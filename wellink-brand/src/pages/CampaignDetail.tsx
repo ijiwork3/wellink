@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Send, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Bookmark } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Bookmark } from 'lucide-react'
 import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
 
@@ -103,7 +103,7 @@ export default function CampaignDetail() {
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
 
   // 콘텐츠검수 (기존 기능 유지)
-  const [statuses, setStatuses] = useState<Record<number, string>>(
+  const [_statuses, setStatuses] = useState<Record<number, string>>(
     Object.fromEntries(campaign.influencers.map(inf => [inf.id, inf.status]))
   )
   const [rejectModal, setRejectModal] = useState<number | null>(null)

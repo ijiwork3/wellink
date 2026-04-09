@@ -14,7 +14,6 @@ import {
   TrendingUp,
   Crown,
   ImageOff,
-  X,
 } from 'lucide-react'
 import Modal from '../components/Modal'
 
