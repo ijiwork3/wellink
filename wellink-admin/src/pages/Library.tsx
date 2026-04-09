@@ -194,19 +194,19 @@ export default function Library() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
           <div className="text-xs text-gray-500 mb-1">총 도달</div>
           <div className="text-xl font-bold text-gray-900">{totalReach.toLocaleString()}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
           <div className="text-xs text-gray-500 mb-1">총 좋아요</div>
           <div className="text-xl font-bold text-gray-900">{totalLikes.toLocaleString()}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
           <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
             <TrendingUp size={12} />
             평균 참여율
@@ -217,7 +217,7 @@ export default function Library() {
 
       {/* Top Performer */}
       {topPerformer && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3 transition-all">
           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#8CC63F20' }}>
             <Crown size={16} style={{ color: '#8CC63F' }} />
           </div>
@@ -283,7 +283,7 @@ export default function Library() {
             {sortOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-20 py-1 min-w-[120px]">
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl z-20 py-1 min-w-[120px]">
                   {(['최신순', '도달순', '좋아요순'] as SortKey[]).map(key => (
                     <button
                       key={key}
@@ -323,7 +323,7 @@ export default function Library() {
 
       {filtered.length === 0 ? (
         /* Empty State */
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
+        <div className="bg-white rounded-xl border border-gray-100 py-20 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
             <ImageOff size={28} className="text-gray-300" />
           </div>
@@ -364,7 +364,7 @@ export default function Library() {
               return (
                 <div
                   key={c.id}
-                  className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer group relative ${
+                  className={`bg-white rounded-xl border transition-all cursor-pointer group relative ${
                     isSelected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'
                   }`}
                 >
@@ -424,7 +424,7 @@ export default function Library() {
         </div>
       ) : (
         /* ───── List (Table) View ───── */
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
