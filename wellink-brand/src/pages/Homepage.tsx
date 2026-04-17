@@ -1,792 +1,332 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import {
-  Check,
-  Coins,
-  ShieldCheck,
-  Clock,
-  User,
-  Users,
-  Building2,
-  CalendarDays,
-  ChevronDown,
-  Sparkles,
-  FileText,
-  Target,
-  Upload,
-  Wallet,
-  ArrowRight,
-} from 'lucide-react'
+// UNUSED: 현재 미사용 파일. 필요 시 App.tsx에 라우트 등록
+import React from 'react'
+import { motion, useReducedMotion } from 'motion/react'
+import { CheckCircle2, Users, MapPin, Trophy, Star, Menu, X } from 'lucide-react'
+import { CtaLink } from '../landing/components/CtaLink'
+import { getLandingConfig } from '../landing/config/landing'
+import { cn } from '../landing/lib/classnames'
+import { ExpertPoolSection } from '../landing/sections/ExpertPoolSection'
+import { FooterCTA } from '../landing/sections/FooterCTA'
+import { HeroSection } from '../landing/sections/HeroSection'
+import { ROASSection } from '../landing/sections/ROASSection'
+import type { NavItem } from '../landing/types/landing'
 
-/* ────────────────────────────────────────────
-   Intersection Observer hook (fade-in on scroll)
-   ──────────────────────────────────────────── */
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setInView(true) },
-      { threshold },
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [threshold])
-
-  return { ref, inView }
-}
-
-/* ────────────────────────────────────────────
-   Count-up animation hook
-   ──────────────────────────────────────────── */
-function useCountUp(target: number, duration = 1600, start = false, suffix = '') {
-  const [display, setDisplay] = useState(`0${suffix}`)
-
-  useEffect(() => {
-    if (!start) return
-    let raf: number
-    const t0 = performance.now()
-    const tick = (now: number) => {
-      const progress = Math.min((now - t0) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
-      const current = Math.round(eased * target)
-      setDisplay(`${current.toLocaleString()}${suffix}`)
-      if (progress < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [start, target, duration, suffix])
-
-  return display
-}
-
-/* ────────────────────────────────────────────
-   Data
-   ──────────────────────────────────────────── */
-const uspCards = [
-  {
-    icon: Coins,
-    title: '700원의 힘',
-    desc: '인플루언서 1인당 획득 비용 700원.\n범용 플랫폼의 체리피커 대신, 진짜 웰니스 팬을 만나세요.',
-  },
-  {
-    icon: ShieldCheck,
-    title: '진성 필터링',
-    desc: '운동 안 하는 인플루언서는 거릅니다.\nAI Fit-Score가 콘텐츠 진정성과 브랜드 궁합을 검증합니다.',
-  },
-  {
-    icon: Clock,
-    title: '70% 업무 절감',
-    desc: '매칭부터 정산까지 원스톱 자동화.\nPoC 3건에서 업무시간 70% 절감을 실증했습니다.',
-  },
+const roasData = [
+  { name: '가짜 팔로워 (타 매체)', value: 60, color: '#D1D5DB' },
+  { name: '진성 유저 (웰링크)', value: 85, color: '#BFF264' },
 ]
 
-const influencerTypes = [
-  {
-    icon: User,
-    title: '개인 인플루언서',
-    desc: '피트니스, 요가, 헬시 라이프.\n개인의 진정성이 브랜드 신뢰로 이어집니다.',
-    gradient: 'from-emerald-500 to-teal-600',
-  },
-  {
-    icon: Users,
-    title: '크루 . 커뮤니티',
-    desc: '러닝크루, 요가 모임, 피트니스 그룹.\n커뮤니티의 결속력이 바이럴의 시작점입니다.',
-    gradient: 'from-blue-500 to-indigo-600',
-  },
-  {
-    icon: Building2,
-    title: '센터 . 스튜디오',
-    desc: '필라테스, 크로스핏, PT 센터.\nO2O 체험과 리뷰가 동시에 이루어집니다.',
-    gradient: 'from-orange-400 to-rose-500',
-  },
-  {
-    icon: CalendarDays,
-    title: '행사 . 이벤트',
-    desc: '마라톤, 피트니스 엑스포, 웰니스 페스티벌.\n대규모 노출이 필요할 때의 최적 채널입니다.',
-    gradient: 'from-violet-500 to-purple-600',
-  },
+const NAV_ITEMS: NavItem[] = [
+  { label: '서비스 소개', href: '#service-intro' },
+  { label: '전문가 풀', href: '#expert-pool' },
+  { label: '성공 사례', href: '#success-case' },
 ]
 
-const processSteps = [
-  { icon: FileText, num: 1, title: 'AI 포트폴리오', desc: '가입만 하면 AI가 자동으로 포트폴리오를 생성합니다' },
-  { icon: Target, num: 2, title: '맞춤 캠페인', desc: 'Fit-Score 기반으로 나와 맞는 캠페인만 추천받습니다' },
-  { icon: Upload, num: 3, title: '콘텐츠 등록', desc: '촬영 → 업로드 → 자동 검수, 최소한의 단계로 완료' },
-  { icon: Wallet, num: 4, title: '자동 수익 정산', desc: '캠페인 종료 후 자동 정산, 별도 청구 절차 없음' },
-]
-
-const plans = [
-  {
-    name: 'Focus',
-    price: '99,000',
-    unit: '원/월',
-    tag: null,
-    desc: '인플루언서 매칭 기본 지원',
-    features: [
-      '기본 인플루언서 DB 접근 (5,000명)',
-      '월별 프로모션 참여',
-      '기본 분석 리포트 제공',
-    ],
-    style: 'white' as const,
-  },
-  {
-    name: 'Scale',
-    price: '299,000',
-    unit: '원/월',
-    tag: '추천',
-    desc: 'AI 기반 성과 분석 + 우선 매칭',
-    features: [
-      '50,000명+ 인플루언서 DB 접근',
-      'AI 기반 성과 예측 . 분석',
-      '우선 인플루언서 매칭',
-      '커스텀 대시보드',
-      '우선 지원',
-    ],
-    style: 'green' as const,
-  },
-  {
-    name: 'Infinite',
-    price: '커스텀',
-    unit: '',
-    tag: null,
-    desc: '글로벌 엔터프라이즈 맞춤형',
-    features: [
-      '무제한 인플루언서 DB',
-      '전담 전문가 배정',
-      '실시간 전략 컨설팅',
-      '글로벌 솔루션',
-      '우선 기술 지원',
-    ],
-    style: 'dark' as const,
-  },
-]
-
-const faqs = [
-  {
-    q: '인플루언서 DB는 얼마나 되나요?',
-    a: '웰니스/피트니스 분야 5만 명 이상의 진성 인플루언서가 등록되어 있습니다.',
-  },
-  {
-    q: 'AI Fit-Score가 뭔가요?',
-    a: '브랜드와 인플루언서의 콘텐츠 성향, 팔로워 특성, 과거 캠페인 성과를 종합 분석해 최적 매칭 점수를 제공합니다.',
-  },
-  {
-    q: '비용은 어떻게 되나요?',
-    a: 'Focus 플랜은 월 99,000원부터 시작합니다. 매칭 건당 1~5만원, SaaS 월 20~50만원, 커미션 3%로 구성됩니다.',
-  },
-  {
-    q: '기존 대행사와 뭐가 다른가요?',
-    a: '대행사 대비 1/10 수준의 비용으로, 데이터 기반 매칭과 자동화된 운영을 제공합니다.',
-  },
-]
-
-const NAV_LINKS = [
-  { label: '광고주', target: 'usp' },
-  { label: '인플루언서', target: 'influencer-hero' },
-  { label: '요금제', target: 'pricing' },
-  { label: 'FAQ', target: 'faq' },
-]
-
-/* ────────────────────────────────────────────
-   Homepage Component
-   ──────────────────────────────────────────── */
 export default function Homepage() {
-  const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const shouldReduceMotion = useReducedMotion()
+  const mobileMenuRef = React.useRef<HTMLDivElement | null>(null)
+  const menuButtonRef = React.useRef<HTMLButtonElement | null>(null)
 
-  /* GNB scroll state */
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const landingConfig = React.useMemo(() => getLandingConfig(), [])
 
-  /* smooth scroll helper */
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+  const hoverScaleSubtle = shouldReduceMotion ? undefined : { scale: 1.02 }
+  const hoverLiftCard = shouldReduceMotion ? undefined : { y: -10 }
+  const hoverScaleCard = shouldReduceMotion ? undefined : { scale: 1.01 }
 
-  /* hero count-up */
-  const heroObs = useInView(0.3)
-  const ctr = useCountUp(20, 1400, heroObs.inView, '%')
-  const cpa = useCountUp(700, 1400, heroObs.inView, '원')
-  const save = useCountUp(70, 1400, heroObs.inView, '%')
+  React.useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMenuOpen])
 
-  /* section observers */
-  const uspObs = useInView()
-  const typesObs = useInView()
-  const inflHeroObs = useInView()
-  const processObs = useInView()
-  const pricingObs = useInView()
-  const faqObs = useInView()
-  const ctaObs = useInView()
+  React.useEffect(() => {
+    if (!isMenuOpen) return
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleEsc)
+    mobileMenuRef.current?.querySelector<HTMLElement>('a, button')?.focus()
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [isMenuOpen])
 
-  /* FAQ accordion */
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-
-  /* mobile nav toggle */
-  const [mobileNav, setMobileNav] = useState(false)
-
-  /* ── render ── */
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-white text-gray-900">
-      {/* ===== GNB ===== */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'bg-white/95 backdrop-blur'
-            : 'bg-transparent'
-        }`}
+    <div id="top" className="min-h-screen bg-white font-sans text-slate-900 selection:bg-lime-200">
+      <a
+        href="#main-content"
+        className="sr-only z-[60] rounded-md bg-white px-3 py-2 font-semibold text-[#0A3622] focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
-          {/* Logo */}
-          <button onClick={() => scrollTo('hero')} className="flex items-center gap-1.5">
-            <span className={`text-base font-bold tracking-tight transition-colors ${scrolled ? 'text-gray-900' : 'text-white'}`}>
-              WELLINK
-            </span>
-            <span className="bg-[#8CC63F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">
-              AI
-            </span>
-          </button>
+        본문으로 건너뛰기
+      </a>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_LINKS.map(l => (
-              <button
-                key={l.target}
-                onClick={() => scrollTo(l.target)}
-                className={`text-sm font-medium transition-colors hover:text-[#8CC63F] ${
-                  scrolled ? 'text-gray-700' : 'text-white/80'
-                }`}
+      <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <a href="#top" className="text-2xl font-black tracking-tighter text-[#0A3622]">
+            WELLINK
+          </a>
+          <div className="hidden items-center gap-8 md:flex">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-sm font-medium text-slate-600 transition-colors hover:text-[#0A3622] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0A3622]"
               >
-                {l.label}
-              </button>
+                {item.label}
+              </a>
             ))}
-            <button
-              onClick={() => navigate('/login')}
-              aria-label="로그인 페이지로 이동"
-              className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            <CtaLink
+              href={landingConfig.contactUrl}
+              ctaLabel="상담 신청"
+              ctaLocation="header_desktop"
+              ctaId="header_desktop_consult"
+              className="rounded-full bg-[#BFF264] px-6 py-2 text-sm font-bold text-[#0A3622] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0A3622]"
             >
-              로그인
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              aria-label="무료로 시작하기 — 로그인 페이지로 이동"
-              className="bg-[#8CC63F] hover:bg-[#7AB832] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
-            >
-              무료로 시작하기
-            </button>
+              상담 신청
+            </CtaLink>
           </div>
-
-          {/* Mobile hamburger */}
           <button
-            className="md:hidden flex flex-col gap-1 p-2"
-            onClick={() => setMobileNav(!mobileNav)}
-            aria-label={mobileNav ? '메뉴 닫기' : '메뉴 열기'}
+            ref={menuButtonRef}
+            type="button"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            aria-controls="mobile-navigation-menu"
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? '모바일 메뉴 닫기' : '모바일 메뉴 열기'}
           >
-            <span className={`block w-5 h-0.5 rounded transition-all ${scrolled ? 'bg-gray-900' : 'bg-white'} ${mobileNav ? 'rotate-45 translate-y-[3px]' : ''}`} />
-            <span className={`block w-5 h-0.5 rounded transition-all ${scrolled ? 'bg-gray-900' : 'bg-white'} ${mobileNav ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 rounded transition-all ${scrolled ? 'bg-gray-900' : 'bg-white'} ${mobileNav ? '-rotate-45 -translate-y-[3px]' : ''}`} />
+            {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
-
-        {/* Mobile dropdown */}
-        {mobileNav && (
-          <div className="md:hidden bg-white border-t border-gray-100 px-6 pb-4 pt-2">
-            {NAV_LINKS.map(l => (
-              <button
-                key={l.target}
-                onClick={() => { scrollTo(l.target); setMobileNav(false) }}
-                className="block w-full text-left py-2.5 text-sm font-medium text-gray-700 hover:text-[#8CC63F]"
-              >
-                {l.label}
-              </button>
-            ))}
-            <button
-              onClick={() => { navigate('/login'); setMobileNav(false) }}
-              className="mt-2 w-full text-sm text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-            >
-              로그인
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              className="mt-2 w-full bg-[#8CC63F] text-white text-sm font-semibold px-5 py-2.5 rounded-xl"
-            >
-              무료로 시작하기
-            </button>
-          </div>
-        )}
       </nav>
 
-      {/* ===== HERO ===== */}
-      <section
-        id="hero"
-        ref={heroObs.ref}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%)',
-        }}
-      >
-        {/* Green glow */}
+      {isMenuOpen && (
         <div
-          className="absolute pointer-events-none"
-          style={{
-            width: 800,
-            height: 800,
-            top: '20%',
-            left: '50%',
-            transform: 'translate(-50%, -30%)',
-            background: 'radial-gradient(circle, rgba(140,198,63,0.12) 0%, transparent 70%)',
-          }}
-        />
-        {/* Secondary glow */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            width: 500,
-            height: 500,
-            bottom: '10%',
-            right: '10%',
-            background: 'radial-gradient(circle, rgba(140,198,63,0.06) 0%, transparent 70%)',
-          }}
-        />
-
-        <div className={`relative z-10 max-w-3xl mx-auto text-center px-6 transition-all duration-700 ${heroObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/10 rounded-full px-4 py-1.5 mb-8">
-            <Sparkles size={14} className="text-[#8CC63F]" />
-            <span className="text-xs text-white/70 font-medium">웰니스 . 피트니스 특화 인플루언서 마케팅</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight">
-            광고비 낭비 없이,
-            <br />
-            <span className="text-[#8CC63F]">AI</span>가 증명하는 진짜 성과
-          </h1>
-
-          <p className="mt-6 text-base sm:text-lg text-gray-400 leading-relaxed max-w-xl mx-auto">
-            웰니스 . 피트니스 특화 5만 명 진성 인플루언서 DB
-            <br />
-            AI Fit-Score 매칭으로 CTR 20%, 획득비용 700원 달성
-          </p>
-
-          {/* CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => navigate('/login')}
-              className="group bg-[#8CC63F] hover:bg-[#7AB832] text-white font-semibold px-8 py-3.5 rounded-xl text-sm transition-all hover:shadow-lg hover:shadow-[#8CC63F]/20 flex items-center gap-2"
+          id="mobile-navigation-menu"
+          ref={mobileMenuRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mobile-menu-title"
+          className="fixed inset-0 z-40 bg-white pt-20 md:hidden"
+        >
+          <h2 id="mobile-menu-title" className="sr-only">모바일 메뉴</h2>
+          <div className="flex flex-col items-center gap-6 p-6">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-lg font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+            <CtaLink
+              href={landingConfig.contactUrl}
+              ctaLabel="상담 신청"
+              ctaLocation="header_mobile"
+              ctaId="header_mobile_consult"
+              className="w-full rounded-full bg-[#BFF264] py-4 text-center text-lg font-bold text-[#0A3622]"
+              onClick={() => setIsMenuOpen(false)}
             >
-              무료로 시작하기
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
-            </button>
-            <button
-              onClick={() => scrollTo('usp')}
-              className="border border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3.5 rounded-xl text-sm transition-all"
-            >
-              서비스 둘러보기
-            </button>
+              상담 신청
+            </CtaLink>
           </div>
+        </div>
+      )}
 
-          {/* Stat badges */}
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            {[
-              { value: ctr, label: 'CTR' },
-              { value: cpa, label: '획득비용' },
-              { value: save, label: '업무 절감' },
-            ].map(s => (
-              <div
-                key={s.label}
-                className="bg-white/[0.07] backdrop-blur border border-white/10 rounded-2xl px-6 py-4 min-w-[130px]"
-              >
-                <p className="text-2xl sm:text-3xl font-extrabold text-[#8CC63F]">{s.value}</p>
-                <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+      <main id="main-content">
+        <HeroSection shouldReduceMotion={Boolean(shouldReduceMotion)} contactUrl={landingConfig.contactUrl} />
+
+        <section id="service-intro" className="scroll-mt-28 py-24 md:py-32">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="grid items-center gap-16 @lg:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { src: 'https://images.unsplash.com/photo-1754257319747-df51c384c0fa?q=80&w=900&auto=format&fit=crop', alt: '기구 필라테스 수업' },
+                  { src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=900&auto=format&fit=crop', alt: 'Gym' },
+                  { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=900&auto=format&fit=crop', alt: 'Lifting' },
+                  { src: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=900&auto=format&fit=crop', alt: 'Pilates' },
+                ].map((image) => (
+                  <motion.div key={image.alt} whileHover={hoverScaleSubtle} className="h-52 overflow-hidden rounded-3xl md:h-56">
+                    <img src={image.src} className="h-full w-full object-cover" alt={image.alt} referrerPolicy="no-referrer" loading="lazy" decoding="async" width={900} height={900} />
+                  </motion.div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown size={24} className="text-white/30" />
-        </div>
-      </section>
-
-      {/* ===== USP 3 Cards ===== */}
-      <section id="usp" className="py-24 bg-white">
-        <div
-          ref={uspObs.ref}
-          className={`max-w-6xl mx-auto px-6 transition-all duration-700 ${uspObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="text-center mb-16">
-            <div className="w-10 h-1 bg-[#8CC63F] rounded-full mx-auto mb-4" />
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">왜 웰링크인가요?</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {uspCards.map((c, i) => (
-              <div
-                key={c.title}
-                className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-                style={{ transitionDelay: `${i * 80}ms` }}
-              >
-                <div className="w-14 h-14 bg-[#8CC63F]/10 rounded-2xl flex items-center justify-center mb-6">
-                  <c.icon size={26} className="text-[#8CC63F]" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{c.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{c.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== 4 Influencer Types ===== */}
-      <section id="types" className="py-24 bg-gray-900">
-        <div
-          ref={typesObs.ref}
-          className={`max-w-6xl mx-auto px-6 transition-all duration-700 ${typesObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="text-center mb-16">
-            <div className="w-10 h-1 bg-[#8CC63F] rounded-full mx-auto mb-4" />
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">4가지 유형의 웰니스 인플루언서</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-6">
-            {influencerTypes.map((t, i) => (
-              <div
-                key={t.title}
-                className="bg-gray-800 rounded-2xl overflow-hidden hover:bg-gray-700/80 transition-all duration-300 group cursor-pointer"
-                style={{ transitionDelay: `${i * 80}ms` }}
-                onClick={() => navigate('/login')}
-              >
-                {/* Placeholder image area */}
-                <div className={`h-40 bg-gradient-to-br ${t.gradient} flex items-center justify-center relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/10" />
-                  <t.icon size={48} className="text-white/80 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-white mb-2">{t.title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line">{t.desc}</p>
+              <div>
+                <span className="mb-4 block text-sm font-bold tracking-wider text-[#0A3622] uppercase">01. Various Categories</span>
+                <h2 className="mb-6 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+                  헬스, 크로스핏은 물론<br />요가, 필라테스, 바레까지.<br />
+                  <span className="text-[#0A3622]">다양한 종목을 직접 골라보세요.</span>
+                </h2>
+                <p className="mb-10 text-lg text-slate-600">어떤 종목의 타겟을 원하든 준비되어 있습니다. 브랜드의 성격에 딱 맞는 세부 카테고리별 전문가 매칭을 지원합니다.</p>
+                <div className="flex flex-wrap gap-2">
+                  {['#헬스', '#크로스핏', '#요가', '#필라테스', '#바레', '#러닝'].map((tag) => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">{tag}</span>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Influencer Hero ===== */}
-      <section id="influencer-hero" className="py-24 bg-[#FAFAFA]">
-        <div
-          ref={inflHeroObs.ref}
-          className={`max-w-6xl mx-auto px-6 transition-all duration-700 ${inflHeroObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Text */}
-            <div>
-              <div className="inline-flex items-center gap-2 bg-[#8CC63F]/10 rounded-full px-4 py-1.5 mb-6">
-                <Sparkles size={14} className="text-[#8CC63F]" />
-                <span className="text-xs text-[#8CC63F] font-semibold">For Influencers</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
-                당신의 색깔을 가장
-                <br />
-                잘 이해하는 브랜드
-              </h2>
-              <p className="mt-5 text-base text-gray-600 leading-relaxed">
-                AI가 당신의 콘텐츠를 분석해
-                <br />
-                진짜 맞는 브랜드만 연결합니다
-              </p>
-              <button
-                onClick={() => navigate('/login')}
-                className="mt-8 bg-[#8CC63F] hover:bg-[#7AB832] text-white font-semibold px-8 py-3.5 rounded-xl text-sm transition-all hover:shadow-lg hover:shadow-[#8CC63F]/20 flex items-center gap-2 group"
-              >
-                인플루언서로 시작하기
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
-              </button>
             </div>
+          </div>
+        </section>
 
-            {/* Visual: 4 step preview cards */}
-            <div className="relative flex items-center justify-center min-h-[380px]">
-              {processSteps.map((s, i) => (
-                <div
-                  key={s.num}
-                  className="absolute bg-white rounded-2xl border border-gray-100 p-5 w-56"
-                  style={{
-                    top: `${i * 55 + 10}px`,
-                    left: `${i * 30 + 20}px`,
-                    zIndex: processSteps.length - i,
-                    transform: `rotate(${-2 + i * 1.5}deg)`,
-                  }}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 bg-[#8CC63F] rounded-lg flex items-center justify-center shrink-0">
-                      <span className="text-white text-xs font-bold">{s.num}</span>
+        <ExpertPoolSection shouldReduceMotion={Boolean(shouldReduceMotion)} />
+        <ROASSection data={roasData} />
+
+        <section className="bg-[#111827] py-24 text-white md:py-32">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="grid items-center gap-16 @lg:grid-cols-2">
+              <div>
+                <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-xs font-bold tracking-wider text-[#BFF264] uppercase">04. Operation Automation</span>
+                <h2 className="mb-6 text-3xl font-black leading-tight md:text-5xl">
+                  모집부터 보고서까지<br /><span className="text-[#BFF264]">단 10분.</span><br />수동 업무에서 해방되세요.
+                </h2>
+                <p className="mb-10 text-lg text-white/60">수동 리스트업과 엑셀 작업은 이제 과거의 일입니다. 캠페인 운영 전 과정을 자동화하여 마케팅 리소스를 <span className="font-bold text-white">90% 이상</span> 절감해 드립니다.</p>
+                <ul className="space-y-4">
+                  {['원클릭 인플루언서 모집', '실시간 콘텐츠 검수 시스템', '자동 성과 대시보드 생성'].map((item) => (
+                    <li key={item} className="flex items-center gap-3 font-bold">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#BFF264] text-[#0A3622]"><CheckCircle2 size={16} /></div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+                  <div className="mb-8 flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <div className="h-3 w-3 rounded-full bg-red-400" />
+                      <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                      <div className="h-3 w-3 rounded-full bg-green-400" />
                     </div>
-                    <span className="text-sm font-bold text-gray-900">{s.title}</span>
+                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Dashboard Pro</div>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl bg-white/5 p-6">
+                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Total Reach</div>
+                      <div className="text-2xl font-black text-[#BFF264]">1.4M+</div>
+                    </div>
+                    <div className="rounded-2xl bg-white/5 p-6">
+                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Campaign ROI</div>
+                      <div className="text-2xl font-black text-[#BFF264]">348%</div>
+                    </div>
+                  </div>
+                  <div className="mt-8 space-y-4">
+                    {[0.8, 0.6, 0.9].map((w, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <div className="h-8 w-8 rounded bg-white/10" />
+                        <div className="h-2 flex-1 rounded-full bg-white/10">
+                          <motion.div initial={{ width: 0 }} whileInView={{ width: `${w * 100}%` }} className="h-full rounded-full bg-[#BFF264]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24 md:py-32">
+          <div className="mx-auto max-w-7xl px-6 text-center">
+            <span className="mb-4 block text-sm font-bold tracking-wider text-[#0A3622] uppercase">05. Multi-Layer Pool</span>
+            <h2 className="mb-16 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+              개인을 넘어 오프라인 공간과<br />커뮤니티까지 연결하는 웰링크만의 차별점
+            </h2>
+            <div className="grid gap-6 @sm:grid-cols-2 @lg:grid-cols-4">
+              {[
+                { icon: Star, label: '1:1 Targeted', title: '개인 인플루언서', desc: '트레이너, 운동 선수, 신뢰도 높은 피트니스/웰니스 전문 크리에이터.' },
+                { icon: Users, label: 'Community Power', title: '운동 크루', desc: '러닝 크루, 동호회 등 강력한 팬덤 커뮤니티.' },
+                { icon: MapPin, label: 'Offline Experience', title: '피트니스/웰니스 센터', desc: '공간 및 체험 제공을 통해 생생한 경험을 확산하는 피트니스 센터.' },
+                { icon: Trophy, label: 'Mass Exposure', title: '행사/이벤트', desc: '대회, 세미나 등 대형 오프라인 이벤트 스폰서십 연결.' },
+              ].map((item) => (
+                <motion.div key={item.title} whileHover={hoverLiftCard} className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-shadow hover:shadow-xl">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[#0A3622]"><item.icon size={28} /></div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</div>
+                  <h3 className="mb-4 text-xl font-black text-slate-900">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-500">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-slate-50 py-24 md:py-32">
+          <div className="mx-auto max-w-7xl px-6 text-center">
+            <h2 className="mb-4 text-3xl font-black text-slate-900 md:text-5xl">마케터의 고민,</h2>
+            <h2 className="mb-8 text-3xl font-black text-[#0A3622] md:text-5xl">웰링크가 해결해 드립니다.</h2>
+            <p className="mb-16 text-slate-500">실제 필드에서 활동하는 마케터들의 가장 큰 고충을 정확히 타겟팅합니다.</p>
+            <div className="grid gap-8 @lg:grid-cols-2">
+              {[
+                { id: 'P1', role: '브랜드 매니저', problem: '"우리 브랜드의 전문성을 이해하는 진짜 파트너를 찾기 힘들어요."', value: '검증된 인플루언서 DB: 정성·정량 스코어링을 통해 브랜드 핏이 완벽한 전문가 매칭', color: 'bg-emerald-50' },
+                { id: 'P2', role: '인플루언서 마케팅 담당자', problem: '"매번 파편화된 커뮤니케이션과 운영에 리소스가 너무 많이 들어요."', value: '운영의 표준(SOP): 모집부터 콘텐츠 검수까지 표준화된 프로세스로 운영 업무 자동화', color: 'bg-blue-50' },
+                { id: 'P3', role: '웰니스 스타트업', problem: '"유저 획득 단가(CAC)를 낮추고 지속 가능한 자산을 만들고 싶어요."', value: '콘텐츠 자산화: 광고 소재로 즉시 활용 가능한 고품질 UGC 및 재사용권 확보 프로세스', color: 'bg-purple-50' },
+                { id: 'P4', role: '퍼포먼스 마케터', problem: '"단순 도달은 높은데, 실제 매출(ROAS)로 증명되나요?"', value: '데이터 어트리뷰션: UTM 및 전용 쿠폰 코드를 통한 실시간 전환 추적 및 성과 리포트', color: 'bg-orange-50' },
+              ].map((item) => (
+                <motion.div key={item.id} whileHover={hoverScaleCard} className="flex overflow-hidden rounded-[2.5rem] bg-white shadow-sm">
+                  <div className={cn('flex w-1/3 flex-col items-center justify-center p-8', item.color)}>
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white font-black text-[#0A3622] shadow-sm">{item.id}</div>
+                    <div className="text-center font-black text-slate-900">{item.role}</div>
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center p-8 text-left">
+                    <div className="mb-6">
+                      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-400">
+                        <div className="flex h-4 w-4 items-center justify-center rounded-full border border-red-400 text-[8px]">!</div>
+                        Problem
+                      </div>
+                      <div className="text-lg font-black leading-tight text-slate-900">{item.problem}</div>
+                    </div>
+                    <div className="mb-6 h-px w-full bg-slate-100" />
+                    <div>
+                      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                        <CheckCircle2 size={12} />Value
+                      </div>
+                      <div className="text-sm font-medium text-slate-600">{item.value}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-[#0A3622] py-24 text-white md:py-32">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
+            <span className="mb-4 block text-sm font-bold tracking-wider text-[#BFF264] uppercase">Standard Operating Procedure</span>
+            <h2 className="mb-16 text-3xl font-black leading-tight md:text-5xl">
+              피트니스 마케팅의<br /><span className="text-[#BFF264]">체계적인 성과 창출 프로세스</span>
+            </h2>
+            <p className="mx-auto mb-20 max-w-2xl text-white/60">우리는 운에 맡기지 않습니다. 데이터와 표준화된 프로세스로 성공할 수밖에 없는 캠페인을 설계합니다.</p>
+            <div className="grid gap-8 @sm:grid-cols-2 @lg:grid-cols-4">
+              {[
+                { step: '01', title: '설계', desc: '브랜드 목표와 타겟에 최적화된 캠페인 전략 수립' },
+                { step: '02', title: '매칭', desc: '5만 명의 리스트 중 브랜드 핏이 완벽한 전문가 선정' },
+                { step: '03', title: '운영', desc: '콘텐츠 가이드부터 검수까지 표준화된 프로세스 진행' },
+                { step: '04', title: '리포트', desc: '실시간 전환 추적 및 ROI 중심의 성과 보고서 제공' },
+              ].map((item, i) => (
+                <div key={item.step} className="group relative">
+                  <div className="mb-8 flex justify-center">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#BFF264] text-3xl font-black text-[#0A3622] transition-transform group-hover:scale-110">{item.step}</div>
+                  </div>
+                  <h3 className="mb-4 text-2xl font-black">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-white/50">{item.desc}</p>
+                  {i < 3 && <div className="absolute right-0 top-12 hidden h-px w-1/2 bg-white/10 @lg:block" />}
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ===== Process 4 Steps ===== */}
-      <section id="process" className="py-24 bg-white">
-        <div
-          ref={processObs.ref}
-          className={`max-w-6xl mx-auto px-6 transition-all duration-700 ${processObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="text-center mb-16">
-            <div className="w-10 h-1 bg-[#8CC63F] rounded-full mx-auto mb-4" />
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">참여는 간단합니다</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-            {/* Connecting line (desktop) */}
-            <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200">
-              <div className="absolute inset-y-0 left-0 bg-[#8CC63F] w-full" style={{ clipPath: 'inset(0 0 0 0)' }} />
-            </div>
-
-            {processSteps.map((s, i) => (
-              <div key={s.num} className="relative text-center" style={{ transitionDelay: `${i * 100}ms` }}>
-                {/* Number circle */}
-                <div className="relative z-10 w-20 h-20 bg-[#8CC63F] rounded-full flex items-center justify-center mx-auto mb-5 shadow-[#8CC63F]/20">
-                  <s.icon size={28} className="text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed max-w-[220px] mx-auto">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Pricing ===== */}
-      <section id="pricing" className="py-24 bg-white">
-        <div
-          ref={pricingObs.ref}
-          className={`max-w-5xl mx-auto px-6 transition-all duration-700 ${pricingObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="text-center mb-16">
-            <div className="w-10 h-1 bg-[#8CC63F] rounded-full mx-auto mb-4" />
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">가장 합리적 가격으로 시작하세요</h2>
-            <p className="mt-3 text-base text-gray-500">모든 플랜에 AI Fit-Score 매칭이 포함됩니다.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Focus */}
-            {plans.filter(p => p.style === 'white').map(plan => (
-              <div
-                key={plan.name}
-                className="bg-white rounded-2xl border border-gray-200 p-7 flex flex-col relative hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="mb-5">
-                  <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{plan.desc}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-gray-900">{plan.price}</span>
-                    <span className="text-sm text-gray-500">{plan.unit}</span>
-                  </div>
-                </div>
-                <ul className="space-y-2.5 mb-7 flex-1">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
-                      <Check size={15} className="shrink-0 mt-0.5 text-[#8CC63F]" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="w-full py-3 rounded-xl text-sm font-semibold bg-[#8CC63F] text-white hover:bg-[#7AB535] transition-colors"
-                >
-                  시작하기
-                </button>
-              </div>
-            ))}
-
-            {/* Scale */}
-            {plans.filter(p => p.style === 'green').map(plan => (
-              <div
-                key={plan.name}
-                className="bg-[#8CC63F] rounded-2xl p-7 flex flex-col relative hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
-                    {plan.tag}
-                  </span>
-                </div>
-                <div className="mb-5">
-                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-                  <p className="text-xs text-white/80 mt-1">{plan.desc}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-white">{plan.price}</span>
-                    <span className="text-sm text-white/80">{plan.unit}</span>
-                  </div>
-                </div>
-                <ul className="space-y-2.5 mb-7 flex-1">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2.5 text-sm text-white/90">
-                      <Check size={15} className="shrink-0 mt-0.5 text-white" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="w-full py-3 rounded-xl text-sm font-semibold bg-white text-[#8CC63F] hover:bg-white/90 transition-colors"
-                >
-                  시작하기
-                </button>
-              </div>
-            ))}
-
-            {/* Infinite */}
-            {plans.filter(p => p.style === 'dark').map(plan => (
-              <div
-                key={plan.name}
-                className="bg-gray-900 rounded-2xl p-7 flex flex-col relative hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="mb-5">
-                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-                  <p className="text-xs text-gray-400 mt-1">{plan.desc}</p>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-white">{plan.price}</span>
-                  </div>
-                </div>
-                <ul className="space-y-2.5 mb-7 flex-1">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
-                      <Check size={15} className="shrink-0 mt-0.5 text-[#8CC63F]" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="w-full py-3 rounded-xl text-sm font-semibold border-2 border-white text-white hover:bg-white/10 transition-colors"
-                >
-                  도입 문의하기
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ ===== */}
-      <section id="faq" className="py-24 bg-[#FAFAFA]">
-        <div
-          ref={faqObs.ref}
-          className={`max-w-3xl mx-auto px-6 transition-all duration-700 ${faqObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <div className="text-center mb-16">
-            <div className="w-10 h-1 bg-[#8CC63F] rounded-full mx-auto mb-4" />
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">자주 묻는 질문</h2>
-          </div>
-
-          <div className="space-y-3">
-            {faqs.map((f, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-shadow"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-6 py-5 text-left"
-                >
-                  <span className="text-sm font-semibold text-gray-900 pr-4">{f.q}</span>
-                  <ChevronDown
-                    size={18}
-                    className={`shrink-0 text-gray-400 transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    openFaq === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <p className="px-6 pb-5 text-sm text-gray-600 leading-relaxed">{f.a}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== CTA Banner ===== */}
-      <section className="py-20 bg-[#8CC63F]">
-        <div
-          ref={ctaObs.ref}
-          className={`max-w-4xl mx-auto px-6 text-center transition-all duration-700 ${ctaObs.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        >
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">지금 바로 웰링크를 시작하세요</h2>
-          <p className="mt-4 text-base text-white/80">3분이면 첫 캠페인을 만들 수 있습니다</p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-white text-[#8CC63F] hover:bg-white/90 font-semibold px-8 py-3.5 rounded-xl text-sm transition-all shadow-black/10"
-            >
-              광고주로 시작하기
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              className="border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-3.5 rounded-xl text-sm transition-all"
-            >
-              인플루언서로 시작하기
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Footer ===== */}
-      <footer className="bg-gray-900 py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            {/* Logo + info */}
-            <div>
-              <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-base font-bold text-white tracking-tight">WELLINK</span>
-                <span className="bg-[#8CC63F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">AI</span>
-              </div>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                (주)애프터액션 | 대표: 이영준 | 사업자등록번호: 000-00-00000
-              </p>
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => window.open('https://wellink.co.kr/terms', '_blank')}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                이용약관
-              </button>
-              <button
-                onClick={() => window.open('https://wellink.co.kr/privacy', '_blank')}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                개인정보처리방침
-              </button>
-              <button
-                onClick={() => window.open('mailto:help@wellink.co.kr')}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                고객센터
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-800">
-            <p className="text-xs text-gray-600 text-center">&copy; 2026 WELLINK. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <FooterCTA
+        contactUrl={landingConfig.contactUrl}
+        termsUrl={landingConfig.termsUrl}
+        privacyUrl={landingConfig.privacyUrl}
+        inquiryUrl={landingConfig.inquiryUrl}
+      />
     </div>
   )
 }

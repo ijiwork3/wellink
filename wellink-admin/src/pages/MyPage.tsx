@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2 } from 'lucide-react'
 
 // Instagram 아이콘 — lucide-react에 없어 인라인 SVG로 대체
@@ -19,6 +19,7 @@ const tabs = ['광고주 정보', '구독 관리'] as const
 
 export default function MyPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<typeof tabs[number]>('광고주 정보')
 
@@ -37,7 +38,14 @@ export default function MyPage() {
 
   // SNS 연동
   const [snsConnected] = useState(true)
+  const [searchParams] = useSearchParams()
   const [snsModal, setSnsModal] = useState(false)
+
+  useEffect(() => {
+    const m = searchParams.get('modal')
+    if (m === 'password')  setPwModal(true)
+    if (m === 'instagram') setSnsModal(true)
+  }, [searchParams, location.key])
   const [snsHandle, setSnsHandle] = useState('wellink_brand')
 
   // 비밀번호 변경 모달
@@ -117,7 +125,7 @@ export default function MyPage() {
       </div>
 
       {/* 광고주 정보 설정 */}
-      {activeTab === '광고주 정보' && <div className="bg-white rounded-2xl border border-gray-100">
+      {activeTab === '광고주 정보' && <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div>
             <h2 className="text-base font-bold text-gray-900">광고주 정보 설정</h2>
@@ -148,10 +156,11 @@ export default function MyPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1.5 block">이름</label>
+                <label htmlFor="mypage-name" className="text-xs text-gray-500 mb-1.5 block">이름</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                   <User size={15} className="text-gray-400 shrink-0" />
                   <input
+                    id="mypage-name"
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
@@ -298,7 +307,7 @@ export default function MyPage() {
 
       {/* 구독 관리 탭 */}
       {activeTab === '구독 관리' && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-base font-bold text-gray-900">현재 구독 플랜</h2>
@@ -397,8 +406,9 @@ export default function MyPage() {
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1.5 block">Instagram 비즈니스 계정</label>
+            <label htmlFor="sns-handle" className="text-xs text-gray-500 mb-1.5 block">Instagram 비즈니스 계정</label>
             <input
+              id="sns-handle"
               type="text"
               value={snsHandle}
               onChange={e => setSnsHandle(e.target.value)}

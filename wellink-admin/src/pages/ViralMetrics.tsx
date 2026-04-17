@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Share2, Bookmark, Eye, Zap, Image } from 'lucide-react'
+import { useToast } from '../components/Toast'
 
 function InstagramIcon({ size = 16, className = '' }: { size?: number; className?: string }) {
   return (
@@ -93,6 +94,7 @@ function formatNumber(n: number): string {
 
 export default function ViralMetrics() {
   const [period, setPeriod] = useState<Period>('월간')
+  const { showToast } = useToast()
 
   return (
     <div className="space-y-6">
@@ -112,7 +114,7 @@ export default function ViralMetrics() {
               onClick={() => setPeriod(p)}
               className={`text-sm px-3 py-1.5 rounded-md transition-all ${
                 period === p
-                  ? 'bg-white font-medium text-gray-900'
+                  ? 'bg-white shadow-sm font-medium text-gray-900'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -174,13 +176,16 @@ export default function ViralMetrics() {
             Instagram 비즈니스 계정을 연결하면 바이럴 지표가 자동으로 수집되어 실시간 분석이 가능합니다.
           </p>
         </div>
-        <button className="text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors shrink-0">
+        <button
+          onClick={() => showToast('마이페이지 > 계정 설정에서 Instagram을 연결해주세요.', 'info')}
+          className="text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors shrink-0"
+        >
           연결하기
         </button>
       </div>
 
       {/* 콘텐츠별 바이럴 성과 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
           <p className="text-xs text-gray-500 mt-0.5">바이럴 점수 높은 순 정렬</p>

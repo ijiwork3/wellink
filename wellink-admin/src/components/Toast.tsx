@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
 import { CheckCircle, XCircle, Info, X } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'info'
@@ -21,10 +21,10 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
-  let nextId = 0
+  const nextIdRef = useRef(0)
 
   const showToast = useCallback((message: string, type: ToastType = 'success') => {
-    const id = ++nextId
+    const id = ++nextIdRef.current
     setToasts(prev => [...prev, { id, type, message }])
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
@@ -70,6 +70,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastItem; onRemove: (id: numbe
       <span className="flex-1 text-sm text-gray-800">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
+        aria-label="알림 닫기"
         className="text-gray-400 hover:text-gray-600 transition-colors"
       >
         <X size={14} />

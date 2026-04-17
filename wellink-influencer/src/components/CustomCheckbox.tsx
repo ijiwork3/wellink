@@ -12,6 +12,8 @@ export default function CustomCheckbox({ checked, onChange, label, className = '
     <button
       type="button"
       onClick={onChange}
+      role="checkbox"
+      aria-checked={checked}
       className={`flex items-center gap-2.5 cursor-pointer group ${className}`}
     >
       <div

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Heart, Plus, FolderPlus, Users, X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import Modal from '../components/Modal'
 import Dropdown from '../components/Dropdown'
 
@@ -39,10 +39,18 @@ function fitScoreBadge(score: number) {
 
 export default function InfluencerManage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [influencers, setInfluencers] = useState<Influencer[]>(initialInfluencers)
   const [groups, setGroups] = useState<string[]>(initialGroups)
   const [activeTab, setActiveTab] = useState('전체')
+  const [searchParams] = useSearchParams()
   const [newGroupModal, setNewGroupModal] = useState(false)
+  const [confirmRemoveId, setConfirmRemoveId] = useState<number | null>(null)
+  const [confirmDeleteGroup, setConfirmDeleteGroup] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('modal') === 'newgroup') setNewGroupModal(true)
+  }, [searchParams, location.key])
   const [newGroupName, setNewGroupName] = useState('')
   const removeBookmark = (id: number) => {
     setInfluencers(prev => prev.filter(inf => inf.id !== id))
@@ -70,6 +78,13 @@ export default function InfluencerManage() {
     setGroups(prev => [...prev, trimmed])
     setNewGroupName('')
     setNewGroupModal(false)
+  }
+
+  const deleteGroup = (name: string) => {
+    setGroups(prev => prev.filter(g => g !== name))
+    setInfluencers(prev => prev.map(inf => ({ ...inf, groups: inf.groups.filter(g => g !== name) })))
+    if (activeTab === name) setActiveTab('전체')
+    setConfirmDeleteGroup(null)
   }
 
   // 탭별 필터
@@ -105,26 +120,43 @@ export default function InfluencerManage() {
 
       {/* 그룹 탭 */}
       <div className="flex gap-2 flex-wrap">
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm transition-all duration-150 ${
-              activeTab === tab
-                ? 'bg-[#8CC63F] text-white font-medium'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
-            }`}
-          >
-            {tab === '북마크' && <Heart size={13} />}
-            {tab !== '전체' && tab !== '북마크' && <Users size={13} />}
-            {tab}
-            <span className={`text-xs rounded-full px-1.5 py-0.5 ${
-              activeTab === tab ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-            }`}>
+        {tabs.map(tab => {
+          const isCustomGroup = tab !== '전체' && tab !== '북마크'
+          const isActive = activeTab === tab
+          const baseClass = `flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm transition-all duration-150 ${
+            isActive ? 'bg-[#8CC63F] text-white font-medium' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
+          }`
+          const countBadge = (
+            <span className={`text-xs rounded-full px-1.5 py-0.5 ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
               {getTabCount(tab)}
             </span>
-          </button>
-        ))}
+          )
+          if (isCustomGroup) {
+            return (
+              <div key={tab} className={baseClass}>
+                <button onClick={() => setActiveTab(tab)} className="flex items-center gap-1.5">
+                  <Users size={13} />
+                  {tab}
+                  {countBadge}
+                </button>
+                <button
+                  onClick={() => setConfirmDeleteGroup(tab)}
+                  aria-label={`${tab} 그룹 삭제`}
+                  className={`ml-0.5 transition-opacity hover:opacity-70 ${isActive ? 'text-white' : 'text-gray-400'}`}
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            )
+          }
+          return (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={baseClass}>
+              {tab === '북마크' && <Heart size={13} />}
+              {tab}
+              {countBadge}
+            </button>
+          )
+        })}
         <button
           onClick={() => setNewGroupModal(true)}
           className="flex items-center gap-1 px-3 py-2 rounded-full text-sm border border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
@@ -152,13 +184,13 @@ export default function InfluencerManage() {
           {filteredInfluencers.map(inf => (
             <div
               key={inf.id}
-              className="bg-white rounded-xl border border-gray-100 p-5 relative group"
+              className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative group"
             >
               {/* 북마크 하트 (우측 상단) */}
               <button
-                onClick={() => removeBookmark(inf.id)}
+                onClick={() => setConfirmRemoveId(inf.id)}
                 className="absolute top-4 right-4"
-                title="북마크 해제"
+                aria-label="북마크 해제"
               >
                 <Heart size={16} className="text-red-500 fill-red-500 hover:opacity-70 transition-opacity" />
               </button>
@@ -244,12 +276,60 @@ export default function InfluencerManage() {
         </div>
       )}
 
+      {/* 북마크 해제 확인 모달 */}
+      <Modal open={confirmRemoveId !== null} onClose={() => setConfirmRemoveId(null)} title="북마크 해제" size="sm">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">이 인플루언서를 북마크에서 해제하시겠습니까?</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirmRemoveId(null)}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors duration-150"
+            >
+              취소
+            </button>
+            <button
+              onClick={() => {
+                if (confirmRemoveId !== null) { removeBookmark(confirmRemoveId); setConfirmRemoveId(null) }
+              }}
+              className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm hover:bg-red-600 transition-colors duration-150"
+            >
+              해제
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 그룹 삭제 확인 모달 */}
+      <Modal open={confirmDeleteGroup !== null} onClose={() => setConfirmDeleteGroup(null)} title="그룹 삭제" size="sm">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">'{confirmDeleteGroup}'</span> 그룹을 삭제하시겠습니까?<br />
+            <span className="text-xs text-gray-400">그룹만 삭제되며 인플루언서 정보는 유지됩니다.</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirmDeleteGroup(null)}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors duration-150"
+            >
+              취소
+            </button>
+            <button
+              onClick={() => { if (confirmDeleteGroup) deleteGroup(confirmDeleteGroup) }}
+              className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm hover:bg-red-600 transition-colors duration-150"
+            >
+              삭제
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       {/* 새 그룹 만들기 모달 */}
       <Modal open={newGroupModal} onClose={() => { setNewGroupModal(false); setNewGroupName('') }} title="새 그룹 만들기">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
+            <label htmlFor="new-group-name" className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
             <input
+              id="new-group-name"
               type="text"
               value={newGroupName}
               onChange={e => setNewGroupName(e.target.value)}

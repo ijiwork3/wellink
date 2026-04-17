@@ -1,36 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { useQAMode } from '../utils/useQAMode'
+import { useToast } from '../components/Toast'
 
 type UserType = '인플루언서' | '광고주'
 
 export default function Login() {
   const navigate = useNavigate()
+  const qa = useQAMode()
+  const { showToast } = useToast()
   const [userType, setUserType] = useState<UserType>('인플루언서')
-  const [id, setId] = useState('')
-  const [password, setPassword] = useState('')
+  const [id, setId] = useState(qa === 'error' ? 'wrong@test.com' : qa === 'filled' ? 'admin@wellink.co.kr' : '')
+  const [password, setPassword] = useState(qa === 'error' ? 'pass1234' : qa === 'filled' ? 'wellink2026' : '')
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [loginError, setLoginError] = useState('')
+  const [loading, setLoading] = useState(qa === 'loading')
+  const [loginError, setLoginError] = useState(qa === 'error' ? '아이디 또는 비밀번호가 올바르지 않습니다.' : '')
+
+  useEffect(() => {
+    if (qa === 'error') {
+      setId('wrong@test.com')
+      setPassword('pass1234')
+      setLoginError('아이디 또는 비밀번호가 올바르지 않습니다.')
+      setLoading(false)
+    } else if (qa === 'filled') {
+      setId('admin@wellink.co.kr')
+      setPassword('wellink2026')
+      setLoginError('')
+      setLoading(false)
+    } else if (qa === 'loading') {
+      setLoading(true)
+    }
+  }, [qa])
 
   const handleLogin = async () => {
-    if (!id || !password) return
+    if (!id.trim() || !password.trim()) return
     setLoading(true)
     setLoginError('')
     // Simulate login
     await new Promise(r => setTimeout(r, 800))
     setLoading(false)
-    if (id !== 'test') {
+    if (!['test', 'admin@wellink.co.kr'].includes(id)) {
       setLoginError('아이디 또는 비밀번호가 올바르지 않습니다.')
       return
     }
-    if (userType === '광고주') {
-      // Go to admin (port 3004)
-      window.location.href = `${import.meta.env.VITE_ADMIN_URL || 'http://localhost:3004'}/dashboard`
-    } else {
-      // Go to influencer portal (port 3005)
-      window.location.href = `${import.meta.env.VITE_INFLUENCER_URL || 'http://localhost:3005'}/campaigns/browse`
-    }
+    showToast('로그인되었습니다.', 'success')
+    navigate('/dashboard')
   }
 
   return (
@@ -58,7 +73,7 @@ export default function Login() {
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-gray-900">환영합니다!</h1>
           <p className="text-sm text-gray-500 mt-1">
-            서비스 이용을 위해 <span className="text-[#8CC63F] font-medium">로그인해주세요</span>
+            서비스 이용을 위해 <span className="text-[#8CC63F] font-medium">로그인해 주세요</span>
           </p>
         </div>
 
@@ -68,9 +83,9 @@ export default function Login() {
             <button
               key={type}
               onClick={() => { setUserType(type); setLoginError('') }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
                 userType === type
-                  ? 'bg-[#8CC63F] text-white'
+                  ? 'bg-[#8CC63F] text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -83,17 +98,17 @@ export default function Login() {
         {/* Form */}
         <div className="space-y-3">
           <div>
-            <label htmlFor="login-id" className="text-xs text-gray-500 mb-1.5 block">{userType === '광고주' ? '광고주' : '인플루언서'} 아이디</label>
+            <label htmlFor="login-id" className="text-xs text-gray-500 mb-1.5 block">{userType} 아이디</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-[#8CC63F] transition-colors">
               <User size={15} className="text-gray-400 shrink-0" />
               <input
                 id="login-id"
-                type="text"
+                type="email"
                 value={id}
                 onChange={e => { setId(e.target.value); setLoginError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="아이디를 입력해주세요"
-                className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#8CC63F] rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
             </div>
           </div>
@@ -108,7 +123,8 @@ export default function Login() {
                 onChange={e => { setPassword(e.target.value); setLoginError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="••••••••"
-                className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-300"
+                maxLength={100}
+                className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#8CC63F] rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
               <button
                 onClick={() => setShowPassword(!showPassword)}
@@ -126,7 +142,7 @@ export default function Login() {
 
         <button
           onClick={handleLogin}
-          disabled={!id || !password || loading}
+          disabled={!id.trim() || !password.trim() || loading}
           className={`mt-5 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
             id && password && !loading
               ? 'bg-[#8CC63F] text-white hover:bg-[#7AB535]'
@@ -143,7 +159,7 @@ export default function Login() {
         <p className="text-center text-xs text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button
-            onClick={() => window.location.href = `${import.meta.env.VITE_INFLUENCER_URL || 'http://localhost:3005'}/signup`}
+            onClick={() => navigate('/signup')}
             className="text-[#8CC63F] font-medium hover:underline"
           >
             회원가입
@@ -154,7 +170,7 @@ export default function Login() {
       {/* Help button */}
       <button
         onClick={() => window.open('mailto:help@wellink.co.kr', '_blank')}
-        className="absolute bottom-6 right-6 w-10 h-10 bg-[#8CC63F] text-white rounded-full flex items-center justify-center hover:bg-[#7AB535] transition-colors text-sm font-bold"
+        className="absolute bottom-6 right-6 w-10 h-10 bg-[#8CC63F] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#7AB535] transition-colors text-sm font-bold"
         aria-label="도움말 문의"
       >
         ?

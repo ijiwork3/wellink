@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Search, Layers } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Search, X, Layers, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { campaigns } from '../data/campaigns'
+import { useQAMode } from '../utils/useQAMode'
 
-const categories = ['전체', '뷰티/패션', '맛집/푸드', '생활/미용', '디지털/가전', '어필/스포츠', '기타']
+const categories = ['전체', '뷰티/패션', '맛집/푸드', '어필/스포츠']
 
 // 스켈레톤 카드 컴포넌트
 function SkeletonCard() {
@@ -12,10 +14,10 @@ function SkeletonCard() {
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
       <div className="h-40 bg-gray-100" />
       <div className="p-4 space-y-2.5">
-        <div className="h-3 bg-gray-100 rounded-lg w-1/3" />
-        <div className="h-4 bg-gray-100 rounded-lg w-4/5" />
-        <div className="h-3 bg-gray-100 rounded-lg w-2/3" />
-        <div className="h-4 bg-gray-100 rounded-lg w-1/2" />
+        <div className="h-3 bg-gray-100 rounded-xl w-1/3" />
+        <div className="h-4 bg-gray-100 rounded-xl w-4/5" />
+        <div className="h-3 bg-gray-100 rounded-xl w-2/3" />
+        <div className="h-4 bg-gray-100 rounded-xl w-1/2" />
         <div className="h-9 bg-gray-100 rounded-xl mt-3" />
       </div>
     </div>
@@ -23,15 +25,24 @@ function SkeletonCard() {
 }
 
 export default function CampaignBrowse() {
+  const qa = useQAMode()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const [loading, setLoading] = useState(true)
+  const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
 
   useEffect(() => {
+    if (qa === 'loading') return // loading 상태 고정
     const t = setTimeout(() => setLoading(false), 800)
     return () => clearTimeout(t)
-  }, [])
+  }, [qa])
+
+  useEffect(() => {
+    if (qa === 'empty-search') setSearch('검색결과없음xyz')
+    if (qa === 'modal-detail') setQuickViewId(1)
+  }, [qa])
 
   const toggleLike = (id: number) => {
     setLikedIds((prev) => {
@@ -42,11 +53,33 @@ export default function CampaignBrowse() {
     })
   }
 
-  const filtered = campaigns.filter((c) => {
+  const baseFiltered = campaigns.filter((c) => {
     const matchCategory = selectedCategory === '전체' || c.category === selectedCategory
-    const matchSearch = !search || c.name.includes(search) || c.brand.includes(search)
+    const q = search.trim().toLowerCase()
+    const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
     return matchCategory && matchSearch
   })
+
+  const filtered = qa === 'empty' ? [] : baseFiltered
+
+  if (qa === 'error') {
+    return (
+      <Layout showSidebar={false}>
+        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
+          <XCircle size={44} className="text-red-300" />
+          <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
+            style={{ backgroundColor: '#8CC63F' }}
+          >
+            <RefreshCw size={14} />
+            다시 시도
+          </button>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout showSidebar={false}>
@@ -69,11 +102,21 @@ export default function CampaignBrowse() {
           <input
             id="campaign-search"
             type="text"
-            placeholder="캠페인명, 브랜드명으로 검색"
+            placeholder="캠페인 또는 브랜드명 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-full border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+            className="w-full pl-11 pr-10 py-3 rounded-full border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch('')}
+              aria-label="검색어 삭제"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-150"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
         {/* 카테고리 탭 */}
@@ -81,11 +124,11 @@ export default function CampaignBrowse() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => { setSelectedCategory(cat); setSearch(''); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
                 selectedCategory === cat
                   ? 'text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#8CC63F]/40 hover:text-[#8CC63F]'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#8CC63F]/40 hover:text-[#8CC63F] hover:bg-[#8CC63F]/5'
               }`}
               style={selectedCategory === cat ? { backgroundColor: '#8CC63F' } : {}}
             >
@@ -103,11 +146,11 @@ export default function CampaignBrowse() {
 
         {/* 스켈레톤 / 실제 그리드 */}
         {loading ? (
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
             {filtered.map((c) => (
               <CampaignCard
                 key={c.id}
@@ -139,10 +182,38 @@ export default function CampaignBrowse() {
         )}
       </div>
 
+      {/* 퀵뷰 모달 (qa=modal-detail) */}
+      {quickViewId !== null && (() => {
+        const c = campaigns.find(x => x.id === quickViewId)
+        if (!c) return null
+        return (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setQuickViewId(null)}>
+            <div className="bg-white rounded-t-2xl w-full max-w-lg p-6 pb-8 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-gray-900">{c.name}</h3>
+                <button onClick={() => setQuickViewId(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">{c.brand}</p>
+              <div className="flex gap-2">
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{backgroundColor:'#8CC63F', color:'white'}}>{c.category}</span>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{'체험단'}</span>
+              </div>
+              <button
+                onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
+                className="mt-5 w-full py-3 rounded-xl text-sm font-semibold text-white"
+                style={{backgroundColor:'#8CC63F'}}
+              >
+                캠페인 상세 보기
+              </button>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white mt-16">
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-2 @sm:grid-cols-4 gap-4 @sm:gap-8 mb-8">
             <div className="col-span-1">
               <div className="flex items-center gap-1.5 mb-3">
                 <span className="text-base font-bold" style={{color: '#8CC63F'}}>WELLINK AI</span>
@@ -166,7 +237,7 @@ export default function CampaignBrowse() {
             <div>
               <h4 className="text-sm font-semibold mb-3">회사</h4>
               <ul className="space-y-2 text-xs text-gray-400">
-                <li><button onClick={() => window.open('https://wellink.co.kr/blog', '_blank')} className="hover:text-white transition-colors">블로그</button></li>
+                <li><button onClick={() => window.open('https://wellink.co.kr/blog', '_blank', 'noopener,noreferrer')} className="hover:text-white transition-colors">블로그</button></li>
               </ul>
             </div>
             <div>
@@ -174,7 +245,7 @@ export default function CampaignBrowse() {
               <ul className="space-y-2 text-xs text-gray-400">
                 <li><button onClick={() => window.open('mailto:help@wellink.co.kr')} className="hover:text-white transition-colors">문의하기</button></li>
                 <li><button onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/#faq`} className="hover:text-white transition-colors">FAQ</button></li>
-                <li><button onClick={() => window.open('https://wellink.co.kr/terms', '_blank')} className="hover:text-white transition-colors">서비스 이용 약관</button></li>
+                <li><button onClick={() => window.open('https://wellink.co.kr/terms', '_blank', 'noopener,noreferrer')} className="hover:text-white transition-colors">서비스 이용 약관</button></li>
               </ul>
             </div>
           </div>

@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Megaphone, Users, Activity, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Zap, Search,
-  Eye, Heart, MessageCircle, BarChart3
+  Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock
 } from 'lucide-react'
 import StatusBadge from '../components/StatusBadge'
+import ErrorState from '../components/ErrorState'
+import { useQAMode } from '../utils/useQAMode'
+import { getDDay } from '../utils/getDDay'
 
 /* ── Brand tokens ── */
 const BRAND_GREEN = '#8CC63F'
@@ -13,7 +17,7 @@ const BRAND_GREEN = '#8CC63F'
 const kpis = [
   {
     title: '활성 캠페인',
-    value: 3,
+    value: 2,
     sub: '현재 진행 중',
     trend: 50,
     icon: <Megaphone size={16} />,
@@ -43,12 +47,12 @@ const kpis = [
 
 /* ── 캠페인 데이터 ── */
 const campaigns = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-11', dday: 2 },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-04-18', dday: 9 },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05' },
 ]
 
-/* ── 알림 데이터 ── */
-const notifications = [
+/* ── 알림 초기 데이터 ── */
+const INITIAL_NOTIFICATIONS: { id: number; text: string; time: string; dot: string; route: string; unread: boolean }[] = [
   { id: 1, text: '이창민님이 콘텐츠를 제출했습니다 — 검수가 필요합니다.', time: '5분 전', dot: 'bg-sky-400', route: '/campaigns/1', unread: true },
   { id: 2, text: '비건 신제품 론칭에 새 인플루언서가 지원했습니다.', time: '1시간 전', dot: 'bg-emerald-400', route: '/campaigns/2', unread: true },
   { id: 3, text: 'AI 리스트업이 완료되었습니다. 결과를 확인하세요.', time: '3시간 전', dot: 'bg-slate-400', route: '/influencers/ai', unread: true },
@@ -56,13 +60,32 @@ const notifications = [
   { id: 5, text: '박리나님과의 협의가 수락되었습니다.', time: '2일 전', dot: 'bg-slate-400', route: '/influencers/manage', unread: false },
 ]
 
-/* ── 콘텐츠 성과 (이번 주) ── */
-const weeklyContent = [
-  { label: '조회수', value: '24.3K', change: 12, icon: <Eye size={14} />, sparkline: [30, 45, 38, 52, 60, 55, 72] },
-  { label: '좋아요', value: '1,842', change: 8.5, icon: <Heart size={14} />, sparkline: [20, 28, 25, 35, 32, 40, 45] },
-  { label: '댓글', value: '326', change: -5.2, icon: <MessageCircle size={14} />, sparkline: [40, 35, 42, 30, 28, 25, 22] },
-  { label: '공유', value: '189', change: 22, icon: <BarChart3 size={14} />, sparkline: [10, 15, 12, 20, 25, 28, 35] },
-]
+/* ── 콘텐츠 성과 — 기간별 ── */
+type ContentPeriod = '일간' | '주간' | '월간'
+
+const contentByPeriod: Record<ContentPeriod, { label: string; value: string; change: number; sparkline: number[] }[]> = {
+  // 일간: 30일 sparkline
+  일간: [
+    { label: '조회수', value: '3.4K',  change: 5.2,  sparkline: [28,30,27,32,29,31,35,30,33,32,36,31,34,38,33,36,34,38,35,40,36,38,37,40,38,35,37,39,36,34] },
+    { label: '좋아요', value: '263',   change: 3.1,  sparkline: [22,24,21,26,23,25,28,24,27,25,29,24,27,30,26,28,27,30,28,32,29,30,29,31,30,28,29,31,28,26] },
+    { label: '댓글',   value: '47',    change: -8.3, sparkline: [52,50,53,48,51,49,46,50,47,49,45,48,46,43,47,44,46,43,41,44,42,44,43,45,43,41,42,44,41,47] },
+    { label: '공유',   value: '27',    change: 12.5, sparkline: [18,19,17,20,19,21,22,20,22,21,23,21,23,24,22,24,23,25,23,26,24,25,25,26,25,24,25,26,24,27] },
+  ],
+  // 주간: 12주 sparkline
+  주간: [
+    { label: '조회수', value: '24.3K', change: 12,   sparkline: [0,0,18,22,28,24,34,30,36,38,34,42] },
+    { label: '좋아요', value: '1,842', change: 8.5,  sparkline: [0,0,14,18,22,19,26,24,28,30,27,32] },
+    { label: '댓글',   value: '326',   change: -5.2, sparkline: [0,0,30,28,34,26,22,20,18,16,14,18] },
+    { label: '공유',   value: '189',   change: 22,   sparkline: [0,0,8,10,14,11,17,16,19,21,18,24] },
+  ],
+  // 월간: 12개월 sparkline
+  월간: [
+    { label: '조회수', value: '104.8K', change: 18.4, sparkline: [0,0,0,0,0,0,0,0,62,74,90,112] },
+    { label: '좋아요', value: '7,940',  change: 11.2, sparkline: [0,0,0,0,0,0,0,0,55,62,74,90]  },
+    { label: '댓글',   value: '1,408',  change: -2.1, sparkline: [0,0,0,0,0,0,0,0,48,44,40,42]  },
+    { label: '공유',   value: '814',    change: 31.6, sparkline: [0,0,0,0,0,0,0,0,32,46,58,72]  },
+  ],
+}
 
 
 /* ── Sparkline SVG ── */
@@ -94,39 +117,216 @@ function Sparkline({ data, color, width = 80, height = 24 }: { data: number[]; c
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const qa = useQAMode()
+  const [showAllNotifications, setShowAllNotifications] = useState(false)
+  const [contentPeriod, setContentPeriod] = useState<ContentPeriod>('주간')
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
+
+  /* ── QA: 에러 상태 ── */
+  if (qa === 'error') {
+    return <ErrorState onRetry={() => window.location.reload()} />
+  }
+
+  /* ── QA: 신규 회원 온보딩 ── */
+  if (qa === 'new-user') {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
+          <p className="text-sm text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
+        </div>
+        <div className="bg-gradient-to-br from-[#8CC63F]/10 to-[#7AB535]/5 border border-[#8CC63F]/20 rounded-2xl p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-[#8CC63F]/15 flex items-center justify-center mx-auto mb-4">
+            <Sparkles size={24} className="text-[#8CC63F]" />
+          </div>
+          <h2 className="text-base font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
+          <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+            캠페인을 등록하면 AI가 브랜드에 맞는 인플루언서를 추천해 드립니다.
+          </p>
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={() => navigate('/campaigns/new')}
+              className="bg-[#8CC63F] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#7AB535] transition-colors"
+            >
+              <Megaphone size={14} className="inline mr-2" />
+              첫 캠페인 만들기
+            </button>
+            <button
+              onClick={() => navigate('/influencers/ai')}
+              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              인플루언서 탐색
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4">
+          {[
+            { step: '01', title: '캠페인 등록', desc: '제품과 캠페인 정보를 입력하세요' },
+            { step: '02', title: '인플루언서 매칭', desc: 'AI가 적합한 인플루언서를 추천합니다' },
+            { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
+          ].map(s => (
+            <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
+              <span className="text-[11px] font-bold text-[#8CC63F]">Step {s.step}</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">{s.title}</p>
+              <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  /* ── QA: 로딩 스켈레톤 ── */
+  if (qa === 'loading') {
+    return (
+      <div className="space-y-6 animate-pulse">
+        {/* 헤더 스켈레톤 */}
+        <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
+          <div className="space-y-2">
+            <div className="h-6 w-48 bg-gray-100 rounded-xl" />
+            <div className="h-4 w-32 bg-gray-100 rounded-xl" />
+          </div>
+          <div className="h-9 w-28 bg-gray-100 rounded-xl" />
+        </div>
+        {/* 요약 배너 스켈레톤 */}
+        <div className="h-16 bg-gray-100 rounded-xl" />
+        {/* KPI 4개 스켈레톤 */}
+        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="bg-gray-100 rounded-xl h-32" />
+          ))}
+        </div>
+        {/* 섹션 2개 스켈레톤 */}
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
+          <div className="col-span-2 bg-gray-100 rounded-xl h-48" />
+          <div className="bg-gray-100 rounded-xl h-48" />
+        </div>
+        {/* 콘텐츠 성과 스켈레톤 */}
+        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="bg-gray-100 rounded-xl h-24" />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  /* ── QA: 빈 상태 (캠페인 없음) ── */
+  if (qa === 'empty') {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
+            <p className="text-sm text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
+          </div>
+          <button
+            onClick={() => navigate('/campaigns/new')}
+            className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+          >
+            <Megaphone size={14} />새 캠페인
+          </button>
+        </div>
+        {/* 0값 KPI */}
+        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+          {[
+            { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} /> },
+            { title: '진행중 인플루언서', value: '0', sub: '참여 인원 없음', icon: <Users size={16} /> },
+            { title: '이번달 도달', value: '0', sub: '임프레션 없음', icon: <Activity size={16} /> },
+            { title: '검수대기', value: '0', sub: '콘텐츠 대기 없음', icon: <Clock size={16} /> },
+          ].map(k => (
+            <div key={k.title} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-gray-500 font-medium">{k.title}</span>
+                <span className="text-gray-300">{k.icon}</span>
+              </div>
+              <div className="text-[28px] font-bold text-gray-300">{k.value}</div>
+              <div className="text-xs text-gray-400 mt-1">{k.sub}</div>
+            </div>
+          ))}
+        </div>
+        {/* 빈 캠페인 영역 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" />
+          <p className="text-sm font-semibold text-gray-400 mb-1">진행 중인 캠페인이 없습니다</p>
+          <p className="text-xs text-gray-300 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
+          <button
+            onClick={() => navigate('/campaigns/new')}
+            className="text-sm bg-[#8CC63F] text-white px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors"
+          >
+            새 캠페인 만들기
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const unreadCount = notifications.filter(n => n.unread).length
-  const visibleNotifications = notifications.slice(0, 4)
+  const visibleNotifications = showAllNotifications ? notifications : notifications.slice(0, 4)
+
+  const handleNotificationClick = (id: number, route: string) => {
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, unread: false } : n)
+    )
+    navigate(route)
+  }
+
+  const now = new Date()
+  const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
+
+  const isPlanLocked = qa === 'plan-locked'
 
   return (
     <div className="space-y-6">
+      {/* ── QA: plan-locked 배너 ── */}
+      {isPlanLocked && (
+        <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-sm">
+          <Lock size={14} className="shrink-0" />
+          <span>현재 포커스 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.</span>
+          <button
+            onClick={() => navigate('/subscription')}
+            className="ml-auto text-xs font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0"
+          >
+            플랜 업그레이드
+          </button>
+        </div>
+      )}
       {/* ── 인사말 + 날짜 ── */}
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">안녕하세요, test님</h1>
-        <p className="text-sm text-gray-500 mt-0.5">2026년 4월 9일 수요일</p>
+      <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{dateStr}</p>
+        </div>
+        <button
+          onClick={() => navigate('/campaigns/new')}
+          className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+        >
+          <Megaphone size={14} />
+          새 캠페인
+        </button>
       </div>
 
       {/* ── 요약 배너 ── */}
-      <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4">
+      <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
         <div className="w-1 self-stretch rounded-full bg-[#8CC63F] shrink-0" />
         <div>
           <p className="text-xs font-medium text-gray-400 mb-1">이번 주 현황</p>
           <p className="text-sm leading-relaxed text-gray-700">
             봄 요가 프로모션 모집률이 <span className="font-semibold text-gray-900">53%</span>에 도달했습니다.
-            마감까지 <span className="font-semibold text-rose-500">D-2</span>이므로 추가 인플루언서 초대를 권장합니다.
+            마감까지 <span className="font-semibold text-rose-500">{getDDay('2026-04-28').label}</span>이므로 추가 인플루언서 초대를 권장합니다.
             이번 주 콘텐츠 조회수는 전주 대비 12% 증가 중입니다.
           </p>
         </div>
       </div>
 
       {/* ── KPI 카드 ── */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
         {kpis.map(kpi => {
           const isPositive = kpi.trend >= 0
           return (
             <div
               key={kpi.title}
-              className="bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-3 transition-all duration-200 cursor-default"
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 transition-all duration-200 hover:shadow-md cursor-default"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500 font-medium">{kpi.title}</span>
@@ -147,9 +347,9 @@ export default function Dashboard() {
       </div>
 
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
         {/* 활성 캠페인 현황 */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
             <button
@@ -159,6 +359,7 @@ export default function Dashboard() {
               전체보기 <ArrowRight size={12} />
             </button>
           </div>
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-50 bg-gray-50/50">
@@ -170,7 +371,9 @@ export default function Dashboard() {
             <tbody>
               {campaigns.map(c => {
                 const pct = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
-                const isUrgent = c.dday <= 3
+                const { label: ddayLabel, pulse: ddayPulse, color: ddayTextColor } = getDDay(c.deadline)
+                const ddayBg = ddayTextColor === 'text-red-500' ? 'bg-red-100' : ddayTextColor === 'text-orange-500' ? 'bg-orange-100' : 'bg-gray-100'
+                const ddayColor = `${ddayBg} ${ddayTextColor.replace('text-red-500', 'text-red-600').replace('text-orange-500', 'text-orange-600').replace('text-gray-500', 'text-gray-500')}`
                 return (
                   <tr
                     key={c.id}
@@ -186,7 +389,7 @@ export default function Dashboard() {
                         <div className="w-20 bg-gray-100 rounded-full h-1.5">
                           <div
                             className="h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${pct}%`, backgroundColor: BRAND_GREEN }}
+                            style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#EF4444' : BRAND_GREEN }}
                           />
                         </div>
                         <span className="text-xs text-gray-500">{pct}%</span>
@@ -195,19 +398,16 @@ export default function Dashboard() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs text-gray-600">{c.deadline}</span>
-                        <span
-                          className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${
-                            isUrgent
-                              ? 'bg-red-100 text-red-600 animate-pulse'
-                              : 'bg-orange-100 text-orange-600'
-                          }`}
-                        >
-                          D-{c.dday}
+                        <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>
+                          {ddayLabel}
                         </span>
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <button className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1">
+                      <button
+                        onClick={() => navigate(`/campaigns/${c.id}`)}
+                        className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
+                      >
                         상세보기 <ArrowRight size={11} />
                       </button>
                     </td>
@@ -216,10 +416,11 @@ export default function Dashboard() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* 최근 알림 */}
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <div className="flex items-center gap-2">
               <Bell size={14} className="text-gray-500" />
@@ -238,8 +439,11 @@ export default function Dashboard() {
             {visibleNotifications.map(n => (
               <div
                 key={n.id}
-                className={`px-5 py-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${n.unread ? 'bg-blue-50/30' : ''}`}
-                onClick={() => navigate(n.route)}
+                className={`px-5 py-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${n.unread ? 'bg-[#8CC63F]/5' : ''}`}
+                onClick={() => handleNotificationClick(n.id, n.route)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && handleNotificationClick(n.id, n.route)}
               >
                 <div className="flex gap-2.5 items-start">
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.dot}`} />
@@ -256,31 +460,54 @@ export default function Dashboard() {
           {notifications.length > 4 && (
             <div className="px-5 py-3 border-t border-gray-50">
               <button
-                onClick={() => navigate('/notifications')}
+                onClick={() => setShowAllNotifications(prev => !prev)}
                 className="text-xs text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center"
               >
-                더보기 <ArrowRight size={11} />
+                {showAllNotifications ? '접기' : '더보기'} <ArrowRight size={11} className={showAllNotifications ? 'rotate-90' : ''} />
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── 이번 주 콘텐츠 성과 ── */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">이번 주 콘텐츠 성과</h2>
-        <div className="grid grid-cols-4 gap-4">
-          {weeklyContent.map(item => {
+      {/* ── 콘텐츠 성과 ── */}
+      <div className={isPlanLocked ? 'relative' : ''}>
+        {isPlanLocked && (
+          <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
+            <Lock size={24} className="text-amber-400" />
+            <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+          </div>
+        )}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-900">콘텐츠 성과</h2>
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            {(['일간', '주간', '월간'] as ContentPeriod[]).map(p => (
+              <button
+                key={p}
+                onClick={() => setContentPeriod(p)}
+                className={`text-xs px-2.5 py-1 rounded-md transition-all ${
+                  contentPeriod === p ? 'bg-white shadow-sm font-semibold text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+          {contentByPeriod[contentPeriod].map(item => {
             const isPositive = item.change >= 0
             const lineColor = isPositive ? BRAND_GREEN : '#EF4444'
             return (
               <div
                 key={item.label}
-                className="bg-white rounded-xl border border-gray-100 p-4 hover:border-gray-200 transition-colors duration-150"
+                className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 transition-all duration-200 hover:shadow-md"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-gray-400">{item.icon}</span>
+                    <span className="text-gray-400">
+                      {item.label === '조회수' ? <Eye size={14} /> : item.label === '좋아요' ? <Heart size={14} /> : item.label === '댓글' ? <MessageCircle size={14} /> : <BarChart3 size={14} />}
+                    </span>
                     <span className="text-xs text-gray-500 font-medium">{item.label}</span>
                   </div>
                   <span
@@ -301,50 +528,28 @@ export default function Dashboard() {
       </div>
 
       {/* ── 빠른 실행 ── */}
-      <div>
+      <div className={isPlanLocked ? 'relative' : ''}>
+        {isPlanLocked && (
+          <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
+            <Lock size={24} className="text-amber-400" />
+            <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+          </div>
+        )}
         <h2 className="text-sm font-semibold text-gray-900 mb-3">빠른 실행</h2>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3">
           {[
-            {
-              icon: <Megaphone size={18} />,
-              label: '새 캠페인',
-              sub: '캠페인 만들기',
-              route: '/campaigns/new',
-              gradient: 'from-[#8CC63F]/10 to-[#8CC63F]/5',
-              iconColor: 'text-[#8CC63F]',
-            },
-            {
-              icon: <Users size={18} />,
-              label: 'AI 리스트업',
-              sub: '인플루언서 추천',
-              route: '/influencers/ai',
-              gradient: 'from-violet-50 to-violet-50/30',
-              iconColor: 'text-violet-500',
-            },
-            {
-              icon: <Search size={18} />,
-              label: '인플루언서 탐색',
-              sub: '전체 리스트 보기',
-              route: '/influencers/list',
-              gradient: 'from-blue-100/80 to-blue-50/40',
-              iconColor: 'text-blue-600',
-            },
-            {
-              icon: <Zap size={18} />,
-              label: '콘텐츠 검수',
-              sub: '대기 중 2건',
-              route: '/campaigns/1',
-              gradient: 'from-orange-100/80 to-orange-50/40',
-              iconColor: 'text-orange-500',
-            },
+            { icon: <Megaphone size={18} />, label: '새 캠페인',    sub: '캠페인 만들기',    route: '/campaigns/new',    primary: true },
+            { icon: <Users size={18} />,     label: 'AI 리스트업',  sub: '인플루언서 추천',  route: '/influencers/ai',   primary: false },
+            { icon: <Search size={18} />,    label: '인플루언서 탐색', sub: '전체 리스트 보기', route: '/influencers/list', primary: false },
+            { icon: <Zap size={18} />,       label: '콘텐츠 검수',  sub: qa === 'empty' ? '--건' : '대기 중 2건',     route: '/campaigns',        primary: false },
           ].map(item => (
             <button
               key={item.label}
               onClick={() => navigate(item.route)}
-              className="bg-white border border-gray-100 border border-gray-100 rounded-xl p-4 text-left hover:border-gray-200 hover:bg-gray-50/50 transition-all duration-150 group"
+              className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200"
             >
-              <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
-                <span className={item.iconColor}>{item.icon}</span>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-[#8CC63F]/10' : 'bg-gray-100'}`}>
+                <span className={item.primary ? 'text-[#8CC63F]' : 'text-gray-500'}>{item.icon}</span>
               </div>
               <p className="text-sm font-semibold text-gray-900">{item.label}</p>
               <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>

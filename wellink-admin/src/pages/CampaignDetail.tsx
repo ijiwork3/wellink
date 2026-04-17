@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Bookmark } from 'lucide-react'
 import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
@@ -55,8 +55,8 @@ const applicantsData = [
 
 // 선정된 지원자 더미
 const selectedApplicantsData = [
-  { id: 201, name: '이창민', followers: '8.7K', engagement: '4.1%', fitScore: 95, selectedAt: '2026-04-03', avatar: 'bg-pink-200' },
-  { id: 202, name: '김가애', followers: '18.9K', engagement: '4.2%', fitScore: 90, selectedAt: '2026-04-03', avatar: 'bg-yellow-200' },
+  { id: 201, name: '이창민', followers: '8.7K', engagement: '4.1%', fitScore: 92, selectedAt: '2026-04-03', avatar: 'bg-pink-200' },
+  { id: 202, name: '김가애', followers: '18.9K', engagement: '4.2%', fitScore: 88, selectedAt: '2026-04-03', avatar: 'bg-yellow-200' },
 ]
 
 // 등록 콘텐츠 더미
@@ -88,6 +88,7 @@ const tabs = ['캠페인 정보', '지원자 관리', '선정된 지원자', '�
 export default function CampaignDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { showToast } = useToast()
   const campaign = campaignsData[id ?? '1'] ?? campaignsData['1']
 
@@ -101,7 +102,15 @@ export default function CampaignDetail() {
   const [selectedInfluencers, setSelectedInfluencers] = useState(selectedApplicantsData)
 
   // 콘텐츠 다운로드 모달
+  const [searchParams] = useSearchParams()
   const [downloadModal, setDownloadModal] = useState(false)
+
+  // QA: ?modal=download | reject 로 진입 시 자동 오픈
+  useEffect(() => {
+    const m = searchParams.get('modal')
+    if (m === 'download') setDownloadModal(true)
+    if (m === 'reject')   setRejectModal(1)
+  }, [searchParams, location.key])
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
 
   // 콘텐츠검수 (기존 기능 유지)
@@ -243,7 +252,7 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <BarChart3 size={15} className="text-gray-400" />
               캠페인 기본 정보
@@ -273,12 +282,12 @@ export default function CampaignDetail() {
               ))}
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-700 mb-3">설명</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{campaign.description}</p>
           </div>
           {/* 인플루언서 진행 현황 */}
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100">
               <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Users size={15} className="text-gray-400" />
@@ -356,7 +365,7 @@ export default function CampaignDetail() {
               </button>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -443,7 +452,7 @@ export default function CampaignDetail() {
               리스트 Export
             </button>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -515,7 +524,7 @@ export default function CampaignDetail() {
               콘텐츠 다운로드
             </button>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -603,7 +612,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* 콘텐츠 성과 추세 그래프 */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">콘텐츠 성과 추세</h3>
             <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
               {/* Y축 그리드 */}
@@ -632,7 +641,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* 콘텐츠 순위 테이블 */}
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100">
               <h3 className="text-sm font-semibold text-gray-700">콘텐츠 순위</h3>
             </div>

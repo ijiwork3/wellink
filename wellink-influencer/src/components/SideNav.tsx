@@ -23,7 +23,7 @@ export default function SideNav() {
   const location = useLocation()
 
   return (
-    <nav className="w-52 flex-shrink-0 space-y-6">
+    <nav className="w-52 flex-shrink-0 space-y-6 sticky top-0 self-start">
       {sections.map((section) => (
         <div key={section.title}>
           <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-1.5 px-3">
@@ -39,10 +39,9 @@ export default function SideNav() {
                     onClick={() => navigate(item.path)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left ${
                       isActive
-                        ? 'text-white font-medium shadow-sm'
+                        ? 'bg-gray-100 text-gray-900 font-medium'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
-                    style={isActive ? { backgroundColor: '#8CC63F' } : undefined}
                   >
                     <Icon size={15} className="flex-shrink-0" />
                     {item.label}

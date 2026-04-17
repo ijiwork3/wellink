@@ -1,7 +1,8 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
+import BottomTabBar from './BottomTabBar'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -10,11 +11,13 @@ interface LayoutProps {
 
 export default function Layout({ children, showSidebar = true }: LayoutProps) {
   const navigate = useNavigate()
+  const device = useDeviceMode()
+  const isMobile = device === 'phone'
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F5F7F5' }}>
+    <div className="flex flex-col w-full h-full">
       {/* GNB */}
-      <header className="h-14 flex items-center justify-between px-6 fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100">
+      <header className={`h-14 flex-shrink-0 flex items-center justify-between ${isMobile ? 'px-4' : 'px-6'} bg-white border-b border-gray-100 z-40`}>
         <button
           onClick={() => navigate('/home')}
           aria-label="WELLINK AI 홈으로"
@@ -24,42 +27,46 @@ export default function Layout({ children, showSidebar = true }: LayoutProps) {
           WELLINK AI
         </button>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/profile')}
-            aria-label="마이페이지로 이동"
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-150 font-medium"
-          >
-            마이페이지
-          </button>
+          {!isMobile && (
+            <button
+              onClick={() => navigate('/profile')}
+              aria-label="마이페이지로 이동"
+              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-150 font-medium"
+            >
+              마이페이지
+            </button>
+          )}
           <button
             onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/login`}
-            className="text-sm px-3.5 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
+            className={`text-sm ${isMobile ? 'px-3' : 'px-3.5'} py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150`}
           >
             로그아웃
           </button>
         </div>
       </header>
 
-      {/* 상단 여백 */}
-      <div className="h-14" />
-
-      {showSidebar && <ProfileHeader />}
-
-      {/* 본문 */}
-      {showSidebar ? (
-        <div className="flex-1 max-w-screen-xl mx-auto w-full px-6 py-6">
-          <div className="flex gap-6">
-            <SideNav />
-            <main className="flex-1 min-w-0" style={{ animation: 'fadeIn 0.15s ease-out' }}>
-              {children}
-            </main>
+      {/* 본문 스크롤 영역 */}
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        {showSidebar && <ProfileHeader />}
+        {showSidebar ? (
+          <div className={`flex-1 max-w-screen-xl mx-auto w-full ${isMobile ? 'px-4 py-4' : 'px-6 py-6'}`}>
+            <div className="flex gap-6">
+              {/* SideNav: 태블릿·PC에서만 표시 */}
+              {!isMobile && <SideNav />}
+              <main className="flex-1 min-w-0" style={{ animation: 'fadeIn 0.15s ease-out' }}>
+                {children}
+              </main>
+            </div>
           </div>
-        </div>
-      ) : (
-        <main className="flex-1" style={{ animation: 'fadeIn 0.15s ease-out' }}>
-          {children}
-        </main>
-      )}
+        ) : (
+          <main className="flex-1" style={{ animation: 'fadeIn 0.15s ease-out' }}>
+            {children}
+          </main>
+        )}
+      </div>
+
+      {/* 하단 탭바: 스마트폰에서만 표시 */}
+      {showSidebar && <BottomTabBar />}
     </div>
   )
 }

@@ -72,7 +72,9 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className={`w-full flex items-center justify-between gap-2 border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150 cursor-pointer
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`w-full flex items-center justify-between gap-2 border rounded-xl px-3 py-2 text-sm bg-white transition-all duration-150 cursor-pointer
           ${open ? 'border-gray-400 ring-2 ring-gray-200' : 'border-gray-200 hover:border-gray-300'}
           focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:outline-none`}
       >
@@ -84,14 +86,27 @@ export default function CustomSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        <div
+          role="listbox"
+          aria-multiselectable={multiple}
+          className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto"
+        >
           {options.map(opt => (
             <div
               key={opt.value}
+              role="option"
+              aria-selected={isSelected(opt.value)}
+              tabIndex={0}
               onClick={() => handleSelect(opt.value)}
-              className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelect(opt.value)
+                }
+              }}
+              className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#8CC63F]
                 ${isSelected(opt.value)
-                  ? 'bg-gray-900 text-white'
+                  ? 'bg-[#8CC63F]/10 text-[#5a8228] font-medium'
                   : 'text-gray-700 hover:bg-gray-50'
                 }`}
             >

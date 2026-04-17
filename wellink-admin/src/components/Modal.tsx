@@ -37,17 +37,20 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
         style={{ animation: 'slideUp 0.2s ease-out' }}
         onClick={e => e.stopPropagation()}
       >
-        {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          {title ? (
             <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-1 rounded-lg hover:bg-gray-100"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        )}
+          ) : (
+            <span />
+          )}
+          <button
+            onClick={onClose}
+            aria-label="닫기"
+            className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-1 rounded-lg hover:bg-gray-100"
+          >
+            <X size={18} />
+          </button>
+        </div>
         <div className="p-6">{children}</div>
       </div>
     </div>

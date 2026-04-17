@@ -43,18 +43,11 @@ body {
   }
 }
 
-/* 스크롤바 커스텀 */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+/* 스크롤바 숨기기 */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #D1D5DB;
+*::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }

@@ -23,9 +23,15 @@ export default function Dropdown({ trigger, children, align = 'right', className
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      <div onClick={() => setOpen(v => !v)} className="cursor-pointer">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="cursor-pointer"
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
         {trigger}
-      </div>
+      </button>
       {open && (
         <div
           className={`absolute z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden

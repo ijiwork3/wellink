@@ -14,7 +14,7 @@ const BRAND_GREEN = '#8CC63F'
 const kpis = [
   {
     title: '활성 캠페인',
-    value: 3,
+    value: 2,
     sub: '현재 진행 중',
     trend: 50,
     icon: <Megaphone size={16} />,
@@ -111,7 +111,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── 요약 배너 ── */}
-      <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4">
+      <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
         <div className="w-1 self-stretch rounded-full bg-[#8CC63F] shrink-0" />
         <div>
           <p className="text-xs font-medium text-gray-400 mb-1">이번 주 현황</p>
@@ -129,7 +129,7 @@ export default function Dashboard() {
           <div
             key={kpi.title}
             onClick={() => navigate(kpi.route)}
-            className="cursor-pointer"
+            className="transition-all duration-200 hover:shadow-md cursor-pointer"
           >
             <KPICard
               title={kpi.title}
@@ -146,7 +146,7 @@ export default function Dashboard() {
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
       <div className="grid grid-cols-3 gap-5">
         {/* 활성 캠페인 현황 */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
             <button
@@ -219,7 +219,7 @@ export default function Dashboard() {
         </div>
 
         {/* 최근 알림 */}
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <div className="flex items-center gap-2">
               <Bell size={14} className="text-gray-500" />
@@ -266,7 +266,7 @@ export default function Dashboard() {
             return (
               <div
                 key={item.label}
-                className="bg-white rounded-xl border border-gray-100 p-4 hover:border-gray-200 transition-colors duration-150"
+                className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 transition-all duration-200 hover:shadow-md"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5">
@@ -331,7 +331,7 @@ export default function Dashboard() {
             <button
               key={item.label}
               onClick={() => navigate(item.route)}
-              className="bg-white border border-gray-100 rounded-xl p-4 text-left hover:border-gray-200 hover:bg-gray-50/50 transition-all duration-150 group"
+              className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200 group"
             >
               <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
                 <span className={item.iconColor}>{item.icon}</span>

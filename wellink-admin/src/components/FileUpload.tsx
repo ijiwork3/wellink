@@ -57,7 +57,7 @@ export default function FileUpload({
           accept={accept}
           multiple={multiple}
           className="hidden"
-          onChange={e => addFiles(e.target.files)}
+          onChange={e => { addFiles(e.target.files); e.target.value = '' }}
         />
       </div>
 

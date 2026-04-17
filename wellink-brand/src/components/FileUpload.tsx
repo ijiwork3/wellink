@@ -1,6 +1,9 @@
 import { useState, useRef, type DragEvent } from 'react'
 import { Upload, X, FileText } from 'lucide-react'
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_FILE_COUNT = 5
+
 interface FileUploadProps {
   onFilesChange?: (files: File[]) => void
   accept?: string
@@ -16,19 +19,59 @@ export default function FileUpload({
 }: FileUploadProps) {
   const [files, setFiles] = useState<File[]>([])
   const [dragging, setDragging] = useState(false)
+  const [fileError, setFileError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  /** accept 문자열(e.g. "image/*,.pdf") 기반 MIME 타입 검사 */
+  const isAccepted = (file: File): boolean => {
+    if (!accept) return true
+    const acceptList = accept.split(',').map(s => s.trim())
+    return acceptList.some(pattern => {
+      if (pattern.startsWith('.')) {
+        return file.name.toLowerCase().endsWith(pattern.toLowerCase())
+      }
+      if (pattern.endsWith('/*')) {
+        return file.type.startsWith(pattern.slice(0, -1))
+      }
+      return file.type === pattern
+    })
+  }
 
   const addFiles = (newFiles: FileList | null) => {
     if (!newFiles) return
-    const arr = Array.from(newFiles)
-    const updated = multiple ? [...files, ...arr] : arr
-    setFiles(updated)
-    onFilesChange?.(updated)
+    setFileError(null)
+    const incoming = Array.from(newFiles)
+
+    // 파일 타입 검사
+    const invalidType = incoming.find(f => !isAccepted(f))
+    if (invalidType) {
+      setFileError(`'${invalidType.name}'은(는) 허용되지 않는 파일 형식입니다.`)
+      return
+    }
+
+    // 파일 크기 검사
+    const oversize = incoming.find(f => f.size > MAX_FILE_SIZE)
+    if (oversize) {
+      setFileError(`'${oversize.name}'은(는) 파일 크기가 10MB를 초과합니다.`)
+      return
+    }
+
+    const combined = multiple ? [...files, ...incoming] : incoming
+
+    // 파일 개수 제한
+    if (combined.length > MAX_FILE_COUNT) {
+      setFileError(`파일은 최대 ${MAX_FILE_COUNT}개까지 첨부할 수 있습니다.`)
+      return
+    }
+
+    setFiles(combined)
+    onFilesChange?.(combined)
   }
 
   const removeFile = (index: number) => {
     const updated = files.filter((_, i) => i !== index)
     setFiles(updated)
+    setFileError(null)
     onFilesChange?.(updated)
   }
 
@@ -50,16 +93,19 @@ export default function FileUpload({
       >
         <Upload size={20} className="text-gray-400" />
         <p className="text-sm text-gray-500 text-center">{hint}</p>
-        <p className="text-xs text-gray-400">클릭하거나 파일을 드래그하세요</p>
+        <p className="text-xs text-gray-400">클릭하거나 파일을 드래그하세요 (최대 {MAX_FILE_COUNT}개, 10MB 이하)</p>
         <input
           ref={inputRef}
           type="file"
           accept={accept}
           multiple={multiple}
           className="hidden"
-          onChange={e => addFiles(e.target.files)}
+          onChange={e => { addFiles(e.target.files); e.target.value = '' }}
         />
       </div>
+      {fileError && (
+        <p className="text-xs text-red-500 flex items-center gap-1">{fileError}</p>
+      )}
 
       {files.length > 0 && (
         <div className="space-y-1.5">
@@ -76,6 +122,7 @@ export default function FileUpload({
               <button
                 type="button"
                 onClick={() => removeFile(i)}
+                aria-label="파일 삭제"
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X size={13} />

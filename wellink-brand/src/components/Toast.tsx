@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
 import { CheckCircle, XCircle, Info, X } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'info'
@@ -21,10 +21,10 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
-  let nextId = 0
+  const nextIdRef = useRef(0)
 
   const showToast = useCallback((message: string, type: ToastType = 'success') => {
-    const id = ++nextId
+    const id = ++nextIdRef.current
     setToasts(prev => [...prev, { id, type, message }])
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2">
+      <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2" role="status" aria-live="polite" aria-atomic="false">
         {toasts.map(toast => (
           <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />
         ))}
@@ -70,7 +70,8 @@ function ToastItem({ toast, onRemove }: { toast: ToastItem; onRemove: (id: numbe
       <span className="flex-1 text-sm text-gray-800">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        aria-label="닫기"
+        className="p-2 -mr-1 text-gray-400 hover:text-gray-600 transition-colors"
       >
         <X size={14} />
       </button>

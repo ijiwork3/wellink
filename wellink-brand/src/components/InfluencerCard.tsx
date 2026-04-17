@@ -60,6 +60,9 @@ export default function InfluencerCard({ influencer, selected, onToggle, onClick
         {onToggle && (
           <button
             onClick={e => { e.stopPropagation(); onToggle() }}
+            role="checkbox"
+            aria-checked={!!selected}
+            aria-label={`${influencer.name} 선택`}
             className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
               selected ? 'bg-gray-900 border-gray-900' : 'border-gray-300'
             }`}

@@ -36,7 +36,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all duration-150"
       onClick={() => navigate(`/campaigns/${campaign.id}`)}
     >
       {/* 마감임박 상단 띠 */}
@@ -56,6 +56,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
           <button
             className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150"
             onClick={handleLike}
+            aria-label={liked ? '관심 해제' : '관심 등록'}
           >
             <Heart
               size={16}
@@ -69,7 +70,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
 
       {/* 콘텐츠 영역 */}
       <div className="p-4">
-        <p className="text-xs text-gray-400 mb-0.5">{campaign.brand}</p>
+        <p className="text-xs text-gray-400 mb-0.5 truncate">{campaign.brand}</p>
         <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-2">{campaign.name}</p>
 
         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
@@ -83,8 +84,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
         </div>
 
         <button
-          className="w-full py-2 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-          style={{ backgroundColor: '#8CC63F' }}
+          className="w-full py-2 rounded-xl text-sm font-medium text-[#5a8228] border border-[#8CC63F]/30 bg-[#8CC63F]/5 hover:bg-[#8CC63F]/10 transition-all duration-150"
           onClick={(e) => {
             e.stopPropagation()
             navigate(`/campaigns/${campaign.id}`)

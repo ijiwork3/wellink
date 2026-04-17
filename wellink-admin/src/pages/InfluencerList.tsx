@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { Search, ChevronLeft, ChevronRight, CheckCircle, Heart } from 'lucide-react'
 import CustomSelect from '../components/CustomSelect'
 import Modal from '../components/Modal'
@@ -75,9 +76,20 @@ export default function InfluencerList() {
   const [fitScoreFilter, setFitScoreFilter] = useState('')
   const [engagementFilter, setEngagementFilter] = useState('')
   const [followerTier, setFollowerTier] = useState('')
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const [selectedInfluencer, setSelectedInfluencer] = useState<typeof influencers[0] | null>(null)
   const [detailTab, setDetailTab] = useState('overview')
   const [proposalModal, setProposalModal] = useState(false)
+
+  // QA: ?modal=detail | proposal
+  useEffect(() => {
+    const m = searchParams.get('modal')
+    if (m === 'detail' || m === 'proposal') {
+      setSelectedInfluencer(influencers[0])
+      if (m === 'proposal') setProposalModal(true)
+    }
+  }, [searchParams, location.key])
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null)
   const [proposalSent, setProposalSent] = useState(false)
   const PER_PAGE = 5

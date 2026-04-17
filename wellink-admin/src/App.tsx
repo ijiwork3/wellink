@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import { ToastProvider } from './components/Toast'
+import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import ProfileInsight from './pages/ProfileInsight'
 import AdPerformance from './pages/AdPerformance'
@@ -22,6 +23,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analytics/profile" element={<ProfileInsight />} />

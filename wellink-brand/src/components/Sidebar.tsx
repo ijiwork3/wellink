@@ -1,82 +1,98 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
-  MessageCircle, Sparkles, Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, Search
+  Megaphone, BookOpen, CreditCard,
+  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink
 } from 'lucide-react'
 
 const sections = [
   {
     label: '분석',
     items: [
-      { to: '/dashboard', icon: <LayoutDashboard size={14} />, label: '홈 대시보드' },
-      { to: '/analytics/profile', icon: <BarChart2 size={14} />, label: '프로필 인사이트' },
-      { to: '/analytics/ads', icon: <TrendingUp size={14} />, label: '광고 성과' },
-      { to: '/analytics/viral', icon: <Share2 size={14} />, label: '바이럴 지표' },
+      { to: '/analytics/profile', icon: <BarChart2 size={15} />, label: '프로필 인사이트' },
+      { to: '/analytics/ads', icon: <TrendingUp size={15} />, label: '광고 성과' },
+      { to: '/analytics/viral', icon: <Share2 size={15} />, label: '바이럴 지표' },
     ],
   },
   {
     label: '인플루언서',
     items: [
-      { to: '/influencers/list', icon: <Users size={14} />, label: '인플루언서 리스트' },
-      { to: '/influencers/manage', icon: <UserCheck size={14} />, label: '인플루언서 관리' },
-      { to: '/influencers/dm', icon: <MessageCircle size={14} />, label: 'DM 관리' },
-      { to: '/influencers/ai', icon: <Sparkles size={14} />, label: 'AI 리스트업' },
+      { to: '/influencers/list', icon: <Users size={15} />, label: '인플루언서 리스트' },
+      { to: '/influencers/manage', icon: <UserCheck size={15} />, label: '인플루언서 관리' },
+      { to: '/influencers/dm', icon: <MessageCircle size={15} />, label: 'DM 관리' },
+      { to: '/influencers/ai', icon: <Sparkles size={15} />, label: 'AI 리스트업' },
     ],
   },
   {
     label: '캠페인',
     items: [
-      { to: '/campaigns', icon: <Megaphone size={14} />, label: '캠페인 관리' },
-      { to: '/library', icon: <BookOpen size={14} />, label: '콘텐츠 라이브러리' },
+      { to: '/campaigns', icon: <Megaphone size={15} />, label: '캠페인 목록' },
+      { to: '/library', icon: <BookOpen size={15} />, label: '콘텐츠 라이브러리' },
     ],
   },
   {
     label: '구독',
     items: [
-      { to: '/subscription', icon: <CreditCard size={14} />, label: '구독 관리' },
+      { to: '/subscription', icon: <CreditCard size={15} />, label: '구독 관리' },
     ],
   },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isMyPageActive = location.pathname === '/mypage'
   return (
-    <aside className="w-[180px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
+    <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0">
       {/* 로고 */}
-      <div className="px-4 pt-5 pb-3">
-        <div className="flex items-center gap-1.5 mb-3">
-          <span className="text-sm font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-[9px] font-semibold bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
-        </div>
-        {/* 메뉴 검색 */}
-        <div className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-100">
-          <Search size={11} className="text-gray-400 shrink-0" />
-          <span className="text-[11px] text-gray-400">메뉴 검색</span>
+      <div className="px-5 pt-5 pb-4">
+        <div className="flex items-center gap-1.5">
+          <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
+          <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
         </div>
       </div>
 
+      {/* 대시보드 — 섹션 없이 단독 항목 */}
+      <div className="px-3 pb-2">
+        <NavLink
+          to="/dashboard"
+          end
+          onClick={() => onNavigate?.()}
+          className={({ isActive }) =>
+            `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 ${
+              isActive
+                ? 'bg-gray-100 text-gray-900 font-medium'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            }`
+          }
+        >
+          <LayoutDashboard size={15} />
+          대시보드
+        </NavLink>
+      </div>
+
       {/* 내비게이션 */}
-      <nav className="flex-1 overflow-y-auto px-2 pb-2">
+      <nav className="flex-1 overflow-y-auto px-3 pb-2">
         {sections.map(section => (
-          <div key={section.label} className="mb-3">
-            <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5 px-2.5">
+          <div key={section.label} className="mb-4">
+            <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
               {section.label}
             </div>
             {section.items.map(item => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/campaigns'}
+                end={item.to === '/dashboard'}
+                onClick={() => onNavigate?.()}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-2.5 py-[7px] rounded-lg text-[13px] transition-all duration-150 mb-0.5 ${
+                  `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 ${
                     isActive
-                      ? 'bg-[#8CC63F]/10 text-[#5a8a1f] font-semibold'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-gray-100 text-gray-900 font-medium'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   }`
                 }
               >
-                <span className="shrink-0 opacity-70">{item.icon}</span>
+                {item.icon}
                 {item.label}
               </NavLink>
             ))}
@@ -85,32 +101,36 @@ export default function Sidebar() {
       </nav>
 
       {/* 하단 링크 + 계정 */}
-      <div className="px-2 pb-4 border-t border-gray-100 pt-2">
+      <div className="px-3 pb-5 border-t border-gray-100 pt-3">
         <button
-          onClick={() => window.open('https://wellink.co.kr', '_blank')}
-          className="flex items-center gap-2 px-2.5 py-[7px] rounded-lg text-[13px] text-gray-500 hover:bg-gray-50 hover:text-gray-700 w-full transition-colors duration-150"
+          onClick={() => window.open('https://wellink.co.kr', '_blank', 'noopener,noreferrer')}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-0.5"
         >
-          <BookMarked size={14} className="shrink-0 opacity-70" />
-          서비스 가이드
+          <BookMarked size={15} />
+          <span className="flex-1 text-left">서비스 가이드</span>
+          <ExternalLink size={12} className="shrink-0 opacity-60" />
         </button>
         <button
-          onClick={() => window.open('https://wellink.co.kr/blog', '_blank')}
-          className="flex items-center gap-2 px-2.5 py-[7px] rounded-lg text-[13px] text-gray-500 hover:bg-gray-50 hover:text-gray-700 w-full transition-colors duration-150 mb-1"
+          onClick={() => window.open('https://wellink.co.kr/blog', '_blank', 'noopener,noreferrer')}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-2"
         >
-          <Lightbulb size={14} className="shrink-0 opacity-70" />
-          인사이트/블로그
+          <Lightbulb size={15} />
+          <span className="flex-1 text-left">인사이트/블로그</span>
+          <ExternalLink size={12} className="shrink-0 opacity-60" />
         </button>
 
-        <div className="border-t border-gray-100 pt-2 mt-1">
+        <div className="border-t border-gray-100 pt-3">
           <button
             onClick={() => navigate('/mypage')}
-            className="flex items-center gap-2 px-2.5 py-1.5 w-full rounded-lg hover:bg-gray-50 transition-colors duration-150"
+            className={`flex items-center gap-2.5 px-3 py-2 w-full rounded-lg hover:bg-gray-100 transition-colors duration-150 ${isMyPageActive ? 'bg-gray-100' : ''}`}
           >
-            <div className="w-6 h-6 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
-              <User size={12} className="text-[#5a8a1f]" />
+            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shrink-0">
+              <User size={13} />
             </div>
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-[12px] font-medium text-gray-900 truncate leading-tight">test님</p>
+              {/* TODO: 로그인 컨텍스트에서 사용자 정보 주입 */}
+              <p className="text-xs font-medium text-gray-900 truncate">웰링크 브랜드</p>
+              <p className="text-[11px] text-gray-400 truncate">brand@wellink.ai</p>
             </div>
           </button>
         </div>

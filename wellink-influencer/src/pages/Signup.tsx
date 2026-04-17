@@ -1,23 +1,62 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
 import CustomCheckbox from '../components/CustomCheckbox'
+import { useQAMode } from '../utils/useQAMode'
 
-const activityFields = ['헬스', '필라테스', '요가', '크로스핏', '수영', '스포츠', '기타', '아웃도어']
+const activityFields = ['피트니스', '요가', '영양·식단', '뷰티', '라이프스타일', '스포츠', '아웃도어', '멘탈헬스']
 
 const inputBase =
   'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150'
 
+const FILLED_FORM = {
+  name: '김인플루', email: 'influencer@wellink.co.kr', password: 'pass1234!',
+  passwordConfirm: 'pass1234!', phone: '010-1234-5678', instagram: '@wellink_official',
+}
+
 export default function Signup() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({
-    name: '', email: '', password: '', passwordConfirm: '', phone: '', instagram: '',
-  })
+  const qa = useQAMode()
+
+  const initForm = () => {
+    if (qa === 'filled' || qa === 'verified') return { ...FILLED_FORM }
+    if (qa === 'error') return { ...FILLED_FORM }
+    return { name: '', email: '', password: '', passwordConfirm: '', phone: '', instagram: '' }
+  }
+
+  const [form, setForm] = useState(initForm)
   const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set())
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [phoneVerified, setPhoneVerified] = useState(false)
-  const [instaVerified, setInstaVerified] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>(
+    qa === 'error' ? { email: '이미 가입된 이메일입니다.', password: '비밀번호는 8자 이상이어야 해요' } : {}
+  )
+  const [phoneVerified, setPhoneVerified] = useState(qa === 'verified')
+  const [instaVerified, setInstaVerified] = useState(qa === 'verified')
   const [toast, setToast] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (qa === 'filled') {
+      setForm({ ...FILLED_FORM })
+      setErrors({})
+      setPhoneVerified(false)
+      setInstaVerified(false)
+    } else if (qa === 'verified') {
+      setForm({ ...FILLED_FORM })
+      setErrors({})
+      setPhoneVerified(true)
+      setInstaVerified(true)
+    } else if (qa === 'error') {
+      setForm({ ...FILLED_FORM })
+      setErrors({ email: '이미 가입된 이메일입니다.', password: '비밀번호는 8자 이상이어야 해요' })
+      setPhoneVerified(false)
+      setInstaVerified(false)
+    } else {
+      setForm({ name: '', email: '', password: '', passwordConfirm: '', phone: '', instagram: '' })
+      setErrors({})
+      setPhoneVerified(false)
+      setInstaVerified(false)
+    }
+  }, [qa])
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -49,7 +88,11 @@ export default function Signup() {
     const newErrors = validate()
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) { showToast('입력 정보를 확인해 주세요'); return }
-    navigate('/home')
+    setIsSubmitting(true)
+    setTimeout(() => {
+      setIsSubmitting(false)
+      navigate('/home')
+    }, 800)
   }
 
   return (
@@ -147,11 +190,12 @@ export default function Signup() {
               <button
                 onClick={() => {
                   if (!form.phone) { showToast('전화번호를 입력해 주세요'); return }
+                  if (!/^01[0-9]-\d{3,4}-\d{4}$/.test(form.phone)) { showToast('전화번호 형식을 확인해 주세요 (예: 010-1234-5678)'); return }
                   setPhoneVerified(true)
-                  showToast('인증번호가 발송되었습니다')
+                  showToast('인증번호가 발송됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  phoneVerified ? 'bg-green-50 text-green-700' : 'text-white hover:opacity-90'
+                  phoneVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
                 }`}
                 style={!phoneVerified ? { backgroundColor: '#8CC63F' } : {}}
               >
@@ -176,11 +220,13 @@ export default function Signup() {
               <button
                 onClick={() => {
                   if (!form.instagram) { showToast('인스타그램 아이디를 입력해 주세요'); return }
+                  const handle = form.instagram.replace(/^@/, '')
+                  if (!/^[a-zA-Z0-9_.]{1,30}$/.test(handle)) { showToast('올바른 인스타그램 아이디를 입력해 주세요'); return }
                   setInstaVerified(true)
-                  showToast('인스타그램 연동이 완료되었습니다')
+                  showToast('인스타그램 연동이 완료됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  instaVerified ? 'bg-green-50 text-green-700' : 'text-white hover:opacity-90'
+                  instaVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
                 }`}
                 style={!instaVerified ? { backgroundColor: '#8CC63F' } : {}}
               >
@@ -193,7 +239,7 @@ export default function Signup() {
           {/* 활동 분야 — CustomCheckbox */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2.5">활동 분야</label>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 @sm:grid-cols-4 gap-2.5">
               {activityFields.map((field) => (
                 <CustomCheckbox
                   key={field}
@@ -208,10 +254,11 @@ export default function Signup() {
           {/* 가입 버튼 */}
           <button
             onClick={handleSubmit}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1"
+            disabled={isSubmitting}
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#8CC63F' }}
           >
-            회원 인증 후 가입하기
+            {isSubmitting ? '처리 중...' : '회원 인증 후 가입하기'}
           </button>
 
           {/* 로그인 링크 */}
@@ -231,10 +278,10 @@ export default function Signup() {
       {/* 토스트 */}
       {toast && (
         <div
-          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-green-200 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
+          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-[#8CC63F]/30 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
           style={{ animation: 'slideInRight 0.2s ease-out' }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F] flex-shrink-0" />
           <span className="text-sm font-medium text-gray-900">{toast}</span>
         </div>
       )}

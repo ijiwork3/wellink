@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { Sparkles, ArrowRight, Loader2, Check } from 'lucide-react'
 import CustomSelect from '../components/CustomSelect'
 import { useToast } from '../components/Toast'
@@ -48,9 +48,17 @@ type Phase = 'idle' | 'loading' | 'done'
 
 export default function AIListup() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { showToast } = useToast()
+  const [searchParams] = useSearchParams()
   const [prompt, setPrompt] = useState('')
   const [phase, setPhase] = useState<Phase>('idle')
+
+  // QA: ?phase=idle | loading | done
+  useEffect(() => {
+    const p = searchParams.get('phase') as Phase | null
+    if (p === 'loading' || p === 'done') setPhase(p)
+  }, [searchParams, location.key])
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [prefPlatform, setPrefPlatform] = useState('인스타그램')
   const [followerRange, setFollowerRange] = useState('전체')
@@ -90,8 +98,9 @@ export default function AIListup() {
       {phase === 'idle' && (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">브랜드 설명</label>
+            <label htmlFor="ai-brand-desc" className="text-sm font-semibold text-gray-700 block mb-2">브랜드 설명</label>
             <textarea
+              id="ai-brand-desc"
               value={prompt}
               onChange={e => setPrompt(e.target.value)}
               placeholder="예) 저희는 웰니스 라이프스타일 브랜드로, 요가·필라테스 관련 제품을 판매합니다. 25-35세 여성 타겟이며, 진성성 높고 건강한 라이프스타일을 추구하는 인플루언서를 찾고 있습니다."

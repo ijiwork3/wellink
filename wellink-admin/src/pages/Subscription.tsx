@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { Check, CreditCard } from 'lucide-react'
 import Modal from '../components/Modal'
 import { useToast } from '../components/Toast'
@@ -62,8 +63,14 @@ const paymentHistory = [
 ]
 
 export default function Subscription() {
+  const location = useLocation()
   const [currentPlan] = useState('scale')
+  const [searchParams] = useSearchParams()
   const [confirmModal, setConfirmModal] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('modal') === 'planchange') setConfirmModal(plans[1].id)
+  }, [searchParams, location.key])
   const [confirmed, setConfirmed] = useState(false)
   const { showToast } = useToast()
 
@@ -132,7 +139,7 @@ export default function Subscription() {
           >
             {/* 추천 배지 */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
+              <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                 {plan.tag}
               </span>
             </div>
@@ -282,7 +289,8 @@ export default function Subscription() {
               >취소</button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 bg-[#8CC63F] text-white py-2 rounded-lg text-sm hover:bg-[#7AB535] transition-colors duration-150"
+                disabled={confirmed}
+                className="flex-1 bg-[#8CC63F] text-white py-2 rounded-lg text-sm hover:bg-[#7AB535] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
               >확인</button>
             </div>
           </div>

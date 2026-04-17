@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Search,
   Download,
@@ -16,6 +16,10 @@ import {
   ImageOff,
 } from 'lucide-react'
 import Modal from '../components/Modal'
+import { useToast } from '../components/Toast'
+import ErrorState from '../components/ErrorState'
+import { useQAMode } from '../utils/useQAMode'
+import { fmtDate } from '../utils/fmtDate'
 
 /* ───── Mock Data ───── */
 
@@ -32,7 +36,7 @@ interface Content {
   saves: number
   shareRate: number
   engagementRate: number
-  status: '승인' | '검수중' | '대기중'
+  status: '승인' | '검수중' | '대기중' | '반려'
   thumbnailColor: string
 }
 
@@ -52,16 +56,20 @@ const contents: Content[] = [
 /* ───── Style Maps ───── */
 
 const typeColors: Record<string, string> = {
+  '이미지': 'bg-sky-100 text-sky-700',
   '릴스': 'bg-pink-100 text-pink-700',
-  '피드': 'bg-blue-100 text-blue-700',
   '스토리': 'bg-purple-100 text-purple-700',
+  '영상': 'bg-orange-100 text-orange-700',
+  '피드': 'bg-blue-100 text-blue-700',
   '숏폼': 'bg-emerald-100 text-emerald-700',
 }
 
+// TODO: StatusBadge 컴포넌트로 교체 예정 ('승인' 상태 추가 및 색상 정책 통일 후)
 const statusColors: Record<string, string> = {
-  '승인': 'bg-green-100 text-green-700',
-  '검수중': 'bg-orange-100 text-orange-700',
-  '대기중': 'bg-yellow-100 text-yellow-700',
+  '승인': 'bg-[#8CC63F]/10 text-[#5a8228]',
+  '검수중': 'bg-amber-50 text-amber-700',
+  '대기중': 'bg-gray-100 text-gray-500',
+  '반려': 'bg-red-50 text-red-600',
 }
 
 const platformIcons: Record<string, string> = {
@@ -69,6 +77,9 @@ const platformIcons: Record<string, string> = {
   '유튜브': 'YT',
   '블로그': 'BL',
 }
+
+/* ───── Campaign list ───── */
+const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인']
 
 /* ───── Sort helpers ───── */
 
@@ -78,7 +89,7 @@ function sortContents(items: Content[], key: SortKey): Content[] {
   const sorted = [...items]
   switch (key) {
     case '최신순':
-      return sorted.sort((a, b) => b.date.localeCompare(a.date))
+      return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     case '도달순':
       return sorted.sort((a, b) => b.reach - a.reach)
     case '좋아요순':
@@ -88,28 +99,129 @@ function sortContents(items: Content[], key: SortKey): Content[] {
   }
 }
 
+/* ───── ConfirmState ───── */
+
+interface ConfirmState {
+  open: boolean
+  title: string
+  description: string
+  onConfirm: () => void
+}
+
+const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
+
 /* ───── Component ───── */
 
 export default function Library() {
+  const { showToast } = useToast()
+  const qa = useQAMode()
   const [search, setSearch] = useState('')
+  const [campaignFilter, setCampaignFilter] = useState('전체')
   const [statusFilter, setStatusFilter] = useState('전체')
   const [platformFilter, setPlatformFilter] = useState('전체')
   const [typeFilter, setTypeFilter] = useState('전체')
+  const [approvedIds, setApprovedIds] = useState<Set<number>>(new Set(contents.filter(c => c.status === '승인').map(c => c.id)))
+  const [rejectedIds, setRejectedIds] = useState<Set<number>>(new Set(contents.filter(c => c.status === '반려').map(c => c.id)))
   const [sortKey, setSortKey] = useState<SortKey>('최신순')
   const [sortOpen, setSortOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(qa === 'view-list' ? 'list' : 'grid')
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
+  const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
+  const [rejectReason, setRejectReason] = useState('')
+
+  // 정렬 드롭다운 Escape 키 닫기
+  useEffect(() => {
+    if (!sortOpen) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSortOpen(false)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [sortOpen])
+
+  const openRejectConfirm = (item: Content) => {
+    setRejectConfirm({
+      open: true,
+      title: '이 콘텐츠를 반려할까요?',
+      description: '이 작업은 되돌릴 수 없습니다.',
+      onConfirm: () => {
+        setRejectedIds(prev => new Set([...prev, item.id]))
+        setPreviewItem(null)
+        showToast('콘텐츠가 반려되었습니다.', 'info')
+      },
+    })
+  }
+
+  const closeRejectConfirm = () => {
+    setRejectConfirm(defaultConfirm)
+    setRejectReason('')
+  }
+
+  const handleRejectConfirm = () => {
+    rejectConfirm.onConfirm()
+    closeRejectConfirm()
+  }
+
+  if (qa === 'loading') {
+    return (
+      <div className="space-y-4 animate-pulse">
+        {/* 헤더 스켈레톤 */}
+        <div className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-3">
+          <div>
+            <div className="h-6 w-40 bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-56 bg-gray-200 rounded" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-9 w-32 bg-gray-200 rounded-xl" />
+            <div className="h-9 w-28 bg-gray-200 rounded-xl" />
+          </div>
+        </div>
+        {/* KPI 4개 스켈레톤 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+              <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
+              <div className="h-6 w-20 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+        {/* 필터 바 스켈레톤 */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-9 bg-gray-200 rounded-xl" />
+          <div className="h-9 w-20 bg-gray-200 rounded-xl" />
+          <div className="h-9 w-24 bg-gray-200 rounded-xl" />
+        </div>
+        {/* 콘텐츠 그리드 6개 스켈레톤 */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[0, 1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="aspect-video bg-gray-200" />
+              <div className="p-3">
+                <div className="h-4 w-3/4 bg-gray-200 rounded mb-2" />
+                <div className="h-3 w-1/2 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (qa === 'error') {
+    return <ErrorState message="라이브러리를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
+  }
 
   /* ── Filter & Sort ── */
 
-  const filtered = sortContents(
+  const filtered = qa === 'empty' ? [] : sortContents(
     contents.filter(c => {
       const matchSearch = c.creator.includes(search) || c.campaign.includes(search)
+      const matchCampaign = campaignFilter === '전체' || c.campaign === campaignFilter
       const matchStatus = statusFilter === '전체' || c.status === statusFilter
       const matchPlatform = platformFilter === '전체' || c.platform === platformFilter
       const matchType = typeFilter === '전체' || c.type === typeFilter
-      return matchSearch && matchStatus && matchPlatform && matchType
+      return matchSearch && matchCampaign && matchStatus && matchPlatform && matchType
     }),
     sortKey,
   )
@@ -164,7 +276,7 @@ export default function Library() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
           <p className="text-sm text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
@@ -172,52 +284,53 @@ export default function Library() {
         <div className="flex items-center gap-2">
           {selectedIds.size > 0 && (
             <button
-              onClick={() => alert(`${selectedIds.size}개 콘텐츠를 다운로드합니다.`)}
-              className="flex items-center gap-2 text-white px-4 py-2 rounded-xl text-sm transition-colors"
-              style={{ backgroundColor: '#8CC63F' }}
+              onClick={() => showToast(`${selectedIds.size}개 콘텐츠 다운로드를 시작합니다.`, 'success')}
+              className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2 rounded-xl text-sm transition-colors"
             >
               <Download size={14} />
               선택 다운로드 ({selectedIds.size})
             </button>
           )}
-          <button
-            onClick={() => alert('전체 콘텐츠를 다운로드합니다.')}
-            className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors"
-          >
-            <Download size={14} />
-            전체 다운로드
-          </button>
+          {filtered.length > 0 && (
+            <button
+              onClick={() => showToast('전체 콘텐츠 다운로드를 시작합니다.', 'success')}
+              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >
+              <Download size={14} />
+              전체 다운로드
+            </button>
+          )}
         </div>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="text-xs text-gray-500 mb-1">총 도달</div>
           <div className="text-xl font-bold text-gray-900">{totalReach.toLocaleString()}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="text-xs text-gray-500 mb-1">총 좋아요</div>
           <div className="text-xl font-bold text-gray-900">{totalLikes.toLocaleString()}</div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 transition-all">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
             <TrendingUp size={12} />
             평균 참여율
           </div>
-          <div className="text-xl font-bold" style={{ color: '#8CC63F' }}>{avgEngagement}%</div>
+          <div className="text-xl font-bold text-[#8CC63F]">{avgEngagement}%</div>
         </div>
       </div>
 
       {/* Top Performer */}
       {topPerformer && (
-        <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3 transition-all">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#8CC63F20' }}>
-            <Crown size={16} style={{ color: '#8CC63F' }} />
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#8CC63F]/10">
+            <Crown size={16} className="text-[#8CC63F]" />
           </div>
           <div className="flex-1">
             <span className="text-xs text-gray-500">Top Performer</span>
@@ -227,7 +340,7 @@ export default function Library() {
           </div>
           <div className="text-right">
             <div className="text-xs text-gray-500">참여율</div>
-            <div className="text-sm font-bold" style={{ color: '#8CC63F' }}>{topPerformer.engagementRate}%</div>
+            <div className="text-sm font-bold text-[#8CC63F]">{topPerformer.engagementRate}%</div>
           </div>
           <div className="text-right">
             <div className="text-xs text-gray-500">도달</div>
@@ -235,6 +348,31 @@ export default function Library() {
           </div>
         </div>
       )}
+
+      {/* Campaign Tab Filter */}
+      <div className="flex gap-1 border-b border-gray-200">
+        {campaigns.map(camp => {
+          const count = camp === '전체' ? contents.length : contents.filter(c => c.campaign === camp).length
+          return (
+            <button
+              key={camp}
+              onClick={() => setCampaignFilter(camp)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 transition-colors whitespace-nowrap ${
+                campaignFilter === camp
+                  ? 'border-[#8CC63F] font-semibold text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {camp}
+              <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${
+                campaignFilter === camp ? 'bg-[#8CC63F] text-white' : 'bg-gray-100 text-gray-500'
+              }`}>
+                {count}
+              </span>
+            </button>
+          )
+        })}
+      </div>
 
       {/* Search + Filters Row */}
       <div className="space-y-3">
@@ -245,6 +383,7 @@ export default function Library() {
             <input
               type="text"
               placeholder="제작자, 캠페인 검색..."
+              aria-label="콘텐츠 검색"
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors"
@@ -252,16 +391,18 @@ export default function Library() {
           </div>
 
           {/* View mode toggle */}
-          <div className="flex border border-gray-200 rounded-xl overflow-hidden">
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
             <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#8CC63F] text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+              onClick={() => { setViewMode('grid'); setSelectedIds(new Set()) }}
+              aria-label="그리드 보기"
+              className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#8CC63F] text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+              onClick={() => { setViewMode('list'); setSelectedIds(new Set()) }}
+              aria-label="리스트 보기"
+              className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <List size={16} />
             </button>
@@ -279,7 +420,7 @@ export default function Library() {
             {sortOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl z-20 py-1 min-w-[120px]">
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-20 py-1 min-w-[120px]">
                   {(['최신순', '도달순', '좋아요순'] as SortKey[]).map(key => (
                     <button
                       key={key}
@@ -287,7 +428,7 @@ export default function Library() {
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between ${sortKey === key ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                     >
                       {key}
-                      {sortKey === key && <Check size={14} style={{ color: '#8CC63F' }} />}
+                      {sortKey === key && <Check size={14} className="text-[#8CC63F]" />}
                     </button>
                   ))}
                 </div>
@@ -299,7 +440,7 @@ export default function Library() {
         {/* Filter chips */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-gray-400 font-medium mr-1">상태</span>
-          {['전체', '승인', '검수중', '대기중'].map(s => (
+          {['전체', '승인', '검수중', '대기중', '반려'].map(s => (
             <Chip key={s} label={s} active={statusFilter === s} onClick={() => setStatusFilter(s)} />
           ))}
           <div className="w-px h-5 bg-gray-200 mx-1" />
@@ -319,7 +460,7 @@ export default function Library() {
 
       {filtered.length === 0 ? (
         /* Empty State */
-        <div className="bg-white rounded-xl border border-gray-100 py-20 flex flex-col items-center justify-center">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
             <ImageOff size={28} className="text-gray-300" />
           </div>
@@ -328,6 +469,7 @@ export default function Library() {
           <button
             onClick={() => {
               setSearch('')
+              setCampaignFilter('전체')
               setStatusFilter('전체')
               setPlatformFilter('전체')
               setTypeFilter('전체')
@@ -344,6 +486,9 @@ export default function Library() {
           <div className="flex items-center gap-2 mb-3">
             <button
               onClick={toggleSelectAll}
+              role="checkbox"
+              aria-checked={isAllSelected}
+              aria-label="전체 선택"
               className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                 isAllSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white hover:border-gray-400'
               }`}
@@ -353,19 +498,23 @@ export default function Library() {
             <span className="text-xs text-gray-500">전체 선택 ({filtered.length})</span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 @lg:grid-cols-4 gap-4">
             {filtered.map(c => {
               const isSelected = selectedIds.has(c.id)
+              const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
               return (
                 <div
                   key={c.id}
-                  className={`bg-white rounded-xl border transition-all cursor-pointer group relative ${
+                  className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer group relative ${
                     isSelected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'
                   }`}
                 >
                   {/* Checkbox */}
                   <button
                     onClick={e => { e.stopPropagation(); toggleSelect(c.id) }}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    aria-label={`${c.creator} 콘텐츠 선택`}
                     className={`absolute top-3 left-3 z-10 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                       isSelected
                         ? 'border-[#8CC63F] bg-[#8CC63F]'
@@ -395,8 +544,8 @@ export default function Library() {
                   {/* Card body */}
                   <div className="p-3" onClick={() => setPreviewItem(c)}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-900">{c.creator}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[c.status]}`}>{c.status}</span>
+                      <span className="text-sm font-semibold text-gray-900 truncate max-w-[120px]">{c.creator}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[displayStatus] ?? statusColors['대기중']}`}>{displayStatus}</span>
                     </div>
                     <p className="text-xs text-gray-500 truncate mb-2">{c.campaign}</p>
                     <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -418,13 +567,17 @@ export default function Library() {
         </div>
       ) : (
         /* ───── List (Table) View ───── */
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="py-3 px-3 w-8">
                   <button
                     onClick={toggleSelectAll}
+                    role="checkbox"
+                    aria-checked={isAllSelected}
+                    aria-label="전체 선택"
                     className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
                       isAllSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white'
                     }`}
@@ -440,14 +593,18 @@ export default function Library() {
             <tbody>
               {filtered.map(c => {
                 const isSelected = selectedIds.has(c.id)
+                const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
                 return (
                   <tr
                     key={c.id}
-                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors ${isSelected ? 'bg-gray-50' : ''}`}
+                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-[#8CC63F]/5' : ''}`}
                   >
                     <td className="py-3 px-3">
                       <button
                         onClick={() => toggleSelect(c.id)}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                        aria-label={`${c.creator} 콘텐츠 선택`}
                         className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
                           isSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white'
                         }`}
@@ -465,30 +622,32 @@ export default function Library() {
                       </div>
                     </td>
                     <td className="py-3 px-3 text-sm font-medium text-gray-900">{c.creator}</td>
-                    <td className="py-3 px-3 text-xs text-gray-600[120px] truncate">{c.campaign}</td>
+                    <td className="py-3 px-3 text-xs text-gray-600 max-w-[120px] truncate">{c.campaign}</td>
                     <td className="py-3 px-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[c.type]}`}>{c.type}</span>
                     </td>
                     <td className="py-3 px-3 text-xs text-gray-500">{c.platform}</td>
-                    <td className="py-3 px-3 text-xs text-gray-500">{c.date}</td>
+                    <td className="py-3 px-3 text-xs text-gray-500">{fmtDate(c.date)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.reach.toLocaleString()}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.comments}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.saves}</td>
-                    <td className="py-3 px-3 text-sm font-medium" style={{ color: '#8CC63F' }}>{c.engagementRate}%</td>
+                    <td className={`py-3 px-3 text-sm font-medium ${c.engagementRate >= 4 ? 'text-[#5a8228]' : c.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{c.engagementRate}%</td>
                     <td className="py-3 px-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[c.status]}`}>{c.status}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[displayStatus] ?? statusColors['대기중']}`}>{displayStatus}</span>
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex gap-1">
                         <button
                           onClick={() => setPreviewItem(c)}
+                          aria-label="미리보기"
                           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
                         >
                           <Eye size={14} />
                         </button>
                         <button
-                          onClick={() => alert(`${c.creator}님의 콘텐츠를 다운로드합니다.`)}
+                          onClick={() => showToast(`${c.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+                          aria-label="다운로드"
                           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
                         >
                           <Download size={14} />
@@ -500,12 +659,15 @@ export default function Library() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
       {/* ────── Preview Modal ────── */}
       <Modal open={!!previewItem} onClose={() => setPreviewItem(null)} title="콘텐츠 상세" size="lg">
-        {previewItem && (
+        {previewItem && (() => {
+          const modalDisplayStatus = approvedIds.has(previewItem.id) ? '승인' : rejectedIds.has(previewItem.id) ? '반려' : previewItem.status
+          return (
           <div className="space-y-5">
             {/* Thumbnail */}
             <div
@@ -525,7 +687,7 @@ export default function Library() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[previewItem.type]}`}>{previewItem.type}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[previewItem.status]}`}>{previewItem.status}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[modalDisplayStatus] ?? statusColors['대기중']}`}>{modalDisplayStatus}</span>
               </div>
             </div>
 
@@ -551,17 +713,75 @@ export default function Library() {
               <span>{previewItem.platform} · {previewItem.date}</span>
             </div>
 
-            {/* Download button */}
+            {/* Approve / Reject + Download */}
+            {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }}
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+                >
+                  <Check size={15} />
+                  승인
+                </button>
+                <button
+                  onClick={() => openRejectConfirm(previewItem)}
+                  className="flex-1 flex items-center justify-center gap-2 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
+                >
+                  반려
+                </button>
+              </div>
+            )}
+            {approvedIds.has(previewItem.id) && (
+              <div className="w-full text-center text-sm text-[#8CC63F] font-medium py-2">승인된 콘텐츠입니다</div>
+            )}
+            {rejectedIds.has(previewItem.id) && (
+              <div className="w-full text-center text-sm text-red-400 font-medium py-2">반려된 콘텐츠입니다</div>
+            )}
             <button
-              onClick={() => alert(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`)}
-              className="w-full flex items-center justify-center gap-2 text-white py-2.5 rounded-xl text-sm font-medium transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#8CC63F' }}
+              onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+              className="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-gray-50"
             >
               <Download size={15} />
               다운로드
             </button>
           </div>
-        )}
+          )
+        })()}
+      </Modal>
+
+      {/* 반려 확인 모달 */}
+      <Modal open={rejectConfirm.open} onClose={closeRejectConfirm} size="sm" title="콘텐츠 반려">
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">{rejectConfirm.title}</p>
+            <p className="text-xs text-gray-500 mt-1">{rejectConfirm.description}</p>
+          </div>
+          <div>
+            <textarea
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder="인플루언서에게 전달할 반려 사유를 입력해 주세요 (선택)"
+              maxLength={300}
+              rows={4}
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300 transition-all duration-150 placeholder:text-gray-400"
+            />
+            <div className="text-right text-xs text-gray-400 mt-0.5">{rejectReason.length}/300</div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={closeRejectConfirm}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleRejectConfirm}
+              className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors duration-150"
+            >
+              반려
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   )

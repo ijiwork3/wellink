@@ -1,32 +1,99 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, Search, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import Modal from '../components/Modal'
 import { StatusBadge, PlatformBadge } from '../components/Badge'
 import { campaigns } from '../data/campaigns'
+import { useQAMode } from '../utils/useQAMode'
+import { useToast } from '../components/Toast'
 
 export default function CampaignDetail() {
+  const qa = useQAMode()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const campaign = campaigns.find((c) => c.id === Number(id))
 
   const [liked, setLiked] = useState(false)
-  const [applyModalOpen, setApplyModalOpen] = useState(false)
-  const [applied, setApplied] = useState(false)
-  const [successModal, setSuccessModal] = useState(false)
-  const [toast, setToast] = useState('')
+  const [searchParams] = useSearchParams()
+  const [applyModalOpen, setApplyModalOpen] = useState(qa === 'modal-apply')
 
-  const showToast = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(''), 2500)
-  }
+  useEffect(() => {
+    if (searchParams.get('modal') === 'apply') setApplyModalOpen(true)
+  }, [searchParams, location.key])
+  const { addToast } = useToast()
+  const [applied, setApplied] = useState(qa === 'applied')
+  const [successModal, setSuccessModal] = useState(false)
+
+  const isClosed = qa === 'closed' || campaign?.status === '종료'
 
   const handleApply = () => {
+    if (applied) return
     setApplied(true)
     setApplyModalOpen(false)
     setSuccessModal(true)
     setTimeout(() => setSuccessModal(false), 2500)
+  }
+
+  if (qa === 'loading') {
+    return (
+      <Layout showSidebar={false}>
+        <div className="max-w-3xl mx-auto px-6 py-8 animate-pulse">
+          {/* 뒤로가기 */}
+          <div className="h-4 bg-gray-100 rounded-xl w-20 mb-6" />
+          {/* 메인 카드 스켈레톤 */}
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4">
+            {/* 이미지 배너 */}
+            <div className="h-56 bg-gray-100" />
+            <div className="p-6 space-y-4">
+              {/* 브랜드 + 상태 */}
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  <div className="h-4 bg-gray-100 rounded-xl w-20" />
+                  <div className="h-4 bg-gray-100 rounded-full w-12" />
+                </div>
+                <div className="h-8 bg-gray-100 rounded-xl w-20" />
+              </div>
+              {/* 제목 */}
+              <div className="h-6 bg-gray-100 rounded-xl w-3/4" />
+              <div className="h-4 bg-gray-100 rounded-xl w-full" />
+              <div className="h-4 bg-gray-100 rounded-xl w-5/6" />
+              {/* 기간 정보 박스 */}
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+                <div className="h-16 bg-gray-100 rounded-xl" />
+                <div className="h-16 bg-gray-100 rounded-xl" />
+              </div>
+              {/* 채널 */}
+              <div className="h-14 bg-gray-100 rounded-xl" />
+              {/* 혜택 박스 */}
+              <div className="h-14 bg-gray-100 rounded-xl" />
+              {/* 신청 버튼 */}
+              <div className="h-12 bg-gray-100 rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (qa === 'error') {
+    return (
+      <Layout showSidebar={false}>
+        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
+          <XCircle size={44} className="text-red-300" />
+          <p className="text-sm font-semibold text-gray-900">캠페인 정보를 불러오지 못했어요</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
+            style={{ backgroundColor: '#8CC63F' }}
+          >
+            <RefreshCw size={14} />
+            다시 시도
+          </button>
+        </div>
+      </Layout>
+    )
   }
 
   if (!campaign) {
@@ -55,7 +122,7 @@ export default function CampaignDetail() {
       <div className="max-w-3xl mx-auto px-6 py-8">
         {/* 뒤로가기 */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/campaigns/browse')}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors duration-150"
         >
           <ArrowLeft size={16} />
@@ -89,7 +156,7 @@ export default function CampaignDetail() {
               <button
                 onClick={() => {
                   setLiked(!liked)
-                  showToast(liked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록되었어요!')
+                  addToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
                 }}
                 aria-pressed={liked}
                 aria-label={liked ? '관심 캠페인 해제' : '관심 캠페인 등록'}
@@ -112,7 +179,7 @@ export default function CampaignDetail() {
             <p className="text-sm text-gray-600 mb-5">{campaign.description}</p>
 
             {/* 기간 정보 */}
-            <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 mb-5">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50">
                 <Calendar size={18} style={{ color: '#8CC63F' }} />
                 <div>
@@ -140,10 +207,10 @@ export default function CampaignDetail() {
 
             {/* 보상 */}
             {campaign.reward && (
-              <div className="mb-5 p-4 rounded-xl border border-green-200 bg-green-50 flex items-start gap-3">
-                <Gift size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="mb-5 p-4 rounded-xl border border-[#8CC63F]/20 bg-[#8CC63F]/5 flex items-start gap-3">
+                <Gift size={18} className="text-[#5a8228] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-green-700 mb-0.5">제공 혜택</p>
+                  <p className="text-xs font-semibold text-[#5a8228] mb-0.5">제공 혜택</p>
                   <p className="text-sm font-medium text-gray-900">{campaign.reward}</p>
                 </div>
               </div>
@@ -165,10 +232,14 @@ export default function CampaignDetail() {
             )}
 
             {/* 신청 버튼 */}
-            {applied ? (
+            {isClosed ? (
+              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+                마감된 캠페인입니다
+              </div>
+            ) : applied ? (
               <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-[#8CC63F] text-[#8CC63F] bg-[#8CC63F]/5 flex items-center justify-center gap-2">
                 <CheckCircle2 size={16} />
-                신청 완료
+                신청완료
               </div>
             ) : (
               <button
@@ -191,7 +262,7 @@ export default function CampaignDetail() {
           <p className="text-sm text-gray-600">
             <span className="font-semibold text-gray-900">{campaign.name}</span>에 신청하시겠습니까?
           </p>
-          <div className="p-3 rounded-xl text-sm bg-green-50 text-green-700">
+          <div className="p-3 rounded-xl text-sm bg-[#8CC63F]/5 text-[#5a8228]">
             신청 후 브랜드 검토 → 선정 결과 알림 → 제품 수령 → 콘텐츠 게시 순으로 진행됩니다.
           </div>
           <div className="flex gap-3 pt-2">
@@ -229,21 +300,18 @@ export default function CampaignDetail() {
               <p className="text-lg font-bold text-gray-900">신청 완료!</p>
               <p className="text-sm text-gray-500 mt-1">브랜드 검토 후 결과를 알려드릴게요</p>
             </div>
-            <button onClick={() => setSuccessModal(false)} className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors" aria-label="닫기">닫기</button>
+            <button
+              onClick={() => { setSuccessModal(false); navigate('/campaigns/my') }}
+              className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: '#8CC63F' }}
+            >
+              나의 캠페인 확인
+            </button>
+            <button onClick={() => setSuccessModal(false)} className="text-sm text-gray-400 hover:text-gray-600 transition-colors" aria-label="닫기">닫기</button>
           </div>
         </div>
       )}
 
-      {/* 토스트 */}
-      {toast && (
-        <div
-          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
-          style={{ animation: 'slideInRight 0.2s ease-out' }}
-        >
-          <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
-          <span className="text-sm font-medium text-gray-900">{toast}</span>
-        </div>
-      )}
     </Layout>
   )
 }

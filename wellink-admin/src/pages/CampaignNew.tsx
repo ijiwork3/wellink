@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { Check, Loader2 } from 'lucide-react'
 import InfluencerCard from '../components/InfluencerCard'
 import Modal from '../components/Modal'
@@ -33,15 +33,28 @@ const stepLabels = ['기본정보', '예산·조건', '원고가이드', '인플
 
 export default function CampaignNew() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { showToast } = useToast()
   const [step, setStep] = useState(1)
+  const [searchParams] = useSearchParams()
   const [completedModal, setCompletedModal] = useState(false)
+
+  useEffect(() => {
+    const m = searchParams.get('modal')
+    const s = searchParams.get('step')
+    if (m === 'completed') setCompletedModal(true)
+    if (s) {
+      const n = parseInt(s, 10)
+      if (n >= 1 && n <= TOTAL_STEPS) setStep(n)
+    }
+  }, [searchParams, location.key])
   const [autoSaved, setAutoSaved] = useState(false)
 
   const [s1, setS1] = useState({ name: '', goal: '', channels: [] as string[], startDate: '', endDate: '', applyDeadline: '', campaignType: '기본캠페인' as string, brandHashtags: [] as string[] })
   const [s2, setS2] = useState({ budget: '', minUnit: '', maxUnit: '', headcount: '', supply: '배송' })
   const [s3, setS3] = useState({ required: '', prohibited: [] as string[], hashtags: [] as string[], contentRef: '', snsExternalUse: '사용 불가' as string })
   const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [isPublishing, setIsPublishing] = useState(false)
 
   const triggerAutoSave = () => {
     setAutoSaved(true)
@@ -95,9 +108,17 @@ export default function CampaignNew() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">새 캠페인 등록</h1>
-        <p className="text-sm text-gray-500 mt-0.5">5단계로 캠페인을 설정합니다.</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">새 캠페인 등록</h1>
+          <p className="text-sm text-gray-500 mt-0.5">5단계로 캠페인을 설정합니다.</p>
+        </div>
+        <button
+          onClick={() => navigate('/campaigns')}
+          className="text-sm text-gray-400 hover:text-gray-600 transition-colors mt-1"
+        >
+          취소
+        </button>
       </div>
 
       {/* 스텝 인디케이터 */}
@@ -182,8 +203,9 @@ export default function CampaignNew() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">캠페인명 *</label>
+            <label htmlFor="campaign-name" className="text-xs font-medium text-gray-600 block mb-1.5">캠페인명 *</label>
             <input
+              id="campaign-name"
               type="text"
               value={s1.name}
               onChange={e => setS1(p => ({ ...p, name: e.target.value }))}
@@ -244,8 +266,9 @@ export default function CampaignNew() {
         <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
           <h2 className="text-sm font-semibold text-gray-700">예산 & 조건</h2>
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">총 예산 (원)</label>
+            <label htmlFor="campaign-budget" className="text-xs font-medium text-gray-600 block mb-1.5">총 예산 (원)</label>
             <input
+              id="campaign-budget"
               type="text"
               value={s2.budget}
               onChange={e => setS2(p => ({ ...p, budget: e.target.value }))}
@@ -437,10 +460,17 @@ export default function CampaignNew() {
           </div>
 
           <button
-            onClick={() => setCompletedModal(true)}
-            className="w-full bg-[#8CC63F] text-white py-3 rounded-lg text-sm font-semibold hover:bg-[#7AB535] transition-colors duration-150 mt-2"
+            onClick={() => {
+              setIsPublishing(true)
+              setTimeout(() => {
+                setIsPublishing(false)
+                setCompletedModal(true)
+              }, 800)
+            }}
+            disabled={isPublishing}
+            className="w-full bg-[#8CC63F] text-white py-3 rounded-lg text-sm font-semibold hover:bg-[#7AB535] transition-colors duration-150 mt-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            캠페인 발행하기
+            {isPublishing ? <><Loader2 size={16} className="animate-spin" />발행 중...</> : '캠페인 발행하기'}
           </button>
         </div>
       )}
@@ -457,7 +487,11 @@ export default function CampaignNew() {
         {step < TOTAL_STEPS && (
           <button
             onClick={handleNext}
-            className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-lg text-sm font-medium hover:bg-[#7AB535] transition-colors duration-150"
+            disabled={
+              (step === 1 && (!s1.name.trim() || !s1.goal)) ||
+              (step === 2 && !s2.budget.trim())
+            }
+            className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-lg text-sm font-medium hover:bg-[#7AB535] transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             다음
           </button>

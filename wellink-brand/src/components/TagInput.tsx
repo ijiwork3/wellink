@@ -1,12 +1,14 @@
 import { useState, type KeyboardEvent } from 'react'
 import { X } from 'lucide-react'
 
+const MAX_TAGS = 10
+
 interface TagInputProps {
   tags: string[]
   onChange: (tags: string[]) => void
   placeholder?: string
   addHash?: boolean
-  tagColor?: 'blue' | 'red' | 'gray'
+  tagColor?: 'brand' | 'red' | 'gray'
 }
 
 export default function TagInput({
@@ -18,9 +20,12 @@ export default function TagInput({
 }: TagInputProps) {
   const [input, setInput] = useState('')
 
+  const isMaxReached = tags.length >= MAX_TAGS
+
   const addTag = () => {
     const val = input.trim()
     if (!val) return
+    if (isMaxReached) return
     const formatted = addHash ? (val.startsWith('#') ? val : `#${val}`) : val
     if (!tags.includes(formatted)) {
       onChange([...tags, formatted])
@@ -43,7 +48,7 @@ export default function TagInput({
   }
 
   const colorMap = {
-    blue: 'bg-blue-50 text-blue-600 border-blue-200',
+    brand: 'bg-[#8CC63F]/10 text-[#5a8228] border-[#8CC63F]/30',
     red: 'bg-red-50 text-red-600 border-red-200',
     gray: 'bg-gray-100 text-gray-700 border-gray-200',
   }
@@ -56,17 +61,22 @@ export default function TagInput({
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2 focus-visible:ring-gray-900 transition-all"
+          placeholder={isMaxReached ? `태그는 최대 ${MAX_TAGS}개까지 입력 가능합니다` : placeholder}
+          disabled={isMaxReached}
+          className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2 focus-visible:ring-gray-900 transition-all disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
         />
         <button
           type="button"
           onClick={addTag}
-          className="text-sm bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-150"
+          disabled={isMaxReached}
+          className="text-sm bg-gray-100 text-gray-700 px-3 py-2 rounded-xl hover:bg-gray-200 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           추가
         </button>
       </div>
+      {isMaxReached && (
+        <p className="text-xs text-amber-600">태그는 최대 {MAX_TAGS}개까지 입력할 수 있습니다.</p>
+      )}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {tags.map(tag => (
@@ -78,6 +88,7 @@ export default function TagInput({
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
+                aria-label={`${tag} 태그 삭제`}
                 className="hover:opacity-70 transition-opacity"
               >
                 <X size={11} />

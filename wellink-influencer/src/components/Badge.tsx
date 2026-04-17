@@ -25,7 +25,7 @@ interface StatusBadgeProps {
  */
 
 type Cfg2 = { bg: string; text: string; dot: string }
-const active2:  Cfg2 = { bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-400' }
+const active2:  Cfg2 = { bg: 'bg-[#8CC63F]/10', text: 'text-[#5a8228]', dot: 'bg-[#8CC63F]' }
 const pending2: Cfg2 = { bg: 'bg-amber-100',   text: 'text-amber-700',   dot: 'bg-amber-400'   }
 const review2:  Cfg2 = { bg: 'bg-sky-100',     text: 'text-sky-700',     dot: 'bg-sky-400'     }
 const done2:    Cfg2 = { bg: 'bg-slate-100',   text: 'text-slate-500',   dot: 'bg-slate-400'   }
@@ -52,14 +52,14 @@ export function PlatformBadge({ platform, className = '' }: PlatformBadgeProps) 
     switch (platform.toLowerCase()) {
       case 'instagram':
       case '인스타그램':
-        return { bg: 'bg-pink-100', text: 'text-pink-700', label: '인스타그램' }
+        return { bg: 'bg-[#E1306C]/10', text: 'text-[#E1306C]', label: '인스타그램' }
       case 'youtube':
       case '유튜브':
         return { bg: 'bg-red-100', text: 'text-red-700', label: '유튜브' }
       case 'blog':
       case '블로그':
       case '네이버 블로그':
-        return { bg: 'bg-green-100', text: 'text-green-700', label: '블로그' }
+        return { bg: 'bg-[#03C75A]/10', text: 'text-[#03C75A]', label: '블로그' }
       case 'tiktok':
       case '틱톡':
         return { bg: 'bg-gray-100', text: 'text-gray-700', label: '틱톡' }

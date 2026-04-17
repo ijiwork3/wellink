@@ -54,7 +54,7 @@ export default function CampaignRow({ campaign }: CampaignRowProps) {
       <td className="py-3 px-4">
         <button
           onClick={() => navigate(`/campaigns/${campaign.id}`)}
-          className="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors"
+          className="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-xl hover:bg-gray-700 transition-colors"
         >
           상세보기
         </button>

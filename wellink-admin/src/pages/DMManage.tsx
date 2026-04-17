@@ -88,7 +88,7 @@ export default function DMManage() {
         <p className="text-sm text-gray-500 mt-0.5">인플루언서와의 메시지를 관리합니다.</p>
       </div>
 
-      <div className="flex gap-0 bg-white rounded-xl border border-gray-100 overflow-hidden" style={{ height: '560px' }}>
+      <div className="flex gap-0 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style={{ height: '560px' }}>
         {/* 대화 목록 */}
         <div className="w-64 border-r border-gray-100 flex flex-col">
           <div className="p-3 border-b border-gray-50">
@@ -104,6 +104,11 @@ export default function DMManage() {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
+            {filtered.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8">
+                <p className="text-xs text-gray-400">검색 결과가 없습니다.</p>
+              </div>
+            )}
             {filtered.map(conv => (
               <button
                 key={conv.id}
