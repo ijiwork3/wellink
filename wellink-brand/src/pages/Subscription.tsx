@@ -132,7 +132,7 @@ export default function Subscription() {
           >
             {/* 추천 배지 */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+              <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
                 {plan.tag}
               </span>
             </div>

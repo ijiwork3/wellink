@@ -70,7 +70,7 @@ export default function Login() {
               onClick={() => { setUserType(type); setLoginError('') }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                 userType === type
-                  ? 'bg-[#8CC63F] text-white shadow-sm'
+                  ? 'bg-[#8CC63F] text-white'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -154,7 +154,7 @@ export default function Login() {
       {/* Help button */}
       <button
         onClick={() => window.open('mailto:help@wellink.co.kr', '_blank')}
-        className="absolute bottom-6 right-6 w-10 h-10 bg-[#8CC63F] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#7AB535] transition-colors text-sm font-bold"
+        className="absolute bottom-6 right-6 w-10 h-10 bg-[#8CC63F] text-white rounded-full flex items-center justify-center hover:bg-[#7AB535] transition-colors text-sm font-bold"
         aria-label="도움말 문의"
       >
         ?

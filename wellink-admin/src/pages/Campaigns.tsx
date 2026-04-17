@@ -58,7 +58,7 @@ export default function Campaigns() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
+        <div className="bg-white rounded-xl border border-gray-100 py-16 text-center">
           <Megaphone size={40} className="text-gray-200 mx-auto mb-3" />
           <p className="text-sm font-medium text-gray-400">등록된 캠페인이 없습니다.</p>
           <button
@@ -78,7 +78,7 @@ export default function Campaigns() {
               <div
                 key={c.id}
                 onClick={() => navigate(`/campaigns/${c.id}`)}
-                className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all cursor-pointer"
+                className="bg-white rounded-xl border border-gray-100 p-5 transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>

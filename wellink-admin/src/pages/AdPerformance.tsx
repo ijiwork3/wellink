@@ -52,7 +52,7 @@ export default function AdPerformance() {
               onClick={() => setPeriod(p)}
               className={`text-sm px-3 py-1.5 rounded-md transition-all ${
                 period === p
-                  ? 'bg-white shadow-sm font-medium text-gray-900'
+                  ? 'bg-white font-medium text-gray-900'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -101,7 +101,7 @@ export default function AdPerformance() {
       </div>
 
       {/* 캠페인별 성과 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h3 className="text-sm font-semibold text-gray-900">캠페인별 성과</h3>
         </div>
@@ -141,7 +141,7 @@ export default function AdPerformance() {
       </div>
 
       {/* 콘텐츠 유형별 성과 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h3 className="text-sm font-semibold text-gray-900">콘텐츠 유형별 성과</h3>
         </div>

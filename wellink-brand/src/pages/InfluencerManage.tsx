@@ -153,7 +153,7 @@ export default function InfluencerManage() {
           {filteredInfluencers.map(inf => (
             <div
               key={inf.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative group"
+              className="bg-white rounded-xl border border-gray-100 p-5 relative group"
             >
               {/* 북마크 하트 (우측 상단) */}
               <button
@@ -222,7 +222,7 @@ export default function InfluencerManage() {
                     그룹에 추가
                   </button>
                   {addToGroupDropdown === inf.id && (
-                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg py-1 z-10 min-w-[140px]">
                       {groups.filter(g => !inf.groups.includes(g)).length === 0 ? (
                         <div className="px-3 py-2 text-xs text-gray-400">모든 그룹에 소속됨</div>
                       ) : (

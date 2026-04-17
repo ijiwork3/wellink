@@ -237,7 +237,7 @@ export default function Homepage() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/95 backdrop-blur shadow-sm'
+            ? 'bg-white/95 backdrop-blur'
             : 'bg-transparent'
         }`}
       >
@@ -295,7 +295,7 @@ export default function Homepage() {
 
         {/* Mobile dropdown */}
         {mobileNav && (
-          <div className="md:hidden bg-white border-t border-gray-100 px-6 pb-4 pt-2 shadow-lg">
+          <div className="md:hidden bg-white border-t border-gray-100 px-6 pb-4 pt-2">
             {NAV_LINKS.map(l => (
               <button
                 key={l.target}
@@ -513,7 +513,7 @@ export default function Homepage() {
               {processSteps.map((s, i) => (
                 <div
                   key={s.num}
-                  className="absolute bg-white rounded-2xl shadow-lg border border-gray-100 p-5 w-56"
+                  className="absolute bg-white rounded-2xl border border-gray-100 p-5 w-56"
                   style={{
                     top: `${i * 55 + 10}px`,
                     left: `${i * 30 + 20}px`,
@@ -555,7 +555,7 @@ export default function Homepage() {
             {processSteps.map((s, i) => (
               <div key={s.num} className="relative text-center" style={{ transitionDelay: `${i * 100}ms` }}>
                 {/* Number circle */}
-                <div className="relative z-10 w-20 h-20 bg-[#8CC63F] rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#8CC63F]/20">
+                <div className="relative z-10 w-20 h-20 bg-[#8CC63F] rounded-full flex items-center justify-center mx-auto mb-5 shadow-[#8CC63F]/20">
                   <s.icon size={28} className="text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{s.title}</h3>
@@ -617,7 +617,7 @@ export default function Homepage() {
                 className="bg-[#8CC63F] rounded-2xl p-7 flex flex-col relative hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                  <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
                     {plan.tag}
                   </span>
                 </div>
@@ -694,7 +694,7 @@ export default function Homepage() {
             {faqs.map((f, i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-shadow hover:shadow-md"
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-shadow"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
@@ -730,7 +730,7 @@ export default function Homepage() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => navigate('/login')}
-              className="bg-white text-[#8CC63F] hover:bg-white/90 font-semibold px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-black/10"
+              className="bg-white text-[#8CC63F] hover:bg-white/90 font-semibold px-8 py-3.5 rounded-xl text-sm transition-all shadow-black/10"
             >
               광고주로 시작하기
             </button>

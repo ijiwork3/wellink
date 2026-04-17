@@ -112,7 +112,7 @@ export default function ViralMetrics() {
               onClick={() => setPeriod(p)}
               className={`text-sm px-3 py-1.5 rounded-md transition-all ${
                 period === p
-                  ? 'bg-white shadow-sm font-medium text-gray-900'
+                  ? 'bg-white font-medium text-gray-900'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -180,7 +180,7 @@ export default function ViralMetrics() {
       </div>
 
       {/* 콘텐츠별 바이럴 성과 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
           <p className="text-xs text-gray-500 mt-0.5">바이럴 점수 높은 순 정렬</p>

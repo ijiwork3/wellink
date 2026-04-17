@@ -108,7 +108,7 @@ export default function ProfileInsight() {
               onClick={() => setPeriod(p)}
               className={`text-sm px-3 py-1.5 rounded-md transition-all ${
                 period === p
-                  ? 'bg-white shadow-sm font-medium text-gray-900'
+                  ? 'bg-white font-medium text-gray-900'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -159,7 +159,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 콘텐츠 성과 — 피드별 추세선 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-100 p-5">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">콘텐츠 성과</h3>
         <p className="text-xs text-gray-500 -mt-2 mb-4">최근 5개 게시물의 좋아요 추세</p>
         <FeedTrendChart data={feedTrendData} />
@@ -168,7 +168,7 @@ export default function ProfileInsight() {
       {/* 오디언스 분포 */}
       <div className="grid grid-cols-3 gap-5">
         {/* 나이 분포 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">연령대 분포</h3>
           <div className="space-y-3">
             {ageData.map(d => (
@@ -186,7 +186,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 성별 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">성별 비율</h3>
           <div className="flex h-4 rounded-full overflow-hidden mb-4">
             {genderData.map(d => (
@@ -207,7 +207,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 지역 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">지역 분포</h3>
           <div className="space-y-3">
             {regionData.map(d => (
@@ -226,7 +226,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 월별 팔로워 추이 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-100 p-5">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">월별 팔로워 추이</h3>
         <div className="flex items-end gap-3 h-32">
           {['1월', '2월', '3월', '4월'].map((month, i) => {

@@ -117,7 +117,7 @@ export default function MyPage() {
       </div>
 
       {/* 광고주 정보 설정 */}
-      {activeTab === '광고주 정보' && <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      {activeTab === '광고주 정보' && <div className="bg-white rounded-2xl border border-gray-100">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div>
             <h2 className="text-base font-bold text-gray-900">광고주 정보 설정</h2>
@@ -298,7 +298,7 @@ export default function MyPage() {
 
       {/* 구독 관리 탭 */}
       {activeTab === '구독 관리' && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-base font-bold text-gray-900">현재 구독 플랜</h2>

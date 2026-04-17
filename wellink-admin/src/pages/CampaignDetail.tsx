@@ -243,7 +243,7 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <BarChart3 size={15} className="text-gray-400" />
               캠페인 기본 정보
@@ -273,12 +273,12 @@ export default function CampaignDetail() {
               ))}
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-700 mb-3">설명</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{campaign.description}</p>
           </div>
           {/* 인플루언서 진행 현황 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100">
               <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Users size={15} className="text-gray-400" />
@@ -356,7 +356,7 @@ export default function CampaignDetail() {
               </button>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -443,7 +443,7 @@ export default function CampaignDetail() {
               리스트 Export
             </button>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -515,7 +515,7 @@ export default function CampaignDetail() {
               콘텐츠 다운로드
             </button>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -603,7 +603,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* 콘텐츠 성과 추세 그래프 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">콘텐츠 성과 추세</h3>
             <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
               {/* Y축 그리드 */}
@@ -632,7 +632,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* 콘텐츠 순위 테이블 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100">
               <h3 className="text-sm font-semibold text-gray-700">콘텐츠 순위</h3>
             </div>

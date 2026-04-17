@@ -152,7 +152,7 @@ export default function InfluencerManage() {
           {filteredInfluencers.map(inf => (
             <div
               key={inf.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative group"
+              className="bg-white rounded-xl border border-gray-100 p-5 relative group"
             >
               {/* 북마크 하트 (우측 상단) */}
               <button

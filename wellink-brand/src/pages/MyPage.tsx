@@ -117,7 +117,7 @@ export default function MyPage() {
       </div>
 
       {/* 광고주 정보 설정 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white rounded-2xl border border-gray-100">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div>
             <h2 className="text-base font-bold text-gray-900">광고주 정보 설정</h2>
