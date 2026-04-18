@@ -2,8 +2,9 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink
+  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink, Home
 } from 'lucide-react'
+import { useToast } from './Toast'
 
 const sections = [
   {
@@ -41,6 +42,7 @@ const sections = [
 export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
+  const { showToast } = useToast()
   const isMyPageActive = location.pathname === '/mypage'
   return (
     <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0">
@@ -50,6 +52,17 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
           <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
           <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
         </div>
+      </div>
+
+      {/* 홈 버튼 */}
+      <div className="px-3 pb-2">
+        <button
+          onClick={() => { showToast('홈으로 이동'); onNavigate?.() }}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
+        >
+          <Home size={15} />
+          홈
+        </button>
       </div>
 
       {/* 대시보드 — 섹션 없이 단독 항목 */}

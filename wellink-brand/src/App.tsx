@@ -25,6 +25,13 @@ const BRAND_TAB_MAP: Record<string, string> = {
 }
 
 const STATE_ITEMS: StatusItem[] = [
+  /* ────────────────── 정상 ────────────────── */
+  {
+    label: '정상',
+    children: [
+      { label: '대시보드 (기본)', path: '/dashboard' },
+    ],
+  },
   {
     label: '인스타그램 연결',
     children: [
@@ -72,6 +79,15 @@ const STATE_ITEMS: StatusItem[] = [
 ]
 
 const STATUS_ITEMS: StatusItem[] = [
+  /* ────────────────── 정상 ────────────────── */
+  {
+    label: '정상',
+    children: [
+      { label: '대시보드', path: '/dashboard' },
+      { label: '로그인 — 기본', path: '/login' },
+    ],
+  },
+
   /* ────────────────── 온보딩 ────────────────── */
   {
     label: '온보딩',
