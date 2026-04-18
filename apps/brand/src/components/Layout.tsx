@@ -18,7 +18,7 @@ export default function Layout() {
           <button onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100">
             <Menu size={20} className="text-gray-700" />
           </button>
-          <span className="ml-2 text-sm font-bold text-gray-900">WELLINK <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full ml-1">브랜드</span></span>
+          <span className="ml-2 text-sm font-bold text-gray-900">WELLINK <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">브랜드</span></span>
         </div>
       )}
 

@@ -50,7 +50,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-1.5">
           <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
+          <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
         </div>
       </div>
 

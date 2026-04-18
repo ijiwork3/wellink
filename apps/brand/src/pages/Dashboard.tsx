@@ -134,9 +134,9 @@ export default function Dashboard() {
           <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
           <p className="text-sm text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
         </div>
-        <div className="bg-gradient-to-br from-[#8CC63F]/10 to-[#7AB535]/5 border border-[#8CC63F]/20 rounded-2xl p-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-[#8CC63F]/15 flex items-center justify-center mx-auto mb-4">
-            <Sparkles size={24} className="text-[#8CC63F]" />
+        <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green/20 rounded-2xl p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-brand-green/15 flex items-center justify-center mx-auto mb-4">
+            <Sparkles size={24} className="text-brand-green" />
           </div>
           <h2 className="text-base font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
           <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
@@ -145,7 +145,7 @@ export default function Dashboard() {
           <div className="flex justify-center gap-3">
             <button
               onClick={() => navigate('/campaigns/new')}
-              className="bg-[#8CC63F] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#7AB535] transition-colors"
+              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
             >
               <Megaphone size={14} className="inline mr-2" />
               첫 캠페인 만들기
@@ -165,7 +165,7 @@ export default function Dashboard() {
             { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
           ].map(s => (
             <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
-              <span className="text-[11px] font-bold text-[#8CC63F]">Step {s.step}</span>
+              <span className="text-[11px] font-bold text-brand-green">Step {s.step}</span>
               <p className="text-sm font-semibold text-gray-900 mt-1">{s.title}</p>
               <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
             </div>
@@ -221,7 +221,7 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
           >
             <Megaphone size={14} />새 캠페인
           </button>
@@ -251,7 +251,7 @@ export default function Dashboard() {
           <p className="text-xs text-gray-300 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="text-sm bg-[#8CC63F] text-white px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors"
+            className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             새 캠페인 만들기
           </button>
@@ -298,7 +298,7 @@ export default function Dashboard() {
         </div>
         <button
           onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
         >
           <Megaphone size={14} />
           새 캠페인
@@ -307,7 +307,7 @@ export default function Dashboard() {
 
       {/* ── 요약 배너 ── */}
       <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
-        <div className="w-1 self-stretch rounded-full bg-[#8CC63F] shrink-0" />
+        <div className="w-1 self-stretch rounded-full bg-brand-green shrink-0" />
         <div>
           <p className="text-xs font-medium text-gray-400 mb-1">이번 주 현황</p>
           <p className="text-sm leading-relaxed text-gray-700">
@@ -438,7 +438,7 @@ export default function Dashboard() {
             {visibleNotifications.map(n => (
               <div
                 key={n.id}
-                className={`px-5 py-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${n.unread ? 'bg-[#8CC63F]/5' : ''}`}
+                className={`px-5 py-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${n.unread ? 'bg-brand-green/5' : ''}`}
                 onClick={() => handleNotificationClick(n.id, n.route)}
                 role="button"
                 tabIndex={0}
@@ -547,8 +547,8 @@ export default function Dashboard() {
               onClick={() => navigate(item.route)}
               className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200"
             >
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-[#8CC63F]/10' : 'bg-gray-100'}`}>
-                <span className={item.primary ? 'text-[#8CC63F]' : 'text-gray-500'}>{item.icon}</span>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-brand-green/10' : 'bg-gray-100'}`}>
+                <span className={item.primary ? 'text-brand-green' : 'text-gray-500'}>{item.icon}</span>
               </div>
               <p className="text-sm font-semibold text-gray-900">{item.label}</p>
               <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>

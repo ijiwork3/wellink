@@ -145,7 +145,7 @@ export default function Campaigns() {
         </div>
         <button
           onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
         >
           <Plus size={16} />
           새 캠페인 등록
@@ -161,7 +161,7 @@ export default function Campaigns() {
             onChange={e => setSearch(e.target.value)}
             placeholder="캠페인명, 카테고리 검색..."
             aria-label="캠페인 검색"
-            className="w-full pl-9 pr-9 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F]"
+            className="w-full pl-9 pr-9 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green"
           />
           {search && (
             <button
@@ -200,13 +200,13 @@ export default function Campaigns() {
             onClick={() => setActiveTab(tab)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 transition-colors ${
               activeTab === tab
-                ? 'border-[#8CC63F] font-semibold text-gray-900'
+                ? 'border-brand-green font-semibold text-gray-900'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
             {tab}
             <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${
-              activeTab === tab ? 'bg-[#8CC63F] text-white' : 'bg-gray-100 text-gray-500'
+              activeTab === tab ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
             }`}>
               {tabCounts[tab]}
             </span>
@@ -228,7 +228,7 @@ export default function Campaigns() {
           {!search && (
             <button
               onClick={() => navigate('/campaigns/new')}
-              className="mt-4 text-sm bg-[#8CC63F] text-white px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors"
+              className="mt-4 text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
             >
               첫 캠페인 만들기
             </button>
@@ -283,7 +283,7 @@ export default function Campaigns() {
                         <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
                           <div
-                            className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-[#8CC63F]'}`}
+                            className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-brand-green'}`}
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -294,7 +294,7 @@ export default function Campaigns() {
                       {c.reach > 0 ? (
                         <div>
                           <p className="text-xs font-medium text-gray-700">{fmtNumber(c.reach)} 도달</p>
-                          <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-[#5a8228]' : c.engRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                          <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-brand-green-text' : c.engRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                             {c.engRate}% 참여율
                           </p>
                         </div>
@@ -355,7 +355,7 @@ export default function Campaigns() {
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
                     <TrendingUp size={12} className="text-gray-400 mx-auto mb-0.5" />
-                    <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-[#5a8228]' : c.engRate >= 2.5 ? 'text-gray-700' : c.engRate > 0 ? 'text-red-500' : 'text-gray-300'}`}>
+                    <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-brand-green-text' : c.engRate >= 2.5 ? 'text-gray-700' : c.engRate > 0 ? 'text-red-500' : 'text-gray-300'}`}>
                       {c.engRate > 0 ? `${c.engRate}%` : '—'}
                     </p>
                     <p className="text-[10px] text-gray-400">참여율</p>
@@ -369,7 +369,7 @@ export default function Campaigns() {
                   </div>
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
-                    <div className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-[#8CC63F]'}`} style={{ width: `${progress}%` }} />
+                    <div className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-brand-green'}`} style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               </div>

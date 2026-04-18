@@ -166,8 +166,8 @@ export default function Media() {
                   <p className="text-sm font-medium text-gray-900">{p.name}</p>
                   {p.connected && p.url ? (
                     <div className="flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F] inline-block" />
-                      <p className="text-xs text-[#5a8228] truncate max-w-[140px]">@{p.url}</p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-green inline-block" />
+                      <p className="text-xs text-brand-green-text truncate max-w-[140px]">@{p.url}</p>
                     </div>
                   ) : (
                     <p className="text-xs text-gray-400 mt-0.5">연결되지 않음</p>
@@ -176,7 +176,7 @@ export default function Media() {
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-gray-500">팔로워 <strong className="text-gray-700">{p.followers.toLocaleString()}</strong></span>
                       {p.engagementRate != null && (
-                        <span className="text-[10px] text-gray-500">참여율 <strong className={p.engagementRate >= 4 ? 'text-[#5a8228]' : p.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}>{p.engagementRate}%</strong></span>
+                        <span className="text-[10px] text-gray-500">참여율 <strong className={p.engagementRate >= 4 ? 'text-brand-green-text' : p.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}>{p.engagementRate}%</strong></span>
                       )}
                     </div>
                   )}
@@ -185,7 +185,7 @@ export default function Media() {
 
               {p.connected ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-[#5a8228] bg-[#8CC63F]/10 px-2.5 py-1 rounded-full">연결됨</span>
+                  <span className="text-xs font-medium text-brand-green-text bg-brand-green/10 px-2.5 py-1 rounded-full">연결됨</span>
                   <button
                     onClick={() => setDisconnectModal({ platformId: p.id, name: p.name })}
                     className="text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
@@ -209,7 +209,7 @@ export default function Media() {
           ))}
         </div>
 
-        <div className="mt-5 p-4 rounded-xl bg-[#8CC63F]/5" style={{ borderLeft: '3px solid #8CC63F' }}>
+        <div className="mt-5 p-4 rounded-xl bg-brand-green/5" style={{ borderLeft: `3px solid ${BRAND.green}` }}>
           <p className="text-xs text-gray-600">
             SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인됩니다.
           </p>
@@ -245,7 +245,7 @@ export default function Media() {
                 connectModal.name === '인스타그램' ? '@인스타그램 아이디' :
                 'https://www.youtube.com/@채널명'
               }
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150 mb-4"
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150 mb-4"
               onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
             />
             <div className="flex gap-3">

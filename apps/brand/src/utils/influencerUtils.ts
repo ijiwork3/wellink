@@ -5,7 +5,7 @@ export const avatarColors = ['bg-purple-100','bg-blue-100','bg-green-100','bg-ye
 export { fmtFollowers as formatFollowers }
 
 export function fitScoreBadge(score: number): string {
-  if (score >= 85) return 'bg-[#8CC63F]/10 text-[#5a8228]'
+  if (score >= 85) return 'bg-brand-green/10 text-brand-green-text'
   if (score >= 70) return 'bg-amber-50 text-amber-700'
   return 'bg-gray-100 text-gray-500'
 }

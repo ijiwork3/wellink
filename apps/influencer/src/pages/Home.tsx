@@ -222,7 +222,7 @@ export default function Home() {
                     >
                       <Bookmark
                         size={16}
-                        className={bookmarks.has(c.id) ? 'text-[#8CC63F] fill-[#8CC63F]' : 'text-gray-400'}
+                        className={bookmarks.has(c.id) ? 'text-brand-green fill-brand-green' : 'text-gray-400'}
                       />
                     </button>
                   </div>
@@ -236,7 +236,7 @@ export default function Home() {
                     <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full"
-                        style={{ width: `${progressPct}%`, backgroundColor: progressPct >= 80 ? '#EF4444' : '#8CC63F' }}
+                        style={{ width: `${progressPct}%`, backgroundColor: progressPct >= 80 ? '#EF4444' : BRAND.green }}
                       />
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -255,7 +255,7 @@ export default function Home() {
                     </button>
                     <button
                       onClick={() => navigate(`/campaigns/${c.id}`)}
-                      className="px-4 py-2 rounded-xl text-xs font-medium text-[#5a8228] border border-[#8CC63F]/40 bg-[#8CC63F]/5 hover:bg-[#8CC63F]/10 transition-colors"
+                      className="px-4 py-2 rounded-xl text-xs font-medium text-brand-green-text border border-brand-green/40 bg-brand-green/5 hover:bg-brand-green/10 transition-colors"
                     >
                       신청하기
                     </button>

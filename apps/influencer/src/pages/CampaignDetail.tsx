@@ -207,10 +207,10 @@ export default function CampaignDetail() {
 
             {/* 보상 */}
             {campaign.reward && (
-              <div className="mb-5 p-4 rounded-xl border border-[#8CC63F]/20 bg-[#8CC63F]/5 flex items-start gap-3">
-                <Gift size={18} className="text-[#5a8228] flex-shrink-0 mt-0.5" />
+              <div className="mb-5 p-4 rounded-xl border border-brand-green/20 bg-brand-green/5 flex items-start gap-3">
+                <Gift size={18} className="text-brand-green-text flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-[#5a8228] mb-0.5">제공 혜택</p>
+                  <p className="text-xs font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
                   <p className="text-sm font-medium text-gray-900">{campaign.reward}</p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ export default function CampaignDetail() {
                 마감된 캠페인입니다
               </div>
             ) : applied ? (
-              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-[#8CC63F] text-[#8CC63F] bg-[#8CC63F]/5 flex items-center justify-center gap-2">
+              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green bg-brand-green/5 flex items-center justify-center gap-2">
                 <CheckCircle2 size={16} />
                 신청완료
               </div>
@@ -262,7 +262,7 @@ export default function CampaignDetail() {
           <p className="text-sm text-gray-600">
             <span className="font-semibold text-gray-900">{campaign.name}</span>에 신청하시겠습니까?
           </p>
-          <div className="p-3 rounded-xl text-sm bg-[#8CC63F]/5 text-[#5a8228]">
+          <div className="p-3 rounded-xl text-sm bg-brand-green/5 text-brand-green-text">
             신청 후 브랜드 검토 → 선정 결과 알림 → 제품 수령 → 콘텐츠 게시 순으로 진행됩니다.
           </div>
           <div className="flex gap-3 pt-2">

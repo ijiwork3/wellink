@@ -35,7 +35,7 @@ const platformBadge: Record<string, string> = {
 }
 
 const fitScoreColor = (score: number) => {
-  if (score >= 85) return 'bg-[#8CC63F]'
+  if (score >= 85) return 'bg-brand-green'
   if (score >= 70) return 'bg-gray-400'
   return 'bg-gray-300'
 }
@@ -85,7 +85,7 @@ export default function AIListup() {
           <p className="text-xs text-gray-300 mb-4">AI 리스트업을 실행해 인플루언서를 추천받아 보세요.</p>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="text-sm bg-[#8CC63F] text-white px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors"
+            className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             캠페인 만들기
           </button>
@@ -100,8 +100,8 @@ export default function AIListup() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center w-full max-w-sm">
           <div className="relative inline-block mb-4">
-            <div className="w-16 h-16 rounded-full bg-[#8CC63F]/10 flex items-center justify-center">
-              <Loader2 size={28} className="animate-spin text-[#8CC63F]" />
+            <div className="w-16 h-16 rounded-full bg-brand-green/10 flex items-center justify-center">
+              <Loader2 size={28} className="animate-spin text-brand-green" />
             </div>
           </div>
           <p className="text-sm font-semibold text-gray-900 mb-1">AI가 인플루언서를 분석 중입니다...</p>
@@ -121,10 +121,10 @@ export default function AIListup() {
       </div>
 
       {/* AI 브랜딩 */}
-      <div className="flex items-center gap-3 bg-[#8CC63F]/5 border border-[#8CC63F]/20 rounded-2xl px-5 py-4">
+      <div className="flex items-center gap-3 bg-brand-green/5 border border-brand-green/20 rounded-2xl px-5 py-4">
         <div className="relative flex items-center justify-center w-12 h-12 shrink-0">
-          <div className="absolute inset-0 bg-[#8CC63F]/10 rounded-full" />
-          <Sparkles size={22} className="text-[#8CC63F] relative z-10" />
+          <div className="absolute inset-0 bg-brand-green/10 rounded-full" />
+          <Sparkles size={22} className="text-brand-green relative z-10" />
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">AI 인플루언서 리스트업</p>
@@ -144,7 +144,7 @@ export default function AIListup() {
               placeholder="예) 저희는 웰니스 라이프스타일 브랜드로, 요가·필라테스 관련 제품을 판매합니다. 25-35세 여성 타겟이며, 진성성 높고 건강한 라이프스타일을 추구하는 인플루언서를 찾고 있습니다."
               rows={5}
               maxLength={500}
-              className="w-full text-sm border border-gray-200 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] leading-relaxed transition-all duration-150"
+              className="w-full text-sm border border-gray-200 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green leading-relaxed transition-all duration-150"
             />
             <div className="text-right text-xs text-gray-400 mt-0.5">{prompt.length}/500</div>
           </div>
@@ -177,7 +177,7 @@ export default function AIListup() {
             <button
               onClick={handleAnalyze}
               disabled={!prompt.trim()}
-              className="flex-1 bg-[#8CC63F] text-white py-3 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Sparkles size={15} />
               분석 시작
@@ -190,8 +190,8 @@ export default function AIListup() {
       {phase === 'loading' && (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
           <div className="relative inline-block mb-4">
-            <div className="w-16 h-16 rounded-full bg-[#8CC63F]/10 flex items-center justify-center">
-              <Loader2 size={28} className="animate-spin text-[#8CC63F]" />
+            <div className="w-16 h-16 rounded-full bg-brand-green/10 flex items-center justify-center">
+              <Loader2 size={28} className="animate-spin text-brand-green" />
             </div>
           </div>
           <p className="text-sm font-semibold text-gray-900 mb-1">브랜드를 분석 중입니다...</p>
@@ -200,7 +200,7 @@ export default function AIListup() {
           <div className="space-y-2 text-left max-w-xs mx-auto">
             {['브랜드 키워드 추출 중', '오디언스 매칭 분석 중', 'Fit Score 계산 중'].map((s, i) => (
               <div key={i} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#8CC63F] animate-pulse" style={{ animationDelay: `${i * 0.7}s` }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" style={{ animationDelay: `${i * 0.7}s` }} />
                 <p className="text-xs text-gray-500 animate-pulse" style={{ animationDelay: `${i * 0.7}s` }}>{s}</p>
               </div>
             ))}
@@ -255,7 +255,7 @@ export default function AIListup() {
                 onKeyDown={e => { if (e.key === ' ') { e.preventDefault(); toggleSelect(inf.id) } }}
                 className={`relative bg-white rounded-xl border p-4 cursor-pointer transition-all duration-150 ${
                   selected.has(inf.id)
-                    ? 'border-[#8CC63F] shadow-md'
+                    ? 'border-brand-green shadow-md'
                     : 'border-gray-100 hover:border-gray-300 hover:shadow-sm'
                 }`}
               >
@@ -277,8 +277,8 @@ export default function AIListup() {
                     </div>
                     <div className="flex gap-3 mt-1 text-xs">
                       <span className="text-gray-500">팔로워 {formatFollowers(inf.followers)}</span>
-                      <span className={`font-medium ${inf.engagement >= 4 ? 'text-[#5a8228]' : inf.engagement >= 2.5 ? 'text-gray-500' : 'text-red-500'}`}>참여율 {inf.engagement}%</span>
-                      <span className={`font-medium ${inf.authentic >= 80 ? 'text-[#5a8228]' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>진성 {inf.authentic}%</span>
+                      <span className={`font-medium ${inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-500' : 'text-red-500'}`}>참여율 {inf.engagement}%</span>
+                      <span className={`font-medium ${inf.authentic >= 80 ? 'text-brand-green-text' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>진성 {inf.authentic}%</span>
                     </div>
                     <div className="flex gap-1 mt-2 flex-wrap">
                       {inf.category.map(c => (
@@ -300,7 +300,7 @@ export default function AIListup() {
 
                   {/* 선택 체크 */}
                   <div className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
-                    selected.has(inf.id) ? 'bg-[#8CC63F] border-[#8CC63F]' : 'border-gray-300'
+                    selected.has(inf.id) ? 'bg-brand-green border-brand-green' : 'border-gray-300'
                   }`}>
                     {selected.has(inf.id) && <Check size={12} className="text-white" />}
                   </div>
@@ -312,7 +312,7 @@ export default function AIListup() {
           })()}
 
           {selected.size > 0 && (
-            <div className="sticky bottom-4 bg-[#8CC63F] text-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl">
+            <div className="sticky bottom-4 bg-brand-green text-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-xl">
               <span className="text-sm font-medium">{selected.size}명 선택됨</span>
               <button
                 onClick={() => navigate('/campaigns/new', { state: { selectedInfluencers: Array.from(selected) } })}

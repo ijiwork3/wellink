@@ -8,6 +8,7 @@ export default defineConfig({
   server: { port: 3005 },
   resolve: {
     alias: {
+      '@wellink/ui/theme.css': path.resolve(__dirname, '../../packages/ui/src/theme.css'),
       '@wellink/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
     },
   },

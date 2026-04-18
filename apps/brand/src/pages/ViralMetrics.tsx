@@ -4,7 +4,7 @@ import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar 
 import { ErrorState } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { fmtNumber } from '@wellink/ui'
+import { fmtNumber, BRAND } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
@@ -151,7 +151,7 @@ export default function ViralMetrics() {
           <p className="text-xs text-gray-300 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
           <button
             onClick={() => navigate('/campaigns')}
-            className="text-sm font-medium text-white px-5 py-2.5 rounded-xl bg-[#8CC63F] hover:bg-[#7AB535] transition-colors"
+            className="text-sm font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors"
           >
             캠페인 만들기
           </button>
@@ -248,7 +248,7 @@ export default function ViralMetrics() {
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.reach}</p>
           <TrendMiniBar values={trend.reach} color="#3B82F6" />
-          <p className="text-xs text-[#8CC63F] font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
+          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
@@ -256,8 +256,8 @@ export default function ViralMetrics() {
             <Share2 size={14} className="text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.shares}</p>
-          <TrendMiniBar values={trend.shares} color="#8CC63F" />
-          <p className="text-xs text-[#8CC63F] font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
+          <TrendMiniBar values={trend.shares} color={BRAND.green} />
+          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
@@ -266,20 +266,20 @@ export default function ViralMetrics() {
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.saves}</p>
           <TrendMiniBar values={trend.saves} color="#8B5CF6" />
-          <p className="text-xs text-[#8CC63F] font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
+          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-gray-500">바이럴 계수</span>
             <Zap size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-[#8CC63F]">{kpi.viral}</p>
+          <p className="text-2xl font-bold text-brand-green">{kpi.viral}</p>
           <div className="mt-3 h-8 flex items-center">
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-[#8CC63F] rounded-full" style={{ width: `${isZero ? 0 : Math.max(0, Math.min(100, (rawKpi.viral / 4) * 100))}%` }} />
+              <div className="h-full bg-brand-green rounded-full" style={{ width: `${isZero ? 0 : Math.max(0, Math.min(100, (rawKpi.viral / 4) * 100))}%` }} />
             </div>
           </div>
-          <p className="text-xs text-[#8CC63F] font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
+          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
         </div>
       </div>
 
@@ -334,11 +334,11 @@ export default function ViralMetrics() {
                           style={{
                             width: `${item.viralScore}%`,
                             // 바이럴 스코어: 80+ 녹색 / 50~79 amber / 49이하 gray
-                            backgroundColor: item.viralScore >= 80 ? '#8CC63F' : item.viralScore >= 50 ? '#F59E0B' : '#E5E7EB'
+                            backgroundColor: item.viralScore >= 80 ? BRAND.green : item.viralScore >= 50 ? '#F59E0B' : '#E5E7EB'
                           }}
                         />
                       </div>
-                      <span className={`text-sm font-bold ${item.viralScore >= 80 ? 'text-[#8CC63F]' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                      <span className={`text-sm font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
                         {item.viralScore}
                       </span>
                     </div>

@@ -17,7 +17,7 @@ import Library from './pages/Library'
 import Subscription from './pages/Subscription'
 import MyPage from './pages/MyPage'
 import { MockupShell, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider } from '@wellink/ui'
+import { ToastProvider, BRAND } from '@wellink/ui'
 
 const BRAND_TAB_MAP: Record<string, string> = {
   login: '/login',
@@ -308,7 +308,7 @@ function AppRoutes() {
       statusItems={STATUS_ITEMS}
       onNavigate={({ path }) => path && navigate(path)}
       onReset={() => navigate('/dashboard')}
-      accentColor="#8CC63F"
+      accentColor={BRAND.green}
       defaultDevice="desktop"
       containerClassName="bg-white"
     >

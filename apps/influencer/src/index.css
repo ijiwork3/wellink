@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@wellink/ui/theme.css";
 
 * {
   box-sizing: border-box;

@@ -5,7 +5,7 @@ import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE } from '@wellink/ui'
+import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, BRAND } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ─── 더미 데이터 ─── */
@@ -385,7 +385,7 @@ export default function CampaignDetail() {
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
                   : activeTab === tab
-                    ? 'border-[#8CC63F] font-semibold text-gray-900'
+                    ? 'border-brand-green font-semibold text-gray-900'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -400,11 +400,11 @@ export default function CampaignDetail() {
         <div className="space-y-4">
           {/* DM 안내 배너 — 선정된 인플루언서가 있을 때만 표시 */}
           {selectedInfluencers.length > 0 && (
-            <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#8CC63F]/10 border border-[#8CC63F]/30">
-              <p className="text-sm text-[#5a8228] font-medium">인플루언서가 선정되었습니다. DM을 발송해 보세요.</p>
+            <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-brand-green/10 border border-brand-green/30">
+              <p className="text-sm text-brand-green-text font-medium">인플루언서가 선정되었습니다. DM을 발송해 보세요.</p>
               <button
                 onClick={() => navigate('/influencers/dm')}
-                className="shrink-0 text-xs bg-[#8CC63F] text-white px-3 py-1.5 rounded-xl hover:bg-[#7AB535] transition-colors duration-150"
+                className="shrink-0 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
               >
                 DM 이동
               </button>
@@ -526,7 +526,7 @@ export default function CampaignDetail() {
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleSelectApplicant(a.id)}
-                          className="flex items-center gap-1 text-xs bg-[#8CC63F] text-white px-3 py-1.5 rounded-xl hover:bg-[#7AB535] transition-colors duration-150"
+                          className="flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
                         >
                           <Check size={12} /> 선정
                         </button>
@@ -656,7 +656,7 @@ export default function CampaignDetail() {
                 }
                 setDownloadModal(true)
               }}
-              className="flex items-center gap-2 bg-[#8CC63F] text-white px-3 py-1.5 rounded-xl text-xs hover:bg-[#7AB535] transition-colors duration-150"
+              className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
             >
               <Download size={13} />
               콘텐츠 다운로드
@@ -675,7 +675,7 @@ export default function CampaignDetail() {
                   key={c.id}
                   onClick={() => toggleContentCheck(c.id)}
                   className={`bg-white rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-150 shadow-sm ${
-                    isChecked ? 'border-[#8CC63F]' : 'border-gray-100 hover:border-gray-200'
+                    isChecked ? 'border-brand-green' : 'border-gray-100 hover:border-gray-200'
                   }`}
                 >
                   {/* 썸네일 */}
@@ -683,7 +683,7 @@ export default function CampaignDetail() {
                     <Image size={32} className="text-white/60" />
                     {/* 선택 체크 */}
                     <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
-                      isChecked ? 'bg-[#8CC63F] border-[#8CC63F]' : 'bg-white/80 border-gray-300'
+                      isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
                     }`}>
                       {isChecked && <Check size={11} className="text-white" strokeWidth={3} />}
                     </div>
@@ -723,7 +723,7 @@ export default function CampaignDetail() {
                       </div>
                       <div className="text-center">
                         <p className="text-[10px] text-gray-400 mb-0.5">참여율</p>
-                        <p className="text-xs font-bold text-[#8CC63F]">{engRate}%</p>
+                        <p className="text-xs font-bold text-brand-green">{engRate}%</p>
                       </div>
                     </div>
                   </div>
@@ -778,12 +778,12 @@ export default function CampaignDetail() {
                 )
               })}
               {/* 라인 */}
-              <path d={linePath} fill="none" stroke="#8CC63F" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+              <path d={linePath} fill="none" stroke={BRAND.green} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
               {/* 포인트 + 라벨 */}
               {points.map((p, i) => (
                 <g key={i}>
-                  <circle cx={p.x} cy={p.y} r={4} fill="#8CC63F" />
-                  <circle cx={p.x} cy={p.y} r={6} fill="#8CC63F" fillOpacity={0.2} />
+                  <circle cx={p.x} cy={p.y} r={4} fill={BRAND.green} />
+                  <circle cx={p.x} cy={p.y} r={6} fill={BRAND.green} fillOpacity={0.2} />
                   <text x={p.x} y={chartH - 8} textAnchor="middle" className="text-[10px] fill-gray-500">{p.name}</text>
                   <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[10px] fill-gray-700 font-medium">{p.likes}</text>
                 </g>
@@ -826,7 +826,7 @@ export default function CampaignDetail() {
                       <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
                       <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
                       <td className="py-3 px-4">
-                        <span className="text-sm font-semibold text-[#8CC63F]">{engRate}%</span>
+                        <span className="text-sm font-semibold text-brand-green">{engRate}%</span>
                       </td>
                     </tr>
                   )
@@ -865,7 +865,7 @@ export default function CampaignDetail() {
           <button
             onClick={handleDownloadPayment}
             disabled={isPaying}
-            className="w-full bg-[#8CC63F] text-white py-3 rounded-xl text-sm font-semibold hover:bg-[#7AB535] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-brand-green text-white py-3 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             결제하기
           </button>

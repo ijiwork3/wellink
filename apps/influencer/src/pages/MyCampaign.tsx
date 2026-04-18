@@ -35,7 +35,7 @@ const statusBadgeClass: Record<CampaignStatus, string> = {
   '검토중':   'bg-amber-50 text-amber-700',
   '콘텐츠대기': 'bg-gray-100 text-gray-600',
   '검수중':   'bg-sky-50 text-sky-700',
-  '완료':     'bg-[#8CC63F]/10 text-[#5a8228]',
+  '완료':     'bg-brand-green/10 text-brand-green-text',
   '미선정':   'bg-red-50 text-red-600',
 }
 
@@ -269,7 +269,7 @@ export default function MyCampaign() {
 
                   {/* 진행 상황 */}
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
                     <span className="text-xs text-gray-500">{c.progress}</span>
                   </div>
 
@@ -294,7 +294,7 @@ export default function MyCampaign() {
                       if (action === '콘텐츠 제출') return (
                         <button key={action}
                           onClick={() => navigate(`/campaigns/${c.id}`)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-[#5a8228] border border-[#8CC63F]/30 bg-[#8CC63F]/5 hover:bg-[#8CC63F]/10 transition-colors">
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-brand-green-text border border-brand-green/30 bg-brand-green/5 hover:bg-brand-green/10 transition-colors">
                           <Upload size={12} />
                           콘텐츠 제출
                         </button>
@@ -332,7 +332,7 @@ export default function MyCampaign() {
               value={contentUrl}
               onChange={(e) => setContentUrl(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleContentSubmit() }}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#8CC63F] focus:ring-2 focus:ring-[#8CC63F]/20 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 transition-colors"
               placeholder="https://instagram.com/p/..."
             />
           </div>
@@ -341,7 +341,7 @@ export default function MyCampaign() {
             <button
               onClick={handleContentSubmit}
               disabled={!contentUrl.trim()}
-              className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               제출하기
             </button>

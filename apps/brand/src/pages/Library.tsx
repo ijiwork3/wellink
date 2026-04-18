@@ -257,7 +257,7 @@ export default function Library() {
       onClick={onClick}
       className={`text-sm px-3 py-1.5 rounded-xl border transition-all ${
         active
-          ? 'bg-[#8CC63F] text-white border-[#8CC63F]'
+          ? 'bg-brand-green text-white border-brand-green'
           : 'border-gray-200 text-gray-600 hover:border-gray-400'
       }`}
     >
@@ -279,7 +279,7 @@ export default function Library() {
           {selectedIds.size > 0 && (
             <button
               onClick={() => showToast(`${selectedIds.size}개 콘텐츠 다운로드를 시작합니다.`, 'success')}
-              className="flex items-center gap-2 bg-[#8CC63F] text-white px-4 py-2 rounded-xl text-sm transition-colors"
+              className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-xl text-sm transition-colors"
             >
               <Download size={14} />
               선택 다운로드 ({selectedIds.size})
@@ -316,15 +316,15 @@ export default function Library() {
             <TrendingUp size={12} />
             평균 참여율
           </div>
-          <div className="text-xl font-bold text-[#8CC63F]">{avgEngagement}%</div>
+          <div className="text-xl font-bold text-brand-green">{avgEngagement}%</div>
         </div>
       </div>
 
       {/* Top Performer */}
       {topPerformer && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 hover:shadow-md transition-all">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#8CC63F]/10">
-            <Crown size={16} className="text-[#8CC63F]" />
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-brand-green/10">
+            <Crown size={16} className="text-brand-green" />
           </div>
           <div className="flex-1">
             <span className="text-xs text-gray-500">Top Performer</span>
@@ -334,7 +334,7 @@ export default function Library() {
           </div>
           <div className="text-right">
             <div className="text-xs text-gray-500">참여율</div>
-            <div className="text-sm font-bold text-[#8CC63F]">{topPerformer.engagementRate}%</div>
+            <div className="text-sm font-bold text-brand-green">{topPerformer.engagementRate}%</div>
           </div>
           <div className="text-right">
             <div className="text-xs text-gray-500">도달</div>
@@ -353,13 +353,13 @@ export default function Library() {
               onClick={() => setCampaignFilter(camp)}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 transition-colors whitespace-nowrap ${
                 campaignFilter === camp
-                  ? 'border-[#8CC63F] font-semibold text-gray-900'
+                  ? 'border-brand-green font-semibold text-gray-900'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               {camp}
               <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${
-                campaignFilter === camp ? 'bg-[#8CC63F] text-white' : 'bg-gray-100 text-gray-500'
+                campaignFilter === camp ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
               }`}>
                 {count}
               </span>
@@ -422,7 +422,7 @@ export default function Library() {
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between ${sortKey === key ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                     >
                       {key}
-                      {sortKey === key && <Check size={14} className="text-[#8CC63F]" />}
+                      {sortKey === key && <Check size={14} className="text-brand-green" />}
                     </button>
                   ))}
                 </div>
@@ -484,7 +484,7 @@ export default function Library() {
               aria-checked={isAllSelected}
               aria-label="전체 선택"
               className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                isAllSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white hover:border-gray-400'
+                isAllSelected ? 'border-brand-green bg-brand-green' : 'border-gray-300 bg-white hover:border-gray-400'
               }`}
             >
               {isAllSelected && <Check size={12} className="text-white" />}
@@ -511,7 +511,7 @@ export default function Library() {
                     aria-label={`${c.creator} 콘텐츠 선택`}
                     className={`absolute top-3 left-3 z-10 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                       isSelected
-                        ? 'border-[#8CC63F] bg-[#8CC63F]'
+                        ? 'border-brand-green bg-brand-green'
                         : 'border-white/80 bg-white/80 opacity-0 group-hover:opacity-100'
                     }`}
                   >
@@ -573,7 +573,7 @@ export default function Library() {
                     aria-checked={isAllSelected}
                     aria-label="전체 선택"
                     className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                      isAllSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white'
+                      isAllSelected ? 'border-brand-green bg-brand-green' : 'border-gray-300 bg-white'
                     }`}
                   >
                     {isAllSelected && <Check size={10} className="text-white" />}
@@ -591,7 +591,7 @@ export default function Library() {
                 return (
                   <tr
                     key={c.id}
-                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-[#8CC63F]/5' : ''}`}
+                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-brand-green/5' : ''}`}
                   >
                     <td className="py-3 px-3">
                       <button
@@ -600,7 +600,7 @@ export default function Library() {
                         aria-checked={isSelected}
                         aria-label={`${c.creator} 콘텐츠 선택`}
                         className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                          isSelected ? 'border-[#8CC63F] bg-[#8CC63F]' : 'border-gray-300 bg-white'
+                          isSelected ? 'border-brand-green bg-brand-green' : 'border-gray-300 bg-white'
                         }`}
                       >
                         {isSelected && <Check size={10} className="text-white" />}
@@ -626,7 +626,7 @@ export default function Library() {
                     <td className="py-3 px-3 text-sm text-gray-700">{fmtNumber(c.likes)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.comments}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.saves}</td>
-                    <td className={`py-3 px-3 text-sm font-medium ${c.engagementRate >= 4 ? 'text-[#5a8228]' : c.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{c.engagementRate}%</td>
+                    <td className={`py-3 px-3 text-sm font-medium ${c.engagementRate >= 4 ? 'text-brand-green-text' : c.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{c.engagementRate}%</td>
                     <td className="py-3 px-3">
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </td>
@@ -712,7 +712,7 @@ export default function Library() {
               <div className="flex gap-2">
                 <button
                   onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
                 >
                   <Check size={15} />
                   승인
@@ -726,7 +726,7 @@ export default function Library() {
               </div>
             )}
             {approvedIds.has(previewItem.id) && (
-              <div className="w-full text-center text-sm text-[#8CC63F] font-medium py-2">승인된 콘텐츠입니다</div>
+              <div className="w-full text-center text-sm text-brand-green font-medium py-2">승인된 콘텐츠입니다</div>
             )}
             {rejectedIds.has(previewItem.id) && (
               <div className="w-full text-center text-sm text-red-400 font-medium py-2">반려된 콘텐츠입니다</div>

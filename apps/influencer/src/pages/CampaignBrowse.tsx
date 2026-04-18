@@ -105,7 +105,7 @@ export default function CampaignBrowse() {
             placeholder="캠페인 또는 브랜드명 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-10 py-3 rounded-full border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+            className="w-full pl-11 pr-10 py-3 rounded-full border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
           />
           {search && (
             <button
@@ -128,7 +128,7 @@ export default function CampaignBrowse() {
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
                 selectedCategory === cat
                   ? 'text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#8CC63F]/40 hover:text-[#8CC63F] hover:bg-[#8CC63F]/5'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green/40 hover:text-brand-green hover:bg-brand-green/5'
               }`}
               style={selectedCategory === cat ? { backgroundColor: BRAND.green } : {}}
             >

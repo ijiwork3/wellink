@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
-import { KPICard, StatusBadge } from '@wellink/ui'
+import { KPICard, StatusBadge, BRAND } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { fmtNumber, fmtPrice } from '@wellink/ui'
@@ -79,7 +79,7 @@ const adFormatPerf = [
 
 // data-policy-v1 §광고성과: ROAS ≥3.0x 녹색 / 1.5~3.0x amber / <1.5x 빨강
 function getRoasColor(roas: number): string {
-  if (roas >= 3.0) return 'text-[#8CC63F]'
+  if (roas >= 3.0) return 'text-brand-green'
   if (roas >= 1.5) return 'text-amber-600'
   if (roas > 0)   return 'text-red-500'
   return 'text-gray-400'
@@ -87,7 +87,7 @@ function getRoasColor(roas: number): string {
 
 // data-policy-v1 §광고성과: CTR ≥2.0% 녹색 / 1.0~2.0% 기본 / <1.0% 빨강
 function getCtrColor(ctr: number): string {
-  if (ctr >= 2.0) return 'text-[#8CC63F]'
+  if (ctr >= 2.0) return 'text-brand-green'
   if (ctr > 0 && ctr < 1.0) return 'text-red-500'
   return 'text-gray-900'
 }
@@ -105,7 +105,7 @@ function getObjectiveBadge(obj: string) {
 function RoasBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? (value / max) * 100 : 0
   // data-policy-v1: ROAS ≥3.0 녹색 / ≥1.5 amber / >0 빨강
-  const color = value >= 3.0 ? '#8CC63F' : value >= 1.5 ? '#F59E0B' : value > 0 ? '#EF4444' : '#E5E7EB'
+  const color = value >= 3.0 ? BRAND.green : value >= 1.5 ? '#F59E0B' : value > 0 ? '#EF4444' : '#E5E7EB'
   return (
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -289,7 +289,7 @@ export default function AdPerformance() {
             <p className="text-[11px] text-gray-400 mt-0.5">Meta 광고 관리자 기준 캠페인</p>
           </div>
           <div className="flex items-center gap-3 text-[10px] text-gray-400">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#8CC63F] inline-block" />≥4.0x 우수</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
           </div>
         </div>
@@ -357,7 +357,7 @@ export default function AdPerformance() {
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#8CC63F]"
+                    className="h-full rounded-full bg-brand-green"
                     style={{ width: `${(f.impressions / adFormatPerf[0].impressions) * 100}%` }}
                   />
                 </div>

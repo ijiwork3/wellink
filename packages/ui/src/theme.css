@@ -1,0 +1,11 @@
+/* 웰링크 DS 색상 토큰 — 단일 정의, 모든 앱에서 @import하여 사용
+ * JS 상수와 동기화: packages/ui/src/constants/colors.ts > BRAND
+ * 색상 변경 시 이 파일 + colors.ts 두 곳만 수정하면 됨
+ */
+@theme {
+  --color-brand-green:       #8CC63F;  /* 메인 그린 — 버튼 bg, 아이콘, 포인트 */
+  --color-brand-green-text:  #5a8228;  /* 텍스트/아이콘 그린 — 밝은 배경 위 */
+  --color-brand-green-hover: #7AB535;  /* hover 그린 */
+  --color-brand-green-bg:    #f0f9e8;  /* 연한 그린 배경 */
+  --color-brand-green-border:#c5e39a;  /* 연한 그린 보더 */
+}

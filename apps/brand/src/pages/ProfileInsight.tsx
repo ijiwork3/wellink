@@ -3,7 +3,7 @@ import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Chev
 import { KPICard } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { fmtNumber } from '@wellink/ui'
+import { fmtNumber, BRAND } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 
@@ -124,7 +124,7 @@ const contentTypeData = [
 ]
 
 const metricColors = {
-  likes:    '#8CC63F',
+  likes:    BRAND.green,
   reach:    '#3B82F6',
   comments: '#F59E0B',
   saves:    '#8B5CF6',
@@ -555,13 +555,13 @@ export default function ProfileInsight() {
                 <span className="text-xs text-gray-500 w-16 shrink-0">{ct.type}</span>
                 <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#8CC63F]"
+                    className="h-full rounded-full bg-brand-green"
                     style={{ width: `${(ct.avgReach / 5200) * 100}%` }}
                   />
                 </div>
                 <div className="flex gap-3 text-xs text-right">
                   <span className="text-gray-700 w-14">도달 <strong>{fmtNumber(ct.avgReach)}</strong></span>
-                  <span className={`font-semibold w-10 ${ct.engagementRate >= 4 ? 'text-[#5a8228]' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                  <span className={`font-semibold w-10 ${ct.engagementRate >= 4 ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                     {ct.engagementRate}%
                   </span>
                 </div>
@@ -569,7 +569,7 @@ export default function ProfileInsight() {
             ))}
           </div>
           <p className="text-xs text-gray-400 mt-4">
-            <span className="text-[#8CC63F] font-medium">초록색</span>은 높은 참여율,{' '}
+            <span className="text-brand-green font-medium">초록색</span>은 높은 참여율,{' '}
             <span className="text-red-500 font-medium">빨간색</span>은 개선 필요 지표
           </p>
         </div>
@@ -578,7 +578,7 @@ export default function ProfileInsight() {
         <div className="col-span-2 @sm:col-span-3 @lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-900">팔로워 추이</h3>
-            <span className="text-xs text-[#8CC63F] font-medium">{ytdLabel}</span>
+            <span className="text-xs text-brand-green font-medium">{ytdLabel}</span>
           </div>
           <FollowerBarChart data={followerData} />
           {nullCount > 0 && (
@@ -631,7 +631,7 @@ export default function ProfileInsight() {
                             const isGood = parseFloat(engRate) >= 4
                             const isBad  = parseFloat(engRate) < 2.5
                             return (
-                              <span className={`text-xs font-semibold ${isGood ? 'text-[#8CC63F]' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                              <span className={`text-xs font-semibold ${isGood ? 'text-brand-green' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
                                 {engRate}%
                               </span>
                             )

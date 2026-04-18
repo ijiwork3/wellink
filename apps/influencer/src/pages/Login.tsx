@@ -56,7 +56,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center bg-gradient-to-br from-[#f0f9e8] to-white p-4">
+    <div className="min-h-full flex items-center justify-center bg-gradient-to-br from-brand-green-bg to-white p-4">
       {/* 로고 */}
       <div className="absolute top-0 left-0 right-0 px-6 py-4 flex items-center justify-between">
         <button onClick={() => navigate('/campaigns/browse')} className="flex items-center gap-1.5">
@@ -87,7 +87,7 @@ export default function Login() {
               value={id}
               onChange={e => setId(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/20 focus:border-[#8CC63F] transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
             />
           </div>
 
@@ -101,7 +101,7 @@ export default function Login() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/20 focus:border-[#8CC63F] transition-all"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
             />
             <button
               type="button"
@@ -127,7 +127,7 @@ export default function Login() {
 
         <p className="text-center text-xs text-gray-400 mt-4">
           계정이 없으신가요?{' '}
-          <button onClick={() => navigate('/signup')} className="text-[#8CC63F] hover:underline">회원가입</button>
+          <button onClick={() => navigate('/signup')} className="text-brand-green hover:underline">회원가입</button>
         </p>
       </div>
     </div>

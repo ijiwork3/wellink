@@ -198,7 +198,7 @@ export default function MyPage() {
             }}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-[#8CC63F] text-white'
+                ? 'bg-brand-green text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -218,7 +218,7 @@ export default function MyPage() {
               <h2 className="text-base font-bold text-gray-900">구독 관리</h2>
               <p className="text-xs text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
             </div>
-            <span className="text-xs font-semibold bg-[#8CC63F]/10 text-[#5a8228] px-3 py-1.5 rounded-full border border-[#8CC63F]/20">
+            <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
               현재: Scale 플랜
             </span>
           </div>
@@ -242,8 +242,8 @@ export default function MyPage() {
             onClick={handleSave}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               qa === 'edit'
-                ? 'bg-[#8CC63F] text-white ring-2 ring-[#8CC63F] ring-offset-2 hover:bg-[#7AB535] shadow-md'
-                : 'bg-[#8CC63F] text-white hover:bg-[#7AB535]'
+                ? 'bg-brand-green text-white ring-2 ring-brand-green ring-offset-2 hover:bg-brand-green-hover shadow-md'
+                : 'bg-brand-green text-white hover:bg-brand-green-hover'
             }`}
           >
             <Save size={14} />
@@ -255,7 +255,7 @@ export default function MyPage() {
           {/* 계정 정보 */}
           <section>
             <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-[#8CC63F] rounded-full" />
+              <span className="w-1 h-4 bg-brand-green rounded-full" />
               계정 정보
             </h3>
             <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
@@ -301,7 +301,7 @@ export default function MyPage() {
           {/* 회사 정보 */}
           <section>
             <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-[#8CC63F] rounded-full" />
+              <span className="w-1 h-4 bg-brand-green rounded-full" />
               회사 정보
             </h3>
             <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
@@ -380,7 +380,7 @@ export default function MyPage() {
                 aria-label="마케팅 정보 수신 동의"
                 className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
                   marketingConsent
-                    ? 'bg-[#8CC63F] border-[#8CC63F]'
+                    ? 'bg-brand-green border-brand-green'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
@@ -401,11 +401,11 @@ export default function MyPage() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <span className="w-1 h-4 bg-[#8CC63F] rounded-full" />
+                <span className="w-1 h-4 bg-brand-green rounded-full" />
                 SNS 연동 설정
               </h3>
               {snsConnected && (
-                <span className="flex items-center gap-1 text-xs text-[#8CC63F] font-medium">
+                <span className="flex items-center gap-1 text-xs text-brand-green font-medium">
                   <CheckCircle2 size={13} />
                   연결됨
                 </span>
@@ -426,7 +426,7 @@ export default function MyPage() {
                 className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   snsConnected
                     ? 'border border-gray-200 text-gray-700 hover:bg-gray-50'
-                    : 'bg-[#8CC63F] text-white hover:bg-[#7AB535]'
+                    : 'bg-brand-green text-white hover:bg-brand-green-hover'
                 }`}
               >
                 {snsConnected ? '연동 관리' : 'Instagram 연결하기'}
@@ -487,7 +487,7 @@ export default function MyPage() {
             </button>
             <button
               onClick={handlePasswordChange}
-              className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
             >
               변경하기
             </button>
@@ -528,7 +528,7 @@ export default function MyPage() {
             <button
               onClick={handleSnsConnect}
               disabled={snsHandle.trim() === ''}
-              className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               연결
             </button>

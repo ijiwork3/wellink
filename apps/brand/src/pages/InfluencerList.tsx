@@ -255,7 +255,7 @@ export default function InfluencerList() {
             aria-label="인플루언서 검색"
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
           />
         </div>
         <div className="w-full @sm:w-36">
@@ -359,7 +359,7 @@ export default function InfluencerList() {
 
                 {/* 참여율 */}
                 <td className="py-3 px-4 text-sm font-medium">
-                  <span className={inf.engagement >= 4 ? 'text-[#5a8228]' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}>
+                  <span className={inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}>
                     {inf.engagement}%
                   </span>
                 </td>
@@ -377,7 +377,7 @@ export default function InfluencerList() {
 
                 {/* 진성비율 */}
                 <td className="py-3 px-4">
-                  <span className={`text-sm font-medium ${inf.authentic >= 80 ? 'text-[#5a8228]' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                  <span className={`text-sm font-medium ${inf.authentic >= 80 ? 'text-brand-green-text' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
                     {inf.authentic}%
                   </span>
                 </td>
@@ -435,7 +435,7 @@ export default function InfluencerList() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`w-7 h-7 rounded-lg text-xs transition-colors duration-150 ${page === p ? 'bg-[#8CC63F] text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+                className={`w-7 h-7 rounded-lg text-xs transition-colors duration-150 ${page === p ? 'bg-brand-green text-white' : 'hover:bg-gray-100 text-gray-600'}`}
               >
                 {p}
               </button>
@@ -482,7 +482,7 @@ export default function InfluencerList() {
               </div>
               <button
                 onClick={() => setProposalModal(true)}
-                className="shrink-0 bg-[#8CC63F] text-white text-sm px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors duration-150"
+                className="shrink-0 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
               >
                 캠페인에 제안 보내기
               </button>
@@ -521,13 +521,13 @@ export default function InfluencerList() {
                   ))}
                   <div className="bg-gray-50 rounded-xl p-3">
                     <div className="text-xs text-gray-500 mb-1">참여율</div>
-                    <div className={`text-sm font-semibold ${selectedInfluencer.engagement >= 4 ? 'text-[#5a8228]' : selectedInfluencer.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                    <div className={`text-sm font-semibold ${selectedInfluencer.engagement >= 4 ? 'text-brand-green-text' : selectedInfluencer.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                       {selectedInfluencer.engagement}%
                     </div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
                     <div className="text-xs text-gray-500 mb-1">진성 비율</div>
-                    <div className={`text-sm font-semibold ${selectedInfluencer.authentic >= 80 ? 'text-[#5a8228]' : selectedInfluencer.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                    <div className={`text-sm font-semibold ${selectedInfluencer.authentic >= 80 ? 'text-brand-green-text' : selectedInfluencer.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
                       {selectedInfluencer.authentic}%
                     </div>
                   </div>
@@ -554,14 +554,14 @@ export default function InfluencerList() {
                         <span className="text-[11px] font-semibold text-gray-600">브랜드 핏 스코어</span>
                       </div>
                       <div className="flex items-end gap-1 mb-1.5">
-                        <span className={`text-2xl font-bold ${selectedInfluencer.fitScore >= 80 ? 'text-[#8CC63F]' : selectedInfluencer.fitScore >= 60 ? 'text-gray-700' : 'text-gray-500'}`}>
+                        <span className={`text-2xl font-bold ${selectedInfluencer.fitScore >= 80 ? 'text-brand-green' : selectedInfluencer.fitScore >= 60 ? 'text-gray-700' : 'text-gray-500'}`}>
                           {selectedInfluencer.fitScore}
                         </span>
                         <span className="text-xs text-gray-400 mb-1">/100</span>
                       </div>
                       <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
                         <div
-                          className="h-full rounded-full bg-[#8CC63F]"
+                          className="h-full rounded-full bg-brand-green"
                           style={{ width: `${selectedInfluencer.fitScore}%` }}
                         />
                       </div>
@@ -693,7 +693,7 @@ export default function InfluencerList() {
               </button>
               <button
                 onClick={handleProposal}
-                className="flex-1 bg-[#8CC63F] text-white py-2 rounded-xl text-sm hover:bg-[#7AB535] transition-colors duration-150"
+                className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150"
               >
                 제안 보내기
               </button>

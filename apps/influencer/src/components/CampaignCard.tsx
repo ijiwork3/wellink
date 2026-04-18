@@ -84,7 +84,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
         </div>
 
         <button
-          className="w-full py-2 rounded-xl text-sm font-medium text-[#5a8228] border border-[#8CC63F]/30 bg-[#8CC63F]/5 hover:bg-[#8CC63F]/10 transition-all duration-150"
+          className="w-full py-2 rounded-xl text-sm font-medium text-brand-green-text border border-brand-green/30 bg-brand-green/5 hover:bg-brand-green/10 transition-all duration-150"
           onClick={(e) => {
             e.stopPropagation()
             navigate(`/campaigns/${campaign.id}`)

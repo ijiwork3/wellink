@@ -205,7 +205,7 @@ export default function DMManage() {
               <button
                 key={conv.id}
                 onClick={() => handleSelect(conv)}
-                className={`w-full flex items-start gap-3 px-3 py-3 text-left transition-colors border-b border-gray-50 ${selected?.id === conv.id ? 'bg-[#8CC63F]/10 border-l-2 border-l-[#8CC63F]' : 'hover:bg-gray-50'}`}
+                className={`w-full flex items-start gap-3 px-3 py-3 text-left transition-colors border-b border-gray-50 ${selected?.id === conv.id ? 'bg-brand-green/10 border-l-2 border-l-brand-green' : 'hover:bg-gray-50'}`}
               >
                 <div className={`w-9 h-9 rounded-full ${conv.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                   {conv.name[0]}
@@ -276,12 +276,12 @@ export default function DMManage() {
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
                     maxLength={2000}
-                    className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] focus:bg-white transition-colors"
+                    className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green focus:bg-white transition-colors"
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim()}
-                    className="bg-[#8CC63F] text-white px-4 py-2.5 rounded-xl hover:bg-[#7AB535] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="bg-brand-green text-white px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Send size={14} />
                     <span className="text-sm">전송</span>

@@ -188,7 +188,7 @@ export default function Subscription() {
         </div>
         {/* 현재 플랜 뱃지 */}
         {currentPlan ? (
-          <span className="text-xs font-semibold bg-[#8CC63F]/10 text-[#5a8228] px-3 py-1.5 rounded-full border border-[#8CC63F]/20">
+          <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
             현재: {plans.find(p => p.id === currentPlan)?.name ?? currentPlan} 플랜
           </span>
         ) : (
@@ -228,24 +228,24 @@ export default function Subscription() {
 
       {/* QA: 무료 체험 중 배너 */}
       {qa === 'trial' && (
-        <div className="bg-[#8CC63F]/10 border border-[#8CC63F]/30 rounded-xl p-4 space-y-3">
+        <div className="bg-brand-green/10 border border-brand-green/30 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold text-[#5a8228]">현재 Scale 플랜 14일 무료 체험 중입니다.</p>
+              <p className="text-sm font-semibold text-brand-green-text">현재 Scale 플랜 14일 무료 체험 중입니다.</p>
               <span className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full animate-pulse">D-7</span>
             </div>
-            <span className="text-xs font-medium text-[#5a8228] bg-[#8CC63F]/20 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
               체험 중
             </span>
           </div>
           {/* 체험 진행 바 */}
           <div>
-            <div className="flex justify-between text-xs text-[#5a8228]/70 mb-1.5">
+            <div className="flex justify-between text-xs text-brand-green-text/70 mb-1.5">
               <span>시작일</span>
               <span>7일 경과 / 14일</span>
             </div>
-            <div className="h-2 bg-[#8CC63F]/20 rounded-full overflow-hidden">
-              <div className="h-full bg-[#8CC63F] rounded-full" style={{ width: '50%' }} />
+            <div className="h-2 bg-brand-green/20 rounded-full overflow-hidden">
+              <div className="h-full bg-brand-green rounded-full" style={{ width: '50%' }} />
             </div>
           </div>
         </div>
@@ -272,13 +272,13 @@ export default function Subscription() {
             key={plan.id}
             className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
               currentPlan === plan.id
-                ? 'border-2 border-[#8CC63F] shadow-md'
+                ? 'border-2 border-brand-green shadow-md'
                 : 'border border-gray-200'
             }`}
           >
             {currentPlan === plan.id && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-[#8CC63F] text-white text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                <span className="bg-brand-green text-white text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                   현재 플랜
                 </span>
               </div>
@@ -294,7 +294,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
-                  <Check size={15} className="shrink-0 mt-0.5 text-[#8CC63F]" />
+                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" />
                   {f}
                 </li>
               ))}
@@ -305,7 +305,7 @@ export default function Subscription() {
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors duration-150 ${
                 plan.id === currentPlan
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#8CC63F] text-white hover:bg-[#7AB535]'
+                  : 'bg-brand-green text-white hover:bg-brand-green-hover'
               }`}
             >
               {plan.id === currentPlan ? '현재 플랜' : plan.cta}
@@ -317,12 +317,12 @@ export default function Subscription() {
         {plans.filter(p => p.style === 'green').map(plan => (
           <div
             key={plan.id}
-            className={`bg-[#8CC63F] rounded-2xl p-6 flex flex-col relative ${
-              currentPlan === plan.id ? 'ring-2 ring-offset-2 ring-[#8CC63F]' : ''
+            className={`bg-brand-green rounded-2xl p-6 flex flex-col relative ${
+              currentPlan === plan.id ? 'ring-2 ring-offset-2 ring-brand-green' : ''
             }`}
           >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-white text-[#8CC63F] text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+              <span className="bg-white text-brand-green text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                 {currentPlan === plan.id ? '현재 플랜' : plan.tag}
               </span>
             </div>
@@ -348,7 +348,7 @@ export default function Subscription() {
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors duration-150 ${
                 plan.id === currentPlan
                   ? 'bg-white/30 text-white/60 cursor-not-allowed'
-                  : 'bg-white text-[#8CC63F] hover:bg-white/90'
+                  : 'bg-white text-brand-green hover:bg-white/90'
               }`}
             >
               {plan.id === currentPlan ? '현재 플랜' : plan.cta}
@@ -381,7 +381,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
-                  <Check size={15} className="shrink-0 mt-0.5 text-[#8CC63F]" />
+                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" />
                   {f}
                 </li>
               ))}
@@ -430,7 +430,7 @@ export default function Subscription() {
             </div>
             <button
               onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
-              className="text-xs bg-[#8CC63F] text-white px-3 py-1.5 rounded-xl hover:bg-[#7AB535] transition-colors"
+              className="text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors"
             >
               등록하기
             </button>
@@ -470,7 +470,7 @@ export default function Subscription() {
                   <td className="py-3 px-5 text-sm text-gray-900">{p.amount}</td>
                   <td className="py-3 px-5 text-sm text-gray-600">{fmtDate(p.date)}</td>
                   <td className="py-3 px-5">
-                    <span className="text-xs bg-[#8CC63F]/10 text-[#5a8228] px-2 py-0.5 rounded-full font-medium">{p.status}</span>
+                    <span className="text-xs bg-brand-green/10 text-brand-green-text px-2 py-0.5 rounded-full font-medium">{p.status}</span>
                   </td>
                 </tr>
               ))}
@@ -501,7 +501,7 @@ export default function Subscription() {
           </div>
           <button
             onClick={() => setInfiniteModal(false)}
-            className="w-full bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#7AB535] transition-colors duration-150"
+            className="w-full bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150"
           >
             확인
           </button>
@@ -512,7 +512,7 @@ export default function Subscription() {
       <Modal open={!!confirmModal} onClose={handleCloseConfirmModal} title="플랜 변경">
         {confirmed ? (
           <div className="text-center py-6">
-            <div className="w-12 h-12 bg-[#8CC63F] rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-3">
               <Check size={20} className="text-white" />
             </div>
             <p className="text-sm font-semibold text-gray-900">플랜이 변경되었습니다!</p>
@@ -563,7 +563,7 @@ export default function Subscription() {
               <button
                 onClick={handleConfirm}
                 disabled={confirmed}
-                className="flex-1 bg-[#8CC63F] text-white py-2 rounded-xl text-sm hover:bg-[#7AB535] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
               >확인</button>
             </div>
           </div>

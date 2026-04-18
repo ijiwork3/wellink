@@ -213,7 +213,7 @@ export default function InfluencerManage() {
           <p className="text-xs text-gray-300 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
           <button
             onClick={() => navigate('/influencers/list')}
-            className="text-sm bg-[#8CC63F] text-white px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors"
+            className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             인플루언서 찾아보기
           </button>
@@ -255,7 +255,7 @@ export default function InfluencerManage() {
             key={tab}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm transition-all duration-150 ${
               activeTab === tab
-                ? 'bg-[#8CC63F] text-white font-medium'
+                ? 'bg-brand-green text-white font-medium'
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
             }`}
           >
@@ -303,7 +303,7 @@ export default function InfluencerManage() {
           <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
           <button
             onClick={() => navigate('/influencers/list')}
-            className="inline-flex items-center gap-1.5 bg-[#8CC63F] text-white text-sm px-4 py-2 rounded-xl hover:bg-[#7AB535] transition-colors duration-150"
+            className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
           >
             인플루언서 찾아보기
           </button>
@@ -348,7 +348,7 @@ export default function InfluencerManage() {
                 </div>
                 <div>
                   <span className="text-xs text-gray-400">참여율</span>
-                  <p className={`font-semibold ${inf.engagement >= 4 ? 'text-[#5a8228]' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{inf.engagement}%</p>
+                  <p className={`font-semibold ${inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{inf.engagement}%</p>
                 </div>
                 <div>
                   <span className="text-xs text-gray-400">핏 스코어</span>
@@ -363,7 +363,7 @@ export default function InfluencerManage() {
                 {inf.groups.map(g => (
                   <span
                     key={g}
-                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium bg-[#8CC63F]/10 text-[#8CC63F]"
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium bg-brand-green/10 text-brand-green"
                   >
                     {g}
                     <button
@@ -431,7 +431,7 @@ export default function InfluencerManage() {
             <button
               onClick={createGroup}
               disabled={!newGroupName.trim()}
-              className="flex-1 bg-[#8CC63F] text-white py-2 rounded-xl text-sm hover:bg-[#7AB535] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+              className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
             >
               생성
             </button>

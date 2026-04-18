@@ -8,7 +8,7 @@ import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Signup from './pages/Signup'
 import { MockupShell, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider } from '@wellink/ui'
+import { ToastProvider, BRAND } from '@wellink/ui'
 
 const INF_TAB_MAP: Record<string, string> = {
   home: '/home',
@@ -183,7 +183,7 @@ function AppRoutes() {
       statusItems={STATUS_ITEMS}
       onNavigate={({ path }) => path && navigate(path)}
       onReset={() => navigate('/home')}
-      accentColor="#8CC63F"
+      accentColor={BRAND.green}
       defaultDevice="desktop"
       containerClassName="bg-white"
     >

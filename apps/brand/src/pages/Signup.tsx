@@ -4,7 +4,7 @@ import { BRAND, useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 const inputBase =
-  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150'
+  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
 
 const FILLED_FORM = {
   name: '김광고',
@@ -98,7 +98,7 @@ export default function Signup() {
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
             <h1 className="text-2xl font-black" style={{ color: BRAND.green }}>WELLINK</h1>
-            <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
+            <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
           </div>
           <p className="text-sm text-gray-500">광고주 포털 회원가입</p>
         </div>
@@ -197,10 +197,10 @@ export default function Signup() {
                 type="checkbox"
                 checked={agreedTerms}
                 onChange={e => setAgreedTerms(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 accent-[#8CC63F] cursor-pointer"
+                className="w-4 h-4 rounded border-gray-300 accent-brand-green cursor-pointer"
               />
               <span className="text-sm text-gray-600">
-                <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-[#8CC63F] transition-colors">서비스 이용약관</button>
+                <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-brand-green transition-colors">서비스 이용약관</button>
                 {' '}동의{' '}
                 <span className="text-red-400 text-xs">(필수)</span>
               </span>
@@ -210,10 +210,10 @@ export default function Signup() {
                 type="checkbox"
                 checked={agreedPrivacy}
                 onChange={e => setAgreedPrivacy(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 accent-[#8CC63F] cursor-pointer"
+                className="w-4 h-4 rounded border-gray-300 accent-brand-green cursor-pointer"
               />
               <span className="text-sm text-gray-600">
-                <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-[#8CC63F] transition-colors">개인정보처리방침</button>
+                <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-brand-green transition-colors">개인정보처리방침</button>
                 {' '}동의{' '}
                 <span className="text-red-400 text-xs">(필수)</span>
               </span>

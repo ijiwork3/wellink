@@ -13,7 +13,7 @@ const activityFields = [
 ]
 
 const inputClass =
-  'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150'
+  'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
 
 export default function Profile() {
   const qa = useQAMode()
@@ -144,13 +144,13 @@ export default function Profile() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#8CC63F]/30 to-[#8CC63F]/10 flex items-center justify-center shrink-0">
-                <User size={28} className="text-[#8CC63F]" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-green/30 to-brand-green/10 flex items-center justify-center shrink-0">
+                <User size={28} className="text-brand-green" />
               </div>
               <button
                 onClick={() => showToast('프로필 사진 변경 기능은 준비 중이에요', 'info')}
                 aria-label="프로필 사진 변경"
-                className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#8CC63F] rounded-full flex items-center justify-center hover:bg-[#7AB535] transition-colors"
+                className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-brand-green rounded-full flex items-center justify-center hover:bg-brand-green-hover transition-colors"
               >
                 <Camera size={10} className="text-white" />
               </button>
@@ -162,7 +162,7 @@ export default function Profile() {
           </div>
           <div className="grid grid-cols-3 gap-2 @sm:gap-3 mt-4">
             {[
-              { icon: <TrendingUp size={13} className="text-[#8CC63F]" />, label: '팔로워', value: '8,700' },
+              { icon: <TrendingUp size={13} className="text-brand-green" />, label: '팔로워', value: '8,700' },
               { icon: <Star size={13} className="text-amber-500" />, label: '평균 참여율', value: '4.1%' },
               { icon: <Megaphone size={13} className="text-gray-500" />, label: '완료 캠페인', value: '3건' },
             ].map(stat => (
@@ -178,7 +178,7 @@ export default function Profile() {
         {/* 편집 모드 뱃지 */}
         {isEditing && (
           <div className="flex items-center gap-2">
-            <span className="bg-[#8CC63F]/10 text-[#5a8228] text-xs px-3 py-1 rounded-full font-medium">편집 모드</span>
+            <span className="bg-brand-green/10 text-brand-green-text text-xs px-3 py-1 rounded-full font-medium">편집 모드</span>
             <button
               onClick={handleCancelEdit}
               className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
@@ -225,7 +225,7 @@ export default function Profile() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호</label>
               <button
                 onClick={() => setPwModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 hover:bg-[#8CC63F]/5"
+                className="px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 hover:bg-brand-green/5"
                 style={{ borderColor: BRAND.green, color: BRAND.green }}
               >
                 비밀번호 변경하기
@@ -243,7 +243,7 @@ export default function Profile() {
                   onChange={(e) => setInstagram(e.target.value.replace(/^@/, ''))}
                   placeholder="아이디 입력"
                   aria-label="인스타그램 아이디"
-                  className="flex-1 border border-gray-200 rounded-r-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+                  className="flex-1 border border-gray-200 rounded-r-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
                 />
               </div>
             </div>

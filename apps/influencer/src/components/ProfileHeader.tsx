@@ -22,7 +22,7 @@ export default function ProfileHeader() {
           <div className="flex-1 min-w-0">
             <div className={`flex items-center gap-2 ${isMobile ? 'mb-0.5' : 'mb-1'}`}>
               <span className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900`}>김찬기님</span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#8CC63F]/10 text-[#8CC63F]">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-green/10 text-brand-green">
                 인플루언서
               </span>
             </div>

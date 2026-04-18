@@ -59,7 +59,7 @@ function StyledDateInput({ label, value, min, max, onChange }: { label: string; 
           min={min}
           max={max}
           onChange={e => onChange(e.target.value)}
-          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150 bg-white cursor-pointer"
+          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150 bg-white cursor-pointer"
         />
       </div>
     </div>
@@ -253,9 +253,9 @@ export default function CampaignNew() {
               >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
                   isDone
-                    ? 'bg-[#8CC63F] text-white'
+                    ? 'bg-brand-green text-white'
                     : isActive
-                    ? 'bg-[#8CC63F] text-white ring-4 ring-[#8CC63F]/20'
+                    ? 'bg-brand-green text-white ring-4 ring-brand-green/20'
                     : 'bg-gray-100 text-gray-400'
                 }`}>
                   {isDone ? <Check size={14} /> : num}
@@ -271,7 +271,7 @@ export default function CampaignNew() {
                 </span>
               </button>
               {i < stepLabels.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-1 mt-[-12px] transition-all duration-300 ${num < step ? 'bg-[#8CC63F]' : 'bg-gray-100'}`} />
+                <div className={`flex-1 h-0.5 mx-1 mt-[-12px] transition-all duration-300 ${num < step ? 'bg-brand-green' : 'bg-gray-100'}`} />
               )}
             </div>
           )
@@ -302,7 +302,7 @@ export default function CampaignNew() {
               value={s1.name}
               onChange={e => setS1(p => ({ ...p, name: e.target.value }))}
               placeholder="예) 봄 시즌 웰니스 캠페인"
-              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
             />
           </div>
 
@@ -318,7 +318,7 @@ export default function CampaignNew() {
                     onClick={() => setS1(p => ({ ...p, campaignType: type }))}
                     className={`flex-1 py-2.5 text-sm font-medium transition-all duration-150 ${
                       s1.campaignType === type
-                        ? 'bg-[#8CC63F] text-white'
+                        ? 'bg-brand-green text-white'
                         : 'bg-white text-gray-600 hover:bg-gray-50'
                     }`}
                   >
@@ -337,7 +337,7 @@ export default function CampaignNew() {
                     onClick={() => toggleChannel(ch)}
                     className={`text-sm px-3 py-1.5 rounded-xl border transition-all duration-150 ${
                       s1.channels.includes(ch)
-                        ? 'bg-[#8CC63F] text-white border-[#8CC63F]'
+                        ? 'bg-brand-green text-white border-brand-green'
                         : 'border-gray-200 text-gray-600 hover:border-gray-400'
                     }`}
                   >
@@ -408,7 +408,7 @@ export default function CampaignNew() {
                 min="1"
                 max="9999"
                 step="1"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
               />
             </div>
             <div>
@@ -421,7 +421,7 @@ export default function CampaignNew() {
                     onClick={() => setS2(p => ({ ...p, supply: opt }))}
                     className={`flex-1 py-2.5 text-sm rounded-xl border transition-all duration-150 ${
                       s2.supply === opt
-                        ? 'bg-[#8CC63F] text-white border-[#8CC63F]'
+                        ? 'bg-brand-green text-white border-brand-green'
                         : 'border-gray-200 text-gray-600 hover:border-gray-400'
                     }`}
                   >
@@ -445,7 +445,7 @@ export default function CampaignNew() {
                 setS2(p => ({ ...p, budget: raw }))
               }}
               placeholder="예) 2,000,000"
-              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
             />
           </div>
 
@@ -459,7 +459,7 @@ export default function CampaignNew() {
                 value={formatNumber(s2.minUnit)}
                 onChange={e => setS2(p => ({ ...p, minUnit: parseNumber(e.target.value) }))}
                 placeholder="예) 50,000"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
               />
             </div>
             <div>
@@ -470,7 +470,7 @@ export default function CampaignNew() {
                 value={formatNumber(s2.maxUnit)}
                 onChange={e => setS2(p => ({ ...p, maxUnit: parseNumber(e.target.value) }))}
                 placeholder="예) 300,000"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
               />
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function CampaignNew() {
               placeholder="반드시 언급해야 할 제품 특징, 메시지 등을 입력하세요."
               rows={4}
               maxLength={500}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
             />
             <div className="text-right text-xs text-gray-400 mt-0.5">{s3.required.length}/500</div>
           </div>
@@ -528,7 +528,7 @@ export default function CampaignNew() {
               placeholder="참고할 콘텐츠 스타일, 레퍼런스 URL, 톤앤매너 등을 자유롭게 작성해주세요."
               rows={4}
               maxLength={300}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150"
+              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
             />
             <div className="text-right text-xs text-gray-400 mt-0.5">{s3.contentRef.length}/300</div>
           </div>
@@ -544,7 +544,7 @@ export default function CampaignNew() {
                     name="snsExternalUse"
                     checked={s3.snsExternalUse === opt}
                     onChange={() => setS3(p => ({ ...p, snsExternalUse: opt }))}
-                    className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-[#8CC63F]/30"
+                    className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-brand-green/30"
                   />
                   <span className="text-sm text-gray-700">{opt}</span>
                 </label>
@@ -579,8 +579,8 @@ export default function CampaignNew() {
                   }}
                 />
                 {selected.has(inf.id) && (
-                  <div className="absolute inset-0 rounded-xl bg-[#8CC63F]/5 pointer-events-none flex items-center justify-center">
-                    <div className="absolute top-3 right-3 w-6 h-6 bg-[#8CC63F] rounded-full flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-xl bg-brand-green/5 pointer-events-none flex items-center justify-center">
+                    <div className="absolute top-3 right-3 w-6 h-6 bg-brand-green rounded-full flex items-center justify-center">
                       <Check size={12} className="text-white" />
                     </div>
                   </div>
@@ -688,7 +688,7 @@ export default function CampaignNew() {
         {step < TOTAL_STEPS ? (
           <button
             onClick={handleNext}
-            className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors duration-150"
+            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150"
           >
             다음
           </button>
@@ -696,7 +696,7 @@ export default function CampaignNew() {
           <button
             onClick={() => { if (!isPublishing) { setIsPublishing(true); setCompletedModal(true) } }}
             disabled={isPublishing}
-            className="flex-1 bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#7AB535] transition-colors duration-150 disabled:opacity-60"
+            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60"
           >
             캠페인 발행하기
           </button>
@@ -706,7 +706,7 @@ export default function CampaignNew() {
       {/* 완료 모달 */}
       <Modal open={completedModal} onClose={() => { setCompletedModal(false); setIsPublishing(false) }} size="sm">
         <div className="text-center py-4">
-          <div className="w-14 h-14 bg-[#8CC63F] rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-4">
             <Check size={24} className="text-white" />
           </div>
           <h3 className="text-base font-bold text-gray-900 mb-2">캠페인이 발행되었습니다!</h3>
@@ -718,7 +718,7 @@ export default function CampaignNew() {
                 showToast('캠페인이 발행되었습니다.', 'success')
                 navigate('/influencers/manage')
               }}
-              className="w-full bg-[#8CC63F] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#7AB535] transition-colors duration-150"
+              className="w-full bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150"
             >
               인플루언서 관리로 이동
             </button>

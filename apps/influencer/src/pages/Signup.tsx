@@ -7,7 +7,7 @@ import { useQAMode } from '@wellink/ui'
 const activityFields = ['피트니스', '요가', '영양·식단', '뷰티', '라이프스타일', '스포츠', '아웃도어', '멘탈헬스']
 
 const inputBase =
-  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#8CC63F]/30 focus:border-[#8CC63F] transition-all duration-150'
+  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
 
 const FILLED_FORM = {
   name: '김인플루', email: 'influencer@wellink.co.kr', password: 'pass1234!',
@@ -195,7 +195,7 @@ export default function Signup() {
                   showToast('인증번호가 발송됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  phoneVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
+                  phoneVerified ? 'bg-brand-green/10 text-brand-green-text' : 'text-white hover:opacity-90'
                 }`}
                 style={!phoneVerified ? { backgroundColor: BRAND.green } : {}}
               >
@@ -226,7 +226,7 @@ export default function Signup() {
                   showToast('인스타그램 연동이 완료됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  instaVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
+                  instaVerified ? 'bg-brand-green/10 text-brand-green-text' : 'text-white hover:opacity-90'
                 }`}
                 style={!instaVerified ? { backgroundColor: BRAND.green } : {}}
               >
@@ -278,10 +278,10 @@ export default function Signup() {
       {/* 토스트 */}
       {toast && (
         <div
-          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-[#8CC63F]/30 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
+          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-brand-green/30 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
           style={{ animation: 'slideInRight 0.2s ease-out' }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F] flex-shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
           <span className="text-sm font-medium text-gray-900">{toast}</span>
         </div>
       )}
