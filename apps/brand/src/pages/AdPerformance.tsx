@@ -77,16 +77,18 @@ const adFormatPerf = [
   { format: '스토리 광고', impressions: 88000,  clicks: 1230, ctr: 1.40, cpm: 6800 },
 ]
 
+// data-policy-v1 §광고성과: ROAS ≥3.0x 녹색 / 1.5~3.0x amber / <1.5x 빨강
 function getRoasColor(roas: number): string {
-  if (roas >= 4.0) return 'text-[#8CC63F]'
-  if (roas >= 2.0) return 'text-amber-600'
+  if (roas >= 3.0) return 'text-[#8CC63F]'
+  if (roas >= 1.5) return 'text-amber-600'
   if (roas > 0)   return 'text-red-500'
   return 'text-gray-400'
 }
 
+// data-policy-v1 §광고성과: CTR ≥2.0% 녹색 / 1.0~2.0% 기본 / <1.0% 빨강
 function getCtrColor(ctr: number): string {
-  if (ctr >= 2.5) return 'text-[#8CC63F]'
-  if (ctr > 0 && ctr < 1.5) return 'text-red-500'
+  if (ctr >= 2.0) return 'text-[#8CC63F]'
+  if (ctr > 0 && ctr < 1.0) return 'text-red-500'
   return 'text-gray-900'
 }
 
@@ -102,7 +104,8 @@ function getObjectiveBadge(obj: string) {
 
 function RoasBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? (value / max) * 100 : 0
-  const color = value >= 4.0 ? '#8CC63F' : value >= 2.0 ? '#F59E0B' : value > 0 ? '#EF4444' : '#E5E7EB'
+  // data-policy-v1: ROAS ≥3.0 녹색 / ≥1.5 amber / >0 빨강
+  const color = value >= 3.0 ? '#8CC63F' : value >= 1.5 ? '#F59E0B' : value > 0 ? '#EF4444' : '#E5E7EB'
   return (
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">

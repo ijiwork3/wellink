@@ -256,7 +256,7 @@ export default function CampaignDetail() {
         </div>
       </div>
 
-      {/* 신청 확인 모달 */}
+      {/* 신청 확인 모달 — 정책서 §신청 모달: 자기소개 입력 필드 추후 추가 예정 (API 연동 시) */}
       <Modal open={applyModalOpen} onClose={() => setApplyModalOpen(false)} title="캠페인 신청">
         <div className="space-y-4">
           <p className="text-sm text-gray-600">

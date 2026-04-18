@@ -21,6 +21,8 @@ const campaigns = [
   { id: 2, name: '비건 신제품 론칭' },
 ]
 
+// 카테고리 옵션 — 데이터 정책 v1 §2-4 (결정 필요 항목, 확정 시 업데이트)
+// 현재: 웰링크 앱 내 실제 사용 카테고리 기준
 const categoryOptions = [
   { label: '카테고리', value: '' },
   { label: '피트니스', value: '피트니스' },
@@ -31,11 +33,12 @@ const categoryOptions = [
   { label: '크로스핏', value: '크로스핏' },
 ]
 
+// 핏스코어 — 데이터 정책 v1 §2-1: 85+ 우수(green) / 70~84 보통(amber) / 70미만 개선필요(gray)
 const fitScoreOptions = [
   { label: '핏 스코어', value: '' },
-  { label: '85점 이상', value: '85+' },
-  { label: '70점 이상', value: '70+' },
-  { label: '70점 미만', value: 'under70' },
+  { label: '85점 이상 (우수)', value: '85+' },
+  { label: '70점 이상 (보통)', value: '70+' },
+  { label: '70점 미만 (개선필요)', value: 'under70' },
 ]
 
 // 참여율 필터 — 데이터 정책 v1 §2-3: 4%+ 높음, 2~4% 보통, 2% 미만 낮음

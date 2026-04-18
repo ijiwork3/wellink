@@ -19,6 +19,7 @@ const VIEW_MODE_TO_PERIOD: Record<ViewMode, DatePeriod> = {
 }
 
 // 뷰 모드별 KPI 더미 데이터
+// data-policy-v1 §4-3: 바이럴 계수(viral)는 배수(x) 단위 표시. reach/shares/saves는 fmtNumber() 적용
 const kpiByMode: Record<ViewMode, { reach: number; shares: number; saves: number; viral: number }> = {
   daily:   { reach: 4200,   shares: 82,    saves: 312,   viral: 2.1 },
   weekly:  { reach: 18700,  shares: 410,   saves: 1820,  viral: 2.3 },
@@ -332,6 +333,7 @@ export default function ViralMetrics() {
                           className="h-full rounded-full"
                           style={{
                             width: `${item.viralScore}%`,
+                            // 바이럴 스코어: 80+ 녹색 / 50~79 amber / 49이하 gray
                             backgroundColor: item.viralScore >= 80 ? '#8CC63F' : item.viralScore >= 50 ? '#F59E0B' : '#E5E7EB'
                           }}
                         />

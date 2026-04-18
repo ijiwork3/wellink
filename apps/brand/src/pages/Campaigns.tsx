@@ -281,6 +281,7 @@ export default function Campaigns() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2">
                         <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
                           <div
                             className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-[#8CC63F]'}`}
                             style={{ width: `${progress}%` }}
@@ -367,6 +368,7 @@ export default function Campaigns() {
                     <span>{progress}%</span>
                   </div>
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
                     <div className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-[#8CC63F]'}`} style={{ width: `${progress}%` }} />
                   </div>
                 </div>
