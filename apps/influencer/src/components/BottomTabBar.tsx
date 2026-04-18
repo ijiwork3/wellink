@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Compass, LayoutDashboard, Heart, UserCircle, Link2 } from 'lucide-react'
+import { BRAND } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 const tabs = [

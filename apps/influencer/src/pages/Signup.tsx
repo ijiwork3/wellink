@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
-import { CustomCheckbox } from '@wellink/ui'
+import { BRAND, CustomCheckbox } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 
 const activityFields = ['피트니스', '요가', '영양·식단', '뷰티', '라이프스타일', '스포츠', '아웃도어', '멘탈헬스']

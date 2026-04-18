@@ -4,7 +4,7 @@ import { Search, X, Layers, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { campaigns } from '../data/campaigns'
-import { useQAMode } from '@wellink/ui'
+import { BRAND, useQAMode } from '@wellink/ui'
 
 const categories = ['전체', '뷰티/패션', '맛집/푸드', '어필/스포츠']
 

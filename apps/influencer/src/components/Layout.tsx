@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
+import { BRAND } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 interface LayoutProps {
