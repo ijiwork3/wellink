@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@wellink/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@types/react-router-dom": "^5.3.3",
     "lucide-react": "^1.7.0",
