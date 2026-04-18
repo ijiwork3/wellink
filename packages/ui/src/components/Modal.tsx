@@ -1,3 +1,11 @@
+/**
+ * Modal — 공통 모달
+ * - open / onClose 제어
+ * - 배경 클릭·Escape 키로 닫힘 (closeOnBackdrop 기본 true)
+ * - size: sm(384px) / md(512px) / lg(672px)
+ * - body scroll lock + 최대 높이 90vh 내 내부 스크롤
+ */
+
 import { X } from 'lucide-react'
 import { useEffect, type ReactNode } from 'react'
 

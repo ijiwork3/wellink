@@ -1,3 +1,9 @@
+/**
+ * KPICard — 핵심 지표 카드
+ * - trend: 양수 = 상승(초록), 음수 = 하락(빨강)
+ * - positive: false 시 하락이 좋은 지표 (비용·반려율 등) — 컬러 반전
+ */
+
 import { useState } from 'react'
 import { TrendingUp, TrendingDown, Info } from 'lucide-react'
 

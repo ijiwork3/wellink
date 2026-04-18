@@ -2,7 +2,7 @@
  * TagInput — 태그 입력 컴포넌트
  * Enter 또는 , 로 태그 추가
  * addHash: true 시 # 자동 prefix
- * tagColor: 'blue' | 'red' | 'gray'
+ * tagColor: 'blue' | 'red' | 'gray' | 'brand' (웰링크 그린)
  */
 
 import { useState, type KeyboardEvent } from 'react'
