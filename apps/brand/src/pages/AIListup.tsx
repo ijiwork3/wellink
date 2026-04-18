@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Sparkles, ArrowRight, Loader2, Check } from 'lucide-react'
 import { CustomSelect } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
+import { ErrorState } from '@wellink/ui'
 import { avatarColors, formatFollowers } from '../utils/influencerUtils'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const recommendedInfluencers = [

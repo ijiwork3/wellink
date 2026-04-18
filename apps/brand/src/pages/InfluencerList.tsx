@@ -3,9 +3,9 @@ import { Search, ChevronLeft, ChevronRight, CheckCircle, Heart, Sparkles, Target
 import { CustomSelect } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
+import { ErrorState } from '@wellink/ui'
 import { avatarColors, formatFollowers, fitScoreBadge, fitScoreLabel } from '../utils/influencerUtils'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const influencers = [

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Megaphone, Search, X, BarChart2, Users, Clock, TrendingUp, ChevronRight, LayoutGrid, List } from 'lucide-react'
-import ErrorState from '../components/ErrorState'
+import { ErrorState } from '@wellink/ui'
 import { StatusBadge } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 import { getDDay as getDDayUtil } from '../utils/getDDay'
 
 

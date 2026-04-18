@@ -13,7 +13,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
 }
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 const tabs = ['광고주 정보', '구독 관리'] as const
 

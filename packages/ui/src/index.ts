@@ -4,6 +4,7 @@
  * 사용법:
  *   import { StatusBadge, KPICard, Modal } from '@wellink/ui'
  *   import { useToast, ToastProvider } from '@wellink/ui'
+ *   import { useQAMode } from '@wellink/ui'
  */
 
 // 배지
@@ -26,3 +27,7 @@ export { default as Modal }          from './components/Modal'
 export { default as Dropdown }       from './components/Dropdown'
 export { default as SNSPanel }       from './components/SNSPanel'
 export { ToastProvider, useToast }   from './components/Toast'
+export { default as ErrorState }     from './components/ErrorState'
+
+// 유틸 훅
+export { useQAMode } from './utils/useQAMode'

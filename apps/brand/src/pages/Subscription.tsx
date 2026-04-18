@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw } from 'lucide-react'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 const plans = [

@@ -3,9 +3,9 @@ import { Heart, Plus, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
+import { ErrorState } from '@wellink/ui'
 import { avatarColors, formatFollowers, fitScoreBadge } from '../utils/influencerUtils'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 interface Influencer {
   id: number

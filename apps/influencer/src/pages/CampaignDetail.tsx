@@ -5,7 +5,7 @@ import Layout from '../components/Layout'
 import { Modal } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { campaigns } from '../data/campaigns'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 export default function CampaignDetail() {

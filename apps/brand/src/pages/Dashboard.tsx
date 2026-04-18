@@ -6,8 +6,8 @@ import {
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock
 } from 'lucide-react'
 import { StatusBadge } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
-import { useQAMode } from '../utils/useQAMode'
+import { ErrorState } from '@wellink/ui'
+import { useQAMode } from '@wellink/ui'
 import { getDDay } from '../utils/getDDay'
 
 /* ── Brand tokens ── */

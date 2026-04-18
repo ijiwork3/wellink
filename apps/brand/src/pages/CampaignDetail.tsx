@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Info } from 'lucide-react'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
-import { useQAMode } from '../utils/useQAMode'
+import { ErrorState } from '@wellink/ui'
+import { useQAMode } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ─── 더미 데이터 ─── */

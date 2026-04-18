@@ -6,7 +6,7 @@ import { CustomCheckbox } from '@wellink/ui'
 import { Toggle } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 const activityFields = [
   '헬스', '필라테스', '요가', '크로스핏', '수영', '스포츠', '기타', '아웃도어(배낭여행·트레킹)',

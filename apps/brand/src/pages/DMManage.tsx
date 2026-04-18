@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Send, Search, MessageSquare, ArrowLeft } from 'lucide-react'
-import ErrorState from '../components/ErrorState'
-import { useQAMode } from '../utils/useQAMode'
+import { ErrorState } from '@wellink/ui'
+import { useQAMode } from '@wellink/ui'
 
 const conversations = [
   {

@@ -4,7 +4,7 @@ import { Link2, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 interface Platform {
   id: string

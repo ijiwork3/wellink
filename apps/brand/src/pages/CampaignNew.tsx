@@ -7,7 +7,7 @@ import { CustomSelect } from '@wellink/ui'
 import { TagInput } from '@wellink/ui'
 import { FileUpload } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const aiInfluencers = [

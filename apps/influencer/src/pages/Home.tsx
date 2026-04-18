@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Clock, Users, ChevronRight, Megaphone, Bookmark, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 interface BookmarkedCampaign {

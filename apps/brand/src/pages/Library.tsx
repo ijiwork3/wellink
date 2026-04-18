@@ -17,8 +17,8 @@ import {
 } from 'lucide-react'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
-import { useQAMode } from '../utils/useQAMode'
+import { ErrorState } from '@wellink/ui'
+import { useQAMode } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ───── Mock Data ───── */

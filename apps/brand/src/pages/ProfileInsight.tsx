@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
 import { KPICard } from '@wellink/ui'
-import ErrorState from '../components/ErrorState'
-import { useQAMode } from '../utils/useQAMode'
+import { ErrorState } from '@wellink/ui'
+import { useQAMode } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 

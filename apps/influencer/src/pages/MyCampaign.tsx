@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, ChevronRight, Upload, X, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal } from '@wellink/ui'
-import { useQAMode } from '../utils/useQAMode'
+import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 type CampaignStatus = '신청완료' | '진행중' | '게시완료' | '포인트지급'
