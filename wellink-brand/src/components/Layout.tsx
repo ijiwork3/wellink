@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
+import InstagramGlobalBanner from './InstagramGlobalBanner'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 export default function Layout() {
@@ -41,7 +42,10 @@ export default function Layout() {
       {!isMobile && <Sidebar />}
 
       <div className="flex-1 overflow-y-auto min-w-0">
-        <main className={`max-w-[1080px] ${isMobile ? 'px-4 py-4 pt-16' : 'px-8 py-7'}`}>
+        <div className={isMobile ? 'pt-12' : ''}>
+          <InstagramGlobalBanner />
+        </div>
+        <main className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>
