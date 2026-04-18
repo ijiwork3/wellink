@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, Search, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal } from '@wellink/ui'
+import { BRAND, Modal } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { campaigns } from '../data/campaigns'
 import { useQAMode } from '@wellink/ui'
@@ -86,7 +86,7 @@ export default function CampaignDetail() {
           <button
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             <RefreshCw size={14} />
             다시 시도
@@ -108,7 +108,7 @@ export default function CampaignDetail() {
           <button
             onClick={() => navigate('/campaigns/browse')}
             className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             캠페인 목록으로
           </button>
@@ -181,14 +181,14 @@ export default function CampaignDetail() {
             {/* 기간 정보 */}
             <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 mb-5">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50">
-                <Calendar size={18} style={{ color: '#8CC63F' }} />
+                <Calendar size={18} style={{ color: BRAND.green }} />
                 <div>
                   <p className="text-xs text-gray-500">신청 마감</p>
                   <p className="text-sm font-semibold text-gray-900">{campaign.applyEnd}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50">
-                <Clock size={18} style={{ color: '#8CC63F' }} />
+                <Clock size={18} style={{ color: BRAND.green }} />
                 <div>
                   <p className="text-xs text-gray-500">게시 마감</p>
                   <p className="text-sm font-semibold text-gray-900">{campaign.postEnd}</p>
@@ -198,7 +198,7 @@ export default function CampaignDetail() {
 
             {/* 채널 */}
             <div className="flex items-center gap-3 mb-5 p-4 rounded-xl bg-gray-50">
-              <Users size={18} style={{ color: '#8CC63F' }} />
+              <Users size={18} style={{ color: BRAND.green }} />
               <div>
                 <p className="text-xs text-gray-500">모집 채널</p>
                 <p className="text-sm font-semibold text-gray-900">{campaign.channel}</p>
@@ -223,7 +223,7 @@ export default function CampaignDetail() {
                 <ul className="space-y-2">
                   {campaign.conditions.map((cond, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                      <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" style={{ color: '#8CC63F' }} />
+                      <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" style={{ color: BRAND.green }} />
                       {cond}
                     </li>
                   ))}
@@ -247,7 +247,7 @@ export default function CampaignDetail() {
                 className={`w-full py-3 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 ${
                   campaign.status === '마감임박' ? 'animate-pulse' : ''
                 }`}
-                style={{ backgroundColor: '#8CC63F' }}
+                style={{ backgroundColor: BRAND.green }}
               >
                 신청하기
               </button>
@@ -275,7 +275,7 @@ export default function CampaignDetail() {
             <button
               onClick={handleApply}
               className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-              style={{ backgroundColor: '#8CC63F' }}
+              style={{ backgroundColor: BRAND.green }}
             >
               신청하기
             </button>
@@ -294,7 +294,7 @@ export default function CampaignDetail() {
               className="w-20 h-20 rounded-full flex items-center justify-center"
               style={{ backgroundColor: '#f0fce8' }}
             >
-              <CheckCircle2 size={40} style={{ color: '#8CC63F' }} />
+              <CheckCircle2 size={40} style={{ color: BRAND.green }} />
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-gray-900">신청 완료!</p>
@@ -303,7 +303,7 @@ export default function CampaignDetail() {
             <button
               onClick={() => { setSuccessModal(false); navigate('/campaigns/my') }}
               className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-              style={{ backgroundColor: '#8CC63F' }}
+              style={{ backgroundColor: BRAND.green }}
             >
               나의 캠페인 확인
             </button>

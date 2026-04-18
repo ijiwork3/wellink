@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Calendar } from 'lucide-react'
-import { StatusBadge, PlatformBadge } from '@wellink/ui'
+import { StatusBadge, PlatformBadge, fmtDate } from '@wellink/ui'
 import type { Campaign } from '../data/campaigns'
 
 // 카드 이미지 영역 파스텔 배경색 — 카테고리별
@@ -80,7 +80,7 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
 
         <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
           <Calendar size={12} />
-          <span>신청 마감 <span className="font-medium text-gray-600">{campaign.applyEnd}</span></span>
+          <span>신청 마감 <span className="font-medium text-gray-600">{fmtDate(campaign.applyEnd)}</span></span>
         </div>
 
         <button

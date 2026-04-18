@@ -5,6 +5,7 @@ import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ─── 더미 데이터 ─── */
@@ -60,7 +61,7 @@ const selectedApplicantsData = [
   { id: 202, name: '김가애', followers: '18.9K', engagement: 4.2, fitScore: 88, selectedAt: '2026-04-22', avatar: 'bg-yellow-200' },
 ]
 
-// 등록 콘텐츠 더미
+// 등록 콘텐츠 더미 — reach는 숫자로 저장, 표시 시 fmtNumber() 사용
 const registeredContents = [
   { id: 1, thumbnail: 'bg-gradient-to-br from-pink-100 to-pink-200', influencer: '이창민', type: '릴스', reach: 12400, likes: 890, comments: 42, saves: 156 },
   { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-100 to-yellow-200', influencer: '김가애', type: '피드', reach: 8100, likes: 540, comments: 28, saves: 89 },
@@ -76,14 +77,14 @@ const typeColors: Record<string, string> = {
   '피드': 'bg-blue-100 text-blue-700',
 }
 
+// 캠페인·참여 상태 스타일은 @wellink/ui 상수 사용
 const statusConfig: Record<string, { label: string; cls: string }> = {
-  '모집중': { label: '모집중', cls: 'bg-[#8CC63F]/10 text-[#5a8228]' },
-  '대기중': { label: '대기중', cls: 'bg-amber-50 text-amber-700' },
-  '진행중': { label: '진행중', cls: 'bg-amber-50 text-amber-700' },
-  '검수중': { label: '검수중', cls: 'bg-gray-100 text-gray-600' },
-  '완료': { label: '완료', cls: 'bg-[#8CC63F]/10 text-[#5a8228]' },
-  '반려': { label: '반려', cls: 'bg-red-50 text-red-600' },
-  '콘텐츠대기': { label: '콘텐츠대기', cls: 'bg-gray-100 text-gray-600' },
+  ...Object.fromEntries(
+    Object.entries(CAMPAIGN_STATUS_STYLE).map(([k, v]) => [k, { label: k, cls: v }])
+  ),
+  ...Object.fromEntries(
+    Object.entries(PARTICIPATION_STATUS_STYLE).map(([k, v]) => [k, { label: k, cls: v }])
+  ),
 }
 
 const tabs = ['캠페인 정보', '지원자 관리', '선정 인플루언서', '등록 콘텐츠', '성과 리포트']
@@ -706,7 +707,7 @@ export default function CampaignDetail() {
                     <div className="grid grid-cols-4 gap-2">
                       <div className="text-center">
                         <p className="text-[10px] text-gray-400 mb-0.5">도달</p>
-                        <p className="text-xs font-bold text-gray-800">{c.reach >= 1000 ? `${(c.reach / 1000).toFixed(1)}K` : c.reach}</p>
+                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                       </div>
                       <div className="text-center">
                         <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
@@ -822,7 +823,7 @@ export default function CampaignDetail() {
                           {c.type}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{c.reach.toLocaleString()}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
                       <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
                       <td className="py-3 px-4">
                         <span className="text-sm font-semibold text-[#8CC63F]">{engRate}%</span>

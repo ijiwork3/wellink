@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, Mail } from 'lucide-react'
-import { useQAMode } from '@wellink/ui'
+import { BRAND, useQAMode } from '@wellink/ui'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -60,7 +60,7 @@ export default function Login() {
       {/* 로고 */}
       <div className="absolute top-0 left-0 right-0 px-6 py-4 flex items-center justify-between">
         <button onClick={() => navigate('/campaigns/browse')} className="flex items-center gap-1.5">
-          <span className="text-base font-bold tracking-tight" style={{ color: '#8CC63F' }}>WELLINK AI</span>
+          <span className="text-base font-bold tracking-tight" style={{ color: BRAND.green }}>WELLINK AI</span>
         </button>
         <button
           onClick={() => navigate('/signup')}
@@ -119,7 +119,7 @@ export default function Login() {
             onClick={handleLogin}
             disabled={!id.trim() || !password.trim() || loading}
             className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 disabled:opacity-40 hover:opacity-90"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>

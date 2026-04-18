@@ -8,10 +8,12 @@ import {
 import { StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber, fmtRate, BRAND } from '@wellink/ui'
 import { getDDay } from '../utils/getDDay'
+import { fmtDate } from '../utils/fmtDate'
 
 /* ── Brand tokens ── */
-const BRAND_GREEN = '#8CC63F'
+
 
 /* ── KPI 데이터 ── */
 const kpis = [
@@ -31,7 +33,7 @@ const kpis = [
   },
   {
     title: '이번달 도달',
-    value: '482,000',
+    value: fmtNumber(482000),
     sub: '누적 임프레션',
     trend: 8.3,
     icon: <Activity size={16} />,
@@ -63,27 +65,24 @@ const INITIAL_NOTIFICATIONS: { id: number; text: string; time: string; dot: stri
 /* ── 콘텐츠 성과 — 기간별 ── */
 type ContentPeriod = '일간' | '주간' | '월간'
 
-const contentByPeriod: Record<ContentPeriod, { label: string; value: string; change: number; sparkline: number[] }[]> = {
-  // 일간: 30일 sparkline
+const contentByPeriod: Record<ContentPeriod, { label: string; value: number; change: number; sparkline: number[] }[]> = {
   일간: [
-    { label: '조회수', value: '3.4K',  change: 5.2,  sparkline: [28,30,27,32,29,31,35,30,33,32,36,31,34,38,33,36,34,38,35,40,36,38,37,40,38,35,37,39,36,34] },
-    { label: '좋아요', value: '263',   change: 3.1,  sparkline: [22,24,21,26,23,25,28,24,27,25,29,24,27,30,26,28,27,30,28,32,29,30,29,31,30,28,29,31,28,26] },
-    { label: '댓글',   value: '47',    change: -8.3, sparkline: [52,50,53,48,51,49,46,50,47,49,45,48,46,43,47,44,46,43,41,44,42,44,43,45,43,41,42,44,41,47] },
-    { label: '공유',   value: '27',    change: 12.5, sparkline: [18,19,17,20,19,21,22,20,22,21,23,21,23,24,22,24,23,25,23,26,24,25,25,26,25,24,25,26,24,27] },
+    { label: '조회수', value: 3400,   change: 5.2,  sparkline: [28,30,27,32,29,31,35,30,33,32,36,31,34,38,33,36,34,38,35,40,36,38,37,40,38,35,37,39,36,34] },
+    { label: '좋아요', value: 263,    change: 3.1,  sparkline: [22,24,21,26,23,25,28,24,27,25,29,24,27,30,26,28,27,30,28,32,29,30,29,31,30,28,29,31,28,26] },
+    { label: '댓글',   value: 47,     change: -8.3, sparkline: [52,50,53,48,51,49,46,50,47,49,45,48,46,43,47,44,46,43,41,44,42,44,43,45,43,41,42,44,41,47] },
+    { label: '공유',   value: 27,     change: 12.5, sparkline: [18,19,17,20,19,21,22,20,22,21,23,21,23,24,22,24,23,25,23,26,24,25,25,26,25,24,25,26,24,27] },
   ],
-  // 주간: 12주 sparkline
   주간: [
-    { label: '조회수', value: '24.3K', change: 12,   sparkline: [0,0,18,22,28,24,34,30,36,38,34,42] },
-    { label: '좋아요', value: '1,842', change: 8.5,  sparkline: [0,0,14,18,22,19,26,24,28,30,27,32] },
-    { label: '댓글',   value: '326',   change: -5.2, sparkline: [0,0,30,28,34,26,22,20,18,16,14,18] },
-    { label: '공유',   value: '189',   change: 22,   sparkline: [0,0,8,10,14,11,17,16,19,21,18,24] },
+    { label: '조회수', value: 24300,  change: 12,   sparkline: [0,0,18,22,28,24,34,30,36,38,34,42] },
+    { label: '좋아요', value: 1842,   change: 8.5,  sparkline: [0,0,14,18,22,19,26,24,28,30,27,32] },
+    { label: '댓글',   value: 326,    change: -5.2, sparkline: [0,0,30,28,34,26,22,20,18,16,14,18] },
+    { label: '공유',   value: 189,    change: 22,   sparkline: [0,0,8,10,14,11,17,16,19,21,18,24] },
   ],
-  // 월간: 12개월 sparkline
   월간: [
-    { label: '조회수', value: '104.8K', change: 18.4, sparkline: [0,0,0,0,0,0,0,0,62,74,90,112] },
-    { label: '좋아요', value: '7,940',  change: 11.2, sparkline: [0,0,0,0,0,0,0,0,55,62,74,90]  },
-    { label: '댓글',   value: '1,408',  change: -2.1, sparkline: [0,0,0,0,0,0,0,0,48,44,40,42]  },
-    { label: '공유',   value: '814',    change: 31.6, sparkline: [0,0,0,0,0,0,0,0,32,46,58,72]  },
+    { label: '조회수', value: 104800, change: 18.4, sparkline: [0,0,0,0,0,0,0,0,62,74,90,112] },
+    { label: '좋아요', value: 7940,   change: 11.2, sparkline: [0,0,0,0,0,0,0,0,55,62,74,90]  },
+    { label: '댓글',   value: 1408,   change: -2.1, sparkline: [0,0,0,0,0,0,0,0,48,44,40,42]  },
+    { label: '공유',   value: 814,    change: 31.6, sparkline: [0,0,0,0,0,0,0,0,32,46,58,72]  },
   ],
 }
 
@@ -336,7 +335,7 @@ export default function Dashboard() {
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{kpi.value}</div>
                 <div className="text-xs text-gray-500 mt-1">{kpi.sub}</div>
               </div>
-              <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? '' : 'text-red-500'}`} style={isPositive ? { color: BRAND_GREEN } : undefined}>
+              <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? '' : 'text-red-500'}`} style={isPositive ? { color: BRAND.green } : undefined}>
                 {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
                 <span className="text-gray-400 font-normal">전월 대비</span>
@@ -389,7 +388,7 @@ export default function Dashboard() {
                         <div className="w-20 bg-gray-100 rounded-full h-1.5">
                           <div
                             className="h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#EF4444' : BRAND_GREEN }}
+                            style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#EF4444' : BRAND.green }}
                           />
                         </div>
                         <span className="text-xs text-gray-500">{pct}%</span>
@@ -397,7 +396,7 @@ export default function Dashboard() {
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs text-gray-600">{c.deadline}</span>
+                        <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
                         <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>
                           {ddayLabel}
                         </span>
@@ -428,7 +427,7 @@ export default function Dashboard() {
               {unreadCount > 0 && (
                 <span
                   className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full leading-none"
-                  style={{ backgroundColor: BRAND_GREEN }}
+                  style={{ backgroundColor: BRAND.green }}
                 >
                   {unreadCount}
                 </span>
@@ -497,7 +496,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
           {contentByPeriod[contentPeriod].map(item => {
             const isPositive = item.change >= 0
-            const lineColor = isPositive ? BRAND_GREEN : '#EF4444'
+            const lineColor = isPositive ? BRAND.green : '#EF4444'
             return (
               <div
                 key={item.label}
@@ -512,13 +511,13 @@ export default function Dashboard() {
                   </div>
                   <span
                     className={`text-[11px] font-medium ${isPositive ? '' : 'text-red-500'}`}
-                    style={isPositive ? { color: BRAND_GREEN } : undefined}
+                    style={isPositive ? { color: BRAND.green } : undefined}
                   >
-                    {isPositive ? '+' : ''}{item.change}%
+                    {fmtRate(item.change)}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-bold text-gray-900">{item.value}</span>
+                  <span className="text-lg font-bold text-gray-900">{fmtNumber(item.value)}</span>
                   <Sparkline data={item.sparkline} color={lineColor} />
                 </div>
               </div>

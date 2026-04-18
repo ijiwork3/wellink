@@ -22,7 +22,7 @@ export default function Layout({ children, showSidebar = true }: LayoutProps) {
           onClick={() => navigate('/home')}
           aria-label="WELLINK AI 홈으로"
           className="text-xl font-black tracking-tight transition-opacity hover:opacity-80"
-          style={{ color: '#8CC63F' }}
+          style={{ color: BRAND.green }}
         >
           WELLINK AI
         </button>

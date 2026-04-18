@@ -4,7 +4,9 @@ import { Plus, Megaphone, Search, X, BarChart2, Users, Clock, TrendingUp, Chevro
 import { ErrorState } from '@wellink/ui'
 import { StatusBadge } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber } from '@wellink/ui'
 import { getDDay as getDDayUtil } from '../utils/getDDay'
+import { fmtDate } from '../utils/fmtDate'
 
 
 const campaigns = [
@@ -290,7 +292,7 @@ export default function Campaigns() {
                     <td className="py-3.5 px-4 text-right">
                       {c.reach > 0 ? (
                         <div>
-                          <p className="text-xs font-medium text-gray-700">{(c.reach / 1000).toFixed(1)}K 도달</p>
+                          <p className="text-xs font-medium text-gray-700">{fmtNumber(c.reach)} 도달</p>
                           <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-[#5a8228]' : c.engRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                             {c.engRate}% 참여율
                           </p>
@@ -302,7 +304,7 @@ export default function Campaigns() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
                         <Clock size={12} className="text-gray-400" />
-                        <span className="text-xs text-gray-500">{c.deadline}</span>
+                        <span className="text-xs text-gray-500">{fmtDate(c.deadline)}</span>
                         <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>{ddayLabel}</span>
                       </div>
                     </td>
@@ -347,7 +349,7 @@ export default function Campaigns() {
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
                     <BarChart2 size={12} className="text-gray-400 mx-auto mb-0.5" />
-                    <p className="text-xs font-semibold text-gray-700">{c.reach > 0 ? `${(c.reach/1000).toFixed(0)}K` : '—'}</p>
+                    <p className="text-xs font-semibold text-gray-700">{c.reach > 0 ? fmtNumber(c.reach) : '—'}</p>
                     <p className="text-[10px] text-gray-400">도달</p>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">

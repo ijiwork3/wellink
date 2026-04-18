@@ -1,10 +1,8 @@
+import { fmtFollowers } from '@wellink/ui'
+
 export const avatarColors = ['bg-purple-100','bg-blue-100','bg-green-100','bg-yellow-100','bg-pink-100','bg-indigo-100']
 
-export function formatFollowers(n: number): string {
-  if (n >= 10000) return `${(n / 10000).toFixed(1)}만`
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}천`
-  return n.toString()
-}
+export { fmtFollowers as formatFollowers }
 
 export function fitScoreBadge(score: number): string {
   if (score >= 85) return 'bg-[#8CC63F]/10 text-[#5a8228]'

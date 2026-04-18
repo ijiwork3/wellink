@@ -8,6 +8,7 @@ import { TagInput } from '@wellink/ui'
 import { FileUpload } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtPrice } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const aiInfluencers = [
@@ -626,7 +627,7 @@ export default function CampaignNew() {
               <span className="text-xs font-semibold text-gray-500">예산·조건</span>
             </div>
             {[
-              { label: '총 예산', value: s2.budget ? `${formatNumber(s2.budget)}원` : '(미입력)' },
+              { label: '총 예산', value: s2.budget ? fmtPrice(Number(parseNumber(s2.budget))) : '(미입력)' },
               { label: '모집 인원', value: s2.headcount ? `${s2.headcount}명` : '(미입력)' },
               { label: '제품 제공', value: s2.supply },
             ].map((row, idx, arr) => (

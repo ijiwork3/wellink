@@ -30,7 +30,7 @@ export default function BottomTabBar() {
             <Icon
               size={20}
               className={isActive ? '' : 'text-gray-400'}
-              style={isActive ? { color: '#8CC63F' } : undefined}
+              style={isActive ? { color: BRAND.green } : undefined}
             />
             <span
               className={`text-[10px] font-medium ${isActive ? 'text-gray-900' : 'text-gray-400'}`}

@@ -105,7 +105,7 @@ export default function Signup() {
         <button
           onClick={() => window.open('mailto:contact@wellink.co.kr')}
           className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150"
-          style={{ color: '#8CC63F' }}
+          style={{ color: BRAND.green }}
         >
           도입문의
         </button>
@@ -114,7 +114,7 @@ export default function Signup() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         {/* 로고 */}
         <div className="text-center mb-7">
-          <h1 className="text-2xl font-black" style={{ color: '#8CC63F' }}>WELLINK AI</h1>
+          <h1 className="text-2xl font-black" style={{ color: BRAND.green }}>WELLINK AI</h1>
           <p className="text-sm text-gray-500 mt-1">인플루언서 포털 회원가입</p>
         </div>
 
@@ -197,7 +197,7 @@ export default function Signup() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
                   phoneVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
                 }`}
-                style={!phoneVerified ? { backgroundColor: '#8CC63F' } : {}}
+                style={!phoneVerified ? { backgroundColor: BRAND.green } : {}}
               >
                 {phoneVerified && <CheckCircle2 size={13} />}
                 {phoneVerified ? '인증완료' : '인증하기'}
@@ -228,7 +228,7 @@ export default function Signup() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
                   instaVerified ? 'bg-[#8CC63F]/10 text-[#5a8228]' : 'text-white hover:opacity-90'
                 }`}
-                style={!instaVerified ? { backgroundColor: '#8CC63F' } : {}}
+                style={!instaVerified ? { backgroundColor: BRAND.green } : {}}
               >
                 {instaVerified && <CheckCircle2 size={13} />}
                 {instaVerified ? '인증완료' : '인증하기'}
@@ -256,7 +256,7 @@ export default function Signup() {
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             {isSubmitting ? '처리 중...' : '회원 인증 후 가입하기'}
           </button>
@@ -267,7 +267,7 @@ export default function Signup() {
             <button
               onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/login`}
               className="font-medium hover:underline transition-colors duration-150"
-              style={{ color: '#8CC63F' }}
+              style={{ color: BRAND.green }}
             >
               로그인하기
             </button>

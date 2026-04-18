@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
-import { KPICard } from '@wellink/ui'
+import { KPICard, StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber, fmtPrice } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { getDateLabel } from '../utils/getDateLabel'
@@ -12,13 +13,13 @@ type Period = (typeof periods)[number]
 
 /** 기간별 KPI 데이터 — Meta 유료 광고 기준 */
 const kpiByPeriod: Record<Period, {
-  spend: string; reach: string; clicks: string; roas: number
+  spend: number; reach: number; clicks: number; roas: number
   trends: [number, number, number, number]
 }> = {
-  일간: { spend: '₩72,000',  reach: '13.8K', clicks: '350',    roas: 3.6, trends: [5.2,  3.8,  12.0, 2.1] },
-  주간: { spend: '₩486,000', reach: '96K',   clicks: '2,410',  roas: 3.8, trends: [9.3,  6.2,  18.5, 3.4] },
-  월간: { spend: '₩1,950,000',  reach: '386K',  clicks: '9,820',  roas: 4.1, trends: [14.8, 11.2, 22.3, 7.6] },
-  연간: { spend: '₩23,400,000',  reach: '4.6M',  clicks: '117,840', roas: 4.3, trends: [32.1, 28.4, 41.2, 18.9] },
+  일간: { spend: 72000,     reach: 13800,   clicks: 350,    roas: 3.6, trends: [5.2,  3.8,  12.0, 2.1] },
+  주간: { spend: 486000,    reach: 96000,   clicks: 2410,   roas: 3.8, trends: [9.3,  6.2,  18.5, 3.4] },
+  월간: { spend: 1950000,   reach: 386000,  clicks: 9820,   roas: 4.1, trends: [14.8, 11.2, 22.3, 7.6] },
+  연간: { spend: 23400000,  reach: 4600000, clicks: 117840, roas: 4.3, trends: [32.1, 28.4, 41.2, 18.9] },
 }
 
 /** Meta 광고 캠페인 더미 데이터 */
@@ -89,15 +90,6 @@ function getCtrColor(ctr: number): string {
   return 'text-gray-900'
 }
 
-// TODO: '게재중', '일시중지' 상태가 StatusBadge에 추가되면 컴포넌트로 교체 예정
-function getStatusBadge(status: string) {
-  switch (status) {
-    case '게재중':   return 'bg-[#8CC63F]/10 text-[#5a8228]'
-    case '일시중지': return 'bg-amber-50 text-amber-700'
-    case '종료':     return 'bg-gray-100 text-gray-500'
-    default:        return 'bg-gray-100 text-gray-500'
-  }
-}
 
 function getObjectiveBadge(obj: string) {
   switch (obj) {
@@ -249,7 +241,7 @@ export default function AdPerformance() {
       <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="광고 지출"
-          value={isZero ? '₩0' : kpi.spend}
+          value={isZero ? '₩0' : fmtPrice(kpi.spend)}
           sub={period === '일간' ? '오늘 지출' : period === '주간' ? '이번 주' : period === '월간' ? '이번 달' : '올해 누적'}
           trend={isZero ? 0 : kpi.trends[0]}
           trendLabel="전기간 대비"
@@ -258,7 +250,7 @@ export default function AdPerformance() {
         />
         <KPICard
           title="총 도달"
-          value={isZero ? '0' : kpi.reach}
+          value={isZero ? '0' : fmtNumber(kpi.reach)}
           sub="광고 노출 사용자"
           trend={isZero ? 0 : kpi.trends[1]}
           trendLabel="전기간 대비"
@@ -267,7 +259,7 @@ export default function AdPerformance() {
         />
         <KPICard
           title="총 클릭"
-          value={isZero ? '0' : kpi.clicks}
+          value={isZero ? '0' : fmtNumber(kpi.clicks)}
           sub="링크 클릭 합산"
           trend={isZero ? 0 : kpi.trends[2]}
           trendLabel="전기간 대비"
@@ -317,16 +309,16 @@ export default function AdPerformance() {
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${getStatusBadge(c.status)}`}>{c.status}</span>
+                      <StatusBadge status={c.status} dot={false} />
                     </td>
                     <td className="py-3.5 px-4 text-sm text-gray-700">
-                      {c.spend ? `₩${c.spend.toLocaleString('ko-KR')}` : '—'}
+                      {c.spend ? fmtPrice(c.spend) : '—'}
                     </td>
                     <td className="py-3.5 px-4 text-sm text-gray-700">
-                      {c.reach ? `${(c.reach / 1000).toFixed(0)}K` : '—'}
+                      {c.reach ? fmtNumber(c.reach) : '—'}
                     </td>
                     <td className="py-3.5 px-4 text-sm text-gray-700">
-                      {c.clicks ? c.clicks.toLocaleString() : '—'}
+                      {c.clicks ? fmtNumber(c.clicks) : '—'}
                     </td>
                     <td className={`py-3.5 px-4 text-sm font-medium ${c.ctr ? getCtrColor(c.ctr) : 'text-gray-300'}`}>
                       {c.ctr ? `${c.ctr}%` : '—'}
@@ -353,11 +345,11 @@ export default function AdPerformance() {
             <div key={f.format} className="flex items-center gap-4">
               <div className="w-24 shrink-0">
                 <span className="text-xs font-medium text-gray-700">{f.format}</span>
-                <p className="text-[10px] text-gray-400 mt-0.5">CPM ₩{f.cpm.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-400">노출 {(f.impressions / 1000).toFixed(0)}K</span>
+                  <span className="text-[10px] text-gray-400">노출 {fmtNumber(f.impressions)}</span>
                   <span className={`text-[11px] font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -369,7 +361,7 @@ export default function AdPerformance() {
               </div>
               <div className="w-20 text-right shrink-0">
                 <span className="text-xs text-gray-500">클릭 </span>
-                <span className="text-xs font-bold text-gray-800">{f.clicks.toLocaleString()}</span>
+                <span className="text-xs font-bold text-gray-800">{fmtNumber(f.clicks)}</span>
               </div>
             </div>
           ))}

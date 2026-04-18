@@ -1,4 +1,4 @@
-import { SNSPanel } from '@wellink/ui'
+import { BRAND, SNSPanel } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 export default function ProfileHeader() {
@@ -13,7 +13,7 @@ export default function ProfileHeader() {
           {/* 아바타 */}
           <div
             className={`${isMobile ? 'w-12 h-12 text-lg' : 'w-16 h-16 text-2xl'} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm`}
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             김
           </div>

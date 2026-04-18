@@ -46,6 +46,9 @@ const statusConfig: Record<string, Cfg> = {
   // alert
   '반려':       alert,
   '마감임박':   alert,
+  // 광고 게재 상태
+  '게재중':     active,
+  '일시중지':   pending,
   // 플랫폼
   '인스타그램': { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
   '유튜브':     { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },

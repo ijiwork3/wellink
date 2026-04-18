@@ -31,3 +31,18 @@ export { default as ErrorState }     from './components/ErrorState'
 
 // 유틸 훅
 export { useQAMode } from './utils/useQAMode'
+
+// 포맷 유틸 — 데이터 정책 v1 §1-1, §1-2, §1-3
+export { fmtNumber, fmtFollowers, fmtRate, fmtPrice } from './utils/format'
+export { fmtDate } from './utils/fmtDate'
+export { getDDay } from './utils/getDDay'
+
+// DS 색상 토큰
+export { BRAND } from './constants/colors'
+
+// 상태값 상수 — 데이터 정책 v1 §3-1, §3-2
+export {
+  CAMPAIGN_STATUS, CAMPAIGN_STATUS_STYLE,
+  PARTICIPATION_STATUS, PARTICIPATION_STATUS_STYLE,
+} from './constants/status'
+export type { CampaignStatus, ParticipationStatus } from './constants/status'

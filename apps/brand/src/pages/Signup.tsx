@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQAMode } from '@wellink/ui'
+import { BRAND, useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 const inputBase =
@@ -87,7 +87,7 @@ export default function Signup() {
           type="button"
           onClick={() => window.open('mailto:contact@wellink.co.kr')}
           className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150"
-          style={{ color: '#8CC63F' }}
+          style={{ color: BRAND.green }}
         >
           도입문의
         </button>
@@ -97,7 +97,7 @@ export default function Signup() {
         {/* 로고 */}
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
-            <h1 className="text-2xl font-black" style={{ color: '#8CC63F' }}>WELLINK</h1>
+            <h1 className="text-2xl font-black" style={{ color: BRAND.green }}>WELLINK</h1>
             <span className="text-[10px] font-medium bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
           </div>
           <p className="text-sm text-gray-500">광고주 포털 회원가입</p>
@@ -225,7 +225,7 @@ export default function Signup() {
             onClick={handleSubmit}
             disabled={isSubmitting || !agreedTerms || !agreedPrivacy}
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             {isSubmitting ? '처리 중...' : '회원가입'}
           </button>
@@ -236,7 +236,7 @@ export default function Signup() {
             <button
               onClick={() => navigate('/login')}
               className="font-medium hover:underline transition-colors duration-150"
-              style={{ color: '#8CC63F' }}
+              style={{ color: BRAND.green }}
             >
               로그인하기
             </button>

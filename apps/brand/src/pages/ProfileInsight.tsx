@@ -3,6 +3,7 @@ import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Chev
 import { KPICard } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 
@@ -10,63 +11,54 @@ const periods = ['일간', '주간', '월간', '연간'] as const
 type Period = (typeof periods)[number]
 
 /** 기간별 KPI 데이터 */
-const kpiByPeriod: Record<Period, { followers: string; reach: string; engagement: string; impressions: string; trends: [number, number, number, number] }> = {
-  일간: { followers: '24,800', reach: '9.8%',  engagement: '4.2%', impressions: '31.2K', trends: [0.1, 0.8, 0.5, 2.1] },
-  주간: { followers: '24,650', reach: '11.2%', engagement: '3.9%', impressions: '198K',  trends: [1.2, 1.5, -0.1, 4.8] },
-  월간: { followers: '23,900', reach: '12.4%', engagement: '3.7%', impressions: '820K',  trends: [5.2, 1.8, -0.3, 8.6] },
-  연간: { followers: '18,200', reach: '13.1%', engagement: '3.5%', impressions: '9.2M',  trends: [22.8, 3.1, -0.8, 18.4] },
+const kpiByPeriod: Record<Period, { followers: number; reach: number; engagement: number; impressions: number; trends: [number, number, number, number] }> = {
+  일간: { followers: 24800, reach: 9.8,  engagement: 4.2, impressions: 31200,   trends: [0.1, 0.8, 0.5, 2.1] },
+  주간: { followers: 24650, reach: 11.2, engagement: 3.9, impressions: 198000,  trends: [1.2, 1.5, -0.1, 4.8] },
+  월간: { followers: 23900, reach: 12.4, engagement: 3.7, impressions: 820000,  trends: [5.2, 1.8, -0.3, 8.6] },
+  연간: { followers: 18200, reach: 13.1, engagement: 3.5, impressions: 9200000, trends: [22.8, 3.1, -0.8, 18.4] },
 }
 
-/** 기간별 팔로워 추이 데이터 — null = 데이터 없음 */
-type BarDataItem = { label: string; value: number | null; display: string; showLabel?: boolean }
+/** 기간별 팔로워 추이 데이터 — null = 데이터 없음(연결 전 기간) */
+type BarDataItem = { label: string; value: number | null; showLabel?: boolean }
 
 const followerDataByPeriod: Record<Period, BarDataItem[]> = {
-  // 일간: 최근 30일 — 라벨은 5일 간격만
   일간: Array.from({ length: 30 }, (_, i) => {
     const day = i + 1
     const base = 24100
     const v = i < 5 ? null : Math.round(base + (i - 5) * 28 + (Math.sin(i * 0.8) * 80))
-    return {
-      label: `${day}일`,
-      value: v,
-      display: v ? `${(v / 1000).toFixed(1)}K` : '--',
-      showLabel: day === 1 || day % 5 === 0,
-    }
+    return { label: `${day}일`, value: v, showLabel: day === 1 || day % 5 === 0 }
   }),
-  // 주간: 최근 12주
   주간: [
-    { label: '1/2주', value: null,  display: '--',    showLabel: true },
-    { label: '1/3주', value: null,  display: '--',    showLabel: true },
-    { label: '1/4주', value: 20800, display: '20.8K', showLabel: true },
-    { label: '2/1주', value: 21200, display: '21.2K', showLabel: true },
-    { label: '2/2주', value: 21600, display: '21.6K', showLabel: true },
-    { label: '2/3주', value: 22100, display: '22.1K', showLabel: true },
-    { label: '2/4주', value: 22500, display: '22.5K', showLabel: true },
-    { label: '3/1주', value: 22900, display: '22.9K', showLabel: true },
-    { label: '3/2주', value: 23300, display: '23.3K', showLabel: true },
-    { label: '3/3주', value: 23700, display: '23.7K', showLabel: true },
-    { label: '3/4주', value: 24100, display: '24.1K', showLabel: true },
-    { label: '이번주', value: 24800, display: '24.8K', showLabel: true },
+    { label: '1/2주', value: null,  showLabel: true },
+    { label: '1/3주', value: null,  showLabel: true },
+    { label: '1/4주', value: 20800, showLabel: true },
+    { label: '2/1주', value: 21200, showLabel: true },
+    { label: '2/2주', value: 21600, showLabel: true },
+    { label: '2/3주', value: 22100, showLabel: true },
+    { label: '2/4주', value: 22500, showLabel: true },
+    { label: '3/1주', value: 22900, showLabel: true },
+    { label: '3/2주', value: 23300, showLabel: true },
+    { label: '3/3주', value: 23700, showLabel: true },
+    { label: '3/4주', value: 24100, showLabel: true },
+    { label: '이번주', value: 24800, showLabel: true },
   ],
-  // 월간: 최근 12개월
   월간: [
-    { label: '5월',  value: null,  display: '--' },
-    { label: '6월',  value: null,  display: '--' },
-    { label: '7월',  value: null,  display: '--' },
-    { label: '8월',  value: null,  display: '--' },
-    { label: '9월',  value: null,  display: '--' },
-    { label: '10월', value: null,  display: '--' },
-    { label: '11월', value: null,  display: '--' },
-    { label: '12월', value: null,  display: '--' },
-    { label: '1월',  value: 20200, display: '20.2K' },
-    { label: '2월',  value: 21800, display: '21.8K' },
-    { label: '3월',  value: 23100, display: '23.1K' },
-    { label: '4월',  value: 24800, display: '24.8K' },
+    { label: '5월' , value: null  },
+    { label: '6월' , value: null  },
+    { label: '7월' , value: null  },
+    { label: '8월' , value: null  },
+    { label: '9월' , value: null  },
+    { label: '10월', value: null  },
+    { label: '11월', value: null  },
+    { label: '12월', value: null  },
+    { label: '1월' , value: 20200 },
+    { label: '2월' , value: 21800 },
+    { label: '3월' , value: 23100 },
+    { label: '4월' , value: 24800 },
   ],
-  // 연간: 2025년 서비스 시작
   연간: [
-    { label: '2025', value: 12400, display: '12.4K' },
-    { label: "'26*", value: 24800, display: '24.8K' },
+    { label: '2025',  value: 12400 },
+    { label: "'26*",  value: 24800 },
   ],
 }
 
@@ -166,18 +158,19 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
 
   return (
     <div className="flex items-end h-28" style={{ gap: isDense ? '1px' : '8px' }}>
-      {data.map(({ label, value, display, showLabel }) => {
+      {data.map(({ label, value, showLabel }) => {
         const isNull = value === null
+        const displayVal = isNull ? '--' : fmtNumber(value)
         const heightPct = isNull ? 20 : Math.max(6, (value / maxVal) * 100)
         const doShowLabel = isDense ? (showLabel ?? false) : true
         return (
           <div key={label} className="flex-1 flex flex-col items-center min-w-0" style={{ gap: isDense ? '1px' : '4px' }}>
             {/* 값 레이블 — 밀집 모드에서는 숨김 */}
             {!isDense && (
-              <span className={`text-[10px] ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{display}</span>
+              <span className={`text-[10px] ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{displayVal}</span>
             )}
             <div
-              title={`${label}: ${display}`}
+              title={`${label}: ${displayVal}`}
               className={`w-full rounded-t-sm ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-gray-800'} cursor-default`}
               style={{ height: `${heightPct}%`, minHeight: '3px', transition: 'height 0.3s' }}
             />
@@ -475,7 +468,7 @@ export default function ProfileInsight() {
       <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="팔로워 수"
-          value={kpi.followers}
+          value={fmtNumber(kpi.followers)}
           sub="@wellink_brand"
           trend={kpi.trends[0]}
           trendLabel="전기간 대비"
@@ -484,7 +477,7 @@ export default function ProfileInsight() {
         />
         <KPICard
           title="평균 도달률"
-          value={kpi.reach}
+          value={`${kpi.reach}%`}
           sub="게시물 기준"
           trend={kpi.trends[1]}
           trendLabel="전기간 대비"
@@ -493,7 +486,7 @@ export default function ProfileInsight() {
         />
         <KPICard
           title="참여율"
-          value={kpi.engagement}
+          value={`${kpi.engagement}%`}
           sub="좋아요+댓글 기준"
           trend={kpi.trends[2]}
           trendLabel="전기간 대비"
@@ -502,7 +495,7 @@ export default function ProfileInsight() {
         />
         <KPICard
           title="노출 수"
-          value={kpi.impressions}
+          value={fmtNumber(kpi.impressions)}
           sub={period === '일간' ? '당일 누적' : period === '주간' ? '주간 누적' : period === '월간' ? '월간 누적' : '연간 누적'}
           trend={kpi.trends[3]}
           trendLabel="전기간 대비"
@@ -567,7 +560,7 @@ export default function ProfileInsight() {
                   />
                 </div>
                 <div className="flex gap-3 text-xs text-right">
-                  <span className="text-gray-700 w-14">도달 <strong>{ct.avgReach.toLocaleString()}</strong></span>
+                  <span className="text-gray-700 w-14">도달 <strong>{fmtNumber(ct.avgReach)}</strong></span>
                   <span className={`font-semibold w-10 ${ct.engagementRate >= 4 ? 'text-[#5a8228]' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                     {ct.engagementRate}%
                   </span>
@@ -628,10 +621,10 @@ export default function ProfileInsight() {
                       <td colSpan={5} className="py-2.5 text-center text-xs text-gray-300">데이터 없음</td>
                     ) : (
                       <>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{(d.reach as number).toLocaleString()}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{(d.likes as number).toLocaleString()}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{(d.comments as number).toLocaleString()}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{(d.saves as number).toLocaleString()}</td>
+                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.reach as number)}</td>
+                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.likes as number)}</td>
+                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.comments as number)}</td>
+                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.saves as number)}</td>
                         <td className="py-2.5 text-right">
                           {(() => {
                             const engRate = (((d.likes as number) + (d.comments as number) + (d.saves as number)) / (d.reach as number) * 100).toFixed(1)

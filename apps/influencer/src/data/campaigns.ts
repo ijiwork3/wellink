@@ -62,7 +62,7 @@ export const campaigns: Campaign[] = [
     name: '웰니스 스킨케어 리뷰어',
     channel: '인스타그램',
     category: '뷰티/패션',
-    status: '마감임박',
+    status: '모집중',
     applyEnd: '2026-04-07',
     postEnd: '2026-04-17',
     image: '✨',

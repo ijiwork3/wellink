@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, ChevronRight, Upload, X, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal } from '@wellink/ui'
+import { BRAND, Modal } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
+import { fmtPrice, fmtDate } from '@wellink/ui'
 
-type CampaignStatus = '신청완료' | '진행중' | '게시완료' | '포인트지급'
+// 인플루언서 관점 참여 상태 — 데이터 정책 v1 §3-2 기준
+type CampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '완료' | '미선정'
 
 interface Campaign {
   id: string
@@ -20,28 +22,32 @@ interface Campaign {
 }
 
 const MOCK_CAMPAIGNS: Campaign[] = [
-  { id: '1', name: '프로틴 파워 챌린지', channel: '인스타그램', appliedAt: '2026-03-15', deadline: '2026-04-20', status: '진행중', progress: '콘텐츠 제작 중', reward: '80,000원' },
-  { id: '2', name: '필라테스 스튜디오 체험', channel: '인스타그램', appliedAt: '2026-03-10', deadline: '2026-04-25', status: '신청완료', progress: '검토 중', reward: '50,000원' },
-  { id: '3', name: '아웃도어 장비 리뷰', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '게시완료', progress: '게시 확인 중', reward: '120,000원' },
-  { id: '4', name: '헬스 보충제 캠페인', channel: '인스타그램', appliedAt: '2026-02-10', deadline: '2026-03-20', status: '포인트지급', progress: '완료', reward: '95,000원' },
+  { id: '1', name: '프로틴 파워 챌린지', channel: '인스타그램', appliedAt: '2026-03-15', deadline: '2026-04-20', status: '콘텐츠대기', progress: '콘텐츠 제작 중', reward: fmtPrice(80000) },
+  { id: '2', name: '필라테스 스튜디오 체험', channel: '인스타그램', appliedAt: '2026-03-10', deadline: '2026-04-25', status: '지원완료', progress: '검토 중', reward: fmtPrice(50000) },
+  { id: '3', name: '아웃도어 장비 리뷰', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '검수중', progress: '게시 확인 중', reward: fmtPrice(120000) },
+  { id: '4', name: '헬스 보충제 캠페인', channel: '인스타그램', appliedAt: '2026-02-10', deadline: '2026-03-20', status: '완료', progress: '완료', reward: fmtPrice(95000) },
 ]
 
-const STATUS_TABS = ['전체', '신청완료', '진행중', '게시완료', '포인트지급'] as const
+const STATUS_TABS = ['전체', '지원완료', '검토중', '콘텐츠대기', '검수중', '완료'] as const
 
 const statusBadgeClass: Record<CampaignStatus, string> = {
-  '신청완료': 'bg-gray-100 text-gray-600',
-  '진행중': 'bg-amber-50 text-amber-700',
-  '게시완료': 'bg-[#8CC63F]/10 text-[#5a8228]',
-  '포인트지급': 'bg-[#8CC63F]/10 text-[#5a8228]',
+  '지원완료': 'bg-gray-100 text-gray-600',
+  '검토중':   'bg-amber-50 text-amber-700',
+  '콘텐츠대기': 'bg-gray-100 text-gray-600',
+  '검수중':   'bg-sky-50 text-sky-700',
+  '완료':     'bg-[#8CC63F]/10 text-[#5a8228]',
+  '미선정':   'bg-red-50 text-red-600',
 }
 
 /** 상태별 가능한 액션 */
 function getActions(status: CampaignStatus): Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'> {
   switch (status) {
-    case '신청완료': return ['수정', '취소']
-    case '진행중': return ['콘텐츠 제출']
-    case '게시완료': return ['상세보기']
-    case '포인트지급': return ['상세보기']
+    case '지원완료': return ['수정', '취소']
+    case '검토중':   return ['취소']
+    case '콘텐츠대기': return ['콘텐츠 제출']
+    case '검수중':   return ['상세보기']
+    case '완료':     return ['상세보기']
+    case '미선정':   return ['상세보기']
   }
 }
 
@@ -67,7 +73,7 @@ export default function MyCampaign() {
   const [cancelModal, setCancelModal] = useState<Campaign | null>(null)
   const [campaigns, setCampaigns] = useState<Campaign[]>(initCampaigns)
   const [contentUrl, setContentUrl] = useState('')
-  const firstActive = MOCK_CAMPAIGNS.find(c => c.status === '진행중') ?? null
+  const firstActive = MOCK_CAMPAIGNS.find(c => c.status === '콘텐츠대기') ?? null
   const [submitModal, setSubmitModal] = useState<Campaign | null>(
     qa === 'modal-submit' ? firstActive : null
   )
@@ -77,9 +83,9 @@ export default function MyCampaign() {
     try { const u = new URL(contentUrl); if (!/^https?:/.test(u.protocol)) throw new Error() } catch { showToast('유효한 URL을 입력해 주세요 (http/https)', 'error'); return }
     if (submitModal) {
       setCampaigns(prev => prev.map(c =>
-        c.id === submitModal.id ? { ...c, status: '게시완료', progress: '게시 확인 중' } : c
+        c.id === submitModal.id ? { ...c, status: '검수중', progress: '게시 확인 중' } : c
       ))
-      setActiveStatus('게시완료')
+      setActiveStatus('검수중')
     }
     setSubmitModal(null)
     setContentUrl('')
@@ -160,7 +166,7 @@ export default function MyCampaign() {
           <button
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 text-sm font-medium text-white px-5 py-2.5 rounded-xl transition-colors hover:opacity-90"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             <RefreshCw size={14} />다시 시도
           </button>
@@ -227,13 +233,13 @@ export default function MyCampaign() {
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 flex flex-col items-center justify-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: '#f0fce8' }}>
-              <Search size={24} style={{ color: '#8CC63F' }} />
+              <Search size={24} style={{ color: BRAND.green }} />
             </div>
             <p className="text-sm font-medium text-gray-500 mb-1">해당 상태의 캠페인이 없어요</p>
             <button
               onClick={() => navigate('/campaigns/browse')}
               className="mt-3 px-5 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90"
-              style={{ backgroundColor: '#8CC63F' }}
+              style={{ backgroundColor: BRAND.green }}
             >
               캠페인 찾아보기
             </button>
@@ -253,7 +259,7 @@ export default function MyCampaign() {
                         <span className="text-[10px] text-gray-400 shrink-0">{c.channel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">신청일 {c.appliedAt} · 마감 {c.deadline}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">신청일 {fmtDate(c.appliedAt)} · 마감 {fmtDate(c.deadline)}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-xs text-gray-400">리워드</p>

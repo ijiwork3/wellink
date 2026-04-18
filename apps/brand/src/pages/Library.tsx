@@ -15,10 +15,11 @@ import {
   Crown,
   ImageOff,
 } from 'lucide-react'
-import { Modal } from '@wellink/ui'
+import { Modal, StatusBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ───── Mock Data ───── */
@@ -64,13 +65,6 @@ const typeColors: Record<string, string> = {
   '숏폼': 'bg-emerald-100 text-emerald-700',
 }
 
-// TODO: StatusBadge 컴포넌트로 교체 예정 ('승인' 상태 추가 및 색상 정책 통일 후)
-const statusColors: Record<string, string> = {
-  '승인': 'bg-[#8CC63F]/10 text-[#5a8228]',
-  '검수중': 'bg-amber-50 text-amber-700',
-  '대기중': 'bg-gray-100 text-gray-500',
-  '반려': 'bg-red-50 text-red-600',
-}
 
 const platformIcons: Record<string, string> = {
   '인스타그램': 'IG',
@@ -311,11 +305,11 @@ export default function Library() {
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="text-xs text-gray-500 mb-1">총 도달</div>
-          <div className="text-xl font-bold text-gray-900">{totalReach.toLocaleString()}</div>
+          <div className="text-xl font-bold text-gray-900">{fmtNumber(totalReach)}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="text-xs text-gray-500 mb-1">총 좋아요</div>
-          <div className="text-xl font-bold text-gray-900">{totalLikes.toLocaleString()}</div>
+          <div className="text-xl font-bold text-gray-900">{fmtNumber(totalLikes)}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all">
           <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
@@ -344,7 +338,7 @@ export default function Library() {
           </div>
           <div className="text-right">
             <div className="text-xs text-gray-500">도달</div>
-            <div className="text-sm font-bold text-gray-900">{topPerformer.reach.toLocaleString()}</div>
+            <div className="text-sm font-bold text-gray-900">{fmtNumber(topPerformer.reach)}</div>
           </div>
         </div>
       )}
@@ -545,15 +539,15 @@ export default function Library() {
                   <div className="p-3" onClick={() => setPreviewItem(c)}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-gray-900 truncate max-w-[120px]">{c.creator}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusColors[displayStatus] ?? statusColors['대기중']}`}>{displayStatus}</span>
+                      <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
                     <p className="text-xs text-gray-500 truncate mb-2">{c.campaign}</p>
                     <div className="flex items-center gap-3 text-xs text-gray-400">
                       <span className="flex items-center gap-0.5">
-                        <Eye size={11} /> {c.reach >= 10000 ? (c.reach / 10000).toFixed(1) + '만' : c.reach.toLocaleString()}
+                        <Eye size={11} /> {fmtNumber(c.reach)}
                       </span>
                       <span className="flex items-center gap-0.5">
-                        <Heart size={11} /> {c.likes.toLocaleString()}
+                        <Heart size={11} /> {fmtNumber(c.likes)}
                       </span>
                       <span className="flex items-center gap-0.5">
                         <MessageCircle size={11} /> {c.comments}
@@ -628,13 +622,13 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3 text-xs text-gray-500">{c.platform}</td>
                     <td className="py-3 px-3 text-xs text-gray-500">{fmtDate(c.date)}</td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{c.reach.toLocaleString()}</td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
+                    <td className="py-3 px-3 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
+                    <td className="py-3 px-3 text-sm text-gray-700">{fmtNumber(c.likes)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.comments}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{c.saves}</td>
                     <td className={`py-3 px-3 text-sm font-medium ${c.engagementRate >= 4 ? 'text-[#5a8228]' : c.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{c.engagementRate}%</td>
                     <td className="py-3 px-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[displayStatus] ?? statusColors['대기중']}`}>{displayStatus}</span>
+                      <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex gap-1">
@@ -687,7 +681,7 @@ export default function Library() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[previewItem.type]}`}>{previewItem.type}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[modalDisplayStatus] ?? statusColors['대기중']}`}>{modalDisplayStatus}</span>
+                <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
               </div>
             </div>
 

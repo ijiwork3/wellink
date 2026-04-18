@@ -1,1 +1,1 @@
-export function fmtDate(d: string) { return d.replace(/-/g, '.') }
+export { fmtDate } from '@wellink/ui'

@@ -38,23 +38,28 @@ const fitScoreOptions = [
   { label: '70점 미만', value: 'under70' },
 ]
 
+// 참여율 필터 — 데이터 정책 v1 §2-3: 4%+ 높음, 2~4% 보통, 2% 미만 낮음
 const engagementOptions = [
   { label: '참여율', value: '' },
-  { label: '3% 이상', value: '3+' },
-  { label: '5% 이상', value: '5+' },
+  { label: '높음 (4% 이상)', value: 'high' },
+  { label: '보통 (2~4%)', value: 'mid' },
+  { label: '낮음 (2% 미만)', value: 'low' },
 ]
 
+// 팔로워 Tier 필터 — 데이터 정책 v1 §2-2
 const followerTierOptions = [
   { label: '팔로워급', value: '' },
   { label: '나노 (~1만)', value: 'nano' },
   { label: '마이크로 (1만~10만)', value: 'micro' },
-  { label: '매크로 (10만+)', value: 'macro' },
+  { label: '매크로 (10만~100만)', value: 'macro' },
+  { label: '메가 (100만+)', value: 'mega' },
 ]
 
 function getFollowerTier(followers: number): string {
-  if (followers < 10000) return 'nano'
-  if (followers < 100000) return 'micro'
-  return 'macro'
+  if (followers < 10_000) return 'nano'
+  if (followers < 100_000) return 'micro'
+  if (followers < 1_000_000) return 'macro'
+  return 'mega'
 }
 
 export default function InfluencerList() {
@@ -187,8 +192,9 @@ export default function InfluencerList() {
     if (fitScoreFilter === '85+' && inf.fitScore < 85) return false
     if (fitScoreFilter === '70+' && inf.fitScore < 70) return false
     if (fitScoreFilter === 'under70' && inf.fitScore >= 70) return false
-    if (engagementFilter === '3+' && inf.engagement < 3) return false
-    if (engagementFilter === '5+' && inf.engagement < 5) return false
+    if (engagementFilter === 'high' && inf.engagement < 4) return false
+    if (engagementFilter === 'mid' && (inf.engagement < 2 || inf.engagement >= 4)) return false
+    if (engagementFilter === 'low' && inf.engagement >= 2) return false
     if (followerTier && getFollowerTier(inf.followers) !== followerTier) return false
     return true
   })

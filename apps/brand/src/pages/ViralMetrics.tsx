@@ -4,6 +4,7 @@ import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar 
 import { ErrorState } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { fmtNumber } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
@@ -18,11 +19,11 @@ const VIEW_MODE_TO_PERIOD: Record<ViewMode, DatePeriod> = {
 }
 
 // 뷰 모드별 KPI 더미 데이터
-const kpiByMode: Record<ViewMode, { reach: string; shares: string; saves: string; viral: string }> = {
-  daily:   { reach: '4.2K',   shares: '82',    saves: '312',    viral: '2.1x' },
-  weekly:  { reach: '18.7K',  shares: '410',   saves: '1,820',  viral: '2.3x' },
-  monthly: { reach: '48.2K',  shares: '1,240', saves: '3,890',  viral: '2.4x' },
-  yearly:  { reach: '578K',   shares: '14,880', saves: '46,680', viral: '2.6x' },
+const kpiByMode: Record<ViewMode, { reach: number; shares: number; saves: number; viral: number }> = {
+  daily:   { reach: 4200,   shares: 82,    saves: 312,   viral: 2.1 },
+  weekly:  { reach: 18700,  shares: 410,   saves: 1820,  viral: 2.3 },
+  monthly: { reach: 48200,  shares: 1240,  saves: 3890,  viral: 2.4 },
+  yearly:  { reach: 578000, shares: 14880, saves: 46680, viral: 2.6 },
 }
 
 const viralContentData = [
@@ -42,11 +43,6 @@ function getTypeColor(type: string) {
     case '피드': return 'bg-blue-100 text-blue-700'
     default: return 'bg-gray-100 text-gray-700'
   }
-}
-
-function formatNumber(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`
-  return n.toLocaleString()
 }
 
 // 추세 미니 차트 (바 형태)
@@ -170,10 +166,12 @@ export default function ViralMetrics() {
 
   /* ── QA: 전부 0 (엣지케이스) — 데이터 있으나 지표가 모두 0 ── */
   const isZero = qa === 'zero'
-  const kpiZero = { reach: '--', shares: '--', saves: '--', viral: '--' }
   const trendZero = { reach: [0,0,0,0,0,0,0], saves: [0,0,0,0,0,0,0], shares: [0,0,0,0,0,0,0] }
 
-  const kpi = isZero ? kpiZero : kpiByMode[viewMode]
+  const rawKpi = kpiByMode[viewMode]
+  const kpi = isZero
+    ? { reach: '--', shares: '--', saves: '--', viral: '--' }
+    : { reach: fmtNumber(rawKpi.reach), shares: fmtNumber(rawKpi.shares), saves: fmtNumber(rawKpi.saves), viral: `${rawKpi.viral}x` }
   const trend = isZero ? trendZero : trendData[viewMode]
 
   const trendPct: Record<ViewMode, { reach: string; shares: string; saves: string; viral: string }> = {
@@ -277,7 +275,7 @@ export default function ViralMetrics() {
           <p className="text-2xl font-bold text-[#8CC63F]">{kpi.viral}</p>
           <div className="mt-3 h-8 flex items-center">
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-[#8CC63F] rounded-full" style={{ width: `${(() => { const v = parseFloat(kpi.viral); return Number.isNaN(v) ? 0 : Math.max(0, Math.min(100, (v / 4) * 100)) })()}%` }} />
+              <div className="h-full bg-[#8CC63F] rounded-full" style={{ width: `${isZero ? 0 : Math.max(0, Math.min(100, (rawKpi.viral / 4) * 100))}%` }} />
             </div>
           </div>
           <p className="text-xs text-[#8CC63F] font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
@@ -322,11 +320,11 @@ export default function ViralMetrics() {
                   <td className="py-3 px-4">
                     <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${getTypeColor(item.type)}`}>{item.type}</span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-700 font-medium">{formatNumber(item.reach)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{formatNumber(item.likes)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{formatNumber(item.comments)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{formatNumber(item.saves)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{formatNumber(item.shares)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 font-medium">{fmtNumber(item.reach)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.likes)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.comments)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.saves)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.shares)}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">

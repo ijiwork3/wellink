@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { User, Activity, Camera, Star, TrendingUp, Megaphone, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox } from '@wellink/ui'
+import { BRAND, CustomCheckbox } from '@wellink/ui'
 import { Toggle } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -88,7 +88,7 @@ export default function Profile() {
           <button
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             <RefreshCw size={14} />
             다시 시도
@@ -191,7 +191,7 @@ export default function Profile() {
         {/* 기본 정보 카드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-2 mb-5">
-            <User size={16} style={{ color: '#8CC63F' }} />
+            <User size={16} style={{ color: BRAND.green }} />
             <h2 className="text-base font-semibold text-gray-900">기본 정보</h2>
           </div>
 
@@ -226,7 +226,7 @@ export default function Profile() {
               <button
                 onClick={() => setPwModalOpen(true)}
                 className="px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 hover:bg-[#8CC63F]/5"
-                style={{ borderColor: '#8CC63F', color: '#8CC63F' }}
+                style={{ borderColor: BRAND.green, color: BRAND.green }}
               >
                 비밀번호 변경하기
               </button>
@@ -253,7 +253,7 @@ export default function Profile() {
         {/* 활동 분야 카드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-2 mb-5">
-            <Activity size={16} style={{ color: '#8CC63F' }} />
+            <Activity size={16} style={{ color: BRAND.green }} />
             <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
           </div>
 
@@ -283,7 +283,7 @@ export default function Profile() {
           onClick={handleSave}
           disabled={isSaving}
           className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ backgroundColor: '#8CC63F' }}
+          style={{ backgroundColor: BRAND.green }}
         >
           {isSaving ? '저장 중...' : '저장하기'}
         </button>
@@ -331,7 +331,7 @@ export default function Profile() {
           <button
             onClick={handlePwChange}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             변경하기
           </button>

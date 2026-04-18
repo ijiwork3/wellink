@@ -71,7 +71,7 @@ export default function CampaignBrowse() {
           <button
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             <RefreshCw size={14} />
             다시 시도
@@ -130,7 +130,7 @@ export default function CampaignBrowse() {
                   ? 'text-white shadow-sm'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-[#8CC63F]/40 hover:text-[#8CC63F] hover:bg-[#8CC63F]/5'
               }`}
-              style={selectedCategory === cat ? { backgroundColor: '#8CC63F' } : {}}
+              style={selectedCategory === cat ? { backgroundColor: BRAND.green } : {}}
             >
               {cat}
             </button>
@@ -166,14 +166,14 @@ export default function CampaignBrowse() {
               className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
               style={{ backgroundColor: '#f0fce8' }}
             >
-              <Search size={32} style={{ color: '#8CC63F' }} />
+              <Search size={32} style={{ color: BRAND.green }} />
             </div>
             <p className="text-sm font-medium text-gray-500 mb-1">검색 결과가 없어요</p>
             <p className="text-xs text-gray-400 mb-4">다른 키워드나 카테고리로 검색해 보세요</p>
             <button
               onClick={() => { setSearch(''); setSelectedCategory('전체') }}
               className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 flex items-center gap-1.5"
-              style={{ backgroundColor: '#8CC63F' }}
+              style={{ backgroundColor: BRAND.green }}
             >
               <Layers size={14} />
               전체 캠페인 보기
@@ -195,13 +195,13 @@ export default function CampaignBrowse() {
               </div>
               <p className="text-sm text-gray-600 mb-3">{c.brand}</p>
               <div className="flex gap-2">
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{backgroundColor:'#8CC63F', color:'white'}}>{c.category}</span>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{backgroundColor: BRAND.green, color:'white'}}>{c.category}</span>
                 <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{'체험단'}</span>
               </div>
               <button
                 onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
                 className="mt-5 w-full py-3 rounded-xl text-sm font-semibold text-white"
-                style={{backgroundColor:'#8CC63F'}}
+                style={{backgroundColor: BRAND.green}}
               >
                 캠페인 상세 보기
               </button>
@@ -216,7 +216,7 @@ export default function CampaignBrowse() {
           <div className="grid grid-cols-2 @sm:grid-cols-4 gap-4 @sm:gap-8 mb-8">
             <div className="col-span-1">
               <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-base font-bold" style={{color: '#8CC63F'}}>WELLINK AI</span>
+                <span className="text-base font-bold" style={{color: BRAND.green}}>WELLINK AI</span>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed">웰니스 성장의 정점, 데이터로 증명하며 만들면서 마케팅의 새로운 패러다임을 제시합니다.</p>
               <div className="mt-4 space-y-1 text-xs text-gray-500">

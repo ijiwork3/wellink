@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Clock, Users, ChevronRight, Megaphone, Bookmark, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode } from '@wellink/ui'
+import { BRAND, useQAMode, fmtDate, getDDay, StatusBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
 interface BookmarkedCampaign {
@@ -15,7 +15,7 @@ interface BookmarkedCampaign {
   budget: string
   headcount: number
   applied: number
-  status: '모집중' | '마감임박' | '종료'
+  status: '모집중' | '종료'
   thumbnailColor: string
 }
 
@@ -56,26 +56,16 @@ const bookmarkedCampaigns: BookmarkedCampaign[] = [
     budget: '요가매트 1개 제공',
     headcount: 5,
     applied: 3,
-    status: '마감임박',
+    status: '모집중',
     thumbnailColor: '#93C5FD',
   },
 ]
 
-function getDDay(deadline: string) {
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const diff = Math.round((new Date(deadline).getTime() - today.getTime()) / 86400000)
-  if (diff <= 0) return { label: '마감', color: 'bg-gray-100 text-gray-400', pulse: false }
-  if (diff <= 3) return { label: `D-${diff}`, color: 'bg-red-100 text-red-600', pulse: true }
-  if (diff <= 7) return { label: `D-${diff}`, color: 'bg-orange-100 text-orange-600', pulse: false }
-  return { label: `D-${diff}`, color: 'bg-gray-100 text-gray-500', pulse: false }
-}
 
-function statusBadge(status: BookmarkedCampaign['status']) {
-  switch (status) {
-    case '모집중': return 'bg-[#8CC63F]/10 text-[#5a8228]'
-    case '마감임박': return 'bg-red-100 text-red-600'
-    case '종료': return 'bg-gray-100 text-gray-400'
-  }
+function ddayBgClass(textColor: string): string {
+  if (textColor.includes('red'))    return 'bg-red-100'
+  if (textColor.includes('orange')) return 'bg-orange-100'
+  return 'bg-gray-100'
 }
 
 export default function Home() {
@@ -150,7 +140,7 @@ export default function Home() {
           <button
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: '#8CC63F' }}
+            style={{ backgroundColor: BRAND.green }}
           >
             <RefreshCw size={14} />
             다시 시도
@@ -188,7 +178,7 @@ export default function Home() {
             <button
               onClick={() => navigate('/campaigns/browse')}
               className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-              style={{ backgroundColor: '#8CC63F' }}
+              style={{ backgroundColor: BRAND.green }}
             >
               캠페인 둘러보기
             </button>
@@ -215,10 +205,8 @@ export default function Home() {
                     {/* 정보 */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusBadge(c.status)}`}>
-                          {c.status}
-                        </span>
-                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>
+                        <StatusBadge status={c.status} dot={false} size="sm" />
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ddayBgClass(ddayColor)} ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>
                           {ddayLabel}
                         </span>
                       </div>
@@ -253,7 +241,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Clock size={11} />
-                      <span>{c.deadline}</span>
+                      <span>{fmtDate(c.deadline)}</span>
                     </div>
                   </div>
 

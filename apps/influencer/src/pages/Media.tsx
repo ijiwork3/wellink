@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal } from '@wellink/ui'
+import { BRAND, Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 
@@ -142,7 +142,7 @@ export default function Media() {
     <Layout>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <div className="flex items-center gap-2 mb-2">
-          <Link2 size={16} style={{ color: '#8CC63F' }} />
+          <Link2 size={16} style={{ color: BRAND.green }} />
           <h2 className="text-base font-semibold text-gray-900">미디어 연결</h2>
         </div>
         <p className="text-sm text-gray-500 mb-5">
@@ -200,7 +200,7 @@ export default function Media() {
                     setConnectModal({ platformId: p.id, name: p.name })
                   }}
                   className="text-xs px-3.5 py-1.5 rounded-xl text-white transition-all duration-150 hover:opacity-90"
-                  style={{ backgroundColor: '#8CC63F' }}
+                  style={{ backgroundColor: BRAND.green }}
                 >
                   연결하기
                 </button>
@@ -258,7 +258,7 @@ export default function Media() {
               <button
                 onClick={handleConnect}
                 className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-                style={{ backgroundColor: '#8CC63F' }}
+                style={{ backgroundColor: BRAND.green }}
               >
                 연결
               </button>
