@@ -34,16 +34,10 @@ export default function Login() {
   }, [qa])
 
   const handleLogin = async () => {
-    if (!id.trim() || !password.trim()) return
     setLoading(true)
     setLoginError('')
-    // Simulate login
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
     setLoading(false)
-    if (!['test', 'admin@wellink.co.kr'].includes(id)) {
-      setLoginError('아이디 또는 비밀번호가 올바르지 않습니다.')
-      return
-    }
     showToast('로그인되었습니다.', 'success')
     auth.set('brand')
     navigate('/dashboard')
@@ -149,14 +143,9 @@ export default function Login() {
 
         <button
           onClick={handleLogin}
-          disabled={!id.trim() || !password.trim() || loading}
-          aria-disabled={!id.trim() || !password.trim() || loading}
+          disabled={loading}
           aria-busy={loading}
-          className={`mt-5 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
-            id && password && !loading
-              ? 'bg-brand-green text-white hover:bg-brand-green-hover'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          }`}
+          className="mt-5 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 bg-brand-green text-white hover:bg-brand-green-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
@@ -179,10 +168,19 @@ export default function Login() {
       {/* Help button */}
       <button
         onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
-        className="absolute bottom-6 right-6 w-10 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-sm font-bold"
+        className="absolute bottom-6 right-20 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors text-sm font-bold border border-gray-200"
         aria-label="도움말 문의"
       >
         ?
+      </button>
+
+      {/* Quick login */}
+      <button
+        onClick={handleLogin}
+        disabled={loading}
+        className="absolute bottom-6 right-6 px-4 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-sm font-semibold disabled:opacity-60"
+      >
+        {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '로그인 →'}
       </button>
     </div>
   )
