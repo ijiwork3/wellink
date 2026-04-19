@@ -398,7 +398,7 @@ export default function InfluencerManage() {
       )}
 
       {/* 새 그룹 만들기 모달 */}
-      <Modal open={newGroupModal} onClose={() => { setNewGroupModal(false); setNewGroupName('') }} title="새 그룹 만들기">
+      <Modal open={newGroupModal} onClose={() => { setNewGroupModal(false); setNewGroupName('') }} title="새 그룹 만들기" size="sm">
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
