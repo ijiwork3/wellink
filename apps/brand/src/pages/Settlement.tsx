@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Receipt, XCircle, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Receipt, XCircle, CheckCircle2, AlertCircle } from 'lucide-react'
 import { Modal, useToast, useQAMode, ErrorState, fmtNumber } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
