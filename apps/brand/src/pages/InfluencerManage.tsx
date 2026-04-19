@@ -343,9 +343,9 @@ export default function InfluencerManage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredInfluencers.map(inf => (
               <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                {/* 프로필 행 — 아바타(데스크톱만) / 이름+카테고리 / 하트 */}
+                {/* 프로필 행 */}
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`hidden md:flex w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
+                  <div className={`flex w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
