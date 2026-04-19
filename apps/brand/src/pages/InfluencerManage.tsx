@@ -56,6 +56,7 @@ export default function InfluencerManage() {
   const [activeTab, setActiveTab] = useState('전체')
   const [newGroupModal, setNewGroupModal] = useState(qa === 'modal-new-group')
   const [newGroupName, setNewGroupName] = useState('')
+  const [newGroupError, setNewGroupError] = useState('')
   const [addToGroupDropdown, setAddToGroupDropdown] = useState<number | null>(null)
   const [confirm, setConfirm] = useState<ConfirmState>(defaultConfirm)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -133,11 +134,23 @@ export default function InfluencerManage() {
     )
   }
 
+  const GROUP_NAME_MAX = 30
+
+  const validateGroupName = (name: string): string => {
+    const trimmed = name.trim()
+    if (!trimmed) return '그룹명을 입력해 주세요.'
+    if (trimmed.length > GROUP_NAME_MAX) return `그룹명은 ${GROUP_NAME_MAX}자 이하로 입력해 주세요.`
+    if (groups.includes(trimmed)) return '이미 존재하는 그룹명입니다.'
+    return ''
+  }
+
   const createGroup = () => {
     const trimmed = newGroupName.trim()
-    if (!trimmed || groups.includes(trimmed)) return
+    const error = validateGroupName(trimmed)
+    if (error) { setNewGroupError(error); return }
     setGroups(prev => [...prev, trimmed])
     setNewGroupName('')
+    setNewGroupError('')
     setNewGroupModal(false)
     showToast('그룹이 생성되었습니다.', 'success')
   }
@@ -398,22 +411,43 @@ export default function InfluencerManage() {
       )}
 
       {/* 새 그룹 만들기 모달 */}
-      <Modal open={newGroupModal} onClose={() => { setNewGroupModal(false); setNewGroupName('') }} title="새 그룹 만들기" size="sm">
+      <Modal
+        open={newGroupModal}
+        onClose={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }}
+        title="새 그룹 만들기"
+        size="sm"
+      >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
             <input
               type="text"
               value={newGroupName}
-              onChange={e => setNewGroupName(e.target.value)}
+              onChange={e => { setNewGroupName(e.target.value); setNewGroupError('') }}
               placeholder="예: VIP 인플루언서"
-              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-150"
+              maxLength={GROUP_NAME_MAX + 1}
+              aria-invalid={!!newGroupError}
+              aria-describedby={newGroupError ? 'group-name-error' : undefined}
+              className={`w-full text-sm border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 transition-all duration-150 ${
+                newGroupError
+                  ? 'border-red-400 focus:ring-red-200'
+                  : 'border-gray-200 focus:ring-gray-200'
+              }`}
               onKeyDown={e => e.key === 'Enter' && createGroup()}
             />
+            <div className="flex items-start justify-between mt-1.5">
+              {newGroupError
+                ? <p id="group-name-error" role="alert" className="text-xs text-red-500">{newGroupError}</p>
+                : <span />
+              }
+              <span className={`text-xs ml-auto ${newGroupName.trim().length > GROUP_NAME_MAX ? 'text-red-500' : 'text-gray-400'}`}>
+                {newGroupName.trim().length}/{GROUP_NAME_MAX}
+              </span>
+            </div>
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => { setNewGroupModal(false); setNewGroupName('') }}
+              onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
             >
               취소
