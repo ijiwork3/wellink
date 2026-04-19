@@ -37,11 +37,11 @@ const DAY_MS = 86_400_000
 // 목업 데이터 — BE 연동 시 API로 교체 (최근 추가순 정렬 기준: addedAt 내림차순)
 const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const base = [
-    { id: 1, name: '이창민', category: ['피트니스', '크로스핏'], followers: 8700,  engagement: 4.1, fitScore: 92, groups: ['우수 인플루언서'] },
-    { id: 4, name: '김가애', category: ['요가'],                 followers: 18900, engagement: 4.2, fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
-    { id: 5, name: '박리나', category: ['웰니스'],               followers: 7120,  engagement: 2.2, fitScore: 71, groups: [] },
-    { id: 6, name: '최수진', category: ['러닝', '마라톤'],        followers: 12400, engagement: 3.8, fitScore: 85, groups: [] },
-    { id: 7, name: '정민준', category: ['헬스', 'PT'],           followers: 5300,  engagement: 5.1, fitScore: 79, groups: [] },
+    { id: 1, name: '이창민',                     category: ['피트니스', '크로스핏'],  followers: 8700,  engagement: 4.1, fitScore: 92, groups: ['우수 인플루언서'] },
+    { id: 4, name: '김가애',                     category: ['요가'],                followers: 18900, engagement: 4.2, fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
+    { id: 5, name: '박리나',                     category: ['웰니스'],               followers: 7120,  engagement: 2.2, fitScore: 71, groups: [] },
+    { id: 6, name: '최수진나이스바디핏니스트레이너', category: ['러닝', '마라톤', '트레일'],  followers: 12400, engagement: 3.8, fitScore: 85, groups: [] },
+    { id: 7, name: '정민준헬스앤라이프스타일코치',  category: ['헬스', 'PT', '다이어트'],  followers: 5300,  engagement: 5.1, fitScore: 79, groups: [] },
   ]
   const src = base[i % base.length]
   // 앞쪽 인덱스일수록 최근 추가 (index 0 = 오늘, 이후 하루씩 과거)
@@ -342,23 +342,14 @@ export default function InfluencerManage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredInfluencers.map(inf => (
-              <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative">
-                {/* 찜 해제 버튼 */}
-                <button
-                  onClick={() => removeBookmark(inf.id, inf.name)}
-                  className="absolute top-4 right-4"
-                  aria-label={`${inf.name} 찜 해제`}
-                >
-                  <Heart size={16} className="text-red-500 fill-red-500 hover:opacity-70 transition-opacity" aria-hidden="true" />
-                </button>
-
-                {/* 프로필 */}
-                <div className="flex items-center gap-3 mb-3">
+              <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                {/* 프로필 행 — 아바타 / 이름+카테고리 / 하트 */}
+                <div className="flex items-start gap-3 mb-3">
                   <div className={`w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">{inf.name}</p>
                       {NOW - inf.addedAt <= 7 * DAY_MS && (
                         <span className="shrink-0 text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
@@ -370,39 +361,28 @@ export default function InfluencerManage() {
                       ))}
                     </div>
                   </div>
+                  <button
+                    onClick={() => removeBookmark(inf.id, inf.name)}
+                    className="shrink-0 mt-0.5"
+                    aria-label={`${inf.name} 찜 해제`}
+                  >
+                    <Heart size={16} className="text-red-500 fill-red-500 hover:opacity-70 transition-opacity" aria-hidden="true" />
+                  </button>
                 </div>
 
-                {/* 지표 — 모바일: 세로(라벨+값 한 줄) / 데스크톱(md+): 가로 */}
-                <div className="mb-3 text-sm">
-                  {/* 모바일·태블릿 */}
-                  <div className="flex flex-col gap-1 md:hidden">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xs text-gray-400 w-14 shrink-0">팔로워</span>
-                      <span className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xs text-gray-400 w-14 shrink-0">참여율</span>
-                      <span className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xs text-gray-400 w-14 shrink-0">핏 스코어</span>
-                      <span className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
-                    </div>
+                {/* 지표 — 배지 형태, 가로 나열 + 줄바꿈 */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs text-gray-400">팔로워</span>
+                    <span className="text-sm font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
                   </div>
-                  {/* 데스크톱 */}
-                  <div className="hidden md:flex md:items-center md:gap-4">
-                    <div>
-                      <span className="text-xs text-gray-400 block">팔로워</span>
-                      <span className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-gray-400 block">참여율</span>
-                      <span className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-gray-400 block">핏 스코어</span>
-                      <span className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
-                    </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs text-gray-400">참여율</span>
+                    <span className={`text-sm font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs text-gray-400">핏 스코어</span>
+                    <span className={`text-sm font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
                   </div>
                 </div>
 
