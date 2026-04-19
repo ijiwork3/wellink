@@ -99,6 +99,8 @@ export default function InfluencerManage() {
   // 상세 모달
   const [detailInfluencer, setDetailInfluencer] = useState<Influencer | null>(null)
   const [detailTab, setDetailTab] = useState('overview')
+  const [contentSubTab, setContentSubTab] = useState<'feed' | 'reels'>('feed')
+  const [contentSort, setContentSort] = useState<'latest' | 'likes' | 'comments'>('latest')
   const [proposalModal, setProposalModal] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null)
   const [proposalSent, setProposalSent] = useState(false)
@@ -621,7 +623,7 @@ export default function InfluencerManage() {
         return (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            onClick={() => setDetailInfluencer(null)}
+            onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
           >
             <div
               className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-2xl mx-4'}`}
@@ -638,7 +640,7 @@ export default function InfluencerManage() {
                     <div className="flex items-center">
                       <h2 className="text-base font-bold text-gray-900 flex-1">{inf.name}</h2>
                       <button
-                        onClick={() => setDetailInfluencer(null)}
+                        onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
                         aria-label="닫기"
                         className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0"
                       >
@@ -791,47 +793,58 @@ export default function InfluencerManage() {
               </div>
             )}
 
-            {detailTab === 'content' && (
-              <div className="space-y-6">
-                {/* 피드 콘텐츠 */}
+            {detailTab === 'content' && (() => {
+              const isFeed = contentSubTab === 'feed'
+              const baseItems = isFeed ? feedContents : reelsContents
+              const sorted = [...baseItems].sort((a, b) => {
+                if (contentSort === 'likes') return b.likes - a.likes
+                if (contentSort === 'comments') return b.comments - a.comments
+                return 0 // latest: 원래 순서 유지
+              })
+              return (
                 <div>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <p className="text-xs font-semibold text-gray-700">피드 콘텐츠</p>
-                    <div className="flex gap-2 text-[11px] text-gray-400">
-                      <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span>
-                      <span>평균 댓글 <span className="font-semibold text-gray-600">{avgComments}</span></span>
+                  {/* 서브탭 + 정렬 */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex gap-0">
+                      {(['feed', 'reels'] as const).map(tab => (
+                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest') }}
+                          className={`text-xs px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+                          {tab === 'feed' ? '피드' : '릴스'}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
+                        <button key={val} onClick={() => setContentSort(val)}
+                          className={`text-[11px] px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
+                          {label}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {feedContents.map((c, i) => (
-                      <div key={i} className="rounded-xl overflow-hidden border border-gray-100 cursor-default" onClick={() => showToast('콘텐츠 상세는 준비 중이에요.', 'info')}>
-                        <div className={`aspect-square bg-gradient-to-br ${c.bg} flex items-center justify-center`}>
-                          <Image size={18} className="text-white/50" aria-hidden="true" />
-                        </div>
-                        <div className="px-2 py-1.5 bg-white flex gap-2">
-                          <span className="flex items-center gap-0.5 text-[10px] text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
-                          <span className="flex items-center gap-0.5 text-[10px] text-gray-400"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
-                {/* 릴스 콘텐츠 */}
-                <div>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <p className="text-xs font-semibold text-gray-700">릴스 콘텐츠</p>
-                    <div className="flex gap-2 text-[11px] text-gray-400">
-                      <span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span>
-                      <span>평균 참여율 <span className="font-semibold text-gray-600">{avgReelsEng}%</span></span>
-                    </div>
+                  {/* 통계 */}
+                  <div className="flex gap-3 text-[11px] text-gray-400 mb-3">
+                    {isFeed ? (
+                      <>
+                        <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span>
+                        <span>평균 댓글 <span className="font-semibold text-gray-600">{avgComments}</span></span>
+                      </>
+                    ) : (
+                      <>
+                        <span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span>
+                        <span>평균 참여율 <span className="font-semibold text-gray-600">{avgReelsEng}%</span></span>
+                      </>
+                    )}
                   </div>
+
+                  {/* 그리드 */}
                   <div className="grid grid-cols-3 gap-2">
-                    {reelsContents.map((c, i) => (
+                    {sorted.map((c, i) => (
                       <div key={i} className="rounded-xl overflow-hidden border border-gray-100 cursor-default" onClick={() => showToast('콘텐츠 상세는 준비 중이에요.', 'info')}>
-                        <div className={`aspect-[9/16] bg-gradient-to-br ${c.bg} flex items-center justify-center relative`}>
+                        <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
                           <Image size={18} className="text-white/50" aria-hidden="true" />
-                          <span className="absolute top-1.5 right-1.5 text-[9px] bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>
+                          {!isFeed && <span className="absolute top-1.5 right-1.5 text-[9px] bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
                         </div>
                         <div className="px-2 py-1.5 bg-white flex gap-2">
                           <span className="flex items-center gap-0.5 text-[10px] text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
@@ -841,8 +854,8 @@ export default function InfluencerManage() {
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
+              )
+            })()}
               </div>
 
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
