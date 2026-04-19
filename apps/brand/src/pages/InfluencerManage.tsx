@@ -10,6 +10,7 @@ import { useQAMode } from '@wellink/ui'
 import { getEngagementColor, getFitScoreColor } from '@wellink/ui'
 import { useIsMobile } from '../qa-mockup-kit'
 
+const INITIAL_SIZE = 100
 const PAGE_SIZE = 20
 
 interface Influencer {
@@ -30,7 +31,7 @@ interface ConfirmState {
 }
 
 // 목업 데이터 — BE 연동 시 API로 교체
-const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 48 }, (_, i) => {
+const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const base = [
     { id: 1, name: '이창민', category: ['피트니스', '크로스핏'], followers: 8700,  engagement: 4.1, fitScore: 92, groups: ['우수 인플루언서'] },
     { id: 4, name: '김가애', category: ['요가'],                 followers: 18900, engagement: 4.2, fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
@@ -61,10 +62,10 @@ export default function InfluencerManage() {
   const { showToast } = useToast()
   const isMobile = useIsMobile()
 
-  const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS.slice(0, PAGE_SIZE))
-  const [page, setPage] = useState(1)
+  const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS.slice(0, INITIAL_SIZE))
+  const [page, setPage] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(ALL_INFLUENCERS.length > PAGE_SIZE)
+  const [hasMore, setHasMore] = useState(ALL_INFLUENCERS.length > INITIAL_SIZE)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   const [groups, setGroups] = useState<string[]>(initialGroups)
@@ -84,13 +85,11 @@ export default function InfluencerManage() {
     setLoadingMore(true)
     // BE 연동 시 API 호출로 교체
     setTimeout(() => {
-      const next = page + 1
-      const start = next * PAGE_SIZE - PAGE_SIZE
-      // activeTab 기준 전체 목록에서 슬라이싱 (실제론 서버 페이지네이션)
+      const start = INITIAL_SIZE + page * PAGE_SIZE
       const more = ALL_INFLUENCERS.slice(start, start + PAGE_SIZE)
       if (more.length > 0) {
         setInfluencers(prev => [...prev, ...more])
-        setPage(next)
+        setPage(p => p + 1)
         setHasMore(start + PAGE_SIZE < ALL_INFLUENCERS.length)
       } else {
         setHasMore(false)
@@ -337,7 +336,7 @@ export default function InfluencerManage() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredInfluencers.map(inf => (
+            {filteredInfluencers.map((inf, idx) => (
               <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative">
                 {/* 찜 해제 버튼 */}
                 <button
@@ -354,7 +353,10 @@ export default function InfluencerManage() {
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900">{inf.name}</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      <span className="text-gray-400 font-normal mr-1.5">#{idx + 1}</span>
+                      {inf.name}
+                    </p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
@@ -363,17 +365,13 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
-                {/* 지표 — 데스크톱(md+): 가로 / 모바일·태블릿: 세로 */}
-                <div className="flex flex-col md:flex-row md:items-center md:gap-4 gap-1.5 text-sm mb-3">
-                  <div className="flex items-baseline gap-1.5 md:block">
+                {/* 지표 — 데스크톱(md+): 가로 / 모바일·태블릿: 세로(라벨-값 2열 그리드) */}
+                <div className="mb-3 text-sm md:flex md:items-center md:gap-4">
+                  <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-1 md:contents">
                     <span className="text-xs text-gray-400">팔로워</span>
                     <p className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</p>
-                  </div>
-                  <div className="flex items-baseline gap-1.5 md:block">
                     <span className="text-xs text-gray-400">참여율</span>
                     <p className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
-                  </div>
-                  <div className="flex items-baseline gap-1.5 md:block">
                     <span className="text-xs text-gray-400">핏 스코어</span>
                     <p className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</p>
                   </div>
