@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { StatusBadge } from '@wellink/ui'
+import { StatusBadge, getDDay } from '@wellink/ui'
 
 interface Campaign {
   id: number
@@ -12,13 +12,6 @@ interface Campaign {
 
 interface CampaignRowProps {
   campaign: Campaign
-}
-
-function getDDay(deadline: string) {
-  const diff = Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000)
-  if (diff === 0) return 'D-Day'
-  if (diff > 0) return `D-${diff}`
-  return `D+${Math.abs(diff)}`
 }
 
 export default function CampaignRow({ campaign }: CampaignRowProps) {
@@ -46,8 +39,8 @@ export default function CampaignRow({ campaign }: CampaignRowProps) {
         </div>
       </td>
       <td className="py-3 px-4">
-        <span className={`text-xs font-medium ${dday.startsWith('D-') && dday !== 'D-Day' ? 'text-orange-600' : 'text-gray-600'}`}>
-          {dday}
+        <span className={`text-xs font-medium ${dday.color}${dday.pulse ? ' animate-pulse' : ''}`}>
+          {dday.label}
         </span>
         <div className="text-xs text-gray-400">{campaign.deadline}</div>
       </td>

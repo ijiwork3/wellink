@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Check, Loader2, XCircle, RefreshCw } from 'lucide-react'
-import { InfluencerCard } from '@wellink/ui'
-import { Modal } from '@wellink/ui'
-import { CustomSelect } from '@wellink/ui'
-import { TagInput } from '@wellink/ui'
-import { FileUpload } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
-import { fmtPrice } from '@wellink/ui'
+import { InfluencerCard, Modal, CustomSelect, TagInput, FileUpload, useToast, useQAMode, fmtPrice, TIMER_MS } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const aiInfluencers = [
@@ -28,7 +21,7 @@ const goalOptions = [
 const TOTAL_STEPS = 5
 const stepLabels = ['기본정보', '예산·조건', '원고가이드', '인플루언서', '검토발행']
 
-const FILLED_S1 = { name: '봄 시즌 웰니스 캠페인', goal: '전환', channels: ['인스타그램'], startDate: '2026-05-01', endDate: '2026-05-31', applyDeadline: '2026-04-25', campaignType: '기본캠페인' as string, brandHashtags: ['#웰링크', '#건강한일상'] }
+const FILLED_S1 = { name: '봄 시즌 웰니스 캠페인', goal: '전환', channels: ['인스타그램'], startDate: '2026-05-01', endDate: '2026-05-31', applyDeadline: '2026-04-25', campaignType: '기본캠페인', brandHashtags: ['#웰링크', '#건강한일상'] }
 const FILLED_S2 = { budget: '2000000', minUnit: '50000', maxUnit: '300000', headcount: '10', supply: '배송' }
 
 // 오늘 날짜 (min 속성용) — 컴포넌트 외부 상수로 한 번만 계산
@@ -45,7 +38,7 @@ function formatNumber(v: string): string {
 function parseNumber(v: string): string {
   return v.replace(/[^0-9]/g, '')
 }
-const FILLED_S3 = { required: '제품의 건강 효능을 자연스럽게 언급해주세요. 실제 사용 경험 중심으로 제작하세요.', prohibited: ['#광고', '#협찬제품'], hashtags: ['#웰링크', '#웰니스챌린지'], contentRef: '밝고 자연스러운 라이프스타일 스타일', snsExternalUse: '사용 가능' as string }
+const FILLED_S3 = { required: '제품의 건강 효능을 자연스럽게 언급해주세요. 실제 사용 경험 중심으로 제작하세요.', prohibited: ['#광고', '#협찬제품'], hashtags: ['#웰링크', '#웰니스챌린지'], contentRef: '밝고 자연스러운 라이프스타일 스타일', snsExternalUse: '사용 가능' }
 
 // 날짜 입력 wrapper (styled)
 function StyledDateInput({ label, value, min, max, onChange }: { label: string; value: string; min: string; max?: string; onChange: (v: string) => void }) {
@@ -73,13 +66,6 @@ export default function CampaignNew() {
   const { showToast } = useToast()
 
   const isFilled = qa === 'filled' || qa === 'modal-complete'
-  const initStep = () => {
-    if (qa === 'step-2') return 2
-    if (qa === 'step-3') return 3
-    if (qa === 'step-4') return 4
-    if (qa === 'filled' || qa === 'step-5' || qa === 'modal-complete') return 5
-    return 1
-  }
 
   // AIListup에서 전달된 인플루언서 ID 파싱
   const locationSelectedIds: number[] = (() => {
@@ -88,14 +74,14 @@ export default function CampaignNew() {
     return ids.map(id => Number(id)).filter(id => !Number.isNaN(id))
   })()
 
-  const [step, setStep] = useState(initStep)
+  const [step, setStep] = useState(1)
   const [completedModal, setCompletedModal] = useState(qa === 'modal-complete')
   const [isPublishing, setIsPublishing] = useState(false)
   const [autoSaved, setAutoSaved] = useState(false)
 
-  const [s1, setS1] = useState(isFilled ? FILLED_S1 : { name: '', goal: '', channels: [] as string[], startDate: '', endDate: '', applyDeadline: '', campaignType: '기본캠페인' as string, brandHashtags: [] as string[] })
+  const [s1, setS1] = useState(isFilled ? FILLED_S1 : { name: '', goal: '', channels: [] as string[], startDate: '', endDate: '', applyDeadline: '', campaignType: '기본캠페인', brandHashtags: [] as string[] })
   const [s2, setS2] = useState(isFilled ? FILLED_S2 : { budget: '', minUnit: '', maxUnit: '', headcount: '', supply: '배송' })
-  const [s3, setS3] = useState(isFilled ? FILLED_S3 : { required: '', prohibited: [] as string[], hashtags: [] as string[], contentRef: '', snsExternalUse: '사용 불가' as string })
+  const [s3, setS3] = useState(isFilled ? FILLED_S3 : { required: '', prohibited: [] as string[], hashtags: [] as string[], contentRef: '', snsExternalUse: '사용 불가' })
   const [selected, setSelected] = useState<Set<number>>(
     isFilled
       ? new Set([1, 4])
@@ -149,7 +135,7 @@ export default function CampaignNew() {
   if (qa === 'error') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-        <XCircle size={44} className="text-red-300" />
+        <XCircle size={44} className="text-red-300" aria-hidden="true" />
         <div className="text-center">
           <p className="text-sm font-semibold text-gray-900">캠페인 등록 중 오류가 발생했습니다</p>
           <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
@@ -158,7 +144,7 @@ export default function CampaignNew() {
           onClick={() => window.location.reload()}
           className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors"
         >
-          <RefreshCw size={14} />다시 시도
+          <RefreshCw size={14} aria-hidden="true" />다시 시도
         </button>
       </div>
     )
@@ -166,7 +152,7 @@ export default function CampaignNew() {
 
   const triggerAutoSave = () => {
     setAutoSaved(true)
-    setTimeout(() => setAutoSaved(false), 2000)
+    setTimeout(() => setAutoSaved(false), TIMER_MS.AUTO_SAVE_FEEDBACK)
   }
 
   const handleNext = () => {
@@ -258,7 +244,7 @@ export default function CampaignNew() {
                     ? 'bg-brand-green text-white ring-4 ring-brand-green/20'
                     : 'bg-gray-100 text-gray-400'
                 }`}>
-                  {isDone ? <Check size={14} /> : num}
+                  {isDone ? <Check size={14} aria-hidden="true" /> : num}
                 </div>
                 <span className={`text-[10px] whitespace-nowrap transition-colors duration-150 ${
                   isActive
@@ -279,10 +265,10 @@ export default function CampaignNew() {
       </div>
 
       {/* 자동저장 표시 */}
-      <div className="flex justify-end mb-3 h-5">
+      <div className="flex justify-end mb-3 h-5" aria-live="polite">
         {autoSaved && (
-          <span className="text-xs text-gray-400 flex items-center gap-1">
-            <Loader2 size={11} className="animate-spin" />
+          <span className="text-xs text-gray-400 flex items-center gap-1" role="status">
+            <Loader2 size={11} className="animate-spin" aria-hidden="true" />
             자동 저장됨
           </span>
         )}
@@ -350,12 +336,13 @@ export default function CampaignNew() {
 
           {/* Row 3: 캠페인 목적 */}
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">캠페인 목적 *</label>
+            <label id="goal-label" className="text-xs font-medium text-gray-600 block mb-1.5">캠페인 목적 *</label>
             <CustomSelect
               value={s1.goal}
-              onChange={v => setS1(p => ({ ...p, goal: v as string }))}
+              onChange={v => setS1(p => ({ ...p, goal: v }))}
               options={goalOptions}
               placeholder="선택하세요"
+              aria-labelledby="goal-label"
             />
           </div>
 
@@ -581,7 +568,7 @@ export default function CampaignNew() {
                 {selected.has(inf.id) && (
                   <div className="absolute inset-0 rounded-xl bg-brand-green/5 pointer-events-none flex items-center justify-center">
                     <div className="absolute top-3 right-3 w-6 h-6 bg-brand-green rounded-full flex items-center justify-center">
-                      <Check size={12} className="text-white" />
+                      <Check size={12} className="text-white" aria-hidden="true" />
                     </div>
                   </div>
                 )}
@@ -707,7 +694,7 @@ export default function CampaignNew() {
       <Modal open={completedModal} onClose={() => { setCompletedModal(false); setIsPublishing(false) }} size="sm">
         <div className="text-center py-4">
           <div className="w-14 h-14 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check size={24} className="text-white" />
+            <Check size={24} className="text-white" aria-hidden="true" />
           </div>
           <h3 className="text-base font-bold text-gray-900 mb-2">캠페인이 발행되었습니다!</h3>
           <p className="text-sm text-gray-500 mb-5">인플루언서들에게 제안이 전송됩니다.</p>

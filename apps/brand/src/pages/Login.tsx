@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Lock, Eye, EyeOff } from 'lucide-react'
-import { useQAMode, BRAND } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
+import { useQAMode, auth, useToast, TIMER_MS } from '@wellink/ui'
+import { CONTACT_EMAIL, HELP_EMAIL } from '../config/urls'
 
 type UserType = '인플루언서' | '광고주'
 
@@ -38,21 +38,22 @@ export default function Login() {
     setLoading(true)
     setLoginError('')
     // Simulate login
-    await new Promise(r => setTimeout(r, 800))
+    await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
     setLoading(false)
     if (!['test', 'admin@wellink.co.kr'].includes(id)) {
       setLoginError('아이디 또는 비밀번호가 올바르지 않습니다.')
       return
     }
     showToast('로그인되었습니다.', 'success')
+    auth.set('brand')
     navigate('/dashboard')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{background: 'linear-gradient(135deg, #f0f9e8 0%, #e8f5d8 30%, #d4edba 60%, #c8e8a8 100%)'}}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{background: 'var(--gradient-login-bg)'}}>
       {/* Subtle green blobs */}
-      <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-20" style={{background: `radial-gradient(circle, ${BRAND.green}, transparent)`}} />
-      <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-15" style={{background: `radial-gradient(circle, ${BRAND.green}, transparent)`}} />
+      <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-20" style={{background: `radial-gradient(circle, var(--color-brand-green), transparent)`}} />
+      <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-15" style={{background: `radial-gradient(circle, var(--color-brand-green), transparent)`}} />
 
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 px-8 py-5 flex items-center justify-between">
@@ -61,7 +62,7 @@ export default function Login() {
           <span className="text-[10px] font-bold bg-brand-green text-white px-1.5 py-0.5 rounded-full">AI</span>
         </button>
         <button
-          onClick={() => window.open('mailto:contact@wellink.co.kr', '_blank')}
+          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}
           className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors"
         >
           도입문의
@@ -100,14 +101,17 @@ export default function Login() {
           <div>
             <label htmlFor="login-id" className="text-xs text-gray-500 mb-1.5 block">{userType} 아이디</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
-              <User size={15} className="text-gray-400 shrink-0" />
+              <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
                 id="login-id"
                 type="email"
+                autoComplete="email"
                 value={id}
                 onChange={e => { setId(e.target.value); setLoginError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="아이디를 입력해주세요"
+                aria-describedby={loginError ? 'login-error' : undefined}
+                aria-invalid={!!loginError}
                 className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
             </div>
@@ -115,15 +119,18 @@ export default function Login() {
           <div>
             <label htmlFor="login-password" className="text-xs text-gray-500 mb-1.5 block">비밀번호</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
-              <Lock size={15} className="text-gray-400 shrink-0" />
+              <Lock size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
                 id="login-password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 value={password}
                 onChange={e => { setPassword(e.target.value); setLoginError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="••••••••"
                 maxLength={100}
+                aria-describedby={loginError ? 'login-error' : undefined}
+                aria-invalid={!!loginError}
                 className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
               <button
@@ -131,11 +138,11 @@ export default function Login() {
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showPassword ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
               </button>
             </div>
             {loginError && (
-              <p className="mt-1.5 text-xs text-red-500">{loginError}</p>
+              <p id="login-error" className="mt-1.5 text-xs text-red-500" role="alert" aria-live="assertive">{loginError}</p>
             )}
           </div>
         </div>
@@ -143,6 +150,8 @@ export default function Login() {
         <button
           onClick={handleLogin}
           disabled={!id.trim() || !password.trim() || loading}
+          aria-disabled={!id.trim() || !password.trim() || loading}
+          aria-busy={loading}
           className={`mt-5 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
             id && password && !loading
               ? 'bg-brand-green text-white hover:bg-brand-green-hover'
@@ -150,7 +159,7 @@ export default function Login() {
           }`}
         >
           {loading ? (
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
           ) : (
             <>로그인 →</>
           )}
@@ -169,7 +178,7 @@ export default function Login() {
 
       {/* Help button */}
       <button
-        onClick={() => window.open('mailto:help@wellink.co.kr', '_blank')}
+        onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
         className="absolute bottom-6 right-6 w-10 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-sm font-bold"
         aria-label="도움말 문의"
       >

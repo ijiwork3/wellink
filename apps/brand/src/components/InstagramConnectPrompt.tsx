@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { SEMANTIC_COLORS, TIMER_MS } from '@wellink/ui'
 
 interface Props {
   featureName: string   // 예: '프로필 인사이트', '광고 성과', '바이럴 지표'
@@ -29,7 +30,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
       } else {
         setStep('error')
       }
-    }, 2000)
+    }, TIMER_MS.MOCK_CONNECT)
   }
 
   function handleSuccessConfirm() {
@@ -66,7 +67,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
         <button
           onClick={openModal}
           className="flex items-center gap-2 text-sm font-semibold text-white px-6 py-2.5 rounded-xl transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}
+          style={{ background: 'var(--gradient-instagram)' }}
         >
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -82,6 +83,8 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget && step !== 'loading') closeModal() }}
+          aria-hidden="true"
+          tabIndex={-1}
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
 
@@ -129,7 +132,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                   <button
                     onClick={handleConnect}
                     className="flex-1 text-sm font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90"
-                    style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}
+                    style={{ background: 'var(--gradient-instagram)' }}
                   >
                     연결 시작
                   </button>
@@ -165,7 +168,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
             {step === 'success' && (
               <div className="p-6 text-center">
                 <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke={SEMANTIC_COLORS.success} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
@@ -187,7 +190,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
             {step === 'error' && (
               <div className="p-6 text-center">
                 <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke={SEMANTIC_COLORS.error} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="8" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />

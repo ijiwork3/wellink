@@ -49,13 +49,13 @@ export function ROASSection({ data }: ROASSectionProps) {
                 <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                   Avg Conversion
                 </div>
-                <div className="text-3xl font-black text-[#0A3622]">+42%</div>
+                <div className="text-3xl font-black text-[var(--color-landing-dark)]">+42%</div>
               </div>
             </div>
           </div>
 
           <div>
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[#0A3622] uppercase">
+            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               03. Data Driven ROAS
             </span>
             <h2 className="mb-6 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
@@ -74,11 +74,11 @@ export function ROASSection({ data }: ROASSectionProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-2xl bg-slate-50 p-6">
-                <div className="text-3xl font-black text-[#0A3622]">92%</div>
+                <div className="text-3xl font-black text-[var(--color-landing-dark)]">92%</div>
                 <div className="text-sm font-bold text-slate-500">진성 유저 매칭률</div>
               </div>
               <div className="rounded-2xl bg-slate-50 p-6">
-                <div className="text-3xl font-black text-[#0A3622]">0%</div>
+                <div className="text-3xl font-black text-[var(--color-landing-dark)]">0%</div>
                 <div className="text-sm font-bold text-slate-500">허수 계정 차단</div>
               </div>
             </div>

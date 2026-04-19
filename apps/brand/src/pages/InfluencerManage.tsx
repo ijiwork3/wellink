@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
-import { avatarColors, formatFollowers, fitScoreBadge } from '../utils/influencerUtils'
+import { fmtFollowers as formatFollowers } from '@wellink/ui'
+import { AVATAR_COLORS } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { getEngagementColor, getFitScoreBadge } from '@wellink/ui'
 
 interface Influencer {
   id: number
@@ -38,7 +40,9 @@ function getBookmarkedIds(): Set<number> {
   try {
     const raw = sessionStorage.getItem('wl_bookmarks')
     if (raw) return new Set<number>(JSON.parse(raw) as number[])
-  } catch {}
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
+  }
   return new Set<number>()
 }
 
@@ -55,22 +59,6 @@ export default function InfluencerManage() {
   const [addToGroupDropdown, setAddToGroupDropdown] = useState<number | null>(null)
   const [confirm, setConfirm] = useState<ConfirmState>(defaultConfirm)
   const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // NOTE: storage 이벤트는 localStorage에서만 발생하고 sessionStorage에서는 발생하지 않음.
-  // wl_bookmarks는 sessionStorage에 저장되므로 이 이벤트 리스너는 실제로 동작하지 않음.
-  // 동일 탭 내 북마크 변경은 removeBookmark 함수에서 직접 state를 갱신하는 방식으로 처리됨.
-  // 다른 탭 간 동기화가 필요하다면 localStorage로 마이그레이션 필요.
-  //
-  // useEffect(() => {
-  //   const onStorage = (e: StorageEvent) => {
-  //     if (e.key === 'wl_bookmarks') {
-  //       const bookmarkedIds = getBookmarkedIds()
-  //       setInfluencers(initialInfluencers.filter(inf => bookmarkedIds.has(inf.id)))
-  //     }
-  //   }
-  //   window.addEventListener('storage', onStorage)
-  //   return () => window.removeEventListener('storage', onStorage)
-  // }, [])
 
   // 그룹 추가 드롭다운 바깥 클릭 시 닫기
   useEffect(() => {
@@ -208,9 +196,9 @@ export default function InfluencerManage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <Heart size={40} className="text-gray-200 mx-auto mb-3" />
+          <Heart size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-400 mb-1">찜한 인플루언서가 없습니다</p>
-          <p className="text-xs text-gray-300 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
+          <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
           <button
             onClick={() => navigate('/influencers/list')}
             className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
@@ -249,7 +237,7 @@ export default function InfluencerManage() {
       </div>
 
       {/* 그룹 탭 */}
-      <div className="flex gap-2 flex-wrap">
+      <div role="tablist" className="flex gap-2 flex-wrap">
         {tabs.map(tab => (
           <div
             key={tab}
@@ -260,10 +248,12 @@ export default function InfluencerManage() {
             }`}
           >
             <button
+              role="tab"
+              aria-selected={activeTab === tab}
               onClick={() => setActiveTab(tab)}
               className="flex items-center gap-1.5"
             >
-              {tab === '북마크' && <Heart size={13} />}
+              {tab === '북마크' && <Heart size={13} aria-hidden="true" />}
               {tab}
               <span className={`text-xs rounded-full px-1.5 py-0.5 ${
                 activeTab === tab ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
@@ -281,7 +271,7 @@ export default function InfluencerManage() {
                     : 'text-gray-400 hover:text-red-500'
                 }`}
               >
-                <X size={12} />
+                <X size={12} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -290,7 +280,7 @@ export default function InfluencerManage() {
           onClick={() => setNewGroupModal(true)}
           className="flex items-center gap-1 px-3 py-2 rounded-full text-sm border border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
         >
-          <Plus size={13} />
+          <Plus size={13} aria-hidden="true" />
           그룹 추가
         </button>
       </div>
@@ -298,7 +288,7 @@ export default function InfluencerManage() {
       {/* 인플루언서 카드 그리드 또는 빈 상태 */}
       {filteredInfluencers.length === 0 ? (
         <div className="py-16 text-center">
-          <Heart size={40} className="mx-auto text-gray-300 mb-4" />
+          <Heart size={40} className="mx-auto text-gray-400 mb-4" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
           <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
           <button
@@ -322,12 +312,12 @@ export default function InfluencerManage() {
                 title={`${inf.name} 찜 해제`}
                 aria-label={`${inf.name} 찜 해제`}
               >
-                <Heart size={16} className="text-red-500 fill-red-500 hover:opacity-70 transition-opacity" />
+                <Heart size={16} className="text-red-500 fill-red-500 hover:opacity-70 transition-opacity" aria-hidden="true" />
               </button>
 
               {/* 프로필 영역 */}
               <div className="flex items-center gap-3 mb-3">
-                <div className={`w-11 h-11 rounded-full ${avatarColors[inf.id % avatarColors.length]} flex items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
+                <div className={`w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
                   {inf.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -348,11 +338,11 @@ export default function InfluencerManage() {
                 </div>
                 <div>
                   <span className="text-xs text-gray-400">참여율</span>
-                  <p className={`font-semibold ${inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>{inf.engagement}%</p>
+                  <p className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
                 </div>
                 <div>
                   <span className="text-xs text-gray-400">핏 스코어</span>
-                  <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${fitScoreBadge(inf.fitScore)}`}>
+                  <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}>
                     {inf.fitScore}
                   </span>
                 </div>
@@ -371,7 +361,7 @@ export default function InfluencerManage() {
                       aria-label={`${g} 그룹에서 제거`}
                       className="hover:text-red-500 transition-colors"
                     >
-                      <X size={11} />
+                      <X size={11} aria-hidden="true" />
                     </button>
                   </span>
                 ))}
@@ -380,7 +370,7 @@ export default function InfluencerManage() {
                     onClick={() => setAddToGroupDropdown(addToGroupDropdown === inf.id ? null : inf.id)}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
                   >
-                    <Plus size={11} />
+                    <Plus size={11} aria-hidden="true" />
                     그룹에 추가
                   </button>
                   {addToGroupDropdown === inf.id && (

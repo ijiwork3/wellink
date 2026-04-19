@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw } from 'lucide-react'
-import { Modal } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
+import { Modal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
+import { ENTERPRISE_EMAIL } from '../config/urls'
 
 const plans = [
   {
@@ -99,7 +98,7 @@ export default function Subscription() {
       setConfirmed(false)
       showToast(`${selectedPlan?.name} 플랜으로 변경되었습니다.`, 'success')
       confirmTimerRef.current = null
-    }, 1200)
+    }, TIMER_MS.MOCK_PLAN_CHANGE)
   }
 
   const handleCloseConfirmModal = () => {
@@ -164,14 +163,14 @@ export default function Subscription() {
           <p className="text-sm text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         <div className="bg-white rounded-xl border border-red-100 shadow-sm p-12 text-center">
-          <XCircle size={40} className="text-red-400 mx-auto mb-3" />
+          <XCircle size={40} className="text-red-400 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-900 mb-1">구독 정보를 불러올 수 없습니다</p>
           <p className="text-xs text-gray-500 mb-4">잠시 후 다시 시도해 주세요.</p>
           <button
             onClick={() => window.location.reload()}
             className="text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2 mx-auto"
           >
-            <RefreshCw size={14} />다시 시도
+            <RefreshCw size={14} aria-hidden="true" />다시 시도
           </button>
         </div>
       </div>
@@ -201,7 +200,7 @@ export default function Subscription() {
       {/* QA: 구독 만료 배너 */}
       {qa === 'expired' && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
-          <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" />
+          <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-sm font-semibold text-red-700">구독이 만료되었습니다</p>
             <p className="text-xs text-red-500 mt-0.5">지금 플랜을 선택하고 서비스를 계속 이용하세요.</p>
@@ -212,7 +211,7 @@ export default function Subscription() {
       {/* QA: 결제 실패 배너 */}
       {qa === 'payment-failed' && (
         <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+          <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-sm font-semibold text-amber-800">결제에 실패했습니다</p>
             <p className="text-xs text-amber-600 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
@@ -294,7 +293,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
-                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" />
+                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -337,7 +336,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-white/90">
-                  <Check size={15} className="shrink-0 mt-0.5 text-white" />
+                  <Check size={15} className="shrink-0 mt-0.5 text-white" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -380,8 +379,8 @@ export default function Subscription() {
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
-                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" />
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-500">
+                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -408,7 +407,7 @@ export default function Subscription() {
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-            <CreditCard size={15} className="text-gray-500" />
+            <CreditCard size={15} className="text-gray-500" aria-hidden="true" />
             결제 수단
           </h3>
           <button
@@ -424,7 +423,7 @@ export default function Subscription() {
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-dashed border-gray-300">
             <div className="flex items-center gap-3">
               <div className="w-10 h-7 bg-gray-200 rounded-md flex items-center justify-center shrink-0">
-                <CreditCard size={14} className="text-gray-400" />
+                <CreditCard size={14} className="text-gray-400" aria-hidden="true" />
               </div>
               <p className="text-sm text-gray-400">등록된 결제 수단이 없습니다</p>
             </div>
@@ -459,7 +458,7 @@ export default function Subscription() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 {['내용', '금액', '날짜', '상태'].map(h => (
-                  <th key={h} className="text-left text-xs font-medium text-gray-500 py-2.5 px-5">{h}</th>
+                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-5">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -483,9 +482,9 @@ export default function Subscription() {
       {/* 미구독 상태 빈 결제내역 */}
       {(!currentPlan || qa === 'plan-free') && (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
-          <CreditCard size={32} className="text-gray-200 mx-auto mb-3" />
+          <CreditCard size={32} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm text-gray-400">결제 내역이 없습니다</p>
-          <p className="text-xs text-gray-300 mt-1">플랜 구독 후 결제 내역이 표시됩니다</p>
+          <p className="text-xs text-gray-400 mt-1">플랜 구독 후 결제 내역이 표시됩니다</p>
         </div>
       )}
 
@@ -497,7 +496,7 @@ export default function Subscription() {
           </p>
           <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
             <span className="text-sm text-gray-500">이메일</span>
-            <span className="text-sm font-semibold text-gray-900">enterprise@wellink.ai</span>
+            <span className="text-sm font-semibold text-gray-900">{ENTERPRISE_EMAIL}</span>
           </div>
           <button
             onClick={() => setInfiniteModal(false)}
@@ -513,7 +512,7 @@ export default function Subscription() {
         {confirmed ? (
           <div className="text-center py-6">
             <div className="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-3">
-              <Check size={20} className="text-white" />
+              <Check size={20} className="text-white" aria-hidden="true" />
             </div>
             <p className="text-sm font-semibold text-gray-900">플랜이 변경되었습니다!</p>
           </div>
@@ -549,7 +548,7 @@ export default function Subscription() {
             {/* 다운그레이드 경고 */}
             {currentPlan === 'scale' && confirmModal === 'focus' && (
               <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl">
-                <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
                 <p className="text-xs text-amber-700">
                   다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.
                 </p>

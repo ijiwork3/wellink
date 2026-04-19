@@ -37,6 +37,7 @@ export default function SideNav() {
                 <li key={item.path}>
                   <button
                     onClick={() => navigate(item.path)}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left ${
                       isActive
                         ? 'bg-gray-100 text-gray-900 font-medium'

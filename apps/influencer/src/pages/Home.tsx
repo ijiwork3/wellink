@@ -2,64 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Clock, Users, ChevronRight, Megaphone, Bookmark, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BRAND, useQAMode, fmtDate, getDDay, StatusBadge } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, StatusBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
+import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
 
-interface BookmarkedCampaign {
-  id: string
-  name: string
-  brand: string
-  category: string
-  channel: string
-  deadline: string
-  budget: string
-  headcount: number
-  applied: number
-  status: '모집중' | '종료'
-  thumbnailColor: string
-}
-
-const bookmarkedCampaigns: BookmarkedCampaign[] = [
-  {
-    id: '1',
-    name: '비건 단백질 쉐이크 체험단 모집',
-    brand: '그린푸드',
-    category: '맛집/푸드',
-    channel: '인스타그램',
-    deadline: '2026-04-20',
-    budget: '제품 1개월분 무료 제공',
-    headcount: 15,
-    applied: 8,
-    status: '모집중',
-    thumbnailColor: '#C4B5FD',
-  },
-  {
-    id: '2',
-    name: '크로스핏 보충제 리뷰어 모집',
-    brand: 'SMILEATO',
-    category: '어필/스포츠',
-    channel: '인스타그램/유튜브',
-    deadline: '2026-04-25',
-    budget: '보충제 풀패키지 + 활동비 10만원',
-    headcount: 10,
-    applied: 6,
-    status: '모집중',
-    thumbnailColor: '#86EFAC',
-  },
-  {
-    id: '3',
-    name: '프리미엄 요가매트 체험단',
-    brand: 'ENUF',
-    category: '어필/스포츠',
-    channel: '인스타그램',
-    deadline: '2026-04-18',
-    budget: '요가매트 1개 제공',
-    headcount: 5,
-    applied: 3,
-    status: '모집중',
-    thumbnailColor: '#93C5FD',
-  },
-]
+const bookmarkedCampaigns = mockBookmarkedCampaigns
 
 
 function ddayBgClass(textColor: string): string {
@@ -135,14 +82,13 @@ export default function Home() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
+          <XCircle size={44} className="text-red-300" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-900">홈 정보를 불러오지 못했어요</p>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: BRAND.green }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150 bg-brand-green"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} aria-hidden="true" />
             다시 시도
           </button>
         </div>
@@ -163,7 +109,7 @@ export default function Home() {
             onClick={() => navigate('/campaigns/browse')}
             className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            더 찾아보기 <ChevronRight size={12} />
+            더 찾아보기 <ChevronRight size={12} aria-hidden="true" />
           </button>
         </div>
 
@@ -171,14 +117,13 @@ export default function Home() {
           /* 빈 상태 */
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 flex flex-col items-center justify-center">
             <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-3">
-              <Heart size={24} className="text-red-300" />
+              <Heart size={24} className="text-red-300" aria-hidden="true" />
             </div>
             <p className="text-sm font-medium text-gray-500 mb-1">관심 캠페인이 없어요</p>
             <p className="text-xs text-gray-400 mb-4">마음에 드는 캠페인에 북마크를 눌러보세요</p>
             <button
               onClick={() => navigate('/campaigns/browse')}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-              style={{ backgroundColor: BRAND.green }}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 bg-brand-green"
             >
               캠페인 둘러보기
             </button>
@@ -196,10 +141,9 @@ export default function Home() {
                   <div className="flex items-start gap-3">
                     {/* 썸네일 */}
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: c.thumbnailColor + '40' }}
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${c.thumbnailClass}`}
                     >
-                      <Megaphone size={18} style={{ color: c.thumbnailColor }} />
+                      <Megaphone size={18} className={c.thumbnailTextClass} aria-hidden="true" />
                     </div>
 
                     {/* 정보 */}
@@ -222,6 +166,7 @@ export default function Home() {
                     >
                       <Bookmark
                         size={16}
+                        aria-hidden="true"
                         className={bookmarks.has(c.id) ? 'text-brand-green fill-brand-green' : 'text-gray-400'}
                       />
                     </button>
@@ -230,17 +175,17 @@ export default function Home() {
                   {/* 하단 정보 */}
                   <div className="mt-3 flex items-center gap-4">
                     <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Users size={11} />
+                      <Users size={11} aria-hidden="true" />
                       <span>{c.applied}/{c.headcount}명</span>
                     </div>
                     <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full"
-                        style={{ width: `${progressPct}%`, backgroundColor: progressPct >= 80 ? '#EF4444' : BRAND.green }}
+                        className={`h-full rounded-full ${progressPct >= 80 ? 'bg-red-500' : 'bg-brand-green'}`}
+                        style={{ width: `${progressPct}%` }}
                       />
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Clock size={11} />
+                      <Clock size={11} aria-hidden="true" />
                       <span>{fmtDate(c.deadline)}</span>
                     </div>
                   </div>

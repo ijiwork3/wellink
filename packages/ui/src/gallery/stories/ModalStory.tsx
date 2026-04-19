@@ -30,7 +30,7 @@ export default function ModalStory() {
           Small
         </button>
         <button onClick={() => setOpenMd(true)}
-          className="px-4 py-2 bg-[#8CC63F] text-white text-sm rounded-lg hover:bg-[#7AB535]">
+          className="px-4 py-2 bg-brand-green text-white text-sm rounded-lg hover:bg-brand-green-hover">
           Medium (기본)
         </button>
         <button onClick={() => setOpenLg(true)}
@@ -47,7 +47,7 @@ export default function ModalStory() {
         <p className="text-sm text-gray-600">sm 사이즈 모달입니다. 확인/취소 같은 간단한 액션에 사용합니다.</p>
         <div className="flex gap-2 mt-4 justify-end">
           <button onClick={() => setOpenSm(false)} className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">취소</button>
-          <button onClick={() => setOpenSm(false)} className="px-4 py-2 text-sm text-white bg-[#8CC63F] rounded-lg hover:bg-[#7AB535]">확인</button>
+          <button onClick={() => setOpenSm(false)} className="px-4 py-2 text-sm text-white bg-brand-green rounded-lg hover:bg-brand-green-hover">확인</button>
         </div>
       </Modal>
 
@@ -74,7 +74,7 @@ export default function ModalStory() {
         <div className="text-center py-4">
           <p className="text-lg font-semibold text-gray-900 mb-2">제목 없는 모달</p>
           <p className="text-sm text-gray-500 mb-4">title prop을 생략하면 헤더 없이 표시됩니다.</p>
-          <button onClick={() => setOpenNoTitle(false)} className="px-6 py-2 text-sm text-white bg-[#8CC63F] rounded-lg hover:bg-[#7AB535]">닫기</button>
+          <button onClick={() => setOpenNoTitle(false)} className="px-6 py-2 text-sm text-white bg-brand-green rounded-lg hover:bg-brand-green-hover">닫기</button>
         </div>
       </Modal>
 

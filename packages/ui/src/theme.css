@@ -3,9 +3,31 @@
  * 색상 변경 시 이 파일 + colors.ts 두 곳만 수정하면 됨
  */
 @theme {
+  --color-landing-dark:      #0A3622;  /* 랜딩 다크 그린 — 텍스트, 아이콘, 배경 */
+  --color-landing-lime:      #BFF264;  /* 랜딩 라임 — 포인트 컬러 */
+  --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 — gray-900 */
+
   --color-brand-green:       #8CC63F;  /* 메인 그린 — 버튼 bg, 아이콘, 포인트 */
   --color-brand-green-text:  #5a8228;  /* 텍스트/아이콘 그린 — 밝은 배경 위 */
   --color-brand-green-hover: #7AB535;  /* hover 그린 */
   --color-brand-green-bg:    #f0f9e8;  /* 연한 그린 배경 */
   --color-brand-green-border:#c5e39a;  /* 연한 그린 보더 */
+
+  --color-sparkline-success: #8CC63F;  /* 스파크라인 상승 — 브랜드 그린 */
+  --color-sparkline-alert:   #EF4444;  /* 스파크라인 하락 — 빨강 */
+
+  --color-roas-warning:      #F59E0B;  /* ROAS ≥1.5 amber */
+  --color-roas-danger:       #EF4444;  /* ROAS <1.5 red */
+
+  --color-chart-empty:       #E5E7EB;  /* 차트 빈 상태 fallback — gray-200 */
+
+  --color-chart-reach:       #3B82F6;  /* 도달 지표 — blue-500 */
+  --color-chart-comments:    #F59E0B;  /* 댓글 지표 — amber-400 */
+  --color-chart-saves:       #8B5CF6;  /* 저장 지표 — violet-500 */
+}
+
+:root {
+  --gradient-auth-bg: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 15%, transparent) 0%, #ffffff 70%);
+  --gradient-login-bg: linear-gradient(135deg, #f0f9e8 0%, #e8f5d8 30%, #d4edba 60%, #c8e8a8 100%);
+  --gradient-instagram: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
 }

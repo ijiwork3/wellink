@@ -39,7 +39,7 @@ export function PageHeader({ name, description, importPath, props }: PageHeaderP
     <div className="mb-10 pb-8 border-b border-gray-200">
       <div className="flex items-center gap-3 mb-2">
         <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
-        <span className="text-xs font-medium bg-[#8CC63F]/10 text-[#7AB535] px-2.5 py-1 rounded-full">Component</span>
+        <span className="text-xs font-medium bg-brand-green/10 text-brand-green-text px-2.5 py-1 rounded-full">Component</span>
       </div>
       <p className="text-sm text-gray-600 mb-4">{description}</p>
       <div className="inline-flex items-center gap-2 bg-gray-900 text-gray-300 text-xs px-4 py-2 rounded-lg font-mono">

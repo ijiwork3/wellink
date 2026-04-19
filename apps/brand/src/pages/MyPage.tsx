@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, XCircle, RefreshCw, ExternalLink } from 'lucide-react'
+import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, XCircle, RefreshCw, ExternalLink, Users, Trash2, Shield } from 'lucide-react'
 
 function InstagramIcon({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
@@ -11,20 +11,53 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
     </svg>
   )
 }
-import { Modal } from '@wellink/ui'
+import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 
-const tabs = ['광고주 정보', '구독 관리'] as const
+const tabs = ['광고주 정보', '팀 멤버', '구독 관리'] as const
+
+type MemberRole = 'Owner' | 'Manager' | 'Viewer'
+
+interface TeamMember {
+  id: number
+  name: string
+  email: string
+  role: MemberRole
+  joinedAt: string
+}
+
+const MOCK_MEMBERS: TeamMember[] = [
+  { id: 1, name: '이지훈', email: 'brand@wellink.ai', role: 'Owner', joinedAt: '2026-03-01' },
+  { id: 2, name: '김마케터', email: 'marketing@wellink.ai', role: 'Manager', joinedAt: '2026-03-15' },
+  { id: 3, name: '박뷰어', email: 'viewer@wellink.ai', role: 'Viewer', joinedAt: '2026-04-01' },
+]
+
+const ROLE_BADGE: Record<MemberRole, string> = {
+  Owner:   'bg-brand-green/10 text-brand-green-text',
+  Manager: 'bg-sky-100 text-sky-700',
+  Viewer:  'bg-gray-100 text-gray-600',
+}
 
 export default function MyPage() {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const qa = useQAMode()
-  // QA: tab-settings → '구독 관리' 탭 초기 활성화
+  // QA: tab-settings → '구독 관리' / tab-team → '팀 멤버' 탭 초기 활성화
   const [activeTab, setActiveTab] = useState<typeof tabs[number]>(
-    qa === 'tab-settings' ? '구독 관리' : '광고주 정보'
+    qa === 'tab-settings' ? '구독 관리' :
+    qa === 'tab-team'     ? '팀 멤버' :
+    '광고주 정보'
   )
+
+  // 팀 멤버
+  const [members, setMembers] = useState<TeamMember[]>(MOCK_MEMBERS)
+  const [inviteModal, setInviteModal] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState<MemberRole>('Manager')
+  const [deleteModal, setDeleteModal] = useState<TeamMember | null>(null)
+  const [changeRoleModal, setChangeRoleModal] = useState<TeamMember | null>(null)
+  const [changeRoleValue, setChangeRoleValue] = useState<MemberRole>('Manager')
 
   // 계정 정보
   const [name, setName] = useState('이지훈')
@@ -60,6 +93,7 @@ export default function MyPage() {
     if (qa === 'modal-password') { setPwModal(true); return }
     if (qa === 'modal-withdraw') { setWithdrawModal(true); return }
     if (qa === 'tab-settings')   { setActiveTab('구독 관리'); return }
+    if (qa === 'tab-team')       { setActiveTab('팀 멤버'); return }
   }, [qa])
 
   // QA: 로딩 상태
@@ -121,13 +155,13 @@ export default function MyPage() {
   if (qa === 'error') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <XCircle size={48} className="text-red-300" />
+        <XCircle size={48} className="text-red-300" aria-hidden="true" />
         <div className="text-center">
           <p className="text-sm font-semibold text-gray-900">계정 정보를 불러올 수 없습니다</p>
           <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
         </div>
         <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors">
-          <RefreshCw size={14} />다시 시도
+          <RefreshCw size={14} aria-hidden="true" />다시 시도
         </button>
       </div>
     )
@@ -148,8 +182,6 @@ export default function MyPage() {
       setPasswordError('모든 항목을 입력하세요.')
       return
     }
-    // TODO: 실제 API 연동 시 서버 검증으로 교체 필요
-    // (현재 API 없으므로 현재 비밀번호 검사는 임시 통과 처리)
     if (newPw.length < 8) {
       setPasswordError('비밀번호는 8자 이상이어야 합니다.')
       return
@@ -180,10 +212,10 @@ export default function MyPage() {
           <p className="text-sm text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
         </div>
         <button
-          onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), 1000) }}
+          onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
           className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
-          <LogOut size={15} />
+          <LogOut size={15} aria-hidden="true" />
           로그아웃
         </button>
       </div>
@@ -202,13 +234,81 @@ export default function MyPage() {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {tab === '광고주 정보' && <User size={14} />}
-            {tab === '구독 관리' && <Hash size={14} />}
+            {tab === '광고주 정보' && <User size={14} aria-hidden="true" />}
+            {tab === '팀 멤버' && <Users size={14} aria-hidden="true" />}
+            {tab === '구독 관리' && <Hash size={14} aria-hidden="true" />}
             {tab}
-            {tab === '구독 관리' && <ExternalLink size={12} className="ml-0.5 opacity-70" />}
+            {tab === '구독 관리' && <ExternalLink size={12} className="ml-0.5 opacity-70" aria-hidden="true" />}
           </button>
         ))}
       </div>
+
+      {/* 팀 멤버 탭 콘텐츠 */}
+      {activeTab === '팀 멤버' && (
+        <div className="space-y-4">
+          {/* 안내 + 초대 버튼 */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">팀 멤버 관리</h2>
+                <p className="text-xs text-gray-500 mt-0.5">현재 Scale 플랜 · 최대 5명까지 초대할 수 있습니다.</p>
+              </div>
+              <button
+                onClick={() => setInviteModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              >
+                <Users size={14} aria-hidden="true" />
+                멤버 초대
+              </button>
+            </div>
+          </div>
+
+          {/* 멤버 목록 */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            {members.map(member => (
+              <div key={member.id} className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors">
+                {/* 아바타 */}
+                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shrink-0 font-semibold text-sm">
+                  {member.name[0]}
+                </div>
+                {/* 정보 */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{member.name}</p>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_BADGE[member.role]}`}>
+                      {member.role}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5 truncate">{member.email}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">합류일 {member.joinedAt}</p>
+                </div>
+                {/* 액션 */}
+                {member.role !== 'Owner' && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => { setChangeRoleModal(member); setChangeRoleValue(member.role) }}
+                      className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <Shield size={12} aria-hidden="true" />
+                      권한 변경
+                    </button>
+                    <button
+                      onClick={() => setDeleteModal(member)}
+                      className="flex items-center gap-1 text-xs text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 size={12} aria-hidden="true" />
+                      삭제
+                    </button>
+                  </div>
+                )}
+                {member.role === 'Owner' && (
+                  <span className="text-xs text-gray-300 shrink-0">—</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* QA: tab-settings — 구독 관리 탭 콘텐츠 */}
       {activeTab === '구독 관리' && (
@@ -246,7 +346,7 @@ export default function MyPage() {
                 : 'bg-brand-green text-white hover:bg-brand-green-hover'
             }`}
           >
-            <Save size={14} />
+            <Save size={14} aria-hidden="true" />
             변경사항 저장
           </button>
         </div>
@@ -262,14 +362,14 @@ export default function MyPage() {
               <div>
                 <label htmlFor="mypage-email" className="text-xs text-gray-500 mb-1.5 block">이메일 주소</label>
                 <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
-                  <Mail size={15} className="text-gray-400 shrink-0" />
+                  <Mail size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <span id="mypage-email" className="text-sm text-gray-500">{email}</span>
                 </div>
               </div>
               <div>
                 <label htmlFor="mypage-name" className="text-xs text-gray-500 mb-1.5 block">이름</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
-                  <User size={15} className="text-gray-400 shrink-0" />
+                  <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <input
                     id="mypage-name"
                     type="text"
@@ -308,7 +408,7 @@ export default function MyPage() {
               <div>
                 <label htmlFor="mypage-company" className="text-xs text-gray-500 mb-1.5 block">회사명</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
-                  <Building2 size={15} className="text-gray-400 shrink-0" />
+                  <Building2 size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <input
                     id="mypage-company"
                     type="text"
@@ -323,7 +423,7 @@ export default function MyPage() {
               <div>
                 <label htmlFor="mypage-biz-number" className="text-xs text-gray-500 mb-1.5 block">사업자 등록번호</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
-                  <Hash size={15} className="text-gray-400 shrink-0" />
+                  <Hash size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <input
                     id="mypage-biz-number"
                     type="text"
@@ -339,7 +439,7 @@ export default function MyPage() {
               <div>
                 <label htmlFor="mypage-manager" className="text-xs text-gray-500 mb-1.5 block">담당자명</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
-                  <User size={15} className="text-gray-400 shrink-0" />
+                  <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <input
                     id="mypage-manager"
                     type="text"
@@ -354,7 +454,7 @@ export default function MyPage() {
               <div>
                 <label htmlFor="mypage-phone" className="text-xs text-gray-500 mb-1.5 block">연락처</label>
                 <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
-                  <Phone size={15} className="text-gray-400 shrink-0" />
+                  <Phone size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                   <input
                     id="mypage-phone"
                     type="text"
@@ -406,7 +506,7 @@ export default function MyPage() {
               </h3>
               {snsConnected && (
                 <span className="flex items-center gap-1 text-xs text-brand-green font-medium">
-                  <CheckCircle2 size={13} />
+                  <CheckCircle2 size={13} aria-hidden="true" />
                   연결됨
                 </span>
               )}
@@ -414,7 +514,7 @@ export default function MyPage() {
             <div className="border border-gray-200 rounded-xl p-5 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shrink-0">
-                  <InstagramIcon size={22} className="text-white" />
+                  <InstagramIcon size={22} className="text-white" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Instagram 비즈니스</p>
@@ -500,7 +600,7 @@ export default function MyPage() {
         <div className="space-y-4">
           <div className="flex justify-center">
             <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
-              <Link size={24} className="text-gray-400" />
+              <Link size={24} className="text-gray-400" aria-hidden="true" />
             </div>
           </div>
           <div>
@@ -534,6 +634,143 @@ export default function MyPage() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* 멤버 초대 모달 */}
+      <Modal open={inviteModal} onClose={() => { setInviteModal(false); setInviteEmail('') }} title="멤버 초대">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="invite-email" className="text-xs text-gray-500 mb-1.5 block">이메일 주소</label>
+            <input
+              id="invite-email"
+              type="email"
+              value={inviteEmail}
+              onChange={e => setInviteEmail(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              placeholder="초대할 이메일을 입력하세요"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 mb-1.5 block">권한</label>
+            <div className="flex gap-2">
+              {(['Manager', 'Viewer'] as MemberRole[]).map(role => (
+                <button
+                  key={role}
+                  onClick={() => setInviteRole(role)}
+                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                    inviteRole === role
+                      ? 'bg-brand-green text-white border-brand-green'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => { setInviteModal(false); setInviteEmail('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              disabled={!inviteEmail.trim()}
+              onClick={() => {
+                const newMember: TeamMember = {
+                  id: Date.now(),
+                  name: inviteEmail.split('@')[0],
+                  email: inviteEmail,
+                  role: inviteRole,
+                  joinedAt: '2026-04-19',
+                }
+                setMembers(prev => [...prev, newMember])
+                setInviteModal(false)
+                setInviteEmail('')
+                showToast(`${inviteEmail}에 초대 메일을 발송했습니다.`, 'success')
+              }}
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              초대하기
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 권한 변경 모달 */}
+      <Modal open={!!changeRoleModal} onClose={() => setChangeRoleModal(null)} title="권한 변경">
+        {changeRoleModal && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              <strong>{changeRoleModal.name}</strong>의 권한을 변경합니다.
+            </p>
+            <div className="flex gap-2">
+              {(['Manager', 'Viewer'] as MemberRole[]).map(role => (
+                <button
+                  key={role}
+                  onClick={() => setChangeRoleValue(role)}
+                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                    changeRoleValue === role
+                      ? 'bg-brand-green text-white border-brand-green'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setChangeRoleModal(null)}
+                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setMembers(prev => prev.map(m =>
+                    m.id === changeRoleModal.id ? { ...m, role: changeRoleValue } : m
+                  ))
+                  setChangeRoleModal(null)
+                  showToast(`${changeRoleModal.name}의 권한이 ${changeRoleValue}로 변경되었습니다.`, 'success')
+                }}
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              >
+                변경하기
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* 멤버 삭제 모달 */}
+      <Modal open={!!deleteModal} onClose={() => setDeleteModal(null)} title="멤버 삭제">
+        {deleteModal && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              <strong>{deleteModal.name}</strong>({deleteModal.email})을 팀에서 제거하시겠습니까?
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteModal(null)}
+                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setMembers(prev => prev.filter(m => m.id !== deleteModal.id))
+                  showToast(`${deleteModal.name}이(가) 팀에서 제거되었습니다.`, 'info')
+                  setDeleteModal(null)
+                }}
+                className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* 회원 탈퇴 모달 (QA: modal-withdraw) */}
@@ -570,7 +807,7 @@ export default function MyPage() {
                 setWithdrawModal(false)
                 setWithdrawConfirmText('')
                 showToast('탈퇴 처리가 완료되었습니다.', 'info')
-                setTimeout(() => navigate('/'), 1500)
+                setTimeout(() => navigate('/'), TIMER_MS.NAV_DELAY)
               }}
               className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >

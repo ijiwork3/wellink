@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
-import { KPICard } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
-import { fmtNumber, BRAND } from '@wellink/ui'
+import { KPICard, ErrorState, useQAMode, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
+import { getDateLabel } from '../utils/getDateLabel'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 
 const periods = ['일간', '주간', '월간', '연간'] as const
@@ -124,32 +122,14 @@ const contentTypeData = [
 ]
 
 const metricColors = {
-  likes:    BRAND.green,
-  reach:    '#3B82F6',
-  comments: '#F59E0B',
-  saves:    '#8B5CF6',
+  likes:    'var(--color-brand-green)',
+  reach:    'var(--color-chart-reach)',
+  comments: 'var(--color-chart-comments)',
+  saves:    'var(--color-chart-saves)',
 }
 
 type MetricKey = keyof typeof metricColors
 
-function getDateLabel(period: Period, offset: number): string {
-  const now = new Date()
-  if (period === '일간') {
-    const d = new Date(now); d.setDate(d.getDate() + offset)
-    return `${d.getMonth() + 1}/${d.getDate()}`
-  }
-  if (period === '주간') {
-    const start = new Date(now); start.setDate(start.getDate() + offset * 7 - start.getDay() + 1)
-    const end = new Date(start); end.setDate(start.getDate() + 6)
-    return `${start.getMonth() + 1}/${start.getDate()} – ${end.getMonth() + 1}/${end.getDate()}`
-  }
-  if (period === '연간') {
-    const year = now.getFullYear() + offset
-    return `${year}년`
-  }
-  const d = new Date(now.getFullYear(), now.getMonth() + offset, 1)
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월`
-}
 
 /** 팔로워 추이 바 차트 — null = 회색 점선 바, 30개 이상은 라벨 간소화 */
 function FollowerBarChart({ data }: { data: BarDataItem[] }) {
@@ -223,11 +203,11 @@ function MultiLineTrendChart({
   }
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ maxHeight: '200px' }}>
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ maxHeight: '200px' }} role="img" aria-label="기간별 지표 추이 차트">
       {/* 그리드 라인 */}
       {[0, 0.25, 0.5, 0.75, 1].map(ratio => {
         const y = padY + chartH - ratio * chartH
-        return <line key={ratio} x1={padX} y1={y} x2={width - padX} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+        return <line key={ratio} x1={padX} y1={y} x2={width - padX} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
 
       {/* null 구간 배경 음영 */}
@@ -255,7 +235,7 @@ function MultiLineTrendChart({
               y={padY}
               width={Math.max(0, xEnd - xStart)}
               height={chartH}
-              fill="#f9fafb"
+              fill={CHART_COLORS.nullBg}
               rx={4}
             />
           )
@@ -270,7 +250,7 @@ function MultiLineTrendChart({
         if (firstNullEnd < 0) return null
         const cx = padX + (chartW / Math.max(1, data.length - 1)) * (firstNullEnd / 2)
         return (
-          <text x={cx} y={padY + chartH / 2 + 4} textAnchor="middle" fill="#d1d5db" fontSize="10">
+          <text x={cx} y={padY + chartH / 2 + 4} textAnchor="middle" fill={CHART_COLORS.nullText} fontSize="10">
             데이터 없음
           </text>
         )
@@ -323,7 +303,7 @@ function MultiLineTrendChart({
         const doShow = isDense ? (d.showLabel ?? false) : true
         if (!doShow) return null
         return (
-          <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? '#d1d5db' : '#9ca3af'} fontSize="10">
+          <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize="10">
             {d.label}
           </text>
         )
@@ -561,7 +541,7 @@ export default function ProfileInsight() {
                 </div>
                 <div className="flex gap-3 text-xs text-right">
                   <span className="text-gray-700 w-14">도달 <strong>{fmtNumber(ct.avgReach)}</strong></span>
-                  <span className={`font-semibold w-10 ${ct.engagementRate >= 4 ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                  <span className={`font-semibold w-10 ${ct.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
                     {ct.engagementRate}%
                   </span>
                 </div>
@@ -603,12 +583,12 @@ export default function ProfileInsight() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left text-xs font-medium text-gray-400 pb-3 pr-4">기간</th>
-                <th className="text-right text-xs font-medium text-gray-400 pb-3 px-4">도달</th>
-                <th className="text-right text-xs font-medium text-gray-400 pb-3 px-4">좋아요</th>
-                <th className="text-right text-xs font-medium text-gray-400 pb-3 px-4">댓글</th>
-                <th className="text-right text-xs font-medium text-gray-400 pb-3 px-4">저장</th>
-                <th className="text-right text-xs font-medium text-gray-400 pb-3">참여율</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-400 pb-3 pr-4">기간</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">도달</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">좋아요</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">댓글</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">저장</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3">참여율</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -628,7 +608,7 @@ export default function ProfileInsight() {
                         <td className="py-2.5 text-right">
                           {(() => {
                             const engRate = (((d.likes as number) + (d.comments as number) + (d.saves as number)) / (d.reach as number) * 100).toFixed(1)
-                            const isGood = parseFloat(engRate) >= 4
+                            const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
                             const isBad  = parseFloat(engRate) < 2.5
                             return (
                               <span className={`text-xs font-semibold ${isGood ? 'text-brand-green' : isBad ? 'text-red-500' : 'text-gray-700'}`}>

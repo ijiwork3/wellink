@@ -22,12 +22,13 @@
  * deps: react, lucide-react, tailwind v4, html2canvas
  */
 
-import { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
+import { useState, useEffect, useRef, useCallback, createContext, useContext, type CSSProperties } from 'react';
 import {
   Smartphone, Tablet, Monitor,
   Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
 
 // ─────────────────────────────────────────────────────────────
 // 타입 & 상수
@@ -163,7 +164,7 @@ export function DeviceToggle({
         ['tablet',  <Tablet size={13} />,  '태블릿'],
         ['phone',   <Smartphone size={13} />, '스마트폰'],
       ] as [DeviceMode, React.ReactNode, string][]).map(([mode, icon, label]) => (
-        <button key={mode} onClick={() => setDeviceMode(mode)} title={label}
+        <button key={mode} onClick={() => setDeviceMode(mode)} title={label} aria-label={label}
           className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
             deviceMode === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-600'
           }`}>
@@ -183,7 +184,7 @@ export function ScreenBadge({ label }: { label: string }) {
   const copy = () => {
     navigator.clipboard.writeText(label);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), TIMER_MS.CLIPBOARD_FEEDBACK);
   };
   return (
     <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-2 shadow-md text-[12px] text-slate-600 whitespace-nowrap">
@@ -202,12 +203,12 @@ export function ScreenBadge({ label }: { label: string }) {
 
 export function StateDropdown({
   items,
-  accentColor = '#8736e3',
+  accentColor = QA_ACCENT_COLOR,
   onNavigate,
 }: {
   items: StatusItem[];
   accentColor?: string;
-  onNavigate?: (result: { path?: string }) => void;
+  onNavigate?: (result: { state?: string; tab?: string; path?: string }) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -233,6 +234,7 @@ export function StateDropdown({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(v => !v)}
+        aria-label="QA 상태 선택"
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
         style={selected ? { borderColor: accentColor, color: accentColor } : undefined}
       >
@@ -398,7 +400,7 @@ export function QANavigator<S extends string, T extends string>({
 
   const handleGo = () => {
     const result = parseQAPath(input.trim(), validStates, tabMap);
-    if (!result) { setError(true); setTimeout(() => setError(false), 1200); return; }
+    if (!result) { setError(true); setTimeout(() => setError(false), TIMER_MS.QA_STATE_RESET); return; }
     onNavigate(result);
     setInput('');
   };
@@ -433,7 +435,8 @@ export function ResetButton({ onReset }: { onReset: () => void }) {
   return (
     <button onClick={onReset}
       className="w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full shadow flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-white transition-colors"
-      title="초기화">
+      title="초기화"
+      aria-label="초기화">
       <Power size={14} />
     </button>
   );
@@ -448,7 +451,7 @@ export function ScreenshotButton({ targetId }: { targetId: string }) {
 
   const capture = async () => {
     const el = document.getElementById(targetId);
-    if (!el) { setState('error'); setTimeout(() => setState('idle'), 1500); return; }
+    if (!el) { setState('error'); setTimeout(() => setState('idle'), TIMER_MS.STATE_FEEDBACK); return; }
 
     setState('capturing');
     try {
@@ -471,7 +474,7 @@ export function ScreenshotButton({ targetId }: { targetId: string }) {
       el.style.transformOrigin = prevTransformOrigin;
 
       canvas.toBlob(blob => {
-        if (!blob) { setState('error'); setTimeout(() => setState('idle'), 1500); return; }
+        if (!blob) { setState('error'); setTimeout(() => setState('idle'), TIMER_MS.STATE_FEEDBACK); return; }
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -479,11 +482,11 @@ export function ScreenshotButton({ targetId }: { targetId: string }) {
         a.click();
         URL.revokeObjectURL(url);
         setState('done');
-        setTimeout(() => setState('idle'), 1800);
+        setTimeout(() => setState('idle'), TIMER_MS.LONG_TASK_FEEDBACK);
       }, 'image/png');
     } catch {
       setState('error');
-      setTimeout(() => setState('idle'), 1500);
+      setTimeout(() => setState('idle'), TIMER_MS.STATE_FEEDBACK);
     }
   };
 
@@ -514,7 +517,7 @@ function QATopBar<S extends string, T extends string>({
   screenLabel: string;
   stateItems: StatusItem[];
   statusItems: StatusItem[];
-  onNavigate: (result: { state?: S; tab?: T; path?: string }) => void;
+  onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
   return (
@@ -525,7 +528,7 @@ function QATopBar<S extends string, T extends string>({
       <ScreenBadge label={screenLabel} />
       {/* 우: 상태 + 경로 드롭다운 */}
       <div className="flex items-center gap-1.5">
-        <StateDropdown items={stateItems} accentColor={accentColor} onNavigate={onNavigate as any} />
+        <StateDropdown items={stateItems} accentColor={accentColor} onNavigate={onNavigate as (result: { state?: string; tab?: string; path?: string }) => void} />
         <PathDropdown items={statusItems} onNavigate={onNavigate} accentColor={accentColor} />
       </div>
     </div>
@@ -576,7 +579,7 @@ export function MockupShell<S extends string, T extends string>({
   statusItems = [],
   onNavigate,
   onReset,
-  accentColor = '#8736e3',
+  accentColor = QA_ACCENT_COLOR,
   children,
   defaultDevice = 'desktop',
   containerClassName,
@@ -612,7 +615,7 @@ export function MockupShell<S extends string, T extends string>({
         screenLabel={screenLabel}
         stateItems={stateItems}
         statusItems={statusItems}
-        onNavigate={onNavigate as any}
+        onNavigate={onNavigate}
         accentColor={accentColor}
       />
 
@@ -626,8 +629,8 @@ export function MockupShell<S extends string, T extends string>({
             transformOrigin: 'center center',
             borderRadius: radius,
             flexShrink: 0,
-            containerType: 'inline-size' as any,
-          }}
+            ['container-type' as string]: 'inline-size',
+          } as CSSProperties}
           className={`overflow-hidden flex flex-col ${containerClassName ?? 'bg-white'}`}
         >
           <DeviceModeContext.Provider value={deviceMode}>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, Mail } from 'lucide-react'
-import { BRAND, useQAMode } from '@wellink/ui'
+import { useQAMode, auth, TIMER_MS } from '@wellink/ui'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -46,12 +46,13 @@ export default function Login() {
     if (!id.trim() || !password.trim()) return
     setLoading(true)
     setError('')
-    await new Promise(r => setTimeout(r, 700))
+    await new Promise(r => setTimeout(r, TIMER_MS.MOCK_LOGIN))
     setLoading(false)
     if (id !== 'test@wellink.co.kr') {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.')
       return
     }
+    auth.set('influencer')
     navigate('/campaigns/browse')
   }
 
@@ -60,7 +61,7 @@ export default function Login() {
       {/* 로고 */}
       <div className="absolute top-0 left-0 right-0 px-6 py-4 flex items-center justify-between">
         <button onClick={() => navigate('/campaigns/browse')} className="flex items-center gap-1.5">
-          <span className="text-base font-bold tracking-tight" style={{ color: BRAND.green }}>WELLINK AI</span>
+          <span className="text-base font-bold tracking-tight text-brand-green">WELLINK AI</span>
         </button>
         <button
           onClick={() => navigate('/signup')}
@@ -81,7 +82,8 @@ export default function Login() {
           <div className="relative">
             <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
-              type="text"
+              type="email"
+              autoComplete="email"
               placeholder="이메일"
               aria-label="이메일"
               value={id}
@@ -96,6 +98,7 @@ export default function Login() {
             <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
               placeholder="비밀번호"
               aria-label="비밀번호"
               value={password}
@@ -113,13 +116,14 @@ export default function Login() {
             </button>
           </div>
 
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-red-500" role="alert" aria-live="assertive">{error}</p>}
 
           <button
             onClick={handleLogin}
             disabled={!id.trim() || !password.trim() || loading}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 disabled:opacity-40 hover:opacity-90"
-            style={{ backgroundColor: BRAND.green }}
+            aria-disabled={!id.trim() || !password.trim() || loading}
+            aria-busy={loading}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 disabled:opacity-40 hover:opacity-90"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, Search, XCircle, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BRAND, Modal } from '@wellink/ui'
+import { Modal, ErrorState, TIMER_MS, SEMANTIC_COLORS } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
-import { campaigns } from '../data/campaigns'
+import { mockCampaigns as campaigns } from '../services/mock/campaigns'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 
@@ -33,7 +33,7 @@ export default function CampaignDetail() {
     setApplied(true)
     setApplyModalOpen(false)
     setSuccessModal(true)
-    setTimeout(() => setSuccessModal(false), 2500)
+    setTimeout(() => setSuccessModal(false), TIMER_MS.SUCCESS_MODAL_CLOSE)
   }
 
   if (qa === 'loading') {
@@ -80,17 +80,8 @@ export default function CampaignDetail() {
   if (qa === 'error') {
     return (
       <Layout showSidebar={false}>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">캠페인 정보를 불러오지 못했어요</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: BRAND.green }}
-          >
-            <RefreshCw size={14} />
-            다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="캠페인 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )
@@ -99,19 +90,11 @@ export default function CampaignDetail() {
   if (!campaign) {
     return (
       <Layout showSidebar={false}>
-        <div className="max-w-screen-xl mx-auto px-6 py-20 flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-            <Search size={28} className="text-gray-300" />
-          </div>
-          <p className="text-sm font-medium text-gray-500 mb-1">캠페인을 찾을 수 없어요</p>
-          <p className="text-xs text-gray-400 mb-4">잘못된 링크이거나 삭제된 캠페인이에요</p>
-          <button
-            onClick={() => navigate('/campaigns/browse')}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-            style={{ backgroundColor: BRAND.green }}
-          >
-            캠페인 목록으로
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState
+            message="캠페인을 찾을 수 없어요"
+            onRetry={() => navigate('/campaigns/browse')}
+          />
         </div>
       </Layout>
     )
@@ -125,7 +108,7 @@ export default function CampaignDetail() {
           onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/campaigns/browse')}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors duration-150"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={16} aria-hidden="true" />
           목록으로
         </button>
 
@@ -139,8 +122,7 @@ export default function CampaignDetail() {
           )}
           {/* 이미지 배너 */}
           <div
-            className="h-56 flex items-center justify-center text-8xl relative"
-            style={{ backgroundColor: '#f0fce8' }}
+            className="h-56 flex items-center justify-center text-8xl relative bg-brand-green/10"
           >
             {campaign.image}
           </div>
@@ -159,15 +141,16 @@ export default function CampaignDetail() {
                   showToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
                 }}
                 aria-pressed={liked}
-                aria-label={liked ? '관심 캠페인 해제' : '관심 캠페인 등록'}
+                aria-label={liked ? '좋아요 취소' : '좋아요'}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 ${
                   liked ? 'border-red-300' : 'border-gray-200'
                 }`}
               >
                 <Heart
                   size={16}
-                  fill={liked ? '#ef4444' : 'none'}
-                  color={liked ? '#ef4444' : '#9ca3af'}
+                  aria-hidden="true"
+                  fill={liked ? SEMANTIC_COLORS.heart : 'none'}
+                  color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
                 />
                 <span className={`text-sm ${liked ? 'text-red-500' : 'text-gray-500'}`}>
                   {liked ? '관심등록됨' : '관심등록'}
@@ -181,14 +164,14 @@ export default function CampaignDetail() {
             {/* 기간 정보 */}
             <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 mb-5">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50">
-                <Calendar size={18} style={{ color: BRAND.green }} />
+                <Calendar size={18} className="text-brand-green" aria-hidden="true" />
                 <div>
                   <p className="text-xs text-gray-500">신청 마감</p>
                   <p className="text-sm font-semibold text-gray-900">{campaign.applyEnd}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50">
-                <Clock size={18} style={{ color: BRAND.green }} />
+                <Clock size={18} className="text-brand-green" aria-hidden="true" />
                 <div>
                   <p className="text-xs text-gray-500">게시 마감</p>
                   <p className="text-sm font-semibold text-gray-900">{campaign.postEnd}</p>
@@ -198,7 +181,7 @@ export default function CampaignDetail() {
 
             {/* 채널 */}
             <div className="flex items-center gap-3 mb-5 p-4 rounded-xl bg-gray-50">
-              <Users size={18} style={{ color: BRAND.green }} />
+              <Users size={18} className="text-brand-green" aria-hidden="true" />
               <div>
                 <p className="text-xs text-gray-500">모집 채널</p>
                 <p className="text-sm font-semibold text-gray-900">{campaign.channel}</p>
@@ -208,7 +191,7 @@ export default function CampaignDetail() {
             {/* 보상 */}
             {campaign.reward && (
               <div className="mb-5 p-4 rounded-xl border border-brand-green/20 bg-brand-green/5 flex items-start gap-3">
-                <Gift size={18} className="text-brand-green-text flex-shrink-0 mt-0.5" />
+                <Gift size={18} className="text-brand-green-text flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
                   <p className="text-xs font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
                   <p className="text-sm font-medium text-gray-900">{campaign.reward}</p>
@@ -223,7 +206,7 @@ export default function CampaignDetail() {
                 <ul className="space-y-2">
                   {campaign.conditions.map((cond, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                      <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0" style={{ color: BRAND.green }} />
+                      <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0 text-brand-green" aria-hidden="true" />
                       {cond}
                     </li>
                   ))}
@@ -238,16 +221,15 @@ export default function CampaignDetail() {
               </div>
             ) : applied ? (
               <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green bg-brand-green/5 flex items-center justify-center gap-2">
-                <CheckCircle2 size={16} />
+                <CheckCircle2 size={16} aria-hidden="true" />
                 신청완료
               </div>
             ) : (
               <button
                 onClick={() => setApplyModalOpen(true)}
-                className={`w-full py-3 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 ${
+                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 ${
                   campaign.status === '마감임박' ? 'animate-pulse' : ''
                 }`}
-                style={{ backgroundColor: BRAND.green }}
               >
                 신청하기
               </button>
@@ -274,8 +256,7 @@ export default function CampaignDetail() {
             </button>
             <button
               onClick={handleApply}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-              style={{ backgroundColor: BRAND.green }}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90"
             >
               신청하기
             </button>
@@ -285,25 +266,29 @@ export default function CampaignDetail() {
 
       {/* 신청 완료 성공 모달 */}
       {successModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="success-modal-title"
+          onKeyDown={e => e.key === 'Escape' && setSuccessModal(false)}
+        >
           <div
             className="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 mx-4"
             style={{ animation: 'scaleIn 0.2s ease-out' }}
           >
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: '#f0fce8' }}
+              className="w-20 h-20 rounded-full bg-brand-green/10 flex items-center justify-center"
             >
-              <CheckCircle2 size={40} style={{ color: BRAND.green }} />
+              <CheckCircle2 size={40} className="text-brand-green" aria-hidden="true" />
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-gray-900">신청 완료!</p>
+              <p id="success-modal-title" className="text-lg font-bold text-gray-900">신청 완료!</p>
               <p className="text-sm text-gray-500 mt-1">브랜드 검토 후 결과를 알려드릴게요</p>
             </div>
             <button
               onClick={() => { setSuccessModal(false); navigate('/campaigns/my') }}
-              className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-              style={{ backgroundColor: BRAND.green }}
+              className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-colors"
             >
               나의 캠페인 확인
             </button>

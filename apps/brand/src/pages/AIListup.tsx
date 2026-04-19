@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Sparkles, ArrowRight, Loader2, Check } from 'lucide-react'
-import { CustomSelect } from '@wellink/ui'
+import { CustomSelect, PlatformBadge, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
-import { avatarColors, formatFollowers } from '../utils/influencerUtils'
+import { AVATAR_COLORS } from '@wellink/ui'
+import { formatFollowers } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { ENGAGEMENT_THRESHOLD, FITSCORE_THRESHOLD } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const recommendedInfluencers = [
@@ -28,17 +30,10 @@ const followerOptions = [
   { label: '매크로 (10만+)', value: 'macro' },
 ]
 
-const platformBadge: Record<string, string> = {
-  '인스타그램': 'bg-[#E1306C]/10 text-[#E1306C]',
-  '유튜브': 'bg-red-100 text-red-700',
-  '틱톡': 'bg-gray-100 text-gray-700',
-}
-
-const fitScoreColor = (score: number) => {
-  if (score >= 85) return 'bg-brand-green'
-  if (score >= 70) return 'bg-gray-400'
-  return 'bg-gray-300'
-}
+const fitScoreBarColor = (score: number) =>
+  score >= FITSCORE_THRESHOLD.excellent ? 'bg-brand-green'
+  : score >= FITSCORE_THRESHOLD.average ? 'bg-gray-400'
+  : 'bg-gray-300'
 
 type Phase = 'idle' | 'loading' | 'done'
 
@@ -58,7 +53,7 @@ export default function AIListup() {
     setTimeout(() => {
       setPhase('done')
       showToast('AI 리스트업이 완료됐어요.', 'success')
-    }, 2200)
+    }, TIMER_MS.MOCK_AI_ANALYZE)
   }
 
   const toggleSelect = (id: number) => {
@@ -80,7 +75,7 @@ export default function AIListup() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <Sparkles size={40} className="text-gray-200 mx-auto mb-3" />
+          <Sparkles size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-400 mb-1">분석 결과가 없어요</p>
           <p className="text-xs text-gray-300 mb-4">AI 리스트업을 실행해 인플루언서를 추천받아 보세요.</p>
           <button
@@ -99,9 +94,9 @@ export default function AIListup() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center w-full max-w-sm">
-          <div className="relative inline-block mb-4">
+          <div className="relative inline-block mb-4" role="status" aria-label="AI 분석 중">
             <div className="w-16 h-16 rounded-full bg-brand-green/10 flex items-center justify-center">
-              <Loader2 size={28} className="animate-spin text-brand-green" />
+              <Loader2 size={28} className="animate-spin text-brand-green" aria-hidden="true" />
             </div>
           </div>
           <p className="text-sm font-semibold text-gray-900 mb-1">AI가 인플루언서를 분석 중입니다...</p>
@@ -124,7 +119,7 @@ export default function AIListup() {
       <div className="flex items-center gap-3 bg-brand-green/5 border border-brand-green/20 rounded-2xl px-5 py-4">
         <div className="relative flex items-center justify-center w-12 h-12 shrink-0">
           <div className="absolute inset-0 bg-brand-green/10 rounded-full" />
-          <Sparkles size={22} className="text-brand-green relative z-10" />
+          <Sparkles size={22} className="text-brand-green relative z-10" aria-hidden="true" />
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">AI 인플루언서 리스트업</p>
@@ -150,19 +145,21 @@ export default function AIListup() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">선호 플랫폼</label>
+              <label id="platform-label" className="text-xs font-medium text-gray-600 block mb-1.5">선호 플랫폼</label>
               <CustomSelect
                 value={prefPlatform}
-                onChange={v => setPrefPlatform(v as string)}
+                onChange={v => setPrefPlatform(v)}
                 options={platformOptions}
+                aria-labelledby="platform-label"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">팔로워 규모</label>
+              <label id="follower-label" className="text-xs font-medium text-gray-600 block mb-1.5">팔로워 규모</label>
               <CustomSelect
                 value={followerRange}
-                onChange={v => setFollowerRange(v as string)}
+                onChange={v => setFollowerRange(v)}
                 options={followerOptions}
+                aria-labelledby="follower-label"
               />
             </div>
           </div>
@@ -172,14 +169,14 @@ export default function AIListup() {
               className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors duration-150 flex items-center justify-center gap-2"
             >
               직접 인플루언서 찾아보기
-              <ArrowRight size={15} />
+              <ArrowRight size={15} aria-hidden="true" />
             </button>
             <button
               onClick={handleAnalyze}
               disabled={!prompt.trim()}
               className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Sparkles size={15} />
+              <Sparkles size={15} aria-hidden="true" />
               분석 시작
             </button>
           </div>
@@ -237,7 +234,7 @@ export default function AIListup() {
             if (filtered.length === 0) {
               return (
                 <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-                  <Sparkles size={36} className="text-gray-200 mx-auto mb-3" />
+                  <Sparkles size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
                   <p className="text-sm font-semibold text-gray-400 mb-1">선택한 조건에 해당하는 인플루언서가 없어요</p>
                   <p className="text-xs text-gray-300">플랫폼 또는 팔로워 규모 필터를 변경해 보세요.</p>
                 </div>
@@ -252,7 +249,7 @@ export default function AIListup() {
                 role="checkbox"
                 aria-checked={selected.has(inf.id)}
                 tabIndex={0}
-                onKeyDown={e => { if (e.key === ' ') { e.preventDefault(); toggleSelect(inf.id) } }}
+                onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleSelect(inf.id) } }}
                 className={`relative bg-white rounded-xl border p-4 cursor-pointer transition-all duration-150 ${
                   selected.has(inf.id)
                     ? 'border-brand-green shadow-md'
@@ -265,19 +262,17 @@ export default function AIListup() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className={`w-11 h-11 rounded-full ${avatarColors[inf.id % avatarColors.length]} flex items-center justify-center text-gray-700 font-semibold shrink-0`}>
+                  <div className={`w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-semibold shrink-0`}>
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-sm text-gray-900">{inf.name}</span>
-                      <span className={`text-xs font-medium rounded-full px-2 py-0.5 ${platformBadge[inf.platform] ?? 'bg-gray-100 text-gray-600'}`}>
-                        {inf.platform}
-                      </span>
+                      <PlatformBadge platform={inf.platform} />
                     </div>
                     <div className="flex gap-3 mt-1 text-xs">
                       <span className="text-gray-500">팔로워 {formatFollowers(inf.followers)}</span>
-                      <span className={`font-medium ${inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-500' : 'text-red-500'}`}>참여율 {inf.engagement}%</span>
+                      <span className={`font-medium ${inf.engagement >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : inf.engagement >= ENGAGEMENT_THRESHOLD.low ? 'text-gray-500' : 'text-red-500'}`}>참여율 {inf.engagement}%</span>
                       <span className={`font-medium ${inf.authentic >= 80 ? 'text-brand-green-text' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>진성 {inf.authentic}%</span>
                     </div>
                     <div className="flex gap-1 mt-2 flex-wrap">
@@ -290,7 +285,7 @@ export default function AIListup() {
                       <span className="text-xs text-gray-500 shrink-0">Fit Score</span>
                       <div className="flex-1 bg-gray-100 rounded-full h-1.5">
                         <div
-                          className={`h-1.5 rounded-full ${fitScoreColor(inf.fitScore)}`}
+                          className={`h-1.5 rounded-full ${fitScoreBarColor(inf.fitScore)}`}
                           style={{ width: `${inf.fitScore}%` }}
                         />
                       </div>
@@ -302,7 +297,7 @@ export default function AIListup() {
                   <div className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
                     selected.has(inf.id) ? 'bg-brand-green border-brand-green' : 'border-gray-300'
                   }`}>
-                    {selected.has(inf.id) && <Check size={12} className="text-white" />}
+                    {selected.has(inf.id) && <Check size={12} className="text-white" aria-hidden="true" />}
                   </div>
                 </div>
               </div>
@@ -319,7 +314,7 @@ export default function AIListup() {
                 className="bg-white text-gray-900 text-sm font-medium px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors duration-150 flex items-center gap-2"
               >
                 캠페인에 추가하기
-                <ArrowRight size={14} />
+                <ArrowRight size={14} aria-hidden="true" />
               </button>
             </div>
           )}

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -16,8 +17,9 @@ import CampaignDetail from './pages/CampaignDetail'
 import Library from './pages/Library'
 import Subscription from './pages/Subscription'
 import MyPage from './pages/MyPage'
+import Settlement from './pages/Settlement'
 import { MockupShell, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider, BRAND } from '@wellink/ui'
+import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
 const BRAND_TAB_MAP: Record<string, string> = {
   login: '/login',
@@ -279,6 +281,18 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
+  /* ────────────────── 정산 관리 ────────────────── */
+  {
+    label: '정산 관리',
+    children: [
+      { label: '기본 (정산 목록)', path: '/settlement' },
+      { label: '로딩', path: '/settlement?qa=loading' },
+      { label: '빈 상태', path: '/settlement?qa=empty' },
+      { label: '모달 — 승인 확인', path: '/settlement?qa=modal-approve' },
+      { label: '에러', path: '/settlement?qa=error' },
+    ],
+  },
+
   /* ────────────────── 마이페이지 ────────────────── */
   {
     label: '마이페이지',
@@ -286,6 +300,7 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '기본 (광고주 정보 탭)', path: '/mypage' },
       { label: '로딩 스켈레톤', path: '/mypage?qa=loading' },
       { label: '편집 모드 강조', path: '/mypage?qa=edit' },
+      { label: '탭 — 팀 멤버', path: '/mypage?qa=tab-team' },
       { label: '탭 — 구독 관리', path: '/mypage?qa=tab-settings' },
       { label: '모달 — 비밀번호 변경', path: '/mypage?qa=modal-password' },
       { label: '모달 — 회원 탈퇴', path: '/mypage?qa=modal-withdraw' },
@@ -298,6 +313,30 @@ function AppRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/dashboard':          '대시보드 — WELLINK AI',
+      '/analytics/profile':  '프로필 인사이트 — WELLINK AI',
+      '/analytics/ads':      '광고 성과 — WELLINK AI',
+      '/analytics/viral':    '바이럴 지표 — WELLINK AI',
+      '/influencers/list':   '인플루언서 리스트 — WELLINK AI',
+      '/influencers/manage': '인플루언서 관리 — WELLINK AI',
+      '/influencers/dm':     'DM 관리 — WELLINK AI',
+      '/influencers/ai':     'AI 리스트업 — WELLINK AI',
+      '/campaigns':          '캠페인 관리 — WELLINK AI',
+      '/campaigns/new':      '새 캠페인 등록 — WELLINK AI',
+      '/library':            '콘텐츠 라이브러리 — WELLINK AI',
+      '/subscription':       '구독 관리 — WELLINK AI',
+      '/mypage':             '마이페이지 — WELLINK AI',
+      '/login':              '로그인 — WELLINK AI',
+      '/signup':             '회원가입 — WELLINK AI',
+    }
+    const path = location.pathname
+    // campaign detail: /campaigns/:id
+    const title = titles[path] ?? (path.startsWith('/campaigns/') ? '캠페인 상세 — WELLINK AI' : 'WELLINK AI')
+    document.title = title
+  }, [location.pathname])
+
   return (
     <MockupShell
       appLabel="[광고주 어드민]"
@@ -308,36 +347,39 @@ function AppRoutes() {
       statusItems={STATUS_ITEMS}
       onNavigate={({ path }) => path && navigate(path)}
       onReset={() => navigate('/dashboard')}
-      accentColor={BRAND.green}
+      accentColor="var(--color-brand-green)"
       defaultDevice="desktop"
       containerClassName="bg-white"
     >
       <div className="w-full h-full overflow-y-auto">
-        <Routes>
-          {/* 공개 페이지 (온보딩) */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+        <ErrorBoundary>
+          <Routes>
+            {/* 공개 페이지 (온보딩) */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          {/* 어드민 페이지 (Sidebar 레이아웃) */}
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/analytics/profile" element={<ProfileInsight />} />
-            <Route path="/analytics/ads" element={<AdPerformance />} />
-            <Route path="/analytics/viral" element={<ViralMetrics />} />
-            <Route path="/influencers/list" element={<InfluencerList />} />
-            <Route path="/influencers/manage" element={<InfluencerManage />} />
-            <Route path="/influencers/dm" element={<DMManage />} />
-            <Route path="/influencers/ai" element={<AIListup />} />
-            <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/campaigns/new" element={<CampaignNew />} />
-            <Route path="/campaigns/:id" element={<CampaignDetail />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/subscription" element={<Subscription />} />
-            <Route path="/mypage" element={<MyPage />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+            {/* 어드민 페이지 (Sidebar 레이아웃) — 인증 필요 */}
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/analytics/profile" element={<ProfileInsight />} />
+              <Route path="/analytics/ads" element={<AdPerformance />} />
+              <Route path="/analytics/viral" element={<ViralMetrics />} />
+              <Route path="/influencers/list" element={<InfluencerList />} />
+              <Route path="/influencers/manage" element={<InfluencerManage />} />
+              <Route path="/influencers/dm" element={<DMManage />} />
+              <Route path="/influencers/ai" element={<AIListup />} />
+              <Route path="/campaigns" element={<Campaigns />} />
+              <Route path="/campaigns/new" element={<CampaignNew />} />
+              <Route path="/campaigns/:id" element={<CampaignDetail />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/subscription" element={<Subscription />} />
+              <Route path="/settlement" element={<Settlement />} />
+              <Route path="/mypage" element={<MyPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </div>
     </MockupShell>
   )

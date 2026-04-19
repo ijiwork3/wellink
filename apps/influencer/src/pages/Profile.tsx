@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { User, Activity, Camera, Star, TrendingUp, Megaphone, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BRAND, CustomCheckbox } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputClass, TIMER_MS } from '@wellink/ui'
 import { Toggle } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -12,8 +12,6 @@ const activityFields = [
   '헬스', '필라테스', '요가', '크로스핏', '수영', '스포츠', '기타', '아웃도어(배낭여행·트레킹)',
 ]
 
-const inputClass =
-  'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
 
 export default function Profile() {
   const qa = useQAMode()
@@ -33,6 +31,7 @@ export default function Profile() {
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('modal') === 'password') setPwModalOpen(true)
@@ -83,14 +82,13 @@ export default function Profile() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
+          <XCircle size={44} className="text-red-300" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-900">프로필 정보를 불러오지 못했어요</p>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: BRAND.green }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150 bg-brand-green"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} aria-hidden="true" />
             다시 시도
           </button>
         </div>
@@ -107,13 +105,11 @@ export default function Profile() {
     })
   }
 
-  const [isSaving, setIsSaving] = useState(false)
-
   const handleSave = async () => {
     if (!name.trim()) { showToast('이름을 입력해 주세요', 'error'); return }
     if (selectedFields.size === 0) { showToast('활동 분야를 최소 1개 선택해 주세요', 'error'); return }
     setIsSaving(true)
-    await new Promise(r => setTimeout(r, 800))
+    await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
     setIsSaving(false)
     setIsEditing(false)
     setSavedName(name)
@@ -137,6 +133,12 @@ export default function Profile() {
     showToast('비밀번호가 변경되었습니다!', 'success')
   }
 
+  const stats = useMemo(() => [
+    { icon: <TrendingUp size={13} className="text-brand-green" aria-hidden="true" />, label: '팔로워', value: '8,700' },
+    { icon: <Star size={13} className="text-amber-500" aria-hidden="true" />, label: '평균 참여율', value: '4.1%' },
+    { icon: <Megaphone size={13} className="text-gray-500" aria-hidden="true" />, label: '완료 캠페인', value: '3건' },
+  ], [])
+
   return (
     <Layout>
       <div className="space-y-4 max-w-xl">
@@ -145,14 +147,14 @@ export default function Profile() {
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-green/30 to-brand-green/10 flex items-center justify-center shrink-0">
-                <User size={28} className="text-brand-green" />
+                <User size={28} className="text-brand-green" aria-hidden="true" />
               </div>
               <button
                 onClick={() => showToast('프로필 사진 변경 기능은 준비 중이에요', 'info')}
                 aria-label="프로필 사진 변경"
                 className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-brand-green rounded-full flex items-center justify-center hover:bg-brand-green-hover transition-colors"
               >
-                <Camera size={10} className="text-white" />
+                <Camera size={10} className="text-white" aria-hidden="true" />
               </button>
             </div>
             <div className="flex-1">
@@ -161,11 +163,7 @@ export default function Profile() {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2 @sm:gap-3 mt-4">
-            {[
-              { icon: <TrendingUp size={13} className="text-brand-green" />, label: '팔로워', value: '8,700' },
-              { icon: <Star size={13} className="text-amber-500" />, label: '평균 참여율', value: '4.1%' },
-              { icon: <Megaphone size={13} className="text-gray-500" />, label: '완료 캠페인', value: '3건' },
-            ].map(stat => (
+            {stats.map(stat => (
               <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex justify-center mb-1">{stat.icon}</div>
                 <p className="text-sm font-bold text-gray-900">{stat.value}</p>
@@ -191,7 +189,7 @@ export default function Profile() {
         {/* 기본 정보 카드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-2 mb-5">
-            <User size={16} style={{ color: BRAND.green }} />
+            <User size={16} className="text-brand-green" aria-hidden="true" />
             <h2 className="text-base font-semibold text-gray-900">기본 정보</h2>
           </div>
 
@@ -225,8 +223,7 @@ export default function Profile() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호</label>
               <button
                 onClick={() => setPwModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 hover:bg-brand-green/5"
-                style={{ borderColor: BRAND.green, color: BRAND.green }}
+                className="px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 hover:bg-brand-green/5 border-brand-green text-brand-green"
               >
                 비밀번호 변경하기
               </button>
@@ -253,7 +250,7 @@ export default function Profile() {
         {/* 활동 분야 카드 */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-2 mb-5">
-            <Activity size={16} style={{ color: BRAND.green }} />
+            <Activity size={16} className="text-brand-green" aria-hidden="true" />
             <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
           </div>
 
@@ -274,7 +271,7 @@ export default function Profile() {
               <p className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
               <p className="text-xs text-gray-500 mt-0.5">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
             </div>
-            <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} />
+            <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} label="마케팅 수신 동의" />
           </div>
         </div>
 
@@ -282,8 +279,7 @@ export default function Profile() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ backgroundColor: BRAND.green }}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
         >
           {isSaving ? '저장 중...' : '저장하기'}
         </button>
@@ -330,8 +326,7 @@ export default function Profile() {
           </button>
           <button
             onClick={handlePwChange}
-            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90"
-            style={{ backgroundColor: BRAND.green }}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 bg-brand-green"
           >
             변경하기
           </button>

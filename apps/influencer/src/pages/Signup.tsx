@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
-import { BRAND, CustomCheckbox } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
+import { CustomCheckbox, useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS } from '@wellink/ui'
+import { BRAND_URL, CONTACT_EMAIL } from '../config/urls'
 
 const activityFields = ['피트니스', '요가', '영양·식단', '뷰티', '라이프스타일', '스포츠', '아웃도어', '멘탈헬스']
-
-const inputBase =
-  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
 
 const FILLED_FORM = {
   name: '김인플루', email: 'influencer@wellink.co.kr', password: 'pass1234!',
@@ -17,6 +14,7 @@ const FILLED_FORM = {
 export default function Signup() {
   const navigate = useNavigate()
   const qa = useQAMode()
+  const { showToast } = useToast()
 
   const initForm = () => {
     if (qa === 'filled' || qa === 'verified') return { ...FILLED_FORM }
@@ -31,7 +29,6 @@ export default function Signup() {
   )
   const [phoneVerified, setPhoneVerified] = useState(qa === 'verified')
   const [instaVerified, setInstaVerified] = useState(qa === 'verified')
-  const [toast, setToast] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -57,11 +54,6 @@ export default function Signup() {
       setInstaVerified(false)
     }
   }, [qa])
-
-  const showToast = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(''), 2500)
-  }
 
   const toggleField = (field: string) => {
     setSelectedFields((prev) => {
@@ -92,20 +84,19 @@ export default function Signup() {
     setTimeout(() => {
       setIsSubmitting(false)
       navigate('/home')
-    }, 800)
+    }, TIMER_MS.FORM_SUBMIT)
   }
 
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
-      style={{ background: 'linear-gradient(135deg, rgba(140,198,63,0.15) 0%, #ffffff 70%)' }}
+      style={{ background: 'var(--gradient-auth-bg)' }}
     >
       {/* 도입문의 버튼 */}
       <div className="fixed top-4 right-4 z-10">
         <button
-          onClick={() => window.open('mailto:contact@wellink.co.kr')}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150"
-          style={{ color: BRAND.green }}
+          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
+          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green"
         >
           도입문의
         </button>
@@ -114,7 +105,7 @@ export default function Signup() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         {/* 로고 */}
         <div className="text-center mb-7">
-          <h1 className="text-2xl font-black" style={{ color: BRAND.green }}>WELLINK AI</h1>
+          <h1 className="text-2xl font-black text-brand-green">WELLINK AI</h1>
           <p className="text-sm text-gray-500 mt-1">인플루언서 포털 회원가입</p>
         </div>
 
@@ -125,12 +116,15 @@ export default function Signup() {
             <input
               id="signup-name"
               type="text"
+              autoComplete="name"
               placeholder="실명을 입력해 주세요"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
+              aria-describedby={errors.name ? 'inf-signup-name-error' : undefined}
+              aria-invalid={!!errors.name}
               className={`${inputBase} ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+            {errors.name && <p id="inf-signup-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
           </div>
 
           {/* 이메일 */}
@@ -139,12 +133,15 @@ export default function Signup() {
             <input
               id="signup-email"
               type="email"
+              autoComplete="email"
               placeholder="example@email.com"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
+              aria-describedby={errors.email ? 'inf-signup-email-error' : undefined}
+              aria-invalid={!!errors.email}
               className={`${inputBase} ${errors.email ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+            {errors.email && <p id="inf-signup-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
           </div>
 
           {/* 비밀번호 */}
@@ -153,12 +150,15 @@ export default function Signup() {
             <input
               id="signup-password"
               type="password"
+              autoComplete="new-password"
               placeholder="8자 이상 입력해 주세요"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
+              aria-describedby={errors.password ? 'inf-signup-password-error' : undefined}
+              aria-invalid={!!errors.password}
               className={`${inputBase} ${errors.password ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
+            {errors.password && <p id="inf-signup-password-error" className="text-xs text-red-500 mt-1" role="alert">{errors.password}</p>}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -167,12 +167,15 @@ export default function Signup() {
             <input
               id="signup-password-confirm"
               type="password"
+              autoComplete="new-password"
               placeholder="비밀번호를 다시 입력해 주세요"
               value={form.passwordConfirm}
               onChange={(e) => setForm({ ...form, passwordConfirm: e.target.value })}
+              aria-describedby={errors.passwordConfirm ? 'inf-signup-password-confirm-error' : undefined}
+              aria-invalid={!!errors.passwordConfirm}
               className={`${inputBase} ${errors.passwordConfirm ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.passwordConfirm && <p className="text-xs text-red-500 mt-1">{errors.passwordConfirm}</p>}
+            {errors.passwordConfirm && <p id="inf-signup-password-confirm-error" className="text-xs text-red-500 mt-1" role="alert">{errors.passwordConfirm}</p>}
           </div>
 
           {/* 전화번호 — 인증하기 인라인 */}
@@ -182,6 +185,7 @@ export default function Signup() {
               <input
                 id="signup-phone"
                 type="tel"
+                autoComplete="tel"
                 placeholder="010-0000-0000"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -195,9 +199,8 @@ export default function Signup() {
                   showToast('인증번호가 발송됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  phoneVerified ? 'bg-brand-green/10 text-brand-green-text' : 'text-white hover:opacity-90'
+                  phoneVerified ? 'bg-brand-green/10 text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
-                style={!phoneVerified ? { backgroundColor: BRAND.green } : {}}
               >
                 {phoneVerified && <CheckCircle2 size={13} />}
                 {phoneVerified ? '인증완료' : '인증하기'}
@@ -226,9 +229,8 @@ export default function Signup() {
                   showToast('인스타그램 연동이 완료됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  instaVerified ? 'bg-brand-green/10 text-brand-green-text' : 'text-white hover:opacity-90'
+                  instaVerified ? 'bg-brand-green/10 text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
-                style={!instaVerified ? { backgroundColor: BRAND.green } : {}}
               >
                 {instaVerified && <CheckCircle2 size={13} />}
                 {instaVerified ? '인증완료' : '인증하기'}
@@ -255,8 +257,7 @@ export default function Signup() {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ backgroundColor: BRAND.green }}
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
           >
             {isSubmitting ? '처리 중...' : '회원 인증 후 가입하기'}
           </button>
@@ -265,9 +266,8 @@ export default function Signup() {
           <p className="text-center text-sm text-gray-500">
             이미 계정이 있으신가요?{' '}
             <button
-              onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/login`}
-              className="font-medium hover:underline transition-colors duration-150"
-              style={{ color: BRAND.green }}
+              onClick={() => window.location.href = `${BRAND_URL}/login`}
+              className="font-medium hover:underline transition-colors duration-150 text-brand-green"
             >
               로그인하기
             </button>
@@ -275,16 +275,6 @@ export default function Signup() {
         </div>
       </div>
 
-      {/* 토스트 */}
-      {toast && (
-        <div
-          className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 bg-white border border-brand-green/30 rounded-xl px-4 py-3 shadow-lg min-w-[260px]"
-          style={{ animation: 'slideInRight 0.2s ease-out' }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
-          <span className="text-sm font-medium text-gray-900">{toast}</span>
-        </div>
-      )}
     </div>
   )
 }

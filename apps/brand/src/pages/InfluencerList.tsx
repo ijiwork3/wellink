@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Search, ChevronLeft, ChevronRight, CheckCircle, Heart, Sparkles, Target, Lightbulb, TrendingUp, Image, MessageCircle, Users } from 'lucide-react'
-import { CustomSelect } from '@wellink/ui'
+import { CustomSelect, TIMER_MS } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
-import { avatarColors, formatFollowers, fitScoreBadge, fitScoreLabel } from '../utils/influencerUtils'
+import { fmtFollowers as formatFollowers } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { AVATAR_COLORS } from '@wellink/ui'
+import { getEngagementColor, getAuthenticColor, getFitScoreBadge, getFitScoreLabel, getFitScoreColor, getRecommendedCampaignType } from '@wellink/ui'
+import { FITSCORE_THRESHOLD, ENGAGEMENT_THRESHOLD } from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const influencers = [
@@ -86,7 +89,9 @@ export default function InfluencerList() {
     try {
       const raw = sessionStorage.getItem('wl_bookmarks')
       if (raw) return new Set<number>(JSON.parse(raw) as number[])
-    } catch {}
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
+    }
     return new Set<number>()
   })
   const { showToast } = useToast()
@@ -157,15 +162,15 @@ export default function InfluencerList() {
           <p className="text-sm text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Users size={40} className="text-gray-200 mx-auto mb-3" />
+          <Users size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-400 mb-1">인플루언서 데이터가 없습니다</p>
-          <p className="text-xs text-gray-300">구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다.</p>
+          <p className="text-xs text-gray-400">구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다.</p>
         </div>
       </div>
     )
   }
 
-  const toggleBookmark = (id: number) => {
+  const toggleBookmark = useCallback((id: number) => {
     // 최초 찜 클릭 시 sessionStorage 소멸 안내 (1회만)
     if (!sessionStorage.getItem('wl_bookmark_warned')) {
       sessionStorage.setItem('wl_bookmark_warned', '1')
@@ -177,30 +182,32 @@ export default function InfluencerList() {
       else next.add(id)
       try {
         sessionStorage.setItem('wl_bookmarks', JSON.stringify(Array.from(next)))
-      } catch {}
+      } catch (e) {
+        if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
+      }
       return next
     })
-  }
+  }, [showToast])
 
-  useEffect(() => {
-    try {
-      sessionStorage.setItem('wl_bookmarks', JSON.stringify(Array.from(bookmarked)))
-    } catch {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const filtered = influencers.filter(inf => {
+  const filtered = useMemo(() => influencers.filter(inf => {
     if (search && !inf.name.includes(search)) return false
     if (category && !inf.category.includes(category)) return false
-    if (fitScoreFilter === '85+' && inf.fitScore < 85) return false
-    if (fitScoreFilter === '70+' && inf.fitScore < 70) return false
-    if (fitScoreFilter === 'under70' && inf.fitScore >= 70) return false
-    if (engagementFilter === 'high' && inf.engagement < 4) return false
-    if (engagementFilter === 'mid' && (inf.engagement < 2 || inf.engagement >= 4)) return false
-    if (engagementFilter === 'low' && inf.engagement >= 2) return false
+    if (fitScoreFilter === '85+' && inf.fitScore < FITSCORE_THRESHOLD.excellent) return false
+    if (fitScoreFilter === '70+' && inf.fitScore < FITSCORE_THRESHOLD.average) return false
+    if (fitScoreFilter === 'under70' && inf.fitScore >= FITSCORE_THRESHOLD.average) return false
+    if (engagementFilter === 'high' && inf.engagement < ENGAGEMENT_THRESHOLD.high) return false
+    if (engagementFilter === 'mid' && (inf.engagement < ENGAGEMENT_THRESHOLD.low || inf.engagement >= ENGAGEMENT_THRESHOLD.high)) return false
+    if (engagementFilter === 'low' && inf.engagement >= ENGAGEMENT_THRESHOLD.low) return false
     if (followerTier && getFollowerTier(inf.followers) !== followerTier) return false
     return true
-  })
+  }), [search, category, fitScoreFilter, engagementFilter, followerTier])
+
+  const summaryStats = useMemo(() => [
+    { label: '전체 인플루언서', value: influencers.length + '명' },
+    { label: '즐겨찾기', value: bookmarked.size + '명' },
+    { label: '평균 Fit Score', value: Math.round(influencers.reduce((s, i) => s + i.fitScore, 0) / influencers.length) + '점' },
+    { label: '평균 참여율', value: (influencers.filter(i => i.engagement > 0).reduce((s, i) => s + i.engagement, 0) / influencers.filter(i => i.engagement > 0).length).toFixed(1) + '%' },
+  ], [bookmarked.size])
 
   const perPage = 5
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
@@ -220,7 +227,7 @@ export default function InfluencerList() {
       }
       setSelectedInfluencer(null)
       showToast(`${influencerName}님에게 제안을 전송했습니다.`, 'success')
-    }, 1200)
+    }, TIMER_MS.MOCK_SEND)
   }
 
   return (
@@ -232,12 +239,7 @@ export default function InfluencerList() {
 
       {/* 요약 통계 */}
       <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3">
-        {[
-          { label: '전체 인플루언서', value: influencers.length + '명' },
-          { label: '즐겨찾기', value: bookmarked.size + '명' },
-          { label: '평균 Fit Score', value: Math.round(influencers.reduce((s, i) => s + i.fitScore, 0) / influencers.length) + '점' },
-          { label: '평균 참여율', value: (influencers.filter(i => i.engagement > 0).reduce((s, i) => s + i.engagement, 0) / influencers.filter(i => i.engagement > 0).length).toFixed(1) + '%' },
-        ].map(stat => (
+        {summaryStats.map(stat => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
             <p className="text-xs text-gray-400">{stat.label}</p>
             <p className="text-lg font-bold text-gray-900 mt-0.5">{stat.value}</p>
@@ -248,7 +250,7 @@ export default function InfluencerList() {
       {/* 검색 & 필터 */}
       <div className="flex flex-col @sm:flex-row gap-2.5 flex-wrap items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <input
             type="text"
             placeholder="이름으로 검색..."
@@ -261,28 +263,28 @@ export default function InfluencerList() {
         <div className="w-full @sm:w-36">
           <CustomSelect
             value={category}
-            onChange={(v: string | string[]) => { setCategory(v as string); setPage(1) }}
+            onChange={v => { setCategory(v); setPage(1) }}
             options={categoryOptions}
           />
         </div>
         <div className="w-full @sm:w-36">
           <CustomSelect
             value={fitScoreFilter}
-            onChange={(v: string | string[]) => { setFitScoreFilter(v as string); setPage(1) }}
+            onChange={v => { setFitScoreFilter(v); setPage(1) }}
             options={fitScoreOptions}
           />
         </div>
         <div className="w-full @sm:w-36">
           <CustomSelect
             value={engagementFilter}
-            onChange={(v: string | string[]) => { setEngagementFilter(v as string); setPage(1) }}
+            onChange={v => { setEngagementFilter(v); setPage(1) }}
             options={engagementOptions}
           />
         </div>
         <div className="w-full @sm:w-40">
           <CustomSelect
             value={followerTier}
-            onChange={(v: string | string[]) => { setFollowerTier(v as string); setPage(1) }}
+            onChange={v => { setFollowerTier(v); setPage(1) }}
             options={followerTierOptions}
           />
         </div>
@@ -294,8 +296,8 @@ export default function InfluencerList() {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              {['인플루언서', '카테고리', '팔로워', '참여율', 'Fit Score', '진성비율', '최근 콘텐츠', ''].map(h => (
-                <th key={h} className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+              {['인플루언서', '카테고리', '팔로워', '참여율', 'Fit Score', '진성비율', '최근 콘텐츠', '액션'].map(h => (
+                <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h === '액션' ? <span className="sr-only">액션</span> : h}</th>
               ))}
             </tr>
           </thead>
@@ -303,7 +305,7 @@ export default function InfluencerList() {
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-16 text-center">
-                  <Search size={40} className="text-gray-200 mx-auto mb-3" />
+                  <Search size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
                   <p className="text-sm text-gray-500 font-medium">
                     {qa === 'filter-empty' ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다.'}
                   </p>
@@ -319,27 +321,29 @@ export default function InfluencerList() {
             ) : paginated.map(inf => (
               <tr
                 key={inf.id}
-                className="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                className="hover:bg-gray-50 cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:bg-brand-green/5"
                 onClick={() => { setSelectedInfluencer(inf); setDetailTab('overview') }}
                 role="button"
                 tabIndex={0}
-                onKeyDown={e => { if (e.key === 'Enter') { setSelectedInfluencer(inf); setDetailTab('overview') } }}
+                aria-label={`${inf.name} 상세 보기`}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInfluencer(inf); setDetailTab('overview') } }}
               >
                 {/* 인플루언서 (이름 + 북마크) */}
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full ${avatarColors[inf.id % avatarColors.length]} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                    <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                       {inf.name[0]}
                     </div>
                     <span className="text-sm font-medium text-gray-900">{inf.name}</span>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
-                      className="shrink-0"
+                      className="shrink-0 p-2 -m-2"
                     >
                       <Heart
                         size={14}
                         className={bookmarked.has(inf.id) ? 'text-red-500 fill-red-500' : 'text-gray-300 hover:text-red-400'}
+                        aria-hidden="true"
                       />
                     </button>
                   </div>
@@ -359,7 +363,7 @@ export default function InfluencerList() {
 
                 {/* 참여율 */}
                 <td className="py-3 px-4 text-sm font-medium">
-                  <span className={inf.engagement >= 4 ? 'text-brand-green-text' : inf.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}>
+                  <span className={getEngagementColor(inf.engagement)}>
                     {inf.engagement}%
                   </span>
                 </td>
@@ -367,9 +371,9 @@ export default function InfluencerList() {
                 {/* Fit Score (원형 배지) */}
                 <td className="py-3 px-4">
                   <span
-                    className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${fitScoreBadge(inf.fitScore)}`}
-                    aria-label={`Fit Score ${inf.fitScore} — ${fitScoreLabel(inf.fitScore)}`}
-                    title={`Fit Score ${inf.fitScore} — ${fitScoreLabel(inf.fitScore)}`}
+                    className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}
+                    aria-label={`Fit Score ${inf.fitScore} — ${getFitScoreLabel(inf.fitScore)}`}
+                    title={`Fit Score ${inf.fitScore} — ${getFitScoreLabel(inf.fitScore)}`}
                   >
                     {inf.fitScore}
                   </span>
@@ -377,7 +381,7 @@ export default function InfluencerList() {
 
                 {/* 진성비율 */}
                 <td className="py-3 px-4">
-                  <span className={`text-sm font-medium ${inf.authentic >= 80 ? 'text-brand-green-text' : inf.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                  <span className={`text-sm font-medium ${getAuthenticColor(inf.authentic)}`}>
                     {inf.authentic}%
                   </span>
                 </td>
@@ -391,7 +395,7 @@ export default function InfluencerList() {
                       'bg-gradient-to-br from-green-100 to-green-200',
                     ].map((bg, i) => (
                       <div key={i} className={`w-12 h-12 rounded-lg ${bg} flex items-center justify-center`}>
-                        <Image size={12} className="text-white/60" />
+                        <Image size={12} className="text-white/60" aria-hidden="true" />
                       </div>
                     ))}
                   </div>
@@ -420,7 +424,7 @@ export default function InfluencerList() {
         </div>
 
         {/* 페이지네이션 */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-50">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-50" aria-live="polite" aria-atomic="true">
           <span className="text-xs text-gray-500">총 {filtered.length}명 중 {paginated.length}명 표시</span>
           <div className="flex items-center gap-1">
             <button
@@ -429,7 +433,7 @@ export default function InfluencerList() {
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors duration-150"
               disabled={page === 1}
             >
-              <ChevronLeft size={15} />
+              <ChevronLeft size={15} aria-hidden="true" />
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
               <button
@@ -446,7 +450,7 @@ export default function InfluencerList() {
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors duration-150"
               disabled={page === totalPages}
             >
-              <ChevronRight size={15} />
+              <ChevronRight size={15} aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -461,17 +465,17 @@ export default function InfluencerList() {
         {selectedInfluencer && (
           <div>
             <div className="flex items-center flex-wrap gap-4 mb-5 -mt-2">
-              <div className={`w-14 h-14 rounded-full ${avatarColors[selectedInfluencer.id % avatarColors.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
+              <div className={`w-14 h-14 rounded-full ${AVATAR_COLORS[selectedInfluencer.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
                 {selectedInfluencer.name[0]}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-lg font-bold text-gray-900">{selectedInfluencer.name}</h2>
                   <span
-                    className={`text-xs font-bold rounded-full px-2.5 py-1 ${fitScoreBadge(selectedInfluencer.fitScore)}`}
-                    aria-label={`Fit Score ${selectedInfluencer.fitScore} — ${fitScoreLabel(selectedInfluencer.fitScore)}`}
+                    className={`text-xs font-bold rounded-full px-2.5 py-1 ${getFitScoreBadge(selectedInfluencer.fitScore)}`}
+                    aria-label={`Fit Score ${selectedInfluencer.fitScore} — ${getFitScoreLabel(selectedInfluencer.fitScore)}`}
                   >
-                    Fit {selectedInfluencer.fitScore} ({fitScoreLabel(selectedInfluencer.fitScore)})
+                    Fit {selectedInfluencer.fitScore} ({getFitScoreLabel(selectedInfluencer.fitScore)})
                   </span>
                 </div>
                 <div className="flex gap-2 mt-1 flex-wrap">
@@ -489,10 +493,12 @@ export default function InfluencerList() {
             </div>
 
             {/* 탭 (개요 / 최근 콘텐츠) */}
-            <div className="flex border-b border-gray-100 mb-4 -mx-6 px-6">
+            <div role="tablist" className="flex border-b border-gray-100 mb-4 -mx-6 px-6">
               {[['overview', '개요'], ['content', '최근 콘텐츠']].map(([key, label]) => (
                 <button
                   key={key}
+                  role="tab"
+                  aria-selected={detailTab === key}
                   onClick={() => setDetailTab(key)}
                   className={`text-sm px-3 py-2.5 border-b-2 transition-all duration-150 ${
                     detailTab === key
@@ -521,19 +527,19 @@ export default function InfluencerList() {
                   ))}
                   <div className="bg-gray-50 rounded-xl p-3">
                     <div className="text-xs text-gray-500 mb-1">참여율</div>
-                    <div className={`text-sm font-semibold ${selectedInfluencer.engagement >= 4 ? 'text-brand-green-text' : selectedInfluencer.engagement >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                    <div className={`text-sm font-semibold ${getEngagementColor(selectedInfluencer.engagement)}`}>
                       {selectedInfluencer.engagement}%
                     </div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
                     <div className="text-xs text-gray-500 mb-1">진성 비율</div>
-                    <div className={`text-sm font-semibold ${selectedInfluencer.authentic >= 80 ? 'text-brand-green-text' : selectedInfluencer.authentic >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                    <div className={`text-sm font-semibold ${getAuthenticColor(selectedInfluencer.authentic)}`}>
                       {selectedInfluencer.authentic}%
                     </div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
                     <div className="text-xs text-gray-500 mb-1">Fit Score</div>
-                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${fitScoreBadge(selectedInfluencer.fitScore)}`}>
+                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${getFitScoreBadge(selectedInfluencer.fitScore)}`}>
                       {selectedInfluencer.fitScore}
                     </span>
                   </div>
@@ -542,7 +548,7 @@ export default function InfluencerList() {
                 {/* AI 인사이트 가이드 */}
                 <div>
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Sparkles size={13} className="text-gray-400" />
+                    <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
                     <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
                     <span className="text-[10px] font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
                   </div>
@@ -550,11 +556,11 @@ export default function InfluencerList() {
                     {/* 카드 1: 핏 스코어 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
-                        <Target size={12} className="text-gray-400" />
+                        <Target size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-[11px] font-semibold text-gray-600">브랜드 핏 스코어</span>
                       </div>
                       <div className="flex items-end gap-1 mb-1.5">
-                        <span className={`text-2xl font-bold ${selectedInfluencer.fitScore >= 80 ? 'text-brand-green' : selectedInfluencer.fitScore >= 60 ? 'text-gray-700' : 'text-gray-500'}`}>
+                        <span className={`text-2xl font-bold ${getFitScoreColor(selectedInfluencer.fitScore)}`}>
                           {selectedInfluencer.fitScore}
                         </span>
                         <span className="text-xs text-gray-400 mb-1">/100</span>
@@ -571,11 +577,11 @@ export default function InfluencerList() {
                     {/* 카드 2: 추천 캠페인 타입 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
-                        <TrendingUp size={12} className="text-gray-400" />
+                        <TrendingUp size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-[11px] font-semibold text-gray-600">추천 캠페인</span>
                       </div>
                       <p className="text-xs font-bold text-gray-900 mb-1.5">
-                        {selectedInfluencer.fitScore >= 85 ? '릴스 리뷰형' : selectedInfluencer.fitScore >= 70 ? '피드 협찬형' : '스토리 언급형'}
+                        {getRecommendedCampaignType(selectedInfluencer.fitScore)}
                       </p>
                       <p className="text-[10px] text-gray-500 leading-snug">
                         평균 대비 <span className="font-semibold text-gray-700">{selectedInfluencer.fitScore >= 85 ? '2.3배' : selectedInfluencer.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율
@@ -585,7 +591,7 @@ export default function InfluencerList() {
                     {/* 카드 3: 협업 팁 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
-                        <Lightbulb size={12} className="text-gray-400" />
+                        <Lightbulb size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-[11px] font-semibold text-gray-600">협업 팁</span>
                       </div>
                       <p className="text-[10px] text-gray-600 leading-snug">
@@ -629,17 +635,17 @@ export default function InfluencerList() {
                       onClick={() => showToast('콘텐츠 상세는 준비 중이에요.', 'info')}
                     >
                       <div className={`aspect-square bg-gradient-to-br ${c.bg} flex items-center justify-center relative`}>
-                        <Image size={20} className="text-white/60" />
+                        <Image size={20} className="text-white/60" aria-hidden="true" />
                         <span className="absolute top-2 right-2 text-[10px] bg-white/80 text-gray-700 px-1.5 py-0.5 rounded-full font-medium">
                           {c.type}
                         </span>
                       </div>
                       <div className="px-2.5 py-2 bg-white flex items-center gap-2.5">
                         <span className="flex items-center gap-1 text-[11px] text-gray-500">
-                          <Heart size={10} className="text-red-400" />{c.likes.toLocaleString()}
+                          <Heart size={10} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}
                         </span>
                         <span className="flex items-center gap-1 text-[11px] text-gray-500">
-                          <MessageCircle size={10} className="text-gray-400" />{c.comments}
+                          <MessageCircle size={10} className="text-gray-400" aria-hidden="true" />{c.comments}
                         </span>
                       </div>
                     </div>
@@ -656,7 +662,7 @@ export default function InfluencerList() {
       <Modal open={proposalModal} onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }} title="캠페인에 제안 보내기">
         {proposalSent ? (
           <div className="text-center py-6">
-            <CheckCircle size={40} className="text-green-500 mx-auto mb-3" />
+            <CheckCircle size={40} className="text-green-500 mx-auto mb-3" aria-hidden="true" />
             <p className="text-sm font-semibold text-gray-900">제안이 전송되었습니다!</p>
           </div>
         ) : (

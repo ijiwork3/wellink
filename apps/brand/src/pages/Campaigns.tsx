@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Megaphone, Search, X, BarChart2, Users, Clock, TrendingUp, ChevronRight, LayoutGrid, List } from 'lucide-react'
-import { ErrorState } from '@wellink/ui'
-import { StatusBadge } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
-import { fmtNumber } from '@wellink/ui'
-import { getDDay as getDDayUtil } from '../utils/getDDay'
+import { ErrorState, StatusBadge, useQAMode, fmtNumber, ENGAGEMENT_THRESHOLD, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 
@@ -39,16 +35,6 @@ const campaigns = [
 const tabs = ['전체', '대기중', '모집중', '종료'] as const
 type Tab = typeof tabs[number]
 
-/** 유틸 getDDay를 Campaigns 배지 스타일(bg+text 조합)로 변환 */
-function getDDay(deadline: string) {
-  const { label, color: textColor, pulse } = getDDayUtil(deadline)
-  let color: string
-  if (textColor === 'text-red-500') color = 'bg-red-100 text-red-600'
-  else if (textColor === 'text-orange-500') color = 'bg-orange-100 text-orange-600'
-  else color = 'bg-gray-100 text-gray-500'
-  return { label, color, pulse }
-}
-
 
 export default function Campaigns() {
   const navigate = useNavigate()
@@ -56,6 +42,11 @@ export default function Campaigns() {
   const [activeTab, setActiveTab] = useState<Tab>('전체')
   const [search, setSearch] = useState(qa === 'filter-empty' ? '매칭없는검색어zzz' : '')
   const [viewMode, setViewMode] = useState<'list' | 'grid'>(qa === 'grid' ? 'grid' : 'list')
+
+  // sync grid view mode — early return 이전에 선언 (Rules of Hooks)
+  useEffect(() => {
+    if (qa === 'grid') setViewMode('grid')
+  }, [qa])
 
   // qa=loading
   if (qa === 'loading') {
@@ -113,11 +104,6 @@ export default function Campaigns() {
   // qa=empty → override filtered to show empty state
   const qaEmpty = qa === 'empty'
 
-  // sync grid view mode
-  useEffect(() => {
-    if (qa === 'grid') setViewMode('grid')
-  }, [qa])
-
   const filtered = qaEmpty ? [] : campaigns.filter(c => {
     const matchTab = activeTab === '전체' || c.status === activeTab
     const matchSearch = search === '' || c.name.includes(search) || c.category.includes(search)
@@ -147,7 +133,7 @@ export default function Campaigns() {
           onClick={() => navigate('/campaigns/new')}
           className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
         >
-          <Plus size={16} />
+          <Plus size={16} aria-hidden="true" />
           새 캠페인 등록
         </button>
       </div>
@@ -155,7 +141,7 @@ export default function Campaigns() {
       {/* 검색 + 뷰 토글 */}
       <div className="flex items-center gap-3">
         <div className="flex-1 relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -170,7 +156,7 @@ export default function Campaigns() {
               aria-label="검색어 삭제"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-150"
             >
-              <X size={14} />
+              <X size={14} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -180,14 +166,14 @@ export default function Campaigns() {
             aria-label="리스트 보기"
             className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400'}`}
           >
-            <List size={14} />
+            <List size={14} aria-hidden="true" />
           </button>
           <button
             onClick={() => setViewMode('grid')}
             aria-label="그리드 보기"
             className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400'}`}
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={14} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -217,7 +203,7 @@ export default function Campaigns() {
       {/* 빈 상태 */}
       {filtered.length === 0 && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
-          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" />
+          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-400">
             {search
               ? `'${search}' 검색 결과가 없습니다.`
@@ -243,20 +229,21 @@ export default function Campaigns() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-5">캠페인</th>
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-4">카테고리</th>
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-4">플랫폼</th>
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-4">상태</th>
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-4">모집 현황</th>
-                <th className="text-right text-xs font-medium text-gray-500 py-3 px-4">도달 / 참여율</th>
-                <th className="text-left text-xs font-medium text-gray-500 py-3 px-4">마감</th>
-                <th className="py-3 px-4" />
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-5">캠페인</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">카테고리</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">플랫폼</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">상태</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">모집 현황</th>
+                <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4">도달 / 참여율</th>
+                <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">마감</th>
+                <th scope="col" className="py-3 px-4"><span className="sr-only">액션</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtered.map(c => {
                 const progress = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
                 const { label: ddayLabel, color: ddayColor, pulse: ddayPulse } = getDDay(c.deadline)
+                const ddayBadge = getDDayBadgeStyle(ddayColor, ddayPulse)
                 return (
                   <tr
                     key={c.id}
@@ -266,7 +253,7 @@ export default function Campaigns() {
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                          <Megaphone size={14} className="text-gray-400" />
+                          <Megaphone size={14} className="text-gray-400" aria-hidden="true" />
                         </div>
                         <span className="text-sm font-medium text-gray-900 max-w-[180px] truncate">{c.name}</span>
                       </div>
@@ -283,7 +270,7 @@ export default function Campaigns() {
                         <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
                           <div
-                            className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-brand-green'}`}
+                            className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= PROGRESS_THRESHOLD.warning ? 'bg-red-500' : 'bg-brand-green'}`}
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -294,23 +281,23 @@ export default function Campaigns() {
                       {c.reach > 0 ? (
                         <div>
                           <p className="text-xs font-medium text-gray-700">{fmtNumber(c.reach)} 도달</p>
-                          <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-brand-green-text' : c.engRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                          <p className={`text-xs font-semibold ${c.engRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : c.engRate >= ENGAGEMENT_THRESHOLD.low ? 'text-gray-700' : 'text-red-500'}`}>
                             {c.engRate}% 참여율
                           </p>
                         </div>
                       ) : (
-                        <span className="text-xs text-gray-300">—</span>
+                        <span className="text-xs text-gray-400">—</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
-                        <Clock size={12} className="text-gray-400" />
+                        <Clock size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-xs text-gray-500">{fmtDate(c.deadline)}</span>
-                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>{ddayLabel}</span>
+                        <span className={`text-[10px] ${ddayBadge}`}>{ddayLabel}</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <ChevronRight size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                      <ChevronRight size={14} className="text-gray-400 group-hover:text-gray-600 transition-colors" aria-hidden="true" />
                     </td>
                   </tr>
                 )
@@ -327,6 +314,7 @@ export default function Campaigns() {
           {filtered.map(c => {
             const progress = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
             const { label: ddayLabel, color: ddayColor, pulse: ddayPulse } = getDDay(c.deadline)
+            const ddayBadge = getDDayBadgeStyle(ddayColor, ddayPulse)
             return (
               <div
                 key={c.id}
@@ -339,23 +327,23 @@ export default function Campaigns() {
                     <h3 className="text-sm font-semibold text-gray-900 mt-2 truncate max-w-[200px]">{c.name}</h3>
                     <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">{c.category} · {c.platform}</p>
                   </div>
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>{ddayLabel}</span>
+                  <span className={`text-[10px] ${ddayBadge}`}>{ddayLabel}</span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
-                    <Users size={12} className="text-gray-400 mx-auto mb-0.5" />
+                    <Users size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
                     <p className="text-xs font-semibold text-gray-700">{c.current}/{c.total}</p>
                     <p className="text-[10px] text-gray-400">모집</p>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
-                    <BarChart2 size={12} className="text-gray-400 mx-auto mb-0.5" />
+                    <BarChart2 size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
                     <p className="text-xs font-semibold text-gray-700">{c.reach > 0 ? fmtNumber(c.reach) : '—'}</p>
                     <p className="text-[10px] text-gray-400">도달</p>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
-                    <TrendingUp size={12} className="text-gray-400 mx-auto mb-0.5" />
-                    <p className={`text-xs font-semibold ${c.engRate >= 4 ? 'text-brand-green-text' : c.engRate >= 2.5 ? 'text-gray-700' : c.engRate > 0 ? 'text-red-500' : 'text-gray-300'}`}>
+                    <TrendingUp size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
+                    <p className={`text-xs font-semibold ${c.engRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : c.engRate >= ENGAGEMENT_THRESHOLD.low ? 'text-gray-700' : c.engRate > 0 ? 'text-red-500' : 'text-gray-400'}`}>
                       {c.engRate > 0 ? `${c.engRate}%` : '—'}
                     </p>
                     <p className="text-[10px] text-gray-400">참여율</p>
@@ -369,7 +357,7 @@ export default function Campaigns() {
                   </div>
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     {/* data-policy-v1 §3: 모집 진행률 80%+ 빨강 */}
-                    <div className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= 80 ? 'bg-red-500' : 'bg-brand-green'}`} style={{ width: `${progress}%` }} />
+                    <div className={`h-full rounded-full ${progress === 0 ? 'bg-gray-200' : progress >= PROGRESS_THRESHOLD.warning ? 'bg-red-500' : 'bg-brand-green'}`} style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               </div>

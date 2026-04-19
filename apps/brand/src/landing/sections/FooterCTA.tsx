@@ -14,7 +14,7 @@ export function FooterCTA({ contactUrl, termsUrl, privacyUrl, inquiryUrl }: Foot
         <h2 className="mb-4 text-3xl font-black text-slate-900 md:text-5xl">
           데이터가 움직이면 매출이 바뀝니다.
         </h2>
-        <h2 className="mb-8 text-3xl font-black text-[#0A3622] md:text-5xl">
+        <h2 className="mb-8 text-3xl font-black text-[var(--color-landing-dark)] md:text-5xl">
           피트니스 마케팅의 새로운 기준, 웰링크.
         </h2>
         <p className="mb-12 text-slate-500">
@@ -29,7 +29,7 @@ export function FooterCTA({ contactUrl, termsUrl, privacyUrl, inquiryUrl }: Foot
             ctaLabel="무료 상담 신청"
             ctaLocation="footer_primary"
             ctaId="footer_primary_consult"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0A3622] px-10 py-5 text-lg font-bold text-white shadow-xl shadow-emerald-900/20 transition-all hover:scale-105 active:scale-95 sm:w-auto"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-dark)] px-10 py-5 text-lg font-bold text-white shadow-xl shadow-emerald-900/20 transition-all hover:scale-105 active:scale-95 sm:w-auto"
           >
             지금 무료 상담 신청하기
           </CtaLink>
@@ -46,7 +46,7 @@ export function FooterCTA({ contactUrl, termsUrl, privacyUrl, inquiryUrl }: Foot
 
         <div className="mt-24 border-t border-slate-100 pt-12">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="text-xl font-black tracking-tighter text-[#0A3622]">WELLINK</div>
+            <div className="text-xl font-black tracking-tighter text-[var(--color-landing-dark)]">WELLINK</div>
             <div className="flex gap-8 text-sm font-medium text-slate-400">
               <a href={termsUrl} target="_blank" rel="noopener noreferrer">
                 이용약관

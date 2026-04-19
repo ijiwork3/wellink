@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, X, Layers, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
-import { campaigns } from '../data/campaigns'
-import { BRAND, useQAMode } from '@wellink/ui'
+import { mockCampaigns as campaigns } from '../services/mock/campaigns'
+import { useQAMode, TIMER_MS } from '@wellink/ui'
+import { BRAND_URL, HELP_EMAIL } from '../config/urls'
 
 const categories = ['전체', '뷰티/패션', '맛집/푸드', '어필/스포츠']
 
 // 스켈레톤 카드 컴포넌트
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse" role="presentation" aria-hidden="true">
       <div className="h-40 bg-gray-100" />
       <div className="p-4 space-y-2.5">
         <div className="h-3 bg-gray-100 rounded-xl w-1/3" />
@@ -35,7 +36,7 @@ export default function CampaignBrowse() {
 
   useEffect(() => {
     if (qa === 'loading') return // loading 상태 고정
-    const t = setTimeout(() => setLoading(false), 800)
+    const t = setTimeout(() => setLoading(false), TIMER_MS.SKELETON_LOADING)
     return () => clearTimeout(t)
   }, [qa])
 
@@ -53,12 +54,12 @@ export default function CampaignBrowse() {
     })
   }
 
-  const baseFiltered = campaigns.filter((c) => {
+  const baseFiltered = useMemo(() => campaigns.filter((c) => {
     const matchCategory = selectedCategory === '전체' || c.category === selectedCategory
     const q = search.trim().toLowerCase()
     const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
     return matchCategory && matchSearch
-  })
+  }), [selectedCategory, search])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
 
@@ -66,14 +67,13 @@ export default function CampaignBrowse() {
     return (
       <Layout showSidebar={false}>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
+          <XCircle size={44} className="text-red-300" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150"
-            style={{ backgroundColor: BRAND.green }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90 transition-all duration-150 bg-brand-green"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} aria-hidden="true" />
             다시 시도
           </button>
         </div>
@@ -86,7 +86,7 @@ export default function CampaignBrowse() {
       {/* 페이지 헤더 — 라임그린 그라데이션 */}
       <div
         className="px-6 py-10"
-        style={{ background: 'linear-gradient(135deg, rgba(140,198,63,0.12) 0%, rgba(255,255,255,0) 60%)' }}
+        style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 12%, transparent) 0%, rgba(255,255,255,0) 60%)' }}
       >
         <div className="max-w-screen-xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 프리미엄 캠페인</h1>
@@ -98,7 +98,7 @@ export default function CampaignBrowse() {
         {/* 검색바 */}
         <div className="relative mb-4 -mt-4">
           <label htmlFor="campaign-search" className="sr-only">캠페인 검색</label>
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <input
             id="campaign-search"
             type="text"
@@ -112,9 +112,9 @@ export default function CampaignBrowse() {
               type="button"
               onClick={() => setSearch('')}
               aria-label="검색어 삭제"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-150"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -125,12 +125,12 @@ export default function CampaignBrowse() {
             <button
               key={cat}
               onClick={() => { setSelectedCategory(cat); setSearch(''); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
+              aria-current={selectedCategory === cat ? 'true' : undefined}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 selectedCategory === cat
-                  ? 'text-white shadow-sm'
+                  ? 'text-white shadow-sm bg-brand-green'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green/40 hover:text-brand-green hover:bg-brand-green/5'
               }`}
-              style={selectedCategory === cat ? { backgroundColor: BRAND.green } : {}}
             >
               {cat}
             </button>
@@ -139,14 +139,14 @@ export default function CampaignBrowse() {
 
         {/* 결과 수 */}
         {!loading && (
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-4" role="status" aria-live="polite" aria-atomic="true">
             총 <span className="font-semibold text-gray-900">{filtered.length}</span>개의 캠페인
           </p>
         )}
 
         {/* 스켈레톤 / 실제 그리드 */}
         {loading ? (
-          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4" role="status" aria-label="캠페인 목록 불러오는 중">
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length > 0 ? (
@@ -163,19 +163,17 @@ export default function CampaignBrowse() {
         ) : (
           <div className="py-20 flex flex-col items-center">
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-              style={{ backgroundColor: '#f0fce8' }}
+              className="w-16 h-16 rounded-full bg-brand-green/10 flex items-center justify-center mb-4"
             >
-              <Search size={32} style={{ color: BRAND.green }} />
+              <Search size={32} className="text-brand-green" aria-hidden="true" />
             </div>
             <p className="text-sm font-medium text-gray-500 mb-1">검색 결과가 없어요</p>
             <p className="text-xs text-gray-400 mb-4">다른 키워드나 카테고리로 검색해 보세요</p>
             <button
               onClick={() => { setSearch(''); setSelectedCategory('전체') }}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 flex items-center gap-1.5"
-              style={{ backgroundColor: BRAND.green }}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90 flex items-center gap-1.5 bg-brand-green"
             >
-              <Layers size={14} />
+              <Layers size={14} aria-hidden="true" />
               전체 캠페인 보기
             </button>
           </div>
@@ -187,21 +185,29 @@ export default function CampaignBrowse() {
         const c = campaigns.find(x => x.id === quickViewId)
         if (!c) return null
         return (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setQuickViewId(null)}>
-            <div className="bg-white rounded-t-2xl w-full max-w-lg p-6 pb-8 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 focus-visible:outline-none"
+            onClick={() => setQuickViewId(null)}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="quickview-title"
+              className="bg-white rounded-t-2xl w-full max-w-lg p-6 pb-8 max-h-[85vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-gray-900">{c.name}</h3>
-                <button onClick={() => setQuickViewId(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+                <h3 id="quickview-title" className="text-base font-bold text-gray-900">{c.name}</h3>
+                <button onClick={() => setQuickViewId(null)} aria-label="닫기" className="text-gray-400 hover:text-gray-600">✕</button>
               </div>
               <p className="text-sm text-gray-600 mb-3">{c.brand}</p>
               <div className="flex gap-2">
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{backgroundColor: BRAND.green, color:'white'}}>{c.category}</span>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-brand-green text-white">{c.category}</span>
                 <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{'체험단'}</span>
               </div>
               <button
                 onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
-                className="mt-5 w-full py-3 rounded-xl text-sm font-semibold text-white"
-                style={{backgroundColor: BRAND.green}}
+                className="mt-5 w-full py-3 rounded-xl text-sm font-semibold text-white bg-brand-green"
               >
                 캠페인 상세 보기
               </button>
@@ -216,7 +222,7 @@ export default function CampaignBrowse() {
           <div className="grid grid-cols-2 @sm:grid-cols-4 gap-4 @sm:gap-8 mb-8">
             <div className="col-span-1">
               <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-base font-bold" style={{color: BRAND.green}}>WELLINK AI</span>
+                <span className="text-base font-bold text-brand-green">WELLINK AI</span>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed">웰니스 성장의 정점, 데이터로 증명하며 만들면서 마케팅의 새로운 패러다임을 제시합니다.</p>
               <div className="mt-4 space-y-1 text-xs text-gray-500">
@@ -230,8 +236,8 @@ export default function CampaignBrowse() {
             <div>
               <h4 className="text-sm font-semibold mb-3">제품</h4>
               <ul className="space-y-2 text-xs text-gray-400">
-                <li><button onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/#features`} className="hover:text-white transition-colors">기능</button></li>
-                <li><button onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/#pricing`} className="hover:text-white transition-colors">가격</button></li>
+                <li><button onClick={() => window.location.href = `${BRAND_URL}/#features`} className="hover:text-white transition-colors">기능</button></li>
+                <li><button onClick={() => window.location.href = `${BRAND_URL}/#pricing`} className="hover:text-white transition-colors">가격</button></li>
               </ul>
             </div>
             <div>
@@ -243,8 +249,8 @@ export default function CampaignBrowse() {
             <div>
               <h4 className="text-sm font-semibold mb-3">지원</h4>
               <ul className="space-y-2 text-xs text-gray-400">
-                <li><button onClick={() => window.open('mailto:help@wellink.co.kr')} className="hover:text-white transition-colors">문의하기</button></li>
-                <li><button onClick={() => window.location.href = `${import.meta.env.VITE_BRAND_URL || 'http://localhost:3003'}/#faq`} className="hover:text-white transition-colors">FAQ</button></li>
+                <li><button onClick={() => window.open(`mailto:${HELP_EMAIL}`)} className="hover:text-white transition-colors">문의하기</button></li>
+                <li><button onClick={() => window.location.href = `${BRAND_URL}/#faq`} className="hover:text-white transition-colors">FAQ</button></li>
                 <li><button onClick={() => window.open('https://wellink.co.kr/terms', '_blank', 'noopener,noreferrer')} className="hover:text-white transition-colors">서비스 이용 약관</button></li>
               </ul>
             </div>

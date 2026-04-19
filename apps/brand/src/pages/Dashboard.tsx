@@ -8,11 +8,8 @@ import {
 import { StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { fmtNumber, fmtRate, BRAND } from '@wellink/ui'
-import { getDDay } from '../utils/getDDay'
+import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
-
-/* ── Brand tokens ── */
 
 
 /* ── KPI 데이터 ── */
@@ -22,28 +19,28 @@ const kpis = [
     value: 2,
     sub: '현재 진행 중',
     trend: 50,
-    icon: <Megaphone size={16} />,
+    icon: <Megaphone size={16} aria-hidden="true" />,
   },
   {
     title: '진행중 인플루언서',
     value: 12,
     sub: '총 참여 인원',
     trend: 20,
-    icon: <Users size={16} />,
+    icon: <Users size={16} aria-hidden="true" />,
   },
   {
     title: '이번달 도달',
     value: fmtNumber(482000),
     sub: '누적 임프레션',
     trend: 8.3,
-    icon: <Activity size={16} />,
+    icon: <Activity size={16} aria-hidden="true" />,
   },
   {
     title: '검수대기',
     value: 2,
     sub: '콘텐츠 대기 중',
     trend: -33.3,
-    icon: <Clock size={16} />,
+    icon: <Clock size={16} aria-hidden="true" />,
   },
 ]
 
@@ -136,7 +133,7 @@ export default function Dashboard() {
         </div>
         <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green/20 rounded-2xl p-8 text-center">
           <div className="w-14 h-14 rounded-2xl bg-brand-green/15 flex items-center justify-center mx-auto mb-4">
-            <Sparkles size={24} className="text-brand-green" />
+            <Sparkles size={24} className="text-brand-green" aria-hidden="true" />
           </div>
           <h2 className="text-base font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
           <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
@@ -147,7 +144,7 @@ export default function Dashboard() {
               onClick={() => navigate('/campaigns/new')}
               className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
             >
-              <Megaphone size={14} className="inline mr-2" />
+              <Megaphone size={14} className="inline mr-2" aria-hidden="true" />
               첫 캠페인 만들기
             </button>
             <button
@@ -223,16 +220,16 @@ export default function Dashboard() {
             onClick={() => navigate('/campaigns/new')}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
           >
-            <Megaphone size={14} />새 캠페인
+            <Megaphone size={14} aria-hidden="true" />새 캠페인
           </button>
         </div>
         {/* 0값 KPI */}
         <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
           {[
-            { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} /> },
-            { title: '진행중 인플루언서', value: '0', sub: '참여 인원 없음', icon: <Users size={16} /> },
-            { title: '이번달 도달', value: '0', sub: '임프레션 없음', icon: <Activity size={16} /> },
-            { title: '검수대기', value: '0', sub: '콘텐츠 대기 없음', icon: <Clock size={16} /> },
+            { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} aria-hidden="true" /> },
+            { title: '진행중 인플루언서', value: '0', sub: '참여 인원 없음', icon: <Users size={16} aria-hidden="true" /> },
+            { title: '이번달 도달', value: '0', sub: '임프레션 없음', icon: <Activity size={16} aria-hidden="true" /> },
+            { title: '검수대기', value: '0', sub: '콘텐츠 대기 없음', icon: <Clock size={16} aria-hidden="true" /> },
           ].map(k => (
             <div key={k.title} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center justify-between mb-3">
@@ -246,9 +243,9 @@ export default function Dashboard() {
         </div>
         {/* 빈 캠페인 영역 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" />
+          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-400 mb-1">진행 중인 캠페인이 없습니다</p>
-          <p className="text-xs text-gray-300 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
+          <p className="text-xs text-gray-400 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
           <button
             onClick={() => navigate('/campaigns/new')}
             className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
@@ -280,7 +277,7 @@ export default function Dashboard() {
       {/* ── QA: plan-locked 배너 ── */}
       {isPlanLocked && (
         <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-sm">
-          <Lock size={14} className="shrink-0" />
+          <Lock size={14} className="shrink-0" aria-hidden="true" />
           <span>현재 포커스 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.</span>
           <button
             onClick={() => navigate('/subscription')}
@@ -300,7 +297,7 @@ export default function Dashboard() {
           onClick={() => navigate('/campaigns/new')}
           className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
         >
-          <Megaphone size={14} />
+          <Megaphone size={14} aria-hidden="true" />
           새 캠페인
         </button>
       </div>
@@ -335,7 +332,7 @@ export default function Dashboard() {
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{kpi.value}</div>
                 <div className="text-xs text-gray-500 mt-1">{kpi.sub}</div>
               </div>
-              <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? '' : 'text-red-500'}`} style={isPositive ? { color: BRAND.green } : undefined}>
+              <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
                 {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
                 <span className="text-gray-400 font-normal">전월 대비</span>
@@ -363,7 +360,7 @@ export default function Dashboard() {
             <thead>
               <tr className="border-b border-gray-50 bg-gray-50/50">
                 {['캠페인명', '상태', '진행률', '마감일', ''].map(h => (
-                  <th key={h} className="text-left text-xs font-medium text-gray-500 py-2.5 px-4">{h}</th>
+                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -371,8 +368,7 @@ export default function Dashboard() {
               {campaigns.map(c => {
                 const pct = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
                 const { label: ddayLabel, pulse: ddayPulse, color: ddayTextColor } = getDDay(c.deadline)
-                const ddayBg = ddayTextColor === 'text-red-500' ? 'bg-red-100' : ddayTextColor === 'text-orange-500' ? 'bg-orange-100' : 'bg-gray-100'
-                const ddayColor = `${ddayBg} ${ddayTextColor.replace('text-red-500', 'text-red-600').replace('text-orange-500', 'text-orange-600').replace('text-gray-500', 'text-gray-500')}`
+                const ddayBadgeStyle = getDDayBadgeStyle(ddayTextColor, ddayPulse)
                 return (
                   <tr
                     key={c.id}
@@ -387,8 +383,8 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <div className="w-20 bg-gray-100 rounded-full h-1.5">
                           <div
-                            className="h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#EF4444' : BRAND.green }}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-red-500' : 'bg-brand-green'}`}
+                            style={{ width: `${pct}%` }}
                           />
                         </div>
                         <span className="text-xs text-gray-500">{pct}%</span>
@@ -397,7 +393,7 @@ export default function Dashboard() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
-                        <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${ddayColor} ${ddayPulse ? 'animate-pulse' : ''}`}>
+                        <span className={`text-[11px] ${ddayBadgeStyle}`}>
                           {ddayLabel}
                         </span>
                       </div>
@@ -422,12 +418,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <div className="flex items-center gap-2">
-              <Bell size={14} className="text-gray-500" />
+              <Bell size={14} className="text-gray-500" aria-hidden="true" />
               <h2 className="text-sm font-semibold text-gray-900">최근 알림</h2>
               {unreadCount > 0 && (
                 <span
-                  className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full leading-none"
-                  style={{ backgroundColor: BRAND.green }}
+                  className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
                 >
                   {unreadCount}
                 </span>
@@ -436,13 +431,11 @@ export default function Dashboard() {
           </div>
           <div className="divide-y divide-gray-50 flex-1">
             {visibleNotifications.map(n => (
-              <div
+              <button
                 key={n.id}
-                className={`px-5 py-3 hover:bg-gray-50 transition-colors duration-150 cursor-pointer ${n.unread ? 'bg-brand-green/5' : ''}`}
+                type="button"
+                className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green/5' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/40`}
                 onClick={() => handleNotificationClick(n.id, n.route)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && handleNotificationClick(n.id, n.route)}
               >
                 <div className="flex gap-2.5 items-start">
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.dot}`} />
@@ -453,7 +446,7 @@ export default function Dashboard() {
                     <p className="text-[11px] text-gray-400 mt-0.5">{n.time}</p>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
           {notifications.length > 4 && (
@@ -473,7 +466,7 @@ export default function Dashboard() {
       <div className={isPlanLocked ? 'relative' : ''}>
         {isPlanLocked && (
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
-            <Lock size={24} className="text-amber-400" />
+            <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
           </div>
         )}
@@ -496,7 +489,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
           {contentByPeriod[contentPeriod].map(item => {
             const isPositive = item.change >= 0
-            const lineColor = isPositive ? BRAND.green : '#EF4444'
+            const lineColor = isPositive ? 'var(--color-sparkline-success)' : 'var(--color-sparkline-alert)'
             return (
               <div
                 key={item.label}
@@ -510,8 +503,7 @@ export default function Dashboard() {
                     <span className="text-xs text-gray-500 font-medium">{item.label}</span>
                   </div>
                   <span
-                    className={`text-[11px] font-medium ${isPositive ? '' : 'text-red-500'}`}
-                    style={isPositive ? { color: BRAND.green } : undefined}
+                    className={`text-[11px] font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
                   >
                     {fmtRate(item.change)}
                   </span>
@@ -530,17 +522,17 @@ export default function Dashboard() {
       <div className={isPlanLocked ? 'relative' : ''}>
         {isPlanLocked && (
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
-            <Lock size={24} className="text-amber-400" />
+            <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
           </div>
         )}
         <h2 className="text-sm font-semibold text-gray-900 mb-3">빠른 실행</h2>
         <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3">
           {[
-            { icon: <Megaphone size={18} />, label: '새 캠페인',    sub: '캠페인 만들기',    route: '/campaigns/new',    primary: true },
-            { icon: <Users size={18} />,     label: 'AI 리스트업',  sub: '인플루언서 추천',  route: '/influencers/ai',   primary: false },
-            { icon: <Search size={18} />,    label: '인플루언서 탐색', sub: '전체 리스트 보기', route: '/influencers/list', primary: false },
-            { icon: <Zap size={18} />,       label: '콘텐츠 검수',  sub: qa === 'empty' ? '--건' : '대기 중 2건',     route: '/campaigns',        primary: false },
+            { icon: <Megaphone size={18} aria-hidden="true" />, label: '새 캠페인',    sub: '캠페인 만들기',    route: '/campaigns/new',    primary: true },
+            { icon: <Users size={18} aria-hidden="true" />,     label: 'AI 리스트업',  sub: '인플루언서 추천',  route: '/influencers/ai',   primary: false },
+            { icon: <Search size={18} aria-hidden="true" />,    label: '인플루언서 탐색', sub: '전체 리스트 보기', route: '/influencers/list', primary: false },
+            { icon: <Zap size={18} aria-hidden="true" />,       label: '콘텐츠 검수',  sub: qa === 'empty' ? '--건' : '대기 중 2건',     route: '/campaigns',        primary: false },
           ].map(item => (
             <button
               key={item.label}

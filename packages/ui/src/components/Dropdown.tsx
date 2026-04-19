@@ -18,13 +18,18 @@ export default function Dropdown({ trigger, children, align = 'right', className
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+    const handleOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('keydown', handleKey)
+    }
   }, [])
 
   return (

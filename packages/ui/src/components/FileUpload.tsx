@@ -4,7 +4,7 @@
  * multiple: true 시 다중 파일 (기본값)
  */
 
-import { useState, useRef, type DragEvent } from 'react'
+import { useState, useRef, type DragEvent, type KeyboardEvent } from 'react'
 import { Upload, X, FileText } from 'lucide-react'
 
 interface FileUploadProps {
@@ -44,17 +44,28 @@ export default function FileUpload({
     addFiles(e.dataTransfer.files)
   }
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      inputRef.current?.click()
+    }
+  }
+
   return (
     <div className="space-y-2">
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="파일 업로드 영역. 클릭하거나 파일을 드래그하세요"
         onClick={() => inputRef.current?.click()}
+        onKeyDown={handleKeyDown}
         onDragOver={e => { e.preventDefault(); setDragging(true) }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all duration-150
-          ${dragging ? 'border-[#8CC63F] bg-[#8CC63F]/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'}`}
+        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50
+          ${dragging ? 'border-brand-green bg-brand-green/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'}`}
       >
-        <Upload size={20} className="text-gray-400" />
+        <Upload size={20} className="text-gray-400" aria-hidden="true" />
         <p className="text-sm text-gray-500 text-center">{hint}</p>
         <p className="text-xs text-gray-400">클릭하거나 파일을 드래그하세요</p>
         <input
@@ -63,18 +74,21 @@ export default function FileUpload({
           accept={accept}
           multiple={multiple}
           className="hidden"
+          aria-hidden="true"
+          tabIndex={-1}
           onChange={e => addFiles(e.target.files)}
         />
       </div>
 
       {files.length > 0 && (
-        <div className="space-y-1.5">
+        <div role="list" className="space-y-1.5">
           {files.map((file, i) => (
             <div
               key={i}
+              role="listitem"
               className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100"
             >
-              <FileText size={14} className="text-gray-400 shrink-0" />
+              <FileText size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
               <span className="flex-1 text-xs text-gray-700 truncate">{file.name}</span>
               <span className="text-xs text-gray-400 shrink-0">
                 {(file.size / 1024).toFixed(0)}KB
@@ -82,9 +96,10 @@ export default function FileUpload({
               <button
                 type="button"
                 onClick={() => removeFile(i)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label={`${file.name} 삭제`}
+                className="text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
               >
-                <X size={13} />
+                <X size={13} aria-hidden="true" />
               </button>
             </div>
           ))}

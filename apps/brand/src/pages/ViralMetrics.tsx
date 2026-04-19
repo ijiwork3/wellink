@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
-import { ErrorState } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
-import { fmtNumber, BRAND } from '@wellink/ui'
+import { ErrorState, useToast, useQAMode, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
@@ -34,17 +31,6 @@ const viralContentData = [
   { title: '웰링크 제품 언박싱', influencer: '@beauty_sora', type: '스토리', reach: 5600, likes: 680, comments: 42, saves: 320, shares: 150, viralScore: 48 },
   { title: '건강간식 추천 TOP3', influencer: '@snack_master', type: '피드', reach: 4200, likes: 520, comments: 34, saves: 210, shares: 80, viralScore: 35 },
 ]
-
-function getTypeColor(type: string) {
-  switch (type) {
-    case '이미지': return 'bg-sky-100 text-sky-700'
-    case '릴스': return 'bg-pink-100 text-pink-700'
-    case '스토리': return 'bg-purple-100 text-purple-700'
-    case '영상': return 'bg-orange-100 text-orange-700'
-    case '피드': return 'bg-blue-100 text-blue-700'
-    default: return 'bg-gray-100 text-gray-700'
-  }
-}
 
 // 추세 미니 차트 (바 형태)
 function TrendMiniBar({ values, color }: { values: number[]; color: string }) {
@@ -148,7 +134,7 @@ export default function ViralMetrics() {
         <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
           <Zap size={40} className="text-gray-200 mb-3" />
           <p className="text-sm font-semibold text-gray-400 mb-1">바이럴 콘텐츠 데이터가 없습니다</p>
-          <p className="text-xs text-gray-300 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
+          <p className="text-xs text-gray-400 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
           <button
             onClick={() => navigate('/campaigns')}
             className="text-sm font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors"
@@ -247,7 +233,7 @@ export default function ViralMetrics() {
             <Eye size={14} className="text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.reach}</p>
-          <TrendMiniBar values={trend.reach} color="#3B82F6" />
+          <TrendMiniBar values={trend.reach} color={CHART_COLORS.reach} />
           <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
@@ -256,7 +242,7 @@ export default function ViralMetrics() {
             <Share2 size={14} className="text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.shares}</p>
-          <TrendMiniBar values={trend.shares} color={BRAND.green} />
+          <TrendMiniBar values={trend.shares} color="var(--color-brand-green)" />
           <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
@@ -265,7 +251,7 @@ export default function ViralMetrics() {
             <Bookmark size={14} className="text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{kpi.saves}</p>
-          <TrendMiniBar values={trend.saves} color="#8B5CF6" />
+          <TrendMiniBar values={trend.saves} color={CHART_COLORS.saves} />
           <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
@@ -302,7 +288,7 @@ export default function ViralMetrics() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
                 {['콘텐츠', '인플루언서', '유형', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
-                  <th key={h} className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -319,7 +305,7 @@ export default function ViralMetrics() {
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">{item.influencer}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${getTypeColor(item.type)}`}>{item.type}</span>
+                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-700 font-medium">{fmtNumber(item.reach)}</td>
                   <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.likes)}</td>
@@ -334,7 +320,7 @@ export default function ViralMetrics() {
                           style={{
                             width: `${item.viralScore}%`,
                             // 바이럴 스코어: 80+ 녹색 / 50~79 amber / 49이하 gray
-                            backgroundColor: item.viralScore >= 80 ? BRAND.green : item.viralScore >= 50 ? '#F59E0B' : '#E5E7EB'
+                            backgroundColor: item.viralScore >= 80 ? 'var(--color-brand-green)' : item.viralScore >= 50 ? CHART_COLORS.warn : CHART_COLORS.inactive
                           }}
                         />
                       </div>

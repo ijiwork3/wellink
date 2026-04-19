@@ -27,7 +27,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
           fetchPriority="high"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-[#0A3622]/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[var(--color-landing-dark)]/80 backdrop-blur-[2px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
@@ -36,13 +36,13 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? undefined : { duration: 0.6 }}
         >
-          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-xs font-bold tracking-widest text-[#BFF264] uppercase">
+          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-xs font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
             Fitness & Wellness Specialized
           </span>
           <h1 className="mb-8 text-4xl font-black leading-tight text-white md:text-7xl">
             피트니스·웰니스 브랜드를 위한
             <br />
-            <span className="text-[#BFF264]">단 하나의 마케팅 솔루션, 웰링크</span>
+            <span className="text-[var(--color-landing-lime)]">단 하나의 마케팅 솔루션, 웰링크</span>
           </h1>
           <p className="mx-auto mb-12 max-w-2xl text-lg text-white/70 md:text-xl">
             파편화된 인플루언서 마케팅은 이제 그만,
@@ -56,7 +56,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
               ctaLabel="캠페인 상담 받기"
               ctaLocation="hero_primary"
               ctaId="hero_primary_consult"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#BFF264] px-8 py-4 text-lg font-bold text-[#0A3622] transition-all hover:scale-105 active:scale-95 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-lime)] px-8 py-4 text-lg font-bold text-[var(--color-landing-dark)] transition-all hover:scale-105 active:scale-95 sm:w-auto"
             >
               캠페인 상담 받기
             </CtaLink>

@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BRAND, useQAMode } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-
-const inputBase =
-  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
+import { useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS } from '@wellink/ui'
+import { CONTACT_EMAIL } from '../config/urls'
 
 const FILLED_FORM = {
   name: '김광고',
@@ -67,7 +64,7 @@ export default function Signup() {
     if (Object.keys(newErrors).length > 0) { showToast('입력 정보를 확인해 주세요', 'error'); return }
     setIsSubmitting(true)
     try {
-      await new Promise<void>((resolve) => setTimeout(resolve, 500))
+      await new Promise<void>((resolve) => setTimeout(resolve, TIMER_MS.MOCK_SIGNUP))
       showToast('웰링크에 오신 것을 환영합니다 🎉', 'success')
       navigate('/dashboard')
     } catch {
@@ -79,15 +76,14 @@ export default function Signup() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
-      style={{ background: 'linear-gradient(135deg, rgba(140,198,63,0.15) 0%, #ffffff 70%)' }}
+      style={{ background: 'var(--gradient-auth-bg)' }}
     >
       {/* 도입문의 버튼 */}
       <div className="fixed top-4 right-4 z-10">
         <button
           type="button"
-          onClick={() => window.open('mailto:contact@wellink.co.kr')}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150"
-          style={{ color: BRAND.green }}
+          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
+          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green"
         >
           도입문의
         </button>
@@ -97,7 +93,7 @@ export default function Signup() {
         {/* 로고 */}
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
-            <h1 className="text-2xl font-black" style={{ color: BRAND.green }}>WELLINK</h1>
+            <h1 className="text-2xl font-black text-brand-green">WELLINK</h1>
             <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
           </div>
           <p className="text-sm text-gray-500">광고주 포털 회원가입</p>
@@ -108,40 +104,46 @@ export default function Signup() {
           <div>
             <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1.5">담당자 이름 <span className="text-red-400">*</span></label>
             <input
-              id="signup-name" type="text" placeholder="실명을 입력해 주세요"
+              id="signup-name" type="text" autoComplete="name" placeholder="실명을 입력해 주세요"
               value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+              aria-describedby={errors.name ? 'signup-name-error' : undefined}
+              aria-invalid={!!errors.name}
               className={`${inputBase} ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+            {errors.name && <p id="signup-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
           </div>
 
           {/* 이메일 */}
           <div>
             <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1.5">이메일 <span className="text-red-400">*</span></label>
             <input
-              id="signup-email" type="email" placeholder="example@company.com"
+              id="signup-email" type="email" autoComplete="email" placeholder="example@company.com"
               value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+              aria-describedby={errors.email ? 'signup-email-error' : undefined}
+              aria-invalid={!!errors.email}
               className={`${inputBase} ${errors.email ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+            {errors.email && <p id="signup-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
           </div>
 
           {/* 비밀번호 */}
           <div>
             <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 <span className="text-red-400">*</span></label>
             <input
-              id="signup-password" type="password" placeholder="8자 이상 입력해 주세요"
+              id="signup-password" type="password" autoComplete="new-password" placeholder="8자 이상 입력해 주세요"
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+              aria-describedby={errors.password ? 'signup-password-error' : undefined}
+              aria-invalid={!!errors.password}
               className={`${inputBase} ${errors.password ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
+            {errors.password && <p id="signup-password-error" className="text-xs text-red-500 mt-1" role="alert">{errors.password}</p>}
           </div>
 
           {/* 비밀번호 확인 */}
           <div>
             <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 확인 <span className="text-red-400">*</span></label>
             <input
-              id="signup-password-confirm" type="password" placeholder="비밀번호를 다시 입력해 주세요"
+              id="signup-password-confirm" type="password" autoComplete="new-password" placeholder="비밀번호를 다시 입력해 주세요"
               value={form.passwordConfirm}
               onChange={(e) => {
                 const val = e.target.value
@@ -152,9 +154,11 @@ export default function Signup() {
                   setErrors(prev => { const { passwordConfirm: _, ...rest } = prev; return rest })
                 }
               }}
+              aria-describedby={errors.passwordConfirm ? 'signup-password-confirm-error' : undefined}
+              aria-invalid={!!errors.passwordConfirm}
               className={`${inputBase} ${errors.passwordConfirm ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.passwordConfirm && <p className="text-xs text-red-500 mt-1">{errors.passwordConfirm}</p>}
+            {errors.passwordConfirm && <p id="signup-password-confirm-error" className="text-xs text-red-500 mt-1" role="alert">{errors.passwordConfirm}</p>}
           </div>
 
           {/* 회사명 */}
@@ -163,9 +167,11 @@ export default function Signup() {
             <input
               id="signup-company" type="text" placeholder="회사명을 입력해 주세요"
               value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+              aria-describedby={errors.companyName ? 'signup-company-error' : undefined}
+              aria-invalid={!!errors.companyName}
               className={`${inputBase} ${errors.companyName ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.companyName && <p className="text-xs text-red-500 mt-1">{errors.companyName}</p>}
+            {errors.companyName && <p id="signup-company-error" className="text-xs text-red-500 mt-1" role="alert">{errors.companyName}</p>}
           </div>
 
           {/* 사업자 등록번호 */}
@@ -184,7 +190,7 @@ export default function Signup() {
           <div>
             <label htmlFor="signup-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
             <input
-              id="signup-phone" type="tel" placeholder="010-0000-0000"
+              id="signup-phone" type="tel" autoComplete="tel" placeholder="010-0000-0000"
               value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className={`${inputBase} border-gray-200`}
             />
@@ -224,8 +230,7 @@ export default function Signup() {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !agreedTerms || !agreedPrivacy}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ backgroundColor: BRAND.green }}
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
           >
             {isSubmitting ? '처리 중...' : '회원가입'}
           </button>
@@ -235,8 +240,7 @@ export default function Signup() {
             이미 계정이 있으신가요?{' '}
             <button
               onClick={() => navigate('/login')}
-              className="font-medium hover:underline transition-colors duration-150"
-              style={{ color: BRAND.green }}
+              className="font-medium hover:underline transition-colors duration-150 text-brand-green"
             >
               로그인하기
             </button>

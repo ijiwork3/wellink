@@ -1,3 +1,6 @@
+// Mock data — replace with API calls when backend is ready
+// Previously at: src/data/campaigns.ts
+
 export interface Campaign {
   id: number
   brand: string
@@ -13,7 +16,7 @@ export interface Campaign {
   conditions?: string[]
 }
 
-export const campaigns: Campaign[] = [
+export const mockCampaigns: Campaign[] = [
   {
     id: 1,
     brand: '그린푸드',
@@ -49,8 +52,8 @@ export const campaigns: Campaign[] = [
     channel: '인스타그램',
     category: '어필/스포츠',
     status: '모집중',
-    applyEnd: '2026-04-18',
-    postEnd: '2026-04-28',
+    applyEnd: '2026-05-18',
+    postEnd: '2026-05-28',
     image: '🧘',
     description: 'ENUF 프리미엄 요가매트의 편안한 그립감과 내구성을 직접 체험해 보세요.',
     reward: '요가매트 1개 제공',
@@ -63,8 +66,8 @@ export const campaigns: Campaign[] = [
     channel: '인스타그램',
     category: '뷰티/패션',
     status: '모집중',
-    applyEnd: '2026-04-07',
-    postEnd: '2026-04-17',
+    applyEnd: '2026-05-07',
+    postEnd: '2026-05-17',
     image: '✨',
     description: '웰링크뷰티의 신규 웰니스 스킨케어 라인을 체험하고 진솔한 리뷰를 남겨주세요.',
     reward: '스킨케어 세트 제공',
@@ -99,3 +102,48 @@ export const campaigns: Campaign[] = [
     conditions: ['유튜브 구독자 500명 이상', '운동 영상 3개 이상 보유', '영상 1개 이상 제작'],
   },
 ]
+
+// MyCampaign 페이지용 인플루언서 참여 캠페인
+export type MyCampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '완료' | '미선정'
+
+export interface MyCampaign {
+  id: string
+  name: string
+  channel: string
+  appliedAt: string
+  deadline: string
+  status: MyCampaignStatus
+  progress: string
+  reward: string
+}
+
+export const mockMyCampaigns: MyCampaign[] = [
+  { id: '1', name: '프로틴 파워 챌린지', channel: '인스타그램', appliedAt: '2026-03-15', deadline: '2026-04-20', status: '콘텐츠대기', progress: '콘텐츠 제작 중', reward: '80,000원' },
+  { id: '2', name: '필라테스 스튜디오 체험', channel: '인스타그램', appliedAt: '2026-03-10', deadline: '2026-04-25', status: '지원완료', progress: '검토 중', reward: '50,000원' },
+  { id: '3', name: '아웃도어 장비 리뷰', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '검수중', progress: '게시 확인 중', reward: '120,000원' },
+  { id: '4', name: '헬스 보충제 캠페인', channel: '인스타그램', appliedAt: '2026-02-10', deadline: '2026-03-20', status: '완료', progress: '완료', reward: '95,000원' },
+]
+
+// Home 페이지 북마크 캠페인
+export interface BookmarkedCampaign {
+  id: string
+  name: string
+  brand: string
+  category: string
+  channel: string
+  deadline: string
+  budget: string
+  headcount: number
+  applied: number
+  status: '모집중' | '종료'
+  thumbnailClass: string
+  thumbnailTextClass: string
+}
+
+export const mockBookmarkedCampaigns: BookmarkedCampaign[] = [
+  { id: '1', name: '비건 단백질 쉐이크 체험단 모집', brand: '그린푸드', category: '맛집/푸드', channel: '인스타그램', deadline: '2026-04-20', budget: '제품 1개월분 무료 제공', headcount: 15, applied: 8, status: '모집중', thumbnailClass: 'bg-violet-200/60', thumbnailTextClass: 'text-violet-500' },
+  { id: '2', name: '크로스핏 보충제 리뷰어 모집', brand: 'SMILEATO', category: '어필/스포츠', channel: '인스타그램/유튜브', deadline: '2026-04-25', budget: '보충제 풀패키지 + 활동비 10만원', headcount: 10, applied: 6, status: '모집중', thumbnailClass: 'bg-green-200/60', thumbnailTextClass: 'text-green-500' },
+  { id: '3', name: '프리미엄 요가매트 체험단', brand: 'ENUF', category: '어필/스포츠', channel: '인스타그램', deadline: '2026-05-18', budget: '요가매트 1개 제공', headcount: 5, applied: 3, status: '모집중', thumbnailClass: 'bg-blue-200/60', thumbnailTextClass: 'text-blue-500' },
+]
+
+export const BROWSE_CATEGORIES = ['전체', '뷰티/패션', '맛집/푸드', '어필/스포츠']

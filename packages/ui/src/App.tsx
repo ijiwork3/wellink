@@ -96,7 +96,7 @@ function Overview() {
       <div className="mb-10 pb-8 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-3">
           <span className="text-2xl font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-xs font-semibold bg-[#8CC63F] text-white px-2.5 py-1 rounded-full">UI</span>
+          <span className="text-xs font-semibold bg-brand-green text-white px-2.5 py-1 rounded-full">UI</span>
         </div>
         <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
           Wellink 전사 공통 UI 컴포넌트 라이브러리.<br />
@@ -115,7 +115,7 @@ function Overview() {
         <h2 className="text-base font-bold text-gray-900 mb-4">Components <span className="text-gray-400 font-normal text-sm ml-1">{allComponents.length}개</span></h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {allComponents.map(c => (
-            <div key={c.name} className="bg-white border border-gray-200 rounded-xl p-4 hover:border-[#8CC63F]/40 hover:shadow-sm transition-all">
+            <div key={c.name} className="bg-white border border-gray-200 rounded-xl p-4 hover:border-brand-green/40 hover:shadow-sm transition-all">
               <p className="text-sm font-semibold text-gray-900 font-mono">{c.name}</p>
               <p className="text-xs text-gray-500 mt-1">{c.desc}</p>
               <span className="inline-block mt-2 text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{c.group}</span>
@@ -143,7 +143,7 @@ function Overview() {
         <h2 className="text-base font-bold text-gray-900 mb-4">Brand Colors</h2>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: '#8CC63F' }} />
+            <div className="w-8 h-8 rounded-lg bg-brand-green" />
             <div>
               <p className="text-xs font-semibold text-gray-900">Primary</p>
               <p className="text-xs font-mono text-gray-500">#8CC63F</p>
@@ -188,7 +188,7 @@ function Sidebar({ active, onChange, onClose }: {
       <div className="px-5 pt-5 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-gray-900 tracking-tight">WELLINK</span>
-          <span className="text-[10px] font-semibold bg-[#8CC63F] text-white px-1.5 py-0.5 rounded-full">UI</span>
+          <span className="text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">UI</span>
         </div>
         {onClose && (
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 lg:hidden">
@@ -213,7 +213,7 @@ function Sidebar({ active, onChange, onClose }: {
                 onClick={() => { onChange(item.id); onClose?.() }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-0.5 transition-all duration-150 ${
                   active === item.id
-                    ? 'bg-[#8CC63F]/10 text-[#7AB535] font-semibold'
+                    ? 'bg-brand-green/10 text-brand-green-text font-semibold'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >

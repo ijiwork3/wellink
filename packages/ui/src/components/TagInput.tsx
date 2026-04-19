@@ -53,7 +53,7 @@ export default function TagInput({
     blue:  'bg-blue-50 text-blue-600 border-blue-200',
     red:   'bg-red-50 text-red-600 border-red-200',
     gray:  'bg-gray-100 text-gray-700 border-gray-200',
-    brand: 'bg-[#f0f9e8] text-[#5a8a1f] border-[#c5e39a]',
+    brand: 'bg-brand-green/10 text-brand-green-text border-brand-green/30',
   }
 
   return (
@@ -65,7 +65,7 @@ export default function TagInput({
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2 focus-visible:ring-[#8CC63F] transition-all"
+          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2 focus-visible:ring-brand-green transition-all"
         />
         <button
           type="button"
@@ -76,19 +76,21 @@ export default function TagInput({
         </button>
       </div>
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div role="list" className="flex flex-wrap gap-1.5">
           {tags.map(tag => (
             <span
               key={tag}
+              role="listitem"
               className={`flex items-center gap-1 text-xs border px-2.5 py-1 rounded-full ${colorMap[tagColor]}`}
             >
               {tag}
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="hover:opacity-70 transition-opacity"
+                aria-label={`${tag} 태그 삭제`}
+                className="hover:opacity-70 transition-opacity p-1 -m-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
               >
-                <X size={11} />
+                <X size={11} aria-hidden="true" />
               </button>
             </span>
           ))}

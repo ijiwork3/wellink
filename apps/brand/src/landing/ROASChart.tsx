@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import { CHART_COLORS } from '@wellink/ui';
 
 type RoasDatum = {
   name: string;
@@ -21,14 +22,15 @@ type ROASChartProps = {
 
 export default function ROASChart({ data }: ROASChartProps) {
   return (
+    <div role="img" aria-label="ROAS 비교 차트" style={{ width: '100%', height: '100%' }}>
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={CHART_COLORS.grid} />
         <XAxis
           dataKey="name"
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fontWeight: 700, fill: CHART_COLORS.axisLabel }}
           dy={10}
         />
         <YAxis hide />
@@ -52,5 +54,6 @@ export default function ROASChart({ data }: ROASChartProps) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

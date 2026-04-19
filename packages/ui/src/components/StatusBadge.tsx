@@ -12,8 +12,18 @@
  * 원색 사용 금지 — bg-*-100 / text-*-600~700 톤 유지
  */
 
+import { memo } from 'react'
+import type { CampaignStatus, ParticipationStatus } from '../constants/status'
+
+/** 플랫폼 문자열 리터럴 타입 */
+type PlatformStatus = '인스타그램' | '유튜브' | '틱톡' | '게재중' | '일시중지'
+
+/** StatusBadge가 수용하는 알려진 상태값 유니온 */
+export type KnownStatus = CampaignStatus | ParticipationStatus | PlatformStatus
+
 interface StatusBadgeProps {
-  status: string
+  /** 알려진 상태값 우선 사용. 미등록 문자열도 허용 (fallback: slate) */
+  status: KnownStatus | (string & {})
   size?: 'sm' | 'md'
   dot?: boolean
   className?: string
@@ -55,7 +65,7 @@ const statusConfig: Record<string, Cfg> = {
   '틱톡':       { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
 }
 
-export default function StatusBadge({ status, size = 'sm', dot = true, className = '' }: StatusBadgeProps) {
+const StatusBadge = memo(function StatusBadge({ status, size = 'sm', dot = true, className = '' }: StatusBadgeProps) {
   const cfg = statusConfig[status] ?? { bg: 'bg-slate-100', text: 'text-slate-500', dot: 'bg-slate-400' }
   const sizeClass = size === 'sm' ? 'text-xs px-2 py-0.5 gap-1' : 'text-sm px-2.5 py-1 gap-1.5'
   const dotSize   = size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2'
@@ -66,4 +76,6 @@ export default function StatusBadge({ status, size = 'sm', dot = true, className
       {status}
     </span>
   )
-}
+})
+
+export default StatusBadge

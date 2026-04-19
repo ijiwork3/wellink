@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BRAND, Modal } from '@wellink/ui'
+import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 
@@ -23,19 +23,19 @@ export default function Media() {
   // QA: platforms 초기값 결정
   const initPlatforms = (): Platform[] => {
     if (qa === 'all-disconnected') return [
-      { id: 'naver', name: '네이버 블로그', iconBg: '#03C75A', icon: 'N', connected: false },
-      { id: 'instagram', name: '인스타그램', iconBg: '#E1306C', icon: '📷', connected: false },
-      { id: 'youtube', name: '유튜브', iconBg: '#FF0000', icon: '▶', connected: false },
+      { id: 'naver', name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', connected: false },
+      { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', connected: false },
+      { id: 'youtube', name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', connected: false },
     ]
     if (qa === 'all-connected') return [
-      { id: 'naver', name: '네이버 블로그', iconBg: '#03C75A', icon: 'N', connected: true, url: 'myblog', followers: 3200, engagementRate: 2.8 },
-      { id: 'instagram', name: '인스타그램', iconBg: '#E1306C', icon: '📷', connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
-      { id: 'youtube', name: '유튜브', iconBg: '#FF0000', icon: '▶', connected: true, url: 'chanChannel', followers: 1200, engagementRate: 3.5 },
+      { id: 'naver', name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', connected: true, url: 'myblog', followers: 3200, engagementRate: 2.8 },
+      { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
+      { id: 'youtube', name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', connected: true, url: 'chanChannel', followers: 1200, engagementRate: 3.5 },
     ]
     return [
-      { id: 'naver', name: '네이버 블로그', iconBg: '#03C75A', icon: 'N', connected: false },
-      { id: 'instagram', name: '인스타그램', iconBg: '#E1306C', icon: '📷', connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
-      { id: 'youtube', name: '유튜브', iconBg: '#FF0000', icon: '▶', connected: false },
+      { id: 'naver', name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', connected: false },
+      { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
+      { id: 'youtube', name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', connected: false },
     ]
   }
 
@@ -93,7 +93,7 @@ export default function Media() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
+          <XCircle size={44} className="text-red-300" aria-hidden="true" />
           <div className="text-center">
             <p className="text-sm font-semibold text-gray-900">SNS 연결 정보를 불러오지 못했어요</p>
             <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요</p>
@@ -102,7 +102,7 @@ export default function Media() {
             onClick={() => window.location.reload()}
             className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors"
           >
-            <RefreshCw size={14} />다시 시도
+            <RefreshCw size={14} aria-hidden="true" />다시 시도
           </button>
         </div>
       </Layout>
@@ -142,7 +142,7 @@ export default function Media() {
     <Layout>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <div className="flex items-center gap-2 mb-2">
-          <Link2 size={16} style={{ color: BRAND.green }} />
+          <Link2 size={16} className="text-brand-green" aria-hidden="true" />
           <h2 className="text-base font-semibold text-gray-900">미디어 연결</h2>
         </div>
         <p className="text-sm text-gray-500 mb-5">
@@ -176,7 +176,7 @@ export default function Media() {
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-gray-500">팔로워 <strong className="text-gray-700">{p.followers.toLocaleString()}</strong></span>
                       {p.engagementRate != null && (
-                        <span className="text-[10px] text-gray-500">참여율 <strong className={p.engagementRate >= 4 ? 'text-brand-green-text' : p.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}>{p.engagementRate}%</strong></span>
+                        <span className="text-[10px] text-gray-500">참여율 <strong className={getEngagementColor(p.engagementRate)}>{p.engagementRate}%</strong></span>
                       )}
                     </div>
                   )}
@@ -199,8 +199,7 @@ export default function Media() {
                     setUrlInput('')
                     setConnectModal({ platformId: p.id, name: p.name })
                   }}
-                  className="text-xs px-3.5 py-1.5 rounded-xl text-white transition-all duration-150 hover:opacity-90"
-                  style={{ backgroundColor: BRAND.green }}
+                  className="text-xs px-3.5 py-1.5 rounded-xl text-white bg-brand-green transition-all duration-150 hover:opacity-90"
                 >
                   연결하기
                 </button>
@@ -209,7 +208,7 @@ export default function Media() {
           ))}
         </div>
 
-        <div className="mt-5 p-4 rounded-xl bg-brand-green/5" style={{ borderLeft: `3px solid ${BRAND.green}` }}>
+        <div className="mt-5 p-4 rounded-xl bg-brand-green/5 border-l-[3px] border-brand-green">
           <p className="text-xs text-gray-600">
             SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인됩니다.
           </p>
@@ -257,8 +256,7 @@ export default function Media() {
               </button>
               <button
                 onClick={handleConnect}
-                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-150 hover:opacity-90"
-                style={{ backgroundColor: BRAND.green }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90"
               >
                 연결
               </button>

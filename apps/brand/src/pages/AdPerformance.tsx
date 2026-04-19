@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
-import { KPICard, StatusBadge, BRAND } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
-import { useQAMode } from '@wellink/ui'
-import { fmtNumber, fmtPrice } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, useQAMode, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { getDateLabel } from '../utils/getDateLabel'
@@ -77,21 +74,6 @@ const adFormatPerf = [
   { format: '스토리 광고', impressions: 88000,  clicks: 1230, ctr: 1.40, cpm: 6800 },
 ]
 
-// data-policy-v1 §광고성과: ROAS ≥3.0x 녹색 / 1.5~3.0x amber / <1.5x 빨강
-function getRoasColor(roas: number): string {
-  if (roas >= 3.0) return 'text-brand-green'
-  if (roas >= 1.5) return 'text-amber-600'
-  if (roas > 0)   return 'text-red-500'
-  return 'text-gray-400'
-}
-
-// data-policy-v1 §광고성과: CTR ≥2.0% 녹색 / 1.0~2.0% 기본 / <1.0% 빨강
-function getCtrColor(ctr: number): string {
-  if (ctr >= 2.0) return 'text-brand-green'
-  if (ctr > 0 && ctr < 1.0) return 'text-red-500'
-  return 'text-gray-900'
-}
-
 
 function getObjectiveBadge(obj: string) {
   switch (obj) {
@@ -105,7 +87,7 @@ function getObjectiveBadge(obj: string) {
 function RoasBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? (value / max) * 100 : 0
   // data-policy-v1: ROAS ≥3.0 녹색 / ≥1.5 amber / >0 빨강
-  const color = value >= 3.0 ? BRAND.green : value >= 1.5 ? '#F59E0B' : value > 0 ? '#EF4444' : '#E5E7EB'
+  const color = value >= 3.0 ? 'var(--color-brand-green)' : value >= 1.5 ? 'var(--color-roas-warning)' : value > 0 ? 'var(--color-roas-danger)' : 'var(--color-chart-empty)'
   return (
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -167,14 +149,14 @@ export default function AdPerformance() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" />
+          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-semibold text-gray-400 mb-1">집행 중인 Meta 광고가 없습니다</p>
           <p className="text-xs text-gray-300 mb-4">Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다.</p>
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
             className="flex items-center gap-1.5 mx-auto text-xs text-gray-500 hover:text-gray-700 transition-colors"
           >
-            <ExternalLink size={12} />Meta 광고 관리자 열기
+            <ExternalLink size={12} aria-hidden="true" />Meta 광고 관리자 열기
           </button>
         </div>
       </div>
@@ -216,8 +198,8 @@ export default function AdPerformance() {
             ))}
           </div>
           <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-1">
-            <button onClick={() => setDateOffset(o => o - 1)} className="p-0.5 rounded hover:bg-gray-100 transition-colors">
-              <ChevronLeft size={14} className="text-gray-500" />
+            <button onClick={() => setDateOffset(o => o - 1)} className="p-2 rounded hover:bg-gray-100 transition-colors">
+              <ChevronLeft size={14} className="text-gray-500" aria-hidden="true" />
             </button>
             <span className="text-xs font-medium text-gray-700 min-w-[80px] text-center">
               {getDateLabel(period, dateOffset)}
@@ -225,16 +207,16 @@ export default function AdPerformance() {
             <button
               onClick={() => setDateOffset(o => Math.min(0, o + 1))}
               disabled={dateOffset >= 0}
-              className="p-0.5 rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <ChevronRight size={14} className="text-gray-500" />
+              <ChevronRight size={14} className="text-gray-500" aria-hidden="true" />
             </button>
           </div>
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
             className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white"
           >
-            <ExternalLink size={12} />
+            <ExternalLink size={12} aria-hidden="true" />
             Meta 광고 관리자
           </button>
         </div>
@@ -248,7 +230,7 @@ export default function AdPerformance() {
           sub={period === '일간' ? '오늘 지출' : period === '주간' ? '이번 주' : period === '월간' ? '이번 달' : '올해 누적'}
           trend={isZero ? 0 : kpi.trends[0]}
           trendLabel="전기간 대비"
-          icon={<DollarSign size={16} />}
+          icon={<DollarSign size={16} aria-hidden="true" />}
           tooltip="Meta 광고 관리자에서 집행된 총 광고 비용"
         />
         <KPICard
@@ -257,7 +239,7 @@ export default function AdPerformance() {
           sub="광고 노출 사용자"
           trend={isZero ? 0 : kpi.trends[1]}
           trendLabel="전기간 대비"
-          icon={<TrendingUp size={16} />}
+          icon={<TrendingUp size={16} aria-hidden="true" />}
           tooltip="광고를 1회 이상 본 고유 사용자 수"
         />
         <KPICard
@@ -266,7 +248,7 @@ export default function AdPerformance() {
           sub="링크 클릭 합산"
           trend={isZero ? 0 : kpi.trends[2]}
           trendLabel="전기간 대비"
-          icon={<MousePointer size={16} />}
+          icon={<MousePointer size={16} aria-hidden="true" />}
           tooltip="광고 내 링크를 클릭한 횟수"
         />
         <KPICard
@@ -275,7 +257,7 @@ export default function AdPerformance() {
           sub="광고비 대비 매출"
           trend={isZero ? 0 : kpi.trends[3]}
           trendLabel="전기간 대비"
-          icon={<ShoppingBag size={16} />}
+          icon={<ShoppingBag size={16} aria-hidden="true" />}
           valueColor={getRoasColor(isZero ? 0 : kpi.roas)}
           tooltip="광고 지출 1원당 발생한 매출 (≥4.0x 우수)"
         />
@@ -298,7 +280,7 @@ export default function AdPerformance() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
                 {['캠페인명', '목표', '상태', '광고비', '도달', '클릭수', 'CTR', 'ROAS'].map(h => (
-                  <th key={h} className="text-left text-xs font-medium text-gray-500 py-2.5 px-4">{h}</th>
+                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4">{h}</th>
                 ))}
               </tr>
             </thead>

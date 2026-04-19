@@ -10,3 +10,19 @@ export function getDDay(deadline: string): { label: string; color: string; pulse
   if (diff <= 7)  return { label: `D-${diff}`,           color: 'text-orange-500',pulse: false }
   return               { label: `D-${diff}`,           color: 'text-gray-500',  pulse: false }
 }
+
+/** D-Day badge 배경+텍스트 클래스 — getDDay() 반환값의 color/pulse를 Tailwind className으로 변환 */
+export function getDDayBadgeStyle(color: string, pulse: boolean): string {
+  const base = 'text-xs font-semibold px-2 py-0.5 rounded-full'
+  const colorMap: Record<string, string> = {
+    'text-red-500':    'bg-red-50 text-red-600',
+    'text-orange-500': 'bg-orange-50 text-orange-600',
+    'text-gray-400':   'bg-gray-100 text-gray-500',
+    'text-gray-500':   'bg-gray-100 text-gray-500',
+  }
+  const colorClass = colorMap[color] ?? 'bg-gray-100 text-gray-500'
+  return `${base} ${colorClass}${pulse ? ' animate-pulse' : ''}`
+}
+
+/** getDDay() 반환 타입 — getDDayBadgeStyle 인자로 사용 */
+export type DayResult = ReturnType<typeof getDDay>

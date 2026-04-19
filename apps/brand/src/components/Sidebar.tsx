@@ -1,10 +1,10 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
-  Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink, Home
+  Megaphone, BookOpen, CreditCard, Receipt,
+  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink, Home, LogOut
 } from 'lucide-react'
-import { useToast } from '@wellink/ui'
+import { useToast, auth } from '@wellink/ui'
 
 const sections = [
   {
@@ -29,6 +29,12 @@ const sections = [
     items: [
       { to: '/campaigns', icon: <Megaphone size={15} />, label: '캠페인 목록' },
       { to: '/library', icon: <BookOpen size={15} />, label: '콘텐츠 라이브러리' },
+    ],
+  },
+  {
+    label: '정산',
+    items: [
+      { to: '/settlement', icon: <Receipt size={15} />, label: '정산 관리' },
     ],
   },
   {
@@ -141,10 +147,17 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
               <User size={13} />
             </div>
             <div className="flex-1 min-w-0 text-left">
-              {/* TODO: 로그인 컨텍스트에서 사용자 정보 주입 */}
+              {/* auth 연동 시 실제 사용자 정보로 교체 예정 */}
               <p className="text-xs font-medium text-gray-900 truncate">웰링크 브랜드</p>
               <p className="text-[11px] text-gray-400 truncate">brand@wellink.ai</p>
             </div>
+          </button>
+          <button
+            onClick={() => { auth.clear(); navigate('/login') }}
+            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors duration-150 mt-1"
+          >
+            <LogOut size={14} className="shrink-0" />
+            로그아웃
           </button>
         </div>
       </div>

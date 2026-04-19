@@ -5,65 +5,49 @@
  */
 
 import { Link2, ChevronRight } from 'lucide-react'
+import { PLATFORM_COLORS } from '../constants/colors'
+
+export interface PlatformConfig {
+  id: 'naver' | 'instagram' | 'youtube'
+  connected: boolean
+  handle?: string
+}
 
 interface SNSPanelProps {
-  naverConnected?: boolean
-  instaConnected?: boolean
-  youtubeConnected?: boolean
-  naverHandle?: string
-  instaHandle?: string
-  youtubeHandle?: string
-  onConnectClick?: (platform: 'naver' | 'instagram' | 'youtube') => void
+  platforms?: PlatformConfig[]
+  onConnectClick?: (id: string) => void
+}
+
+const DEFAULT_PLATFORMS: PlatformConfig[] = [
+  { id: 'naver', connected: false },
+  { id: 'instagram', connected: false },
+  { id: 'youtube', connected: false },
+]
+
+const PLATFORM_META: Record<PlatformConfig['id'], { name: string; icon: string; iconBg: string }> = {
+  naver:     { name: '네이버 블로그', icon: 'N',  iconBg: PLATFORM_COLORS.naver },
+  instagram: { name: '인스타그램',   icon: '📷', iconBg: PLATFORM_COLORS.instagram },
+  youtube:   { name: '유튜브',       icon: '▶',  iconBg: PLATFORM_COLORS.youtube },
 }
 
 export default function SNSPanel({
-  naverConnected = false,
-  instaConnected = false,
-  youtubeConnected = false,
-  naverHandle,
-  instaHandle,
-  youtubeHandle,
+  platforms = DEFAULT_PLATFORMS,
   onConnectClick,
 }: SNSPanelProps) {
-  const platforms = [
-    {
-      name: '네이버 블로그',
-      icon: 'N',
-      iconBg: '#03C75A',
-      connected: naverConnected,
-      handle: naverHandle,
-      id: 'naver' as const,
-    },
-    {
-      name: '인스타그램',
-      icon: '📷',
-      iconBg: '#E1306C',
-      connected: instaConnected,
-      handle: instaHandle,
-      id: 'instagram' as const,
-    },
-    {
-      name: '유튜브',
-      icon: '▶',
-      iconBg: '#FF0000',
-      connected: youtubeConnected,
-      handle: youtubeHandle,
-      id: 'youtube' as const,
-    },
-  ]
+  const resolvedPlatforms = platforms.map(p => ({ ...p, ...PLATFORM_META[p.id] }))
 
   return (
     <div className="border border-gray-100 rounded-2xl p-4 bg-white shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <Link2 size={15} style={{ color: '#8CC63F' }} />
+        <Link2 size={15} className="text-brand-green" aria-hidden="true" />
         <span className="text-sm font-semibold text-gray-900">연결된 SNS</span>
       </div>
       <div>
-        {platforms.map(p => (
+        {resolvedPlatforms.map(p => (
           <div key={p.id} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
             <div className="flex items-center gap-2">
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                 style={{ backgroundColor: p.iconBg }}
               >
                 {p.icon}
@@ -77,16 +61,17 @@ export default function SNSPanel({
             </div>
             {p.connected ? (
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-green inline-block" />
                 <span className="text-xs text-green-600 font-medium">연결됨</span>
               </div>
             ) : (
               <button
-                className="text-xs flex items-center gap-0.5 text-[#8CC63F] hover:opacity-70 transition-all duration-150"
+                className="text-xs text-brand-green flex items-center gap-0.5 hover:opacity-70 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
                 onClick={() => onConnectClick?.(p.id)}
+                aria-label={`${p.name} 연결하기`}
               >
                 연결하기
-                <ChevronRight size={12} />
+                <ChevronRight size={12} aria-hidden="true" />
               </button>
             )}
           </div>

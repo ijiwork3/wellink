@@ -4,7 +4,10 @@
  * platform: '/' 구분자로 복수 플랫폼 지원 (예: '인스타그램/유튜브')
  */
 
+import { memo } from 'react'
 import StatusBadge from './StatusBadge'
+import { fmtFollowers } from '../utils/format'
+import { getEngagementColor } from '../utils/getScoreColor'
 
 interface Influencer {
   id: number
@@ -23,13 +26,7 @@ interface InfluencerCardProps {
   onClick?: () => void
 }
 
-function formatFollowers(n: number) {
-  if (n >= 10000) return `${(n / 10000).toFixed(1)}만`
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}천`
-  return `${n}`
-}
-
-export default function InfluencerCard({ influencer, selected, onToggle, onClick }: InfluencerCardProps) {
+const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onToggle, onClick }: InfluencerCardProps) {
   const initials = influencer.name.slice(0, 1)
   const colors = ['bg-pink-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200', 'bg-purple-200']
   const colorClass = colors[influencer.id % colors.length]
@@ -37,7 +34,7 @@ export default function InfluencerCard({ influencer, selected, onToggle, onClick
   return (
     <div
       className={`bg-white rounded-xl border p-4 cursor-pointer transition-all ${
-        selected ? 'border-[#8CC63F] shadow-md' : 'border-gray-100 shadow-sm hover:shadow-md'
+        selected ? 'border-brand-green shadow-md' : 'border-gray-100 shadow-sm hover:shadow-md'
       }`}
       onClick={onClick}
     >
@@ -53,8 +50,8 @@ export default function InfluencerCard({ influencer, selected, onToggle, onClick
             ))}
           </div>
           <div className="flex gap-3 mt-1 text-xs text-gray-500">
-            <span>팔로워 {formatFollowers(influencer.followers)}</span>
-            <span>참여율 {influencer.engagement}%</span>
+            <span>팔로워 {fmtFollowers(influencer.followers)}</span>
+            <span className={getEngagementColor(influencer.engagement)}>참여율 {influencer.engagement}%</span>
             <span>진성 {influencer.authentic}%</span>
           </div>
           <div className="flex gap-1 mt-2 flex-wrap">
@@ -66,8 +63,10 @@ export default function InfluencerCard({ influencer, selected, onToggle, onClick
         {onToggle && (
           <button
             onClick={e => { e.stopPropagation(); onToggle() }}
+            aria-pressed={selected}
+            aria-label={selected ? '선택 해제' : '선택'}
             className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-              selected ? 'bg-[#8CC63F] border-[#8CC63F]' : 'border-gray-300'
+              selected ? 'bg-brand-green border-brand-green' : 'border-gray-300'
             }`}
           >
             {selected && <span className="text-white text-xs">✓</span>}
@@ -76,4 +75,6 @@ export default function InfluencerCard({ influencer, selected, onToggle, onClick
       </div>
     </div>
   )
-}
+})
+
+export default InfluencerCard

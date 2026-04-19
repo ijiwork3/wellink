@@ -22,9 +22,9 @@ export default function InstagramGlobalBanner() {
           <span className="text-gray-600 ml-1.5 hidden sm:inline">분석·성과 기능을 사용하려면 연결이 필요해요.</span>
         </p>
         <button
-          onClick={() => navigate('/profile-insight')}
+          onClick={() => navigate('/analytics/profile')}
           className="text-xs sm:text-sm font-semibold text-white px-3 sm:px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90 flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}
+          style={{ background: 'var(--gradient-instagram)' }}
         >
           연결하기
         </button>

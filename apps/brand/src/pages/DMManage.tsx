@@ -1,49 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Send, Search, MessageSquare, ArrowLeft } from 'lucide-react'
-import { ErrorState } from '@wellink/ui'
+import { ErrorState, TIMER_MS } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-
-const conversations = [
-  {
-    id: 1,
-    name: '이창민',
-    avatar: 'bg-pink-200',
-    lastMsg: '네, 콘텐츠 가이드 확인했습니다!',
-    time: '5분 전',
-    unread: 2,
-    messages: [
-      { id: 1, from: 'me', text: '안녕하세요, 봄 요가 프로모션 관련해서 연락드립니다.', time: '10:30' },
-      { id: 2, from: 'them', text: '안녕하세요! 말씀해 주세요 😊', time: '10:32' },
-      { id: 3, from: 'me', text: '캠페인 가이드라인 공유드립니다. 검토 부탁드려요.', time: '10:34' },
-      { id: 4, from: 'them', text: '네, 콘텐츠 가이드 확인했습니다!', time: '10:40' },
-    ],
-  },
-  {
-    id: 2,
-    name: '김가애',
-    avatar: 'bg-yellow-200',
-    lastMsg: '언제까지 원고 제출해야 하나요?',
-    time: '1시간 전',
-    unread: 1,
-    messages: [
-      { id: 1, from: 'them', text: '안녕하세요, 캠페인 참여 확정됐다고 연락받았어요!', time: '09:00' },
-      { id: 2, from: 'me', text: '네, 반갑습니다! 잘 부탁드립니다 🙂', time: '09:05' },
-      { id: 3, from: 'them', text: '언제까지 원고 제출해야 하나요?', time: '09:20' },
-    ],
-  },
-  {
-    id: 3,
-    name: '박리나',
-    avatar: 'bg-purple-200',
-    lastMsg: '알겠습니다, 수정해서 다시 보낼게요.',
-    time: '어제',
-    unread: 0,
-    messages: [
-      { id: 1, from: 'me', text: '콘텐츠 검토 완료했습니다. 해시태그 추가 부탁드려요.', time: '어제 14:00' },
-      { id: 2, from: 'them', text: '알겠습니다, 수정해서 다시 보낼게요.', time: '어제 14:30' },
-    ],
-  },
-]
+import { mockConversations as conversations } from '../services/mock/dm'
 
 export default function DMManage() {
   const qa = useQAMode()
@@ -101,7 +60,7 @@ export default function DMManage() {
         isSimulated: true,
       }])
       autoReplyTimerRef.current = null
-    }, 1000)
+    }, TIMER_MS.MOCK_AUTO_REPLY)
   }
 
   const filtered = conversations.filter(c => c.name.includes(search))
@@ -165,7 +124,7 @@ export default function DMManage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
           <MessageSquare size={40} className="text-gray-200 mx-auto mb-3" />
           <p className="text-sm font-semibold text-gray-400 mb-1">진행 중인 DM이 없습니다</p>
-          <p className="text-xs text-gray-300 mb-4">인플루언서와의 DM이 시작되면 여기에 표시됩니다.</p>
+          <p className="text-xs text-gray-400 mb-4">인플루언서와의 DM이 시작되면 여기에 표시됩니다.</p>
         </div>
       </div>
     )
@@ -190,7 +149,7 @@ export default function DMManage() {
                 aria-label="대화 검색"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none"
+                className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-colors"
               />
             </div>
           </div>
@@ -294,7 +253,7 @@ export default function DMManage() {
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-6">
               <MessageSquare size={40} className="text-gray-200" />
               <p className="text-sm font-semibold text-gray-400">대화를 선택해 주세요</p>
-              <p className="text-xs text-gray-300">왼쪽 목록에서 대화를 선택하면 메시지가 표시됩니다.</p>
+              <p className="text-xs text-gray-400">왼쪽 목록에서 대화를 선택하면 메시지가 표시됩니다.</p>
             </div>
           )}
         </div>

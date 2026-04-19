@@ -10,7 +10,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="order-2 lg:order-1">
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[#0A3622] uppercase">
+            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               02. Verified Experts
             </span>
             <h2 className="mb-6 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
@@ -20,7 +20,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
             </h2>
             <p className="mb-10 text-lg text-slate-600">
               단순 협찬 모델이 아닌, 실제 운동 일지와 식단 소통으로 다져진{' '}
-              <span className="border-b-4 border-[#BFF264] font-bold">5만 명의 웰니스 전문가</span>{' '}
+              <span className="border-b-4 border-[var(--color-landing-lime)] font-bold">5만 명의 웰니스 전문가</span>{' '}
               리스트를 바로 활용하세요.
             </p>
 
@@ -33,7 +33,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                   >
                     <img
                       src={`https://picsum.photos/seed/${i + 10}/100/100`}
-                      alt="Expert"
+                      alt=""
                       referrerPolicy="no-referrer"
                       loading="lazy"
                       decoding="async"
@@ -42,7 +42,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                     />
                   </div>
                 ))}
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-lime-200 text-xs font-bold text-[#0A3622]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-lime-200 text-xs font-bold text-[var(--color-landing-dark)]">
                   +50k
                 </div>
               </div>
@@ -52,11 +52,11 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
               </div>
             </div>
 
-            <div className="inline-block rounded-xl bg-[#0A3622] px-6 py-4 text-white">
+            <div className="inline-block rounded-xl bg-[var(--color-landing-dark)] px-6 py-4 text-white">
               <div className="text-xs font-bold uppercase tracking-wider opacity-60">
                 Conversion Rate
               </div>
-              <div className="text-2xl font-black text-[#BFF264]">CVR 12.8%</div>
+              <div className="text-2xl font-black text-[var(--color-landing-lime)]">CVR 12.8%</div>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                   <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-200">
                     <img
                       src="https://picsum.photos/seed/profile/100/100"
-                      alt="Profile"
+                      alt=""
                       referrerPolicy="no-referrer"
                       loading="lazy"
                       decoding="async"
@@ -91,7 +91,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                     ].join(', ')}
                     sizes="(max-width: 768px) 80vw, 300px"
                     className="h-full w-full object-cover"
-                    alt="Post"
+                    alt="인스타그램 피드 콘텐츠"
                     referrerPolicy="no-referrer"
                     loading="lazy"
                     decoding="async"

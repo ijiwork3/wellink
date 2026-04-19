@@ -3,6 +3,8 @@
  * 인스타그램 / 유튜브 / 블로그 / 틱톡
  */
 
+import { memo } from 'react'
+
 type PlatformType = 'instagram' | 'youtube' | 'blog' | 'tiktok' | string
 
 interface PlatformBadgeProps {
@@ -10,7 +12,7 @@ interface PlatformBadgeProps {
   className?: string
 }
 
-export default function PlatformBadge({ platform, className = '' }: PlatformBadgeProps) {
+const PlatformBadge = memo(function PlatformBadge({ platform, className = '' }: PlatformBadgeProps) {
   const getStyle = (): { bg: string; text: string; label: string } => {
     switch (platform.toLowerCase()) {
       case 'instagram':
@@ -40,4 +42,6 @@ export default function PlatformBadge({ platform, className = '' }: PlatformBadg
       {style.label}
     </span>
   )
-}
+})
+
+export default PlatformBadge

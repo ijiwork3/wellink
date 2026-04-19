@@ -1,4 +1,4 @@
-import { BRAND, SNSPanel } from '@wellink/ui'
+import { SNSPanel } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 export default function ProfileHeader() {
@@ -12,8 +12,7 @@ export default function ProfileHeader() {
         <div className={`flex items-start ${isMobile ? 'gap-3' : 'gap-4'} flex-1`}>
           {/* 아바타 */}
           <div
-            className={`${isMobile ? 'w-12 h-12 text-lg' : 'w-16 h-16 text-2xl'} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm`}
-            style={{ backgroundColor: BRAND.green }}
+            className={`${isMobile ? 'w-12 h-12 text-lg' : 'w-16 h-16 text-2xl'} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm bg-brand-green`}
           >
             김
           </div>
@@ -53,7 +52,13 @@ export default function ProfileHeader() {
         {/* SNS 패널: 태블릿·PC에서만 표시 */}
         {!isMobile && (
           <div className="w-64 flex-shrink-0">
-            <SNSPanel instaConnected={true} />
+            <SNSPanel
+              platforms={[
+                { id: 'naver', connected: false },
+                { id: 'instagram', connected: true, handle: 'chanstyler' },
+                { id: 'youtube', connected: false },
+              ]}
+            />
           </div>
         )}
       </div>

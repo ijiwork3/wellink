@@ -1,17 +1,17 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Calendar } from 'lucide-react'
-import { StatusBadge, PlatformBadge, fmtDate } from '@wellink/ui'
-import type { Campaign } from '../data/campaigns'
+import { StatusBadge, PlatformBadge, fmtDate, TIMER_MS } from '@wellink/ui'
+import type { Campaign } from '../services/mock/campaigns'
 
 // 카드 이미지 영역 파스텔 배경색 — 카테고리별
-const categoryBg: Record<string, string> = {
-  '뷰티': '#fce7f3',
-  '스포츠': '#e0f2fe',
-  '푸드': '#fef9c3',
-  '라이프스타일': '#f0fce8',
-  '건강': '#d1fae5',
-  '기타': '#f3f4f6',
+const categoryBgClass: Record<string, string> = {
+  '뷰티': 'bg-pink-100',
+  '스포츠': 'bg-sky-100',
+  '푸드': 'bg-yellow-100',
+  '라이프스타일': 'bg-green-50',
+  '건강': 'bg-emerald-100',
+  '기타': 'bg-gray-100',
 }
 
 interface CampaignCardProps {
@@ -21,16 +21,16 @@ interface CampaignCardProps {
   showLike?: boolean
 }
 
-export default function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true }: CampaignCardProps) {
+const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true }: CampaignCardProps) {
   const navigate = useNavigate()
   const [heartAnim, setHeartAnim] = useState(false)
-  const bg = categoryBg[campaign.category] ?? '#f3f4f6'
+  const bgClass = categoryBgClass[campaign.category] ?? 'bg-gray-100'
   const isUrgent = campaign.status === '마감임박'
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
     setHeartAnim(true)
-    setTimeout(() => setHeartAnim(false), 300)
+    setTimeout(() => setHeartAnim(false), TIMER_MS.HEART_ANIMATION)
     onToggleLike?.(campaign.id)
   }
 
@@ -48,15 +48,14 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
 
       {/* 이미지 영역 */}
       <div
-        className="h-40 flex items-center justify-center text-5xl relative"
-        style={{ backgroundColor: bg }}
+        className={`h-40 flex items-center justify-center text-5xl relative ${bgClass}`}
       >
         {campaign.image}
         {showLike && (
           <button
             className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150"
             onClick={handleLike}
-            aria-label={liked ? '관심 해제' : '관심 등록'}
+            aria-label={liked ? '좋아요 취소' : '좋아요'}
           >
             <Heart
               size={16}
@@ -95,4 +94,6 @@ export default function CampaignCard({ campaign, liked = false, onToggleLike, sh
       </div>
     </div>
   )
-}
+})
+
+export default CampaignCard

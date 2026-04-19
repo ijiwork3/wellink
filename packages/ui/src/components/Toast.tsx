@@ -13,6 +13,7 @@
 
 import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react'
 import { CheckCircle, XCircle, Info, X } from 'lucide-react'
+import { TIMER_MS } from '../constants/timers'
 
 type ToastType = 'success' | 'error' | 'info'
 
@@ -41,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts(prev => [...prev, { id, type, message }])
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
-    }, 3000)
+    }, TIMER_MS.TOAST_AUTO_CLOSE)
   }, [])
 
   const removeToast = (id: number) => {
@@ -51,7 +52,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"
+      >
         {toasts.map(toast => (
           <ToastBubble key={toast.id} toast={toast} onRemove={removeToast} />
         ))}
@@ -81,9 +87,10 @@ function ToastBubble({ toast, onRemove }: { toast: ToastItem; onRemove: (id: num
       <span className="flex-1 text-sm text-gray-800">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        aria-label="알림 닫기"
+        className="text-gray-400 hover:text-gray-600 transition-colors p-2.5 -m-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
       >
-        <X size={14} />
+        <X size={14} aria-hidden="true" />
       </button>
     </div>
   )

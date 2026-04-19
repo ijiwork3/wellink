@@ -11,7 +11,13 @@ export default function Layout() {
   const isMobile = device === 'phone'
 
   return (
-    <div className="flex h-full bg-[#FAFAFA]">
+    <div className="flex h-full bg-gray-50">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-sm focus:font-medium"
+      >
+        메인 콘텐츠로 이동
+      </a>
       {/* 모바일 GNB */}
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 h-12 bg-white border-b border-gray-100 flex items-center px-4 z-50">
@@ -45,7 +51,7 @@ export default function Layout() {
         <div className={isMobile ? 'pt-12' : ''}>
           <InstagramGlobalBanner />
         </div>
-        <main className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>

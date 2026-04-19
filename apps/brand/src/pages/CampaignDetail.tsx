@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Info } from 'lucide-react'
-import { Modal } from '@wellink/ui'
+import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, BRAND } from '@wellink/ui'
+import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ─── 더미 데이터 ─── */
@@ -68,14 +68,6 @@ const registeredContents = [
   { id: 3, thumbnail: 'bg-gradient-to-br from-purple-100 to-purple-200', influencer: '박리나', type: '스토리', reach: 5200, likes: 380, comments: 15, saves: 62 },
   { id: 4, thumbnail: 'bg-gradient-to-br from-blue-100 to-blue-200', influencer: '민경완', type: '피드', reach: 6700, likes: 420, comments: 31, saves: 78 },
 ]
-
-const typeColors: Record<string, string> = {
-  '이미지': 'bg-sky-100 text-sky-700',
-  '릴스': 'bg-pink-100 text-pink-700',
-  '스토리': 'bg-purple-100 text-purple-700',
-  '영상': 'bg-orange-100 text-orange-700',
-  '피드': 'bg-blue-100 text-blue-700',
-}
 
 // 캠페인·참여 상태 스타일은 @wellink/ui 상수 사용
 const statusConfig: Record<string, { label: string; cls: string }> = {
@@ -192,7 +184,7 @@ export default function CampaignDetail() {
       <div className="space-y-5">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/campaigns')} aria-label="이전" className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
-            <ArrowLeft size={18} />
+            <ArrowLeft size={18} aria-hidden="true" />
           </button>
           <h1 className="text-xl font-bold text-gray-900">캠페인 상세</h1>
         </div>
@@ -295,7 +287,7 @@ export default function CampaignDetail() {
     setDownloadModal(false)
     setSelectedContents(new Set())
     showToast('다운로드 준비 중입니다.', 'success')
-    setTimeout(() => setIsPaying(false), 1500)
+    setTimeout(() => setIsPaying(false), TIMER_MS.STATE_FEEDBACK)
   }
 
   // 반려
@@ -321,6 +313,7 @@ export default function CampaignDetail() {
 
   const chartData = registeredContents.map(c => ({ name: c.influencer, likes: c.likes }))
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
+  const safeMaxLikes = maxLikes || 1
 
   // SVG 라인 차트 계산
   const chartW = 500
@@ -333,7 +326,7 @@ export default function CampaignDetail() {
   const plotH = chartH - padT - padB
   const points = chartData.map((d, i) => ({
     x: padL + (i / Math.max(1, chartData.length - 1)) * plotW,
-    y: padT + plotH - (d.likes / maxLikes) * plotH,
+    y: padT + plotH - (d.likes / safeMaxLikes) * plotH,
     ...d,
   }))
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
@@ -352,7 +345,7 @@ export default function CampaignDetail() {
           aria-label="이전"
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-150 text-gray-500"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} aria-hidden="true" />
         </button>
         <div>
           <div className="flex items-center gap-2">
@@ -412,7 +405,7 @@ export default function CampaignDetail() {
           )}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <BarChart3 size={15} className="text-gray-400" />
+              <BarChart3 size={15} className="text-gray-400" aria-hidden="true" />
               캠페인 기본 정보
             </h2>
             <div className="rounded-xl border border-gray-100 overflow-hidden">
@@ -452,7 +445,7 @@ export default function CampaignDetail() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <Users size={15} className="text-gray-400" />
+              <Users size={15} className="text-gray-400" aria-hidden="true" />
               지원자 {applicants.length}명
             </h2>
             <div className="flex gap-2">
@@ -461,14 +454,14 @@ export default function CampaignDetail() {
                 disabled={applicants.length === 0}
                 className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <UserCheck size={13} />
+                <UserCheck size={13} aria-hidden="true" />
                 일괄 선정
               </button>
               <button
                 onClick={() => showToast('리스트를 CSV로 내보냅니다.', 'info')}
                 className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150"
               >
-                <Download size={13} />
+                <Download size={13} aria-hidden="true" />
                 리스트 Export
               </button>
             </div>
@@ -478,7 +471,7 @@ export default function CampaignDetail() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="text-left text-xs font-medium text-gray-500 py-3 px-4 w-10">
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 w-10">
                     <input
                       type="checkbox"
                       aria-label="전체 선택"
@@ -491,7 +484,7 @@ export default function CampaignDetail() {
                     />
                   </th>
                   {['이름', '팔로워', '참여율', 'Fit Score', '신청일', '액션'].map(h => (
-                    <th key={h} className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -528,13 +521,13 @@ export default function CampaignDetail() {
                           onClick={() => handleSelectApplicant(a.id)}
                           className="flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
                         >
-                          <Check size={12} /> 선정
+                          <Check size={12} aria-hidden="true" /> 선정
                         </button>
                         <button
                           onClick={() => setRejectModal(a.id)}
                           className="flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150"
                         >
-                          <X size={12} /> 반려
+                          <X size={12} aria-hidden="true" /> 반려
                         </button>
                       </div>
                     </td>
@@ -559,14 +552,14 @@ export default function CampaignDetail() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <UserCheck size={15} className="text-gray-400" />
+              <UserCheck size={15} className="text-gray-400" aria-hidden="true" />
               선정된 인플루언서 {selectedInfluencers.length}명
             </h2>
             <button
               onClick={() => showToast('리스트를 CSV로 내보냅니다.', 'info')}
               className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150"
             >
-              <Download size={13} />
+              <Download size={13} aria-hidden="true" />
               리스트 Export
             </button>
           </div>
@@ -576,7 +569,7 @@ export default function CampaignDetail() {
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   {['이름', '팔로워', '참여율', 'Fit Score', '선정일', '액션'].map(h => (
-                    <th key={h} className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -608,7 +601,7 @@ export default function CampaignDetail() {
                             : 'text-red-500 border-red-200 hover:bg-red-50'
                         }`}
                       >
-                        <X size={12} /> 선정 취소
+                        <X size={12} aria-hidden="true" /> 선정 취소
                       </button>
                     </td>
                   </tr>
@@ -630,22 +623,22 @@ export default function CampaignDetail() {
       {/* ─── D) 등록 콘텐츠 탭 ─── */}
       {activeTab === '등록 콘텐츠' && qa === 'tab-content-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Image size={40} className="text-gray-200 mx-auto mb-3" />
+          <Image size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
-          <p className="text-xs text-gray-300 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
+          <p className="text-xs text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
         </div>
       )}
       {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (
         <div className="space-y-4">
           {/* 유료 다운로드 안내 배너 */}
           <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100">
-            <Info size={15} className="text-amber-500 shrink-0" />
+            <Info size={15} className="text-amber-500 shrink-0" aria-hidden="true" />
             <p className="text-xs text-amber-700">💡 콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
           </div>
 
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <Image size={15} className="text-gray-400" />
+              <Image size={15} className="text-gray-400" aria-hidden="true" />
               등록된 콘텐츠 {registeredContents.length}건
             </h2>
             <button
@@ -658,7 +651,7 @@ export default function CampaignDetail() {
               }}
               className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
             >
-              <Download size={13} />
+              <Download size={13} aria-hidden="true" />
               콘텐츠 다운로드
             </button>
           </div>
@@ -674,21 +667,25 @@ export default function CampaignDetail() {
                 <div
                   key={c.id}
                   onClick={() => toggleContentCheck(c.id)}
+                  role="checkbox"
+                  aria-checked={isChecked}
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleContentCheck(c.id) } }}
                   className={`bg-white rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-150 shadow-sm ${
                     isChecked ? 'border-brand-green' : 'border-gray-100 hover:border-gray-200'
                   }`}
                 >
                   {/* 썸네일 */}
                   <div className={`relative w-full aspect-[4/3] ${c.thumbnail} flex items-center justify-center`}>
-                    <Image size={32} className="text-white/60" />
+                    <Image size={32} className="text-white/60" aria-hidden="true" />
                     {/* 선택 체크 */}
                     <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
                       isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
                     }`}>
-                      {isChecked && <Check size={11} className="text-white" strokeWidth={3} />}
+                      {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
                     </div>
                     {/* 유형 배지 */}
-                    <span className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[c.type] ?? 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                       {c.type}
                     </span>
                   </div>
@@ -711,13 +708,13 @@ export default function CampaignDetail() {
                       </div>
                       <div className="text-center">
                         <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
-                          <Heart size={9} className="text-red-400" />좋아요
+                          <Heart size={9} className="text-red-400" aria-hidden="true" />좋아요
                         </p>
                         <p className="text-xs font-bold text-gray-800">{c.likes.toLocaleString()}</p>
                       </div>
                       <div className="text-center">
                         <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
-                          <MessageCircle size={9} className="text-gray-400" />댓글
+                          <MessageCircle size={9} className="text-gray-400" aria-hidden="true" />댓글
                         </p>
                         <p className="text-xs font-bold text-gray-800">{c.comments}</p>
                       </div>
@@ -737,9 +734,9 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 — 빈 상태 ─── */}
       {activeTab === '성과 리포트' && qa === 'tab-report-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" />
+          <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-500">성과 데이터가 없습니다</p>
-          <p className="text-xs text-gray-300 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
+          <p className="text-xs text-gray-400 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
         </div>
       )}
 
@@ -753,7 +750,7 @@ export default function CampaignDetail() {
               return (
                 <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Icon size={14} className="text-gray-400" />
+                    <Icon size={14} className="text-gray-400" aria-hidden="true" />
                     <span className="text-xs text-gray-500 font-medium">{k.label}</span>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{k.value}</div>
@@ -769,7 +766,7 @@ export default function CampaignDetail() {
               {/* Y축 그리드 */}
               {[0, 0.25, 0.5, 0.75, 1].map(r => {
                 const y = padT + plotH - r * plotH
-                const val = Math.round(r * maxLikes)
+                const val = Math.round(r * safeMaxLikes)
                 return (
                   <g key={r}>
                     <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
@@ -778,12 +775,12 @@ export default function CampaignDetail() {
                 )
               })}
               {/* 라인 */}
-              <path d={linePath} fill="none" stroke={BRAND.green} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+              <path d={linePath} fill="none" stroke="var(--color-brand-green)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
               {/* 포인트 + 라벨 */}
               {points.map((p, i) => (
                 <g key={i}>
-                  <circle cx={p.x} cy={p.y} r={4} fill={BRAND.green} />
-                  <circle cx={p.x} cy={p.y} r={6} fill={BRAND.green} fillOpacity={0.2} />
+                  <circle cx={p.x} cy={p.y} r={4} fill="var(--color-brand-green)" />
+                  <circle cx={p.x} cy={p.y} r={6} fill="var(--color-brand-green)" fillOpacity={0.2} />
                   <text x={p.x} y={chartH - 8} textAnchor="middle" className="text-[10px] fill-gray-500">{p.name}</text>
                   <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[10px] fill-gray-700 font-medium">{p.likes}</text>
                 </g>
@@ -801,7 +798,7 @@ export default function CampaignDetail() {
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   {['순위', '인플루언서', '유형', '도달', '좋아요', '참여율'].map(h => (
-                    <th key={h} className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -819,7 +816,7 @@ export default function CampaignDetail() {
                       </td>
                       <td className="py-3 px-4 text-sm font-medium text-gray-900">{c.influencer}</td>
                       <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[c.type] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                           {c.type}
                         </span>
                       </td>

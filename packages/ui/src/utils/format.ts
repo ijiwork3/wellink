@@ -16,6 +16,9 @@ export function fmtFollowers(n: number): string {
   return fmtNumber(n)
 }
 
+/** fmtFollowers 별칭 — formatFollowers 네이밍 통일용 */
+export const formatFollowers = fmtFollowers
+
 /**
  * 증감률 포맷 — §1-3: 양수 +N% / 음수 -N% / 0 → 0%
  */

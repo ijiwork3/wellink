@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Home from './pages/Home'
@@ -6,9 +7,10 @@ import MyCampaign from './pages/MyCampaign'
 import CampaignDetail from './pages/CampaignDetail'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
+import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import { MockupShell, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider, BRAND } from '@wellink/ui'
+import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
 const INF_TAB_MAP: Record<string, string> = {
   home: '/home',
@@ -154,6 +156,18 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
+  /* ────────────────── 정산 ────────────────── */
+  {
+    label: '정산',
+    children: [
+      { label: '기본 (정산 내역)', path: '/settlement' },
+      { label: '로딩', path: '/settlement?qa=loading' },
+      { label: '빈 상태', path: '/settlement?qa=empty' },
+      { label: '모달 — 정산 요청', path: '/settlement?qa=modal-request' },
+      { label: '에러', path: '/settlement?qa=error' },
+    ],
+  },
+
   /* ────────────────── SNS 관리 ────────────────── */
   {
     label: 'SNS 관리',
@@ -173,6 +187,21 @@ function AppRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/home':              '홈 — WELLINK AI',
+      '/campaigns/browse':  '캠페인 탐색 — WELLINK AI',
+      '/campaigns/my':      '나의 캠페인 — WELLINK AI',
+      '/profile':           '프로필 — WELLINK AI',
+      '/media':             'SNS 관리 — WELLINK AI',
+      '/login':             '로그인 — WELLINK AI',
+      '/signup':            '회원가입 — WELLINK AI',
+    }
+    const path = location.pathname
+    const title = titles[path] ?? (path.startsWith('/campaigns/') ? '캠페인 상세 — WELLINK AI' : 'WELLINK AI')
+    document.title = title
+  }, [location.pathname])
+
   return (
     <MockupShell
       appLabel="[인플루언서 포털]"
@@ -183,23 +212,27 @@ function AppRoutes() {
       statusItems={STATUS_ITEMS}
       onNavigate={({ path }) => path && navigate(path)}
       onReset={() => navigate('/home')}
-      accentColor={BRAND.green}
+      accentColor="var(--color-brand-green)"
       defaultDevice="desktop"
       containerClassName="bg-white"
     >
       <div className="w-full h-full overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/campaigns/browse" element={<CampaignBrowse />} />
-          <Route path="/campaigns/my" element={<MyCampaign />} />
-          <Route path="/campaigns/:id" element={<CampaignDetail />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/media" element={<Media />} />
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            {/* 보호 경로 — 인증 필요 */}
+            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
+            <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
+            <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
+            <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </div>
     </MockupShell>
   )

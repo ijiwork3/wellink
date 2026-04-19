@@ -117,7 +117,7 @@ export default function FormStory() {
       {/* Dropdown */}
       <h2 className="text-base font-bold text-gray-900 mb-4">Dropdown</h2>
       <StoryBlock title="Dropdown Menu">
-        <Dropdown trigger={<div className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"><MoreHorizontal size={14} /> 더보기</div>}>
+        <Dropdown trigger={<button type="button" className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50"><MoreHorizontal size={14} /> 더보기</button>}>
           <div className="py-1 min-w-[140px]">
             <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">상세보기</button>
             <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">수정</button>

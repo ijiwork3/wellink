@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, ChevronRight, Upload, X, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BRAND, Modal } from '@wellink/ui'
+import { Modal, StatusBadge } from '@wellink/ui'
+import type { ParticipationStatus } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtPrice, fmtDate } from '@wellink/ui'
-
-// 인플루언서 관점 참여 상태 — 데이터 정책 v1 §3-2 기준
-type CampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '완료' | '미선정'
 
 interface Campaign {
   id: string
@@ -16,7 +14,7 @@ interface Campaign {
   channel: string
   appliedAt: string
   deadline: string
-  status: CampaignStatus
+  status: ParticipationStatus
   progress: string
   reward: string
 }
@@ -30,25 +28,19 @@ const MOCK_CAMPAIGNS: Campaign[] = [
 
 const STATUS_TABS = ['전체', '지원완료', '검토중', '콘텐츠대기', '검수중', '완료'] as const
 
-const statusBadgeClass: Record<CampaignStatus, string> = {
-  '지원완료': 'bg-gray-100 text-gray-600',
-  '검토중':   'bg-amber-50 text-amber-700',
-  '콘텐츠대기': 'bg-gray-100 text-gray-600',
-  '검수중':   'bg-sky-50 text-sky-700',
-  '완료':     'bg-brand-green/10 text-brand-green-text',
-  '미선정':   'bg-red-50 text-red-600',
-}
 
 /** 상태별 가능한 액션 */
-function getActions(status: CampaignStatus): Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'> {
-  switch (status) {
-    case '지원완료': return ['수정', '취소']
-    case '검토중':   return ['취소']
-    case '콘텐츠대기': return ['콘텐츠 제출']
-    case '검수중':   return ['상세보기']
-    case '완료':     return ['상세보기']
-    case '미선정':   return ['상세보기']
-  }
+const ACTION_MAP: Partial<Record<ParticipationStatus, Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
+  '지원완료':   ['수정', '취소'],
+  '검토중':     ['취소'],
+  '콘텐츠대기': ['콘텐츠 제출'],
+  '검수중':     ['상세보기'],
+  '완료':       ['상세보기'],
+  '미선정':     ['상세보기'],
+}
+
+function getActions(status: ParticipationStatus): Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'> {
+  return ACTION_MAP[status] ?? ['상세보기']
 }
 
 export default function MyCampaign() {
@@ -158,26 +150,26 @@ export default function MyCampaign() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
+          <XCircle size={44} className="text-red-300" aria-hidden="true" />
           <div className="text-center">
             <p className="text-sm font-semibold text-gray-900">캠페인 정보를 불러오지 못했어요</p>
             <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요</p>
           </div>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 text-sm font-medium text-white px-5 py-2.5 rounded-xl transition-colors hover:opacity-90"
-            style={{ backgroundColor: BRAND.green }}
+            className="flex items-center gap-2 text-sm font-medium text-white px-5 py-2.5 rounded-xl transition-colors hover:opacity-90 bg-brand-green"
           >
-            <RefreshCw size={14} />다시 시도
+            <RefreshCw size={14} aria-hidden="true" />다시 시도
           </button>
         </div>
       </Layout>
     )
   }
 
-  const filtered = activeStatus === '전체'
-    ? campaigns
-    : campaigns.filter((c) => c.status === activeStatus)
+  const filtered = useMemo(
+    () => activeStatus === '전체' ? campaigns : campaigns.filter((c) => c.status === activeStatus),
+    [activeStatus, campaigns]
+  )
 
   const countByStatus = (status: string) =>
     status === '전체' ? campaigns.length : campaigns.filter((c) => c.status === status).length
@@ -200,7 +192,7 @@ export default function MyCampaign() {
             onClick={() => navigate('/campaigns/browse')}
             className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors self-start @sm:self-auto"
           >
-            캠페인 찾기 <ChevronRight size={12} />
+            캠페인 찾기 <ChevronRight size={12} aria-hidden="true" />
           </button>
         </div>
 
@@ -232,14 +224,13 @@ export default function MyCampaign() {
         {/* 카드 리스트 */}
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: '#f0fce8' }}>
-              <Search size={24} style={{ color: BRAND.green }} />
+            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 bg-brand-green/10">
+              <Search size={24} className="text-brand-green" aria-hidden="true" />
             </div>
             <p className="text-sm font-medium text-gray-500 mb-1">해당 상태의 캠페인이 없어요</p>
             <button
               onClick={() => navigate('/campaigns/browse')}
-              className="mt-3 px-5 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90"
-              style={{ backgroundColor: BRAND.green }}
+              className="mt-3 px-5 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90 bg-brand-green"
             >
               캠페인 찾아보기
             </button>
@@ -253,9 +244,7 @@ export default function MyCampaign() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0 pr-2">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${statusBadgeClass[c.status]}`}>
-                          {c.status}
-                        </span>
+                        <StatusBadge status={c.status} size="sm" />
                         <span className="text-[10px] text-gray-400 shrink-0">{c.channel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p>
@@ -287,7 +276,7 @@ export default function MyCampaign() {
                         <button key={action}
                           onClick={() => setCancelModal(c)}
                           className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors">
-                          <X size={12} />
+                          <X size={12} aria-hidden="true" />
                           신청 취소
                         </button>
                       )
@@ -295,7 +284,7 @@ export default function MyCampaign() {
                         <button key={action}
                           onClick={() => navigate(`/campaigns/${c.id}`)}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-brand-green-text border border-brand-green/30 bg-brand-green/5 hover:bg-brand-green/10 transition-colors">
-                          <Upload size={12} />
+                          <Upload size={12} aria-hidden="true" />
                           콘텐츠 제출
                         </button>
                       )
@@ -322,7 +311,7 @@ export default function MyCampaign() {
             <strong className="text-gray-900">{submitModal?.name}</strong>에 대한 콘텐츠를 제출합니다.
           </p>
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-            <Upload size={24} className="text-gray-300 mx-auto mb-2" />
+            <Upload size={24} className="text-gray-300 mx-auto mb-2" aria-hidden="true" />
             <p className="text-xs text-gray-400">콘텐츠 URL을 붙여넣거나 파일을 업로드하세요</p>
           </div>
           <div>

@@ -16,7 +16,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lucide-react": "^1.7.0"
+    "lucide-react": "^1.7.0",
+    "react-router-dom": "^7.14.1"
   },
   "peerDependencies": {
     "react": "^19.0.0",

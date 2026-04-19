@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
+import { TIMER_MS } from '../constants/timers'
 
 interface CodeBlockProps {
   code: string
@@ -11,8 +12,11 @@ export default function CodeBlock({ code, lang = 'tsx' }: CodeBlockProps) {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code.trim())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), TIMER_MS.CLIPBOARD_FEEDBACK)
+      })
+      .catch(() => { /* 조용히 실패 */ })
   }
 
   return (
