@@ -34,9 +34,11 @@ interface ModalProps {
   children: ReactNode
   size?: 'sm' | 'md' | 'lg'
   closeOnBackdrop?: boolean
+  showClose?: boolean
+  fullscreen?: boolean
 }
 
-export default function Modal({ open, onClose, title, label, children, size = 'md', closeOnBackdrop = true }: ModalProps) {
+export default function Modal({ open, onClose, title, label, children, size = 'md', closeOnBackdrop = true, showClose = true, fullscreen = false }: ModalProps) {
   const [visible, setVisible] = useState(false)
   const rafRef = useRef<number | null>(null)
   const focusRafRef = useRef<number | null>(null)
@@ -100,7 +102,7 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto"
+      className={`fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm ${fullscreen ? 'items-stretch' : 'items-center justify-center overflow-y-auto'}`}
       onClick={closeOnBackdrop ? (e) => { if (e.target === e.currentTarget) onCloseRef.current() } : undefined}
     >
       <div
@@ -110,23 +112,32 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
         aria-labelledby={title ? titleId : undefined}
         aria-label={!title ? (label ?? '대화상자') : undefined}
         tabIndex={-1}
-        className={`bg-white rounded-2xl shadow-2xl w-full ${sizeClass} mx-4 overflow-hidden max-h-[90vh] flex flex-col transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+        className={`bg-white shadow-2xl w-full flex flex-col transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+          fullscreen
+            ? 'rounded-none h-full overflow-hidden'
+            : `rounded-2xl ${sizeClass} mx-4 overflow-hidden max-h-[80vh]`
+        }`}
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0)' : 'translateY(16px)',
         }}
         onClick={e => e.stopPropagation()}
       >
-        {title && (
+        {(title || showClose) && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h3 id={titleId} className="text-base font-semibold text-gray-900">{title}</h3>
-            <button
-              onClick={() => onCloseRef.current()}
-              aria-label="닫기"
-              className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 -m-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
+            {title
+              ? <h3 id={titleId} className="text-base font-semibold text-gray-900">{title}</h3>
+              : <span />
+            }
+            {showClose && (
+              <button
+                onClick={() => onCloseRef.current()}
+                aria-label="닫기"
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 -m-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            )}
           </div>
         )}
         <div className="p-6 overflow-y-auto flex-1">{children}</div>

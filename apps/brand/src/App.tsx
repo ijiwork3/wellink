@@ -351,7 +351,7 @@ function AppRoutes() {
       defaultDevice="desktop"
       containerClassName="bg-white"
     >
-      <div className="w-full h-full overflow-y-auto">
+      <div className="w-full h-full">
         <ErrorBoundary>
           <Routes>
             {/* 공개 페이지 (온보딩) */}

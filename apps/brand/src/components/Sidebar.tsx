@@ -37,7 +37,7 @@ const sections = [
   },
 ]
 
-export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
+export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?: () => void; hideLogo?: boolean } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
   const { showToast } = useToast()
@@ -45,12 +45,14 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}
   return (
     <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0">
       {/* 로고 */}
-      <div className="px-5 pt-5 pb-4">
-        <div className="flex items-center gap-1.5">
-          <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">브랜드</span>
+      {!hideLogo && (
+        <div className="px-5 pt-5 pb-4">
+          <div className="flex items-center gap-1.5">
+            <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
+            <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">광고주</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 홈 버튼 */}
       <div className="px-3 pb-2">

@@ -29,7 +29,7 @@ export default function Layout() {
                 <X size={18} className="text-gray-500" />
               </button>
             </div>
-            <Sidebar onNavigate={() => setMobileNav(false)} />
+            <Sidebar onNavigate={() => setMobileNav(false)} hideLogo />
           </div>
           <div className="flex-1 bg-black/40" onClick={() => setMobileNav(false)} />
         </div>
@@ -39,14 +39,14 @@ export default function Layout() {
       {isDesktop && <Sidebar />}
 
       {/* 콘텐츠 영역 */}
-      <div className="flex-1 overflow-y-auto min-w-0 flex flex-col">
+      <div className="flex-1 overflow-y-auto min-w-0 flex flex-col relative">
         {/* 태블릿·스마트폰 GNB — sticky로 목업 박스 내부에 고정 */}
         {!isDesktop && (
           <div className="sticky top-0 h-12 bg-white border-b border-gray-100 flex items-center px-4 z-50 shrink-0">
             <button onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100">
               <Menu size={20} className="text-gray-700" />
             </button>
-            <span className="ml-2 text-sm font-bold text-gray-900">WELLINK <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">브랜드</span></span>
+            <span className="ml-2 text-sm font-bold text-gray-900">WELLINK <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span></span>
           </div>
         )}
         <InstagramGlobalBanner />
