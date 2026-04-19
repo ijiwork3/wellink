@@ -48,18 +48,36 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
 // ─────────────────────────────────────────────────────────────
 
-const DeviceModeContext = createContext<DeviceMode>('desktop');
+const DeviceModeContext = createContext<DeviceMode | null>(null);
+
+function useViewportDeviceMode(): DeviceMode {
+  const calc = () => {
+    const w = window.innerWidth;
+    if (w < 768) return 'phone';
+    if (w < 1024) return 'tablet';
+    return 'desktop';
+  };
+  const [mode, setMode] = useState<DeviceMode>(calc);
+  useEffect(() => {
+    const onResize = () => setMode(calc());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return mode;
+}
 
 export function useDeviceMode(): DeviceMode {
-  return useContext(DeviceModeContext);
+  const ctx = useContext(DeviceModeContext);
+  const viewport = useViewportDeviceMode();
+  return ctx ?? viewport;
 }
 
 export function useIsMobile(): boolean {
-  return useContext(DeviceModeContext) === 'phone';
+  return useDeviceMode() === 'phone';
 }
 
 export function useIsDesktop(): boolean {
-  return useContext(DeviceModeContext) === 'desktop';
+  return useDeviceMode() === 'desktop';
 }
 
 export interface StatusItem {

@@ -100,7 +100,7 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto pt-12 sm:pt-0"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto"
       onClick={closeOnBackdrop ? (e) => { if (e.target === e.currentTarget) onCloseRef.current() } : undefined}
     >
       <div
