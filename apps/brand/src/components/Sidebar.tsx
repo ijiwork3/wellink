@@ -1,8 +1,8 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
-  Megaphone, BookOpen, CreditCard, Receipt,
-  BookMarked, Lightbulb, User, Share2, MessageCircle, Sparkles, ExternalLink, Home, LogOut
+  Megaphone, BookOpen, CreditCard,
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, LogOut
 } from 'lucide-react'
 import { useToast, auth } from '@wellink/ui'
 
@@ -20,8 +20,6 @@ const sections = [
     items: [
       { to: '/influencers/list', icon: <Users size={15} />, label: '인플루언서 리스트' },
       { to: '/influencers/manage', icon: <UserCheck size={15} />, label: '인플루언서 관리' },
-      { to: '/influencers/dm', icon: <MessageCircle size={15} />, label: 'DM 관리' },
-      { to: '/influencers/ai', icon: <Sparkles size={15} />, label: 'AI 리스트업' },
     ],
   },
   {
@@ -29,12 +27,6 @@ const sections = [
     items: [
       { to: '/campaigns', icon: <Megaphone size={15} />, label: '캠페인 목록' },
       { to: '/library', icon: <BookOpen size={15} />, label: '콘텐츠 라이브러리' },
-    ],
-  },
-  {
-    label: '정산',
-    items: [
-      { to: '/settlement', icon: <Receipt size={15} />, label: '정산 관리' },
     ],
   },
   {

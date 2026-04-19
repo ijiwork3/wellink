@@ -1,13 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Compass, LayoutDashboard, Wallet, UserCircle, Link2 } from 'lucide-react'
+import { Compass, LayoutDashboard, Bookmark, UserCircle } from 'lucide-react'
 import { useDeviceMode } from '../qa-mockup-kit'
 
 const tabs = [
-  { label: '탐색',     path: '/campaigns/browse', icon: Compass },
-  { label: '내 캠페인', path: '/campaigns/my',     icon: LayoutDashboard },
-  { label: '정산',     path: '/settlement',        icon: Wallet },
-  { label: '프로필',   path: '/profile',           icon: UserCircle },
-  { label: '미디어',   path: '/media',             icon: Link2 },
+  { label: '탐색',      path: '/campaigns/browse',    icon: Compass },
+  { label: '나의 캠페인', path: '/campaigns/my',        icon: LayoutDashboard },
+  { label: '관심 캠페인', path: '/campaigns/bookmarks', icon: Bookmark },
+  { label: '마이페이지',  path: '/profile',             icon: UserCircle },
 ]
 
 export default function BottomTabBar() {
