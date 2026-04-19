@@ -21,6 +21,7 @@ interface Influencer {
   engagement: number
   fitScore: number
   groups: string[]
+  addedAt: number // timestamp ms — BE 연동 시 서버 값으로 교체
 }
 
 interface ConfirmState {
@@ -30,7 +31,10 @@ interface ConfirmState {
   onConfirm: () => void
 }
 
-// 목업 데이터 — BE 연동 시 API로 교체
+const NOW = Date.now()
+const DAY_MS = 86_400_000
+
+// 목업 데이터 — BE 연동 시 API로 교체 (최근 추가순 정렬 기준: addedAt 내림차순)
 const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const base = [
     { id: 1, name: '이창민', category: ['피트니스', '크로스핏'], followers: 8700,  engagement: 4.1, fitScore: 92, groups: ['우수 인플루언서'] },
@@ -40,8 +44,14 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
     { id: 7, name: '정민준', category: ['헬스', 'PT'],           followers: 5300,  engagement: 5.1, fitScore: 79, groups: [] },
   ]
   const src = base[i % base.length]
-  return { ...src, id: i + 1, name: i < 3 ? src.name : `${src.name} ${i + 1}` }
-})
+  // 앞쪽 인덱스일수록 최근 추가 (index 0 = 오늘, 이후 하루씩 과거)
+  return {
+    ...src,
+    id: i + 1,
+    name: i < 3 ? src.name : `${src.name} ${i + 1}`,
+    addedAt: NOW - i * DAY_MS,
+  }
+}).sort((a, b) => b.addedAt - a.addedAt)
 
 const initialGroups = ['우수 인플루언서', '요가/필라테스']
 const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
@@ -292,11 +302,6 @@ export default function InfluencerManage() {
             >
               {tab === '북마크' && <Heart size={13} aria-hidden="true" />}
               {tab}
-              <span className={`text-xs rounded-full px-1.5 py-0.5 ${
-                activeTab === tab ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-              }`}>
-                {getTabCount(tab)}
-              </span>
             </button>
             {tab !== '전체' && tab !== '북마크' && (
               <button
@@ -336,7 +341,7 @@ export default function InfluencerManage() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredInfluencers.map((inf, idx) => (
+            {filteredInfluencers.map(inf => (
               <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative">
                 {/* 찜 해제 버튼 */}
                 <button
@@ -353,10 +358,12 @@ export default function InfluencerManage() {
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900">
-                      <span className="text-gray-400 font-normal mr-1.5">#{idx + 1}</span>
-                      {inf.name}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{inf.name}</p>
+                      {NOW - inf.addedAt <= 7 * DAY_MS && (
+                        <span className="shrink-0 text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
+                      )}
+                    </div>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
