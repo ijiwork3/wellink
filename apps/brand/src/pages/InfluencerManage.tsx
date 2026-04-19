@@ -295,12 +295,6 @@ export default function InfluencerManage() {
       ? bookmarkedInfluencers
       : influencers.filter(inf => inf.groups.includes(activeTab))
 
-  const getTabCount = (tab: string) => {
-    if (tab === '전체') return influencers.length
-    if (tab === '북마크') return bookmarkedInfluencers.length
-    return influencers.filter(inf => inf.groups.includes(tab)).length
-  }
-
   // "그룹에 추가" 드롭다운/바텀시트에 보여줄 그룹 목록
   const getAddableGroups = (inf: Influencer) => groups.filter(g => !inf.groups.includes(g))
 
