@@ -365,15 +365,37 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
-                {/* 지표 — 데스크톱(md+): 가로 / 모바일·태블릿: 세로(라벨-값 2열 그리드) */}
-                <div className="mb-3 text-sm md:flex md:items-center md:gap-4">
-                  <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-1 md:contents">
-                    <span className="text-xs text-gray-400">팔로워</span>
-                    <p className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</p>
-                    <span className="text-xs text-gray-400">참여율</span>
-                    <p className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
-                    <span className="text-xs text-gray-400">핏 스코어</span>
-                    <p className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</p>
+                {/* 지표 — 모바일: 세로(라벨+값 한 줄) / 데스크톱(md+): 가로 */}
+                <div className="mb-3 text-sm">
+                  {/* 모바일·태블릿 */}
+                  <div className="flex flex-col gap-1 md:hidden">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs text-gray-400 w-14 shrink-0">팔로워</span>
+                      <span className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs text-gray-400 w-14 shrink-0">참여율</span>
+                      <span className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs text-gray-400 w-14 shrink-0">핏 스코어</span>
+                      <span className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
+                    </div>
+                  </div>
+                  {/* 데스크톱 */}
+                  <div className="hidden md:flex md:items-center md:gap-4">
+                    <div>
+                      <span className="text-xs text-gray-400 block">팔로워</span>
+                      <span className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-400 block">참여율</span>
+                      <span className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-400 block">핏 스코어</span>
+                      <span className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
+                    </div>
                   </div>
                 </div>
 
