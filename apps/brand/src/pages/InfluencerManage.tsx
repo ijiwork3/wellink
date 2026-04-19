@@ -67,15 +67,6 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
 const initialGroups = ['우수 인플루언서', '요가/필라테스']
 const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
 
-function getBookmarkedIds(): Set<number> {
-  try {
-    const raw = sessionStorage.getItem('wl_bookmarks')
-    if (raw) return new Set<number>(JSON.parse(raw) as number[])
-  } catch (e) {
-    if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
-  }
-  return new Set<number>()
-}
 
 export default function InfluencerManage() {
   const navigate = useNavigate()
