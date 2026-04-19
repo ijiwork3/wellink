@@ -343,18 +343,16 @@ export default function InfluencerManage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredInfluencers.map(inf => (
               <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                {/* 프로필 행 — 아바타 / 이름+카테고리 / 하트 */}
+                {/* 프로필 행 — 아바타(데스크톱만) / 이름+카테고리 / 하트 */}
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
+                  <div className={`hidden md:flex w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{inf.name}</p>
-                      {NOW - inf.addedAt <= 7 * DAY_MS && (
-                        <span className="shrink-0 text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
-                      )}
-                    </div>
+                    {NOW - inf.addedAt <= 3 * DAY_MS && (
+                      <span className="inline-block text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full mb-1">NEW</span>
+                    )}
+                    <p className="text-sm font-semibold text-gray-900 truncate">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
