@@ -48,10 +48,8 @@ export default function Layout() {
       {/* 데스크톱 사이드바 */}
       {isDesktop && <Sidebar />}
 
-      <div className="flex-1 overflow-y-auto min-w-0">
-        <div className={!isDesktop ? 'pt-12' : ''}>
-          <InstagramGlobalBanner />
-        </div>
+      <div className={`flex-1 overflow-y-auto min-w-0 ${!isDesktop ? 'pt-12' : ''}`}>
+        <InstagramGlobalBanner />
         <main id="main-content" className={`max-w-[1080px] ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
