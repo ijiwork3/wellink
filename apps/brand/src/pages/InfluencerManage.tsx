@@ -209,7 +209,7 @@ export default function InfluencerManage() {
             <div key={i} className="h-9 rounded-full bg-gray-200" style={{ width: w + 'px' }} />
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
           {[0, 1, 2].map(i => (
             <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
               <div className="flex items-center gap-3 mb-3">
@@ -340,7 +340,7 @@ export default function InfluencerManage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {filteredInfluencers.map(inf => (
               <div key={inf.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 {/* 프로필 행 */}
