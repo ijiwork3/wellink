@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Heart, Plus, X, Loader2, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb } from 'lucide-react'
+import { Heart, Plus, X, Loader2, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, BottomSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -16,6 +16,9 @@ const PAGE_SIZE = 20
 interface Influencer {
   id: number
   name: string
+  instagramId: string
+  type: '개인 인플루언서' | '크루/그룹' | '센터' | '행사'
+  bio: string
   category: string[]
   followers: number
   engagement: number
@@ -45,11 +48,11 @@ const DAY_MS = 86_400_000
 // 목업 데이터 — BE 연동 시 API로 교체 (최근 추가순 정렬 기준: addedAt 내림차순)
 const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const base = [
-    { id: 1, name: '이창민',                     category: ['피트니스', '크로스핏'],  followers: 8700,  engagement: 4.1, posts: 234, authentic: 92.3, lastActive: '2일 전', fitScore: 92, groups: ['우수 인플루언서'] },
-    { id: 4, name: '김가애',                     category: ['요가'],                followers: 18900, engagement: 4.2, posts: 567, authentic: 88.7, lastActive: '오늘',  fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
-    { id: 5, name: '박리나',                     category: ['웰니스'],               followers: 7120,  engagement: 2.2, posts: 178, authentic: 85.2, lastActive: '3일 전', fitScore: 71, groups: [] },
-    { id: 6, name: '최수진나이스바디핏니스트레이너', category: ['러닝', '마라톤', '트레일'],  followers: 12400, engagement: 3.8, posts: 302, authentic: 79.4, lastActive: '1일 전', fitScore: 85, groups: [] },
-    { id: 7, name: '정민준헬스앤라이프스타일코치',  category: ['헬스', 'PT', '다이어트'],  followers: 5300,  engagement: 5.1, posts: 145, authentic: 91.0, lastActive: '4일 전', fitScore: 79, groups: [] },
+    { id: 1, name: '이창민', instagramId: 'changmin_fit', type: '개인 인플루언서' as const, bio: '꾸준한 활동과 높은 진성 팔로워로 신뢰도 높은 인플루언서', category: ['피트니스', '크로스핏'], followers: 8700, engagement: 4.1, posts: 234, authentic: 92.3, lastActive: '2일 전', fitScore: 92, groups: ['우수 인플루언서'] },
+    { id: 4, name: '김가애', instagramId: 'gae.yoga', type: '개인 인플루언서' as const, bio: '매일 아침 요가로 하루를 시작합니다 🧘‍♀️ 몸과 마음의 균형을 찾아드려요', category: ['요가'], followers: 18900, engagement: 4.2, posts: 567, authentic: 88.7, lastActive: '오늘', fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
+    { id: 5, name: '박리나', instagramId: 'lina_wellness', type: '개인 인플루언서' as const, bio: '웰니스 라이프스타일 | 비건 푸드 | 마인드풀니스', category: ['웰니스'], followers: 7120, engagement: 2.2, posts: 178, authentic: 85.2, lastActive: '3일 전', fitScore: 71, groups: [] },
+    { id: 6, name: '최수진나이스바디핏니스트레이너', instagramId: 'nicebody_trainer', type: '개인 인플루언서' as const, bio: '기록보다 이야기로 달립니다 🏃 · 러닝 코치 · 마라톤 서브4', category: ['러닝', '마라톤', '트레일'], followers: 12400, engagement: 3.8, posts: 302, authentic: 79.4, lastActive: '1일 전', fitScore: 85, groups: [] },
+    { id: 7, name: '정민준헬스앤라이프스타일코치', instagramId: 'minjun_health', type: '개인 인플루언서' as const, bio: '헬스 코치 10년 | 바른 식단과 운동으로 지속 가능한 몸만들기', category: ['헬스', 'PT', '다이어트'], followers: 5300, engagement: 5.1, posts: 145, authentic: 91.0, lastActive: '4일 전', fitScore: 79, groups: [] },
   ]
   const src = base[i % base.length]
   // 앞쪽 인덱스일수록 최근 추가 (index 0 = 오늘, 이후 하루씩 과거)
@@ -233,7 +236,7 @@ export default function InfluencerManage() {
       <div className="space-y-5 animate-pulse">
         <div>
           <h1 className="text-xl font-bold text-gray-900">인플루언서 관리</h1>
-          <p className="text-sm text-gray-500 mt-0.5">북마크한 인플루언서를 그룹별로 관리하세요.</p>
+          <p className="text-sm text-gray-500 mt-0.5">관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {[60, 52, 80, 72].map((w, i) => (
@@ -286,14 +289,10 @@ export default function InfluencerManage() {
   }
 
   // ── 탭 필터 ──────────────────────────────────────────────
-  const tabs = ['전체', '북마크', ...groups]
-  const bookmarkedIds = getBookmarkedIds()
-  const bookmarkedInfluencers = influencers.filter(inf => bookmarkedIds.has(inf.id))
+  const tabs = ['전체', ...groups]
   const filteredInfluencers = activeTab === '전체'
     ? influencers
-    : activeTab === '북마크'
-      ? bookmarkedInfluencers
-      : influencers.filter(inf => inf.groups.includes(activeTab))
+    : influencers.filter(inf => inf.groups.includes(activeTab))
 
   // "그룹에 추가" 드롭다운/바텀시트에 보여줄 그룹 목록
   const getAddableGroups = (inf: Influencer) => groups.filter(g => !inf.groups.includes(g))
@@ -306,7 +305,7 @@ export default function InfluencerManage() {
       <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
         <div>
           <h1 className="text-xl font-bold text-gray-900">인플루언서 관리</h1>
-          <p className="text-sm text-gray-500 mt-0.5">북마크한 인플루언서를 그룹별로 관리하세요.</p>
+          <p className="text-sm text-gray-500 mt-0.5">관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
 
       {/* 그룹 탭 */}
@@ -326,10 +325,9 @@ export default function InfluencerManage() {
               onClick={() => setActiveTab(tab)}
               className="flex items-center gap-1.5"
             >
-              {tab === '북마크' && <Heart size={13} aria-hidden="true" />}
               {tab}
             </button>
-            {tab !== '전체' && tab !== '북마크' && (
+            {tab !== '전체' && (
               <button
                 onClick={() => deleteGroup(tab)}
                 aria-label={`${tab} 그룹 삭제`}
@@ -631,24 +629,35 @@ export default function InfluencerManage() {
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center">
-                      <h2 className="text-base font-bold text-gray-900 flex-1">{inf.name}</h2>
+                    {/* 1행: 이름 + 상태 배지들 + X */}
+                    <div className="flex items-center gap-1.5 flex-wrap pr-1">
+                      <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
+                      <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                      <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
                         aria-label="닫기"
-                        className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0"
+                        className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0"
                       >
                         <X size={16} aria-hidden="true" />
                       </button>
                     </div>
-                    <div className="flex gap-1.5 mt-1 flex-wrap">
-                      {inf.category.map(c => (
-                        <span key={c} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
-                      ))}
+                    {/* 2행: 팔로워 수 + 인스타 바로가기 */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-500" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+                        <span className="font-semibold text-gray-700">{formatFollowers(inf.followers)}</span>
+                      </span>
+                      <button
+                        onClick={() => showToast('인스타그램으로 이동합니다.', 'info')}
+                        className="flex items-center gap-0.5 text-[11px] text-brand-green hover:underline"
+                      >
+                        <ExternalLink size={11} aria-hidden="true" />
+                        인스타 바로가기
+                      </button>
                     </div>
-                    <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">
-                      {inf.authentic >= 80 ? '꾸준한 활동과 높은 진성 팔로워로 신뢰도 높은 인플루언서' : '활발한 콘텐츠 업로드와 카테고리 전문성 보유'}
-                    </p>
+                    {/* 3행: 바이오(인스타 소개글) */}
+                    <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
                   </div>
                 </div>
                 <div role="tablist" className="flex border-b border-gray-100 -mx-6 px-6">
@@ -669,6 +678,12 @@ export default function InfluencerManage() {
                 {/* 공통 프로필 정보 */}
                 <div className="border border-gray-100 rounded-xl p-4">
                   <p className="text-xs font-semibold text-gray-500 mb-3">공통 프로필 정보</p>
+                  {/* 카테고리 태그 */}
+                  <div className="flex gap-1.5 flex-wrap mb-3">
+                    {inf.category.map(c => (
+                      <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
+                    ))}
+                  </div>
                   <div className="grid grid-cols-3 gap-2.5">
                     {[
                       ['팔로워', formatFollowers(inf.followers), 'text-gray-900'],
@@ -752,6 +767,40 @@ export default function InfluencerManage() {
                     </div>
                   </div>
                 </div>
+
+                {/* 최근 콘텐츠 캡션 워드클라우드 */}
+                {(() => {
+                  const wordPool = [
+                    { word: inf.category[0] ? `#${inf.category[0]}` : '#fitness', weight: 5 },
+                    { word: '#daily', weight: 4 },
+                    { word: '#workout', weight: 4 },
+                    { word: '#healthy', weight: 3 },
+                    { word: '#lifestyle', weight: 3 },
+                    { word: '#motivation', weight: 2 },
+                    { word: '#goodmorning', weight: 2 },
+                    { word: '#follow', weight: 1 },
+                    { word: '#like4like', weight: 1 },
+                  ]
+                  const sizes = ['text-xl font-black', 'text-lg font-bold', 'text-base font-bold', 'text-sm font-semibold', 'text-xs font-medium']
+                  const colors = ['text-gray-900', 'text-blue-700', 'text-teal-600', 'text-gray-600', 'text-gray-400']
+                  return (
+                    <div className="border border-gray-100 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs font-semibold text-gray-500">최근 콘텐츠 캡션 워드클라우드</p>
+                          <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-[9px] flex items-center justify-center cursor-default" title="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">i</span>
+                        </div>
+                        <span className="text-[10px] text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
+                      </div>
+                      <p className="text-[10px] text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1.5 leading-snug">
+                        {wordPool.map(({ word, weight }, i) => (
+                          <span key={word} className={`${sizes[Math.min(5 - weight, 4)]} ${colors[i % colors.length]}`}>{word}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
 
                 {/* AI 인사이트 */}
                 <div>
