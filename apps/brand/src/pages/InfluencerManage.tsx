@@ -8,7 +8,7 @@ import { fmtFollowers as formatFollowers } from '@wellink/ui'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { getEngagementColor, getFitScoreColor } from '@wellink/ui'
-import { useIsMobile } from '../qa-mockup-kit'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 const INITIAL_SIZE = 100
 const PAGE_SIZE = 20
@@ -70,7 +70,8 @@ export default function InfluencerManage() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const { showToast } = useToast()
-  const isMobile = useIsMobile()
+  const device = useDeviceMode()
+  const isMobile = device !== 'desktop'
 
   const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS.slice(0, INITIAL_SIZE))
   const [page, setPage] = useState(0)

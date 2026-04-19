@@ -9,6 +9,7 @@ export default function Layout() {
   const [mobileNav, setMobileNav] = useState(false)
   const device = useDeviceMode()
   const isMobile = device === 'phone'
+  const isTablet = device === 'tablet'
 
   return (
     <div className="flex h-full bg-gray-50">
@@ -51,7 +52,7 @@ export default function Layout() {
         <div className={isMobile ? 'pt-12' : ''}>
           <InstagramGlobalBanner />
         </div>
-        <main id="main-content" className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : isTablet ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>

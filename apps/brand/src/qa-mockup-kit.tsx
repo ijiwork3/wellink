@@ -38,7 +38,7 @@ export type DeviceMode = 'desktop' | 'tablet' | 'phone';
 
 export const DEVICE_BASE: Record<DeviceMode, { w: number; h: number; radius: string }> = {
   desktop: { w: 1280, h: 800,  radius: '8px'  },
-  tablet:  { w: 768,  h: 1024, radius: '14px' },
+  tablet:  { w: 1024, h: 1366, radius: '14px' },
   phone:   { w: 390,  h: 844,  radius: '44px' },
 };
 
@@ -53,7 +53,7 @@ const DeviceModeContext = createContext<DeviceMode | null>(null);
 function useViewportDeviceMode(): DeviceMode {
   const calc = () => {
     const w = window.innerWidth;
-    if (w < 768) return 'phone';
+    if (w < 640) return 'phone';
     if (w < 1024) return 'tablet';
     return 'desktop';
   };
