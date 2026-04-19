@@ -8,8 +8,7 @@ import { useDeviceMode } from '../qa-mockup-kit'
 export default function Layout() {
   const [mobileNav, setMobileNav] = useState(false)
   const device = useDeviceMode()
-  const isMobile = device === 'phone'
-  const isTablet = device === 'tablet'
+  const isDesktop = device === 'desktop'
 
   return (
     <div className="flex h-full bg-gray-50">
@@ -19,8 +18,9 @@ export default function Layout() {
       >
         메인 콘텐츠로 이동
       </a>
-      {/* 모바일 GNB */}
-      {isMobile && (
+
+      {/* 태블릿·스마트폰 GNB */}
+      {!isDesktop && (
         <div className="fixed top-0 left-0 right-0 h-12 bg-white border-b border-gray-100 flex items-center px-4 z-50">
           <button onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100">
             <Menu size={20} className="text-gray-700" />
@@ -29,8 +29,8 @@ export default function Layout() {
         </div>
       )}
 
-      {/* 모바일 오버레이 */}
-      {isMobile && mobileNav && (
+      {/* 태블릿·스마트폰 오버레이 */}
+      {!isDesktop && mobileNav && (
         <div className="fixed inset-0 z-50 flex">
           <div className="w-[260px] bg-white shadow-xl flex-shrink-0 overflow-y-auto">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -45,14 +45,14 @@ export default function Layout() {
         </div>
       )}
 
-      {/* 데스크탑/태블릿 사이드바 */}
-      {!isMobile && <Sidebar />}
+      {/* 데스크톱 사이드바 */}
+      {isDesktop && <Sidebar />}
 
       <div className="flex-1 overflow-y-auto min-w-0">
-        <div className={isMobile ? 'pt-12' : ''}>
+        <div className={!isDesktop ? 'pt-12' : ''}>
           <InstagramGlobalBanner />
         </div>
-        <main id="main-content" className={`max-w-[1080px] ${isMobile ? 'px-4 py-4' : isTablet ? 'px-6 py-5' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`max-w-[1080px] ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>
