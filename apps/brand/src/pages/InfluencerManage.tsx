@@ -350,10 +350,12 @@ export default function InfluencerManage() {
                     {inf.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    {NOW - inf.addedAt <= 3 * DAY_MS && (
-                      <span className="inline-block text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full mb-1">NEW</span>
-                    )}
-                    <p className="text-sm font-semibold text-gray-900 truncate">{inf.name}</p>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate min-w-0">{inf.name}</p>
+                      {NOW - inf.addedAt <= 3 * DAY_MS && (
+                        <span className="shrink-0 text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
+                      )}
+                    </div>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
