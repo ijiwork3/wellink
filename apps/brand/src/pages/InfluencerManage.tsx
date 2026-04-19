@@ -7,7 +7,7 @@ import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers } from '@wellink/ui'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { getEngagementColor, getFitScoreBadge } from '@wellink/ui'
+import { getEngagementColor, getFitScoreColor } from '@wellink/ui'
 import { useIsMobile } from '../qa-mockup-kit'
 
 const PAGE_SIZE = 20
@@ -363,21 +363,19 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
-                {/* 지표 — 데스크톱: 가로 / 태블릿·모바일: 세로 */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2 text-sm mb-3">
-                  <div className="flex items-center gap-1.5 sm:block">
-                    <span className="text-xs text-gray-400 sm:block">팔로워</span>
+                {/* 지표 — 데스크톱(md+): 가로 / 모바일·태블릿: 세로 */}
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4 gap-1.5 text-sm mb-3">
+                  <div className="flex items-baseline gap-1.5 md:block">
+                    <span className="text-xs text-gray-400">팔로워</span>
                     <p className="font-semibold text-gray-900">{formatFollowers(inf.followers)}</p>
                   </div>
-                  <div className="flex items-center gap-1.5 sm:block">
-                    <span className="text-xs text-gray-400 sm:block">참여율</span>
+                  <div className="flex items-baseline gap-1.5 md:block">
+                    <span className="text-xs text-gray-400">참여율</span>
                     <p className={`font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
                   </div>
-                  <div className="flex items-center gap-1.5 sm:block">
-                    <span className="text-xs text-gray-400 sm:block">핏 스코어</span>
-                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}>
-                      {inf.fitScore}
-                    </span>
+                  <div className="flex items-baseline gap-1.5 md:block">
+                    <span className="text-xs text-gray-400">핏 스코어</span>
+                    <p className={`font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</p>
                   </div>
                 </div>
 
