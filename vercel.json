@@ -1,3 +1,5 @@
 {
+  "buildCommand": "npm install -g pnpm && pnpm install --frozen-lockfile=false && pnpm --filter @wellink/ui build && pnpm --filter wellink-brand build",
+  "outputDirectory": "apps/brand/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
