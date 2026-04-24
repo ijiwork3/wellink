@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Info } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Info, Crown } from 'lucide-react'
 import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -62,11 +62,12 @@ const selectedApplicantsData = [
 ]
 
 // 등록 콘텐츠 더미 — reach는 숫자로 저장, 표시 시 fmtNumber() 사용
+// 바이럴 지표 메뉴와 동일한 컬럼 구성 — 도달/좋아요/댓글/저장/공유 + 바이럴 점수
 const registeredContents = [
-  { id: 1, thumbnail: 'bg-gradient-to-br from-pink-100 to-pink-200', influencer: '이창민', type: '릴스', reach: 12400, likes: 890, comments: 42, saves: 156 },
-  { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-100 to-yellow-200', influencer: '김가애', type: '피드', reach: 8100, likes: 540, comments: 28, saves: 89 },
-  { id: 3, thumbnail: 'bg-gradient-to-br from-purple-100 to-purple-200', influencer: '박리나', type: '스토리', reach: 5200, likes: 380, comments: 15, saves: 62 },
-  { id: 4, thumbnail: 'bg-gradient-to-br from-blue-100 to-blue-200', influencer: '민경완', type: '피드', reach: 6700, likes: 420, comments: 31, saves: 78 },
+  { id: 1, thumbnail: 'bg-gradient-to-br from-pink-100 to-pink-200',     influencer: '이창민', type: '릴스',   reach: 12400, likes: 890, comments: 42, saves: 156, shares: 310, viralScore: 88 },
+  { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-100 to-yellow-200', influencer: '김가애', type: '피드',   reach: 8100,  likes: 540, comments: 28, saves: 89,  shares: 180, viralScore: 72 },
+  { id: 3, thumbnail: 'bg-gradient-to-br from-purple-100 to-purple-200', influencer: '박리나', type: '스토리', reach: 5200,  likes: 380, comments: 15, saves: 62,  shares: 95,  viralScore: 54 },
+  { id: 4, thumbnail: 'bg-gradient-to-br from-blue-100 to-blue-200',    influencer: '민경완', type: '피드',   reach: 6700,  likes: 420, comments: 31, saves: 78,  shares: 142, viralScore: 61 },
 ]
 
 // 캠페인·참여 상태 스타일은 @wellink/ui 상수 사용
@@ -636,24 +637,41 @@ export default function CampaignDetail() {
             <p className="text-xs text-amber-700">💡 콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
               <Image size={15} className="text-gray-400" aria-hidden="true" />
               등록된 콘텐츠 {registeredContents.length}건
+              {selectedContents.size > 0 && (
+                <span className="text-xs font-normal text-brand-green">· {selectedContents.size}건 선택</span>
+              )}
             </h2>
-            <button
-              onClick={() => {
-                if (selectedContents.size === 0) {
-                  showToast('다운로드할 콘텐츠를 선택해주세요.', 'error')
-                  return
-                }
-                setDownloadModal(true)
-              }}
-              className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
-            >
-              <Download size={13} aria-hidden="true" />
-              콘텐츠 다운로드
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (selectedContents.size === registeredContents.length) {
+                    setSelectedContents(new Set())
+                  } else {
+                    setSelectedContents(new Set(registeredContents.map(c => c.id)))
+                  }
+                }}
+                className="text-xs text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+              >
+                {selectedContents.size === registeredContents.length ? '선택 해제' : '전체 선택'}
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedContents.size === 0) {
+                    showToast('다운로드할 콘텐츠를 선택해주세요.', 'error')
+                    return
+                  }
+                  setDownloadModal(true)
+                }}
+                className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
+              >
+                <Download size={13} aria-hidden="true" />
+                콘텐츠 다운로드
+              </button>
+            </div>
           </div>
 
           {/* 콘텐츠 카드 그리드 */}
@@ -692,33 +710,57 @@ export default function CampaignDetail() {
 
                   {/* 정보 영역 */}
                   <div className="p-4">
-                    {/* 인플루언서 */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
-                        {c.influencer[0]}
+                    {/* 인플루언서 + 바이럴 점수 */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
+                          {c.influencer[0]}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900">{c.influencer}</span>
+                      <div className="flex items-center gap-1.5 shrink-0" title="바이럴 점수">
+                        <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${c.viralScore}%`,
+                              backgroundColor: c.viralScore >= 80 ? 'var(--color-brand-green)' : c.viralScore >= 50 ? 'var(--color-amber-500)' : 'var(--color-gray-300)',
+                            }}
+                          />
+                        </div>
+                        <span className={`text-xs font-bold ${c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                          {c.viralScore}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* 지표 4개 */}
-                    <div className="grid grid-cols-4 gap-2">
-                      <div className="text-center">
+                    {/* 지표 5개 + 참여율 — 바이럴 지표 메뉴와 동일 컬럼 */}
+                    <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-center">
+                      <div>
                         <p className="text-[10px] text-gray-400 mb-0.5">도달</p>
                         <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                       </div>
-                      <div className="text-center">
+                      <div>
                         <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
                           <Heart size={9} className="text-red-400" aria-hidden="true" />좋아요
                         </p>
-                        <p className="text-xs font-bold text-gray-800">{c.likes.toLocaleString()}</p>
+                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                       </div>
-                      <div className="text-center">
+                      <div>
                         <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
                           <MessageCircle size={9} className="text-gray-400" aria-hidden="true" />댓글
                         </p>
-                        <p className="text-xs font-bold text-gray-800">{c.comments}</p>
+                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.comments)}</p>
                       </div>
-                      <div className="text-center">
+                      <div>
+                        <p className="text-[10px] text-gray-400 mb-0.5">저장</p>
+                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.saves)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 mb-0.5">공유</p>
+                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.shares)}</p>
+                      </div>
+                      <div>
                         <p className="text-[10px] text-gray-400 mb-0.5">참여율</p>
                         <p className="text-xs font-bold text-brand-green">{engRate}%</p>
                       </div>
@@ -757,6 +799,64 @@ export default function CampaignDetail() {
                 </div>
               )
             })}
+          </div>
+
+          {/* 중요 콘텐츠 TOP 3 — 바이럴 점수 기준 */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Crown size={16} className="text-amber-500" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-gray-900">중요 콘텐츠 TOP 3</h3>
+              <span className="text-xs text-gray-400">· 바이럴 점수 기준</span>
+            </div>
+            <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+              {[...registeredContents]
+                .sort((a, b) => b.viralScore - a.viralScore)
+                .slice(0, 3)
+                .map((c, idx) => {
+                  const rankStyle = idx === 0
+                    ? 'bg-amber-50 border-amber-200'
+                    : idx === 1
+                    ? 'bg-gray-50 border-gray-200'
+                    : 'bg-orange-50/60 border-orange-100'
+                  const medal = ['🥇', '🥈', '🥉'][idx]
+                  return (
+                    <div key={c.id} className={`rounded-xl border p-4 ${rankStyle}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg" aria-hidden="true">{medal}</span>
+                          <span className="text-xs font-semibold text-gray-500">{idx + 1}위</span>
+                        </div>
+                        <span className={`text-sm font-bold ${c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                          {c.viralScore}점
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-600 font-semibold text-sm shrink-0">
+                          {c.influencer[0]}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
+                          <p className="text-[11px] text-gray-500">{c.type}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div>
+                          <p className="text-[10px] text-gray-400">도달</p>
+                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-gray-400">좋아요</p>
+                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.likes)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-gray-400">공유</p>
+                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.shares)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
           </div>
 
           {/* 콘텐츠 성과 추세 그래프 */}

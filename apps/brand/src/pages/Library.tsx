@@ -134,6 +134,9 @@ export default function Library() {
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
+  // 유료 다운로드 결제 모달
+  const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' }>({ open: false, scope: 'selected' })
+  const [isPaying, setIsPaying] = useState(false)
 
   const sortListboxRef = useRef<HTMLDivElement>(null)
   const [focusSortKey, setFocusSortKey] = useState<SortKey | null>(null)
@@ -313,7 +316,7 @@ export default function Library() {
         <div className="flex items-center gap-2">
           {selectedIds.size > 0 && (
             <button
-              onClick={() => showToast(`${selectedIds.size}개 콘텐츠 다운로드를 시작합니다.`, 'success')}
+              onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
               className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-xl text-sm transition-colors hover:bg-brand-green-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Download size={14} aria-hidden="true" />
@@ -322,7 +325,7 @@ export default function Library() {
           )}
           {filtered.length > 0 && (
             <button
-              onClick={() => showToast('전체 콘텐츠 다운로드를 시작합니다.', 'success')}
+              onClick={() => setDownloadModal({ open: true, scope: 'all' })}
               className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Download size={14} aria-hidden="true" />
@@ -831,6 +834,59 @@ export default function Library() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* 유료 다운로드 결제 모달 (캠페인 상세와 동일 정책: 건당 5,000원) */}
+      <Modal
+        open={downloadModal.open}
+        onClose={() => !isPaying && setDownloadModal({ open: false, scope: 'selected' })}
+        size="sm"
+        title="콘텐츠 다운로드"
+      >
+        {(() => {
+          const count = downloadModal.scope === 'all' ? filtered.length : selectedIds.size
+          const total = count * 5000
+          return (
+            <div className="space-y-4">
+              <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3">
+                <p className="text-xs text-amber-700">💡 콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">다운로드 대상</span>
+                  <span className="text-gray-900 font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'} {count}건</span>
+                </div>
+                <div className="flex justify-between border-t border-gray-100 pt-2">
+                  <span className="text-gray-500">결제 금액</span>
+                  <span className="text-lg font-bold text-gray-900">{total.toLocaleString()}원</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDownloadModal({ open: false, scope: 'selected' })}
+                  disabled={isPaying}
+                  className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    setIsPaying(true)
+                    setTimeout(() => {
+                      setIsPaying(false)
+                      setDownloadModal({ open: false, scope: 'selected' })
+                      showToast(`${count}건 다운로드를 시작합니다.`, 'success')
+                    }, 800)
+                  }}
+                  disabled={isPaying || count === 0}
+                  className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors disabled:opacity-50"
+                >
+                  {isPaying ? '결제 중…' : `${total.toLocaleString()}원 결제`}
+                </button>
+              </div>
+            </div>
+          )
+        })()}
       </Modal>
     </div>
   )
