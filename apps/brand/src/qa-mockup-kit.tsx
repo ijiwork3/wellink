@@ -25,7 +25,7 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext, type CSSProperties } from 'react';
 import {
   Smartphone, Tablet, Monitor,
-  Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera,
+  Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera, Maximize2,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
@@ -37,9 +37,9 @@ import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
 export type DeviceMode = 'desktop' | 'tablet' | 'phone';
 
 export const DEVICE_BASE: Record<DeviceMode, { w: number; h: number; radius: string }> = {
-  desktop: { w: 1280, h: 800,  radius: '8px'  },
-  tablet:  { w: 1024, h: 1366, radius: '14px' },
-  phone:   { w: 390,  h: 844,  radius: '44px' },
+  desktop: { w: 1280, h: 800,  radius: '0px' },
+  tablet:  { w: 1024, h: 1366, radius: '0px' },
+  phone:   { w: 390,  h: 844,  radius: '0px' },
 };
 
 const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
@@ -576,8 +576,16 @@ function QABottomBar<S extends string, T extends string>({
         onNavigate={onNavigate}
         accentColor={accentColor}
       />
-      {/* 우: 스크린샷 */}
-      <ScreenshotButton targetId={mockupId} />
+      {/* 우: 전체보기 */}
+      <a
+        href={window.location.pathname + (window.location.search ? window.location.search + '&fullscreen=1' : '?fullscreen=1')}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="전체보기"
+        className="w-9 h-9 rounded-full shadow flex items-center justify-center bg-white/80 backdrop-blur-sm text-slate-500 hover:text-slate-800 hover:bg-white transition-colors"
+      >
+        <Maximize2 size={14} />
+      </a>
     </div>
   );
 }
@@ -638,13 +646,13 @@ export function MockupShell<S extends string, T extends string>({
       />
 
       {/* 목업 박스 */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden">
+      <div className="flex-1 flex items-start justify-center overflow-hidden">
         <div
           id={mockupId}
           style={{
             width: w, height: h,
             transform: `scale(${scale})`,
-            transformOrigin: 'center center',
+            transformOrigin: 'top center',
             borderRadius: radius,
             flexShrink: 0,
             ['container-type' as string]: 'inline-size',
