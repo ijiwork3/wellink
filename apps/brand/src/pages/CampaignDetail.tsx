@@ -407,18 +407,6 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* DM 안내 배너 — 선정된 인플루언서가 있을 때만 표시 */}
-          {selectedInfluencers.length > 0 && (
-            <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-brand-green/10 border border-brand-green/30">
-              <p className="text-sm text-brand-green-text font-medium">인플루언서가 선정되었습니다. DM을 발송해 보세요.</p>
-              <button
-                onClick={() => navigate('/influencers/dm')}
-                className="shrink-0 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
-              >
-                DM 이동
-              </button>
-            </div>
-          )}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <BarChart3 size={15} className="text-gray-400" aria-hidden="true" />

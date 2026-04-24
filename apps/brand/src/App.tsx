@@ -9,15 +9,12 @@ import AdPerformance from './pages/AdPerformance'
 import ViralMetrics from './pages/ViralMetrics'
 import InfluencerList from './pages/InfluencerList'
 import InfluencerManage from './pages/InfluencerManage'
-import DMManage from './pages/DMManage'
-import AIListup from './pages/AIListup'
 import Campaigns from './pages/Campaigns'
 import CampaignNew from './pages/CampaignNew'
 import CampaignDetail from './pages/CampaignDetail'
 import Library from './pages/Library'
 import Subscription from './pages/Subscription'
 import MyPage from './pages/MyPage'
-import Settlement from './pages/Settlement'
 import { MockupShell, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
@@ -180,28 +177,6 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── DM 관리 ────────────────── */
-  {
-    label: 'DM 관리',
-    children: [
-      { label: '기본', path: '/influencers/dm' },
-      { label: '빈 상태 — 대화 미선택', path: '/influencers/dm?qa=empty-convo' },
-      { label: '로딩', path: '/influencers/dm?qa=loading' },
-      { label: '에러', path: '/influencers/dm?qa=error' },
-    ],
-  },
-
-  /* ────────────────── AI 리스트업 ────────────────── */
-  {
-    label: 'AI 리스트업',
-    children: [
-      { label: '기본 (추천 결과)', path: '/influencers/ai' },
-      { label: '로딩', path: '/influencers/ai?qa=loading' },
-      { label: '빈 상태', path: '/influencers/ai?qa=empty' },
-      { label: '에러', path: '/influencers/ai?qa=error' },
-    ],
-  },
-
   /* ────────────────── 캠페인 목록 ────────────────── */
   {
     label: '캠페인 목록',
@@ -281,18 +256,6 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── 정산 관리 ────────────────── */
-  {
-    label: '정산 관리',
-    children: [
-      { label: '기본 (정산 목록)', path: '/settlement' },
-      { label: '로딩', path: '/settlement?qa=loading' },
-      { label: '빈 상태', path: '/settlement?qa=empty' },
-      { label: '모달 — 승인 확인', path: '/settlement?qa=modal-approve' },
-      { label: '에러', path: '/settlement?qa=error' },
-    ],
-  },
-
   /* ────────────────── 마이페이지 ────────────────── */
   {
     label: '마이페이지',
@@ -321,8 +284,6 @@ function AppRoutes() {
       '/analytics/viral':    '바이럴 지표 — WELLINK AI',
       '/influencers/list':   '인플루언서 리스트 — WELLINK AI',
       '/influencers/manage': '인플루언서 관리 — WELLINK AI',
-      '/influencers/dm':     'DM 관리 — WELLINK AI',
-      '/influencers/ai':     'AI 리스트업 — WELLINK AI',
       '/campaigns':          '캠페인 관리 — WELLINK AI',
       '/campaigns/new':      '새 캠페인 등록 — WELLINK AI',
       '/library':            '콘텐츠 라이브러리 — WELLINK AI',
@@ -367,14 +328,12 @@ function AppRoutes() {
               <Route path="/analytics/viral" element={<ViralMetrics />} />
               <Route path="/influencers/list" element={<InfluencerList />} />
               <Route path="/influencers/manage" element={<InfluencerManage />} />
-              <Route path="/influencers/dm" element={<DMManage />} />
-              <Route path="/influencers/ai" element={<AIListup />} />
               <Route path="/campaigns" element={<Campaigns />} />
               <Route path="/campaigns/new" element={<CampaignNew />} />
               <Route path="/campaigns/:id" element={<CampaignDetail />} />
               <Route path="/library" element={<Library />} />
               <Route path="/subscription" element={<Subscription />} />
-              <Route path="/settlement" element={<Settlement />} />
+              <Route path="/mypage" element={<MyPage />} />
               <Route path="/mypage" element={<MyPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
