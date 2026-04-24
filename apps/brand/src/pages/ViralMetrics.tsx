@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info } from 'lucide-react'
 import { ErrorState, useToast, useQAMode, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -224,6 +224,16 @@ export default function ViralMetrics() {
           </div>
         </div>
       </div>
+
+      {/* 월간·연간 데이터 부정확 안내 배너 */}
+      {(viewMode === 'monthly' || viewMode === 'yearly') && (
+        <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <Info size={14} className="text-amber-500 mt-0.5 shrink-0" />
+          <p className="text-xs text-amber-700 leading-relaxed">
+            데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
+          </p>
+        </div>
+      )}
 
       {/* KPI 카드 4개 — 지표 중심 */}
       <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
