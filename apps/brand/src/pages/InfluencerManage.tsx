@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, BottomSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -33,6 +33,8 @@ interface Influencer {
   fitScore: number
   groups: string[]
   addedAt: number // timestamp ms — BE 연동 시 서버 값으로 교체
+  recentThumbnails: string[] // 최근 피드 썸네일 URL (0~3장). 빈 배열 = 콘텐츠 없음
+  isPrivate?: boolean // 비공개 계정 — 썸네일 노출 불가
 }
 
 const campaigns = [
@@ -60,12 +62,24 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
     { id: 7, name: '정민준헬스앤라이프스타일코치', instagramId: 'minjun_health', type: '개인 인플루언서' as const, bio: '헬스 코치 10년 | 바른 식단과 운동으로 지속 가능한 몸만들기', category: ['헬스', 'PT', '다이어트'], followers: 5300, engagement: 5.1, posts: 145, authentic: 91.0, lastActive: '4일 전', fitScore: 79, groups: [] },
   ]
   const src = base[i % base.length]
+  // 썸네일 엣지케이스 시뮬레이션:
+  //   i % 7 === 0 → 비공개 계정 (노출 불가)
+  //   i % 7 === 1 → 콘텐츠 없음 (신규/휴면)
+  //   i % 7 === 2 → 1장만 있음
+  //   i % 7 === 3 → 2장만 있음
+  //   그 외      → 3장 모두
+  const thumbCase = i % 7
+  const isPrivate = thumbCase === 0
+  const thumbCount = thumbCase === 1 ? 0 : thumbCase === 2 ? 1 : thumbCase === 3 ? 2 : 3
+  const recentThumbnails = isPrivate ? [] : Array.from({ length: thumbCount }, (_, t) => `mock://thumb-${i}-${t}`)
   // 앞쪽 인덱스일수록 최근 추가 (index 0 = 오늘, 이후 하루씩 과거)
   return {
     ...src,
     id: i + 1,
     name: i < 3 ? src.name : `${src.name} ${i + 1}`,
     addedAt: NOW - i * DAY_MS,
+    recentThumbnails,
+    isPrivate,
   }
 }).sort((a, b) => b.addedAt - a.addedAt)
 
@@ -339,17 +353,32 @@ export default function InfluencerManage() {
 
       {/* 인플루언서 카드 목록 */}
       {filteredInfluencers.length === 0 ? (
-        <div className="py-16 text-center">
-          <Heart size={40} className="mx-auto text-gray-400 mb-4" aria-hidden="true" />
-          <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
-          <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
-          <button
-            onClick={() => navigate('/influencers/list')}
-            className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
-          >
-            인플루언서 찾아보기
-          </button>
-        </div>
+        activeTab !== '전체' ? (
+          // 그룹 탭에서 0건 — "이 그룹에 인플루언서 없음"
+          <div className="py-16 text-center">
+            <Users size={40} className="mx-auto text-gray-300 mb-4" aria-hidden="true" />
+            <p className="text-sm font-medium text-gray-500 mb-1">'{activeTab}' 그룹에 인플루언서가 없습니다.</p>
+            <p className="text-xs text-gray-400 mb-4">전체 탭에서 인플루언서를 그룹에 추가해 보세요.</p>
+            <button
+              onClick={() => setActiveTab('전체')}
+              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+            >
+              전체 보기
+            </button>
+          </div>
+        ) : (
+          <div className="py-16 text-center">
+            <Heart size={40} className="mx-auto text-gray-400 mb-4" aria-hidden="true" />
+            <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
+            <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
+            <button
+              onClick={() => navigate('/influencers/list')}
+              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+            >
+              인플루언서 찾아보기
+            </button>
+          </div>
+        )
       ) : (
         <>
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
@@ -402,18 +431,44 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
-                {/* 최근 피드 썸네일 3장 — 톤앤매너 즉시 파악 (BE 연동 시 실제 이미지로 교체) */}
-                <div className="grid grid-cols-3 gap-1.5 mb-3">
-                  {[0, 1, 2].map(i => (
-                    <div
-                      key={i}
-                      className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-                      aria-label="최근 피드 미리보기"
-                    >
-                      <Image size={18} className="text-gray-300" aria-hidden="true" />
-                    </div>
-                  ))}
-                </div>
+                {/* 최근 피드 썸네일 — 엣지케이스 처리:
+                    1) 비공개 계정 → 안내 메시지
+                    2) 콘텐츠 0장 → 안내 메시지
+                    3) 1~2장 → 빈 슬롯은 점선 placeholder
+                    4) 3장 → 모두 렌더 */}
+                {inf.isPrivate ? (
+                  <div className="mb-3 rounded-lg bg-gray-50 border border-gray-100 px-3 py-3 flex items-center justify-center gap-1.5">
+                    <Image size={14} className="text-gray-300" aria-hidden="true" />
+                    <span className="text-xs text-gray-400">비공개 계정 — 콘텐츠 미리보기를 제공하지 않습니다</span>
+                  </div>
+                ) : inf.recentThumbnails.length === 0 ? (
+                  <div className="mb-3 rounded-lg bg-gray-50 border border-gray-100 px-3 py-3 flex items-center justify-center gap-1.5">
+                    <Image size={14} className="text-gray-300" aria-hidden="true" />
+                    <span className="text-xs text-gray-400">최근 게시된 콘텐츠가 없습니다</span>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-1.5 mb-3">
+                    {Array.from({ length: 3 }).map((_, i) => {
+                      const thumb = inf.recentThumbnails[i]
+                      return thumb ? (
+                        <div
+                          key={i}
+                          className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                          aria-label={`최근 피드 ${i + 1}`}
+                        >
+                          {/* TODO: BE 연동 시 <img src={thumb} /> 로 교체 */}
+                          <Image size={18} className="text-gray-300" aria-hidden="true" />
+                        </div>
+                      ) : (
+                        <div
+                          key={i}
+                          className="aspect-square rounded-lg border border-dashed border-gray-200"
+                          aria-label="빈 슬롯"
+                        />
+                      )
+                    })}
+                  </div>
+                )}
 
                 {/* 그룹 태그 + 그룹에 추가 */}
                 <div className="flex items-center gap-1.5 flex-wrap" onClick={e => e.stopPropagation()}>
