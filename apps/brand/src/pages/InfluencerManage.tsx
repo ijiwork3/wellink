@@ -584,7 +584,7 @@ export default function InfluencerManage() {
             )
           })()}
           <p className="text-center text-xs text-gray-400 pb-4">
-            총 {filteredInfluencers.length}명 · {page} / {totalPages} 페이지
+            {page} / {totalPages} 페이지
           </p>
         </>
       )}
