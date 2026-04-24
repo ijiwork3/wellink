@@ -98,7 +98,8 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
 
   if (!open) return null
 
-  const sizeClass = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' }[size] ?? 'max-w-lg'
+  // sm=384px / md=512px / lg=672px — 좌우 최소 16px 여백(mx-4)은 공통 적용
+  const sizeClass = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-xl' }[size] ?? 'max-w-md'
 
   return (
     <div
@@ -115,7 +116,7 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
         className={`bg-white shadow-2xl w-full flex flex-col transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
           fullscreen
             ? 'rounded-none h-full overflow-hidden'
-            : `rounded-2xl ${sizeClass} mx-4 overflow-hidden max-h-[80vh]`
+            : `rounded-2xl ${sizeClass} w-full mx-4 my-4 overflow-hidden max-h-[90vh]`
         }`}
         style={{
           opacity: visible ? 1 : 0,

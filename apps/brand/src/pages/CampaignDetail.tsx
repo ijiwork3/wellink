@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, MessageCircle, Info, Crown } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown } from 'lucide-react'
 import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -62,13 +62,20 @@ const selectedApplicantsData = [
 ]
 
 // 등록 콘텐츠 더미 — reach는 숫자로 저장, 표시 시 fmtNumber() 사용
-// 바이럴 지표 메뉴와 동일한 컬럼 구성 — 도달/좋아요/댓글/저장/공유 + 바이럴 점수
+// 등록 콘텐츠 — 검수 상태 포함 (검수중/승인/반려)
 const registeredContents = [
-  { id: 1, thumbnail: 'bg-gradient-to-br from-pink-100 to-pink-200',     influencer: '이창민', type: '릴스',   reach: 12400, likes: 890, comments: 42, saves: 156, shares: 310, viralScore: 88 },
-  { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-100 to-yellow-200', influencer: '김가애', type: '피드',   reach: 8100,  likes: 540, comments: 28, saves: 89,  shares: 180, viralScore: 72 },
-  { id: 3, thumbnail: 'bg-gradient-to-br from-purple-100 to-purple-200', influencer: '박리나', type: '스토리', reach: 5200,  likes: 380, comments: 15, saves: 62,  shares: 95,  viralScore: 54 },
-  { id: 4, thumbnail: 'bg-gradient-to-br from-blue-100 to-blue-200',    influencer: '민경완', type: '피드',   reach: 6700,  likes: 420, comments: 31, saves: 78,  shares: 142, viralScore: 61 },
+  { id: 1, thumbnail: 'bg-gradient-to-br from-pink-200 to-pink-300',     influencer: '이창민', instagramId: '@changmin_fit', type: '릴스',   submittedAt: '2026-04-18', reach: 12400, likes: 890, comments: 42, saves: 156, shares: 310, viralScore: 88, status: '검수중' as const },
+  { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-200 to-yellow-300', influencer: '김가애', instagramId: '@gaga_daily',   type: '피드',   submittedAt: '2026-04-17', reach: 8100,  likes: 540, comments: 28, saves: 89,  shares: 180, viralScore: 72, status: '승인'   as const },
+  { id: 3, thumbnail: 'bg-gradient-to-br from-purple-200 to-purple-300', influencer: '박리나', instagramId: '@rina_life',    type: '스토리', submittedAt: '2026-04-16', reach: 5200,  likes: 380, comments: 15, saves: 62,  shares: 95,  viralScore: 54, status: '승인'   as const },
+  { id: 4, thumbnail: 'bg-gradient-to-br from-blue-200 to-blue-300',     influencer: '민경완', instagramId: '@kyeong_w',    type: '피드',   submittedAt: '2026-04-15', reach: 6700,  likes: 420, comments: 31, saves: 78,  shares: 142, viralScore: 61, status: '반려'   as const },
 ]
+
+type ContentStatus = '검수중' | '승인' | '반려'
+const CONTENT_STATUS_STYLE: Record<ContentStatus, string> = {
+  '검수중': 'bg-amber-100 text-amber-700',
+  '승인':   'bg-green-100 text-green-700',
+  '반려':   'bg-red-100   text-red-600',
+}
 
 // 캠페인·참여 상태 스타일은 @wellink/ui 상수 사용
 const statusConfig: Record<string, { label: string; cls: string }> = {
@@ -128,11 +135,19 @@ export default function CampaignDetail() {
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
 
-  // 콘텐츠검수 (기존 기능 유지)
-  const [, setStatuses] = useState<Record<number, string>>(
+  // 콘텐츠 검수 상태 (등록 콘텐츠 탭)
+  const [contentStatuses, setContentStatuses] = useState<Record<number, ContentStatus>>(
+    Object.fromEntries(registeredContents.map(c => [c.id, c.status]))
+  )
+  const [contentFilter, setContentFilter] = useState<'전체' | ContentStatus>('전체')
+  const [contentRejectModal, setContentRejectModal] = useState<number | null>(null)
+  const [contentRejectFeedback, setContentRejectFeedback] = useState('')
+
+  // QA: modal-reject → 첫 번째 인플루언서로 반려 모달 미리 열기
+  // 지원자 관리 탭 — 인플루언서 상태 관리 (반려 처리용)
+  const [, setApplicantStatuses] = useState<Record<number, string>>(
     Object.fromEntries(campaign.influencers.map(inf => [inf.id, inf.status]))
   )
-  // QA: modal-reject → 첫 번째 인플루언서로 반려 모달 미리 열기
   const [rejectModal, setRejectModal] = useState<number | null>(
     qa === 'modal-reject' ? campaign.influencers[0]?.id ?? null : null
   )
@@ -295,7 +310,7 @@ export default function CampaignDetail() {
   const handleReject = () => {
     if (!feedback.trim()) { showToast('피드백 내용을 입력해주세요.', 'error'); return }
     if (rejectModal !== null) {
-      setStatuses(prev => ({ ...prev, [rejectModal]: '반려' }))
+      setApplicantStatuses(prev => ({ ...prev, [rejectModal]: '반려' }))
       // 지원자 목록에서도 제거
       setApplicants(prev => prev.filter(a => a.id !== rejectModal))
     }
@@ -629,149 +644,199 @@ export default function CampaignDetail() {
           <p className="text-xs text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
         </div>
       )}
-      {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (
-        <div className="space-y-4">
-          {/* 유료 다운로드 안내 배너 */}
-          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100">
-            <Info size={15} className="text-amber-500 shrink-0" aria-hidden="true" />
-            <p className="text-xs text-amber-700">💡 콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
-          </div>
-
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <Image size={15} className="text-gray-400" aria-hidden="true" />
-              등록된 콘텐츠 {registeredContents.length}건
-              {selectedContents.size > 0 && (
-                <span className="text-xs font-normal text-brand-green">· {selectedContents.size}건 선택</span>
-              )}
-            </h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  if (selectedContents.size === registeredContents.length) {
-                    setSelectedContents(new Set())
-                  } else {
-                    setSelectedContents(new Set(registeredContents.map(c => c.id)))
-                  }
-                }}
-                className="text-xs text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
-              >
-                {selectedContents.size === registeredContents.length ? '선택 해제' : '전체 선택'}
-              </button>
-              <button
-                onClick={() => {
-                  if (selectedContents.size === 0) {
-                    showToast('다운로드할 콘텐츠를 선택해주세요.', 'error')
-                    return
-                  }
-                  setDownloadModal(true)
-                }}
-                className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
-              >
-                <Download size={13} aria-hidden="true" />
-                콘텐츠 다운로드
-              </button>
+      {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (() => {
+        const filtered = registeredContents.filter(c =>
+          contentFilter === '전체' || contentStatuses[c.id] === contentFilter
+        )
+        const counts = {
+          전체: registeredContents.length,
+          검수중: registeredContents.filter(c => contentStatuses[c.id] === '검수중').length,
+          승인: registeredContents.filter(c => contentStatuses[c.id] === '승인').length,
+          반려: registeredContents.filter(c => contentStatuses[c.id] === '반려').length,
+        }
+        return (
+          <div className="space-y-4">
+            {/* 헤더 — 건수 + 다운로드 */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="text-sm font-semibold text-gray-900">
+                등록 콘텐츠
+                <span className="ml-1.5 text-xs font-normal text-gray-400">{registeredContents.length}건</span>
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const visibleIds = new Set(filtered.map(c => c.id))
+                    const allSelected = filtered.every(c => selectedContents.has(c.id))
+                    if (allSelected) {
+                      setSelectedContents(prev => { const n = new Set(prev); visibleIds.forEach(id => n.delete(id)); return n })
+                    } else {
+                      setSelectedContents(prev => new Set([...prev, ...visibleIds]))
+                    }
+                  }}
+                  className="text-xs text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+                >
+                  {filtered.every(c => selectedContents.has(c.id)) && filtered.length > 0 ? '선택 해제' : '전체 선택'}
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedContents.size === 0) { showToast('다운로드할 콘텐츠를 선택해주세요.', 'error'); return }
+                    setDownloadModal(true)
+                  }}
+                  className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
+                >
+                  <Download size={13} aria-hidden="true" />
+                  다운로드{selectedContents.size > 0 && ` (${selectedContents.size})`}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* 콘텐츠 카드 그리드 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
-            {registeredContents.map(c => {
-              const isChecked = selectedContents.has(c.id)
-              const engRate = c.reach > 0
-                ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1)
-                : '0.0'
-              return (
-                <div
-                  key={c.id}
-                  onClick={() => toggleContentCheck(c.id)}
-                  role="checkbox"
-                  aria-checked={isChecked}
-                  tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleContentCheck(c.id) } }}
-                  className={`bg-white rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-150 shadow-sm ${
-                    isChecked ? 'border-brand-green' : 'border-gray-100 hover:border-gray-200'
+            {/* 검수 상태 필터 탭 */}
+            <div className="flex gap-1.5 flex-wrap">
+              {(['전체', '검수중', '승인', '반려'] as const).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setContentFilter(f)}
+                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border transition-colors ${
+                    contentFilter === f
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
                   }`}
                 >
-                  {/* 썸네일 */}
-                  <div className={`relative w-full aspect-[4/3] ${c.thumbnail} flex items-center justify-center`}>
-                    <Image size={32} className="text-white/60" aria-hidden="true" />
-                    {/* 선택 체크 */}
-                    <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
-                      isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
-                    }`}>
-                      {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
-                    </div>
-                    {/* 유형 배지 */}
-                    <span className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
-                      {c.type}
-                    </span>
-                  </div>
+                  {f}
+                  <span className={`text-[10px] font-bold px-1 rounded-full ${
+                    contentFilter === f ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {counts[f]}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-                  {/* 정보 영역 */}
-                  <div className="p-4">
-                    {/* 인플루언서 + 바이럴 점수 */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
-                          {c.influencer[0]}
+            {/* 유료 다운로드 안내 */}
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
+              <Info size={13} className="text-amber-500 shrink-0" aria-hidden="true" />
+              <p className="text-xs text-amber-700">콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
+            </div>
+
+            {/* 콘텐츠 카드 그리드 */}
+            {filtered.length === 0 ? (
+              <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
+                <Image size={32} className="text-gray-200 mx-auto mb-2" aria-hidden="true" />
+                <p className="text-sm text-gray-400">{contentFilter} 상태의 콘텐츠가 없습니다</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
+                {filtered.map(c => {
+                  const isChecked = selectedContents.has(c.id)
+                  const status = contentStatuses[c.id]
+                  const engRate = c.reach > 0
+                    ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1)
+                    : '0.0'
+                  return (
+                    <div
+                      key={c.id}
+                      className={`bg-white rounded-2xl border-2 overflow-hidden shadow-sm transition-all duration-150 ${
+                        isChecked ? 'border-brand-green' : 'border-gray-100'
+                      }`}
+                    >
+                      {/* 썸네일 */}
+                      <div
+                        className={`relative w-full aspect-[3/4] ${c.thumbnail} flex items-center justify-center cursor-pointer`}
+                        onClick={() => toggleContentCheck(c.id)}
+                      >
+                        <Image size={36} className="text-white/50" aria-hidden="true" />
+                        {/* 선택 체크 */}
+                        <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
+                          isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
+                        }`}>
+                          {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
                         </div>
-                        <span className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0" title="바이럴 점수">
-                        <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${c.viralScore}%`,
-                              backgroundColor: c.viralScore >= 80 ? 'var(--color-brand-green)' : c.viralScore >= 50 ? 'var(--color-amber-500)' : 'var(--color-gray-300)',
-                            }}
-                          />
-                        </div>
-                        <span className={`text-xs font-bold ${c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
-                          {c.viralScore}
+                        {/* 유형 배지 */}
+                        <span className={`absolute top-3 right-3 text-[11px] px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                          {c.type}
                         </span>
+                        {/* 바이럴 점수 */}
+                        <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm ${
+                          c.viralScore >= 80 ? 'bg-green-500/90 text-white' : c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
+                        }`}>
+                          {c.viralScore}점
+                        </div>
                       </div>
-                    </div>
 
-                    {/* 지표 5개 + 참여율 — 바이럴 지표 메뉴와 동일 컬럼 */}
-                    <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-center">
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5">도달</p>
-                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
-                          <Heart size={9} className="text-red-400" aria-hidden="true" />좋아요
-                        </p>
-                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.likes)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5 flex items-center justify-center gap-0.5">
-                          <MessageCircle size={9} className="text-gray-400" aria-hidden="true" />댓글
-                        </p>
-                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.comments)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5">저장</p>
-                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.saves)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5">공유</p>
-                        <p className="text-xs font-bold text-gray-800">{fmtNumber(c.shares)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-gray-400 mb-0.5">참여율</p>
-                        <p className="text-xs font-bold text-brand-green">{engRate}%</p>
+                      {/* 정보 영역 */}
+                      <div className="p-4 space-y-3">
+                        {/* 인플루언서 + 상태 */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
+                              {c.influencer[0]}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
+                              <p className="text-[11px] text-gray-400 truncate">{c.instagramId}</p>
+                            </div>
+                          </div>
+                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
+                            {status}
+                          </span>
+                        </div>
+
+                        {/* 제출일 */}
+                        <p className="text-[11px] text-gray-400">제출일 {c.submittedAt}</p>
+
+                        {/* 지표 3×2 */}
+                        <div className="grid grid-cols-3 gap-y-2 text-center border-t border-gray-50 pt-3">
+                          {[
+                            { label: '도달', value: fmtNumber(c.reach) },
+                            { label: '좋아요', value: fmtNumber(c.likes) },
+                            { label: '댓글', value: fmtNumber(c.comments) },
+                            { label: '저장', value: fmtNumber(c.saves) },
+                            { label: '공유', value: fmtNumber(c.shares) },
+                            { label: '참여율', value: `${engRate}%`, highlight: true },
+                          ].map(m => (
+                            <div key={m.label}>
+                              <p className="text-[10px] text-gray-400 mb-0.5">{m.label}</p>
+                              <p className={`text-xs font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* 검수 액션 — 검수중만 표시 */}
+                        {status === '검수중' && (
+                          <div className="flex gap-2 pt-1">
+                            <button
+                              onClick={() => {
+                                setContentStatuses(prev => ({ ...prev, [c.id]: '승인' }))
+                                showToast(`${c.influencer} 콘텐츠를 승인했습니다.`, 'success')
+                              }}
+                              className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-2 rounded-xl text-xs font-medium hover:bg-brand-green-hover transition-colors"
+                            >
+                              <Check size={12} aria-hidden="true" /> 승인
+                            </button>
+                            <button
+                              onClick={() => setContentRejectModal(c.id)}
+                              className="flex-1 flex items-center justify-center gap-1 border border-red-200 text-red-500 py-2 rounded-xl text-xs font-medium hover:bg-red-50 transition-colors"
+                            >
+                              <X size={12} aria-hidden="true" /> 반려
+                            </button>
+                          </div>
+                        )}
+                        {/* 반려 사유 재제출 안내 */}
+                        {status === '반려' && (
+                          <div className="flex items-center gap-1.5 bg-red-50 rounded-xl px-3 py-2">
+                            <X size={12} className="text-red-400 shrink-0" aria-hidden="true" />
+                            <p className="text-[11px] text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              )
-            })}
+                  )
+                })}
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ─── E) 성과 리포트 탭 — 빈 상태 ─── */}
       {activeTab === '성과 리포트' && qa === 'tab-report-empty' && (
@@ -966,6 +1031,39 @@ export default function CampaignDetail() {
           >
             결제하기
           </button>
+        </div>
+      </Modal>
+
+      {/* 등록 콘텐츠 반려 모달 */}
+      <Modal open={contentRejectModal !== null} onClose={() => { setContentRejectModal(null); setContentRejectFeedback('') }} size="sm" title="콘텐츠 반려">
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600">반려 사유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
+          <textarea
+            value={contentRejectFeedback}
+            onChange={e => setContentRejectFeedback(e.target.value)}
+            placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
+            rows={4}
+            maxLength={500}
+            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-150 placeholder:text-gray-400"
+          />
+          <div className="text-right text-xs text-gray-400">{contentRejectFeedback.length}/500</div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >취소</button>
+            <button
+              onClick={() => {
+                if (contentRejectModal === null) return
+                setContentStatuses(prev => ({ ...prev, [contentRejectModal]: '반려' }))
+                const name = registeredContents.find(c => c.id === contentRejectModal)?.influencer ?? ''
+                showToast(`${name} 콘텐츠를 반려했습니다.`, 'error')
+                setContentRejectModal(null)
+                setContentRejectFeedback('')
+              }}
+              className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors"
+            >반려 전송</button>
+          </div>
         </div>
       </Modal>
 
