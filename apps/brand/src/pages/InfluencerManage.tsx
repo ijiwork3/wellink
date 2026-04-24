@@ -431,26 +431,18 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
-                {/* 최근 피드 썸네일 — 엣지케이스 처리:
-                    1) 비공개 계정 → 안내 메시지
-                    2) 콘텐츠 0장 → 안내 메시지
+                {/* 최근 피드 썸네일 영역 — 항상 동일 높이 (썸네일 3장 그리드 높이)
+                    엣지케이스:
+                    1) 비공개 계정 → 안내 메시지 오버레이
+                    2) 콘텐츠 0장 → 안내 메시지 오버레이
                     3) 1~2장 → 빈 슬롯은 점선 placeholder
                     4) 3장 → 모두 렌더 */}
-                {inf.isPrivate ? (
-                  <div className="mb-3 rounded-lg bg-gray-50 border border-gray-100 px-3 py-3 flex items-center justify-center gap-1.5">
-                    <Image size={14} className="text-gray-300" aria-hidden="true" />
-                    <span className="text-xs text-gray-400">비공개 계정 — 콘텐츠 미리보기를 제공하지 않습니다</span>
-                  </div>
-                ) : inf.recentThumbnails.length === 0 ? (
-                  <div className="mb-3 rounded-lg bg-gray-50 border border-gray-100 px-3 py-3 flex items-center justify-center gap-1.5">
-                    <Image size={14} className="text-gray-300" aria-hidden="true" />
-                    <span className="text-xs text-gray-400">최근 게시된 콘텐츠가 없습니다</span>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-3 gap-1.5 mb-3">
-                    {Array.from({ length: 3 }).map((_, i) => {
-                      const thumb = inf.recentThumbnails[i]
-                      return thumb ? (
+                <div className="grid grid-cols-3 gap-1.5 mb-3 relative">
+                  {/* 그리드 공간 확보 (3장 placeholder) — 비공개/없음 시 비주얼 */}
+                  {Array.from({ length: 3 }).map((_, i) => {
+                    const thumb = !inf.isPrivate && inf.recentThumbnails[i]
+                    if (thumb) {
+                      return (
                         <div
                           key={i}
                           className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
@@ -459,16 +451,25 @@ export default function InfluencerManage() {
                           {/* TODO: BE 연동 시 <img src={thumb} /> 로 교체 */}
                           <Image size={18} className="text-gray-300" aria-hidden="true" />
                         </div>
-                      ) : (
-                        <div
-                          key={i}
-                          className="aspect-square rounded-lg border border-dashed border-gray-200"
-                          aria-label="빈 슬롯"
-                        />
                       )
-                    })}
-                  </div>
-                )}
+                    }
+                    // 비공개·콘텐츠 0장은 전체 영역에 옅은 회색 단일 배경 느낌
+                    if (inf.isPrivate || inf.recentThumbnails.length === 0) {
+                      return <div key={i} className="aspect-square rounded-lg bg-gray-50" aria-hidden="true" />
+                    }
+                    // 1~2장 케이스의 빈 슬롯
+                    return <div key={i} className="aspect-square rounded-lg border border-dashed border-gray-200" aria-label="빈 슬롯" />
+                  })}
+                  {/* 안내 메시지 오버레이 (비공개/콘텐츠 없음만) */}
+                  {(inf.isPrivate || inf.recentThumbnails.length === 0) && (
+                    <div className="absolute inset-0 flex items-center justify-center gap-1.5 pointer-events-none">
+                      <Image size={14} className="text-gray-300" aria-hidden="true" />
+                      <span className="text-xs text-gray-400">
+                        {inf.isPrivate ? '비공개 계정' : '최근 콘텐츠 없음'}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
                 {/* 그룹 태그 + 그룹에 추가 */}
                 <div className="flex items-center gap-1.5 flex-wrap" onClick={e => e.stopPropagation()}>
