@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Heart, Plus, X, Loader2, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink } from 'lucide-react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, BottomSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -8,10 +8,15 @@ import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { getEngagementColor, getFitScoreColor, getFitScoreBadge, getAuthenticColor, getRecommendedCampaignType } from '@wellink/ui'
+import {
+  INFLUENCER_SORT_OPTIONS,
+  DEFAULT_INFLUENCER_SORT,
+  sortInfluencers,
+  type InfluencerSortKey,
+} from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 
-const INITIAL_SIZE = 100
-const PAGE_SIZE = 20
+const PAGE_SIZE = 12
 
 interface Influencer {
   id: number
@@ -75,11 +80,9 @@ export default function InfluencerManage() {
   const device = useDeviceMode()
   const isMobile = device !== 'desktop'
 
-  const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS.slice(0, INITIAL_SIZE))
-  const [page, setPage] = useState(0)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(ALL_INFLUENCERS.length > INITIAL_SIZE)
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS)
+  const [page, setPage] = useState(1)
+  const [sortKey, setSortKey] = useState<InfluencerSortKey>(DEFAULT_INFLUENCER_SORT)
 
   const [groups, setGroups] = useState<string[]>(initialGroups)
   const [activeTab, setActiveTab] = useState('전체')
@@ -100,36 +103,6 @@ export default function InfluencerManage() {
   const [proposalSent, setProposalSent] = useState(false)
 
   const GROUP_NAME_MAX = 30
-
-  // ── 무한 스크롤 ──────────────────────────────────────────
-  const loadMore = useCallback(() => {
-    if (loadingMore || !hasMore) return
-    setLoadingMore(true)
-    // BE 연동 시 API 호출로 교체
-    setTimeout(() => {
-      const start = INITIAL_SIZE + page * PAGE_SIZE
-      const more = ALL_INFLUENCERS.slice(start, start + PAGE_SIZE)
-      if (more.length > 0) {
-        setInfluencers(prev => [...prev, ...more])
-        setPage(p => p + 1)
-        setHasMore(start + PAGE_SIZE < ALL_INFLUENCERS.length)
-      } else {
-        setHasMore(false)
-      }
-      setLoadingMore(false)
-    }, 600)
-  }, [loadingMore, hasMore, page])
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      entries => { if (entries[0].isIntersecting) loadMore() },
-      { rootMargin: '100px' }
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [loadMore])
 
   // ── 드롭다운 바깥 클릭 닫기 (데스크톱) ───────────────────
   useEffect(() => {
@@ -279,11 +252,21 @@ export default function InfluencerManage() {
     )
   }
 
-  // ── 탭 필터 ──────────────────────────────────────────────
+  // ── 탭 필터 + 정렬 + 페이지네이션 ─────────────────────────
   const tabs = ['전체', ...groups]
-  const filteredInfluencers = activeTab === '전체'
-    ? influencers
-    : influencers.filter(inf => inf.groups.includes(activeTab))
+  const filteredInfluencers = useMemo(() => {
+    const filtered = activeTab === '전체'
+      ? influencers
+      : influencers.filter(inf => inf.groups.includes(activeTab))
+    return sortInfluencers(filtered, sortKey)
+  }, [influencers, activeTab, sortKey])
+
+  const totalPages = Math.max(1, Math.ceil(filteredInfluencers.length / PAGE_SIZE))
+  useEffect(() => { if (page > totalPages) setPage(1) }, [page, totalPages])
+  const pagedInfluencers = filteredInfluencers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // 탭/정렬 변경 시 1페이지로 리셋
+  useEffect(() => { setPage(1) }, [activeTab, sortKey])
 
   // "그룹에 추가" 드롭다운/바텀시트에 보여줄 그룹 목록
   const getAddableGroups = (inf: Influencer) => groups.filter(g => !inf.groups.includes(g))
@@ -299,7 +282,8 @@ export default function InfluencerManage() {
           <p className="text-sm text-gray-500 mt-0.5">관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
 
-      {/* 그룹 탭 */}
+      {/* 그룹 탭 + 공통 정렬 */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
       <div role="tablist" className="flex gap-2 flex-wrap">
         {tabs.map(tab => (
           <div
@@ -339,6 +323,18 @@ export default function InfluencerManage() {
           그룹 추가
         </button>
       </div>
+        {/* 공통 정렬 — 인플루언서 프로필 화면 통일 정책 */}
+        <select
+          value={sortKey}
+          onChange={e => setSortKey(e.target.value as InfluencerSortKey)}
+          aria-label="정렬"
+          className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 hover:border-gray-300 focus:outline-none focus:border-brand-green transition-colors"
+        >
+          {INFLUENCER_SORT_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
       </div>
 
       {/* 인플루언서 카드 목록 */}
@@ -357,7 +353,7 @@ export default function InfluencerManage() {
       ) : (
         <>
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
-            {filteredInfluencers.map(inf => (
+            {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow duration-150"
@@ -404,6 +400,19 @@ export default function InfluencerManage() {
                     <span className="text-xs text-gray-400">핏 스코어</span>
                     <span className={`text-sm font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
                   </div>
+                </div>
+
+                {/* 최근 피드 썸네일 3장 — 톤앤매너 즉시 파악 (BE 연동 시 실제 이미지로 교체) */}
+                <div className="grid grid-cols-3 gap-1.5 mb-3">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                      aria-label="최근 피드 미리보기"
+                    >
+                      <Image size={18} className="text-gray-300" aria-hidden="true" />
+                    </div>
+                  ))}
                 </div>
 
                 {/* 그룹 태그 + 그룹에 추가 */}
@@ -455,18 +464,44 @@ export default function InfluencerManage() {
             ))}
           </div>
 
-          {/* 무한 스크롤 sentinel */}
-          <div ref={sentinelRef} className="h-1" />
-
-          {/* 로딩 스피너 또는 끝 표시 */}
-          {loadingMore && (
-            <div className="flex justify-center py-6">
-              <Loader2 size={20} className="animate-spin text-gray-400" aria-label="추가 로드 중" />
-            </div>
+          {/* 페이지네이션 — InfluencerList와 동일 패턴 (페이지 정책 통일) */}
+          {totalPages > 1 && (
+            <nav aria-label="페이지 네비게이션" className="flex items-center justify-center gap-1.5 pt-4 pb-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                aria-label="이전 페이지"
+                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={14} aria-hidden="true" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  aria-current={page === p ? 'page' : undefined}
+                  className={`min-w-[32px] h-8 px-2 rounded-lg text-sm transition-colors ${
+                    page === p
+                      ? 'bg-brand-green text-white font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                aria-label="다음 페이지"
+                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={14} aria-hidden="true" />
+              </button>
+            </nav>
           )}
-          {!hasMore && influencers.length > PAGE_SIZE && (
-            <div className="pb-8" />
-          )}
+          <p className="text-center text-xs text-gray-400 pb-4">
+            총 {filteredInfluencers.length}명 · {page} / {totalPages} 페이지
+          </p>
         </>
       )}
 

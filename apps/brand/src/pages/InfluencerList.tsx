@@ -9,6 +9,12 @@ import { useQAMode } from '@wellink/ui'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { getEngagementColor, getAuthenticColor, getFitScoreBadge, getFitScoreLabel, getFitScoreColor, getRecommendedCampaignType } from '@wellink/ui'
 import { FITSCORE_THRESHOLD, ENGAGEMENT_THRESHOLD } from '@wellink/ui'
+import {
+  INFLUENCER_SORT_OPTIONS,
+  DEFAULT_INFLUENCER_SORT,
+  sortInfluencers,
+  type InfluencerSortKey,
+} from '@wellink/ui'
 
 // NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
 const influencers = [
@@ -85,6 +91,7 @@ export default function InfluencerList() {
   const [proposalSent, setProposalSent] = useState(false)
   const [proposedSet, setProposedSet] = useState<Set<number>>(new Set())
   const [page, setPage] = useState(1)
+  const [sortKey, setSortKey] = useState<InfluencerSortKey>(DEFAULT_INFLUENCER_SORT)
   const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
     try {
       const raw = sessionStorage.getItem('wl_bookmarks')
@@ -209,9 +216,11 @@ export default function InfluencerList() {
     { label: '평균 참여율', value: (influencers.filter(i => i.engagement > 0).reduce((s, i) => s + i.engagement, 0) / influencers.filter(i => i.engagement > 0).length).toFixed(1) + '%' },
   ], [bookmarked.size])
 
+  const sorted = useMemo(() => sortInfluencers(filtered, sortKey), [filtered, sortKey])
+
   const perPage = 5
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage)
+  const totalPages = Math.max(1, Math.ceil(sorted.length / perPage))
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage)
 
   const handleProposal = () => {
     if (!selectedCampaign) { showToast('캠페인을 선택해주세요.', 'error'); return }
@@ -286,6 +295,14 @@ export default function InfluencerList() {
             value={followerTier}
             onChange={v => { setFollowerTier(v); setPage(1) }}
             options={followerTierOptions}
+          />
+        </div>
+        {/* 공통 정렬 — 인플루언서 프로필 화면 통일 정책 */}
+        <div className="w-full @sm:w-44">
+          <CustomSelect
+            value={sortKey}
+            onChange={v => { setSortKey(v as InfluencerSortKey); setPage(1) }}
+            options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))}
           />
         </div>
       </div>

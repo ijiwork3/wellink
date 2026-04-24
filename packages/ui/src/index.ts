@@ -38,6 +38,14 @@ export { auth } from './utils/auth'
 // 유틸 훅
 export { useQAMode } from './utils/useQAMode'
 
+// 인플루언서 공통 정렬 정책
+export {
+  INFLUENCER_SORT_OPTIONS,
+  DEFAULT_INFLUENCER_SORT,
+  sortInfluencers,
+} from './utils/sortInfluencers'
+export type { InfluencerSortKey, SortOption } from './utils/sortInfluencers'
+
 // 포맷 유틸 — 데이터 정책 v1 §1-1, §1-2, §1-3
 export { fmtNumber, fmtFollowers, fmtRate, fmtPrice, formatFollowers } from './utils/format'
 export { fmtDate } from './utils/fmtDate'
