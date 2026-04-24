@@ -116,7 +116,7 @@ export default function ViralMetrics() {
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
           <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-[11px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
         <InstagramConnectPrompt featureName="바이럴 지표" />
       </div>
@@ -129,7 +129,7 @@ export default function ViralMetrics() {
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
           <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-[11px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
           <Zap size={40} className="text-gray-200 mb-3" />
@@ -178,7 +178,7 @@ export default function ViralMetrics() {
       <div className="flex flex-col @sm:flex-row @sm:items-start @sm:justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-[11px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
 
         {/* 날짜 네비게이션 */}
@@ -315,7 +315,7 @@ export default function ViralMetrics() {
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">{item.influencer}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-700 font-medium">{fmtNumber(item.reach)}</td>
                   <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.likes)}</td>

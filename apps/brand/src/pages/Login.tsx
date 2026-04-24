@@ -53,7 +53,7 @@ export default function Login() {
       <div className="absolute top-0 left-0 right-0 px-8 py-5 flex items-center justify-between">
         <button onClick={() => navigate('/')} className="flex items-center gap-1.5">
           <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-[10px] font-bold bg-brand-green text-white px-1.5 py-0.5 rounded-full">AI</span>
+          <span className="text-xs font-bold bg-brand-green text-white px-1.5 py-0.5 rounded-full">AI</span>
         </button>
         <button
           onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}

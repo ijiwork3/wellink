@@ -191,7 +191,7 @@ export default function Campaigns() {
             }`}
           >
             {tab}
-            <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${
+            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
               activeTab === tab ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
             }`}>
               {tabCounts[tab]}
@@ -293,7 +293,7 @@ export default function Campaigns() {
                       <div className="flex items-center gap-1.5">
                         <Clock size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-xs text-gray-500">{fmtDate(c.deadline)}</span>
-                        <span className={`text-[10px] ${ddayBadge}`}>{ddayLabel}</span>
+                        <span className={`text-xs ${ddayBadge}`}>{ddayLabel}</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
@@ -327,31 +327,31 @@ export default function Campaigns() {
                     <h3 className="text-sm font-semibold text-gray-900 mt-2 truncate max-w-[200px]">{c.name}</h3>
                     <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">{c.category} · {c.platform}</p>
                   </div>
-                  <span className={`text-[10px] ${ddayBadge}`}>{ddayLabel}</span>
+                  <span className={`text-xs ${ddayBadge}`}>{ddayLabel}</span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
                     <Users size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
                     <p className="text-xs font-semibold text-gray-700">{c.current}/{c.total}</p>
-                    <p className="text-[10px] text-gray-400">모집</p>
+                    <p className="text-xs text-gray-400">모집</p>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
                     <BarChart2 size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
                     <p className="text-xs font-semibold text-gray-700">{c.reach > 0 ? fmtNumber(c.reach) : '—'}</p>
-                    <p className="text-[10px] text-gray-400">도달</p>
+                    <p className="text-xs text-gray-400">도달</p>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded-lg">
                     <TrendingUp size={12} className="text-gray-400 mx-auto mb-0.5" aria-hidden="true" />
                     <p className={`text-xs font-semibold ${c.engRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : c.engRate >= ENGAGEMENT_THRESHOLD.low ? 'text-gray-700' : c.engRate > 0 ? 'text-red-500' : 'text-gray-400'}`}>
                       {c.engRate > 0 ? `${c.engRate}%` : '—'}
                     </p>
-                    <p className="text-[10px] text-gray-400">참여율</p>
+                    <p className="text-xs text-gray-400">참여율</p>
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
                     <span>모집 진행률</span>
                     <span>{progress}%</span>
                   </div>

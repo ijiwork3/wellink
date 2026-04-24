@@ -268,9 +268,9 @@ export default function AdPerformance() {
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold text-gray-900">캠페인별 성과</h3>
-            <p className="text-[11px] text-gray-400 mt-0.5">Meta 광고 관리자 기준 캠페인</p>
+            <p className="text-xs text-gray-400 mt-0.5">Meta 광고 관리자 기준 캠페인</p>
           </div>
-          <div className="flex items-center gap-3 text-[10px] text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-gray-400">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
           </div>
@@ -291,7 +291,7 @@ export default function AdPerformance() {
                   <tr key={c.name} className="border-b border-gray-50 last:border-0 hover:bg-gray-50">
                     <td className="py-3.5 px-4 text-sm font-medium text-gray-900 max-w-[180px] truncate" title={c.name}>{c.name}</td>
                     <td className="py-3.5 px-4">
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <StatusBadge status={c.status} dot={false} />
@@ -323,19 +323,19 @@ export default function AdPerformance() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h3 className="text-sm font-semibold text-gray-900">소재 유형별 성과</h3>
-          <p className="text-[11px] text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
+          <p className="text-xs text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
         </div>
         <div className="p-5 space-y-4">
           {adFormatPerf.map(f => (
             <div key={f.format} className="flex items-center gap-4">
               <div className="w-24 shrink-0">
                 <span className="text-xs font-medium text-gray-700">{f.format}</span>
-                <p className="text-[10px] text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
+                <p className="text-xs text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-400">노출 {fmtNumber(f.impressions)}</span>
-                  <span className={`text-[11px] font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
+                  <span className="text-xs text-gray-400">노출 {fmtNumber(f.impressions)}</span>
+                  <span className={`text-xs font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div

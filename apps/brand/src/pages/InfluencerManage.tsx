@@ -213,8 +213,8 @@ export default function InfluencerManage() {
     return (
       <div className="space-y-5 animate-pulse">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">인플루언서 관리</h1>
-          <p className="text-sm text-gray-500 mt-0.5">관심 인플루언서를 그룹별로 관리하세요.</p>
+          <h1 className={`${isMobile ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
+          <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {[60, 52, 80, 72].map((w, i) => (
@@ -292,8 +292,8 @@ export default function InfluencerManage() {
       {/* 상단 헤더 + 탭 (sticky) */}
       <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">인플루언서 관리</h1>
-          <p className="text-sm text-gray-500 mt-0.5">관심 인플루언서를 그룹별로 관리하세요.</p>
+          <h1 className={`${isMobile ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
+          <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
 
       {/* 그룹 탭 + 공통 정렬 */}
@@ -302,7 +302,7 @@ export default function InfluencerManage() {
         {tabs.map(tab => (
           <div
             key={tab}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm transition-all duration-150 ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full ${isMobile ? 'text-xs' : 'text-sm'} transition-all duration-150 ${
               activeTab === tab
                 ? 'bg-brand-green text-white font-medium'
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
@@ -397,12 +397,12 @@ export default function InfluencerManage() {
                     <div className="flex items-center gap-1.5 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate min-w-0">{inf.name}</p>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
-                        <span className="shrink-0 text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
+                        <span className="shrink-0 text-xs font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
                       )}
                     </div>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
-                        <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
+                        <span key={c} className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
                       ))}
                     </div>
                   </div>
@@ -742,8 +742,8 @@ export default function InfluencerManage() {
                     {/* 1행: 이름 + 상태 배지들 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
                       <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
-                      <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
-                      <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
                         aria-label="닫기"
@@ -760,14 +760,14 @@ export default function InfluencerManage() {
                       </span>
                       <button
                         onClick={() => showToast('인스타그램으로 이동합니다.', 'info')}
-                        className="flex items-center gap-0.5 text-[11px] text-brand-green hover:underline"
+                        className="flex items-center gap-0.5 text-xs text-brand-green hover:underline"
                       >
                         <ExternalLink size={11} aria-hidden="true" />
                         인스타 바로가기
                       </button>
                     </div>
                     {/* 3행: 바이오(인스타 소개글) */}
-                    <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
+                    <p className="text-xs text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
                   </div>
                 </div>
                 <div role="tablist" className="flex border-b border-gray-100 -mx-6 px-6">
@@ -791,7 +791,7 @@ export default function InfluencerManage() {
                   {/* 카테고리 태그 */}
                   <div className="flex gap-1.5 flex-wrap mb-3">
                     {inf.category.map(c => (
-                      <span key={c} className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
+                      <span key={c} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
                     ))}
                   </div>
                   <div className="grid grid-cols-3 gap-2.5">
@@ -804,7 +804,7 @@ export default function InfluencerManage() {
                       ['Fit Score', null, ''],
                     ].map(([label, value, cls]) => (
                       <div key={label} className="bg-gray-50 rounded-lg p-2.5">
-                        <div className="text-[11px] text-gray-400 mb-1">{label}</div>
+                        <div className="text-xs text-gray-400 mb-1">{label}</div>
                         {label === 'Fit Score'
                           ? <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}>{inf.fitScore}</span>
                           : <div className={`text-sm font-semibold ${cls}`}>{value}</div>
@@ -829,7 +829,7 @@ export default function InfluencerManage() {
                         ['릴스 평균 참여율', `${avgReelsEng}%`],
                       ].map(([label, value]) => (
                         <div key={label}>
-                          <p className="text-[11px] text-gray-400">{label}</p>
+                          <p className="text-xs text-gray-400">{label}</p>
                           <p className="text-sm font-semibold text-gray-900">{value}</p>
                         </div>
                       ))}
@@ -869,7 +869,7 @@ export default function InfluencerManage() {
                         })()}
                         <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-gray-700" fontSize="12" fontWeight="bold">{totalContent}</text>
                       </svg>
-                      <div className="space-y-1.5 text-[11px]">
+                      <div className="space-y-1.5 text-xs">
                         <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-400 shrink-0" />피드 {feedCount}개 ({Math.round(feedCount/totalContent*100)}%)</div>
                         <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />릴스 {reelsCount}개 ({Math.round(reelsCount/totalContent*100)}%)</div>
                         <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />이미지 {imgCount}개 ({Math.round(imgCount/totalContent*100)}%)</div>
@@ -898,11 +898,11 @@ export default function InfluencerManage() {
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
                           <p className="text-xs font-semibold text-gray-500">최근 콘텐츠 캡션 워드클라우드</p>
-                          <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-[9px] flex items-center justify-center cursor-default" title="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">i</span>
+                          <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center cursor-default" title="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">i</span>
                         </div>
-                        <span className="text-[10px] text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
+                        <span className="text-xs text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
                       </div>
-                      <p className="text-[10px] text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
+                      <p className="text-xs text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1.5 leading-snug">
                         {wordPool.map(({ word, weight }, i) => (
                           <span key={word} className={`${sizes[Math.min(5 - weight, 4)]} ${colors[i % colors.length]}`}>{word}</span>
@@ -917,11 +917,11 @@ export default function InfluencerManage() {
                   <div className="flex items-center gap-1.5 mb-3">
                     <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
                     <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
-                    <span className="text-[10px] font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
+                    <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
                   </div>
                   <div className={`grid gap-2.5 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-3'}`}>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2"><Target size={12} className="text-gray-400" /><span className="text-[11px] font-semibold text-gray-600">브랜드 핏 스코어</span></div>
+                      <div className="flex items-center gap-1.5 mb-2"><Target size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">브랜드 핏 스코어</span></div>
                       <div className="flex items-end gap-1 mb-1.5">
                         <span className={`text-2xl font-bold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
                         <span className="text-xs text-gray-400 mb-1">/100</span>
@@ -929,17 +929,17 @@ export default function InfluencerManage() {
                       <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
                         <div className={`h-full rounded-full ${inf.fitScore >= 85 ? 'bg-green-500' : inf.fitScore >= 70 ? 'bg-amber-400' : 'bg-gray-400'}`} style={{ width: `${inf.fitScore}%` }} />
                       </div>
-                      <p className="text-[10px] text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
+                      <p className="text-xs text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
                     </div>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2"><TrendingUp size={12} className="text-gray-400" /><span className="text-[11px] font-semibold text-gray-600">추천 캠페인</span></div>
+                      <div className="flex items-center gap-1.5 mb-2"><TrendingUp size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">추천 캠페인</span></div>
                       <p className="text-xs font-bold text-gray-900 mb-1.5">{getRecommendedCampaignType(inf.fitScore)}</p>
-                      <p className="text-[10px] text-gray-500 leading-snug">평균 대비 <span className="font-semibold text-gray-700">{inf.fitScore >= 85 ? '2.3배' : inf.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율</p>
+                      <p className="text-xs text-gray-500 leading-snug">평균 대비 <span className="font-semibold text-gray-700">{inf.fitScore >= 85 ? '2.3배' : inf.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율</p>
                     </div>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-[11px] font-semibold text-gray-600">협업 팁</span></div>
-                      <p className="text-[10px] text-gray-600 leading-snug">{inf.authentic >= 60 ? '월·목 오전 포스팅이 최고 도달률' : '스토리 연동 세트 콘텐츠 효과적'}</p>
-                      <p className="text-[10px] text-gray-400 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
+                      <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">협업 팁</span></div>
+                      <p className="text-xs text-gray-600 leading-snug">{inf.authentic >= 60 ? '월·목 오전 포스팅이 최고 도달률' : '스토리 연동 세트 콘텐츠 효과적'}</p>
+                      <p className="text-xs text-gray-400 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
                     </div>
                   </div>
                 </div>
@@ -969,7 +969,7 @@ export default function InfluencerManage() {
                     <div className="flex gap-1">
                       {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
                         <button key={val} onClick={() => setContentSort(val)}
-                          className={`text-[11px] px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
+                          className={`text-xs px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
                           {label}
                         </button>
                       ))}
@@ -977,7 +977,7 @@ export default function InfluencerManage() {
                   </div>
 
                   {/* 통계 */}
-                  <div className="flex gap-3 text-[11px] text-gray-400 mb-3">
+                  <div className="flex gap-3 text-xs text-gray-400 mb-3">
                     {isFeed ? (
                       <>
                         <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span>
@@ -997,11 +997,11 @@ export default function InfluencerManage() {
                       <div key={i} className="rounded-xl overflow-hidden border border-gray-100 cursor-default" onClick={() => showToast('콘텐츠 상세는 준비 중이에요.', 'info')}>
                         <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
                           <Image size={18} className="text-white/50" aria-hidden="true" />
-                          {!isFeed && <span className="absolute top-1.5 right-1.5 text-[9px] bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
+                          {!isFeed && <span className="absolute top-1.5 right-1.5 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
                         </div>
                         <div className="px-2 py-1.5 bg-white flex gap-2">
-                          <span className="flex items-center gap-0.5 text-[10px] text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
-                          <span className="flex items-center gap-0.5 text-[10px] text-gray-400"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
+                          <span className="flex items-center gap-0.5 text-xs text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
+                          <span className="flex items-center gap-0.5 text-xs text-gray-400"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
                         </div>
                       </div>
                     ))}

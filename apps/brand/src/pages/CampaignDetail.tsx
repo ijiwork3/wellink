@@ -7,6 +7,7 @@ import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 /* ─── 더미 데이터 ─── */
 const campaignsData: Record<string, {
@@ -350,6 +351,8 @@ export default function CampaignDetail() {
   // 콘텐츠 순위 (좋아요 순)
   const rankedContents = [...registeredContents].sort((a, b) => b.likes - a.likes)
 
+  const device = useDeviceMode()
+  const isPhone = device === 'phone'
   const isClosed = qa === 'campaign-closed'
 
   return (
@@ -365,7 +368,7 @@ export default function CampaignDetail() {
         </button>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-gray-900">{campaign.name}</h1>
+            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>{campaign.name}</h1>
             <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>
               {campaignStatus.label}
             </span>
@@ -390,7 +393,7 @@ export default function CampaignDetail() {
               key={tab}
               onClick={() => { if (!isDisabled) { setActiveTab(tab); setCheckedApplicants(new Set()) } }}
               disabled={isDisabled}
-              className={`whitespace-nowrap px-4 py-2.5 text-sm border-b-2 transition-all duration-150 ${
+              className={`whitespace-nowrap px-4 py-2.5 ${isPhone ? 'text-xs' : 'text-sm'} border-b-2 transition-all duration-150 ${
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
                   : activeTab === tab
@@ -691,7 +694,7 @@ export default function CampaignDetail() {
                   }`}
                 >
                   {f}
-                  <span className={`text-[10px] font-bold px-1 rounded-full ${
+                  <span className={`text-xs font-bold px-1 rounded-full ${
                     contentFilter === f ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
                   }`}>
                     {counts[f]}
@@ -740,7 +743,7 @@ export default function CampaignDetail() {
                           {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
                         </div>
                         {/* 유형 배지 */}
-                        <span className={`absolute top-3 right-3 text-[11px] px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                           {c.type}
                         </span>
                         {/* 바이럴 점수 */}
@@ -761,16 +764,16 @@ export default function CampaignDetail() {
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
-                              <p className="text-[11px] text-gray-400 truncate">{c.instagramId}</p>
+                              <p className="text-xs text-gray-400 truncate">{c.instagramId}</p>
                             </div>
                           </div>
-                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
                             {status}
                           </span>
                         </div>
 
                         {/* 제출일 */}
-                        <p className="text-[11px] text-gray-400">제출일 {c.submittedAt}</p>
+                        <p className="text-xs text-gray-400">제출일 {c.submittedAt}</p>
 
                         {/* 지표 3×2 */}
                         <div className="grid grid-cols-3 gap-y-2 text-center border-t border-gray-50 pt-3">
@@ -783,7 +786,7 @@ export default function CampaignDetail() {
                             { label: '참여율', value: `${engRate}%`, highlight: true },
                           ].map(m => (
                             <div key={m.label}>
-                              <p className="text-[10px] text-gray-400 mb-0.5">{m.label}</p>
+                              <p className="text-xs text-gray-400 mb-0.5">{m.label}</p>
                               <p className={`text-xs font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
                             </div>
                           ))}
@@ -813,7 +816,7 @@ export default function CampaignDetail() {
                         {status === '반려' && (
                           <div className="flex items-center gap-1.5 bg-red-50 rounded-xl px-3 py-2">
                             <X size={12} className="text-red-400 shrink-0" aria-hidden="true" />
-                            <p className="text-[11px] text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
+                            <p className="text-xs text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
                           </div>
                         )}
                       </div>
@@ -848,7 +851,7 @@ export default function CampaignDetail() {
                     <Icon size={14} className="text-gray-400" aria-hidden="true" />
                     <span className="text-xs text-gray-500 font-medium">{k.label}</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{k.value}</div>
+                  <div className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>{k.value}</div>
                 </div>
               )
             })}
@@ -889,20 +892,20 @@ export default function CampaignDetail() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
-                          <p className="text-[11px] text-gray-500">{c.type}</p>
+                          <p className="text-xs text-gray-500">{c.type}</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div>
-                          <p className="text-[10px] text-gray-400">도달</p>
+                          <p className="text-xs text-gray-400">도달</p>
                           <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-400">좋아요</p>
+                          <p className="text-xs text-gray-400">좋아요</p>
                           <p className="text-xs font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-gray-400">공유</p>
+                          <p className="text-xs text-gray-400">공유</p>
                           <p className="text-xs font-bold text-gray-800">{fmtNumber(c.shares)}</p>
                         </div>
                       </div>
@@ -923,7 +926,7 @@ export default function CampaignDetail() {
                 return (
                   <g key={r}>
                     <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
-                    <text x={padL - 8} y={y + 4} textAnchor="end" className="text-[10px] fill-gray-400">{val}</text>
+                    <text x={padL - 8} y={y + 4} textAnchor="end" className="text-xs fill-gray-400">{val}</text>
                   </g>
                 )
               })}
@@ -934,8 +937,8 @@ export default function CampaignDetail() {
                 <g key={i}>
                   <circle cx={p.x} cy={p.y} r={4} fill="var(--color-brand-green)" />
                   <circle cx={p.x} cy={p.y} r={6} fill="var(--color-brand-green)" fillOpacity={0.2} />
-                  <text x={p.x} y={chartH - 8} textAnchor="middle" className="text-[10px] fill-gray-500">{p.name}</text>
-                  <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[10px] fill-gray-700 font-medium">{p.likes}</text>
+                  <text x={p.x} y={chartH - 8} textAnchor="middle" className="text-xs fill-gray-500">{p.name}</text>
+                  <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-xs fill-gray-700 font-medium">{p.likes}</text>
                 </g>
               ))}
             </svg>

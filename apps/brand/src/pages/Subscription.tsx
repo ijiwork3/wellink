@@ -254,7 +254,7 @@ export default function Subscription() {
       {qa === 'plan-free' && (
         <div className="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
           <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center shrink-0 mt-0.5">
-            <span className="text-white text-[10px] font-bold">i</span>
+            <span className="text-white text-xs font-bold">i</span>
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900">현재 무료 플랜을 이용 중입니다</p>
@@ -437,7 +437,7 @@ export default function Subscription() {
         ) : (
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
             <div className="w-10 h-7 bg-gray-800 rounded-md flex items-center justify-center shrink-0">
-              <span className="text-white text-[10px] font-bold">VISA</span>
+              <span className="text-white text-xs font-bold">VISA</span>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">****-****-****-1234</p>

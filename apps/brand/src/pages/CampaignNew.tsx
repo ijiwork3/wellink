@@ -246,7 +246,7 @@ export default function CampaignNew() {
                 }`}>
                   {isDone ? <Check size={14} aria-hidden="true" /> : num}
                 </div>
-                <span className={`text-[10px] whitespace-nowrap transition-colors duration-150 ${
+                <span className={`text-xs whitespace-nowrap transition-colors duration-150 ${
                   isActive
                     ? 'block text-gray-900 font-semibold'
                     : isDone

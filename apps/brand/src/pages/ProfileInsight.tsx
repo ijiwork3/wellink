@@ -147,7 +147,7 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
           <div key={label} className="flex-1 flex flex-col items-center min-w-0" style={{ gap: isDense ? '1px' : '4px' }}>
             {/* 값 레이블 — 밀집 모드에서는 숨김 */}
             {!isDense && (
-              <span className={`text-[10px] ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{displayVal}</span>
+              <span className={`text-xs ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{displayVal}</span>
             )}
             <div
               title={`${label}: ${displayVal}`}
@@ -156,7 +156,7 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
             />
             {/* x축 라벨 — 밀집 모드는 showLabel인 것만 */}
             <span
-              className={`text-[9px] ${isNull ? 'text-gray-300' : 'text-gray-400'} truncate w-full text-center`}
+              className={`text-xs ${isNull ? 'text-gray-300' : 'text-gray-400'} truncate w-full text-center`}
               style={{ visibility: doShowLabel ? 'visible' : 'hidden' }}
             >
               {label}
@@ -562,12 +562,12 @@ export default function ProfileInsight() {
           </div>
           <FollowerBarChart data={followerData} />
           {nullCount > 0 && (
-            <p className="text-[10px] text-gray-300 mt-2">
+            <p className="text-xs text-gray-300 mt-2">
               회색 점선 바: 해당 기간 데이터 없음
             </p>
           )}
           {period === '연간' && (
-            <p className="text-[10px] text-gray-400 mt-2">
+            <p className="text-xs text-gray-400 mt-2">
               * 2026년은 1~4월 기준
             </p>
           )}

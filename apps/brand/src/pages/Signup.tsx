@@ -94,7 +94,7 @@ export default function Signup() {
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
             <h1 className="text-2xl font-black text-brand-green">WELLINK</h1>
-            <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
+            <span className="text-xs font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
           </div>
           <p className="text-sm text-gray-500">광고주 포털 회원가입</p>
         </div>

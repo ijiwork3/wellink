@@ -567,14 +567,14 @@ export default function InfluencerList() {
                   <div className="flex items-center gap-1.5 mb-3">
                     <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
                     <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
-                    <span className="text-[10px] font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
+                    <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
                   </div>
                   <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2.5">
                     {/* 카드 1: 핏 스코어 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Target size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-[11px] font-semibold text-gray-600">브랜드 핏 스코어</span>
+                        <span className="text-xs font-semibold text-gray-600">브랜드 핏 스코어</span>
                       </div>
                       <div className="flex items-end gap-1 mb-1.5">
                         <span className={`text-2xl font-bold ${getFitScoreColor(selectedInfluencer.fitScore)}`}>
@@ -588,19 +588,19 @@ export default function InfluencerList() {
                           style={{ width: `${selectedInfluencer.fitScore}%` }}
                         />
                       </div>
-                      <p className="text-[10px] text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
+                      <p className="text-xs text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
                     </div>
 
                     {/* 카드 2: 추천 캠페인 타입 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
                         <TrendingUp size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-[11px] font-semibold text-gray-600">추천 캠페인</span>
+                        <span className="text-xs font-semibold text-gray-600">추천 캠페인</span>
                       </div>
                       <p className="text-xs font-bold text-gray-900 mb-1.5">
                         {getRecommendedCampaignType(selectedInfluencer.fitScore)}
                       </p>
-                      <p className="text-[10px] text-gray-500 leading-snug">
+                      <p className="text-xs text-gray-500 leading-snug">
                         평균 대비 <span className="font-semibold text-gray-700">{selectedInfluencer.fitScore >= 85 ? '2.3배' : selectedInfluencer.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율
                       </p>
                     </div>
@@ -609,14 +609,14 @@ export default function InfluencerList() {
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Lightbulb size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-[11px] font-semibold text-gray-600">협업 팁</span>
+                        <span className="text-xs font-semibold text-gray-600">협업 팁</span>
                       </div>
-                      <p className="text-[10px] text-gray-600 leading-snug">
+                      <p className="text-xs text-gray-600 leading-snug">
                         {selectedInfluencer.authentic >= 60
                           ? '월·목 오전 포스팅이 최고 도달률'
                           : '스토리 연동 세트 콘텐츠 효과적'}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-1.5">
+                      <p className="text-xs text-gray-400 mt-1.5">
                         주 {selectedInfluencer.authentic >= 60 ? '3' : '2'}회 업로드 패턴
                       </p>
                     </div>
@@ -653,15 +653,15 @@ export default function InfluencerList() {
                     >
                       <div className={`aspect-square bg-gradient-to-br ${c.bg} flex items-center justify-center relative`}>
                         <Image size={20} className="text-white/60" aria-hidden="true" />
-                        <span className="absolute top-2 right-2 text-[10px] bg-white/80 text-gray-700 px-1.5 py-0.5 rounded-full font-medium">
+                        <span className="absolute top-2 right-2 text-xs bg-white/80 text-gray-700 px-1.5 py-0.5 rounded-full font-medium">
                           {c.type}
                         </span>
                       </div>
                       <div className="px-2.5 py-2 bg-white flex items-center gap-2.5">
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
                           <Heart size={10} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}
                         </span>
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
                           <MessageCircle size={10} className="text-gray-400" aria-hidden="true" />{c.comments}
                         </span>
                       </div>

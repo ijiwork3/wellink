@@ -10,6 +10,7 @@ import { ErrorState } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 
 /* ── KPI 데이터 ── */
@@ -162,7 +163,7 @@ export default function Dashboard() {
             { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
           ].map(s => (
             <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
-              <span className="text-[11px] font-bold text-brand-green">Step {s.step}</span>
+              <span className="text-xs font-bold text-brand-green">Step {s.step}</span>
               <p className="text-sm font-semibold text-gray-900 mt-1">{s.title}</p>
               <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
             </div>
@@ -213,7 +214,7 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
+            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-sm text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
           <button
@@ -270,6 +271,8 @@ export default function Dashboard() {
   const now = new Date()
   const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
 
+  const device = useDeviceMode()
+  const isPhone = device === 'phone'
   const isPlanLocked = qa === 'plan-locked'
 
   return (
@@ -290,7 +293,7 @@ export default function Dashboard() {
       {/* ── 인사말 + 날짜 ── */}
       <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
+          <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
           <p className="text-sm text-gray-500 mt-0.5">{dateStr}</p>
         </div>
         <button
@@ -329,7 +332,7 @@ export default function Dashboard() {
                 <span className="text-gray-400">{kpi.icon}</span>
               </div>
               <div>
-                <div className="text-[28px] font-bold text-gray-900 leading-tight">{kpi.value}</div>
+                <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
                 <div className="text-xs text-gray-500 mt-1">{kpi.sub}</div>
               </div>
               <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
@@ -393,7 +396,7 @@ export default function Dashboard() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
-                        <span className={`text-[11px] ${ddayBadgeStyle}`}>
+                        <span className={`text-xs ${ddayBadgeStyle}`}>
                           {ddayLabel}
                         </span>
                       </div>
@@ -422,7 +425,7 @@ export default function Dashboard() {
               <h2 className="text-sm font-semibold text-gray-900">최근 알림</h2>
               {unreadCount > 0 && (
                 <span
-                  className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
+                  className="text-xs font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
                 >
                   {unreadCount}
                 </span>
@@ -443,7 +446,7 @@ export default function Dashboard() {
                     <p className={`text-xs leading-relaxed ${n.unread ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
                       {n.text}
                     </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">{n.time}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
                   </div>
                 </div>
               </button>
@@ -503,13 +506,13 @@ export default function Dashboard() {
                     <span className="text-xs text-gray-500 font-medium">{item.label}</span>
                   </div>
                   <span
-                    className={`text-[11px] font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
+                    className={`text-xs font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
                   >
                     {fmtRate(item.change)}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-bold text-gray-900">{fmtNumber(item.value)}</span>
+                  <span className={`${isPhone ? 'text-sm' : 'text-lg'} font-bold text-gray-900`}>{fmtNumber(item.value)}</span>
                   <Sparkline data={item.sparkline} color={lineColor} />
                 </div>
               </div>
