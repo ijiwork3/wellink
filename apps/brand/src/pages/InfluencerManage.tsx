@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, BottomSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -437,39 +437,49 @@ export default function InfluencerManage() {
                     2) 콘텐츠 0장 → 안내 메시지 오버레이
                     3) 1~2장 → 빈 슬롯은 점선 placeholder
                     4) 3장 → 모두 렌더 */}
-                <div className="grid grid-cols-3 gap-1.5 mb-3 relative">
-                  {/* 그리드 공간 확보 (3장 placeholder) — 비공개/없음 시 비주얼 */}
-                  {Array.from({ length: 3 }).map((_, i) => {
-                    const thumb = !inf.isPrivate && inf.recentThumbnails[i]
-                    if (thumb) {
-                      return (
-                        <div
-                          key={i}
-                          className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-                          aria-label={`최근 피드 ${i + 1}`}
-                        >
-                          {/* TODO: BE 연동 시 <img src={thumb} /> 로 교체 */}
-                          <Image size={18} className="text-gray-300" aria-hidden="true" />
-                        </div>
-                      )
-                    }
-                    // 비공개·콘텐츠 0장은 전체 영역에 옅은 회색 단일 배경 느낌
-                    if (inf.isPrivate || inf.recentThumbnails.length === 0) {
-                      return <div key={i} className="aspect-square rounded-lg bg-gray-50" aria-hidden="true" />
-                    }
-                    // 1~2장 케이스의 빈 슬롯
-                    return <div key={i} className="aspect-square rounded-lg border border-dashed border-gray-200" aria-label="빈 슬롯" />
-                  })}
-                  {/* 안내 메시지 오버레이 (비공개/콘텐츠 없음만) */}
-                  {(inf.isPrivate || inf.recentThumbnails.length === 0) && (
-                    <div className="absolute inset-0 flex items-center justify-center gap-1.5 pointer-events-none">
-                      <Image size={14} className="text-gray-300" aria-hidden="true" />
-                      <span className="text-xs text-gray-400">
-                        {inf.isPrivate ? '비공개 계정' : '최근 콘텐츠 없음'}
-                      </span>
-                    </div>
-                  )}
-                </div>
+                {/* 비공개·콘텐츠 없음은 단일 박스로 명확히 구분 (높이는 3-그리드와 동일: aspect-[3/1]) */}
+                {inf.isPrivate || inf.recentThumbnails.length === 0 ? (
+                  <div
+                    className={`mb-3 aspect-[3/1] rounded-lg flex flex-col items-center justify-center gap-1.5 border ${
+                      inf.isPrivate
+                        ? 'bg-gray-50 border-gray-200'
+                        : 'bg-amber-50/60 border-dashed border-amber-200'
+                    }`}
+                    role="status"
+                  >
+                    {inf.isPrivate ? (
+                      <>
+                        <Lock size={18} className="text-gray-400" aria-hidden="true" />
+                        <span className="text-xs font-medium text-gray-500">비공개 계정 — 피드 미공개</span>
+                      </>
+                    ) : (
+                      <>
+                        <Image size={18} className="text-amber-400" aria-hidden="true" />
+                        <span className="text-xs font-medium text-amber-700">최근 콘텐츠 없음</span>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-1.5 mb-3">
+                    {Array.from({ length: 3 }).map((_, i) => {
+                      const thumb = inf.recentThumbnails[i]
+                      if (thumb) {
+                        return (
+                          <div
+                            key={i}
+                            className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                            aria-label={`최근 피드 ${i + 1}`}
+                          >
+                            {/* TODO: BE 연동 시 <img src={thumb} /> 로 교체 */}
+                            <Image size={18} className="text-gray-300" aria-hidden="true" />
+                          </div>
+                        )
+                      }
+                      // 1~2장 케이스의 빈 슬롯
+                      return <div key={i} className="aspect-square rounded-lg border border-dashed border-gray-200" aria-label="빈 슬롯" />
+                    })}
+                  </div>
+                )}
 
                 {/* 그룹 태그 + 그룹에 추가 */}
                 <div className="flex items-center gap-1.5 flex-wrap" onClick={e => e.stopPropagation()}>
@@ -520,41 +530,59 @@ export default function InfluencerManage() {
             ))}
           </div>
 
-          {/* 페이지네이션 — InfluencerList와 동일 패턴 (페이지 정책 통일) */}
-          {totalPages > 1 && (
-            <nav aria-label="페이지 네비게이션" className="flex items-center justify-center gap-1.5 pt-4 pb-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                aria-label="이전 페이지"
-                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft size={14} aria-hidden="true" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+          {/* 페이지네이션 — 모바일 대응: 윈도우(±1) + 첫/끝 + 생략(...) */}
+          {totalPages > 1 && (() => {
+            // 모바일: 양옆 1개씩 / 데스크톱: 양옆 2개씩
+            const window = isMobile ? 1 : 2
+            const pages: (number | 'ellipsis')[] = []
+            const add = (n: number | 'ellipsis') => pages.push(n)
+            const start = Math.max(2, page - window)
+            const end = Math.min(totalPages - 1, page + window)
+            add(1)
+            if (start > 2) add('ellipsis')
+            for (let p = start; p <= end; p++) add(p)
+            if (end < totalPages - 1) add('ellipsis')
+            if (totalPages > 1) add(totalPages)
+            return (
+              <nav aria-label="페이지 네비게이션" className="flex items-center justify-center gap-1 sm:gap-1.5 pt-4 pb-2 flex-wrap">
                 <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  aria-current={page === p ? 'page' : undefined}
-                  className={`min-w-[32px] h-8 px-2 rounded-lg text-sm transition-colors ${
-                    page === p
-                      ? 'bg-brand-green text-white font-medium'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  aria-label="이전 페이지"
+                  className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  {p}
+                  <ChevronLeft size={14} aria-hidden="true" />
                 </button>
-              ))}
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                aria-label="다음 페이지"
-                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight size={14} aria-hidden="true" />
-              </button>
-            </nav>
-          )}
+                {pages.map((p, idx) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e-${idx}`} className="min-w-[24px] text-center text-xs text-gray-400 select-none">…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      aria-current={page === p ? 'page' : undefined}
+                      aria-label={`${p}페이지`}
+                      className={`min-w-[32px] h-8 px-2 rounded-lg text-sm transition-colors ${
+                        page === p
+                          ? 'bg-brand-green text-white font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  aria-label="다음 페이지"
+                  className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight size={14} aria-hidden="true" />
+                </button>
+              </nav>
+            )
+          })()}
           <p className="text-center text-xs text-gray-400 pb-4">
             총 {filteredInfluencers.length}명 · {page} / {totalPages} 페이지
           </p>
