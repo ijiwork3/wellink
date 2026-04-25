@@ -5,61 +5,21 @@ import {
   ArrowRight, Download, Search, Image,
 } from 'lucide-react'
 
-// ─── 5단계 컬러 스펙 ─────────────────────────────────────────────
+// ─── 10단계 컬러 스펙 ────────────────────────────────────────────
 // 구조·레이아웃·배지 모양 완전 고정
 // 동적 색상은 inline style로 처리 (Tailwind JIT는 동적 클래스명 미지원)
 // 1단계 = 실제 어드민 현재 색상 그대로
 const STAGES = [
-  {
-    n: 1,
-    green:          '#8CC63F',  // brand-green
-    greenLight:     '#f0f9e8',  // brand-green-bg
-    badgeActiveBg:  '#d1fae5',  // emerald-100
-    badgeActiveText:'#065f46',  // emerald-800
-    badgePendingBg: '#fef3c7',  // amber-100
-    badgePendingText:'#92400e', // amber-800
-    barB: '#3B82F6', barC: '#F59E0B',
-  },
-  {
-    n: 2,
-    green:          '#7DC42E',
-    greenLight:     '#e5f5d0',
-    badgeActiveBg:  '#a7f3d0',  // emerald-200
-    badgeActiveText:'#065f46',
-    badgePendingBg: '#fde68a',  // amber-200
-    badgePendingText:'#92400e',
-    barB: '#3B82F6', barC: '#F59E0B',
-  },
-  {
-    n: 3,
-    green:          '#65A30D',  // lime-700
-    greenLight:     '#ecfccb',
-    badgeActiveBg:  '#6ee7b7',  // emerald-300
-    badgeActiveText:'#064e3b',
-    badgePendingBg: '#fcd34d',  // amber-300
-    badgePendingText:'#78350f',
-    barB: '#2563EB', barC: '#F97316',
-  },
-  {
-    n: 4,
-    green:          '#84CC16',  // lime-500
-    greenLight:     '#f7fee7',
-    badgeActiveBg:  '#34d399',  // emerald-400
-    badgeActiveText:'#022c22',
-    badgePendingBg: '#fbbf24',  // amber-400
-    badgePendingText:'#451a03',
-    barB: '#2563EB', barC: '#F97316',
-  },
-  {
-    n: 5,
-    green:          '#A3E635',  // lime-400 MAX
-    greenLight:     '#f7fee7',
-    badgeActiveBg:  '#10b981',  // emerald-500
-    badgeActiveText:'#ffffff',
-    badgePendingBg: '#f59e0b',  // amber-500
-    badgePendingText:'#ffffff',
-    barB: '#1D4ED8', barC: '#EA580C',
-  },
+  { n:  1, green:'#8CC63F', greenLight:'#f0f9e8', badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
+  { n:  2, green:'#88C43A', greenLight:'#eef8e0', badgeActiveBg:'#c6f6d8', badgeActiveText:'#065f46', badgePendingBg:'#fef08a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
+  { n:  3, green:'#82C132', greenLight:'#e8f5d4', badgeActiveBg:'#bbf7d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#FBBF24' },
+  { n:  4, green:'#7BBD28', greenLight:'#e0f0c4', badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde047', badgePendingText:'#78350f', barB:'#2563EB', barC:'#FBBF24' },
+  { n:  5, green:'#74B81E', greenLight:'#d8ebbc', badgeActiveBg:'#86efac', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#2563EB', barC:'#F97316' },
+  { n:  6, green:'#6DB214', greenLight:'#d0e6b0', badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#451a03', barB:'#2563EB', barC:'#F97316' },
+  { n:  7, green:'#78C212', greenLight:'#ecfccb', badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fb923c', badgePendingText:'#431407', barB:'#1D4ED8', barC:'#EA580C' },
+  { n:  8, green:'#84CC16', greenLight:'#f7fee7', badgeActiveBg:'#34d399', badgeActiveText:'#022c22', badgePendingBg:'#f97316', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#EA580C' },
+  { n:  9, green:'#95D81A', greenLight:'#f7fee7', badgeActiveBg:'#10b981', badgeActiveText:'#ffffff', badgePendingBg:'#f59e0b', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#DC2626' },
+  { n: 10, green:'#A3E635', greenLight:'#f7fee7', badgeActiveBg:'#059669', badgeActiveText:'#ffffff', badgePendingBg:'#d97706', badgePendingText:'#ffffff', barB:'#1E40AF', barC:'#DC2626' },
 ]
 type S = typeof STAGES[0]
 
@@ -550,13 +510,13 @@ export default function Moodboard() {
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-4">
         <span className="text-xs text-gray-400 font-medium shrink-0">단계</span>
         <input
-          type="range" min={0} max={4} value={idx}
+          type="range" min={0} max={9} value={idx}
           onChange={e => setIdx(Number(e.target.value))}
           className="flex-1 max-w-xs cursor-pointer"
           style={{ accentColor: s.green }}
         />
-        <span className="text-sm font-bold text-gray-900 w-4 shrink-0">{idx + 1}</span>
-        <span className="text-xs text-gray-400 shrink-0">/ 5</span>
+        <span className="text-sm font-bold text-gray-900 w-5 shrink-0">{idx + 1}</span>
+        <span className="text-xs text-gray-400 shrink-0">/ 10</span>
         <div className="flex items-center gap-1.5 ml-4">
           <div className="w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: s.green }}/>
           <span className="text-xs text-gray-500 font-mono">{s.green}</span>
