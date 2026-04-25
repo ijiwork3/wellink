@@ -19,19 +19,20 @@ const PRIMARY = [
   { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
 ]
 
-// ─── 세컨더리 10단계 (텍스트 전용 — 모두 WCAG AA ≥4.5:1) ────────
-// lime-dark(#4d7c0f, 6.6:1) → green-dark(#15803d, 4.6:1) → emerald-dark(#065f46, >10:1)
+// ─── 딥 10단계 (텍스트 전용 — 모두 WCAG AA ≥4.5:1) ──────────────
+// 1단계: warm lime-dark(#4d7c0f) → 5단계: pure green-dark → 10단계: deep cool emerald(#022c22)
+// 허: 황-초록(80°) → 순수초록(145°) → 쿨에메랄드(160°) / 명도도 점점 어두워짐
 const SECONDARY = [
-  { n:  1, color:'#4d7c0f' },  // lime-700   warm olive-dark
-  { n:  2, color:'#3d7012' },  // lime-800 family
-  { n:  3, color:'#2d6814' },
-  { n:  4, color:'#1d6118' },
-  { n:  5, color:'#15803d' },  // green-700  pivot (가장 비비드한 AA 통과 그린)
-  { n:  6, color:'#166534' },  // green-800
+  { n:  1, color:'#4d7c0f' },  // lime-700     warm yellow-green (가장 밝은 AA 통과)
+  { n:  2, color:'#3b7a18' },  // lime↔green
+  { n:  3, color:'#267822' },  // shifting to pure green
+  { n:  4, color:'#15802c' },
+  { n:  5, color:'#15803d' },  // green-700    순수 그린 (pivot)
+  { n:  6, color:'#108050' },  // green→emerald
   { n:  7, color:'#047857' },  // emerald-700
   { n:  8, color:'#065f46' },  // emerald-800
-  { n:  9, color:'#14532d' },  // green-900
-  { n: 10, color:'#064e3b' },  // emerald-900
+  { n:  9, color:'#064e3b' },  // emerald-900
+  { n: 10, color:'#022c22' },  // emerald-950  deepest cool
 ]
 
 // ─── 나머지 10단계 ─────────────────────────────────────────────────
@@ -573,9 +574,9 @@ export default function Moodboard() {
           </div>
         </div>
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
-        {/* 세컨더리 */}
+        {/* 딥 */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-gray-700 shrink-0">세컨더리</span>
+          <span className="text-xs font-semibold text-gray-700 shrink-0">딥</span>
           <input type="range" min={0} max={9} value={si} onChange={e => setSi(Number(e.target.value))} className="w-28 cursor-pointer" style={{ accentColor: s.color }}/>
           <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{si + 1}</span>
           <div className="flex items-center gap-1.5">
