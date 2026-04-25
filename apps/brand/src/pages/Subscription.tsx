@@ -87,6 +87,10 @@ export default function Subscription() {
   const [infiniteModal, setInfiniteModal] = useState(false)
   const { showToast } = useToast()
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // 신규 — 해지·환불·해지 예약 (원본 보강)
+  const [cancelStatus, setCancelStatus] = useState<'active' | 'cancel_scheduled'>('active')
+  const [cancelModal, setCancelModal] = useState(false)
+  const [refundModal, setRefundModal] = useState(false)
 
   // QA 파라미터 변경 시 상태 동기화
   useEffect(() => {
@@ -281,6 +285,119 @@ export default function Subscription() {
           </div>
         </div>
       )}
+
+      {/* 현재 구독 정보 + 사용량 + 액션 — 신규, 원본 보강 (구독 중일 때만) */}
+      {displayPlan && !showExpired && !showPaymentFailed && qa !== 'plan-free' && (() => {
+        const cur = plans.find(p => p.id === displayPlan)
+        // 다음 결제일 — 오늘 + 30일
+        const next = new Date()
+        next.setDate(next.getDate() + 14)
+        const nextBillingDate = next.toISOString().slice(0, 10)
+        // 사용량 데이터 — 플랜별 (원본 getDefaultFeatures 동등)
+        const usage = displayPlan === 'focus' ? [
+          { name: '인플루언서 DB 접근', used: 1200, limit: 5000, unit: '명' },
+          { name: 'AI 시뮬레이션', used: 3, limit: 10, unit: '회' },
+          { name: '캠페인 관리', used: 2, limit: 5, unit: '개' },
+        ] : displayPlan === 'scale' ? [
+          { name: '인플루언서 DB 접근', used: 12500, limit: 50000, unit: '명' },
+          { name: 'AI 시뮬레이션', used: 45, limit: 100, unit: '회' },
+          { name: '캠페인 관리', used: 8, limit: 20, unit: '개' },
+        ] : [
+          { name: '인플루언서 DB 접근', used: 28000, limit: 999999, unit: '명' },
+          { name: 'AI 시뮬레이션', used: 92, limit: 999, unit: '회' },
+          { name: '캠페인 관리', used: 24, limit: 999, unit: '개' },
+        ]
+        return (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 @md:p-6 space-y-5">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-green/10 text-brand-green-text px-2.5 py-1 text-xs font-bold">
+                    <Check size={12} aria-hidden="true" /> 현재 이용중
+                  </span>
+                  {cancelStatus === 'cancel_scheduled' && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-700 px-2.5 py-1 text-xs font-bold">
+                      해지 예정
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-xl @md:text-2xl font-bold text-gray-900">{cur?.name} 플랜</h2>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base @md:text-lg font-bold text-gray-900">{cur?.price}</span>
+                  <span className="text-xs text-gray-500">{cur?.unit}</span>
+                </div>
+                {cancelStatus === 'active' ? (
+                  <p className="text-xs text-gray-500 mt-1.5">
+                    다음 결제일은 <span className="font-medium text-gray-900">{fmtDate(nextBillingDate)}</span> 입니다.
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-700 mt-1.5">
+                    해지 예정일 <span className="font-bold">{fmtDate(nextBillingDate)}</span> 까지 이용 가능합니다.
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {cancelStatus === 'cancel_scheduled' ? (
+                  <button
+                    onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
+                    className="text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition-colors"
+                  >해지 예약 취소</button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setCancelModal(true)}
+                      className="text-xs font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                    >해지</button>
+                    <button
+                      onClick={() => setRefundModal(true)}
+                      className="text-xs font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                    >환불 요청</button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* 이번 달 사용량 — 원본 getDefaultFeatures 동등 */}
+            <div className="border-t border-gray-100 pt-4">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-1.5">
+                이번 달 사용량 현황
+                <span className="text-[10px] font-normal text-gray-400">(매월 결제일 초기화)</span>
+              </h3>
+              <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+                {usage.map(f => {
+                  const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
+                  const isOver = f.used >= f.limit
+                  const isWarning = pct > 90 && !isOver
+                  return (
+                    <div key={f.name} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-gray-700">{f.name}</span>
+                        <span className="text-[11px] font-bold text-gray-900">
+                          {f.used.toLocaleString()} / {f.limit >= 999999 ? '∞' : f.limit.toLocaleString()}{f.unit}
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            isOver || isWarning ? 'bg-red-500' : 'bg-brand-green'
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      {isOver && (
+                        <p className="mt-1.5 text-[10px] text-red-500 flex items-center gap-1">
+                          <AlertTriangle size={10} aria-hidden="true" />
+                          한도 초과! 플랜 업그레이드를 검토해 주세요.
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* 플랜 카드 3개 */}
       <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
@@ -577,6 +694,47 @@ export default function Subscription() {
           </div>
         )}
       </Modal>
+
+      {/* 해지 확인 모달 — 신규, 원본 CancelPaymentModal 동등 */}
+      <AlertModal
+        open={cancelModal}
+        onClose={() => setCancelModal(false)}
+        title="구독을 해지하시겠습니까?"
+        confirmLabel="해지하기"
+        cancelLabel="유지"
+        variant="danger"
+        onConfirm={() => {
+          setCancelStatus('cancel_scheduled')
+          setCancelModal(false)
+          showToast('해지가 예약되었습니다. 다음 결제일까지 이용 가능합니다.', 'info')
+        }}
+      >
+        <p className="text-xs text-gray-500">
+          해지하면 <strong className="text-gray-700">다음 결제일까지 계속 이용</strong>한 뒤 자동으로 해지됩니다.
+          그 전까지는 언제든 해지 예약을 취소할 수 있습니다.
+        </p>
+      </AlertModal>
+
+      {/* 환불 요청 모달 — 신규, 원본 동등 (즉시 종료) */}
+      <AlertModal
+        open={refundModal}
+        onClose={() => setRefundModal(false)}
+        title="환불을 요청하시겠습니까?"
+        confirmLabel="환불 요청"
+        cancelLabel="취소"
+        variant="danger"
+        onConfirm={() => {
+          setRefundModal(false)
+          setCancelStatus('active')
+          setCurrentPlan('')  // 즉시 미구독
+          showToast('환불 요청이 접수되었습니다. 검토 후 영업일 기준 3~5일 내 처리됩니다.', 'info')
+        }}
+      >
+        <p className="text-xs text-gray-500">
+          환불 요청 시 <strong className="text-red-600">구독이 즉시 종료</strong>되며, 결제 금액은 영업일 기준 3~5일 내 카드사를 통해 환불됩니다.
+          미사용 일수에 따라 부분 환불됩니다.
+        </p>
+      </AlertModal>
     </div>
   )
 }

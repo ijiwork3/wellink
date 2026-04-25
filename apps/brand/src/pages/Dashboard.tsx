@@ -432,6 +432,10 @@ export default function Dashboard() {
                 </span>
               )}
             </div>
+            <button
+              onClick={() => navigate('/notifications')}
+              className="text-xs text-gray-500 hover:text-gray-900 transition-colors duration-150"
+            >전체 보기 →</button>
           </div>
           <div className="divide-y divide-gray-50 flex-1">
             {visibleNotifications.map(n => (

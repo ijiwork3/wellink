@@ -16,6 +16,7 @@ import CampaignDetail from './pages/CampaignDetail'
 import Library from './pages/Library'
 import Subscription from './pages/Subscription'
 import MyPage from './pages/MyPage'
+import Notifications from './pages/Notifications'
 import Moodboard from './pages/Moodboard'
 import { GlobalQAHeader, GLOBAL_QA_HEADER_HEIGHT, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
@@ -218,6 +219,20 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '에러', path: '/mypage?qa=error' },
     ],
   },
+
+  /* ────────────────── 알림 센터 (신규) ────────────────── */
+  {
+    label: '알림 센터',
+    children: [
+      { label: '기본 (전체 알림)', path: '/notifications' },
+      { label: '캠페인 알림만', path: '/notifications?qa=tab-campaign' },
+      { label: '메시지 알림만', path: '/notifications?qa=tab-message' },
+      { label: '시스템 알림만', path: '/notifications?qa=tab-system' },
+      { label: '빈 상태', path: '/notifications?qa=empty' },
+      { label: '로딩 스켈레톤', path: '/notifications?qa=loading' },
+      { label: '에러', path: '/notifications?qa=error' },
+    ],
+  },
 ]
 
 function AppRoutes() {
@@ -269,6 +284,7 @@ function AppRoutes() {
           <Route path="/library" element={<Library />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
