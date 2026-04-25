@@ -40,18 +40,50 @@ interface Content {
   thumbnailClass: string
 }
 
-const contents: Content[] = [
-  { id: 1, creator: '이창민', campaign: '봄 요가 프로모션', type: '릴스', platform: '인스타그램', date: '2026-04-05', reach: 4200, likes: 312, comments: 48, saves: 67, shareRate: 3.2, engagementRate: 10.2, status: '승인', thumbnailClass: 'bg-pink-300' },
-  { id: 2, creator: '김가애', campaign: '봄 요가 프로모션', type: '피드', platform: '인스타그램', date: '2026-04-03', reach: 8100, likes: 540, comments: 92, saves: 134, shareRate: 4.1, engagementRate: 9.5, status: '승인', thumbnailClass: 'bg-blue-300' },
-  { id: 3, creator: '박리나', campaign: '봄 요가 프로모션', type: '스토리', platform: '인스타그램', date: '2026-04-01', reach: 2900, likes: 180, comments: 23, saves: 18, shareRate: 1.8, engagementRate: 7.6, status: '승인', thumbnailClass: 'bg-violet-300' },
-  { id: 4, creator: '민경완', campaign: '봄 요가 프로모션', type: '피드', platform: '인스타그램', date: '2026-03-28', reach: 6700, likes: 420, comments: 67, saves: 89, shareRate: 2.9, engagementRate: 8.6, status: '검수중', thumbnailClass: 'bg-red-300' },
-  { id: 5, creator: '장영훈', campaign: '비건 신제품 론칭', type: '릴스', platform: '인스타그램', date: '2026-03-25', reach: 1200, likes: 88, comments: 12, saves: 9, shareRate: 1.2, engagementRate: 9.1, status: '대기중', thumbnailClass: 'bg-yellow-200' },
-  { id: 6, creator: '한서연', campaign: '비건 신제품 론칭', type: '쇼츠', platform: '유튜브', date: '2026-04-06', reach: 15200, likes: 1240, comments: 189, saves: 312, shareRate: 5.8, engagementRate: 11.4, status: '승인', thumbnailClass: 'bg-emerald-300' },
-  { id: 7, creator: '오진석', campaign: '여름 캠페인', platform: '네이버 블로그', date: '2026-04-07', reach: 3400, likes: 210, comments: 34, saves: 45, shareRate: 2.1, engagementRate: 8.5, status: '검수중', thumbnailClass: 'bg-orange-300' },
-  { id: 8, creator: '정예린', campaign: '여름 캠페인', type: '릴스', platform: '인스타그램', date: '2026-04-08', reach: 9800, likes: 870, comments: 142, saves: 198, shareRate: 4.7, engagementRate: 12.3, status: '승인', thumbnailClass: 'bg-indigo-300' },
-  { id: 9, creator: '최다은', campaign: '비건 신제품 론칭', type: '스토리', platform: '인스타그램', date: '2026-03-30', reach: 1800, likes: 95, comments: 11, saves: 14, shareRate: 1.0, engagementRate: 6.7, status: '대기중', thumbnailClass: 'bg-rose-300' },
-  { id: 10, creator: '김태우', campaign: '여름 캠페인', type: '쇼츠', platform: '유튜브', date: '2026-04-02', reach: 11400, likes: 920, comments: 156, saves: 230, shareRate: 5.2, engagementRate: 11.5, status: '승인', thumbnailClass: 'bg-green-300' },
+// 100개 더미 + 엣지케이스 (썸네일 누락, 0값 등) — 원본 ContentList rawFileUrl=#일 때 ImageIcon fallback 보강
+const CREATOR_POOL = [
+  '이창민', '김가애', '박리나', '민경완', '장영훈', '한서연', '오진석', '정예린', '최다은', '김태우',
+  '윤소영', '강도현', '신혜진', '백지호', '권나연', '문태진', '조성훈', '송예린', '홍은수', '배유나',
 ]
+const CAMPAIGN_POOL = ['봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
+type LibPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+type LibSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
+const LIB_PS: Array<{ p: LibPlatform; t: LibSubType | undefined }> = [
+  { p: '인스타그램', t: '피드' }, { p: '인스타그램', t: '릴스' }, { p: '인스타그램', t: '스토리' },
+  { p: '유튜브', t: '영상' }, { p: '유튜브', t: '쇼츠' },
+  { p: '네이버 블로그', t: undefined },
+  { p: '틱톡', t: undefined },
+]
+const THUMB_POOL = ['bg-pink-300', 'bg-blue-300', 'bg-violet-300', 'bg-red-300', 'bg-yellow-200', 'bg-emerald-300', 'bg-orange-300', 'bg-indigo-300', 'bg-rose-300', 'bg-green-300', 'bg-cyan-300', 'bg-lime-300', 'bg-amber-300', 'bg-fuchsia-300', 'bg-teal-300']
+const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '대기중', '반려']
+const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
+  const creator = CREATOR_POOL[i % CREATOR_POOL.length]
+  const campaign = CAMPAIGN_POOL[i % CAMPAIGN_POOL.length]
+  const ps = LIB_PS[i % LIB_PS.length]
+  // 엣지: i % 17 == 0 썸네일 누락 (placeholder), i % 23 == 0 zero reach
+  const thumbnailMissing = i % 17 === 0
+  const isZero = i % 23 === 0
+  const reach = isZero ? 0 : 1000 + (i * 311) % 30000
+  const likes = isZero ? 0 : Math.floor(reach * (0.04 + (i % 7) * 0.005))
+  const comments = isZero ? 0 : Math.floor(likes * (0.1 + (i % 5) * 0.02))
+  const saves = isZero ? 0 : Math.floor(likes * (0.15 + (i % 4) * 0.02))
+  const shareRate = isZero ? 0 : +(0.5 + (i % 9) * 0.6).toFixed(1)
+  const engagementRate = isZero ? 0 : +(((likes + comments + saves) / Math.max(reach, 1)) * 100).toFixed(1)
+  const monthIdx = (i * 7) % 4   // 0~3 = 1~4월
+  const dayIdx = ((i * 13) % 28) + 1
+  const date = `2026-${String(monthIdx + 1).padStart(2, '0')}-${String(dayIdx).padStart(2, '0')}`
+  return {
+    id: i + 1,
+    creator,
+    campaign,
+    type: ps.t,
+    platform: ps.p,
+    date,
+    reach, likes, comments, saves, shareRate, engagementRate,
+    status: STATUS_CYCLE[i % STATUS_CYCLE.length],
+    thumbnailClass: thumbnailMissing ? '' : THUMB_POOL[i % THUMB_POOL.length],
+  }
+})
 
 /* ───── Thumbnail helpers ───── */
 
@@ -68,7 +100,7 @@ const PLATFORM_BADGE_STYLE: Record<string, string> = {
 }
 
 /* ───── Campaign list ───── */
-const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인']
+const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
 
 /* ───── Sort helpers ───── */
 type SortKey = '최신순' | '도달순' | '좋아요순'
@@ -138,6 +170,9 @@ export default function Library() {
   const [statusFilter, setStatusFilter] = useState('전체')
   const [platformFilter, setPlatformFilter] = useState('전체')
   const [typeFilter, setTypeFilter] = useState('전체')
+  // 페이지네이션 — 신규
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 12  // grid 4 cols × 3 rows = 12 / list 12개
   const [approvedIds, setApprovedIds] = useState<Set<number>>(new Set(contents.filter(c => c.status === '승인').map(c => c.id)))
   const [rejectedIds, setRejectedIds] = useState<Set<number>>(new Set(contents.filter(c => c.status === '반려').map(c => c.id)))
   const [sortKey, setSortKey] = useState<SortKey>('최신순')
@@ -227,6 +262,14 @@ export default function Library() {
     }),
     sortKey,
   ), [qa, search, campaignFilter, statusFilter, platformFilter, typeFilter, sortKey])
+
+  // 검색·필터·정렬 변경 시 페이지 1로 리셋
+  useEffect(() => { setPage(1) }, [search, campaignFilter, statusFilter, platformFilter, typeFilter, sortKey])
+
+  // 페이지네이션 슬라이스 — 신규
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const openRejectConfirm = useCallback((item: Content) => {
     setRejectConfirm({
@@ -582,7 +625,7 @@ export default function Library() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 @lg:grid-cols-4 gap-4">
-            {filtered.map(c => {
+            {paginated.map(c => {
               const isSelected = selectedIds.has(c.id)
               const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
               return (
@@ -649,6 +692,8 @@ export default function Library() {
               )
             })}
           </div>
+          {/* 페이지네이션 — grid 모드 */}
+          <LibPagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
         </div>
       ) : (
         /* ───── List (Table) View ───── */
@@ -676,7 +721,7 @@ export default function Library() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(c => {
+              {paginated.map(c => {
                 const isSelected = selectedIds.has(c.id)
                 const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
                 return (
@@ -751,6 +796,8 @@ export default function Library() {
             </tbody>
           </table>
           </div>
+          {/* 페이지네이션 — list 모드 */}
+          <LibPagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
         </div>
       )}
       </div>{/* /tab-panel-content */}
@@ -899,6 +946,49 @@ export default function Library() {
           </Modal>
         )
       })()}
+    </div>
+  )
+}
+
+/* ───── Pagination ───── */
+function LibPagination({ total, page, pageSize, onChange }: { total: number; page: number; pageSize: number; onChange: (p: number) => void }) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  if (total <= pageSize) return null
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+    .reduce<(number | '…')[]>((acc, p) => {
+      if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
+      acc.push(p)
+      return acc
+    }, [])
+  return (
+    <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
+      <span className="text-xs text-gray-500 shrink-0">총 {total}개 · {page} / {totalPages}</span>
+      <div className="flex items-center gap-1 flex-wrap justify-end">
+        <button
+          onClick={() => onChange(Math.max(1, page - 1))}
+          disabled={page === 1}
+          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >이전</button>
+        {pages.map((p, i) =>
+          p === '…' ? (
+            <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
+          ) : (
+            <button
+              key={p}
+              onClick={() => onChange(p)}
+              className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                page === p ? 'bg-gray-100 text-gray-900' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >{p}</button>
+          )
+        )}
+        <button
+          onClick={() => onChange(Math.min(totalPages, page + 1))}
+          disabled={page === totalPages}
+          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >다음</button>
+      </div>
     </div>
   )
 }
