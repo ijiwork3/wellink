@@ -1,8 +1,9 @@
+import { useState, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, ExternalLink, Home
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, Search
 } from 'lucide-react'
 import { useToast } from '@wellink/ui'
 
@@ -42,6 +43,17 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
   const location = useLocation()
   const { showToast } = useToast()
   const isMyPageActive = location.pathname === '/mypage'
+  const [menuSearch, setMenuSearch] = useState('')
+  const q = menuSearch.trim().toLowerCase()
+  const showHome = !q || '홈'.includes(q)
+  const showDashboard = !q || '대시보드'.includes(q)
+  const filteredSections = useMemo(
+    () =>
+      sections
+        .map(s => ({ ...s, items: s.items.filter(i => !q || i.label.toLowerCase().includes(q)) }))
+        .filter(s => s.items.length > 0),
+    [q]
+  )
   return (
     <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0 min-h-0">
       {/* 로고 */}
@@ -54,39 +66,49 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
         </div>
       )}
 
-      {/* 홈 버튼 */}
+      {/* 메뉴 검색 */}
       <div className="px-3 pb-2">
-        <button
-          onClick={() => { showToast('홈으로 이동'); onNavigate?.() }}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
-        >
-          <Home size={15} />
-          홈
-        </button>
-      </div>
-
-      {/* 대시보드 — 섹션 없이 단독 항목 */}
-      <div className="px-3 pb-2">
-        <NavLink
-          to="/dashboard"
-          end
-          onClick={() => onNavigate?.()}
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 ${
-              isActive
-                ? 'bg-gray-100 text-gray-900 font-medium'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            }`
-          }
-        >
-          <LayoutDashboard size={15} />
-          대시보드
-        </NavLink>
+        <div className="relative">
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={menuSearch}
+            onChange={e => setMenuSearch(e.target.value)}
+            placeholder="메뉴 검색"
+            className="w-full pl-7 pr-2.5 py-1.5 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+          />
+        </div>
       </div>
 
       {/* 내비게이션 */}
       <nav className="flex-1 overflow-y-auto px-3 pb-2">
-        {sections.map(section => (
+        {showHome && (
+          <button
+            onClick={() => { showToast('홈으로 이동'); onNavigate?.() }}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
+          >
+            <Home size={15} />
+            홈
+          </button>
+        )}
+        {showDashboard && (
+          <NavLink
+            to="/dashboard"
+            end
+            onClick={() => onNavigate?.()}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-2 ${
+                isActive
+                  ? 'bg-gray-100 text-gray-900 font-medium'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`
+            }
+          >
+            <LayoutDashboard size={15} />
+            대시보드
+          </NavLink>
+        )}
+        {filteredSections.map(section => (
           <div key={section.label} className="mb-4">
             <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
               {section.label}

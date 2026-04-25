@@ -3,12 +3,11 @@ import { Outlet } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
 import InstagramGlobalBanner from './InstagramGlobalBanner'
-import { useDeviceMode } from '../qa-mockup-kit'
 
 export default function Layout() {
   const [mobileNav, setMobileNav] = useState(false)
-  const device = useDeviceMode()
-  const isDesktop = device === 'desktop'
+  const isDesktop = true
+  const device: 'desktop' | 'tablet' | 'phone' = 'desktop'
 
   return (
     <div className="relative flex h-full bg-gray-50">

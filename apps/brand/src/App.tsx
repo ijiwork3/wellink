@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { Settings, X } from 'lucide-react'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Layout from './components/Layout'
@@ -222,6 +223,10 @@ const STATUS_ITEMS: StatusItem[] = [
 function AppRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [qaOpen, setQaOpen] = useState(false)
+  const handleNavigate = ({ path }: { path?: string }) => {
+    if (path) { navigate(path); setQaOpen(false) }
+  }
 
   useEffect(() => {
     const titles: Record<string, string> = {
@@ -243,10 +248,6 @@ function AppRoutes() {
     const title = titles[path] ?? (path.startsWith('/campaigns/') ? '캠페인 상세 — WELLINK AI' : 'WELLINK AI')
     document.title = title
   }, [location.pathname])
-
-  const handleNavigate = ({ path }: { path?: string }) => {
-    if (path) navigate(path)
-  }
 
   return (
     <>
@@ -273,27 +274,33 @@ function AppRoutes() {
       </Routes>
 
       {location.pathname !== '/moodboard' && (
-        <GlobalQAHeader
-          pathItems={STATUS_ITEMS}
-          onNavigate={handleNavigate}
-          accentColor="var(--color-brand-green)"
-        />
+        <>
+          <button
+            onClick={() => setQaOpen(o => !o)}
+            aria-label="QA 패널 열기"
+            className="fixed bottom-4 right-4 z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+          >
+            {qaOpen ? <X size={16} /> : <Settings size={16} />}
+            <span>QA</span>
+          </button>
+          {qaOpen && (
+            <GlobalQAHeader
+              pathItems={STATUS_ITEMS}
+              onNavigate={handleNavigate}
+              accentColor="var(--color-brand-green)"
+            />
+          )}
+        </>
       )}
     </>
   )
 }
 
-// 미사용 변수 제거를 위한 ref (TAB_MAP은 더 이상 사용 안 함)
 void BRAND_TAB_MAP
+void GLOBAL_QA_HEADER_HEIGHT
 
 function AppShell() {
-  const location = useLocation()
-  const showHeader = location.pathname !== '/moodboard'
-  return (
-    <div style={{ paddingTop: showHeader ? GLOBAL_QA_HEADER_HEIGHT : 0 }}>
-      <AppRoutes />
-    </div>
-  )
+  return <AppRoutes />
 }
 
 export default function App() {

@@ -20,6 +20,7 @@ export interface QAState {
   instaConnected: boolean
   loading: boolean
   error: boolean
+  empty: boolean
 }
 
 export const DEFAULT_QA_STATE: QAState = {
@@ -27,6 +28,7 @@ export const DEFAULT_QA_STATE: QAState = {
   instaConnected: true,
   loading: false,
   error: false,
+  empty: false,
 }
 
 const STORAGE_KEY = 'wl_qa_state'

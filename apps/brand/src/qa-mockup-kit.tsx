@@ -26,7 +26,7 @@ import { useState, useEffect, useRef, useCallback, createContext, useContext, ty
 import {
   Smartphone, Tablet, Monitor,
   Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera, Maximize2,
-  AlertCircle, Loader2, Link2,
+  AlertCircle, Loader2, Link2, Inbox,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
@@ -734,6 +734,13 @@ export function GlobalQAHeader<S extends string, T extends string>({
           onClick={() => setQAState({ error: !qaState.error })}
           icon={<AlertCircle size={11} />}
           label="에러"
+          accentColor={accentColor}
+        />
+        <ToggleChip
+          active={qaState.empty}
+          onClick={() => setQAState({ empty: !qaState.empty })}
+          icon={<Inbox size={11} />}
+          label="값 없음"
           accentColor={accentColor}
         />
         <button

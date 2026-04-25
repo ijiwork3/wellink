@@ -1,31 +1,65 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Megaphone, ChevronRight, Calendar, Users, Wallet } from 'lucide-react'
-import { ErrorState, StatusBadge } from '@wellink/ui'
+import { Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search } from 'lucide-react'
+import { ErrorState, StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
-const campaigns = [
-  {
-    id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8,
-    deadline: '2026-04-28', budget: 2000000, category: '피트니스',
-  },
-  {
-    id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0,
-    deadline: '2026-05-05', budget: 1500000, category: '뷰티/웰니스',
-  },
-  {
-    id: 3, name: '여름 홈트 챌린지', status: '종료', total: 20, current: 20,
-    deadline: '2026-04-01', budget: 3200000, category: '피트니스',
-  },
-  {
-    id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8,
-    deadline: '2026-03-20', budget: 800000, category: '헬스/영양',
-  },
+type Campaign = {
+  id: number; name: string; status: '모집중' | '대기중' | '종료';
+  total: number; current: number; deadline: string; budget: number;
+  category: string; platform: string;
+}
+
+const SEED_CAMPAIGNS: Campaign[] = [
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브' },
+  { id: 3, name: '여름 홈트 챌린지', status: '종료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램' },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그' },
 ]
+
+const NAME_TEMPLATES: Record<string, string[]> = {
+  '맛집/푸드': ['신메뉴 시식 리뷰', '비건 디저트 체험', '수제 베이커리 캠페인', '프리미엄 한식 디너'],
+  '뷰티/패션': ['앰플 신제품 체험', '봄 신상 메이크업', 'SS 컬렉션 룩북', '향수 시그니처 라인'],
+  '피트니스': ['홈트 루틴 챌린지', '단백질 보충제 리뷰', '필라테스 클래스 체험', '러닝화 신제품'],
+  '여행': ['제주 호캉스 패키지', '동남아 휴양지 후기', '강원도 워케이션', '유럽 자유여행 가이드'],
+  '라이프스타일': ['미니멀 인테리어', '홈카페 굿즈 리뷰', '반려동물 용품', '독서 챌린지'],
+  '육아': ['신생아 용품 체험', '유아식 레시피', '교육 완구 리뷰', '주말 가족 나들이'],
+}
+const PLATFORM_LIST = ['인스타그램', '유튜브', '네이버 블로그', '틱톡']
+const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
+const STATUS_LIST: Campaign['status'][] = ['모집중', '대기중', '종료']
+
+const generated: Campaign[] = Array.from({ length: 96 }, (_, i) => {
+  const id = i + 5
+  const category = CATEGORY_LIST[i % CATEGORY_LIST.length]
+  const tplList = NAME_TEMPLATES[category]
+  const baseName = tplList[i % tplList.length]
+  const status = STATUS_LIST[i % STATUS_LIST.length]
+  const platform = PLATFORM_LIST[i % PLATFORM_LIST.length]
+  const total = 5 + (i % 8) * 5
+  const current = status === '종료' ? total : status === '대기중' ? 0 : Math.floor(total * ((i % 5) + 1) / 6)
+  const month = ((i % 6) + 1).toString().padStart(2, '0')
+  const day = ((i % 27) + 1).toString().padStart(2, '0')
+  const deadline = `2026-${month}-${day}`
+  const budget = (i % 7 + 1) * 500000
+  return { id, name: `${baseName} #${id}`, status, total, current, deadline, budget, category, platform }
+})
+
+const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
 const tabs = ['전체', '대기중', '모집중', '종료'] as const
 type Tab = typeof tabs[number]
+
+const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
+const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
+const SORTS = [
+  { value: 'deadline', label: '마감 임박순' },
+  { value: 'recent', label: '최근 등록순' },
+  { value: 'budget-desc', label: '예산 높은순' },
+  { value: 'budget-asc', label: '예산 낮은순' },
+] as const
+type SortKey = typeof SORTS[number]['value']
 
 const fmtBudget = (n: number) => n === 0 ? '-' : `₩${(n / 10000).toFixed(0)}만`
 
@@ -33,6 +67,12 @@ export default function Campaigns() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const [activeTab, setActiveTab] = useState<Tab>('전체')
+  const [search, setSearch] = useState('')
+  const [platformFilter, setPlatformFilter] = useState<string>('전체')
+  const [categoryFilter, setCategoryFilter] = useState<string>('전체')
+  const [sort, setSort] = useState<SortKey>('deadline')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 10
 
   if (qa === 'loading') {
     return (
@@ -69,7 +109,30 @@ export default function Campaigns() {
   }
 
   const qaEmpty = qa === 'empty'
-  const filtered = qaEmpty ? [] : campaigns.filter(c => activeTab === '전체' || c.status === activeTab)
+  const filtered = useMemo(() => {
+    if (qaEmpty) return []
+    const q = search.trim().toLowerCase()
+    const list = campaigns.filter(c =>
+      (activeTab === '전체' || c.status === activeTab) &&
+      (platformFilter === '전체' || c.platform === platformFilter) &&
+      (categoryFilter === '전체' || c.category === categoryFilter) &&
+      (!q || c.name.toLowerCase().includes(q))
+    )
+    const sorted = [...list]
+    sorted.sort((a, b) => {
+      if (sort === 'deadline') return a.deadline.localeCompare(b.deadline)
+      if (sort === 'recent') return b.id - a.id
+      if (sort === 'budget-desc') return b.budget - a.budget
+      if (sort === 'budget-asc') return a.budget - b.budget
+      return 0
+    })
+    return sorted
+  }, [qaEmpty, search, activeTab, platformFilter, categoryFilter, sort])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+  const resetPage = () => setPage(1)
 
   return (
     <div className="space-y-5">
@@ -78,7 +141,7 @@ export default function Campaigns() {
         <h1 className="text-xl @md:text-2xl font-bold text-gray-900">캠페인 목록</h1>
         <button
           onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-1.5 bg-gray-900 text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={14} aria-hidden="true" />
           새 캠페인 등록
@@ -92,7 +155,7 @@ export default function Campaigns() {
           {tabs.map(tab => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => { setActiveTab(tab); resetPage() }}
               className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab
                   ? 'border-gray-900 font-semibold text-gray-900'
@@ -104,17 +167,58 @@ export default function Campaigns() {
           ))}
         </div>
 
+        {/* 검색 + 필터 + 정렬 */}
+        <div className="flex items-center gap-2 px-3 @sm:px-5 py-3 border-b border-gray-100 flex-wrap">
+          <div className="relative flex-1 min-w-[180px]">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => { setSearch(e.target.value); resetPage() }}
+              placeholder="캠페인명 검색"
+              className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+            />
+          </div>
+          <select
+            value={platformFilter}
+            onChange={e => { setPlatformFilter(e.target.value); resetPage() }}
+            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+          >
+            {PLATFORMS.map(p => <option key={p} value={p}>{p === '전체' ? '플랫폼 전체' : p}</option>)}
+          </select>
+          <select
+            value={categoryFilter}
+            onChange={e => { setCategoryFilter(e.target.value); resetPage() }}
+            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+          >
+            {CATEGORIES.map(c => <option key={c} value={c}>{c === '전체' ? '카테고리 전체' : c}</option>)}
+          </select>
+          <select
+            value={sort}
+            onChange={e => { setSort(e.target.value as SortKey); resetPage() }}
+            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+          >
+            {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+        </div>
+
         {/* 리스트 / 빈 상태 */}
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
             <Megaphone size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
             <p className="text-sm text-gray-400">
-              {activeTab !== '전체' ? `'${activeTab}' 상태의 캠페인이 없습니다.` : '등록된 캠페인이 없습니다.'}
+              {qaEmpty
+                ? '등록된 캠페인이 없습니다.'
+                : (search || platformFilter !== '전체' || categoryFilter !== '전체')
+                ? '조건에 맞는 캠페인이 없습니다.'
+                : activeTab !== '전체'
+                ? `'${activeTab}' 상태의 캠페인이 없습니다.`
+                : '등록된 캠페인이 없습니다.'}
             </p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-50">
-            {filtered.map(c => (
+            {paged.map(c => (
               <li
                 key={c.id}
                 onClick={() => navigate(`/campaigns/${c.id}`)}
@@ -126,6 +230,7 @@ export default function Campaigns() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <StatusBadge status={c.status} dot={false} />
+                    <PlatformBadge platform={c.platform} />
                     <span className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate">{c.name}</span>
                   </div>
                   <div className="flex items-center gap-3 @sm:gap-4 text-xs text-gray-500 flex-wrap">
@@ -142,6 +247,49 @@ export default function Campaigns() {
               </li>
             ))}
           </ul>
+        )}
+
+        {/* 페이지네이션 */}
+        {filtered.length > PAGE_SIZE && (
+          <div className="flex items-center justify-between gap-3 px-3 @sm:px-5 py-3 border-t border-gray-100">
+            <span className="text-xs text-gray-500">
+              총 {filtered.length}개 · {safePage} / {totalPages}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >이전</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+                .reduce<(number | '…')[]>((acc, p) => {
+                  if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
+                  acc.push(p)
+                  return acc
+                }, [])
+                .map((p, i) =>
+                  p === '…' ? (
+                    <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                        safePage === p
+                          ? 'bg-gray-100 text-gray-900'
+                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >{p}</button>
+                  )
+                )}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >다음</button>
+            </div>
+          </div>
         )}
       </div>
     </div>

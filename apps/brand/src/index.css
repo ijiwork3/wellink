@@ -19,7 +19,6 @@ body {
 #root {
   width: 100%;
   height: 100vh;
-  padding-top: 44px; /* GlobalQAHeader (fixed, 44px) 자리 확보 */
   text-align: left;
   border-inline: none;
   display: block;
