@@ -8,7 +8,7 @@
  *   'confirm'  — 긍정적 확인 (초록 확인 버튼)
  */
 
-import { AlertTriangle, CheckCircle, Info } from 'lucide-react'
+import { AlertTriangle, CheckCircle } from 'lucide-react'
 import type { ReactNode } from 'react'
 import Modal from './Modal'
 
