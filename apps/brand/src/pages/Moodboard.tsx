@@ -19,19 +19,19 @@ const PRIMARY = [
   { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
 ]
 
-// ─── 딥 10단계 (텍스트 전용 — WCAG AA ≥4.5:1) ───────────────────
-// 1: warm lime-dark(#4d7c0f, 황록 80°) → 10: deep cool emerald(#022c22, 쿨에메랄드 160°)
+// ─── 프라이머리 딥 10단계 (텍스트 전용) ──────────────────────────
+// 1: 현재 1단계보다 밝은 lime(#6a9e14) → 10: deep cool emerald(#022c22)
 const DEEP = [
-  { n:  1, color:'#4d7c0f' },
-  { n:  2, color:'#3b7a18' },
-  { n:  3, color:'#267822' },
-  { n:  4, color:'#15802c' },
-  { n:  5, color:'#15803d' },
-  { n:  6, color:'#108050' },
-  { n:  7, color:'#047857' },
-  { n:  8, color:'#065f46' },
-  { n:  9, color:'#064e3b' },
-  { n: 10, color:'#022c22' },
+  { n:  1, color:'#6a9e14' },  // lime-ish, 1단계보다 밝게 시작
+  { n:  2, color:'#5a9010' },
+  { n:  3, color:'#4a840e' },
+  { n:  4, color:'#3b7a18' },
+  { n:  5, color:'#267822' },
+  { n:  6, color:'#15803d' },  // green-700
+  { n:  7, color:'#108050' },
+  { n:  8, color:'#047857' },  // emerald-700
+  { n:  9, color:'#065f46' },  // emerald-800
+  { n: 10, color:'#064e3b' },  // emerald-900
 ]
 
 // ─── 나머지 10단계 ─────────────────────────────────────────────────
@@ -285,7 +285,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
               </div>
               {notifications.map((n, i) => (
-                <div key={i} className="px-5 py-3 border-b last:border-0" style={{ borderColor: g.border, backgroundColor: n.unread ? p.greenLight : undefined }}>
+                <div key={i} className="px-5 py-3 border-b last:border-0" style={{ borderColor: g.border }}>
                   <div className="flex gap-2.5 items-start">
                     <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: n.dot }}/>
                     <div>
@@ -577,7 +577,7 @@ export default function Moodboard() {
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
         {/* 딥 */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-gray-700 shrink-0">딥</span>
+          <span className="text-xs font-semibold text-gray-700 shrink-0">프라이머리 딥</span>
           <input type="range" min={0} max={9} value={di} onChange={e => setDi(Number(e.target.value))} className="w-24 cursor-pointer" style={{ accentColor: p.green }}/>
           <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{di + 1}</span>
           <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: d.color }}/>
