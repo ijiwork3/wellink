@@ -5,23 +5,36 @@ import {
   ArrowRight, Download, Search, Image,
 } from 'lucide-react'
 
-// ─── 10단계 컬러 스펙 ────────────────────────────────────────────
-// 구조·레이아웃·배지 모양 완전 고정
-// 동적 색상은 inline style로 처리 (Tailwind JIT는 동적 클래스명 미지원)
-// 1단계 = 실제 어드민 현재 색상 그대로
-const STAGES = [
-  { n:  1, green:'#8CC63F', greenLight:'#f0f9e8', badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
-  { n:  2, green:'#88C43A', greenLight:'#eef8e0', badgeActiveBg:'#c6f6d8', badgeActiveText:'#065f46', badgePendingBg:'#fef08a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
-  { n:  3, green:'#82C132', greenLight:'#e8f5d4', badgeActiveBg:'#bbf7d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#FBBF24' },
-  { n:  4, green:'#7BBD28', greenLight:'#e0f0c4', badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde047', badgePendingText:'#78350f', barB:'#2563EB', barC:'#FBBF24' },
-  { n:  5, green:'#74B81E', greenLight:'#d8ebbc', badgeActiveBg:'#86efac', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#2563EB', barC:'#F97316' },
-  { n:  6, green:'#6DB214', greenLight:'#d0e6b0', badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#451a03', barB:'#2563EB', barC:'#F97316' },
-  { n:  7, green:'#78C212', greenLight:'#ecfccb', badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fb923c', badgePendingText:'#431407', barB:'#1D4ED8', barC:'#EA580C' },
-  { n:  8, green:'#84CC16', greenLight:'#f7fee7', badgeActiveBg:'#34d399', badgeActiveText:'#022c22', badgePendingBg:'#f97316', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#EA580C' },
-  { n:  9, green:'#95D81A', greenLight:'#f7fee7', badgeActiveBg:'#10b981', badgeActiveText:'#ffffff', badgePendingBg:'#f59e0b', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#DC2626' },
-  { n: 10, green:'#A3E635', greenLight:'#f7fee7', badgeActiveBg:'#059669', badgeActiveText:'#ffffff', badgePendingBg:'#d97706', badgePendingText:'#ffffff', barB:'#1E40AF', barC:'#DC2626' },
+// ─── 프라이머리 10단계 (버튼·진행바·트렌드·차트A) ─────────────────
+const PRIMARY = [
+  { n:  1, green:'#8CC63F', greenLight:'#f0f9e8' },
+  { n:  2, green:'#88C43A', greenLight:'#edf8de' },
+  { n:  3, green:'#82C132', greenLight:'#e8f5d4' },
+  { n:  4, green:'#7BBD28', greenLight:'#e0f0c4' },
+  { n:  5, green:'#74B81E', greenLight:'#d8ebb8' },
+  { n:  6, green:'#6DB214', greenLight:'#d0e6b0' },
+  { n:  7, green:'#78C212', greenLight:'#ecfccb' },
+  { n:  8, green:'#84CC16', greenLight:'#f7fee7' },
+  { n:  9, green:'#95D81A', greenLight:'#f7fee7' },
+  { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
 ]
-type S = typeof STAGES[0]
+
+// ─── 나머지 10단계 (배지·차트B·차트C) ────────────────────────────
+const ACCENT = [
+  { n:  1, badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
+  { n:  2, badgeActiveBg:'#bbf7d0', badgeActiveText:'#065f46', badgePendingBg:'#fef08a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
+  { n:  3, badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#FBBF24' },
+  { n:  4, badgeActiveBg:'#86efac', badgeActiveText:'#14532d', badgePendingBg:'#fde047', badgePendingText:'#78350f', barB:'#2563EB', barC:'#FBBF24' },
+  { n:  5, badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#2563EB', barC:'#F97316' },
+  { n:  6, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#451a03', barB:'#2563EB', barC:'#F97316' },
+  { n:  7, badgeActiveBg:'#34d399', badgeActiveText:'#022c22', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#EA580C' },
+  { n:  8, badgeActiveBg:'#10b981', badgeActiveText:'#ffffff', badgePendingBg:'#f97316', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#EA580C' },
+  { n:  9, badgeActiveBg:'#059669', badgeActiveText:'#ffffff', badgePendingBg:'#f59e0b', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#DC2626' },
+  { n: 10, badgeActiveBg:'#047857', badgeActiveText:'#ffffff', badgePendingBg:'#d97706', badgePendingText:'#ffffff', barB:'#1E40AF', barC:'#DC2626' },
+]
+
+type P = typeof PRIMARY[0]
+type A = typeof ACCENT[0]
 
 // ─── 배지 공통 ────────────────────────────────────────────────────
 function Badge({ bg, text, children }: { bg: string; text: string; children: React.ReactNode }) {
@@ -36,7 +49,7 @@ function Badge({ bg, text, children }: { bg: string; text: string; children: Rea
 }
 
 // ─── 공통 사이드바 ────────────────────────────────────────────────
-function Sidebar({ s, active }: { s: S; active: string }) {
+function Sidebar({ p, active }: { p: P; active: string }) {
   const navItems = [
     { key: 'dashboard', icon: <LayoutDashboard size={15} />, label: '대시보드', section: null },
     { key: 'profile',   icon: <BarChart3 size={15} />,       label: '프로필 인사이트', section: '분석' },
@@ -55,7 +68,7 @@ function Sidebar({ s, active }: { s: S; active: string }) {
         <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
         <span
           className="text-[10px] font-medium px-1.5 py-0.5 rounded-full leading-none text-white"
-          style={{ backgroundColor: s.green }}
+          style={{ backgroundColor: p.green }}
         >
           광고주
         </span>
@@ -104,7 +117,7 @@ function Sidebar({ s, active }: { s: S; active: string }) {
 }
 
 // ─── 1. 대시보드 ──────────────────────────────────────────────────
-function DashboardScreen({ s }: { s: S }) {
+function DashboardScreen({ p, a }: { p: P; a: A }) {
   const kpis = [
     { label: '활성 캠페인',      value: '2',     trend: '+50%', up: true,  icon: <Megaphone size={16}/> },
     { label: '진행중 인플루언서', value: '12',    trend: '+20%', up: true,  icon: <Users size={16}/> },
@@ -113,7 +126,7 @@ function DashboardScreen({ s }: { s: S }) {
   ]
   return (
     <div className="flex h-full bg-[#fafafa]">
-      <Sidebar s={s} active="dashboard" />
+      <Sidebar p={p} active="dashboard" />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* 헤더 */}
         <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-100">
@@ -123,7 +136,7 @@ function DashboardScreen({ s }: { s: S }) {
           </div>
           <button
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: s.green }}
+            style={{ backgroundColor: p.green }}
           >
             <Megaphone size={14} /> 새 캠페인
           </button>
@@ -138,7 +151,7 @@ function DashboardScreen({ s }: { s: S }) {
                   <span className="text-gray-400">{k.icon}</span>
                 </div>
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{k.value}</div>
-                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? s.green : '#ef4444' }}>
+                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? p.green : '#ef4444' }}>
                   {k.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
                   {k.trend} <span className="font-normal text-gray-400">전월</span>
                 </div>
@@ -151,7 +164,7 @@ function DashboardScreen({ s }: { s: S }) {
             <div className="col-span-2 bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
                 <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
-                <button className="text-xs flex items-center gap-1" style={{ color: s.green }}>
+                <button className="text-xs flex items-center gap-1" style={{ color: p.green }}>
                   전체보기 <ArrowRight size={11}/>
                 </button>
               </div>
@@ -172,8 +185,8 @@ function DashboardScreen({ s }: { s: S }) {
                       <td className="py-3.5 px-4 text-sm font-medium text-gray-900">{c.name}</td>
                       <td className="py-3.5 px-4">
                         <Badge
-                          bg={c.active ? s.badgeActiveBg : s.badgePendingBg}
-                          text={c.active ? s.badgeActiveText : s.badgePendingText}
+                          bg={c.active ? a.badgeActiveBg : a.badgePendingBg}
+                          text={c.active ? a.badgeActiveText : a.badgePendingText}
                         >
                           {c.status}
                         </Badge>
@@ -181,14 +194,14 @@ function DashboardScreen({ s }: { s: S }) {
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
                           <div className="w-20 h-1.5 rounded-full bg-gray-100">
-                            <div className="h-full rounded-full" style={{ width: `${c.pct}%`, backgroundColor: s.green }} />
+                            <div className="h-full rounded-full" style={{ width: `${c.pct}%`, backgroundColor: p.green }} />
                           </div>
                           <span className="text-xs text-gray-500">{c.pct}%</span>
                         </div>
                       </td>
                       <td className="py-3.5 px-4 text-xs text-gray-600">{c.dday}</td>
                       <td className="py-3.5 px-4">
-                        <button className="text-xs flex items-center gap-1" style={{ color: s.green }}>
+                        <button className="text-xs flex items-center gap-1" style={{ color: p.green }}>
                           상세 <ArrowRight size={11}/>
                         </button>
                       </td>
@@ -205,7 +218,7 @@ function DashboardScreen({ s }: { s: S }) {
                 <h2 className="text-sm font-semibold text-gray-900">최근 알림</h2>
                 <span
                   className="text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none text-white"
-                  style={{ backgroundColor: s.green }}
+                  style={{ backgroundColor: p.green }}
                 >3</span>
               </div>
               {[
@@ -216,7 +229,7 @@ function DashboardScreen({ s }: { s: S }) {
                 <div
                   key={i}
                   className="px-5 py-3 border-b border-gray-50 last:border-0"
-                  style={{ backgroundColor: n.unread ? s.greenLight : undefined }}
+                  style={{ backgroundColor: n.unread ? p.greenLight : undefined }}
                 >
                   <div className="flex gap-2.5 items-start">
                     <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: n.dot }}/>
@@ -243,9 +256,9 @@ function DashboardScreen({ s }: { s: S }) {
                 <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 cursor-pointer">
                   <div
                     className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-                    style={{ backgroundColor: item.primary ? s.greenLight : '#f3f4f6' }}
+                    style={{ backgroundColor: item.primary ? p.greenLight : '#f3f4f6' }}
                   >
-                    <span style={{ color: item.primary ? s.green : '#6b7280' }}>{item.icon}</span>
+                    <span style={{ color: item.primary ? p.green : '#6b7280' }}>{item.icon}</span>
                   </div>
                   <p className="text-sm font-semibold text-gray-900">{item.label}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>
@@ -260,7 +273,7 @@ function DashboardScreen({ s }: { s: S }) {
 }
 
 // ─── 2. 인플루언서 리스트 ─────────────────────────────────────────
-function InfluencerScreen({ s }: { s: S }) {
+function InfluencerScreen({ p, a }: { p: P; a: A }) {
   const summary = [
     { label: '전체 인플루언서', value: '5명' },
     { label: '즐겨찾기',       value: '2명' },
@@ -276,7 +289,7 @@ function InfluencerScreen({ s }: { s: S }) {
   ]
   return (
     <div className="flex h-full bg-[#fafafa]">
-      <Sidebar s={s} active="list" />
+      <Sidebar p={p} active="list" />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-100">
           <div>
@@ -285,7 +298,7 @@ function InfluencerScreen({ s }: { s: S }) {
           </div>
           <button
             className="px-4 py-2.5 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: s.green }}
+            style={{ backgroundColor: p.green }}
           >
             + 캠페인 제안
           </button>
@@ -340,23 +353,23 @@ function InfluencerScreen({ s }: { s: S }) {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-700">{r.followers}</td>
-                    <td className="py-3 px-4 text-sm font-semibold" style={{ color: r.engHigh ? s.green : '#6b7280' }}>{r.eng}</td>
+                    <td className="py-3 px-4 text-sm font-semibold" style={{ color: r.engHigh ? p.green : '#6b7280' }}>{r.eng}</td>
                     <td className="py-3 px-4">
                       <Badge
-                        bg={r.fitHigh ? s.badgeActiveBg : s.badgePendingBg}
-                        text={r.fitHigh ? s.badgeActiveText : s.badgePendingText}
+                        bg={r.fitHigh ? a.badgeActiveBg : a.badgePendingBg}
+                        text={r.fitHigh ? a.badgeActiveText : a.badgePendingText}
                       >
                         {r.fit}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-sm font-medium" style={{ color: s.green }}>{r.authentic}</td>
+                    <td className="py-3 px-4 text-sm font-medium" style={{ color: p.green }}>{r.authentic}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1">
                         {[0,1,2].map(j => <div key={j} className="w-8 h-8 rounded-md bg-gray-100" />)}
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <button className="text-xs px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: s.green }}>
+                      <button className="text-xs px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>
                         제안
                       </button>
                     </td>
@@ -372,7 +385,7 @@ function InfluencerScreen({ s }: { s: S }) {
 }
 
 // ─── 3. 성과 분석 ─────────────────────────────────────────────────
-function AnalyticsScreen({ s }: { s: S }) {
+function AnalyticsScreen({ p, a }: { p: P; a: A }) {
   const metrics = [
     { label: '총 도달',       value: '284K',  change: '+18.3%', up: true,  icon: <Eye size={15}/> },
     { label: '총 참여',       value: '23.4K', change: '+24.1%', up: true,  icon: <Activity size={15}/> },
@@ -392,7 +405,7 @@ function AnalyticsScreen({ s }: { s: S }) {
   ]
   return (
     <div className="flex h-full bg-[#fafafa]">
-      <Sidebar s={s} active="ads" />
+      <Sidebar p={p} active="ads" />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-100">
           <div>
@@ -420,7 +433,7 @@ function AnalyticsScreen({ s }: { s: S }) {
                   <span className="text-gray-400">{m.icon}</span>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 mb-2">{m.value}</p>
-                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? s.green : '#ef4444' }}>
+                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? p.green : '#ef4444' }}>
                   {m.up ? <TrendingUp size={10}/> : <TrendingDown size={10}/>}{m.change}
                 </span>
               </div>
@@ -433,10 +446,10 @@ function AnalyticsScreen({ s }: { s: S }) {
               <h2 className="text-sm font-semibold text-gray-900">주간 도달 & 참여 추이</h2>
               <div className="flex items-center gap-5 text-xs text-gray-400">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded inline-block" style={{ backgroundColor: s.green }}/>도달
+                  <span className="w-3 h-2 rounded inline-block" style={{ backgroundColor: p.green }}/>도달
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-2 rounded inline-block" style={{ backgroundColor: s.barB, opacity: 0.7 }}/>참여
+                  <span className="w-3 h-2 rounded inline-block" style={{ backgroundColor: a.barB, opacity: 0.7 }}/>참여
                 </span>
               </div>
             </div>
@@ -444,8 +457,8 @@ function AnalyticsScreen({ s }: { s: S }) {
               {chartData.map((d, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div className="flex items-end gap-0.5 w-full" style={{ height: 100 }}>
-                    <div className="flex-1 rounded-t-sm" style={{ height: `${d.a}%`, backgroundColor: s.green, opacity: 0.85 }}/>
-                    <div className="flex-1 rounded-t-sm" style={{ height: `${d.b}%`, backgroundColor: s.barB, opacity: 0.65 }}/>
+                    <div className="flex-1 rounded-t-sm" style={{ height: `${d.a}%`, backgroundColor: p.green, opacity: 0.85 }}/>
+                    <div className="flex-1 rounded-t-sm" style={{ height: `${d.b}%`, backgroundColor: a.barB, opacity: 0.65 }}/>
                   </div>
                   <span className="text-[10px] text-gray-400 whitespace-nowrap">{d.label}</span>
                 </div>
@@ -472,13 +485,13 @@ function AnalyticsScreen({ s }: { s: S }) {
                   <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4 font-medium text-gray-900">{c.name}</td>
                     <td className="px-5 py-4 text-gray-700">{c.reach}</td>
-                    <td className="px-5 py-4 font-semibold" style={{ color: s.green }}>{c.eng}</td>
+                    <td className="px-5 py-4 font-semibold" style={{ color: p.green }}>{c.eng}</td>
                     <td className="px-5 py-4 text-gray-600">{c.contents}개</td>
                     <td className="px-5 py-4 font-semibold text-gray-500">{c.roas}</td>
                     <td className="px-5 py-4">
                       {c.active === null
                         ? <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">완료</span>
-                        : <Badge bg={c.active ? s.badgeActiveBg : s.badgePendingBg} text={c.active ? s.badgeActiveText : s.badgePendingText}>
+                        : <Badge bg={c.active ? a.badgeActiveBg : a.badgePendingBg} text={c.active ? a.badgeActiveText : a.badgePendingText}>
                             {c.active ? '진행중' : '대기중'}
                           </Badge>
                       }
@@ -495,38 +508,58 @@ function AnalyticsScreen({ s }: { s: S }) {
 }
 
 const SCREENS = [
-  { key: 'dashboard', node: (s: S) => <DashboardScreen s={s} /> },
-  { key: 'influencer', node: (s: S) => <InfluencerScreen s={s} /> },
-  { key: 'analytics',  node: (s: S) => <AnalyticsScreen s={s} /> },
+  { key: 'dashboard', node: (p: P, a: A) => <DashboardScreen p={p} a={a} /> },
+  { key: 'influencer', node: (p: P, a: A) => <InfluencerScreen p={p} a={a} /> },
+  { key: 'analytics',  node: (p: P, a: A) => <AnalyticsScreen p={p} a={a} /> },
 ]
 
 export default function Moodboard() {
-  const [idx, setIdx] = useState(0)
-  const s = STAGES[idx]
+  const [pi, setPi] = useState(0)
+  const [ai, setAi] = useState(0)
+  const p = PRIMARY[pi]
+  const a = ACCENT[ai]
 
   return (
     <div className="min-h-screen bg-zinc-800">
       {/* 컨트롤 바 */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-4">
-        <span className="text-xs text-gray-400 font-medium shrink-0">단계</span>
-        <input
-          type="range" min={0} max={9} value={idx}
-          onChange={e => setIdx(Number(e.target.value))}
-          className="flex-1 max-w-xs cursor-pointer"
-          style={{ accentColor: s.green }}
-        />
-        <span className="text-sm font-bold text-gray-900 w-5 shrink-0">{idx + 1}</span>
-        <span className="text-xs text-gray-400 shrink-0">/ 10</span>
-        <div className="flex items-center gap-1.5 ml-4">
-          <div className="w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: s.green }}/>
-          <span className="text-xs text-gray-500 font-mono">{s.green}</span>
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-8">
+        {/* 프라이머리 */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold text-gray-700 shrink-0">프라이머리</span>
+          <input
+            type="range" min={0} max={9} value={pi}
+            onChange={e => setPi(Number(e.target.value))}
+            className="w-36 cursor-pointer"
+            style={{ accentColor: p.green }}
+          />
+          <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{pi + 1}</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: p.green }}/>
+            <span className="text-xs text-gray-400 font-mono">{p.green}</span>
+          </div>
+        </div>
+        <div className="w-px h-5 bg-gray-200 shrink-0"/>
+        {/* 나머지 */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold text-gray-700 shrink-0">나머지</span>
+          <input
+            type="range" min={0} max={9} value={ai}
+            onChange={e => setAi(Number(e.target.value))}
+            className="w-36 cursor-pointer"
+            style={{ accentColor: a.badgeActiveBg }}
+          />
+          <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{ai + 1}</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgeActiveBg }}/>
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgePendingBg }}/>
+          </div>
         </div>
       </div>
       {/* 스크린 3개 */}
       <div className="py-8 px-8 space-y-8">
         {SCREENS.map(({ key, node }) => (
           <div key={key} className="rounded-2xl overflow-hidden border border-gray-200" style={{ height: 720 }}>
-            {node(s)}
+            {node(p, a)}
           </div>
         ))}
       </div>
