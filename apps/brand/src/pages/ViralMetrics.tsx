@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info } from 'lucide-react'
-import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE } from '@wellink/ui'
+import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info, Heart, MessageCircle, Award } from 'lucide-react'
+import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -25,13 +25,72 @@ const kpiByMode: Record<ViewMode, { reach: number; shares: number; saves: number
   yearly:  { reach: 578000, shares: 14880, saves: 46680, viral: 2.6 },
 }
 
-const viralContentData = [
-  { title: '봄맞이 요가 루틴 5분 챌린지', influencer: '@yoga_jimin', type: '릴스', reach: 18200, likes: 2340, comments: 187, saves: 890, shares: 420, viralScore: 92 },
-  { title: '비건 프로틴 바 솔직 후기', influencer: '@fitfoodie_kr', type: '피드', reach: 12400, likes: 1560, comments: 98, saves: 720, shares: 310, viralScore: 78 },
-  { title: '주말 홈트 브이로그', influencer: '@daily_hana', type: '릴스', reach: 9800, likes: 1120, comments: 76, saves: 540, shares: 280, viralScore: 65 },
-  { title: '웰링크 제품 언박싱', influencer: '@beauty_sora', type: '스토리', reach: 5600, likes: 680, comments: 42, saves: 320, shares: 150, viralScore: 48 },
-  { title: '건강간식 추천 TOP3', influencer: '@snack_master', type: '피드', reach: 4200, likes: 520, comments: 34, saves: 210, shares: 80, viralScore: 35 },
+// 100개 바이럴 콘텐츠 더미 — 원본 ContentScoreItem 동등 (finalScore/grade/performanceScore/momentumScore)
+type ViralContentType = '릴스' | '피드' | '스토리' | '영상' | '쇼츠'
+type ContentGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'
+type ViralContent = {
+  id: string
+  title: string
+  influencer: string
+  type: ViralContentType
+  reach: number
+  likes: number
+  comments: number
+  saves: number
+  shares: number
+  viralScore: number
+  performanceScore: number
+  momentumScore: number
+  grade: ContentGrade
+  createdAt: string
+}
+// 등급 계산 — 원본 getPerformanceGrade
+const calcGrade = (score: number): ContentGrade => {
+  if (score >= 80) return 'A'
+  if (score >= 60) return 'B'
+  if (score >= 40) return 'C'
+  if (score >= 20) return 'D'
+  return 'E'
+}
+const VC_TITLES = [
+  '봄맞이 요가 루틴 5분 챌린지', '비건 프로틴 바 솔직 후기', '주말 홈트 브이로그', '웰링크 제품 언박싱', '건강간식 추천 TOP3',
+  '신상 앰플 일주일 사용기', '러닝화 100km 신어보기', '다이어트 도시락 일주일 기록', '아침 요가 루틴 추천', '필라테스 입문 한 달 변화',
+  '비타민C 앰플 비교 리뷰', '스트레칭 루틴 따라해봤어요', '단백질 보충제 솔직 시식', '레깅스 코디 추천', '저당 디저트 만들기',
+  '홈카페 굿즈 언박싱', '미니멀 인테리어 챌린지', '캠핑 장비 추천템', '노티드 도넛 후기', '강남 맛집 투어',
 ]
+const VC_INFLUENCERS = [
+  '@yoga_jimin', '@fitfoodie_kr', '@daily_hana', '@beauty_sora', '@snack_master',
+  '@runner_kim', '@diet_diary', '@yoga_morning', '@pilates_world', '@vitamin_review',
+  '@stretch_daily', '@protein_kim', '@leggings_lover', '@low_sugar', '@homecafe_master',
+  '@minimal_int', '@camping_pick', '@notted_kr', '@gangnam_food', '@beauty_lab',
+]
+const VC_TYPES: ViralContentType[] = ['릴스', '피드', '스토리', '영상', '쇼츠']
+const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, i) => {
+  const isProcessing = i % 19 === 18  // 5%는 점수 산정 중
+  const viralScore = isProcessing ? 0 : Math.max(8, Math.min(98, 30 + (i * 7) % 70))
+  const performanceScore = isProcessing ? 0 : Math.max(0, viralScore - 5 + (i % 9))
+  const momentumScore = isProcessing ? 0 : Math.max(0, viralScore - 8 + (i % 13))
+  const grade: ContentGrade = isProcessing ? 'processing' : calcGrade(performanceScore)
+  const reach = isProcessing ? 0 : 1000 + (i * 511) % 30000
+  const likes = isProcessing ? 0 : Math.floor(reach * (0.06 + (i % 7) * 0.005))
+  const comments = isProcessing ? 0 : Math.floor(likes * (0.08 + (i % 5) * 0.01))
+  const saves = isProcessing ? 0 : Math.floor(likes * (0.3 + (i % 4) * 0.05))
+  const shares = isProcessing ? 0 : Math.floor(likes * (0.15 + (i % 6) * 0.02))
+  const monthIdx = (i * 7) % 4 + 1
+  const dayIdx = ((i * 11) % 28) + 1
+  return {
+    id: `v-${i + 1}`,
+    title: i < VC_TITLES.length ? VC_TITLES[i] : `${VC_TITLES[i % VC_TITLES.length]} #${Math.floor(i / VC_TITLES.length) + 1}`,
+    influencer: VC_INFLUENCERS[i % VC_INFLUENCERS.length],
+    type: VC_TYPES[i % VC_TYPES.length],
+    reach, likes, comments, saves, shares,
+    viralScore,
+    performanceScore,
+    momentumScore,
+    grade,
+    createdAt: `2026-${String(monthIdx).padStart(2, '0')}-${String(dayIdx).padStart(2, '0')}`,
+  }
+})
 
 // 추세 미니 차트 (바 형태)
 function TrendMiniBar({ values, color }: { values: number[]; color: string }) {
@@ -84,6 +143,15 @@ export default function ViralMetrics() {
   const isInstagramConnected = useInstagramConnected()
   const [viewMode, setViewMode] = useState<ViewMode>('monthly')
   const [dateOffset, setDateOffset] = useState(0)
+  // 신규 — 콘텐츠 필터·정렬·페이지네이션·등급 필터 (원본 보강)
+  type ContentSort = 'createdAt' | 'views' | 'likes' | 'comments' | 'engagement'
+  type ContentFilter = '전체' | '릴스' | '피드' | '스토리' | '영상' | '쇼츠'
+  type GradeFilterT = '전체' | 'processing' | 'A' | 'B' | 'C' | 'D' | 'E'
+  const [contentSort, setContentSort] = useState<ContentSort>('createdAt')
+  const [contentFilter, setContentFilter] = useState<ContentFilter>('전체')
+  const [gradeFilter, setGradeFilter] = useState<GradeFilterT>('전체')
+  const [contentPage, setContentPage] = useState(1)
+  const VC_PAGE_SIZE = 10
 
   /* ── QA: 로딩 스켈레톤 ── */
   if (qa === 'loading') {
@@ -280,71 +348,244 @@ export default function ViralMetrics() {
         </div>
       </div>
 
-      {/* 콘텐츠별 바이럴 성과 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
-            <p className="text-xs text-gray-500 mt-0.5">바이럴 점수 높은 순 · {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}</p>
+      {/* 릴스 평균 조회수 + 등급 분포 — 원본 ViralMetricsSection 보강 */}
+      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+        {/* 릴스 평균 조회수 카드 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500">릴스 평균 조회수</span>
+            <Eye size={14} className="text-gray-400" />
           </div>
-          <button
-            onClick={() => showToast('CSV 파일 다운로드를 시작합니다.', 'success')}
-            className="text-xs text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
-          >
-            CSV 내보내기
-          </button>
+          <p className="text-2xl font-bold text-gray-900">
+            {(() => {
+              const reels = viralContentData.filter(c => c.type === '릴스' && c.reach > 0)
+              return reels.length > 0 ? fmtNumber(Math.floor(reels.reduce((s, c) => s + c.reach, 0) / reels.length)) : '—'
+            })()}
+          </p>
+          <p className="text-[11px] text-gray-400 mt-1">릴스 콘텐츠 {viralContentData.filter(c => c.type === '릴스').length}건 평균</p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-50">
-                {['콘텐츠', '인플루언서', '유형', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
-                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {viralContentData.map(item => (
-                <tr key={item.title} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                        <Image size={14} className="text-gray-400" />
-                      </div>
-                      <span className="text-sm text-gray-900 max-w-[160px] truncate">{item.title}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-500">{item.influencer}</td>
-                  <td className="py-3 px-4">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-700 font-medium">{fmtNumber(item.reach)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.likes)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.comments)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.saves)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(item.shares)}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${item.viralScore}%`,
-                            // 바이럴 스코어: 80+ 녹색 / 50~79 amber / 49이하 gray
-                            backgroundColor: item.viralScore >= 80 ? 'var(--color-brand-green)' : item.viralScore >= 50 ? CHART_COLORS.warn : CHART_COLORS.inactive
-                          }}
-                        />
-                      </div>
-                      <span className={`text-sm font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
-                        {item.viralScore}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* 등급 분포 도넛 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Award size={14} className="text-gray-400" aria-hidden="true" />
+            <h3 className="text-sm font-semibold text-gray-900">콘텐츠 등급 분포</h3>
+            <span title="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다."><Info size={11} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+          </div>
+          <GradeDonut data={viralContentData} />
         </div>
+      </div>
+
+      {/* 콘텐츠별 바이럴 성과 테이블 (필터·정렬·페이지네이션 보강) */}
+      {(() => {
+        // 필터링·정렬
+        let list = viralContentData
+        if (contentFilter !== '전체') list = list.filter(c => c.type === contentFilter)
+        if (gradeFilter !== '전체') list = list.filter(c => c.grade === gradeFilter)
+        const sorted = [...list].sort((a, b) => {
+          switch (contentSort) {
+            case 'createdAt': return b.createdAt.localeCompare(a.createdAt)
+            case 'views': return b.reach - a.reach
+            case 'likes': return b.likes - a.likes
+            case 'comments': return b.comments - a.comments
+            case 'engagement': return (b.likes + b.comments) - (a.likes + a.comments)
+            default: return b.viralScore - a.viralScore
+          }
+        })
+        const totalPages = Math.max(1, Math.ceil(sorted.length / VC_PAGE_SIZE))
+        const safePage = Math.min(contentPage, totalPages)
+        const paginated = sorted.slice((safePage - 1) * VC_PAGE_SIZE, safePage * VC_PAGE_SIZE)
+        return (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
+                <p className="text-xs text-gray-500 mt-0.5">총 {sorted.length}건 · {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}</p>
+              </div>
+              <button
+                onClick={() => showToast('CSV 파일 다운로드를 시작합니다.', 'success')}
+                className="text-xs text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+              >
+                CSV 내보내기
+              </button>
+            </div>
+            {/* 필터·정렬 컨트롤 — 신규 (원본 SortKey/ContentFilter/GradeFilter 보강) */}
+            <div className="px-5 py-3 border-b border-gray-50 flex flex-wrap items-center gap-2">
+              <span className="text-[11px] text-gray-500">유형</span>
+              <CustomSelect
+                value={contentFilter}
+                onChange={v => { setContentFilter(v as ContentFilter); setContentPage(1) }}
+                options={(['전체', '릴스', '피드', '스토리', '영상', '쇼츠'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
+                className="text-xs"
+              />
+              <span className="text-[11px] text-gray-500 ml-2">등급</span>
+              <CustomSelect
+                value={gradeFilter}
+                onChange={v => { setGradeFilter(v as GradeFilterT); setContentPage(1) }}
+                options={[
+                  { label: '전체', value: '전체' },
+                  { label: 'A (우수)', value: 'A' },
+                  { label: 'B', value: 'B' },
+                  { label: 'C', value: 'C' },
+                  { label: 'D', value: 'D' },
+                  { label: 'E', value: 'E' },
+                  { label: '점수 산정중', value: 'processing' },
+                ]}
+                className="text-xs"
+              />
+              <span className="text-[11px] text-gray-500 ml-2">정렬</span>
+              <CustomSelect
+                value={contentSort}
+                onChange={v => { setContentSort(v as ContentSort); setContentPage(1) }}
+                options={[
+                  { label: '최신순', value: 'createdAt' },
+                  { label: '조회 많은순', value: 'views' },
+                  { label: '좋아요 많은순', value: 'likes' },
+                  { label: '댓글 많은순', value: 'comments' },
+                  { label: '참여 많은순', value: 'engagement' },
+                ]}
+                className="text-xs ml-auto"
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-50">
+                    {['콘텐츠', '인플루언서', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
+                      <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map(item => (
+                    <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                            <Image size={14} className="text-gray-400" />
+                          </div>
+                          <span className="text-sm text-gray-900 max-w-[160px] truncate" title={item.title}>{item.title}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-500">{item.influencer}</td>
+                      <td className="py-3 px-4">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <GradePill grade={item.grade} />
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-700 font-medium">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
+                      <td className="py-3 px-4">
+                        {item.grade === 'processing' ? (
+                          <span className="text-xs text-gray-400">산정 중</span>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full"
+                                style={{
+                                  width: `${item.viralScore}%`,
+                                  backgroundColor: item.viralScore >= 80 ? 'var(--color-brand-green)' : item.viralScore >= 50 ? CHART_COLORS.warn : CHART_COLORS.inactive
+                                }}
+                              />
+                            </div>
+                            <span className={`text-sm font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                              {item.viralScore}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {paginated.length === 0 && (
+                    <tr>
+                      <td colSpan={10} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* 페이지네이션 */}
+            {sorted.length > VC_PAGE_SIZE && (
+              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
+                <span className="text-xs text-gray-500">총 {sorted.length}개 · {safePage} / {totalPages}</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setContentPage(p => Math.max(1, p - 1))}
+                    disabled={safePage === 1}
+                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  >이전</button>
+                  <span className="text-xs text-gray-600 px-2">{safePage} / {totalPages}</span>
+                  <button
+                    onClick={() => setContentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={safePage === totalPages}
+                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  >다음</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })()}
+    </div>
+  )
+}
+
+/** 등급 배지 — 원본 ScorePill 동등 */
+function GradePill({ grade }: { grade: ContentGrade }) {
+  const cls = grade === 'A' ? 'bg-emerald-100 text-emerald-700'
+    : grade === 'B' ? 'bg-amber-100 text-amber-700'
+    : grade === 'processing' ? 'bg-blue-50 text-blue-600'
+    : 'bg-gray-100 text-gray-600'
+  const label = grade === 'processing' ? '산정 중' : grade
+  return <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
+}
+
+/** 등급 분포 도넛 — 원본 DonutChart 동등 (SVG 인라인) */
+function GradeDonut({ data }: { data: ViralContent[] }) {
+  const counts = { A: 0, B: 0, C: 0, D: 0, E: 0, processing: 0 } as Record<ContentGrade, number>
+  for (const c of data) counts[c.grade] = (counts[c.grade] ?? 0) + 1
+  const arr = [
+    { label: 'A 우수', value: counts.A, color: '#10b981' },
+    { label: 'B', value: counts.B, color: '#f59e0b' },
+    { label: 'C', value: counts.C, color: '#9ca3af' },
+    { label: 'D', value: counts.D, color: '#d1d5db' },
+    { label: 'E', value: counts.E, color: '#e5e7eb' },
+    { label: '산정중', value: counts.processing, color: '#3b82f6' },
+  ].filter(a => a.value > 0)
+  const total = arr.reduce((s, a) => s + a.value, 0)
+  if (total === 0) return <p className="text-sm text-gray-400 text-center py-8">데이터가 없습니다.</p>
+  const cx = 60, cy = 60, r = 50, ir = 32
+  let acc = 0
+  return (
+    <div className="flex items-center gap-4 flex-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        {arr.map(a => {
+          const start = (acc / total) * Math.PI * 2 - Math.PI / 2
+          acc += a.value
+          const end = (acc / total) * Math.PI * 2 - Math.PI / 2
+          const large = end - start > Math.PI ? 1 : 0
+          const sx = cx + r * Math.cos(start), sy = cy + r * Math.sin(start)
+          const ex = cx + r * Math.cos(end), ey = cy + r * Math.sin(end)
+          const isx = cx + ir * Math.cos(end), isy = cy + ir * Math.sin(end)
+          const iex = cx + ir * Math.cos(start), iey = cy + ir * Math.sin(start)
+          const d = `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 ${large} 0 ${iex} ${iey} Z`
+          return <path key={a.label} d={d} fill={a.color} />
+        })}
+      </svg>
+      <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-1 min-w-[120px]">
+        {arr.map(a => (
+          <div key={a.label} className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1 text-[11px] text-gray-700">
+              <span className="w-2 h-2 rounded-full" style={{ background: a.color }} />
+              {a.label}
+            </span>
+            <span className="text-[11px] font-semibold text-gray-900">{a.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
