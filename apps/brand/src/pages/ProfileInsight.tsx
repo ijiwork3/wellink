@@ -17,6 +17,33 @@ const kpiByPeriod: Record<Period, { followers: number; reach: number; engagement
   연간: { followers: 18200, reach: 13.1, engagement: 3.5, impressions: 9200000, trends: [22.8, 3.1, -0.8, 18.4] },
 }
 
+/** 전환 KPI 데이터 — 원본 buildProfileConversionMetrics 동등 (프로필 방문/웹사이트 클릭/클릭률) */
+const conversionByPeriod: Record<Period, { profileViews: number; websiteClicks: number; profileViewsGrowth: number; websiteClicksGrowth: number }> = {
+  일간: { profileViews: 480,    websiteClicks: 92,    profileViewsGrowth: 4.1, websiteClicksGrowth: 6.2 },
+  주간: { profileViews: 3200,   websiteClicks: 612,   profileViewsGrowth: 8.5, websiteClicksGrowth: 9.8 },
+  월간: { profileViews: 12400,  websiteClicks: 2380,  profileViewsGrowth: 14.6, websiteClicksGrowth: 18.2 },
+  연간: { profileViews: 142000, websiteClicks: 26800, profileViewsGrowth: 32.4, websiteClicksGrowth: 41.5 },
+}
+
+/** 팔로워 인구통계 더미 — 원본 followersAudience 동등 */
+const FOLLOWER_DEMOGRAPHIC = {
+  gender: { malePercent: 38, femalePercent: 62 },
+  age: [
+    { range: '18-24', percent: 18 },
+    { range: '25-34', percent: 42 },
+    { range: '35-44', percent: 24 },
+    { range: '45-54', percent: 12 },
+    { range: '55+', percent: 4 },
+  ],
+}
+
+/** AI 프로필 분석 더미 — 원본 useGetProfileAI 동등 */
+const PROFILE_AI_SUMMARY = `브랜드 프로필 핵심 인사이트
+
+• 팔로워 25K 규모 대비 도달률(12.4%)과 참여율(3.7%)이 모두 업계 평균 이상이며, 콘텐츠 반응이 안정적입니다.
+• 노출 대비 도달률이 4월 들어 +1.8%p 상승했고, 동일 기간 게시 빈도도 늘어 콘텐츠 리듬을 잘 유지하고 있습니다.
+• 25-34세 여성 팔로워 비중이 가장 높아(약 26%), 라이프스타일·뷰티·웰니스 카테고리 광고 캠페인과의 적합도가 높습니다.`
+
 /** 기간별 팔로워 추이 데이터 — null = 데이터 없음(연결 전 기간) */
 type BarDataItem = { label: string; value: number | null; showLabel?: boolean }
 
@@ -485,6 +512,52 @@ export default function ProfileInsight() {
         />
       </div>
 
+      {/* AI 프로필 분석 카드 — 원본 AIAnalysisCard 보강 */}
+      <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-100 rounded-2xl p-5">
+        <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="w-7 h-7 rounded-full bg-white/80 flex items-center justify-center text-emerald-600 text-base">✨</span>
+            <h3 className="text-sm font-bold text-gray-900">AI 프로필 분석</h3>
+          </div>
+        </div>
+        <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{PROFILE_AI_SUMMARY}</p>
+      </div>
+
+      {/* 전환 KPI 3개 — 원본 buildProfileConversionMetrics 보강 */}
+      {(() => {
+        const conv = conversionByPeriod[period]
+        const ctr = conv.profileViews > 0 ? +((conv.websiteClicks / conv.profileViews) * 100).toFixed(1) : 0
+        return (
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
+            <KPICard
+              title="프로필 방문"
+              value={fmtNumber(conv.profileViews)}
+              sub="계정 관심도"
+              trend={conv.profileViewsGrowth}
+              trendLabel="전기간 대비"
+              icon={<Users size={16} />}
+              tooltip="콘텐츠/계정을 본 사용자가 프로필 페이지로 이동한 횟수"
+            />
+            <KPICard
+              title="웹사이트 클릭"
+              value={fmtNumber(conv.websiteClicks)}
+              sub="외부 유입"
+              trend={conv.websiteClicksGrowth}
+              trendLabel="전기간 대비"
+              icon={<TrendingUp size={16} />}
+              tooltip="프로필에 연결된 웹사이트 링크를 누른 횟수"
+            />
+            <KPICard
+              title="클릭률"
+              value={`${ctr}%`}
+              sub="전환율"
+              icon={<BarChart2 size={16} />}
+              tooltip="웹사이트 클릭 ÷ 프로필 방문 × 100 — 전환 유도 효율"
+            />
+          </div>
+        )
+      })()}
+
       {/* 피드별 추세선 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
@@ -625,6 +698,62 @@ export default function ProfileInsight() {
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h3 className="text-sm font-semibold text-gray-900">팔로워 분석</h3>
+          <span className="text-[11px] text-gray-400">28일 누적 · 비공개 계정 제외</span>
+        </div>
+        <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
+          {/* 성별 */}
+          <div>
+            <p className="text-xs font-medium text-gray-500 mb-3">성별</p>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-gray-700 font-medium">남성</span>
+                  <span className="text-gray-900 font-bold">{FOLLOWER_DEMOGRAPHIC.gender.malePercent}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gray-700 rounded-full" style={{ width: `${FOLLOWER_DEMOGRAPHIC.gender.malePercent}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-gray-700 font-medium">여성</span>
+                  <span className="text-gray-900 font-bold">{FOLLOWER_DEMOGRAPHIC.gender.femalePercent}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-green rounded-full" style={{ width: `${FOLLOWER_DEMOGRAPHIC.gender.femalePercent}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* 연령대 */}
+          <div>
+            <p className="text-xs font-medium text-gray-500 mb-3">연령대</p>
+            <div className="space-y-2.5">
+              {FOLLOWER_DEMOGRAPHIC.age.map((a, i) => (
+                <div key={a.range}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-700 font-medium">{a.range}세</span>
+                    <span className="text-gray-900 font-bold">{a.percent}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        i === 1 ? 'bg-gray-900' : i === 2 ? 'bg-gray-700' : i === 0 ? 'bg-gray-500' : 'bg-gray-400'
+                      }`}
+                      style={{ width: `${a.percent}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
