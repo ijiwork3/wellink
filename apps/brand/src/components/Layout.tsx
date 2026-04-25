@@ -50,7 +50,7 @@ export default function Layout() {
           </div>
         )}
         <InstagramGlobalBanner />
-        <main id="main-content" className={`max-w-[1080px] ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`@container w-full ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>

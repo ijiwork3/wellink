@@ -1,728 +1,521 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Check, Loader2, XCircle, RefreshCw } from 'lucide-react'
-import { InfluencerCard, Modal, CustomSelect, TagInput, FileUpload, useToast, useQAMode, fmtPrice, TIMER_MS } from '@wellink/ui'
+import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users } from 'lucide-react'
+import { Modal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
 
-// NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
-const aiInfluencers = [
-  { id: 1, name: '이창민', platform: '인스타그램', followers: 8700, engagement: 4.1, authentic: 92.3, category: ['피트니스', '크로스핏'] },
-  { id: 4, name: '김가애', platform: '인스타그램', followers: 18900, engagement: 4.2, authentic: 88.7, category: ['요가'] },
-  { id: 5, name: '박리나', platform: '인스타그램', followers: 7120, engagement: 2.23, authentic: 81.4, category: ['웰니스'] },
-]
+const PLATFORMS = ['Instagram', 'YouTube', '블로그', '틱톡']
+const CATEGORIES = ['맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아']
+const POST_TYPES = ['피드, 릴스', '피드', '릴스', '스토리', '유튜브 쇼츠']
+const PRECAUTIONS = ['릴스 제작 우대', '체험 후기 필수', '없음']
+const PHOTO_COUNTS = ['3장 이상', '5장 이상', '7장 이상', '10장 이상']
+const VIDEO_COUNTS = ['1개 이상 (15초+)', '1개 이상 (30초+)', '2개 이상', '없음']
 
-const goalOptions = [
-  { label: '선택하세요', value: '' },
-  { label: '브랜드 인지도 향상', value: '인지도' },
-  { label: '구매 전환 유도', value: '전환' },
-  { label: '팔로워 증가', value: '팔로워' },
-  { label: '콘텐츠 제작', value: '콘텐츠' },
-]
+const TODAY = new Date().toISOString().split('T')[0]
 
-const TOTAL_STEPS = 5
-const stepLabels = ['기본정보', '예산·조건', '원고가이드', '인플루언서', '검토발행']
-
-const FILLED_S1 = { name: '봄 시즌 웰니스 캠페인', goal: '전환', channels: ['인스타그램'], startDate: '2026-05-01', endDate: '2026-05-31', applyDeadline: '2026-04-25', campaignType: '기본캠페인', brandHashtags: ['#웰링크', '#건강한일상'] }
-const FILLED_S2 = { budget: '2000000', minUnit: '50000', maxUnit: '300000', headcount: '10', supply: '배송' }
-
-// 오늘 날짜 (min 속성용) — 컴포넌트 외부 상수로 한 번만 계산
-const TODAY_STR = new Date().toISOString().split('T')[0]
-
-// 천 단위 콤마 포맷
-function formatNumber(v: string): string {
-  const num = v.replace(/[^0-9]/g, '')
-  if (!num) return ''
-  return Number(num).toLocaleString('ko-KR')
+const FILLED = {
+  type: '방문형' as '방문형' | '택배형',
+  location: '강남/서초',
+  storeName: '봄 요가 스튜디오',
+  platform: 'Instagram',
+  category: '맛집/푸드',
+  description: '브랜드 소개와 캠페인 핵심 메시지를 담아주세요.',
+  productName: '4구 한우 프리미엄 선물세트 1.2kg',
+  productDetail: '등심 300g + 안심 300g + 채끝 300g + 특수부위 300g',
+  productPrice: '168000',
+  rewardPoint: '0',
+  keywords: ['#봄요가', '#강남요가'],
+  postType: '피드, 릴스',
+  precaution: '릴스 제작 우대',
+  photoCount: '5장 이상',
+  videoCount: '1개 이상 (15초+)',
+  guideText: '구체적인 촬영 가이드를 적어주세요.',
+  link: 'https://store.example.com/1',
+  recruitStart: '2026-04-25',
+  recruitEnd: '2026-05-25',
+  announceDate: '2026-05-30',
+  uploadStart: '2026-04-25',
+  uploadEnd: '2026-05-25',
+  headcount: '20',
 }
 
-// 콤마 제거 후 숫자만
-function parseNumber(v: string): string {
-  return v.replace(/[^0-9]/g, '')
+type Question = {
+  id: string
+  type: 'short' | 'choice'
+  title: string
+  desc: string
+  required: boolean
+  options?: string[]
 }
-const FILLED_S3 = { required: '제품의 건강 효능을 자연스럽게 언급해주세요. 실제 사용 경험 중심으로 제작하세요.', prohibited: ['#광고', '#협찬제품'], hashtags: ['#웰링크', '#웰니스챌린지'], contentRef: '밝고 자연스러운 라이프스타일 스타일', snsExternalUse: '사용 가능' }
 
-// 날짜 입력 wrapper (styled)
-function StyledDateInput({ label, value, min, max, onChange }: { label: string; value: string; min: string; max?: string; onChange: (v: string) => void }) {
-  return (
-    <div>
-      <label className="text-xs font-medium text-gray-600 block mb-1.5">{label}</label>
-      <div className="relative">
-        <input
-          type="date"
-          value={value}
-          min={min}
-          max={max}
-          onChange={e => onChange(e.target.value)}
-          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150 bg-white cursor-pointer"
-        />
-      </div>
-    </div>
-  )
+const fmtKRW = (v: string | number) => {
+  const n = typeof v === 'string' ? Number(v.replace(/[^0-9]/g, '')) : v
+  if (!n) return '0원'
+  return n.toLocaleString('ko-KR') + '원'
 }
 
 export default function CampaignNew() {
   const navigate = useNavigate()
-  const location = useLocation()
   const qa = useQAMode()
   const { showToast } = useToast()
 
   const isFilled = qa === 'filled' || qa === 'modal-complete'
+  const init = isFilled ? FILLED : {
+    type: '방문형' as '방문형' | '택배형',
+    location: '', storeName: '', platform: 'Instagram', category: '맛집/푸드',
+    description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '',
+    keywords: [] as string[], postType: '피드, 릴스', precaution: '릴스 제작 우대',
+    photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
+    recruitStart: '', recruitEnd: '', announceDate: '', uploadStart: '', uploadEnd: '',
+    headcount: '20',
+  }
 
-  // AIListup에서 전달된 인플루언서 ID 파싱
-  const locationSelectedIds: number[] = (() => {
-    const ids = (location.state as { selectedInfluencers?: (string | number)[] } | null)?.selectedInfluencers
-    if (!ids || !Array.isArray(ids)) return []
-    return ids.map(id => Number(id)).filter(id => !Number.isNaN(id))
-  })()
-
-  const [step, setStep] = useState(1)
+  const [form, setForm] = useState(init)
+  const [keywordInput, setKeywordInput] = useState('')
+  const [questions, setQuestions] = useState<Question[]>([])
   const [completedModal, setCompletedModal] = useState(qa === 'modal-complete')
-  const [isPublishing, setIsPublishing] = useState(false)
-  const [autoSaved, setAutoSaved] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-  const [s1, setS1] = useState(isFilled ? FILLED_S1 : { name: '', goal: '', channels: [] as string[], startDate: '', endDate: '', applyDeadline: '', campaignType: '기본캠페인', brandHashtags: [] as string[] })
-  const [s2, setS2] = useState(isFilled ? FILLED_S2 : { budget: '', minUnit: '', maxUnit: '', headcount: '', supply: '배송' })
-  const [s3, setS3] = useState(isFilled ? FILLED_S3 : { required: '', prohibited: [] as string[], hashtags: [] as string[], contentRef: '', snsExternalUse: '사용 불가' })
-  const [selected, setSelected] = useState<Set<number>>(
-    isFilled
-      ? new Set([1, 4])
-      : locationSelectedIds.length > 0
-        ? new Set(locationSelectedIds)
-        : new Set()
-  )
+  const set = <K extends keyof typeof form>(k: K, v: typeof form[K]) => setForm(p => ({ ...p, [k]: v }))
 
-  useEffect(() => {
-    const s = qa === 'step-2' ? 2 : qa === 'step-3' ? 3 : qa === 'step-4' ? 4 : (qa === 'filled' || qa === 'step-5' || qa === 'modal-complete') ? 5 : 1
-    setStep(s)
-    setCompletedModal(qa === 'modal-complete')
-    if (qa === 'filled' || qa === 'modal-complete' || qa === 'step-5') {
-      setS1(FILLED_S1); setS2(FILLED_S2); setS3(FILLED_S3)
-      setSelected(new Set([1, 4]))
-    }
-  }, [qa])
+  // 자동 캠페인 제목
+  const autoTitle = form.location && form.storeName ? `[${form.location}] ${form.storeName}` : ''
 
-  // 이슈 2: 폼 이탈 경고 — step > 1이거나 입력값 있을 때 beforeunload 설정
-  const isDirty = useCallback(() => {
-    if (step > 1) return true
-    if (s1.name.trim() || s1.goal || s1.channels.length > 0) return true
-    if (s2.budget || s2.headcount) return true
-    if (s3.required.trim() || s3.contentRef.trim()) return true
-    return false
-  }, [step, s1, s2, s3])
+  // 총 결제 예정 금액
+  const totalPay = useMemo(() => {
+    const price = Number(form.productPrice) || 0
+    const reward = Number(form.rewardPoint) || 0
+    const head = Number(form.headcount) || 0
+    return (price + reward) * head
+  }, [form.productPrice, form.rewardPoint, form.headcount])
 
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty()) {
-        e.preventDefault()
-        e.returnValue = ''
-      }
-    }
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [isDirty])
-
-  // Step4 진입 시 AIListup에서 전달된 인플루언서 ID 반영
-  useEffect(() => {
-    if (step === 4 && locationSelectedIds.length > 0) {
-      setSelected(prev => {
-        const next = new Set(prev)
-        locationSelectedIds.forEach(id => next.add(id))
-        return next
-      })
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step])
-
-  if (qa === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-        <XCircle size={44} className="text-red-300" aria-hidden="true" />
-        <div className="text-center">
-          <p className="text-sm font-semibold text-gray-900">캠페인 등록 중 오류가 발생했습니다</p>
-          <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
-        </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors"
-        >
-          <RefreshCw size={14} aria-hidden="true" />다시 시도
-        </button>
-      </div>
-    )
+  const addKeyword = () => {
+    const v = keywordInput.trim().replace(/^#/, '')
+    if (!v) return
+    if (form.keywords.includes('#' + v)) return
+    setForm(p => ({ ...p, keywords: [...p.keywords, '#' + v] }))
+    setKeywordInput('')
   }
+  const removeKeyword = (k: string) => setForm(p => ({ ...p, keywords: p.keywords.filter(x => x !== k) }))
 
-  const triggerAutoSave = () => {
-    setAutoSaved(true)
-    setTimeout(() => setAutoSaved(false), TIMER_MS.AUTO_SAVE_FEEDBACK)
+  const addQuestion = (type: 'short' | 'choice') => {
+    setQuestions(q => [...q, {
+      id: Math.random().toString(36).slice(2, 8),
+      type, title: '', desc: '', required: false,
+      options: type === 'choice' ? ['옵션 1'] : undefined,
+    }])
   }
+  const updateQ = (id: string, patch: Partial<Question>) => setQuestions(q => q.map(x => x.id === id ? { ...x, ...patch } : x))
+  const removeQ = (id: string) => setQuestions(q => q.filter(x => x.id !== id))
 
-  const handleNext = () => {
-    if (step === 1) {
-      if (!s1.name.trim()) { showToast('캠페인명을 입력해 주세요.', 'error'); return }
-      if (!s1.goal) { showToast('캠페인 목적을 선택하세요.', 'error'); return }
-      if (s1.channels.length === 0) { showToast('채널을 최소 1개 선택하세요.', 'error'); return }
-      if (!s1.startDate || !s1.endDate) { showToast('시작일과 종료일을 입력하세요.', 'error'); return }
-      if (s1.endDate <= s1.startDate) { showToast('종료일은 시작일보다 이후여야 합니다.', 'error'); return }
-      if (s1.startDate && s1.endDate) {
-        const diffDays = (new Date(s1.endDate).getTime() - new Date(s1.startDate).getTime()) / (1000 * 60 * 60 * 24)
-        if (diffDays < 7) { showToast('캠페인 기간은 최소 7일 이상이어야 합니다.', 'error'); return }
-        if (diffDays > 180) { showToast('캠페인 기간은 최대 180일까지 설정 가능합니다.', 'error'); return }
-      }
-      if (s1.applyDeadline && s1.startDate && s1.applyDeadline > s1.startDate) {
-        showToast('지원 마감일은 시작일 이전이어야 합니다.', 'error'); return
-      }
-      if (s1.applyDeadline && s1.endDate && s1.applyDeadline > s1.endDate) {
-        showToast('지원 마감일은 캠페인 종료일 이전이어야 합니다.', 'error'); return
-      }
-    }
-    if (step === 2) {
-      if (!s2.headcount || parseInt(s2.headcount) < 1) { showToast('모집 인원을 1명 이상 입력하세요.', 'error'); return }
-      if (!s2.budget || s2.budget === '0' || parseInt(s2.budget.replace(/,/g, ''), 10) < 1) { showToast('캠페인 예산을 입력하세요.', 'error'); return }
-      if (s2.minUnit && s2.maxUnit && parseInt(s2.minUnit, 10) > parseInt(s2.maxUnit, 10)) {
-        showToast('최소 단가는 최대 단가보다 클 수 없습니다.', 'error'); return
-      }
-      if (s2.maxUnit && s2.headcount && s2.budget) {
-        const totalUnit = parseInt(s2.maxUnit, 10) * parseInt(s2.headcount, 10)
-        if (totalUnit > parseInt(s2.budget, 10)) {
-          showToast('1인당 최대 단가 × 모집 인원이 총 예산을 초과합니다.', 'error'); return
-        }
-      }
-    }
-    if (step === 3) {
-      if (!s3.required.trim()) { showToast('필수 포함 내용을 입력하세요.', 'error'); return }
-    }
-    if (step === 4) {
-      if (selected.size === 0) { showToast('인플루언서를 최소 1명 선택하세요.', 'error'); return }
-    }
-    triggerAutoSave()
-    if (step < TOTAL_STEPS) setStep(s => s + 1)
-  }
-
-  const handlePrev = () => {
-    if (step > 1) setStep(s => s - 1)
-  }
-
-  const toggleChannel = (ch: string) => {
-    setS1(prev => {
-      const channels = prev.channels.includes(ch)
-        ? prev.channels.filter(c => c !== ch)
-        : [...prev.channels, ch]
-      return { ...prev, channels }
-    })
+  const handleSubmit = () => {
+    if (!form.location || !form.storeName) { showToast('지역과 가게 이름을 입력해주세요', 'error'); return }
+    if (!form.productName || !form.productPrice) { showToast('제공 상품 정보를 입력해주세요', 'error'); return }
+    if (!form.recruitStart || !form.recruitEnd) { showToast('모집 기간을 설정해주세요', 'error'); return }
+    setSubmitting(true)
+    setTimeout(() => {
+      setSubmitting(false)
+      setCompletedModal(true)
+    }, TIMER_MS.MEDIUM)
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">새 캠페인 등록</h1>
-          <p className="text-sm text-gray-500 mt-0.5">5단계로 캠페인을 설정합니다.</p>
-        </div>
-        <button
-          onClick={() => navigate('/campaigns')}
-          className="text-sm text-gray-400 hover:text-gray-600 transition-colors mt-1"
-        >
-          취소
-        </button>
+    <div className="space-y-5 pb-24">
+      {/* 뒤로가기 */}
+      <button
+        onClick={() => navigate('/campaigns')}
+        className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+      >
+        <ArrowLeft size={14} aria-hidden="true" />
+        뒤로 가기
+      </button>
+
+      {/* 페이지 타이틀 */}
+      <div>
+        <h1 className="text-xl @md:text-2xl font-bold text-gray-900">새 캠페인 등록</h1>
+        <p className="text-sm text-gray-500 mt-1">인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.</p>
       </div>
 
-      {/* 스텝 인디케이터 */}
-      <div className="flex items-center mb-8">
-        {stepLabels.map((label, i) => {
-          const num = i + 1
-          const isActive = num === step
-          const isDone = num < step
-          return (
-            <div key={label} className="flex items-center flex-1 last:flex-none">
+      {/* ── 섹션 1: 기본 정보 입력 ── */}
+      <Section title="기본 정보 입력">
+        {/* 캠페인 유형 토글 */}
+        <Field label="캠페인 유형">
+          <div className="grid grid-cols-2 gap-2">
+            {(['방문형', '택배형'] as const).map(t => (
               <button
-                onClick={() => num < step && setStep(num)}
-                className={`flex flex-col items-center gap-1 ${num < step ? 'cursor-pointer' : 'cursor-default'}`}
+                key={t}
+                type="button"
+                onClick={() => set('type', t)}
+                className={`py-3 rounded-xl text-sm font-medium border transition-colors ${
+                  form.type === t
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
-                  isDone
-                    ? 'bg-brand-green text-white'
-                    : isActive
-                    ? 'bg-brand-green text-white ring-4 ring-brand-green/20'
-                    : 'bg-gray-100 text-gray-400'
-                }`}>
-                  {isDone ? <Check size={14} aria-hidden="true" /> : num}
-                </div>
-                <span className={`text-xs whitespace-nowrap transition-colors duration-150 ${
-                  isActive
-                    ? 'block text-gray-900 font-semibold'
-                    : isDone
-                    ? 'hidden @sm:block text-gray-600'
-                    : 'hidden @sm:block text-gray-400'
-                }`}>
-                  {label}
-                </span>
+                {t}
               </button>
-              {i < stepLabels.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-1 mt-[-12px] transition-all duration-300 ${num < step ? 'bg-brand-green' : 'bg-gray-100'}`} />
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* 자동저장 표시 */}
-      <div className="flex justify-end mb-3 h-5" aria-live="polite">
-        {autoSaved && (
-          <span className="text-xs text-gray-400 flex items-center gap-1" role="status">
-            <Loader2 size={11} className="animate-spin" aria-hidden="true" />
-            자동 저장됨
-          </span>
-        )}
-      </div>
-
-      {/* Step 1 — wellwave 참고 순서: 제목 → 유형/채널 → 목적 → 기간 → 썸네일+해시태그 */}
-      {step === 1 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
-          <h2 className="text-sm font-semibold text-gray-700">기본 정보</h2>
-
-          {/* Row 1: 캠페인명 (가장 먼저) */}
-          <div>
-            <label htmlFor="s1-campaign-name" className="text-xs font-medium text-gray-600 block mb-1.5">캠페인명 *</label>
-            <input
-              id="s1-campaign-name"
-              type="text"
-              value={s1.name}
-              onChange={e => setS1(p => ({ ...p, name: e.target.value }))}
-              placeholder="예) 봄 시즌 웰니스 캠페인"
-              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-            />
+            ))}
           </div>
+        </Field>
 
-          {/* Row 2: 캠페인 유형 + 채널 선택 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-5">
-            <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">캠페인 유형 *</label>
-              <div className="flex gap-0 border border-gray-200 rounded-xl overflow-hidden">
-                {['기본캠페인', '공동구매'].map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setS1(p => ({ ...p, campaignType: type }))}
-                    className={`flex-1 py-2.5 text-sm font-medium transition-all duration-150 ${
-                      s1.campaignType === type
-                        ? 'bg-brand-green text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">채널 선택 (복수 가능)</label>
-              <div className="flex gap-2 flex-wrap">
-                {['인스타그램', '유튜브', '틱톡', '블로그'].map(ch => (
-                  <button
-                    key={ch}
-                    type="button"
-                    onClick={() => toggleChannel(ch)}
-                    className={`text-sm px-3 py-1.5 rounded-xl border transition-all duration-150 ${
-                      s1.channels.includes(ch)
-                        ? 'bg-brand-green text-white border-brand-green'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-400'
-                    }`}
-                  >
-                    {ch}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Row 3: 캠페인 목적 */}
-          <div>
-            <label id="goal-label" className="text-xs font-medium text-gray-600 block mb-1.5">캠페인 목적 *</label>
-            <CustomSelect
-              value={s1.goal}
-              onChange={v => setS1(p => ({ ...p, goal: v }))}
-              options={goalOptions}
-              placeholder="선택하세요"
-              aria-labelledby="goal-label"
-            />
-          </div>
-
-          {/* Row 4: 날짜 3개 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
-            <StyledDateInput label="시작일 *" value={s1.startDate} min={TODAY_STR} onChange={v => setS1(p => ({ ...p, startDate: v }))} />
-            <StyledDateInput label="종료일 *" value={s1.endDate} min={s1.startDate || TODAY_STR} onChange={v => setS1(p => ({ ...p, endDate: v }))} />
-            <StyledDateInput label="지원 마감" value={s1.applyDeadline} min={TODAY_STR} max={s1.startDate || undefined} onChange={v => setS1(p => ({ ...p, applyDeadline: v }))} />
-          </div>
-
-          {/* Row 5: 썸네일 + 해시태그 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-5">
-            <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">썸네일 이미지</label>
-              <FileUpload
-                hint="캠페인 대표 이미지 (1200x630px 권장)"
-                accept="image/*"
-                multiple={false}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">브랜드 해시태그</label>
-              <TagInput
-                tags={s1.brandHashtags}
-                onChange={tags => setS1(p => ({ ...p, brandHashtags: tags }))}
-                placeholder="#브랜드태그 입력 후 Enter"
-                addHash
-                tagColor="brand"
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+          <Field label="지역">
+            <Input value={form.location} onChange={v => set('location', v)} placeholder="예) 강남/서초" />
+          </Field>
+          <Field label="가게 이름">
+            <Input value={form.storeName} onChange={v => set('storeName', v)} placeholder="예) 킹콩정육점" />
+          </Field>
         </div>
-      )}
 
-      {/* Step 2 — wellwave 참고 순서: 모집인원 → 제품제공방식 → 총예산 → 단가범위 */}
-      {step === 2 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
-          <h2 className="text-sm font-semibold text-gray-700">예산·조건</h2>
+        <Field label="캠페인 제목 (자동 생성)">
+          <input
+            value={autoTitle}
+            disabled
+            placeholder="위 정보를 입력하면 제목이 자동 생성됩니다"
+            className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700"
+          />
+        </Field>
 
-          {/* Row 1: 모집 인원 + 제품 제공 방식 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="s2-headcount" className="text-xs font-medium text-gray-600 block mb-1.5">모집 인원 *</label>
-              <input
-                id="s2-headcount"
-                type="number"
-                value={s2.headcount}
-                onChange={e => setS2(p => ({ ...p, headcount: String(Math.floor(Number(e.target.value))) }))}
-                placeholder="예) 10"
-                min="1"
-                max="9999"
-                step="1"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1.5">제품 제공 방식</label>
-              <div className="flex gap-2">
-                {['배송', '직접 방문', '제공 없음'].map(opt => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => setS2(p => ({ ...p, supply: opt }))}
-                    className={`flex-1 py-2.5 text-sm rounded-xl border transition-all duration-150 ${
-                      s2.supply === opt
-                        ? 'bg-brand-green text-white border-brand-green'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-400'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: 총 예산 */}
-          <div>
-            <label htmlFor="s2-budget" className="text-xs font-medium text-gray-600 block mb-1.5">총 예산 (원) *</label>
-            <input
-              id="s2-budget"
-              type="text"
-              value={formatNumber(s2.budget)}
-              onChange={e => {
-                const raw = parseNumber(e.target.value)
-                if (raw && Number(raw) > 999999999) return
-                setS2(p => ({ ...p, budget: raw }))
-              }}
-              placeholder="예) 2,000,000"
-              className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-            />
-          </div>
-
-          {/* Row 3: 단가 범위 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="s2-min-unit" className="text-xs font-medium text-gray-600 block mb-1.5">인플루언서 단가 최소 (원)</label>
-              <input
-                id="s2-min-unit"
-                type="text"
-                value={formatNumber(s2.minUnit)}
-                onChange={e => setS2(p => ({ ...p, minUnit: parseNumber(e.target.value) }))}
-                placeholder="예) 50,000"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-              />
-            </div>
-            <div>
-              <label htmlFor="s2-max-unit" className="text-xs font-medium text-gray-600 block mb-1.5">인플루언서 단가 최대 (원)</label>
-              <input
-                id="s2-max-unit"
-                type="text"
-                value={formatNumber(s2.maxUnit)}
-                onChange={e => setS2(p => ({ ...p, maxUnit: parseNumber(e.target.value) }))}
-                placeholder="예) 300,000"
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+          <Field label="진행 플랫폼">
+            <Select value={form.platform} onChange={v => set('platform', v)} options={PLATFORMS} />
+          </Field>
+          <Field label="카테고리">
+            <Select value={form.category} onChange={v => set('category', v)} options={CATEGORIES} />
+          </Field>
         </div>
-      )}
 
-      {/* Step 3 */}
-      {step === 3 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700">원고 가이드</h2>
-          <div>
-            <label htmlFor="s3-required" className="text-xs font-medium text-gray-600 block mb-1.5">필수 포함 내용 *</label>
-            <textarea
-              id="s3-required"
-              value={s3.required}
-              onChange={e => setS3(p => ({ ...p, required: e.target.value }))}
-              placeholder="반드시 언급해야 할 제품 특징, 메시지 등을 입력하세요."
-              rows={4}
-              maxLength={500}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-            />
-            <div className="text-right text-xs text-gray-400 mt-0.5">{s3.required.length}/500</div>
+        <Field label="대표 이미지">
+          <div className="border border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center justify-center bg-gray-50/30 cursor-pointer hover:bg-gray-50 transition-colors">
+            <ImageIcon size={28} className="text-gray-300 mb-2" aria-hidden="true" />
+            <p className="text-sm text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
+            <p className="text-xs text-gray-400 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
           </div>
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">금지 표현</label>
-            <TagInput
-              tags={s3.prohibited}
-              onChange={tags => setS3(p => ({ ...p, prohibited: tags }))}
-              placeholder="입력 후 Enter"
-              tagColor="red"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">필수 해시태그</label>
-            <TagInput
-              tags={s3.hashtags}
-              onChange={tags => setS3(p => ({ ...p, hashtags: tags }))}
-              placeholder="#태그 입력 후 Enter"
-              addHash
-              tagColor="brand"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">파일 첨부</label>
-            <FileUpload hint="브랜드 가이드라인, 이미지 파일 등을 첨부하세요" />
-          </div>
+        </Field>
 
-          {/* 콘텐츠 참고 */}
-          <div>
-            <label htmlFor="s3-content-ref" className="text-xs font-medium text-gray-600 block mb-1.5">콘텐츠 참고</label>
-            <textarea
-              id="s3-content-ref"
-              value={s3.contentRef}
-              onChange={e => setS3(p => ({ ...p, contentRef: e.target.value }))}
-              placeholder="참고할 콘텐츠 스타일, 레퍼런스 URL, 톤앤매너 등을 자유롭게 작성해주세요."
-              rows={4}
-              maxLength={300}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
-            />
-            <div className="text-right text-xs text-gray-400 mt-0.5">{s3.contentRef.length}/300</div>
-          </div>
+        <Field label="캠페인 설명">
+          <textarea
+            value={form.description}
+            onChange={e => set('description', e.target.value)}
+            rows={6}
+            placeholder="캠페인 소개 / 제공 내역 / 참여 방법을 작성해주세요."
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+          />
+        </Field>
+      </Section>
 
-          {/* SNS 외 활용 범위 */}
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">SNS 외 활용 범위</label>
-            <div className="flex gap-4">
-              {['사용 가능', '사용 불가'].map(opt => (
-                <label key={opt} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="snsExternalUse"
-                    checked={s3.snsExternalUse === opt}
-                    onChange={() => setS3(p => ({ ...p, snsExternalUse: opt }))}
-                    className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-brand-green/30"
-                  />
-                  <span className="text-sm text-gray-700">{opt}</span>
-                </label>
+      {/* ── 섹션 2: 제공 내역 및 리워드 ── */}
+      <Section title="제공 내역 및 리워드">
+        <Field label="제공 상품명">
+          <Input value={form.productName} onChange={v => set('productName', v)} placeholder="예) 4구 한우 프리미엄 선물세트 1.2kg" />
+        </Field>
+
+        <Field label="제공 내역 상세">
+          <textarea
+            value={form.productDetail}
+            onChange={e => set('productDetail', e.target.value)}
+            rows={3}
+            placeholder="제공되는 상품의 구성이나 특징을 자세히 적어주세요."
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+          />
+        </Field>
+
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+          <Field label="상품 가격 (소비자가)">
+            <div className="relative">
+              <Input
+                value={form.productPrice ? Number(form.productPrice).toLocaleString('ko-KR') : ''}
+                onChange={v => set('productPrice', v.replace(/[^0-9]/g, ''))}
+                placeholder="0"
+                className="text-right pr-9"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+            </div>
+          </Field>
+          <Field label="추가 리워드 (포인트)">
+            <div className="relative">
+              <Input
+                value={form.rewardPoint ? Number(form.rewardPoint).toLocaleString('ko-KR') : ''}
+                onChange={v => set('rewardPoint', v.replace(/[^0-9]/g, ''))}
+                placeholder="0"
+                className="text-right pr-9"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">P</span>
+            </div>
+          </Field>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2.5 text-xs text-blue-700">
+          <p className="font-semibold mb-0.5">배송형 캠페인 안내</p>
+          <p className="text-blue-600">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
+        </div>
+      </Section>
+
+      {/* ── 섹션 3: 미션 및 키워드 ── */}
+      <Section title="미션 및 키워드">
+        <Field label="필수 키워드">
+          <div className="flex gap-2">
+            <input
+              value={keywordInput}
+              onChange={e => setKeywordInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
+              placeholder="예) 킹콩정육점, 수원한우선물세트 (엔터로 추가)"
+              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            />
+            <button
+              onClick={addKeyword}
+              className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm hover:bg-gray-800 transition-colors"
+            >추가</button>
+          </div>
+          {form.keywords.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {form.keywords.map(k => (
+                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs">
+                  {k}
+                  <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={11} /></button>
+                </span>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-1">콘텐츠를 SNS 외 홈페이지, 광고 소재 등에 활용할 수 있는지 설정합니다.</p>
-          </div>
-        </div>
-      )}
+          )}
+        </Field>
 
-      {/* Step 4 */}
-      {step === 4 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">인플루언서 선택</h2>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{selected.size}명 선택됨</span>
+        <Field label="미션 가이드">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 mb-3">
+            <SubField label="게시 유형">
+              <Select value={form.postType} onChange={v => set('postType', v)} options={POST_TYPES} />
+            </SubField>
+            <SubField label="유의사항">
+              <Select value={form.precaution} onChange={v => set('precaution', v)} options={PRECAUTIONS} />
+            </SubField>
+            <SubField label="사진 첨부">
+              <Select value={form.photoCount} onChange={v => set('photoCount', v)} options={PHOTO_COUNTS} />
+            </SubField>
+            <SubField label="동영상 첨부">
+              <Select value={form.videoCount} onChange={v => set('videoCount', v)} options={VIDEO_COUNTS} />
+            </SubField>
           </div>
-          <p className="text-xs text-gray-500">AI가 추천한 인플루언서 중 참여를 요청할 인원을 선택하세요.</p>
-          <div className="space-y-3">
-            {aiInfluencers.map(inf => (
-              <div key={inf.id} className="relative">
-                <InfluencerCard
-                  influencer={inf}
-                  selected={selected.has(inf.id)}
-                  onToggle={() => {
-                    setSelected(prev => {
-                      const next = new Set(prev)
-                      if (next.has(inf.id)) next.delete(inf.id)
-                      else next.add(inf.id)
-                      return next
-                    })
-                  }}
-                />
-                {selected.has(inf.id) && (
-                  <div className="absolute inset-0 rounded-xl bg-brand-green/5 pointer-events-none flex items-center justify-center">
-                    <div className="absolute top-3 right-3 w-6 h-6 bg-brand-green rounded-full flex items-center justify-center">
-                      <Check size={12} className="text-white" aria-hidden="true" />
-                    </div>
+          <textarea
+            value={form.guideText}
+            onChange={e => set('guideText', e.target.value)}
+            rows={5}
+            placeholder={'구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.\n\n예시) 1. 고기 굽는 소리가 들리게 영상 촬영\n      2. 보지기 포장 상태 언박싱 컷 필수'}
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200"
+          />
+        </Field>
+
+        <Field label="링크 삽입">
+          <Input value={form.link} onChange={v => set('link', v)} placeholder="스마트스토어 또는 플레이스 링크 입력" />
+        </Field>
+
+        <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
+          <div className="flex gap-2 mb-2">
+            <button onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+              <Plus size={12} />단답형 추가
+            </button>
+            <button onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+              <Plus size={12} />객관식 추가
+            </button>
+          </div>
+          {questions.length === 0 ? (
+            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-xs text-gray-400">
+              추가된 질문이 없습니다.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {questions.map((q, i) => (
+                <div key={q.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <GripVertical size={14} className="text-gray-300" />
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
+                      질문 {i + 1} ({q.type === 'short' ? '단답형' : '객관식'})
+                    </span>
+                    <label className="ml-auto flex items-center gap-1 text-xs text-gray-600">
+                      <input type="checkbox" checked={q.required} onChange={e => updateQ(q.id, { required: e.target.checked })} />
+                      필수 답변
+                    </label>
+                    <button onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={13} /></button>
                   </div>
-                )}
+                  <Input value={q.title} onChange={v => updateQ(q.id, { title: v })} placeholder="질문 제목" />
+                  <Input value={q.desc} onChange={v => updateQ(q.id, { desc: v })} placeholder="질문 설명 (선택)" />
+                  {q.type === 'choice' && (
+                    <div className="space-y-1.5 pl-2">
+                      {(q.options ?? []).map((opt, j) => (
+                        <div key={j} className="flex items-center gap-2">
+                          <input type="checkbox" disabled />
+                          <Input
+                            value={opt}
+                            onChange={v => updateQ(q.id, { options: q.options!.map((o, k) => k === j ? v : o) })}
+                            placeholder={`옵션 ${j + 1}`}
+                          />
+                          <button
+                            onClick={() => updateQ(q.id, { options: q.options!.filter((_, k) => k !== j) })}
+                            aria-label="옵션 삭제"
+                            className="text-gray-300 hover:text-red-500"
+                          ><X size={13} /></button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
+                        className="text-xs text-blue-600 hover:text-blue-700"
+                      >+ 옵션 추가하기</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Field>
+      </Section>
+
+      {/* ── 섹션 4: 일정 및 모집 인원 ── */}
+      <Section title="일정 및 모집 인원">
+        <Field label={<span className="flex items-center gap-1"><Calendar size={13} /> 모집 일정</span>}>
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+            <SubField label="모집 기간">
+              <div className="flex items-center gap-1.5">
+                <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
+                <span className="text-gray-400 text-xs">~</span>
+                <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
               </div>
-            ))}
+            </SubField>
+            <SubField label="인플루언서 발표일">
+              <DateInput value={form.announceDate} min={form.recruitEnd || TODAY} onChange={v => set('announceDate', v)} />
+            </SubField>
           </div>
+        </Field>
+
+        <Field label={<span className="flex items-center gap-1"><Upload size={13} /> 콘텐츠 등록 일정</span>}>
+          <SubField label="등록 기간">
+            <div className="flex items-center gap-1.5 max-w-md">
+              <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
+              <span className="text-gray-400 text-xs">~</span>
+              <DateInput value={form.uploadEnd} min={form.uploadStart || TODAY} onChange={v => set('uploadEnd', v)} />
+            </div>
+          </SubField>
+        </Field>
+
+        <Field label={<span className="flex items-center gap-1"><Users size={13} /> 모집 인원</span>}>
+          <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-gray-900">총 모집 인원</p>
+              <p className="text-xs text-gray-500">최소 5명 이상부터 진행 가능합니다.</p>
+            </div>
+            <div className="relative">
+              <input
+                type="number"
+                min="5"
+                value={form.headcount}
+                onChange={e => set('headcount', e.target.value)}
+                className="w-24 text-sm text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">명</span>
+            </div>
+          </div>
+        </Field>
+      </Section>
+
+      {/* 총 결제 예정 금액 */}
+      <div className="bg-blue-50/50 border border-blue-100 rounded-2xl px-4 py-3.5 flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-gray-800">총 결제 예정 금액</span>
+        <div className="text-right">
+          <p className="text-lg @md:text-xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
+          <p className="text-[10px] text-blue-500">기본 수수료 및 리워드 포함된 금액입니다 (VAT 별도)</p>
         </div>
-      )}
+      </div>
 
-      {/* Step 5 */}
-      {step === 5 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700">검토발행</h2>
-          <p className="text-xs text-gray-500">아래 내용을 최종 확인 후 발행하세요.</p>
-
-          {/* s1: 기본정보 */}
-          <div className="rounded-xl border border-gray-100 overflow-hidden mb-3">
-            <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-              <span className="text-xs font-semibold text-gray-500">기본 정보</span>
-            </div>
-            {[
-              { label: '캠페인 유형', value: s1.campaignType },
-              { label: '캠페인명', value: s1.name || '(미입력)' },
-              { label: '목적', value: s1.goal || '(미입력)' },
-              { label: '채널', value: s1.channels.join(', ') || '(미선택)' },
-              { label: '기간', value: s1.startDate && s1.endDate ? `${s1.startDate} ~ ${s1.endDate}` : '(미입력)' },
-              { label: '지원 마감일', value: s1.applyDeadline || '미설정' },
-              { label: '브랜드 해시태그', value: s1.brandHashtags.length > 0 ? s1.brandHashtags.join(', ') : '(미입력)' },
-            ].map((row, idx, arr) => (
-              <div
-                key={row.label}
-                className={`flex gap-4 px-4 py-3 ${idx < arr.length - 1 ? 'border-b border-gray-50' : ''}`}
-              >
-                <span className="text-xs text-gray-500 w-28 shrink-0">{row.label}</span>
-                <span className="text-sm text-gray-900 font-medium">{row.value}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* s2: 예산·조건 */}
-          <div className="rounded-xl border border-gray-100 overflow-hidden mb-3">
-            <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-              <span className="text-xs font-semibold text-gray-500">예산·조건</span>
-            </div>
-            {[
-              { label: '총 예산', value: s2.budget ? fmtPrice(Number(parseNumber(s2.budget))) : '(미입력)' },
-              { label: '모집 인원', value: s2.headcount ? `${s2.headcount}명` : '(미입력)' },
-              { label: '제품 제공', value: s2.supply },
-            ].map((row, idx, arr) => (
-              <div
-                key={row.label}
-                className={`flex gap-4 px-4 py-3 ${idx < arr.length - 1 ? 'border-b border-gray-50' : ''}`}
-              >
-                <span className="text-xs text-gray-500 w-28 shrink-0">{row.label}</span>
-                <span className="text-sm text-gray-900 font-medium">{row.value}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* s3: 원고 가이드 */}
-          <div className="rounded-xl border border-gray-100 overflow-hidden mb-3">
-            <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-              <span className="text-xs font-semibold text-gray-500">원고 가이드</span>
-            </div>
-            {[
-              { label: '필수 포함 내용', value: s3.required || '(미입력)' },
-              { label: '금지 표현', value: s3.prohibited.length > 0 ? s3.prohibited.join(', ') : '(없음)' },
-              { label: '필수 해시태그', value: s3.hashtags.length > 0 ? s3.hashtags.join(', ') : '(없음)' },
-              { label: '콘텐츠 참고', value: s3.contentRef || '(미입력)' },
-              { label: 'SNS 외 활용', value: s3.snsExternalUse },
-            ].map((row, idx, arr) => (
-              <div
-                key={row.label}
-                className={`flex gap-4 px-4 py-3 ${idx < arr.length - 1 ? 'border-b border-gray-50' : ''}`}
-              >
-                <span className="text-xs text-gray-500 w-28 shrink-0">{row.label}</span>
-                <span className="text-sm text-gray-900 font-medium">{row.value}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* 인플루언서 */}
-          <div className="rounded-xl border border-gray-100 overflow-hidden">
-            <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-              <span className="text-xs font-semibold text-gray-500">인플루언서</span>
-            </div>
-            <div className="flex gap-4 px-4 py-3">
-              <span className="text-xs text-gray-500 w-28 shrink-0">선택 인플루언서</span>
-              <span className="text-sm text-gray-900 font-medium">{selected.size}명</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 이전/다음 버튼 — Step5에서는 "캠페인 발행하기"로 대체 */}
-      <div className="flex gap-3 mt-5">
+      {/* 액션 */}
+      <div className="flex items-center justify-end gap-2">
         <button
-          onClick={handlePrev}
-          disabled={step === 1}
-          className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40"
+          onClick={() => navigate('/campaigns')}
+          className="px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+        >취소하기</button>
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          className="flex items-center gap-1.5 px-4 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
         >
-          이전
+          캠페인 등록하기
+          <CheckCircle size={14} />
         </button>
-        {step < TOTAL_STEPS ? (
-          <button
-            onClick={handleNext}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150"
-          >
-            다음
-          </button>
-        ) : (
-          <button
-            onClick={() => { if (!isPublishing) { setIsPublishing(true); setCompletedModal(true) } }}
-            disabled={isPublishing}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60"
-          >
-            캠페인 발행하기
-          </button>
-        )}
       </div>
 
       {/* 완료 모달 */}
-      <Modal open={completedModal} onClose={() => { setCompletedModal(false); setIsPublishing(false) }} size="sm">
-        <div className="text-center py-4">
-          <div className="w-14 h-14 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check size={24} className="text-white" aria-hidden="true" />
+      <Modal isOpen={completedModal} onClose={() => { setCompletedModal(false); navigate('/campaigns') }} title="캠페인이 등록되었습니다">
+        <div className="text-center py-2">
+          <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+            <CheckCircle size={24} className="text-emerald-600" />
           </div>
-          <h3 className="text-base font-bold text-gray-900 mb-2">캠페인이 발행되었습니다!</h3>
-          <p className="text-sm text-gray-500 mb-5">인플루언서들에게 제안이 전송됩니다.</p>
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={() => {
-                setCompletedModal(false)
-                showToast('캠페인이 발행되었습니다.', 'success')
-                navigate('/influencers/manage')
-              }}
-              className="w-full bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors duration-150"
-            >
-              인플루언서 관리로 이동
-            </button>
-            <button
-              onClick={() => {
-                setCompletedModal(false)
-                setIsPublishing(false)
-                showToast('캠페인이 발행되었습니다.', 'success')
-                navigate('/campaigns')
-              }}
-              className="w-full border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors duration-150"
-            >
-              캠페인 목록으로
-            </button>
-          </div>
+          <p className="text-sm text-gray-700 mb-4">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
+          <button
+            onClick={() => { setCompletedModal(false); navigate('/campaigns') }}
+            className="w-full bg-gray-900 text-white py-2.5 rounded-xl text-sm hover:bg-gray-800"
+          >캠페인 목록으로</button>
         </div>
       </Modal>
     </div>
+  )
+}
+
+/* ────────── 헬퍼 컴포넌트 ────────── */
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
+      <h2 className="text-base font-bold text-gray-900 pb-3 border-b border-gray-100">{title}</h2>
+      {children}
+    </section>
+  )
+}
+
+function Field({ label, hint, children }: { label: React.ReactNode; hint?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-sm font-semibold text-gray-800 block mb-2">{label}</label>
+      {hint && <p className="text-xs text-gray-500 -mt-1 mb-2">{hint}</p>}
+      {children}
+    </div>
+  )
+}
+
+function SubField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-xs font-medium text-gray-600 block mb-1.5">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function Input({ value, onChange, placeholder, className = '' }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
+  return (
+    <input
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={`w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition-colors ${className}`}
+    />
+  )
+}
+
+function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
+  return (
+    <select
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-gray-200"
+    >
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  )
+}
+
+function DateInput({ value, min, onChange }: { value: string; min?: string; onChange: (v: string) => void }) {
+  return (
+    <input
+      type="date"
+      value={value}
+      min={min}
+      onChange={e => onChange(e.target.value)}
+      className="flex-1 text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
+    />
   )
 }

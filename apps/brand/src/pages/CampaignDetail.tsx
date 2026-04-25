@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, AlertTriangle, Copy, Calendar } from 'lucide-react'
 import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -49,6 +49,58 @@ const campaignsData: Record<string, {
   },
 }
 
+// 캠페인 확장 메타 (레퍼런스 PDF 기준)
+const campaignMeta: Record<string, {
+  location: string
+  storeName: string
+  recruitPeriod: string  // 'YYYY-MM-DD ~ YYYY-MM-DD'
+  announceDate: string
+  uploadPeriod: string
+  productName: string
+  productDetail: string
+  productPrice: number
+  rewardPoint: number
+  campaignType: '방문형' | '택배형'
+  postType: string
+  precaution: string
+  requiredKeywords: string[]
+  guideText: string
+}> = {
+  '1': {
+    location: '강남/서초',
+    storeName: '봄 요가 스튜디오',
+    recruitPeriod: '2026-04-25 ~ 2026-05-25',
+    announceDate: '2026-05-30',
+    uploadPeriod: '2026-04-25 ~ 2026-05-25',
+    productName: '4구 한우 프리미엄 선물세트 1.2kg',
+    productDetail: '등심 300g + 안심 300g + 채끝 300g + 특수부위 300g',
+    productPrice: 168000,
+    rewardPoint: 0,
+    campaignType: '방문형',
+    postType: '피드, 릴스',
+    precaution: '릴스 제작 우대',
+    requiredKeywords: ['#봄요가', '#요가스튜디오', '#강남요가'],
+    guideText: '구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.',
+  },
+  '2': {
+    location: '온라인',
+    storeName: '비건 뷰티',
+    recruitPeriod: '2026-04-10 ~ 2026-05-10',
+    announceDate: '2026-05-15',
+    uploadPeriod: '2026-05-15 ~ 2026-06-15',
+    productName: '비건 스킨케어 3종 세트',
+    productDetail: '클렌저 200ml + 토너 150ml + 크림 50ml',
+    productPrice: 89000,
+    rewardPoint: 30000,
+    campaignType: '택배형',
+    postType: '피드, 릴스',
+    precaution: '실사용 1주일 후 후기 필수',
+    requiredKeywords: ['#비건뷰티', '#클린뷰티'],
+    guideText: '최소 7일 사용 후 솔직한 리뷰를 작성해주세요.',
+  },
+}
+const fmtKRW = (n: number) => `₩${n.toLocaleString('ko-KR')}`
+
 // 지원자 관리 더미
 const applicantsData = [
   { id: 101, name: '최은지', followers: '12.3K', engagement: 4.2, fitScore: 92, appliedAt: '2026-04-17', avatar: 'bg-rose-200' },
@@ -62,14 +114,51 @@ const selectedApplicantsData = [
   { id: 202, name: '김가애', followers: '18.9K', engagement: 4.2, fitScore: 88, selectedAt: '2026-04-22', avatar: 'bg-yellow-200' },
 ]
 
-// 등록 콘텐츠 더미 — reach는 숫자로 저장, 표시 시 fmtNumber() 사용
-// 등록 콘텐츠 — 검수 상태 포함 (검수중/승인/반려)
-const registeredContents = [
-  { id: 1, thumbnail: 'bg-gradient-to-br from-pink-200 to-pink-300',     influencer: '이창민', instagramId: '@changmin_fit', type: '릴스',   submittedAt: '2026-04-18', reach: 12400, likes: 890, comments: 42, saves: 156, shares: 310, viralScore: 88, status: '검수중' as const },
-  { id: 2, thumbnail: 'bg-gradient-to-br from-yellow-200 to-yellow-300', influencer: '김가애', instagramId: '@gaga_daily',   type: '피드',   submittedAt: '2026-04-17', reach: 8100,  likes: 540, comments: 28, saves: 89,  shares: 180, viralScore: 72, status: '승인'   as const },
-  { id: 3, thumbnail: 'bg-gradient-to-br from-purple-200 to-purple-300', influencer: '박리나', instagramId: '@rina_life',    type: '스토리', submittedAt: '2026-04-16', reach: 5200,  likes: 380, comments: 15, saves: 62,  shares: 95,  viralScore: 54, status: '승인'   as const },
-  { id: 4, thumbnail: 'bg-gradient-to-br from-blue-200 to-blue-300',     influencer: '민경완', instagramId: '@kyeong_w',    type: '피드',   submittedAt: '2026-04-15', reach: 6700,  likes: 420, comments: 31, saves: 78,  shares: 142, viralScore: 61, status: '반려'   as const },
+// 등록 콘텐츠 더미 100개 — 검수중/승인/반려 + 0값(reach=0) 엣지케이스 포함
+const INFLUENCER_POOL = [
+  { name: '이창민', id: '@changmin_fit', thumb: 'bg-gradient-to-br from-pink-200 to-pink-300' },
+  { name: '김가애', id: '@gaga_daily',   thumb: 'bg-gradient-to-br from-yellow-200 to-yellow-300' },
+  { name: '박리나', id: '@rina_life',    thumb: 'bg-gradient-to-br from-purple-200 to-purple-300' },
+  { name: '민경완', id: '@kyeong_w',     thumb: 'bg-gradient-to-br from-blue-200 to-blue-300' },
+  { name: '서유진', id: '@yujin_s',      thumb: 'bg-gradient-to-br from-green-200 to-green-300' },
+  { name: '한지수', id: '@jisu_han',     thumb: 'bg-gradient-to-br from-rose-200 to-rose-300' },
+  { name: '최민호', id: '@minho_choi',   thumb: 'bg-gradient-to-br from-indigo-200 to-indigo-300' },
+  { name: '윤아름', id: '@areum_y',      thumb: 'bg-gradient-to-br from-teal-200 to-teal-300' },
+  { name: '강태현', id: '@taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
+  { name: '임소희', id: '@sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
 ]
+type ContentPlatform = '인스타그램' | '유튜브' | '블로그'
+const PLATFORM_TYPE_MAP: Record<string, ContentPlatform> = {
+  '릴스': '인스타그램', '피드': '인스타그램', '스토리': '인스타그램',
+  '유튜브': '유튜브', '블로그': '블로그',
+}
+const TYPES = ['릴스', '피드', '스토리', '유튜브', '블로그'] as const
+const STATUSES: ContentStatus[] = ['검수중', '승인', '승인', '승인', '반려']
+const registeredContents = Array.from({ length: 100 }, (_, i) => {
+  const inf = INFLUENCER_POOL[i % INFLUENCER_POOL.length]
+  const status = STATUSES[i % STATUSES.length]
+  const isZeroReach = i % 20 === 19
+  const reach    = isZeroReach ? 0 : 3000 + (i * 317 % 40000)
+  const likes    = isZeroReach ? 0 : Math.floor(reach * (0.04 + (i % 7) * 0.01))
+  const comments = isZeroReach ? 0 : Math.floor(reach * (0.003 + (i % 5) * 0.001))
+  const saves    = isZeroReach ? 0 : Math.floor(reach * (0.01 + (i % 4) * 0.005))
+  const shares   = isZeroReach ? 0 : Math.floor(reach * (0.015 + (i % 6) * 0.003))
+  const viralScore = isZeroReach ? 0 : Math.min(99, 30 + (i * 71 % 70))
+  const month = String(Math.floor(i / 30) + 3).padStart(2, '0')
+  const day   = String((i % 28) + 1).padStart(2, '0')
+  const type  = TYPES[i % TYPES.length]
+  return {
+    id: i + 1,
+    thumbnail: inf.thumb,
+    influencer: inf.name,
+    instagramId: inf.id,
+    platform: PLATFORM_TYPE_MAP[type] as ContentPlatform,
+    type,
+    submittedAt: `2026-${month}-${day}`,
+    reach, likes, comments, saves, shares, viralScore,
+    status,
+  }
+})
 
 type ContentStatus = '검수중' | '승인' | '반려'
 const CONTENT_STATUS_STYLE: Record<ContentStatus, string> = {
@@ -92,9 +181,9 @@ const tabs = ['캠페인 정보', '지원자 관리', '선정 인플루언서', 
 
 /** QA qa 값 → 탭명 변환 */
 function tabFromQA(qa: string): string {
-  if (qa === 'tab-applicants' || qa === 'tab-applicants-empty' || qa === 'modal-approve' || qa === 'modal-reject') return '지원자 관리'
+  if (qa === 'tab-applicants' || qa === 'tab-applicants-empty' || qa === 'modal-approve' || qa === 'modal-select' || qa === 'modal-reject') return '지원자 관리'
   if (qa === 'tab-selected' || qa === 'tab-selected-empty') return '선정 인플루언서'
-  if (qa === 'tab-content' || qa === 'tab-content-empty') return '등록 콘텐츠'
+  if (qa === 'tab-content' || qa === 'tab-contents' || qa === 'tab-content-empty') return '등록 콘텐츠'
   if (qa === 'tab-report' || qa === 'tab-report-empty') return '성과 리포트'
   return '캠페인 정보'
 }
@@ -105,6 +194,7 @@ export default function CampaignDetail() {
   const { showToast } = useToast()
   const qa = useQAMode()
   const campaign = campaignsData[id ?? '1'] ?? campaignsData['1']
+  const meta = campaignMeta[id ?? '1'] ?? campaignMeta['1']
 
   const [activeTab, setActiveTab] = useState(() => tabFromQA(qa))
 
@@ -141,6 +231,9 @@ export default function CampaignDetail() {
     Object.fromEntries(registeredContents.map(c => [c.id, c.status]))
   )
   const [contentFilter, setContentFilter] = useState<'전체' | ContentStatus>('전체')
+  const [contentPlatform, setContentPlatform] = useState<'전체' | ContentPlatform>('전체')
+  const [contentSort, setContentSort] = useState<'최신순' | '도달순' | '좋아요순'>('최신순')
+  const [contentPage, setContentPage] = useState(1)
   const [contentRejectModal, setContentRejectModal] = useState<number | null>(null)
   const [contentRejectFeedback, setContentRejectFeedback] = useState('')
 
@@ -320,15 +413,21 @@ export default function CampaignDetail() {
     showToast('반려 피드백이 전달되었습니다.', 'info')
   }
 
+  // 성과 리포트는 승인된 콘텐츠만
+  const approvedContents = registeredContents.filter(c => contentStatuses[c.id] === '승인')
+
   // 성과 리포트 데이터
+  const approvedReach = approvedContents.reduce((s, c) => s + c.reach, 0)
+  const approvedEngagement = approvedContents.reduce((s, c) => s + c.likes + c.comments + c.saves, 0)
+  const approvedEngRate = approvedReach > 0 ? (approvedEngagement / approvedReach * 100).toFixed(1) : '0.0'
   const reportKPI = [
-    { label: '총 도달', value: '32.4K', icon: Eye },
-    { label: '총 참여', value: '2,731', icon: Heart },
-    { label: '참여율', value: '8.4%', icon: TrendingUp },
-    { label: '콘텐츠 수', value: '4', icon: FileText },
+    { label: '총 도달', value: fmtNumber(approvedReach), icon: Eye },
+    { label: '총 참여', value: fmtNumber(approvedEngagement), icon: Heart },
+    { label: '참여율', value: `${approvedEngRate}%`, icon: TrendingUp },
+    { label: '콘텐츠 수', value: `${approvedContents.length}건`, icon: FileText },
   ]
 
-  const chartData = registeredContents.map(c => ({ name: c.influencer, likes: c.likes }))
+  const chartData = approvedContents.map(c => ({ name: c.influencer, likes: c.likes }))
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
   const safeMaxLikes = maxLikes || 1
 
@@ -348,8 +447,8 @@ export default function CampaignDetail() {
   }))
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
 
-  // 콘텐츠 순위 (좋아요 순)
-  const rankedContents = [...registeredContents].sort((a, b) => b.likes - a.likes)
+  // 콘텐츠 순위 (승인된 것만, 좋아요 순)
+  const rankedContents = [...approvedContents].sort((a, b) => b.likes - a.likes)
 
   const device = useDeviceMode()
   const isPhone = device === 'phone'
@@ -357,29 +456,71 @@ export default function CampaignDetail() {
 
   return (
     <div className="space-y-5">
-      {/* 헤더 */}
-      <div className="flex items-center gap-3">
+      {/* 페이지 타이틀 + 뒤로가기 */}
+      <div className="flex items-center gap-2 text-sm text-gray-600">
         <button
           onClick={() => navigate('/campaigns')}
           aria-label="이전"
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-150 text-gray-500"
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
         >
-          <ArrowLeft size={18} aria-hidden="true" />
+          <ArrowLeft size={16} aria-hidden="true" />
         </button>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>{campaign.name}</h1>
-            <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>
-              {campaignStatus.label}
-            </span>
+        <FileText size={16} className="text-gray-500" aria-hidden="true" />
+        <span className="font-medium">캠페인 상세</span>
+      </div>
+
+      {/* 헤더 카드 */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+              <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
+              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
+              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
+            </div>
+            <h1 className="text-xl @md:text-2xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">{campaign.category} · {campaign.period.split(' ~ ').map(fmtDate).join(' ~ ')}</p>
+          <div className="flex items-center gap-1 shrink-0">
+            <button title="공유" aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button>
+            <button title="정보 변경" aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
+            <button title="삭제" aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-gray-800 text-xs text-white"><Trash2 size={13} />삭제</button>
+          </div>
+        </div>
+
+        {/* 일정 바 */}
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
+            <span className="text-gray-600 truncate">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
+            <span className="text-gray-600 truncate">{fmtDate(meta.announceDate)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
+            <span className="text-gray-600 truncate">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+          </div>
+        </div>
+
+        {/* KPI 4칸 */}
+        <div className="grid grid-cols-2 @md:grid-cols-4 gap-3">
+          <KpiCell label="지원자" value={`${applicants.length}`} />
+          <KpiCell label="모집 마감" value={(() => {
+            const end = meta.recruitPeriod?.split(' ~ ')[1]
+            if (!end) return '—'
+            const t = new Date(end).getTime()
+            if (isNaN(t)) return '—'
+            return `D-${Math.max(0, Math.ceil((t - Date.now()) / 86400000))}`
+          })()} />
+          <KpiCell label="제공 상품" value={meta.productName} small />
+          <KpiCell label="리워드" value={fmtKRW(meta.productPrice)} />
         </div>
       </div>
 
       {/* QA: 캠페인 종료 배너 */}
       {isClosed && (
-        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-sm px-4 py-3 rounded-xl mb-4">
+        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-sm px-4 py-3 rounded-xl">
           이 캠페인은 종료되었습니다.
         </div>
       )}
@@ -410,40 +551,61 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <BarChart3 size={15} className="text-gray-400" aria-hidden="true" />
-              캠페인 기본 정보
-            </h2>
-            <div className="rounded-xl border border-gray-100 overflow-hidden">
-              {[
-                { label: '캠페인명', value: campaign.name },
-                { label: '상태', value: campaign.status, badge: true },
-                { label: '카테고리', value: campaign.category },
-                { label: '예산', value: campaign.budget },
-                { label: '기간', value: campaign.period.split(' ~ ').map(fmtDate).join(' ~ ') },
-                { label: '모집인원', value: `${campaign.headcount}명` },
-              ].map((row, idx, arr) => (
-                <div
-                  key={row.label}
-                  className={`flex gap-4 px-4 py-3 ${idx < arr.length - 1 ? 'border-b border-gray-50' : ''}`}
-                >
-                  <span className="text-xs text-gray-500 w-24 shrink-0">{row.label}</span>
-                  {row.badge ? (
-                    <span className={`text-xs font-medium rounded-full px-2 py-0.5 ${campaignStatus.cls}`}>
-                      {campaignStatus.label}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-900 font-medium">{row.value}</span>
-                  )}
-                </div>
-              ))}
+          {/* 대표 이미지 */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
+              <Image size={40} className="text-emerald-300" aria-hidden="true" />
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">설명</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">{campaign.description}</p>
-          </div>
+
+          {/* 캠페인 설명 */}
+          <Section title="캠페인 설명" icon={<FileText size={14} />}>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{campaign.description}</p>
+          </Section>
+
+          {/* 제공 내역 */}
+          <Section title="제공 내역" icon={<Crown size={14} />}>
+            <p className="text-sm font-semibold text-gray-900 mb-1">{meta.productName}</p>
+            <p className="text-sm text-gray-600 mb-3">{meta.productDetail}</p>
+            <ul className="text-xs text-gray-500 space-y-1 list-disc pl-4">
+              <li>제품을 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</li>
+              <li>제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</li>
+            </ul>
+          </Section>
+
+          {/* 캠페인 미션 — 3카드 */}
+          <Section title="캠페인 미션" icon={<TrendingUp size={14} />}>
+            <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2.5">
+              <MissionCard icon={<Search size={16} />} label="키워드" value="필수 포함" />
+              <MissionCard icon={<Camera size={16} />} label="게시 유형" value={meta.postType} />
+              <MissionCard icon={<Heart size={16} />} label="유의사항" value={meta.precaution} />
+            </div>
+          </Section>
+
+          {/* 필수 가이드 */}
+          <Section title="필수 가이드" icon={<FileText size={14} />}>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meta.guideText}</p>
+          </Section>
+
+          {/* 필수 키워드 */}
+          <Section title="필수 키워드" icon={<Search size={14} />}>
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {meta.requiredKeywords.map(k => (
+                <span key={k} className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">{k}</span>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard?.writeText(meta.requiredKeywords.join(' '))
+                showToast('키워드가 복사되었습니다', 'success')
+              }}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-gray-300 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Copy size={13} />
+              키워드 한 번에 복사하기
+            </button>
+          </Section>
         </div>
       )}
 
@@ -636,22 +798,47 @@ export default function CampaignDetail() {
         </div>
       )}
       {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (() => {
-        const filtered = registeredContents.filter(c =>
-          contentFilter === '전체' || contentStatuses[c.id] === contentFilter
-        )
+        const filtered = registeredContents
+          .filter(c =>
+            (contentFilter === '전체' || contentStatuses[c.id] === contentFilter) &&
+            (contentPlatform === '전체' || c.platform === contentPlatform)
+          )
+          .sort((a, b) => {
+            if (contentSort === '도달순') return b.reach - a.reach
+            if (contentSort === '좋아요순') return b.likes - a.likes
+            return b.id - a.id // 최신순
+          })
         const counts = {
           전체: registeredContents.length,
           검수중: registeredContents.filter(c => contentStatuses[c.id] === '검수중').length,
           승인: registeredContents.filter(c => contentStatuses[c.id] === '승인').length,
           반려: registeredContents.filter(c => contentStatuses[c.id] === '반려').length,
         }
+        const pageSize = device === 'desktop' ? 12 : device === 'tablet' ? 10 : 6
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+        const safePage = Math.min(contentPage, totalPages)
+        const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
         return (
           <div className="space-y-4">
+            {/* 검수 대기 알림 */}
+            {counts.검수중 > 0 && !isClosed && (
+              <button
+                onClick={() => { setContentFilter('검수중'); setContentPage(1); setSelectedContents(new Set()) }}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <p className="text-xs text-amber-700 font-medium">검수 대기 콘텐츠 {counts.검수중}건이 있습니다</p>
+                </div>
+                <span className="text-xs text-amber-500">검수하기 →</span>
+              </button>
+            )}
+
             {/* 헤더 — 건수 + 다운로드 */}
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-sm font-semibold text-gray-900">
                 등록 콘텐츠
-                <span className="ml-1.5 text-xs font-normal text-gray-400">{registeredContents.length}건</span>
+                <span className="ml-1.5 text-xs font-normal text-gray-400">{filtered.length}건</span>
               </h2>
               <div className="flex items-center gap-2">
                 <button
@@ -686,7 +873,7 @@ export default function CampaignDetail() {
               {(['전체', '검수중', '승인', '반려'] as const).map(f => (
                 <button
                   key={f}
-                  onClick={() => setContentFilter(f)}
+                  onClick={() => { setContentFilter(f); setContentPage(1); setSelectedContents(new Set()) }}
                   className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border transition-colors ${
                     contentFilter === f
                       ? 'bg-gray-900 text-white border-gray-900'
@@ -703,6 +890,40 @@ export default function CampaignDetail() {
               ))}
             </div>
 
+            {/* 플랫폼 필터 + 정렬 */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex gap-1.5">
+                {(['전체', '인스타그램', '유튜브', '블로그'] as const).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => { setContentPlatform(p); setContentPage(1); setSelectedContents(new Set()) }}
+                    className={`text-xs px-3 py-1.5 rounded-xl border transition-colors ${
+                      contentPlatform === p
+                        ? 'bg-brand-green text-white border-brand-green'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1.5">
+                {(['최신순', '도달순', '좋아요순'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => { setContentSort(s); setContentPage(1); setSelectedContents(new Set()) }}
+                    className={`text-xs px-3 py-1.5 rounded-xl border transition-colors ${
+                      contentSort === s
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* 유료 다운로드 안내 */}
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
               <Info size={13} className="text-amber-500 shrink-0" aria-hidden="true" />
@@ -713,11 +934,24 @@ export default function CampaignDetail() {
             {filtered.length === 0 ? (
               <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
                 <Image size={32} className="text-gray-200 mx-auto mb-2" aria-hidden="true" />
-                <p className="text-sm text-gray-400">{contentFilter} 상태의 콘텐츠가 없습니다</p>
+                <p className="text-sm text-gray-400">
+                  {[
+                    contentPlatform !== '전체' && contentPlatform,
+                    contentFilter !== '전체' && contentFilter,
+                  ].filter(Boolean).join(' · ')} 콘텐츠가 없습니다
+                </p>
+                {(contentFilter !== '전체' || contentPlatform !== '전체') && (
+                  <button
+                    onClick={() => { setContentFilter('전체'); setContentPlatform('전체'); setContentPage(1) }}
+                    className="mt-3 text-xs text-brand-green hover:underline"
+                  >
+                    필터 초기화
+                  </button>
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
-                {filtered.map(c => {
+              <div className={`grid gap-4 ${device === 'desktop' ? 'grid-cols-4' : device === 'tablet' ? 'grid-cols-3' : 'grid-cols-1'}`}>
+                {paginated.map(c => {
                   const isChecked = selectedContents.has(c.id)
                   const status = contentStatuses[c.id]
                   const engRate = c.reach > 0
@@ -742,15 +976,24 @@ export default function CampaignDetail() {
                         }`}>
                           {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
                         </div>
-                        {/* 유형 배지 */}
-                        <span className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {/* 플랫폼 + 유형 배지 */}
+                        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                          c.platform === '인스타그램' ? 'bg-pink-500/90 text-white' :
+                          c.platform === '유튜브' ? 'bg-red-500/90 text-white' :
+                          'bg-green-600/90 text-white'
+                        }`}>{c.platform === '인스타그램' ? 'IG' : c.platform === '유튜브' ? 'YT' : 'Blog'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                           {c.type}
                         </span>
+                        </div>
                         {/* 바이럴 점수 */}
                         <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm ${
-                          c.viralScore >= 80 ? 'bg-green-500/90 text-white' : c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
+                          c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
+                          c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
+                          c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
                         }`}>
-                          {c.viralScore}점
+                          {c.viralScore === 0 ? '—' : `${c.viralScore}점`}
                         </div>
                       </div>
 
@@ -793,7 +1036,7 @@ export default function CampaignDetail() {
                         </div>
 
                         {/* 검수 액션 — 검수중만 표시 */}
-                        {status === '검수중' && (
+                        {status === '검수중' && !isClosed && (
                           <div className="flex gap-2 pt-1">
                             <button
                               onClick={() => {
@@ -823,6 +1066,44 @@ export default function CampaignDetail() {
                     </div>
                   )
                 })}
+              </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1.5 pt-2">
+                <button
+                  onClick={() => setContentPage(p => Math.max(1, p - 1))}
+                  disabled={safePage === 1}
+                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-xs flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
+                >
+                  ‹
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+                  .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && typeof arr[idx - 1] === 'number' && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...')
+                    acc.push(p)
+                    return acc
+                  }, [])
+                  .map((p, i) =>
+                    p === '...'
+                      ? <span key={`e${i}`} className="w-8 text-center text-xs text-gray-400">…</span>
+                      : <button
+                          key={p}
+                          onClick={() => setContentPage(p as number)}
+                          className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                            safePage === p ? 'bg-gray-900 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >{p}</button>
+                  )}
+                <button
+                  onClick={() => setContentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={safePage === totalPages}
+                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-xs flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
+                >
+                  ›
+                </button>
               </div>
             )}
           </div>
@@ -865,7 +1146,7 @@ export default function CampaignDetail() {
               <span className="text-xs text-gray-400">· 바이럴 점수 기준</span>
             </div>
             <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
-              {[...registeredContents]
+              {[...approvedContents]
                 .sort((a, b) => b.viralScore - a.viralScore)
                 .slice(0, 3)
                 .map((c, idx) => {
@@ -1046,6 +1327,7 @@ export default function CampaignDetail() {
             <button
               onClick={() => {
                 if (contentRejectModal === null) return
+                if (!contentRejectFeedback.trim()) { showToast('반려 사유를 입력해주세요.', 'error'); return }
                 setContentStatuses(prev => ({ ...prev, [contentRejectModal]: '반려' }))
                 const name = registeredContents.find(c => c.id === contentRejectModal)?.influencer ?? ''
                 showToast(`${name} 콘텐츠를 반려했습니다.`, 'error')
@@ -1059,7 +1341,7 @@ export default function CampaignDetail() {
       </Modal>
 
       {/* 반려 모달 */}
-      <Modal open={rejectModal !== null} onClose={() => { setRejectModal(null); setFeedback('') }} title="콘텐츠 반려">
+      <Modal open={rejectModal !== null} onClose={() => { setRejectModal(null); setFeedback('') }} title="지원자 반려">
         <div className="space-y-3">
           <p className="text-sm text-gray-600">반려 이유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
           <textarea
@@ -1083,6 +1365,37 @@ export default function CampaignDetail() {
           </div>
         </div>
       </Modal>
+    </div>
+  )
+}
+
+function KpiCell({ label, value, small }: { label: string; value: string; small?: boolean }) {
+  return (
+    <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+      <p className={`font-bold text-gray-900 truncate ${small ? 'text-sm' : 'text-base @md:text-lg'}`}>{value}</p>
+    </div>
+  )
+}
+
+function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @md:p-5">
+      <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+        <span className="text-gray-500">{icon}</span>
+        {title}
+      </h2>
+      {children}
+    </div>
+  )
+}
+
+function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="border border-gray-100 rounded-xl px-3 py-3 text-center">
+      <div className="text-gray-400 mb-1.5 flex justify-center">{icon}</div>
+      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-gray-900">{value}</p>
     </div>
   )
 }

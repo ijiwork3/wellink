@@ -71,7 +71,7 @@ const StatusBadge = memo(function StatusBadge({ status, size = 'sm', dot = true,
   const dotSize   = size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2'
 
   return (
-    <span className={`inline-flex items-center rounded-full font-medium ${sizeClass} ${cfg.bg} ${cfg.text} ${className}`}>
+    <span className={`inline-flex items-center rounded-full font-medium whitespace-nowrap ${sizeClass} ${cfg.bg} ${cfg.text} ${className}`}>
       {dot && <span className={`${dotSize} rounded-full shrink-0 ${cfg.dot}`} />}
       {status}
     </span>
