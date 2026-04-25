@@ -5,7 +5,7 @@ import {
   ArrowRight, Download, Search, Image,
 } from 'lucide-react'
 
-// ─── 프라이머리 10단계 (버튼·진행바·트렌드·차트A) ─────────────────
+// ─── 프라이머리 10단계 (버튼 bg·진행바·차트A·알림뱃지) ──────────
 const PRIMARY = [
   { n:  1, green:'#8CC63F', greenLight:'#f0f9e8' },
   { n:  2, green:'#88C43A', greenLight:'#edf8de' },
@@ -19,103 +19,109 @@ const PRIMARY = [
   { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
 ]
 
+// ─── 세컨더리 10단계 (텍스트 전용 — 모두 WCAG AA ≥4.5:1) ────────
+// lime-dark(#4d7c0f, 6.6:1) → green-dark(#15803d, 4.6:1) → emerald-dark(#065f46, >10:1)
+const SECONDARY = [
+  { n:  1, color:'#4d7c0f' },  // lime-700   warm olive-dark
+  { n:  2, color:'#3d7012' },  // lime-800 family
+  { n:  3, color:'#2d6814' },
+  { n:  4, color:'#1d6118' },
+  { n:  5, color:'#15803d' },  // green-700  pivot (가장 비비드한 AA 통과 그린)
+  { n:  6, color:'#166534' },  // green-800
+  { n:  7, color:'#047857' },  // emerald-700
+  { n:  8, color:'#065f46' },  // emerald-800
+  { n:  9, color:'#14532d' },  // green-900
+  { n: 10, color:'#064e3b' },  // emerald-900
+]
+
 // ─── 나머지 10단계 ─────────────────────────────────────────────────
-// 배지: bg 밝기에 맞춰 text contrast 보정 (WCAG AA 기준 다크 텍스트 유지)
-// 하락 트렌드(trendDown) / 알림 점(dotA/B/C) / 아바타 5색(av1~av5) 포함
+// 1→5: 연한 파스텔 → 찐하게(deep dark vivid)
+// 6→10: 반전 → 밝으면서 원색에 가깝게 (bright saturated 원색)
 const ACCENT = [
-  // 1: 극소프트 파스텔
+  // 1: 소프트 파스텔
   { n: 1,
-    badgeActiveBg: '#d1fae5', badgeActiveText: '#065f46',
-    badgePendingBg: '#fef3c7', badgePendingText: '#92400e',
-    barB: '#bae6fd', barC: '#fed7aa',
-    trendDown: '#fca5a5',
-    dotA: '#7dd3fc', dotB: '#86efac', dotC: '#fde68a',
-    av1: '#86efac', av2: '#93c5fd', av3: '#d8b4fe', av4: '#fca5a5', av5: '#fdba74',
+    badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46',
+    badgePendingBg:'#fef3c7', badgePendingText:'#92400e',
+    barB:'#bae6fd', barC:'#fed7aa', trendDown:'#fca5a5',
+    dotA:'#7dd3fc', dotB:'#86efac', dotC:'#fde68a',
+    av1:'#4ade80', av2:'#60a5fa', av3:'#c084fc', av4:'#fb7185', av5:'#fb923c',
   },
-  // 2: 소프트
+  // 2: 미디엄 파스텔
   { n: 2,
-    badgeActiveBg: '#a7f3d0', badgeActiveText: '#065f46',
-    badgePendingBg: '#fde68a', badgePendingText: '#92400e',
-    barB: '#93c5fd', barC: '#fcd34d',
-    trendDown: '#fca5a5',
-    dotA: '#38bdf8', dotB: '#4ade80', dotC: '#fbbf24',
-    av1: '#4ade80', av2: '#60a5fa', av3: '#c084fc', av4: '#f472b6', av5: '#fb923c',
+    badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46',
+    badgePendingBg:'#fde68a', badgePendingText:'#92400e',
+    barB:'#93c5fd', barC:'#fcd34d', trendDown:'#fca5a5',
+    dotA:'#38bdf8', dotB:'#34d399', dotC:'#fbbf24',
+    av1:'#22c55e', av2:'#3b82f6', av3:'#a855f7', av4:'#f43f5e', av5:'#f97316',
   },
-  // 3: 미디엄 소프트
+  // 3: 비비드 진입
   { n: 3,
-    badgeActiveBg: '#6ee7b7', badgeActiveText: '#14532d',
-    badgePendingBg: '#fcd34d', badgePendingText: '#78350f',
-    barB: '#60a5fa', barC: '#fbbf24',
-    trendDown: '#f87171',
-    dotA: '#0ea5e9', dotB: '#22c55e', dotC: '#f59e0b',
-    av1: '#34d399', av2: '#3b82f6', av3: '#a78bfa', av4: '#fb7185', av5: '#fb923c',
+    badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d',
+    badgePendingBg:'#fcd34d', badgePendingText:'#78350f',
+    barB:'#60a5fa', barC:'#fbbf24', trendDown:'#f87171',
+    dotA:'#0ea5e9', dotB:'#10b981', dotC:'#f59e0b',
+    av1:'#16a34a', av2:'#2563eb', av3:'#7c3aed', av4:'#e11d48', av5:'#ea580c',
   },
-  // 4: 비비드 시작 — bg 중간 밝기, 다크 텍스트 contrast ≥ 7:1
+  // 4: 비비드 딥
   { n: 4,
-    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
-    badgePendingBg: '#fbbf24', badgePendingText: '#78350f',
-    barB: '#3b82f6', barC: '#f97316',
-    trendDown: '#ef4444',
-    dotA: '#0284c7', dotB: '#16a34a', dotC: '#d97706',
-    av1: '#22c55e', av2: '#2563eb', av3: '#8b5cf6', av4: '#e11d48', av5: '#ea580c',
+    badgeActiveBg:'#34d399', badgeActiveText:'#064e3b',
+    badgePendingBg:'#fb923c', badgePendingText:'#7c2d12',
+    barB:'#2563eb', barC:'#ef4444', trendDown:'#dc2626',
+    dotA:'#0284c7', dotB:'#059669', dotC:'#d97706',
+    av1:'#059669', av2:'#1d4ed8', av3:'#6d28d9', av4:'#be123c', av5:'#c2410c',
   },
-  // 5: 풀 비비드 — emerald-400 피크, 텍스트는 emerald-950으로 최대 contrast
+  // 5: 찐하게 MAX — 가장 어둡고 포화된 단계
   { n: 5,
-    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
-    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
-    barB: '#2563eb', barC: '#ea580c',
-    trendDown: '#dc2626',
-    dotA: '#0369a1', dotB: '#15803d', dotC: '#b45309',
-    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#be123c', av5: '#c2410c',
+    badgeActiveBg:'#10b981', badgeActiveText:'#022c22',
+    badgePendingBg:'#f97316', badgePendingText:'#431407',
+    barB:'#1e40af', barC:'#b91c1c', trendDown:'#991b1b',
+    dotA:'#075985', dotB:'#064e3b', dotC:'#78350f',
+    av1:'#047857', av2:'#1e3a8a', av3:'#4c1d95', av4:'#9f1239', av5:'#9a3412',
   },
-  // 6: 비비드 웜
+  // 6: 원색 반전 시작 — 밝아지기 시작
   { n: 6,
-    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
-    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
-    barB: '#1d4ed8', barC: '#ea580c',
-    trendDown: '#dc2626',
-    dotA: '#0369a1', dotB: '#059669', dotC: '#ea580c',
-    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#e11d48', av5: '#ea580c',
+    badgeActiveBg:'#34d399', badgeActiveText:'#064e3b',
+    badgePendingBg:'#fb923c', badgePendingText:'#7c2d12',
+    barB:'#3b82f6', barC:'#ef4444', trendDown:'#ef4444',
+    dotA:'#0ea5e9', dotB:'#10b981', dotC:'#f59e0b',
+    av1:'#16a34a', av2:'#2563eb', av3:'#7c3aed', av4:'#e11d48', av5:'#ea580c',
   },
-  // 7: 비비드 쿨
+  // 7: 원색 방향 — 점점 밝고 선명
   { n: 7,
-    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
-    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
-    barB: '#1e40af', barC: '#dc2626',
-    trendDown: '#dc2626',
-    dotA: '#1e40af', dotB: '#059669', dotC: '#d97706',
-    av1: '#22c55e', av2: '#1e40af', av3: '#6d28d9', av4: '#e11d48', av5: '#c2410c',
+    badgeActiveBg:'#4ade80', badgeActiveText:'#14532d',
+    badgePendingBg:'#fbbf24', badgePendingText:'#78350f',
+    barB:'#60a5fa', barC:'#fb923c', trendDown:'#f87171',
+    dotA:'#38bdf8', dotB:'#34d399', dotC:'#fbbf24',
+    av1:'#22c55e', av2:'#3b82f6', av3:'#a855f7', av4:'#f43f5e', av5:'#f97316',
   },
-  // 8: 딥 블루
+  // 8: 원색 비비드
   { n: 8,
-    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
-    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
-    barB: '#1e3a8a', barC: '#dc2626',
-    trendDown: '#b91c1c',
-    dotA: '#1e3a8a', dotB: '#047857', dotC: '#b45309',
-    av1: '#16a34a', av2: '#1e3a8a', av3: '#5b21b6', av4: '#be123c', av5: '#c2410c',
+    badgeActiveBg:'#86efac', badgeActiveText:'#14532d',
+    badgePendingBg:'#fde68a', badgePendingText:'#78350f',
+    barB:'#93c5fd', barC:'#fcd34d', trendDown:'#fca5a5',
+    dotA:'#7dd3fc', dotB:'#6ee7b7', dotC:'#fde68a',
+    av1:'#4ade80', av2:'#60a5fa', av3:'#c084fc', av4:'#fb7185', av5:'#fb923c',
   },
-  // 9: 비비드 믹스
+  // 9: 원색 브라이트
   { n: 9,
-    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
-    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
-    barB: '#1e40af', barC: '#dc2626',
-    trendDown: '#dc2626',
-    dotA: '#0369a1', dotB: '#15803d', dotC: '#b45309',
-    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#be123c', av5: '#ea580c',
+    badgeActiveBg:'#4ade80', badgeActiveText:'#14532d',
+    badgePendingBg:'#fb923c', badgePendingText:'#7c2d12',
+    barB:'#60a5fa', barC:'#fb923c', trendDown:'#f87171',
+    dotA:'#38bdf8', dotB:'#34d399', dotC:'#fbbf24',
+    av1:'#22c55e', av2:'#3b82f6', av3:'#a855f7', av4:'#f43f5e', av5:'#f97316',
   },
-  // 10: 맥스 비비드
+  // 10: 원색 MAX — pure vivid 원색 팔레트
   { n: 10,
-    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
-    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
-    barB: '#1e40af', barC: '#b91c1c',
-    trendDown: '#b91c1c',
-    dotA: '#0369a1', dotB: '#166534', dotC: '#92400e',
-    av1: '#059669', av2: '#1d4ed8', av3: '#7c3aed', av4: '#e11d48', av5: '#ea580c',
+    badgeActiveBg:'#4ade80', badgeActiveText:'#14532d',
+    badgePendingBg:'#fbbf24', badgePendingText:'#78350f',
+    barB:'#3b82f6', barC:'#ef4444', trendDown:'#ef4444',
+    dotA:'#0ea5e9', dotB:'#22c55e', dotC:'#eab308',
+    av1:'#22c55e', av2:'#2563eb', av3:'#8b5cf6', av4:'#f43f5e', av5:'#f97316',
   },
 ]
 
 type P = typeof PRIMARY[0]
+type S = typeof SECONDARY[0]
 type A = typeof ACCENT[0]
 
 // ─── 배지 공통 ────────────────────────────────────────────────────
@@ -140,23 +146,15 @@ function Sidebar({ p, active }: { p: P; active: string }) {
     { key: 'manage',    icon: <Users size={15} />,            label: '인플루언서 관리', section: '인플루언서' },
     { key: 'campaign',  icon: <Megaphone size={15} />,        label: '캠페인 목록', section: '캠페인' },
   ]
-
   let lastSection = ''
-
   return (
     <div className="w-[220px] shrink-0 flex flex-col h-full bg-white border-r border-gray-100">
-      {/* 로고 */}
       <div className="px-5 pt-5 pb-4 flex items-center gap-1.5">
         <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
-        <span
-          className="text-[10px] font-medium px-1.5 py-0.5 rounded-full leading-none text-white"
-          style={{ backgroundColor: p.green }}
-        >
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>
           광고주
         </span>
       </div>
-
-      {/* 네비게이션 */}
       <nav className="flex-1 px-3 overflow-y-auto">
         {navItems.map(item => {
           const showSection = item.section && item.section !== lastSection
@@ -165,17 +163,9 @@ function Sidebar({ p, active }: { p: P; active: string }) {
           return (
             <div key={item.key}>
               {showSection && (
-                <div className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 px-3 mt-4 mb-1">
-                  {item.section}
-                </div>
+                <div className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 px-3 mt-4 mb-1">{item.section}</div>
               )}
-              <div
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 cursor-pointer ${
-                  isActive
-                    ? 'bg-gray-100 text-gray-900 font-medium'
-                    : 'text-gray-600 hover:opacity-80'
-                }`}
-              >
+              <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 cursor-pointer ${isActive ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-600 hover:opacity-80'}`}>
                 <span className="text-gray-400">{item.icon}</span>
                 {item.label}
               </div>
@@ -183,8 +173,6 @@ function Sidebar({ p, active }: { p: P; active: string }) {
           )
         })}
       </nav>
-
-      {/* 하단 프로필 */}
       <div className="px-3 pb-5 pt-3 border-t border-gray-100">
         <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:opacity-80">
           <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">W</div>
@@ -199,7 +187,7 @@ function Sidebar({ p, active }: { p: P; active: string }) {
 }
 
 // ─── 1. 대시보드 ──────────────────────────────────────────────────
-function DashboardScreen({ p, a }: { p: P; a: A }) {
+function DashboardScreen({ p, s, a }: { p: P; s: S; a: A }) {
   const kpis = [
     { label: '활성 캠페인',      value: '2',     trend: '+50%', up: true,  icon: <Megaphone size={16}/> },
     { label: '진행중 인플루언서', value: '12',    trend: '+20%', up: true,  icon: <Users size={16}/> },
@@ -215,16 +203,12 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
     <div className="flex h-full bg-[#fafafa]">
       <Sidebar p={p} active="dashboard" />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* 헤더 */}
         <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-100">
           <div>
             <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-sm text-gray-500 mt-0.5">2026년 4월 25일 금요일</p>
           </div>
-          <button
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: p.green }}
-          >
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white" style={{ backgroundColor: p.green }}>
             <Megaphone size={14} /> 새 캠페인
           </button>
         </div>
@@ -238,7 +222,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                   <span className="text-gray-400">{k.icon}</span>
                 </div>
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{k.value}</div>
-                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? p.green : a.trendDown }}>
+                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? s.color : a.trendDown }}>
                   {k.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
                   {k.trend} <span className="font-normal text-gray-400">전월</span>
                 </div>
@@ -251,7 +235,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
             <div className="col-span-2 bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
                 <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
-                <button className="text-xs flex items-center gap-1" style={{ color: p.green }}>
+                <button className="text-xs flex items-center gap-1" style={{ color: s.color }}>
                   전체보기 <ArrowRight size={11}/>
                 </button>
               </div>
@@ -271,10 +255,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                     <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                       <td className="py-3.5 px-4 text-sm font-medium text-gray-900">{c.name}</td>
                       <td className="py-3.5 px-4">
-                        <Badge
-                          bg={c.active ? a.badgeActiveBg : a.badgePendingBg}
-                          text={c.active ? a.badgeActiveText : a.badgePendingText}
-                        >
+                        <Badge bg={c.active ? a.badgeActiveBg : a.badgePendingBg} text={c.active ? a.badgeActiveText : a.badgePendingText}>
                           {c.status}
                         </Badge>
                       </td>
@@ -288,7 +269,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                       </td>
                       <td className="py-3.5 px-4 text-xs text-gray-600">{c.dday}</td>
                       <td className="py-3.5 px-4">
-                        <button className="text-xs flex items-center gap-1" style={{ color: p.green }}>
+                        <button className="text-xs flex items-center gap-1" style={{ color: s.color }}>
                           상세 <ArrowRight size={11}/>
                         </button>
                       </td>
@@ -303,17 +284,10 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
               <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-50">
                 <Bell size={14} className="text-gray-500"/>
                 <h2 className="text-sm font-semibold text-gray-900">최근 알림</h2>
-                <span
-                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none text-white"
-                  style={{ backgroundColor: p.green }}
-                >3</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
               </div>
               {notifications.map((n, i) => (
-                <div
-                  key={i}
-                  className="px-5 py-3 border-b border-gray-50 last:border-0"
-                  style={{ backgroundColor: n.unread ? p.greenLight : undefined }}
-                >
+                <div key={i} className="px-5 py-3 border-b border-gray-50 last:border-0" style={{ backgroundColor: n.unread ? p.greenLight : undefined }}>
                   <div className="flex gap-2.5 items-start">
                     <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: n.dot }}/>
                     <div>
@@ -337,11 +311,8 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                 { icon: <Activity size={18}/>, label: '콘텐츠 검수',    sub: '대기 중 2건',   primary: false },
               ].map((item, i) => (
                 <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 cursor-pointer">
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-                    style={{ backgroundColor: item.primary ? p.greenLight : '#f3f4f6' }}
-                  >
-                    <span style={{ color: item.primary ? p.green : '#6b7280' }}>{item.icon}</span>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ backgroundColor: item.primary ? p.greenLight : '#f3f4f6' }}>
+                    <span style={{ color: item.primary ? s.color : '#6b7280' }}>{item.icon}</span>
                   </div>
                   <p className="text-sm font-semibold text-gray-900">{item.label}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>
@@ -356,7 +327,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
 }
 
 // ─── 2. 인플루언서 리스트 ─────────────────────────────────────────
-function InfluencerScreen({ p, a }: { p: P; a: A }) {
+function InfluencerScreen({ p, s, a }: { p: P; s: S; a: A }) {
   const summary = [
     { label: '전체 인플루언서', value: '5명' },
     { label: '즐겨찾기',       value: '2명' },
@@ -379,15 +350,11 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
             <h1 className="text-xl font-bold text-gray-900">인플루언서 리스트</h1>
             <p className="text-sm text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
           </div>
-          <button
-            className="px-4 py-2.5 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: p.green }}
-          >
+          <button className="px-4 py-2.5 rounded-xl text-sm font-medium text-white" style={{ backgroundColor: p.green }}>
             + 캠페인 제안
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-          {/* 요약 KPI */}
           <div className="grid grid-cols-4 gap-3">
             {summary.map((stat, i) => (
               <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl px-4 py-3">
@@ -396,19 +363,15 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
               </div>
             ))}
           </div>
-          {/* 검색바 */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-xl text-sm bg-white border border-gray-100 shadow-sm">
               <Search size={14} className="text-gray-400 shrink-0"/>
               <span className="text-gray-400 text-xs">이름으로 검색...</span>
             </div>
             {['카테고리','핏 스코어','참여율','팔로워급'].map(f => (
-              <div key={f} className="px-3 py-2 rounded-xl text-xs font-medium cursor-pointer border border-gray-200 text-gray-700 bg-white shrink-0">
-                {f} ▾
-              </div>
+              <div key={f} className="px-3 py-2 rounded-xl text-xs font-medium cursor-pointer border border-gray-200 text-gray-700 bg-white shrink-0">{f} ▾</div>
             ))}
           </div>
-          {/* 테이블 */}
           <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
@@ -436,25 +399,20 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-700">{r.followers}</td>
-                    <td className="py-3 px-4 text-sm font-semibold" style={{ color: r.engHigh ? p.green : '#6b7280' }}>{r.eng}</td>
+                    <td className="py-3 px-4 text-sm font-semibold" style={{ color: r.engHigh ? s.color : '#6b7280' }}>{r.eng}</td>
                     <td className="py-3 px-4">
-                      <Badge
-                        bg={r.fitHigh ? a.badgeActiveBg : a.badgePendingBg}
-                        text={r.fitHigh ? a.badgeActiveText : a.badgePendingText}
-                      >
+                      <Badge bg={r.fitHigh ? a.badgeActiveBg : a.badgePendingBg} text={r.fitHigh ? a.badgeActiveText : a.badgePendingText}>
                         {r.fit}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-sm font-medium" style={{ color: p.green }}>{r.authentic}</td>
+                    <td className="py-3 px-4 text-sm font-medium" style={{ color: s.color }}>{r.authentic}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1">
                         {[0,1,2].map(j => <div key={j} className="w-8 h-8 rounded-md bg-gray-100" />)}
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <button className="text-xs px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>
-                        제안
-                      </button>
+                      <button className="text-xs px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>제안</button>
                     </td>
                   </tr>
                 ))}
@@ -468,7 +426,7 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
 }
 
 // ─── 3. 성과 분석 ─────────────────────────────────────────────────
-function AnalyticsScreen({ p, a }: { p: P; a: A }) {
+function AnalyticsScreen({ p, s, a }: { p: P; s: S; a: A }) {
   const metrics = [
     { label: '총 도달',       value: '284K',  change: '+18.3%', up: true,  icon: <Eye size={15}/> },
     { label: '총 참여',       value: '23.4K', change: '+24.1%', up: true,  icon: <Activity size={15}/> },
@@ -507,7 +465,6 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {/* KPI */}
           <div className="grid grid-cols-4 gap-3">
             {metrics.map((m, i) => (
               <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl p-5">
@@ -516,14 +473,13 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
                   <span className="text-gray-400">{m.icon}</span>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 mb-2">{m.value}</p>
-                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? p.green : a.trendDown }}>
+                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? s.color : a.trendDown }}>
                   {m.up ? <TrendingUp size={10}/> : <TrendingDown size={10}/>}{m.change}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* 바 차트 */}
           <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-sm font-semibold text-gray-900">주간 도달 & 참여 추이</h2>
@@ -549,7 +505,6 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
             </div>
           </div>
 
-          {/* 캠페인 테이블 */}
           <div className="bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden">
             <div className="px-5 py-4 flex items-center justify-between border-b border-gray-50">
               <h2 className="text-sm font-semibold text-gray-900">캠페인별 성과 비교</h2>
@@ -568,7 +523,7 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
                   <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4 font-medium text-gray-900">{c.name}</td>
                     <td className="px-5 py-4 text-gray-700">{c.reach}</td>
-                    <td className="px-5 py-4 font-semibold" style={{ color: p.green }}>{c.eng}</td>
+                    <td className="px-5 py-4 font-semibold" style={{ color: s.color }}>{c.eng}</td>
                     <td className="px-5 py-4 text-gray-600">{c.contents}개</td>
                     <td className="px-5 py-4 font-semibold text-gray-500">{c.roas}</td>
                     <td className="px-5 py-4">
@@ -591,30 +546,26 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
 }
 
 const SCREENS = [
-  { key: 'dashboard', node: (p: P, a: A) => <DashboardScreen p={p} a={a} /> },
-  { key: 'influencer', node: (p: P, a: A) => <InfluencerScreen p={p} a={a} /> },
-  { key: 'analytics',  node: (p: P, a: A) => <AnalyticsScreen p={p} a={a} /> },
+  { key: 'dashboard', node: (p: P, s: S, a: A) => <DashboardScreen p={p} s={s} a={a} /> },
+  { key: 'influencer', node: (p: P, s: S, a: A) => <InfluencerScreen p={p} s={s} a={a} /> },
+  { key: 'analytics',  node: (p: P, s: S, a: A) => <AnalyticsScreen p={p} s={s} a={a} /> },
 ]
 
 export default function Moodboard() {
   const [pi, setPi] = useState(0)
+  const [si, setSi] = useState(0)
   const [ai, setAi] = useState(0)
   const p = PRIMARY[pi]
+  const s = SECONDARY[si]
   const a = ACCENT[ai]
 
   return (
     <div className="min-h-screen bg-zinc-800">
-      {/* 컨트롤 바 */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-8">
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-6">
         {/* 프라이머리 */}
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-gray-700 shrink-0">프라이머리</span>
-          <input
-            type="range" min={0} max={9} value={pi}
-            onChange={e => setPi(Number(e.target.value))}
-            className="w-36 cursor-pointer"
-            style={{ accentColor: p.green }}
-          />
+          <input type="range" min={0} max={9} value={pi} onChange={e => setPi(Number(e.target.value))} className="w-28 cursor-pointer" style={{ accentColor: p.green }}/>
           <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{pi + 1}</span>
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: p.green }}/>
@@ -622,15 +573,21 @@ export default function Moodboard() {
           </div>
         </div>
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
+        {/* 세컨더리 */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold text-gray-700 shrink-0">세컨더리</span>
+          <input type="range" min={0} max={9} value={si} onChange={e => setSi(Number(e.target.value))} className="w-28 cursor-pointer" style={{ accentColor: s.color }}/>
+          <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{si + 1}</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: s.color }}/>
+            <span className="text-xs text-gray-400 font-mono">{s.color}</span>
+          </div>
+        </div>
+        <div className="w-px h-5 bg-gray-200 shrink-0"/>
         {/* 나머지 */}
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-gray-700 shrink-0">나머지</span>
-          <input
-            type="range" min={0} max={9} value={ai}
-            onChange={e => setAi(Number(e.target.value))}
-            className="w-36 cursor-pointer"
-            style={{ accentColor: a.badgeActiveBg }}
-          />
+          <input type="range" min={0} max={9} value={ai} onChange={e => setAi(Number(e.target.value))} className="w-28 cursor-pointer" style={{ accentColor: a.badgeActiveBg }}/>
           <span className="text-xs font-bold text-gray-900 w-4 shrink-0">{ai + 1}</span>
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgeActiveBg }}/>
@@ -641,11 +598,10 @@ export default function Moodboard() {
           </div>
         </div>
       </div>
-      {/* 스크린 3개 */}
       <div className="py-8 px-8 space-y-8">
         {SCREENS.map(({ key, node }) => (
           <div key={key} className="rounded-2xl overflow-hidden border border-gray-200" style={{ height: 720 }}>
-            {node(p, a)}
+            {node(p, s, a)}
           </div>
         ))}
       </div>
