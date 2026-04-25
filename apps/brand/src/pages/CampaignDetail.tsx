@@ -243,6 +243,41 @@ export default function CampaignDetail() {
   const handleEditCampaign = () => {
     setEditConfirmModal(true)
   }
+
+  const downloadCsv = (rows: (string | number)[][], fileName: string) => {
+    const escape = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
+    const csv = rows.map(r => r.map(escape).join(',')).join('\r\n')
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+  const today = () => new Date().toISOString().slice(0, 10)
+  const handleExportApplicants = () => {
+    if (applicants.length === 0) {
+      showToast('다운로드할 지원자가 없습니다.', 'error')
+      return
+    }
+    const headers = ['이름', '팔로워', '참여율(%)', '적합도', '지원일']
+    const rows = applicants.map(a => [a.name, a.followers, a.engagement, a.fitScore, a.appliedAt])
+    downloadCsv([headers, ...rows], `지원자_${today()}.csv`)
+    showToast(`${applicants.length}명의 지원자 리스트를 다운로드했습니다.`, 'success')
+  }
+  const handleExportSelected = () => {
+    if (selectedInfluencers.length === 0) {
+      showToast('다운로드할 선정자가 없습니다.', 'error')
+      return
+    }
+    const headers = ['이름', '팔로워', '참여율(%)', '적합도', '선정일']
+    const rows = selectedInfluencers.map(s => [s.name, s.followers, s.engagement, s.fitScore, s.selectedAt])
+    downloadCsv([headers, ...rows], `선정된_지원자_${today()}.csv`)
+    showToast(`${selectedInfluencers.length}명의 선정자 리스트를 다운로드했습니다.`, 'success')
+  }
   const confirmEditCampaign = () => {
     setEditConfirmModal(false)
     navigate(`/campaigns/new?edit=${id ?? '1'}`)
@@ -672,7 +707,7 @@ export default function CampaignDetail() {
                 일괄 선정
               </button>
               <button
-                onClick={() => showToast('리스트를 CSV로 내보냅니다.', 'info')}
+                onClick={handleExportApplicants}
                 className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150"
               >
                 <Download size={13} aria-hidden="true" />
@@ -770,7 +805,7 @@ export default function CampaignDetail() {
               선정된 인플루언서 {selectedInfluencers.length}명
             </h2>
             <button
-              onClick={() => showToast('리스트를 CSV로 내보냅니다.', 'info')}
+              onClick={handleExportSelected}
               className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150"
             >
               <Download size={13} aria-hidden="true" />
