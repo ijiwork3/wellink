@@ -261,7 +261,7 @@ export function StateDropdown<S extends string, T extends string>({
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
         style={selected ? { borderColor: accentColor, color: accentColor } : undefined}
       >
-        <span>{selected ?? '상태'}</span>
+        <span>{selected ? `상태: ${selected}` : '상태'}</span>
         <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
@@ -643,13 +643,13 @@ export function MockupShell<S extends string, T extends string>({
       />
 
       {/* 목업 박스 */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden">
+      <div className="flex-1 flex items-start justify-center overflow-hidden">
         <div
           id={mockupId}
           style={{
             width: w, height: h,
             transform: `scale(${scale})`,
-            transformOrigin: 'center center',
+            transformOrigin: 'top center',
             borderRadius: radius,
             flexShrink: 0,
             ['container-type' as string]: 'inline-size',

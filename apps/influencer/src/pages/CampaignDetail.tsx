@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift } from 'lucide-react'
+import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, ErrorState, TIMER_MS, SEMANTIC_COLORS } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
@@ -27,6 +27,19 @@ export default function CampaignDetail() {
   const [successModal, setSuccessModal] = useState(false)
 
   const isClosed = qa === 'closed' || campaign?.status === '종료'
+
+  // 참여 조건 그룹화
+  function groupConditions(conditions: string[]) {
+    const follower: string[] = []
+    const content: string[] = []
+    const etc: string[] = []
+    for (const c of conditions) {
+      if (/팔로워|구독자|이웃/.test(c)) follower.push(c)
+      else if (/피드|게시물|스토리|영상|콘텐츠|업로드|포스팅|릴스/.test(c)) content.push(c)
+      else etc.push(c)
+    }
+    return { follower, content, etc }
+  }
 
   const handleApply = () => {
     if (applied) return
@@ -159,6 +172,30 @@ export default function CampaignDetail() {
             </div>
 
             <h1 className="text-xl font-bold text-gray-900 mb-2">{campaign.name}</h1>
+
+            {/* 모집 현황 */}
+            {(() => {
+              const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
+              return (
+                <div className="mb-5 p-4 rounded-xl bg-gray-50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                      <Users size={13} className="text-brand-green" />
+                      모집 현황
+                    </span>
+                    <span className="text-xs text-gray-500">{campaign.applied}/{campaign.headcount}명</span>
+                  </div>
+                  <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${pct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-1">{pct}% 모집</p>
+                </div>
+              )
+            })()}
+
             <p className="text-sm text-gray-600 mb-5">{campaign.description}</p>
 
             {/* 기간 정보 */}
@@ -200,19 +237,36 @@ export default function CampaignDetail() {
             )}
 
             {/* 참여 조건 */}
-            {campaign.conditions && (
-              <div className="mb-6">
-                <p className="text-sm font-semibold text-gray-900 mb-3">참여 조건</p>
-                <ul className="space-y-2">
-                  {campaign.conditions.map((cond, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                      <CheckCircle2 size={16} className="mt-0.5 flex-shrink-0 text-brand-green" aria-hidden="true" />
-                      {cond}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {campaign.conditions && (() => {
+              const { follower, content, etc } = groupConditions(campaign.conditions!)
+              const groups: { label: string; icon: React.ReactNode; items: string[] }[] = []
+              if (follower.length) groups.push({ label: '팔로워·구독자 조건', icon: <UserCheck size={14} className="text-brand-green" />, items: follower })
+              if (content.length) groups.push({ label: '콘텐츠 업로드 조건', icon: <FileText size={14} className="text-brand-green" />, items: content })
+              if (etc.length) groups.push({ label: '기타 조건', icon: <CheckCircle2 size={14} className="text-brand-green" />, items: etc })
+              return (
+                <div className="mb-6">
+                  <p className="text-sm font-semibold text-gray-900 mb-3">참여 조건</p>
+                  <div className="space-y-3">
+                    {groups.map((g, gi) => (
+                      <div key={gi} className="rounded-xl border border-gray-100 overflow-hidden">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
+                          {g.icon}
+                          <span className="text-xs font-semibold text-gray-600">{g.label}</span>
+                        </div>
+                        <ul className="px-3 py-2 space-y-1.5">
+                          {g.items.map((cond, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                              <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-green flex-shrink-0" />
+                              {cond}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* 신청 버튼 */}
             {isClosed ? (
@@ -292,7 +346,12 @@ export default function CampaignDetail() {
             >
               나의 캠페인 확인
             </button>
-            <button onClick={() => setSuccessModal(false)} className="text-sm text-gray-400 hover:text-gray-600 transition-colors" aria-label="닫기">닫기</button>
+            <button
+              onClick={() => { setSuccessModal(false); navigate('/campaigns/browse') }}
+              className="w-full py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              계속 둘러보기
+            </button>
           </div>
         </div>
       )}
