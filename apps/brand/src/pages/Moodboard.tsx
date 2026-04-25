@@ -20,17 +20,19 @@ const PRIMARY = [
 ]
 
 // ─── 나머지 10단계 (배지·차트B·차트C) ────────────────────────────
+// 배지는 emerald-400 / orange-400이 피크 — 그 이상 가면 "찐해짐"
+// 1~5: 연한 tint에서 vivid로 상승 / 6~10: vivid 유지하며 차트색 변화
 const ACCENT = [
-  { n:  1, badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
-  { n:  2, badgeActiveBg:'#bbf7d0', badgeActiveText:'#065f46', badgePendingBg:'#fef08a', badgePendingText:'#92400e', barB:'#3B82F6', barC:'#F59E0B' },
-  { n:  3, badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#FBBF24' },
-  { n:  4, badgeActiveBg:'#86efac', badgeActiveText:'#14532d', badgePendingBg:'#fde047', badgePendingText:'#78350f', barB:'#2563EB', barC:'#FBBF24' },
-  { n:  5, badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#2563EB', barC:'#F97316' },
-  { n:  6, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#451a03', barB:'#2563EB', barC:'#F97316' },
-  { n:  7, badgeActiveBg:'#34d399', badgeActiveText:'#022c22', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#EA580C' },
-  { n:  8, badgeActiveBg:'#10b981', badgeActiveText:'#ffffff', badgePendingBg:'#f97316', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#EA580C' },
-  { n:  9, badgeActiveBg:'#059669', badgeActiveText:'#ffffff', badgePendingBg:'#f59e0b', badgePendingText:'#ffffff', barB:'#1D4ED8', barC:'#DC2626' },
-  { n: 10, badgeActiveBg:'#047857', badgeActiveText:'#ffffff', badgePendingBg:'#d97706', badgePendingText:'#ffffff', barB:'#1E40AF', barC:'#DC2626' },
+  { n:  1, badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#93C5FD', barC:'#FDE68A' },
+  { n:  2, badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#92400e', barB:'#60A5FA', barC:'#FCD34D' },
+  { n:  3, badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#FBBF24' },
+  { n:  4, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#F97316' },
+  { n:  5, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#2563EB', barC:'#F97316' },
+  { n:  6, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#2563EB', barC:'#EA580C' },
+  { n:  7, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#EA580C' },
+  { n:  8, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#DC2626' },
+  { n:  9, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1E40AF', barC:'#DC2626' },
+  { n: 10, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#1E40AF', barC:'#B91C1C' },
 ]
 
 type P = typeof PRIMARY[0]
