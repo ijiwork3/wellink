@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect } from '@wellink/ui'
+import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -1288,7 +1288,15 @@ export default function CampaignDetail() {
                       {/* 콘텐츠 제목 */}
                       <div>
                         <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
-                        <p className="text-xs text-gray-400 mt-1">@{c.influencer} · {c.type ?? '-'}</p>
+                        <div className="flex items-center gap-1 mt-1 flex-wrap">
+                          <span className="text-xs text-gray-400">@{c.influencer}</span>
+                          <PlatformBadge platform={c.platform} />
+                          {c.type && (
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                              {c.type}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {/* 지표 */}
                       <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-50 text-center">
@@ -1404,9 +1412,14 @@ export default function CampaignDetail() {
                             </td>
                             <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{c.influencer}</td>
                             <td className="py-3 px-4">
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
-                                {c.type ?? '-'}
-                              </span>
+                              <div className="flex items-center gap-1 flex-wrap">
+                                <PlatformBadge platform={c.platform} />
+                                {c.type && (
+                                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                                    {c.type}
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
