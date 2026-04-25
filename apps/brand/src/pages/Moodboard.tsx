@@ -568,7 +568,7 @@ export default function Moodboard() {
   const g = GRAY[gi]
 
   return (
-    <div className="min-h-screen bg-zinc-800">
+    <div className="h-screen overflow-y-auto bg-zinc-800">
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-5">
         {/* 프라이머리 */}
         <div className="flex items-center gap-3">
