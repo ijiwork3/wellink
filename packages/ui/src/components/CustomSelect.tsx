@@ -129,14 +129,14 @@ export default function CustomSelect<T extends string | string[] = string>({
               onClick={() => handleSelect(opt.value)}
               className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100
                 ${isSelected(opt.value)
-                  ? 'bg-brand-green text-white'
+                  ? 'text-gray-900 font-medium hover:bg-gray-50'
                   : idx === activeIdx
                   ? 'bg-gray-100 text-gray-900'
                   : 'text-gray-700 hover:bg-gray-50'
                 }`}
             >
               <span>{opt.label}</span>
-              {isSelected(opt.value) && <Check size={14} aria-hidden="true" />}
+              {isSelected(opt.value) && <Check size={14} className="text-brand-green" aria-hidden="true" />}
             </div>
           ))}
         </div>

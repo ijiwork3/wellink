@@ -1,18 +1,8 @@
 import { useState, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar } from 'lucide-react'
+import { Heart, Users, Gift } from 'lucide-react'
 import { StatusBadge, PlatformBadge, fmtDate, TIMER_MS } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
-
-// 카드 이미지 영역 파스텔 배경색 — 카테고리별
-const categoryBgClass: Record<string, string> = {
-  '뷰티': 'bg-pink-100',
-  '스포츠': 'bg-sky-100',
-  '푸드': 'bg-yellow-100',
-  '라이프스타일': 'bg-green-50',
-  '건강': 'bg-emerald-100',
-  '기타': 'bg-gray-100',
-}
 
 interface CampaignCardProps {
   campaign: Campaign
@@ -24,8 +14,8 @@ interface CampaignCardProps {
 const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true }: CampaignCardProps) {
   const navigate = useNavigate()
   const [heartAnim, setHeartAnim] = useState(false)
-  const bgClass = categoryBgClass[campaign.category] ?? 'bg-gray-100'
   const isUrgent = campaign.status === '마감임박'
+  const progressPct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -47,50 +37,57 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
       )}
 
       {/* 이미지 영역 */}
-      <div
-        className={`h-40 flex items-center justify-center text-5xl relative ${bgClass}`}
-      >
-        {campaign.image}
+      <div className="h-36 flex items-center justify-center text-5xl relative bg-gray-50">
+        <span role="img" aria-hidden="true">{campaign.image}</span>
         {showLike && (
           <button
-            className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150"
+            className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150"
             onClick={handleLike}
-            aria-label={liked ? '좋아요 취소' : '좋아요'}
+            aria-label={liked ? '북마크 해제' : '북마크'}
           >
             <Heart
-              size={16}
+              size={15}
               fill={liked ? '#ef4444' : 'none'}
               color={liked ? '#ef4444' : '#9ca3af'}
-              style={{ transform: heartAnim ? 'scale(1.3)' : 'scale(1)', transition: 'transform 0.15s ease-out' }}
+              style={{ transform: heartAnim ? 'scale(1.35)' : 'scale(1)', transition: 'transform 0.15s ease-out' }}
             />
           </button>
         )}
+        {/* 모집률 바 */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100">
+          <div
+            className={`h-full ${progressPct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
       </div>
 
-      {/* 콘텐츠 영역 */}
+      {/* 콘텐츠 */}
       <div className="p-4">
-        <p className="text-xs text-gray-400 mb-0.5 truncate">{campaign.brand}</p>
-        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-2">{campaign.name}</p>
-
-        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+        <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
           <StatusBadge status={campaign.status} />
           <PlatformBadge platform={campaign.channel} />
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
-          <Calendar size={12} />
-          <span>신청 마감 <span className="font-medium text-gray-600">{fmtDate(campaign.applyEnd)}</span></span>
-        </div>
+        <p className="text-xs text-gray-400 truncate">{campaign.brand}</p>
+        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mt-0.5 mb-3">{campaign.name}</p>
 
-        <button
-          className="w-full py-2 rounded-xl text-sm font-medium text-brand-green-text border border-brand-green/30 bg-brand-green/5 hover:bg-brand-green/10 transition-all duration-150"
-          onClick={(e) => {
-            e.stopPropagation()
-            navigate(`/campaigns/${campaign.id}`)
-          }}
-        >
-          신청하기
-        </button>
+        {/* 리워드 */}
+        {campaign.reward && (
+          <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-brand-green/5 border border-brand-green/10">
+            <Gift size={12} className="text-brand-green shrink-0" />
+            <span className="text-xs font-medium text-gray-700 truncate">{campaign.reward}</span>
+          </div>
+        )}
+
+        {/* 모집 현황 + 마감일 */}
+        <div className="flex items-center justify-between text-[11px] text-gray-400">
+          <span className="flex items-center gap-1">
+            <Users size={11} />
+            {campaign.applied}/{campaign.headcount}명 모집
+          </span>
+          <span>마감 {fmtDate(campaign.applyEnd)}</span>
+        </div>
       </div>
     </div>
   )

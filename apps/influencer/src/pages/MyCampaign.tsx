@@ -1,36 +1,29 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, ChevronRight, Upload, X, XCircle, RefreshCw } from 'lucide-react'
+import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, StatusBadge } from '@wellink/ui'
 import type { ParticipationStatus } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { fmtPrice, fmtDate } from '@wellink/ui'
+import { fmtDate } from '@wellink/ui'
+import { mockMyCampaigns } from '../services/mock/campaigns'
+import type { MyCampaign } from '../services/mock/campaigns'
 
-interface Campaign {
-  id: string
-  name: string
-  channel: string
-  appliedAt: string
-  deadline: string
-  status: ParticipationStatus
-  progress: string
-  reward: string
+// 탭: 진행중(지원완료+검토중+콘텐츠대기+검수중) / 완료 / 미선정
+type TabKey = '전체' | '진행중' | '완료' | '미선정'
+const STATUS_TABS: TabKey[] = ['전체', '진행중', '완료', '미선정']
+
+const ACTIVE_STATUSES: Set<string> = new Set(['지원완료', '검토중', '콘텐츠대기', '검수중'])
+
+function statusToTab(s: string): TabKey {
+  if (ACTIVE_STATUSES.has(s)) return '진행중'
+  if (s === '완료') return '완료'
+  if (s === '미선정') return '미선정'
+  return '전체'
 }
 
-const MOCK_CAMPAIGNS: Campaign[] = [
-  { id: '1', name: '프로틴 파워 챌린지', channel: '인스타그램', appliedAt: '2026-03-15', deadline: '2026-04-20', status: '콘텐츠대기', progress: '콘텐츠 제작 중', reward: fmtPrice(80000) },
-  { id: '2', name: '필라테스 스튜디오 체험', channel: '인스타그램', appliedAt: '2026-03-10', deadline: '2026-04-25', status: '지원완료', progress: '검토 중', reward: fmtPrice(50000) },
-  { id: '3', name: '아웃도어 장비 리뷰', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '검수중', progress: '게시 확인 중', reward: fmtPrice(120000) },
-  { id: '4', name: '헬스 보충제 캠페인', channel: '인스타그램', appliedAt: '2026-02-10', deadline: '2026-03-20', status: '완료', progress: '완료', reward: fmtPrice(95000) },
-]
-
-const STATUS_TABS = ['전체', '지원완료', '검토중', '콘텐츠대기', '검수중', '완료'] as const
-
-
-/** 상태별 가능한 액션 */
-const ACTION_MAP: Partial<Record<ParticipationStatus, Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
+const ACTION_MAP: Partial<Record<string, Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
   '지원완료':   ['수정', '취소'],
   '검토중':     ['취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
@@ -39,8 +32,15 @@ const ACTION_MAP: Partial<Record<ParticipationStatus, Array<'수정' | '취소' 
   '미선정':     ['상세보기'],
 }
 
-function getActions(status: ParticipationStatus): Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'> {
+function getActions(status: string) {
   return ACTION_MAP[status] ?? ['상세보기']
+}
+
+// 콘텐츠 제출 마감 임박 여부 (3일 이내)
+function isDeadlineUrgent(dateStr?: string): boolean {
+  if (!dateStr) return false
+  const diff = new Date(dateStr).getTime() - Date.now()
+  return diff > 0 && diff < 1000 * 60 * 60 * 24 * 3
 }
 
 export default function MyCampaign() {
@@ -48,95 +48,70 @@ export default function MyCampaign() {
   const qa = useQAMode()
   const { showToast } = useToast()
 
-  const initStatus = () => {
-    if (qa.startsWith('tab-') && qa.endsWith('-empty')) {
-      return qa.replace('tab-', '').replace('-empty', '')
-    }
-    if (qa.startsWith('tab-')) return qa.replace('tab-', '')
-    return '전체'
-  }
-
-  const initCampaigns = () => {
-    if (qa === 'empty' || qa.endsWith('-empty')) return []
-    return MOCK_CAMPAIGNS
-  }
-
-  const [activeStatus, setActiveStatus] = useState<string>(initStatus)
-  const [cancelModal, setCancelModal] = useState<Campaign | null>(null)
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initCampaigns)
+  const [campaigns, setCampaigns] = useState<MyCampaign[]>(() => qa === 'empty' ? [] : mockMyCampaigns)
+  const [activeTab, setActiveTab] = useState<TabKey>('전체')
+  const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
+  const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [contentUrl, setContentUrl] = useState('')
-  const firstActive = MOCK_CAMPAIGNS.find(c => c.status === '콘텐츠대기') ?? null
-  const [submitModal, setSubmitModal] = useState<Campaign | null>(
-    qa === 'modal-submit' ? firstActive : null
-  )
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (qa === 'empty') { setCampaigns([]); return }
+    if (qa === 'modal-cancel') { setCancelModal(mockMyCampaigns[0]); return }
+    if (qa === 'modal-submit') { setSubmitModal(mockMyCampaigns[0]); return }
+    const tabMap: Record<string, TabKey> = {
+      'tab-신청완료': '진행중', 'tab-진행중': '진행중',
+      'tab-게시완료': '완료', 'tab-포인트지급': '완료',
+    }
+    if (qa && tabMap[qa]) setActiveTab(tabMap[qa])
+    setCampaigns(mockMyCampaigns)
+  }, [qa])
+
+  const filtered = useMemo(() => {
+    let list = campaigns
+    if (activeTab !== '전체') list = list.filter(c => statusToTab(c.status) === activeTab)
+    const q = search.trim().toLowerCase()
+    if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q))
+    return list
+  }, [campaigns, activeTab, search])
+
+  const countByTab = (tab: TabKey) => {
+    if (tab === '전체') return campaigns.length
+    return campaigns.filter(c => statusToTab(c.status) === tab).length
+  }
 
   const handleContentSubmit = () => {
     if (!contentUrl.trim()) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
-    try { const u = new URL(contentUrl); if (!/^https?:/.test(u.protocol)) throw new Error() } catch { showToast('유효한 URL을 입력해 주세요 (http/https)', 'error'); return }
-    if (submitModal) {
-      setCampaigns(prev => prev.map(c =>
-        c.id === submitModal.id ? { ...c, status: '검수중', progress: '게시 확인 중' } : c
-      ))
-      setActiveStatus('검수중')
-    }
+    setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중' } : c))
+    showToast('콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
     setContentUrl('')
-    showToast('콘텐츠가 제출되었습니다!', 'success')
   }
 
-  // qa 변경 동기화
-  useEffect(() => {
-    if (qa.startsWith('tab-') && qa.endsWith('-empty')) {
-      setActiveStatus(qa.replace('tab-', '').replace('-empty', ''))
-      setCampaigns([])
-    } else if (qa.startsWith('tab-')) {
-      setActiveStatus(qa.replace('tab-', ''))
-    }
-    if (qa === 'empty' || qa.endsWith('-empty')) setCampaigns([])
-    if (qa === 'modal-cancel') setCancelModal(MOCK_CAMPAIGNS[0] ?? null)
-    if (qa === 'modal-submit') setSubmitModal(firstActive)
-  }, [qa])
+  const handleCancel = (id: string) => {
+    setCampaigns(prev => prev.filter(c => c.id !== id))
+    setCancelModal(null)
+    showToast('신청이 취소되었어요.', 'info')
+  }
 
-  // qa=loading → 스켈레톤
   if (qa === 'loading') {
     return (
       <Layout>
         <div className="space-y-4 animate-pulse">
-          {/* 헤더 스켈레톤 */}
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="h-4 bg-gray-100 rounded-xl w-28 mb-1.5" />
-              <div className="h-3 bg-gray-100 rounded-xl w-16" />
-            </div>
-            <div className="h-7 bg-gray-100 rounded-xl w-24" />
-          </div>
-          {/* 탭 바 스켈레톤 */}
+          <div className="h-5 bg-gray-100 rounded-xl w-32" />
           <div className="flex gap-2">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="h-7 bg-gray-100 rounded-full w-16" />
-            ))}
+            {[1,2,3,4].map(i => <div key={i} className="h-7 bg-gray-100 rounded-full w-16" />)}
           </div>
-          {/* 카드 스켈레톤 3개 */}
           {[1,2,3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-2.5">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-2">
-                  <div className="flex gap-2">
-                    <div className="h-4 bg-gray-100 rounded-full w-14" />
-                    <div className="h-4 bg-gray-100 rounded-full w-16" />
-                  </div>
-                  <div className="h-4 bg-gray-100 rounded-xl w-3/4" />
-                  <div className="h-3 bg-gray-100 rounded-xl w-1/2" />
-                </div>
-                <div className="text-right space-y-1.5">
-                  <div className="h-3 bg-gray-100 rounded-xl w-10 ml-auto" />
-                  <div className="h-4 bg-gray-100 rounded-xl w-16" />
-                </div>
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+              <div className="flex justify-between">
+                <div className="h-4 bg-gray-100 rounded-xl w-36" />
+                <div className="h-5 bg-gray-100 rounded-full w-16" />
               </div>
-              <div className="h-3 bg-gray-100 rounded-xl w-2/5" />
+              <div className="h-3 bg-gray-100 rounded-xl w-48" />
               <div className="flex gap-2">
-                <div className="flex-1 h-8 bg-gray-100 rounded-xl" />
-                <div className="w-20 h-8 bg-gray-100 rounded-xl" />
+                <div className="h-8 bg-gray-100 rounded-xl flex-1" />
+                <div className="h-8 bg-gray-100 rounded-xl w-20" />
               </div>
             </div>
           ))}
@@ -145,74 +120,65 @@ export default function MyCampaign() {
     )
   }
 
-  // qa=error
   if (qa === 'error') {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" aria-hidden="true" />
-          <div className="text-center">
-            <p className="text-sm font-semibold text-gray-900">캠페인 정보를 불러오지 못했어요</p>
-            <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요</p>
-          </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="flex items-center gap-2 text-sm font-medium text-white px-5 py-2.5 rounded-xl transition-colors hover:opacity-90 bg-brand-green"
-          >
-            <RefreshCw size={14} aria-hidden="true" />다시 시도
+          <XCircle size={44} className="text-red-300" />
+          <p className="text-sm font-semibold text-gray-900">나의 캠페인을 불러오지 못했어요</p>
+          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
+            <RefreshCw size={14} />다시 시도
           </button>
         </div>
       </Layout>
     )
   }
 
-  const filtered = useMemo(
-    () => activeStatus === '전체' ? campaigns : campaigns.filter((c) => c.status === activeStatus),
-    [activeStatus, campaigns]
-  )
-
-  const countByStatus = (status: string) =>
-    status === '전체' ? campaigns.length : campaigns.filter((c) => c.status === status).length
-
-  const handleCancel = (id: string) => {
-    setCampaigns(prev => prev.filter(c => c.id !== id))
-    setCancelModal(null)
-  }
-
   return (
     <Layout>
       <div className="space-y-4">
         {/* 헤더 */}
-        <div className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-3">
+        <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-gray-900">나의 캠페인</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{activeStatus === '전체' ? `전체 ${campaigns.length}개` : `${activeStatus} ${filtered.length}개`}</p>
+            <p className="text-xs text-gray-400 mt-0.5">총 {campaigns.length}개 참여 중</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors self-start @sm:self-auto"
+            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            캠페인 찾기 <ChevronRight size={12} aria-hidden="true" />
+            <Compass size={12} />
+            캠페인 찾기
           </button>
         </div>
 
-        {/* 필터 탭 */}
+        {/* 검색 */}
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="캠페인 또는 브랜드 검색"
+            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:border-brand-green focus:bg-white transition-colors"
+          />
+        </div>
+
+        {/* 탭 */}
         <div className="flex gap-2 flex-wrap">
-          {STATUS_TABS.map((status) => {
-            const count = countByStatus(status)
+          {STATUS_TABS.map(tab => {
+            const count = countByTab(tab)
             return (
               <button
-                key={status}
-                onClick={() => { setActiveStatus(status); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
-                  activeStatus === status
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  activeTab === tab ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {status}
+                {tab}
                 <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                  activeStatus === status ? 'bg-white/20 text-white' : 'bg-gray-300 text-gray-600'
+                  activeTab === tab ? 'bg-white/20 text-white' : 'bg-white text-gray-500'
                 }`}>
                   {count}
                 </span>
@@ -223,32 +189,45 @@ export default function MyCampaign() {
 
         {/* 카드 리스트 */}
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 bg-brand-green/10">
-              <Search size={24} className="text-brand-green" aria-hidden="true" />
+          <div className="bg-white rounded-2xl border border-gray-100 py-16 flex flex-col items-center justify-center gap-3">
+            <div className="w-14 h-14 rounded-full bg-brand-green/10 flex items-center justify-center">
+              <Search size={24} className="text-brand-green" />
             </div>
-            <p className="text-sm font-medium text-gray-500 mb-1">해당 상태의 캠페인이 없어요</p>
-            <button
-              onClick={() => navigate('/campaigns/browse')}
-              className="mt-3 px-5 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90 bg-brand-green"
-            >
-              캠페인 찾아보기
-            </button>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-600">
+                {search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
+              </p>
+              {!search && <p className="text-xs text-gray-400 mt-0.5">새로운 캠페인에 신청해 보세요</p>}
+            </div>
+            {!search && (
+              <button onClick={() => navigate('/campaigns/browse')} className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity">
+                캠페인 찾아보기
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map(c => {
               const actions = getActions(c.status)
+              const urgent = c.status === '콘텐츠대기' && isDeadlineUrgent(c.contentDeadline)
               return (
-                <div key={c.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div key={c.id} className={`bg-white rounded-2xl border p-4 transition-all ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
+                  {/* 마감 임박 알림 */}
+                  {urgent && (
+                    <div className="flex items-center gap-1.5 mb-3 text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-xl">
+                      <AlertCircle size={12} />
+                      콘텐츠 제출 마감이 {fmtDate(c.contentDeadline!)}까지예요!
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0 pr-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <StatusBadge status={c.status} size="sm" />
-                        <span className="text-[10px] text-gray-400 shrink-0">{c.channel}</span>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <StatusBadge status={c.status as ParticipationStatus} size="sm" />
+                        <span className="text-[10px] text-gray-400">{c.channel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">신청일 {fmtDate(c.appliedAt)} · 마감 {fmtDate(c.deadline)}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-xs text-gray-400">리워드</p>
@@ -258,40 +237,38 @@ export default function MyCampaign() {
 
                   {/* 진행 상황 */}
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
+                    <div className={`w-1.5 h-1.5 rounded-full ${c.status === '완료' ? 'bg-gray-400' : c.status === '미선정' ? 'bg-red-300' : 'bg-brand-green'}`} />
                     <span className="text-xs text-gray-500">{c.progress}</span>
                   </div>
 
                   {/* 액션 버튼 */}
                   <div className="flex gap-2">
                     {actions.map(action => {
+                      if (action === '콘텐츠 제출') return (
+                        <button key={action}
+                          onClick={() => setSubmitModal(c)}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity">
+                          <Upload size={12} />콘텐츠 제출
+                        </button>
+                      )
                       if (action === '수정') return (
                         <button key={action}
                           onClick={() => navigate(`/campaigns/${c.id}`)}
-                          className="flex-1 py-2 rounded-xl text-xs font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
-                          수정하기
+                          className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
+                          신청 정보 보기
                         </button>
                       )
                       if (action === '취소') return (
                         <button key={action}
                           onClick={() => setCancelModal(c)}
-                          className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors">
-                          <X size={12} aria-hidden="true" />
-                          신청 취소
-                        </button>
-                      )
-                      if (action === '콘텐츠 제출') return (
-                        <button key={action}
-                          onClick={() => navigate(`/campaigns/${c.id}`)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-brand-green-text border border-brand-green/30 bg-brand-green/5 hover:bg-brand-green/10 transition-colors">
-                          <Upload size={12} aria-hidden="true" />
-                          콘텐츠 제출
+                          className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors">
+                          <X size={12} />신청 취소
                         </button>
                       )
                       return (
                         <button key={action}
                           onClick={() => navigate(`/campaigns/${c.id}`)}
-                          className="flex-1 py-2 rounded-xl text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                          className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
                           상세보기
                         </button>
                       )
@@ -304,60 +281,40 @@ export default function MyCampaign() {
         )}
       </div>
 
-      {/* 콘텐츠 제출 모달 (qa=modal-submit) */}
+      {/* 콘텐츠 제출 모달 */}
       <Modal open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title="콘텐츠 제출">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            <strong className="text-gray-900">{submitModal?.name}</strong>에 대한 콘텐츠를 제출합니다.
-          </p>
-          <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-            <Upload size={24} className="text-gray-300 mx-auto mb-2" aria-hidden="true" />
-            <p className="text-xs text-gray-400">콘텐츠 URL을 붙여넣거나 파일을 업로드하세요</p>
+          <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요.</p>
+          <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
+            <Upload size={22} className="text-gray-300 mx-auto mb-2" />
+            <p className="text-xs text-gray-400">인스타그램, 블로그, 유튜브 등 게시 링크</p>
           </div>
           <div>
             <label className="text-xs text-gray-500 mb-1.5 block">콘텐츠 URL</label>
             <input
               type="text"
               value={contentUrl}
-              onChange={(e) => setContentUrl(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleContentSubmit() }}
+              onChange={e => setContentUrl(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleContentSubmit()}
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 transition-colors"
               placeholder="https://instagram.com/p/..."
             />
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button
-              onClick={handleContentSubmit}
-              disabled={!contentUrl.trim()}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              제출하기
-            </button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">제출하기</button>
           </div>
         </div>
       </Modal>
 
-      {/* 취소 확인 모달 */}
+      {/* 신청 취소 모달 */}
       <Modal open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            <strong className="text-gray-900">{cancelModal?.name}</strong> 캠페인 신청을 취소하시겠습니까?
-          </p>
-          <p className="text-xs text-gray-400">취소 후에는 다시 신청하셔야 합니다.</p>
+          <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
+          <p className="text-xs text-gray-400">취소 후 재신청이 가능하지 않을 수 있어요.</p>
           <div className="flex gap-2">
-            <button
-              onClick={() => setCancelModal(null)}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
-            >
-              유지하기
-            </button>
-            <button
-              onClick={() => cancelModal && handleCancel(cancelModal.id)}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
-            >
-              취소하기
-            </button>
+            <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">유지하기</button>
+            <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors">취소하기</button>
           </div>
         </div>
       </Modal>

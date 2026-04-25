@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS } from '@wellink/ui'
+import { Modal, AlertModal, TIMER_MS, CustomSelect } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -102,18 +102,56 @@ const campaignMeta: Record<string, {
 }
 const fmtKRW = (n: number) => `₩${n.toLocaleString('ko-KR')}`
 
-// 지원자 관리 더미
-const applicantsData = [
-  { id: 101, name: '최은지', followers: '12.3K', engagement: 4.2, fitScore: 92, appliedAt: '2026-04-17', avatar: 'bg-rose-200' },
-  { id: 102, name: '한준영', followers: '8.7K', engagement: 5.1, fitScore: 87, appliedAt: '2026-04-18', avatar: 'bg-sky-200' },
-  { id: 103, name: '오다은', followers: '22.1K', engagement: 3.8, fitScore: 78, appliedAt: '2026-04-20', avatar: 'bg-amber-200' },
+// 지원자 관리 더미 — 100명 (페이지네이션 적용)
+const APPLICANT_NAME_POOL = [
+  '최은지', '한준영', '오다은', '김지환', '박서연', '이도윤', '정하늘', '신유리',
+  '강민재', '윤채영', '조성훈', '송예린', '백지호', '권나연', '문태진', '서다인',
+  '홍은수', '배유나', '노건우', '안소현',
 ]
+const AVATAR_POOL = ['bg-rose-200', 'bg-sky-200', 'bg-amber-200', 'bg-emerald-200', 'bg-violet-200', 'bg-pink-200', 'bg-cyan-200', 'bg-orange-200', 'bg-teal-200', 'bg-indigo-200']
+const applicantsData = Array.from({ length: 100 }, (_, i) => {
+  const name = APPLICANT_NAME_POOL[i % APPLICANT_NAME_POOL.length]
+  const followersN = 5000 + (i * 317 % 40000)
+  const followers = followersN >= 10000 ? `${(followersN / 1000).toFixed(1)}K` : `${followersN.toLocaleString()}`
+  const engagement = +(2.5 + (i * 7 % 50) / 10).toFixed(1)
+  const fitScore = 60 + (i * 13 % 40)
+  const month = String(((i * 3) % 30 < 15 ? 3 : 4)).padStart(2, '0')
+  const day = String(((i * 7) % 28) + 1).padStart(2, '0')
+  return {
+    id: 1000 + i,
+    name: i < APPLICANT_NAME_POOL.length ? name : `${name}${Math.floor(i / APPLICANT_NAME_POOL.length) + 1}`,
+    followers,
+    engagement,
+    fitScore,
+    appliedAt: `2026-${month}-${day}`,
+    avatar: AVATAR_POOL[i % AVATAR_POOL.length],
+  }
+})
 
-// 선정된 지원자 더미
-const selectedApplicantsData = [
-  { id: 201, name: '이창민', followers: '8.7K', engagement: 4.1, fitScore: 92, selectedAt: '2026-04-21', avatar: 'bg-pink-200' },
-  { id: 202, name: '김가애', followers: '18.9K', engagement: 4.2, fitScore: 88, selectedAt: '2026-04-22', avatar: 'bg-yellow-200' },
+// 선정된 지원자 더미 — 100명 (페이지네이션 적용)
+const SELECTED_NAME_POOL = [
+  '이창민', '김가애', '박리나', '민경완', '서유진', '한지수', '최민호', '윤아름',
+  '강태현', '임소희', '구하늘', '나은영', '도성재', '류지원', '명세현', '변하경',
+  '심태웅', '엄혜린', '오지훈', '진서영',
 ]
+const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
+  const name = SELECTED_NAME_POOL[i % SELECTED_NAME_POOL.length]
+  const followersN = 6000 + (i * 411 % 50000)
+  const followers = followersN >= 10000 ? `${(followersN / 1000).toFixed(1)}K` : `${followersN.toLocaleString()}`
+  const engagement = +(3.0 + (i * 9 % 40) / 10).toFixed(1)
+  const fitScore = 70 + (i * 11 % 30)
+  const month = String(((i * 5) % 30 < 20 ? 4 : 5)).padStart(2, '0')
+  const day = String(((i * 3) % 28) + 1).padStart(2, '0')
+  return {
+    id: 2000 + i,
+    name: i < SELECTED_NAME_POOL.length ? name : `${name}${Math.floor(i / SELECTED_NAME_POOL.length) + 1}`,
+    followers,
+    engagement,
+    fitScore,
+    selectedAt: `2026-${month}-${day}`,
+    avatar: AVATAR_POOL[i % AVATAR_POOL.length],
+  }
+})
 
 // 등록 콘텐츠 더미 100개 — 검수중/승인/반려 + 0값(reach=0) 엣지케이스 포함
 const INFLUENCER_POOL = [
@@ -141,6 +179,23 @@ const PLATFORM_SUBTYPES: Array<{ platform: ContentPlatform; sub: ContentSubType 
   { platform: '틱톡',       sub: null },
 ]
 const STATUSES: ContentStatus[] = ['검수중', '승인', '승인', '승인', '반려']
+const CAPTION_TEMPLATES = [
+  '여름 홈트 30일 챌린지 후기',
+  '비건 단백질 먹어본 솔직 리뷰',
+  '신상 앰플 일주일 사용기',
+  '러닝화 100km 신어보기',
+  '다이어트 도시락 일주일 기록',
+  '아침 요가 루틴 추천',
+  '필라테스 입문 한 달 변화',
+  '비타민C 앰플 비교 리뷰',
+  '스트레칭 루틴 따라해봤어요',
+  '단백질 보충제 솔직 시식',
+  '레깅스 코디 추천',
+  '저당 디저트 만들기',
+  '홈카페 굿즈 언박싱',
+  '미니멀 인테리어 챌린지',
+  '캠핑 장비 추천템',
+]
 const registeredContents = Array.from({ length: 100 }, (_, i) => {
   const inf = INFLUENCER_POOL[i % INFLUENCER_POOL.length]
   const status = STATUSES[i % STATUSES.length]
@@ -154,8 +209,10 @@ const registeredContents = Array.from({ length: 100 }, (_, i) => {
   const month = String(Math.floor(i / 30) + 3).padStart(2, '0')
   const day   = String((i % 28) + 1).padStart(2, '0')
   const ps = PLATFORM_SUBTYPES[i % PLATFORM_SUBTYPES.length]
+  const caption = CAPTION_TEMPLATES[i % CAPTION_TEMPLATES.length]
   return {
     id: i + 1,
+    caption: `${caption} #${i + 1}`,
     thumbnail: inf.thumb,
     influencer: inf.name,
     instagramId: inf.id,
@@ -221,12 +278,16 @@ export default function CampaignDetail() {
     qa === 'tab-applicants-empty' || campaign.status === '대기중' ? [] : applicantsData
   )
   const [checkedApplicants, setCheckedApplicants] = useState<Set<number>>(new Set())
+  const [applicantsPage, setApplicantsPage] = useState(1)
 
   // 선정된 지원자 state
   // QA: tab-selected-empty → 빈 배열
   const [selectedInfluencers, setSelectedInfluencers] = useState(
     qa === 'tab-selected-empty' ? [] : selectedApplicantsData
   )
+  const [selectedPage, setSelectedPage] = useState(1)
+  const [rankedPage, setRankedPage] = useState(1)
+  const PAGE_SIZE = 10
   const [deselectModal, setDeselectModal] = useState<number | null>(null)
   const [deleteCampaignModal, setDeleteCampaignModal] = useState(false)
   const [editConfirmModal, setEditConfirmModal] = useState(false)
@@ -502,12 +563,12 @@ export default function CampaignDetail() {
     { label: '콘텐츠 수', value: `${approvedContents.length}건`, icon: FileText },
   ]
 
-  // 콘텐츠가 많을 경우 Top 20 좋아요 기준으로 추려 라벨 가독성 확보
-  const CHART_MAX_POINTS = 20
+  // 콘텐츠별 좋아요 비교 — Top 10
+  const CHART_MAX_POINTS = 10
   const chartData = [...approvedContents]
     .sort((a, b) => b.likes - a.likes)
     .slice(0, CHART_MAX_POINTS)
-    .map(c => ({ name: c.influencer, likes: c.likes }))
+    .map(c => ({ name: c.influencer, caption: c.caption, likes: c.likes }))
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
   const safeMaxLikes = maxLikes || 1
 
@@ -545,7 +606,6 @@ export default function CampaignDetail() {
         >
           <ArrowLeft size={16} aria-hidden="true" />
         </button>
-        <FileText size={16} className="text-gray-500" aria-hidden="true" />
         <span className="font-medium">캠페인 상세</span>
       </div>
 
@@ -606,18 +666,24 @@ export default function CampaignDetail() {
       )}
 
       {/* 탭 */}
-      <div className="overflow-x-auto flex border-b border-gray-200 sticky top-0 bg-white z-10">
+      <div className="overflow-x-auto flex border-b border-gray-200 sticky top-0 bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 scrollbar-hide">
         {tabs.map(tab => {
           const isDisabled = isClosed && tab === '지원자 관리'
+          const isActive = activeTab === tab
           return (
             <button
               key={tab}
+              ref={el => {
+                if (el && isActive) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                }
+              }}
               onClick={() => { if (!isDisabled) { setActiveTab(tab); setCheckedApplicants(new Set()) } }}
               disabled={isDisabled}
-              className={`whitespace-nowrap px-4 py-2.5 ${isPhone ? 'text-xs' : 'text-sm'} border-b-2 transition-all duration-150 ${
+              className={`whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-xs' : 'text-sm'} border-b-2 transition-all duration-150 ${
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
-                  : activeTab === tab
+                  : isActive
                     ? 'border-brand-green font-semibold text-gray-900'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
@@ -738,7 +804,7 @@ export default function CampaignDetail() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {applicants.map(a => (
+                {applicants.slice((applicantsPage - 1) * PAGE_SIZE, applicantsPage * PAGE_SIZE).map(a => (
                   <tr key={a.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="py-3 px-4">
                       <input
@@ -792,6 +858,7 @@ export default function CampaignDetail() {
               </tbody>
             </table>
             </div>
+            <Pagination total={applicants.length} page={applicantsPage} pageSize={PAGE_SIZE} onChange={setApplicantsPage} />
           </div>
         </div>
       )}
@@ -823,7 +890,7 @@ export default function CampaignDetail() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {selectedInfluencers.map(i => (
+                {selectedInfluencers.slice((selectedPage - 1) * PAGE_SIZE, selectedPage * PAGE_SIZE).map(i => (
                   <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
@@ -865,6 +932,7 @@ export default function CampaignDetail() {
               </tbody>
             </table>
             </div>
+            <Pagination total={selectedInfluencers.length} page={selectedPage} pageSize={PAGE_SIZE} onChange={setSelectedPage} />
           </div>
         </div>
       )}
@@ -950,77 +1018,34 @@ export default function CampaignDetail() {
               </div>
             </div>
 
-            {/* 검수 상태 필터 탭 */}
-            <div className="flex gap-1.5 flex-wrap">
-              {(['전체', '검수중', '승인', '반려'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => { setContentFilter(f); setContentPage(1); setSelectedContents(new Set()) }}
-                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border transition-colors ${
-                    contentFilter === f
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
-                  }`}
-                >
-                  {f}
-                  <span className={`text-xs font-bold px-1 rounded-full ${
-                    contentFilter === f ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-                  }`}>
-                    {counts[f]}
-                  </span>
-                </button>
-              ))}
+            {/* 필터 + 정렬 (상태/플랫폼/정렬 단일 행) */}
+            <div className="grid grid-cols-3 gap-2 @sm:flex @sm:items-center @sm:gap-2">
+              <CustomSelect
+                value={contentFilter}
+                onChange={v => { setContentFilter(v as typeof contentFilter); setContentPage(1); setSelectedContents(new Set()) }}
+                options={(['전체', '검수중', '승인', '반려'] as const).map(f => ({
+                  label: `${f} (${counts[f]})`,
+                  value: f,
+                }))}
+                className="@sm:w-36"
+              />
+              <CustomSelect
+                value={contentPlatform}
+                onChange={v => { setContentPlatform(v as typeof contentPlatform); setContentPage(1); setSelectedContents(new Set()) }}
+                options={(['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const).map(p => ({
+                  label: p === '전체' ? '플랫폼 전체' : p,
+                  value: p,
+                }))}
+                className="@sm:w-36"
+              />
+              <CustomSelect
+                value={contentSort}
+                onChange={v => { setContentSort(v as typeof contentSort); setContentPage(1); setSelectedContents(new Set()) }}
+                options={(['최신순', '도달순', '좋아요순'] as const).map(s => ({ label: s, value: s }))}
+                className="@sm:ml-auto @sm:w-32"
+              />
             </div>
 
-            {/* 플랫폼 필터 + 정렬 */}
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex gap-1.5">
-                {(['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const).map(p => (
-                  <button
-                    key={p}
-                    onClick={() => { setContentPlatform(p); setContentPage(1); setSelectedContents(new Set()) }}
-                    className={`text-xs px-3 py-1.5 rounded-xl border transition-colors ${
-                      contentPlatform === p
-                        ? 'bg-brand-green text-white border-brand-green'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-1.5">
-                {(['최신순', '도달순', '좋아요순'] as const).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => { setContentSort(s); setContentPage(1); setSelectedContents(new Set()) }}
-                    className={`text-xs px-3 py-1.5 rounded-xl border transition-colors ${
-                      contentSort === s
-                        ? 'bg-gray-900 text-white border-gray-900'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 다운로드 권한 안내 — 권한 없는 경우에만 노출 (유료 플랜에는 굳이 무제한 안내 X) */}
-            {!canDownloadContent && (
-              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
-                <Info size={13} className="text-amber-500 shrink-0" aria-hidden="true" />
-                <p className="text-xs text-amber-700 flex-1">
-                  콘텐츠 다운로드는 <span className="font-semibold">유료 플랜</span> 구독 시 이용할 수 있습니다.
-                </p>
-                <button
-                  onClick={() => navigate('/subscription')}
-                  className="text-xs font-semibold text-amber-800 underline underline-offset-2 hover:text-amber-900 shrink-0"
-                >
-                  플랜 보기
-                </button>
-              </div>
-            )}
 
             {/* 콘텐츠 카드 그리드 */}
             {filtered.length === 0 ? (
@@ -1225,12 +1250,12 @@ export default function CampaignDetail() {
             {reportKPI.map(k => {
               const Icon = k.icon
               return (
-                <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon size={14} className="text-gray-400" aria-hidden="true" />
-                    <span className="text-xs text-gray-500 font-medium">{k.label}</span>
+                <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <Icon size={13} className="text-gray-400" aria-hidden="true" />
+                    <span className="text-xs text-gray-500">{k.label}</span>
                   </div>
-                  <div className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>{k.value}</div>
+                  <div className="text-2xl @sm:text-3xl font-bold text-gray-900 tracking-tight">{k.value}</div>
                 </div>
               )
             })}
@@ -1248,44 +1273,35 @@ export default function CampaignDetail() {
                 .sort((a, b) => b.viralScore - a.viralScore)
                 .slice(0, 3)
                 .map((c, idx) => {
-                  const rankStyle = idx === 0
-                    ? 'bg-amber-50 border-amber-200'
-                    : idx === 1
-                    ? 'bg-gray-50 border-gray-200'
-                    : 'bg-orange-50/60 border-orange-100'
-                  const medal = ['🥇', '🥈', '🥉'][idx]
+                  const medals = ['🥇', '🥈', '🥉']
+                  const scoreColor = c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-500' : 'text-gray-400'
+                  const borderColor = idx === 0 ? 'border-amber-200' : 'border-gray-100'
+                  const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
                   return (
-                    <div key={c.id} className={`rounded-xl border p-4 ${rankStyle}`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg" aria-hidden="true">{medal}</span>
-                          <span className="text-xs font-semibold text-gray-500">{idx + 1}위</span>
-                        </div>
-                        <span className={`text-sm font-bold ${c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
-                          {c.viralScore}점
-                        </span>
+                    <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3`}>
+                      {/* 상단: 순위 + 점수 */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-base" aria-hidden="true">{medals[idx]}</span>
+                        <span className={`text-sm font-bold ${scoreColor}`}>{c.viralScore}점</span>
                       </div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-600 font-semibold text-sm shrink-0">
-                          {c.influencer[0]}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
-                          <p className="text-xs text-gray-500">{c.type}</p>
-                        </div>
+                      {/* 콘텐츠 제목 */}
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
+                        <p className="text-xs text-gray-400 mt-1">@{c.influencer} · {c.type ?? '-'}</p>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-center">
+                      {/* 지표 */}
+                      <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-50 text-center">
                         <div>
-                          <p className="text-xs text-gray-400">도달</p>
-                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.reach)}</p>
+                          <p className="text-xs text-gray-400 mb-0.5">도달</p>
+                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400">좋아요</p>
-                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.likes)}</p>
+                          <p className="text-xs text-gray-400 mb-0.5">좋아요</p>
+                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400">공유</p>
-                          <p className="text-xs font-bold text-gray-800">{fmtNumber(c.shares)}</p>
+                          <p className="text-xs text-gray-400 mb-0.5">참여율</p>
+                          <p className="text-sm font-bold text-brand-green">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -1294,92 +1310,133 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* 콘텐츠 성과 추세 그래프 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">콘텐츠 성과 추세</h3>
-            <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
-              {/* Y축 그리드 */}
-              {[0, 0.25, 0.5, 0.75, 1].map(r => {
-                const y = padT + plotH - r * plotH
-                const val = Math.round(r * safeMaxLikes)
-                return (
-                  <g key={r}>
-                    <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
-                    <text x={padL - 8} y={y + 4} textAnchor="end" className="text-xs fill-gray-400">{val}</text>
-                  </g>
-                )
-              })}
-              {/* 라인 */}
-              <path d={linePath} fill="none" stroke="var(--color-brand-green)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
-              {/* 포인트 + 라벨 */}
-              {points.map((p, i) => (
-                <g key={i}>
-                  <circle cx={p.x} cy={p.y} r={4} fill="var(--color-brand-green)" />
-                  <circle cx={p.x} cy={p.y} r={6} fill="var(--color-brand-green)" fillOpacity={0.2} />
-                  <text
-                    x={p.x}
-                    y={chartH - padB + 16}
-                    textAnchor="end"
-                    transform={`rotate(-40 ${p.x} ${chartH - padB + 16})`}
-                    className="text-[10px] fill-gray-500"
-                  >
-                    {p.name.length > 8 ? `${p.name.slice(0, 8)}…` : p.name}
-                  </text>
-                  <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[10px] fill-gray-700 font-medium">{p.likes.toLocaleString()}</text>
-                </g>
-              ))}
-              {chartData.length === CHART_MAX_POINTS && approvedContents.length > CHART_MAX_POINTS && (
-                <text x={chartW - padR} y={padT - 6} textAnchor="end" className="text-[10px] fill-gray-400">
-                  좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)
-                </text>
-              )}
-            </svg>
-          </div>
+          {/* 콘텐츠별 좋아요 비교 그래프 */}
+          {(() => {
+            const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+            return (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 좋아요 비교</h3>
+                  {approvedContents.length > CHART_MAX_POINTS && (
+                    <span className="text-xs text-gray-400">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
+                  )}
+                </div>
+                <div className="relative">
+                  <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
+                    {[0, 0.25, 0.5, 0.75, 1].map(r => {
+                      const y = padT + plotH - r * plotH
+                      const val = Math.round(r * safeMaxLikes)
+                      return (
+                        <g key={r}>
+                          <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+                          <text x={padL - 8} y={y + 4} textAnchor="end" fontSize={11} fill="#9ca3af">{val.toLocaleString()}</text>
+                        </g>
+                      )
+                    })}
+                    <path d={linePath} fill="none" stroke="var(--color-brand-green)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+                    {points.map((p, i) => (
+                      <g key={i}
+                        onMouseEnter={() => setHoveredIdx(i)}
+                        onMouseLeave={() => setHoveredIdx(null)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <circle cx={p.x} cy={p.y} r={hoveredIdx === i ? 6 : 4} fill="var(--color-brand-green)" />
+                        <circle cx={p.x} cy={p.y} r={hoveredIdx === i ? 10 : 6} fill="var(--color-brand-green)" fillOpacity={0.15} />
+                        {/* 히트 영역 */}
+                        <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
+                        <text
+                          x={p.x}
+                          y={chartH - padB + 16}
+                          textAnchor="end"
+                          transform={`rotate(-40 ${p.x} ${chartH - padB + 16})`}
+                          fontSize={11}
+                          fill="#6b7280"
+                        >
+                          {p.name.length > 6 ? `${p.name.slice(0, 6)}…` : p.name}
+                        </text>
+                        {/* 호버 툴팁 */}
+                        {hoveredIdx === i && (
+                          <g>
+                            <rect
+                              x={p.x - 70}
+                              y={p.y - 52}
+                              width={140}
+                              height={44}
+                              rx={6}
+                              fill="#1f2937"
+                              fillOpacity={0.92}
+                            />
+                            <text x={p.x} y={p.y - 34} textAnchor="middle" fontSize={10} fill="#d1d5db">
+                              {p.caption.length > 18 ? `${p.caption.slice(0, 18)}…` : p.caption}
+                            </text>
+                            <text x={p.x} y={p.y - 16} textAnchor="middle" fontSize={12} fill="white" fontWeight="600">
+                              ♥ {p.likes.toLocaleString()}
+                            </text>
+                          </g>
+                        )}
+                      </g>
+                    ))}
+                  </svg>
+                </div>
+              </div>
+            )
+          })()}
 
           {/* 콘텐츠 순위 테이블 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-900">콘텐츠 순위</h3>
-            </div>
-            <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100">
-                  {['순위', '인플루언서', '유형', '도달', '좋아요', '참여율'].map(h => (
-                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {rankedContents.map((c, idx) => {
-                  const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
-                  return (
-                    <tr key={c.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="py-3 px-4">
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                          idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-100 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'text-gray-400'
-                        }`}>
-                          {idx + 1}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm font-medium text-gray-900">{c.influencer}</td>
-                      <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
-                          {c.type}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm font-semibold text-brand-green">{engRate}%</span>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            </div>
-          </div>
+          {(() => {
+            const pagedRanked = rankedContents.slice((rankedPage - 1) * PAGE_SIZE, rankedPage * PAGE_SIZE)
+            const rankOffset = (rankedPage - 1) * PAGE_SIZE
+            return (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100">
+                  <h3 className="text-sm font-semibold text-gray-900">콘텐츠 순위</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50/50 border-b border-gray-100">
+                        {['순위', '콘텐츠', '인플루언서', '유형', '도달', '좋아요', '참여율'].map(h => (
+                          <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {pagedRanked.map((c, idx) => {
+                        const rank = rankOffset + idx + 1
+                        const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
+                        return (
+                          <tr key={c.id} className="hover:bg-gray-50 transition-colors duration-150">
+                            <td className="py-3 px-4">
+                              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                                rank === 1 ? 'bg-yellow-100 text-yellow-700' : rank === 2 ? 'bg-gray-100 text-gray-600' : rank === 3 ? 'bg-orange-100 text-orange-700' : 'text-gray-400'
+                              }`}>
+                                {rank}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 max-w-[180px]">
+                              <p className="text-sm font-medium text-gray-900 truncate">{c.caption}</p>
+                            </td>
+                            <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{c.influencer}</td>
+                            <td className="py-3 px-4">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                                {c.type ?? '-'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
+                            <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm font-semibold text-brand-green">{engRate}%</span>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <Pagination total={rankedContents.length} page={rankedPage} pageSize={PAGE_SIZE} onChange={setRankedPage} />
+              </div>
+            )
+          })()}
         </div>
       )}
 
@@ -1674,6 +1731,54 @@ function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: str
       <div className="text-gray-400 mb-1.5 flex justify-center">{icon}</div>
       <p className="text-xs text-gray-500 mb-0.5">{label}</p>
       <p className="text-sm font-semibold text-gray-900">{value}</p>
+    </div>
+  )
+}
+
+/** 공통 페이지네이션 — 캠페인 목록과 동일한 UI */
+function Pagination({ total, page, pageSize, onChange }: { total: number; page: number; pageSize: number; onChange: (p: number) => void }) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const safePage = Math.min(page, totalPages)
+  if (total <= pageSize) return null
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+    .reduce<(number | '…')[]>((acc, p) => {
+      if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
+      acc.push(p)
+      return acc
+    }, [])
+  return (
+    <div className="flex items-center justify-between gap-2 px-3 @sm:px-5 py-3 border-t border-gray-100 flex-wrap">
+      <span className="text-xs text-gray-500 shrink-0">
+        총 {total}개 · {safePage} / {totalPages}
+      </span>
+      <div className="flex items-center gap-1 flex-wrap justify-end">
+        <button
+          onClick={() => onChange(Math.max(1, safePage - 1))}
+          disabled={safePage === 1}
+          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >이전</button>
+        {pages.map((p, i) =>
+          p === '…' ? (
+            <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
+          ) : (
+            <button
+              key={p}
+              onClick={() => onChange(p)}
+              className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                safePage === p
+                  ? 'bg-gray-100 text-gray-900'
+                  : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >{p}</button>
+          )
+        )}
+        <button
+          onClick={() => onChange(Math.min(totalPages, safePage + 1))}
+          disabled={safePage === totalPages}
+          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >다음</button>
+      </div>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
@@ -180,27 +180,24 @@ export default function Campaigns() {
             />
           </div>
           <div className="grid grid-cols-3 gap-2 @sm:flex @sm:items-center @sm:gap-2">
-            <select
+            <CustomSelect
               value={platformFilter}
-              onChange={e => { setPlatformFilter(e.target.value); resetPage() }}
-              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-            >
-              {PLATFORMS.map(p => <option key={p} value={p}>{p === '전체' ? '플랫폼 전체' : p}</option>)}
-            </select>
-            <select
+              onChange={v => { setPlatformFilter(v); resetPage() }}
+              options={PLATFORMS.map(p => ({ label: p === '전체' ? '플랫폼 전체' : p, value: p }))}
+              className="@sm:w-36"
+            />
+            <CustomSelect
               value={categoryFilter}
-              onChange={e => { setCategoryFilter(e.target.value); resetPage() }}
-              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-            >
-              {CATEGORIES.map(c => <option key={c} value={c}>{c === '전체' ? '카테고리 전체' : c}</option>)}
-            </select>
-            <select
+              onChange={v => { setCategoryFilter(v); resetPage() }}
+              options={CATEGORIES.map(c => ({ label: c === '전체' ? '카테고리 전체' : c, value: c }))}
+              className="@sm:w-36"
+            />
+            <CustomSelect
               value={sort}
-              onChange={e => { setSort(e.target.value as SortKey); resetPage() }}
-              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-            >
-              {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-            </select>
+              onChange={v => { setSort(v as SortKey); resetPage() }}
+              options={SORTS.map(s => ({ label: s.label, value: s.value }))}
+              className="@sm:w-36"
+            />
           </div>
         </div>
 

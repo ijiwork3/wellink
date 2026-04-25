@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users } from 'lucide-react'
-import { AlertModal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
+import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
 
 const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
 type Platform = typeof PLATFORMS[number]
@@ -522,13 +522,11 @@ function Input({ value, onChange, placeholder, className = '' }: { value: string
 
 function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
   return (
-    <select
+    <CustomSelect
       value={value}
-      onChange={e => onChange(e.target.value)}
-      className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-gray-200"
-    >
-      {options.map(o => <option key={o} value={o}>{o}</option>)}
-    </select>
+      onChange={onChange}
+      options={options.map(o => ({ label: o, value: o }))}
+    />
   )
 }
 
