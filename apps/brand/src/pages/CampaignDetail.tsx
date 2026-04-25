@@ -109,6 +109,41 @@ const APPLICANT_NAME_POOL = [
   '홍은수', '배유나', '노건우', '안소현',
 ]
 const AVATAR_POOL = ['bg-rose-200', 'bg-sky-200', 'bg-amber-200', 'bg-emerald-200', 'bg-violet-200', 'bg-pink-200', 'bg-cyan-200', 'bg-orange-200', 'bg-teal-200', 'bg-indigo-200']
+// 활동분야 풀 — 원본 ApplicantList의 activityFieldList 대응
+const ACTIVITY_FIELD_POOL = [
+  ['뷰티', '뷰티/코스메틱'],
+  ['피트니스', '운동'],
+  ['푸드', '맛집'],
+  ['패션', '데일리룩'],
+  ['여행'],
+  ['육아', '가족'],
+  ['라이프스타일'],
+  ['홈인테리어'],
+  ['헬스/웰니스'],
+  ['반려동물'],
+]
+// 신청 답변 풀 — 원본 questionVo + answers 대응 (객관식 + 단답)
+const PRIMARY_ANSWER_POOL = [
+  '인스타그램 피드 + 릴스 동시 제작 가능합니다',
+  '평소 브랜드 가치관에 깊이 공감해 신청합니다',
+  '제품 사용 후 솔직한 후기 콘텐츠 강점입니다',
+  '월 평균 4건 이상 콘텐츠 업로드 가능합니다',
+  '협찬 경험 다수, 광고 가이드 준수 자신 있습니다',
+]
+const SECONDARY_QUESTIONS = [
+  { question: '주력 콘텐츠 유형은?', answers: ['릴스', '피드 카드뉴스', '스토리 시리즈', '롱폼 영상'] },
+  { question: '월 평균 광고 협찬 건수는?', answers: ['1건 이하', '2~3건', '4~6건', '7건 이상'] },
+  { question: '촬영 가능 시간대는?', answers: ['평일 오전', '평일 오후', '주말 오전', '주말 오후'] },
+]
+// 휴대폰·이메일·주소 — 원본의 formatPhoneNumber, address, addressDetail 대응
+const PHONE_PREFIX = ['010-1234', '010-5678', '010-9012', '010-3456', '010-7890']
+const ADDRESS_POOL = [
+  '서울특별시 강남구 테헤란로 123',
+  '서울특별시 마포구 양화로 45',
+  '경기도 성남시 분당구 판교역로 235',
+  '서울특별시 송파구 올림픽로 300',
+  '서울특별시 용산구 한강대로 50',
+]
 const applicantsData = Array.from({ length: 100 }, (_, i) => {
   const name = APPLICANT_NAME_POOL[i % APPLICANT_NAME_POOL.length]
   const followersN = 5000 + (i * 317 % 40000)
@@ -117,14 +152,45 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
   const fitScore = 60 + (i * 13 % 40)
   const month = String(((i * 3) % 30 < 15 ? 3 : 4)).padStart(2, '0')
   const day = String(((i * 7) % 28) + 1).padStart(2, '0')
+  // 추가 필드 — 원본 ApplicantList 컬럼 보강
+  const postsCount = 30 + (i * 11) % 250        // 게시물수
+  const avgLikes = Math.floor(followersN * (0.02 + (i % 5) * 0.005))  // 평균 좋아요
+  const avgComments = Math.floor(avgLikes * (0.04 + (i % 4) * 0.01))  // 평균 댓글
+  const recentDays = (i * 2) % 30 + 1           // 최근 활동 일수 전
+  const activityFields = ACTIVITY_FIELD_POOL[i % ACTIVITY_FIELD_POOL.length]
+  const primaryAnswer = PRIMARY_ANSWER_POOL[i % PRIMARY_ANSWER_POOL.length]
+  const phoneNumber = `${PHONE_PREFIX[i % PHONE_PREFIX.length]}-${String(1000 + (i * 7) % 9000).padStart(4, '0')}`
+  const email = `${name.toLowerCase().replace(/[가-힣]/g, '')}user${i + 1}@example.com`
+  const address = ADDRESS_POOL[i % ADDRESS_POOL.length]
+  const addressDetail = `${100 + (i % 30)}동 ${String((i * 13) % 1500 + 101).padStart(4, '0')}호`
+  // 답변 (객관식 3문항) — questionVo 대응
+  const allAnswers = [
+    { question: '주요 콘텐츠 유형', answer: primaryAnswer, orderNumber: 1 },
+    { question: SECONDARY_QUESTIONS[0].question, answer: SECONDARY_QUESTIONS[0].answers[i % SECONDARY_QUESTIONS[0].answers.length], orderNumber: 2 },
+    { question: SECONDARY_QUESTIONS[1].question, answer: SECONDARY_QUESTIONS[1].answers[(i + 1) % SECONDARY_QUESTIONS[1].answers.length], orderNumber: 3 },
+    { question: SECONDARY_QUESTIONS[2].question, answer: SECONDARY_QUESTIONS[2].answers[(i + 2) % SECONDARY_QUESTIONS[2].answers.length], orderNumber: 4 },
+  ]
   return {
     id: 1000 + i,
     name: i < APPLICANT_NAME_POOL.length ? name : `${name}${Math.floor(i / APPLICANT_NAME_POOL.length) + 1}`,
     followers,
+    followerCount: followersN,
     engagement,
     fitScore,
     appliedAt: `2026-${month}-${day}`,
     avatar: AVATAR_POOL[i % AVATAR_POOL.length],
+    // 신규 필드 — 원본 ApplicantList 보강
+    postsCount,
+    avgLikes,
+    avgComments,
+    recentActivityDays: recentDays,
+    activityFields,
+    primaryAnswer,
+    allAnswers,
+    phoneNumber,
+    email,
+    address,
+    addressDetail,
   }
 })
 
@@ -142,14 +208,46 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
   const fitScore = 70 + (i * 11 % 30)
   const month = String(((i * 5) % 30 < 20 ? 4 : 5)).padStart(2, '0')
   const day = String(((i * 3) % 28) + 1).padStart(2, '0')
+  // 신규 필드 — 원본 SELECTED 타입 보강 (업로드 상태·주소·연락처·답변)
+  const postsCount = 50 + (i * 13) % 200
+  const avgLikes = Math.floor(followersN * (0.025 + (i % 5) * 0.005))
+  const avgComments = Math.floor(avgLikes * (0.04 + (i % 4) * 0.01))
+  const activityFields = ACTIVITY_FIELD_POOL[(i + 3) % ACTIVITY_FIELD_POOL.length]
+  const phoneNumber = `${PHONE_PREFIX[(i + 1) % PHONE_PREFIX.length]}-${String(2000 + (i * 11) % 8000).padStart(4, '0')}`
+  const email = `${name.toLowerCase().replace(/[가-힣]/g, '')}selected${i + 1}@example.com`
+  const address = ADDRESS_POOL[(i + 2) % ADDRESS_POOL.length]
+  const addressDetail = `${200 + (i % 20)}동 ${String((i * 17) % 1500 + 201).padStart(4, '0')}호`
+  // 업로드 상태 — i % 3 == 0 미등록, i % 3 == 1 등록(1건), i % 3 == 2 등록(2건)
+  const uploadedPostCount = i % 3 === 0 ? 0 : (i % 3 === 1 ? 1 : 2)
+  const latestUploadedAt = uploadedPostCount > 0 ? `2026-${String(((i * 7) % 30 < 20 ? 5 : 6)).padStart(2, '0')}-${String(((i * 11) % 28) + 1).padStart(2, '0')}` : null
+  const latestPostUrl = uploadedPostCount > 0 ? `https://www.instagram.com/p/sample-${1000 + i}/` : null
+  const allAnswers = [
+    { question: '주요 콘텐츠 유형', answer: PRIMARY_ANSWER_POOL[(i + 2) % PRIMARY_ANSWER_POOL.length], orderNumber: 1 },
+    { question: SECONDARY_QUESTIONS[0].question, answer: SECONDARY_QUESTIONS[0].answers[(i + 1) % SECONDARY_QUESTIONS[0].answers.length], orderNumber: 2 },
+    { question: SECONDARY_QUESTIONS[1].question, answer: SECONDARY_QUESTIONS[1].answers[(i + 3) % SECONDARY_QUESTIONS[1].answers.length], orderNumber: 3 },
+    { question: SECONDARY_QUESTIONS[2].question, answer: SECONDARY_QUESTIONS[2].answers[(i + 4) % SECONDARY_QUESTIONS[2].answers.length], orderNumber: 4 },
+  ]
   return {
     id: 2000 + i,
     name: i < SELECTED_NAME_POOL.length ? name : `${name}${Math.floor(i / SELECTED_NAME_POOL.length) + 1}`,
     followers,
+    followerCount: followersN,
     engagement,
     fitScore,
     selectedAt: `2026-${month}-${day}`,
     avatar: AVATAR_POOL[i % AVATAR_POOL.length],
+    postsCount,
+    avgLikes,
+    avgComments,
+    activityFields,
+    phoneNumber,
+    email,
+    address,
+    addressDetail,
+    uploadedPostCount,
+    latestUploadedAt,
+    latestPostUrl,
+    allAnswers,
   }
 })
 
@@ -279,6 +377,14 @@ export default function CampaignDetail() {
   )
   const [checkedApplicants, setCheckedApplicants] = useState<Set<number>>(new Set())
   const [applicantsPage, setApplicantsPage] = useState(1)
+  // 신규 — 검색·정렬·답변 모달 (원본 ApplicantList 보강)
+  const [applicantsSearch, setApplicantsSearch] = useState('')
+  type ApplicantSortKey = 'followerCount' | 'postsCount' | 'avgLikes' | 'avgComments' | 'engagement' | 'fitScore' | 'recentActivity'
+  const [applicantsSortKey, setApplicantsSortKey] = useState<ApplicantSortKey>('followerCount')
+  const [applicantsSortDesc, setApplicantsSortDesc] = useState(true)
+  const [answersModalId, setAnswersModalId] = useState<number | null>(null)
+  // 객관식 질문별 동적 옵션 필터 (원본 selectedFilters)
+  const [answerFilters, setAnswerFilters] = useState<Record<string, string>>({})
 
   // 선정된 지원자 state
   // QA: tab-selected-empty → 빈 배열
@@ -291,6 +397,14 @@ export default function CampaignDetail() {
   const [deselectModal, setDeselectModal] = useState<number | null>(null)
   const [deleteCampaignModal, setDeleteCampaignModal] = useState(false)
   const [editConfirmModal, setEditConfirmModal] = useState(false)
+  // 신규 — 선정된 지원자 업로드 필터 + 업로드 현황 모달 (원본 page.tsx + ApplicantList 'SELECTED' 보강)
+  type UploadFilter = 'all' | 'uploaded' | 'not-uploaded'
+  const [selectedUploadFilter, setSelectedUploadFilter] = useState<UploadFilter>('all')
+  const [uploadOverviewOpen, setUploadOverviewOpen] = useState(false)
+  const [uploadOverviewDetailId, setUploadOverviewDetailId] = useState<number | null>(null)
+  // 성과 리포트 — 기간 필터 (원본 PeriodFilter)
+  type ReportPeriod = 'daily' | 'weekly' | 'monthly'
+  const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('daily')
 
   const handleShareCampaign = () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -319,13 +433,29 @@ export default function CampaignDetail() {
     URL.revokeObjectURL(url)
   }
   const today = () => new Date().toISOString().slice(0, 10)
+  // CSV export — 원본 ApplicantList downloadRows 동등 (이름/인스타/연락처/이메일/팔로워/상태/주소/포스트URL/질문답변 동적)
   const handleExportApplicants = () => {
     if (applicants.length === 0) {
       showToast('다운로드할 지원자가 없습니다.', 'error')
       return
     }
-    const headers = ['이름', '팔로워', '참여율(%)', '적합도', '지원일']
-    const rows = applicants.map(a => [a.name, a.followers, a.engagement, a.fitScore, a.appliedAt])
+    const questionCount = applicants.reduce((max, a) => Math.max(max, a.allAnswers?.length ?? 0), 0)
+    const headers = [
+      '이름', '연락처', '이메일', '팔로워', '게시물수', '평균좋아요', '평균댓글',
+      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '지원일',
+      ...Array.from({ length: questionCount }, (_, idx) => [`질문${idx + 1}`, `답변${idx + 1}`]).flat(),
+    ]
+    const rows = applicants.map(a => {
+      const answerCells = Array.from({ length: questionCount }, (_, idx) => {
+        const ans = a.allAnswers?.[idx]
+        return [ans?.question ?? '', ans?.answer ?? '']
+      }).flat()
+      return [
+        a.name, a.phoneNumber, a.email, a.followers, a.postsCount, a.avgLikes, a.avgComments,
+        a.engagement, a.fitScore, a.activityFields.join(', '), a.address, a.addressDetail, a.appliedAt,
+        ...answerCells,
+      ]
+    })
     downloadCsv([headers, ...rows], `지원자_${today()}.csv`)
     showToast(`${applicants.length}명의 지원자 리스트를 다운로드했습니다.`, 'success')
   }
@@ -334,8 +464,26 @@ export default function CampaignDetail() {
       showToast('다운로드할 선정자가 없습니다.', 'error')
       return
     }
-    const headers = ['이름', '팔로워', '참여율(%)', '적합도', '선정일']
-    const rows = selectedInfluencers.map(s => [s.name, s.followers, s.engagement, s.fitScore, s.selectedAt])
+    const questionCount = selectedInfluencers.reduce((max, s) => Math.max(max, (s as { allAnswers?: unknown[] }).allAnswers?.length ?? 0), 0)
+    const headers = [
+      '이름', '연락처', '이메일', '팔로워', '게시물수', '평균좋아요', '평균댓글',
+      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '업로드상태', '등록게시글수', '최근등록일', '게시글URL', '선정일',
+      ...Array.from({ length: questionCount }, (_, idx) => [`질문${idx + 1}`, `답변${idx + 1}`]).flat(),
+    ]
+    const rows = selectedInfluencers.map(s => {
+      const sx = s as typeof selectedApplicantsData[number]
+      const answerCells = Array.from({ length: questionCount }, (_, idx) => {
+        const ans = sx.allAnswers?.[idx]
+        return [ans?.question ?? '', ans?.answer ?? '']
+      }).flat()
+      return [
+        sx.name, sx.phoneNumber ?? '-', sx.email ?? '-', sx.followers, sx.postsCount ?? '-', sx.avgLikes ?? '-', sx.avgComments ?? '-',
+        sx.engagement, sx.fitScore, sx.activityFields?.join(', ') ?? '-', sx.address ?? '-', sx.addressDetail ?? '-',
+        (sx.uploadedPostCount ?? 0) > 0 ? '등록 완료' : '미등록', sx.uploadedPostCount ?? 0, sx.latestUploadedAt ?? '-', sx.latestPostUrl ?? '-',
+        sx.selectedAt,
+        ...answerCells,
+      ]
+    })
     downloadCsv([headers, ...rows], `선정된_지원자_${today()}.csv`)
     showToast(`${selectedInfluencers.length}명의 선정자 리스트를 다운로드했습니다.`, 'success')
   }
@@ -553,16 +701,71 @@ export default function CampaignDetail() {
   // 성과 리포트는 승인된 콘텐츠만
   const approvedContents = registeredContents.filter(c => contentStatuses[c.id] === '승인')
 
-  // 성과 리포트 데이터
+  // 성과 리포트 데이터 — 원본 ReportView summary 보강
   const approvedReach = approvedContents.reduce((s, c) => s + c.reach, 0)
-  const approvedEngagement = approvedContents.reduce((s, c) => s + c.likes + c.comments + c.saves, 0)
-  const approvedEngRate = approvedReach > 0 ? (approvedEngagement / approvedReach * 100).toFixed(1) : '0.0'
+  const approvedLikes = approvedContents.reduce((s, c) => s + c.likes, 0)
+  const approvedComments = approvedContents.reduce((s, c) => s + c.comments, 0)
+  const approvedShares = approvedContents.reduce((s, c) => s + c.shares, 0)
+  // 비디오 재생수 — 영상 유형(릴스/영상/쇼츠/스토리)만 reach를 view_count로 대체
+  const approvedViews = approvedContents.reduce((s, c) => {
+    const isVideo = c.type === '릴스' || c.type === '영상' || c.type === '쇼츠' || c.type === '스토리'
+    return s + (isVideo ? c.reach : 0)
+  }, 0)
+  const approvedEngagement = approvedLikes + approvedComments + approvedShares
+  // 평균 참여율 — 원본: (좋아요 + 댓글 + 공유) / 비디오 재생수 × 100
+  const approvedEngRate = approvedViews > 0
+    ? (approvedEngagement / approvedViews * 100).toFixed(1)
+    : (approvedReach > 0 ? (approvedEngagement / approvedReach * 100).toFixed(1) : '0.0')
+  // KPI 5개 — 원본 동등 (총 콘텐츠 / 총 좋아요 / 총 비디오 재생수 / 총 공유 / 총 댓글)
   const reportKPI = [
-    { label: '총 도달', value: fmtNumber(approvedReach), icon: Eye },
-    { label: '총 참여', value: fmtNumber(approvedEngagement), icon: Heart },
-    { label: '참여율', value: `${approvedEngRate}%`, icon: TrendingUp },
-    { label: '콘텐츠 수', value: `${approvedContents.length}건`, icon: FileText },
+    { label: '총 콘텐츠', value: `${approvedContents.length}건`, icon: FileText },
+    { label: '총 좋아요', value: fmtNumber(approvedLikes), icon: Heart },
+    { label: '총 비디오 재생수', value: fmtNumber(approvedViews), icon: Eye },
+    { label: '총 공유 수', value: fmtNumber(approvedShares), icon: Share2 },
+    { label: '총 댓글 수', value: fmtNumber(approvedComments), icon: Info },
   ]
+  // TOP 인플루언서 (인플루언서 단위 집계, 좋아요+댓글+조회수 합산 정렬, 상위 5명) — 원본 보강
+  const topInfluencers = (() => {
+    const map = new Map<string, { name: string; likes: number; comments: number; views: number; contents: number }>()
+    for (const c of approvedContents) {
+      const isVideo = c.type === '릴스' || c.type === '영상' || c.type === '쇼츠' || c.type === '스토리'
+      const ex = map.get(c.influencer) ?? { name: c.influencer, likes: 0, comments: 0, views: 0, contents: 0 }
+      ex.likes += c.likes
+      ex.comments += c.comments
+      ex.views += isVideo ? c.reach : 0
+      ex.contents += 1
+      map.set(c.influencer, ex)
+    }
+    return Array.from(map.values())
+      .sort((a, b) => (b.likes + b.comments + b.views) - (a.likes + a.comments + a.views))
+      .slice(0, 5)
+  })()
+  // 기간별 시계열 — 원본 ReportView trendResults 동등
+  // submittedAt(YYYY-MM-DD) 기준으로 daily/weekly/monthly 버킷 집계
+  const trendData = (() => {
+    if (approvedContents.length === 0) return []
+    const items = approvedContents.map(c => {
+      const d = new Date(c.submittedAt)
+      d.setHours(0, 0, 0, 0)
+      const isVideo = c.type === '릴스' || c.type === '영상' || c.type === '쇼츠' || c.type === '스토리'
+      return { date: d, likes: c.likes, comments: c.comments, shares: c.shares, views: isVideo ? c.reach : 0 }
+    }).sort((a, b) => a.date.getTime() - b.date.getTime())
+    if (items.length === 0) return []
+    const buckets = new Map<string, { label: string; sortKey: number; likes: number; comments: number; shares: number; views: number }>()
+    const fmtMonth = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
+    const fmtDay = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+    const getWeekStart = (d: Date) => { const x = new Date(d); const day = x.getDay(); x.setDate(x.getDate() + (day === 0 ? -6 : 1 - day)); x.setHours(0, 0, 0, 0); return x }
+    for (const it of items) {
+      let bd = it.date, label: string
+      if (reportPeriod === 'monthly') { bd = new Date(it.date.getFullYear(), it.date.getMonth(), 1); label = fmtMonth(bd) }
+      else if (reportPeriod === 'weekly') { bd = getWeekStart(it.date); label = `${fmtDay(bd)}주` }
+      else { label = fmtDay(it.date) }
+      const ex = buckets.get(label) ?? { label, sortKey: bd.getTime(), likes: 0, comments: 0, shares: 0, views: 0 }
+      ex.likes += it.likes; ex.comments += it.comments; ex.shares += it.shares; ex.views += it.views
+      buckets.set(label, ex)
+    }
+    return Array.from(buckets.values()).sort((a, b) => a.sortKey - b.sortKey)
+  })()
 
   // 콘텐츠별 좋아요 비교 — Top 10
   const CHART_MAX_POINTS = 10
@@ -706,15 +909,15 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* 캠페인 설명 */}
+          {/* 캠페인 설명 — 원본 ToastEditorViewer 마크다운 뷰어 보강 (경량) */}
           <Section title="캠페인 설명" icon={<FileText size={14} />}>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{campaign.description}</p>
+            <MarkdownView text={campaign.description} />
           </Section>
 
           {/* 제공 내역 */}
           <Section title="제공 내역" icon={<Crown size={14} />}>
             <p className="text-sm font-semibold text-gray-900 mb-1">{meta.productName}</p>
-            <p className="text-sm text-gray-600 mb-3">{meta.productDetail}</p>
+            <MarkdownView text={meta.productDetail} className="mb-3" />
             <ul className="text-xs text-gray-500 space-y-1 list-disc pl-4">
               <li>제품을 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</li>
               <li>제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</li>
@@ -730,9 +933,9 @@ export default function CampaignDetail() {
             </div>
           </Section>
 
-          {/* 필수 가이드 */}
+          {/* 필수 가이드 — 원본 ToastEditorViewer 마크다운 뷰어 보강 (경량) */}
           <Section title="필수 가이드" icon={<FileText size={14} />}>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meta.guideText}</p>
+            <MarkdownView text={meta.guideText} />
           </Section>
 
           {/* 필수 키워드 */}
@@ -758,14 +961,58 @@ export default function CampaignDetail() {
       )}
 
       {/* ─── B) 지원자 관리 탭 ─── */}
-      {activeTab === '지원자 관리' && !isClosed && (
+      {activeTab === '지원자 관리' && !isClosed && (() => {
+        // 검색·정렬·동적 답변 필터 (원본 ApplicantList 기능 보강)
+        const q = applicantsSearch.trim().toLowerCase()
+        let filtered = applicants
+        if (q) {
+          filtered = filtered.filter(a =>
+            a.name.toLowerCase().includes(q) ||
+            a.activityFields.some(f => f.toLowerCase().includes(q))
+          )
+        }
+        // 동적 답변 필터 적용
+        const activeFilters = Object.entries(answerFilters).filter(([, v]) => !!v)
+        if (activeFilters.length > 0) {
+          filtered = filtered.filter(a =>
+            activeFilters.every(([question, value]) => {
+              const ans = a.allAnswers?.find(x => x.question === question)
+              return ans?.answer === value
+            })
+          )
+        }
+        // 정렬
+        const sorted = [...filtered].sort((a, b) => {
+          let av = 0, bv = 0
+          switch (applicantsSortKey) {
+            case 'followerCount': av = a.followerCount; bv = b.followerCount; break
+            case 'postsCount': av = a.postsCount; bv = b.postsCount; break
+            case 'avgLikes': av = a.avgLikes; bv = b.avgLikes; break
+            case 'avgComments': av = a.avgComments; bv = b.avgComments; break
+            case 'engagement': av = a.engagement; bv = b.engagement; break
+            case 'fitScore': av = a.fitScore; bv = b.fitScore; break
+            case 'recentActivity': av = -a.recentActivityDays; bv = -b.recentActivityDays; break  // 일수 작을수록 최근
+          }
+          return applicantsSortDesc ? bv - av : av - bv
+        })
+        const totalCount = sorted.length
+        const paginated = sorted.slice((applicantsPage - 1) * PAGE_SIZE, applicantsPage * PAGE_SIZE)
+        // 동적 객관식 옵션 (Q2/Q3/Q4)
+        const dynamicQuestions = [SECONDARY_QUESTIONS[0], SECONDARY_QUESTIONS[1], SECONDARY_QUESTIONS[2]]
+        const toggleSort = (k: ApplicantSortKey) => {
+          if (applicantsSortKey === k) setApplicantsSortDesc(d => !d)
+          else { setApplicantsSortKey(k); setApplicantsSortDesc(true) }
+        }
+        const sortIcon = (k: ApplicantSortKey) => applicantsSortKey === k ? (applicantsSortDesc ? '▼' : '▲') : ''
+        return (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
               <Users size={15} className="text-gray-400" aria-hidden="true" />
-              지원자 {applicants.length}명
+              지원자 <span className="text-gray-900 font-bold">{totalCount}</span>명
+              {totalCount !== applicants.length && <span className="text-xs text-gray-400 font-normal">(전체 {applicants.length}명)</span>}
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={handleBulkSelect}
                 disabled={applicants.length === 0}
@@ -783,6 +1030,41 @@ export default function CampaignDetail() {
               </button>
             </div>
           </div>
+
+          {/* 검색 (이름·활동분야) — 신규, 원본 ApplicantList 동등 */}
+          <div className="relative max-w-sm">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              type="search"
+              placeholder="이름·활동분야로 검색"
+              value={applicantsSearch}
+              onChange={e => { setApplicantsSearch(e.target.value); setApplicantsPage(1) }}
+              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 placeholder:text-gray-400"
+            />
+          </div>
+
+          {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등 */}
+          {dynamicQuestions.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span className="text-xs font-medium text-gray-500 mr-1">옵션 필터</span>
+              {dynamicQuestions.map(q => (
+                <CustomSelect
+                  key={q.question}
+                  value={answerFilters[q.question] ?? ''}
+                  onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
+                  options={[{ label: `${q.question} (전체)`, value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
+                  className="text-xs max-w-[220px]"
+                />
+              ))}
+              {Object.values(answerFilters).some(v => v) && (
+                <button
+                  onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
+                  className="text-xs text-brand-green hover:underline ml-1"
+                >초기화</button>
+              )}
+            </div>
+          )}
+
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
             <table className="w-full">
@@ -792,21 +1074,31 @@ export default function CampaignDetail() {
                     <input
                       type="checkbox"
                       aria-label="전체 선택"
-                      checked={checkedApplicants.size === applicants.length && applicants.length > 0}
+                      checked={paginated.length > 0 && paginated.every(a => checkedApplicants.has(a.id))}
                       onChange={() => {
-                        if (checkedApplicants.size === applicants.length) setCheckedApplicants(new Set())
-                        else setCheckedApplicants(new Set(applicants.map(a => a.id)))
+                        const allChecked = paginated.length > 0 && paginated.every(a => checkedApplicants.has(a.id))
+                        if (allChecked) setCheckedApplicants(new Set())
+                        else setCheckedApplicants(new Set(paginated.map(a => a.id)))
                       }}
                       className="rounded border-gray-300"
                     />
                   </th>
-                  {['이름', '팔로워', '참여율', 'Fit Score', '신청일', '액션'].map(h => (
-                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
-                  ))}
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
+                  <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
+                  <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">참여율 {sortIcon('engagement')}</th>
+                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">Fit Score {sortIcon('fitScore')}</th>
+                  <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">액션</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {applicants.slice((applicantsPage - 1) * PAGE_SIZE, applicantsPage * PAGE_SIZE).map(a => (
+                {paginated.map(a => (
                   <tr key={a.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="py-3 px-4">
                       <input
@@ -825,13 +1117,31 @@ export default function CampaignDetail() {
                         <span className="text-sm font-medium text-gray-900 truncate max-w-[100px]">{a.name}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{a.followers}</td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{a.engagement}%</td>
                     <td className="py-3 px-4">
+                      <div className="flex flex-wrap gap-1">
+                        {a.activityFields.map(f => (
+                          <span key={f} className="text-[11px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{a.followers}</td>
+                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.postsCount)}</td>
+                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgLikes)}</td>
+                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgComments)}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{a.engagement}%</td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
                       <span className="text-sm font-semibold text-gray-900">{a.fitScore}</span>
                       <span className="text-xs text-gray-400 ml-0.5">점</span>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-500">{fmtDate(a.appliedAt)}</td>
+                    <td className="py-3 px-4 text-xs text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => setAnswersModalId(a.id)}
+                        className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+                        title="전체 답변 보기"
+                      >답변 보기</button>
+                    </td>
+                    <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1.5">
                         <button
@@ -850,20 +1160,21 @@ export default function CampaignDetail() {
                     </td>
                   </tr>
                 ))}
-                {applicants.length === 0 && (
+                {paginated.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
-                      지원자가 없습니다.
+                    <td colSpan={13} className="py-12 text-center text-sm text-gray-400">
+                      {applicants.length === 0 ? '지원자가 없습니다.' : '조건에 맞는 지원자가 없습니다.'}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
             </div>
-            <Pagination total={applicants.length} page={applicantsPage} pageSize={PAGE_SIZE} onChange={setApplicantsPage} />
+            <Pagination total={totalCount} page={applicantsPage} pageSize={PAGE_SIZE} onChange={setApplicantsPage} />
           </div>
         </div>
-      )}
+        )
+      })()}
 
       {/* ─── C) 선정된 지원자 탭 ─── */}
       {activeTab === '선정 인플루언서' && (
@@ -881,61 +1192,149 @@ export default function CampaignDetail() {
               리스트 Export
             </button>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100">
-                  {['이름', '팔로워', '참여율', 'Fit Score', '선정일', '액션'].map(h => (
-                    <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {selectedInfluencers.slice((selectedPage - 1) * PAGE_SIZE, selectedPage * PAGE_SIZE).map(i => (
-                  <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
-                          {i.name[0]}
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">{i.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{i.followers}</td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{i.engagement}%</td>
-                    <td className="py-3 px-4">
-                      <span className="text-sm font-semibold text-gray-900">{i.fitScore}</span>
-                      <span className="text-xs text-gray-400 ml-0.5">점</span>
-                    </td>
-                    <td className="py-3 px-4 text-xs text-gray-500">{fmtDate(i.selectedAt)}</td>
-                    <td className="py-3 px-4">
-                      <button
-                        onClick={() => setDeselectModal(i.id)}
-                        disabled={isClosed}
-                        className={`flex items-center gap-1 text-xs border px-3 py-1.5 rounded-xl transition-colors duration-150 ${
-                          isClosed
-                            ? 'text-gray-300 border-gray-100 cursor-not-allowed'
-                            : 'text-red-500 border-red-200 hover:bg-red-50'
-                        }`}
-                      >
-                        <X size={12} aria-hidden="true" /> 선정 취소
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {selectedInfluencers.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-sm text-gray-400">
-                      선정된 인플루언서가 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            </div>
-            <Pagination total={selectedInfluencers.length} page={selectedPage} pageSize={PAGE_SIZE} onChange={setSelectedPage} />
+
+          {/* 등록 콘텐츠 현황 카드 — 신규, 원본 page.tsx 보강 */}
+          {selectedInfluencers.length > 0 && (() => {
+            const total = selectedInfluencers.length
+            const uploaded = (selectedInfluencers as typeof selectedApplicantsData).filter(s => (s.uploadedPostCount ?? 0) > 0).length
+            const rate = total > 0 ? Math.round((uploaded / total) * 100) : 0
+            return (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-5">
+                <div className="flex items-end justify-between gap-3 flex-wrap mb-3">
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900">등록 콘텐츠 현황</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">완료율 <span className="font-semibold text-gray-900">{rate}%</span> · {uploaded}/{total}명</p>
+                  </div>
+                  <button
+                    onClick={() => { setUploadOverviewDetailId(null); setUploadOverviewOpen(true) }}
+                    className="text-xs font-medium px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+                  >자세히 보기 →</button>
+                </div>
+                <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-brand-green transition-all" style={{ width: `${rate}%` }} />
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* 업로드 필터 — 신규, 원본 ApplicantList uploadFilter 보강 */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {([
+              { value: 'all', label: '전체' },
+              { value: 'uploaded', label: '등록 완료' },
+              { value: 'not-uploaded', label: '미등록' },
+            ] as const).map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => { setSelectedUploadFilter(opt.value); setSelectedPage(1) }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                  selectedUploadFilter === opt.value
+                    ? 'bg-gray-900 text-white'
+                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >{opt.label}</button>
+            ))}
           </div>
+
+          {(() => {
+            const data = selectedInfluencers as typeof selectedApplicantsData
+            const filteredSelected = selectedUploadFilter === 'all'
+              ? data
+              : data.filter(s => selectedUploadFilter === 'uploaded' ? (s.uploadedPostCount ?? 0) > 0 : (s.uploadedPostCount ?? 0) === 0)
+            const totalSel = filteredSelected.length
+            const pagedSelected = filteredSelected.slice((selectedPage - 1) * PAGE_SIZE, selectedPage * PAGE_SIZE)
+            return (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50/50 border-b border-gray-100">
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">팔로워</th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">참여율</th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">Fit Score</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">연락처</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">주소</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">업로드 상태</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">최근 등록일</th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">등록 게시글</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
+                      <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">선정일</th>
+                      <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">액션</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {pagedSelected.map(i => (
+                      <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                              {i.name[0]}
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 whitespace-nowrap">{i.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex flex-wrap gap-1">
+                            {(i.activityFields ?? []).map(f => (
+                              <span key={f} className="text-[11px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
+                        <td className="py-3 px-4 text-right whitespace-nowrap">
+                          <span className="text-sm font-semibold text-gray-900">{i.fitScore}</span>
+                          <span className="text-xs text-gray-400 ml-0.5">점</span>
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
+                        <td className="py-3 px-4 text-xs text-gray-600 max-w-[220px] truncate" title={`${i.address ?? ''} ${i.addressDetail ?? ''}`}>{i.address ?? '-'} {i.addressDetail ?? ''}</td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {(i.uploadedPostCount ?? 0) > 0 ? (
+                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">등록 완료</span>
+                          ) : (
+                            <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600">미등록</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.latestUploadedAt ?? '-'}</td>
+                        <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{(i.uploadedPostCount ?? 0) > 0 ? `${i.uploadedPostCount}개` : '-'}</td>
+                        <td className="py-3 px-4">
+                          <button
+                            onClick={() => setAnswersModalId(i.id)}
+                            className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+                          >답변 보기</button>
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(i.selectedAt)}</td>
+                        <td className="py-3 px-4">
+                          <button
+                            onClick={() => setDeselectModal(i.id)}
+                            disabled={isClosed}
+                            className={`flex items-center gap-1 text-xs border px-3 py-1.5 rounded-xl transition-colors duration-150 whitespace-nowrap ${
+                              isClosed
+                                ? 'text-gray-300 border-gray-100 cursor-not-allowed'
+                                : 'text-red-500 border-red-200 hover:bg-red-50'
+                            }`}
+                          >
+                            <X size={12} aria-hidden="true" /> 선정 취소
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {pagedSelected.length === 0 && (
+                      <tr>
+                        <td colSpan={13} className="py-12 text-center text-sm text-gray-400">
+                          {selectedInfluencers.length === 0 ? '선정된 인플루언서가 없습니다.' : '조건에 맞는 인플루언서가 없습니다.'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                </div>
+                <Pagination total={totalSel} page={selectedPage} pageSize={PAGE_SIZE} onChange={setSelectedPage} />
+              </div>
+            )
+          })()}
         </div>
       )}
 
@@ -1247,8 +1646,30 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
         <div className="space-y-5">
-          {/* KPI 카드 4개 */}
-          <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+          {/* 기간 필터 — 신규, 원본 PeriodFilter 보강 */}
+          <div className="flex items-center justify-end gap-2 flex-wrap">
+            <span className="text-xs text-gray-500 mr-1">집계 기간</span>
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              {([
+                { value: 'daily', label: '일간' },
+                { value: 'weekly', label: '주간' },
+                { value: 'monthly', label: '월간' },
+              ] as const).map(p => (
+                <button
+                  key={p.value}
+                  onClick={() => setReportPeriod(p.value)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    reportPeriod === p.value
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >{p.label}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* KPI 카드 5개 — 원본 ReportView summary 보강 */}
+          <div className="grid grid-cols-2 @sm:grid-cols-3 @md:grid-cols-5 gap-3 @sm:gap-4">
             {reportKPI.map(k => {
               const Icon = k.icon
               return (
@@ -1257,11 +1678,75 @@ export default function CampaignDetail() {
                     <Icon size={13} className="text-gray-400" aria-hidden="true" />
                     <span className="text-xs text-gray-500">{k.label}</span>
                   </div>
-                  <div className="text-2xl @sm:text-3xl font-bold text-gray-900 tracking-tight">{k.value}</div>
+                  <div className="text-xl @sm:text-2xl @md:text-3xl font-bold text-gray-900 tracking-tight">{k.value}</div>
                 </div>
               )
             })}
           </div>
+
+          {/* 누적 조회수 + 평균 참여율 — 원본 ReportView 우측 요약 카드 보강 */}
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Eye size={13} className="text-gray-400" aria-hidden="true" />
+                <span className="text-xs text-gray-500">누적 조회수</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{fmtNumber(approvedViews)}</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Info size={13} className="text-gray-400" aria-hidden="true" />
+                <span className="text-xs text-gray-500">평균 참여율</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{approvedEngRate}%</div>
+              <p className="mt-2 text-[11px] text-gray-400">(좋아요 + 댓글 + 공유) / 조회수 기준</p>
+            </div>
+          </div>
+
+          {/* TOP 인플루언서 (인플루언서 단위 Top 5) — 원본 ReportView 보강 */}
+          {topInfluencers.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Users size={16} className="text-gray-400" aria-hidden="true" />
+                <h3 className="text-sm font-semibold text-gray-900">TOP 인플루언서</h3>
+                <span className="text-xs text-gray-400">· 좋아요 + 댓글 + 조회수 합산</span>
+              </div>
+              <div className="space-y-2">
+                {topInfluencers.map((inf, idx) => (
+                  <div key={inf.name} className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
+                        idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
+                      }`}>{idx + 1}</div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{inf.name}</p>
+                        <p className="text-xs text-gray-500">콘텐츠 {inf.contents}개</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs flex-wrap justify-end">
+                      <span className="text-gray-500">좋아요 <strong className="text-gray-900">{fmtNumber(inf.likes)}</strong></span>
+                      <span className="text-gray-500">댓글 <strong className="text-gray-900">{fmtNumber(inf.comments)}</strong></span>
+                      <span className="text-gray-500">조회 <strong className="text-gray-900">{fmtNumber(inf.views)}</strong></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 시계열 차트 3종 (좋아요 / 비디오 재생 / 공유·댓글) — 원본 ReportView PerformanceChart 보강 */}
+          {trendData.length > 0 && (
+            <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+              <TrendChart title="좋아요 추이" data={trendData} dataKey="likes" stroke="#ef4444" />
+              <TrendChart title="비디오 재생수 추이" data={trendData} dataKey="views" stroke="#3b82f6" />
+              <div className="@lg:col-span-2">
+                <TrendChart title="공유·댓글 추이" data={trendData} multi={[
+                  { dataKey: 'shares', label: '공유', stroke: '#10b981' },
+                  { dataKey: 'comments', label: '댓글', stroke: '#f59e0b' },
+                ]} />
+              </div>
+            </div>
+          )}
 
           {/* 중요 콘텐츠 TOP 3 — 바이럴 점수 기준 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
@@ -1601,6 +2086,164 @@ export default function CampaignDetail() {
         )}
       </Modal>
 
+      {/* 신청 답변 보기 모달 — 신규, 원본 ApplicantList 보강 */}
+      {(() => {
+        const target = answersModalId !== null
+          ? (applicants.find(a => a.id === answersModalId) ?? (selectedInfluencers as typeof selectedApplicantsData).find(s => s.id === answersModalId))
+          : null
+        return (
+          <Modal
+            open={answersModalId !== null}
+            onClose={() => setAnswersModalId(null)}
+            title="전체 답변 보기"
+            size="md"
+            footer={
+              <button
+                onClick={() => setAnswersModalId(null)}
+                className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+              >닫기</button>
+            }
+          >
+            <div className="space-y-3">
+              {target && (
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-8 h-8 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                    {target.name[0]}
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900">{target.name}</span>
+                </div>
+              )}
+              {target?.allAnswers && target.allAnswers.length > 0 ? (
+                <div className="space-y-3">
+                  {target.allAnswers.map(a => (
+                    <div key={a.orderNumber} className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500">{a.question}</p>
+                      <p className="text-sm text-gray-800 bg-gray-50 rounded-xl p-3 leading-relaxed">{a.answer || '-'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 text-center py-6">답변이 없습니다.</p>
+              )}
+            </div>
+          </Modal>
+        )
+      })()}
+
+      {/* 등록 콘텐츠 현황 모달 — 신규, 원본 page.tsx 업로드 현황 모달 보강 */}
+      {(() => {
+        const data = selectedInfluencers as typeof selectedApplicantsData
+        const detail = uploadOverviewDetailId !== null
+          ? data.find(s => s.id === uploadOverviewDetailId) ?? null
+          : null
+        const total = data.length
+        const uploaded = data.filter(s => (s.uploadedPostCount ?? 0) > 0).length
+        const rate = total > 0 ? Math.round((uploaded / total) * 100) : 0
+        return (
+          <Modal
+            open={uploadOverviewOpen}
+            onClose={() => { setUploadOverviewOpen(false); setUploadOverviewDetailId(null) }}
+            title={detail ? `${detail.name}님의 업로드 현황` : '등록 콘텐츠 현황'}
+            size="lg"
+            footer={
+              detail ? (
+                <button
+                  onClick={() => setUploadOverviewDetailId(null)}
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+                >← 목록으로</button>
+              ) : (
+                <button
+                  onClick={() => { setUploadOverviewOpen(false); setUploadOverviewDetailId(null) }}
+                  className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+                >닫기</button>
+              )
+            }
+          >
+            {!detail ? (
+              <div className="space-y-3">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">완료율</p>
+                    <p className="text-2xl font-bold text-emerald-900 mt-0.5">{rate}%</p>
+                  </div>
+                  <p className="text-xs text-emerald-700">{uploaded}/{total}명 등록</p>
+                </div>
+                <div className="space-y-2 max-h-[420px] overflow-y-auto">
+                  {data.map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => setUploadOverviewDetailId(s.id)}
+                      className="w-full flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-left hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className={`w-10 h-10 rounded-full ${s.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                        {s.name[0]}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-gray-900">{s.name}</span>
+                          {(s.uploadedPostCount ?? 0) > 0 ? (
+                            <span className="text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5">등록 완료</span>
+                          ) : (
+                            <span className="text-[11px] font-bold rounded-full bg-gray-100 text-gray-600 px-2 py-0.5">미등록</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">팔로워 {s.followers} · 참여율 {s.engagement}%</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-semibold text-gray-900">{s.uploadedPostCount ?? 0}개</p>
+                        <p className="text-[10px] text-gray-400">게시글</p>
+                      </div>
+                    </button>
+                  ))}
+                  {data.length === 0 && (
+                    <p className="text-sm text-gray-400 text-center py-12">선정된 인플루언서가 없습니다.</p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-12 h-12 rounded-full ${detail.avatar} flex items-center justify-center text-gray-700 font-semibold shrink-0`}>
+                      {detail.name[0]}
+                    </div>
+                    <div>
+                      <p className="text-base font-bold text-gray-900">{detail.name}</p>
+                      <p className="text-xs text-gray-500">팔로워 {detail.followers} · Fit Score {detail.fitScore}점</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-white rounded-xl p-3 border border-gray-100">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">게시글 수</p>
+                      <p className="text-lg font-bold text-gray-900 mt-1">{detail.uploadedPostCount ?? 0}개</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 border border-gray-100">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">등록 시점</p>
+                      <p className="text-sm font-semibold text-gray-900 mt-1">
+                        {detail.latestUploadedAt ? fmtDate(detail.latestUploadedAt) : '미등록'}
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-xl p-3 border border-gray-100">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">게시글 이동</p>
+                      {detail.latestPostUrl ? (
+                        <a
+                          href={detail.latestPostUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-semibold text-emerald-700 underline mt-1 inline-block"
+                        >게시글로 이동 ↗</a>
+                      ) : (
+                        <p className="text-xs text-gray-400 mt-1">연결된 게시글 없음</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Modal>
+        )
+      })()}
+
       {/* 등록 콘텐츠 반려 모달 */}
       <Modal
         open={contentRejectModal !== null}
@@ -1745,6 +2388,152 @@ function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: str
       <div className="text-gray-400 mb-1.5 flex justify-center">{icon}</div>
       <p className="text-xs text-gray-500 mb-0.5">{label}</p>
       <p className="text-sm font-semibold text-gray-900">{value}</p>
+    </div>
+  )
+}
+
+/** 마크다운 경량 뷰어 — 원본 ToastEditorViewer 일부 호환 (제목·굵게·리스트·줄바꿈) */
+function MarkdownView({ text, className = '' }: { text: string; className?: string }) {
+  if (!text || !text.trim()) {
+    return <p className={`text-sm text-gray-400 ${className}`}>내용이 없습니다.</p>
+  }
+  // 라인 단위 파싱
+  const lines = text.split(/\r?\n/)
+  const blocks: React.ReactNode[] = []
+  let listBuf: string[] = []
+  const flushList = (key: string) => {
+    if (listBuf.length === 0) return
+    blocks.push(
+      <ul key={`ul-${key}`} className="text-sm text-gray-700 list-disc pl-5 space-y-1 my-1">
+        {listBuf.map((item, i) => (
+          <li key={i} dangerouslySetInnerHTML={{ __html: inlineFormat(item) }} />
+        ))}
+      </ul>
+    )
+    listBuf = []
+  }
+  // 인라인 굵게/기울임 — `**bold**`, `*italic*`만
+  const inlineFormat = (s: string): string => {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(?<!\*)\*([^*\s][^*]*[^*\s]|\S)\*(?!\*)/g, '<em>$1</em>')
+  }
+  lines.forEach((rawLine, idx) => {
+    const line = rawLine.trimEnd()
+    if (line.trim() === '') {
+      flushList(String(idx))
+      return
+    }
+    // 헤딩
+    const h2 = /^##\s+(.+)$/.exec(line)
+    const h3 = /^###\s+(.+)$/.exec(line)
+    const h1 = /^#\s+(.+)$/.exec(line)
+    // 리스트
+    const li = /^[-*]\s+(.+)$/.exec(line)
+    if (h1) {
+      flushList(String(idx))
+      blocks.push(<h3 key={idx} className="text-base font-bold text-gray-900 mt-3 mb-2" dangerouslySetInnerHTML={{ __html: inlineFormat(h1[1]) }} />)
+    } else if (h2) {
+      flushList(String(idx))
+      blocks.push(<h4 key={idx} className="text-sm font-bold text-gray-900 mt-3 mb-1.5" dangerouslySetInnerHTML={{ __html: inlineFormat(h2[1]) }} />)
+    } else if (h3) {
+      flushList(String(idx))
+      blocks.push(<h5 key={idx} className="text-sm font-semibold text-gray-800 mt-2 mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(h3[1]) }} />)
+    } else if (li) {
+      listBuf.push(li[1])
+    } else {
+      flushList(String(idx))
+      blocks.push(<p key={idx} className="text-sm text-gray-700 leading-relaxed mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(line) }} />)
+    }
+  })
+  flushList('end')
+  return <div className={className}>{blocks}</div>
+}
+
+/** 시계열 추이 라인 차트 — 원본 ReportView PerformanceChart 동등 (SVG로 직접 구현) */
+type TrendPoint = { label: string; sortKey: number; likes: number; comments: number; shares: number; views: number }
+function TrendChart({
+  title,
+  data,
+  dataKey,
+  stroke,
+  multi,
+}: {
+  title: string
+  data: TrendPoint[]
+  dataKey?: keyof Omit<TrendPoint, 'label' | 'sortKey'>
+  stroke?: string
+  multi?: { dataKey: keyof Omit<TrendPoint, 'label' | 'sortKey'>; label: string; stroke: string }[]
+}) {
+  const W = 600, H = 200, padL = 40, padR = 12, padT = 16, padB = 32
+  const plotW = W - padL - padR, plotH = H - padT - padB
+  const series = multi ?? (dataKey && stroke ? [{ dataKey, label: title, stroke }] : [])
+  const allValues = series.flatMap(s => data.map(d => d[s.dataKey]))
+  const max = Math.max(1, ...allValues)
+  const xStep = data.length > 1 ? plotW / (data.length - 1) : 0
+  const pointFor = (v: number, i: number) => ({
+    x: padL + i * xStep,
+    y: padT + plotH - (v / max) * plotH,
+  })
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-sm font-semibold text-gray-700">{title}</h4>
+        {multi && (
+          <div className="flex items-center gap-3">
+            {multi.map(s => (
+              <span key={s.dataKey} className="flex items-center gap-1 text-[11px] text-gray-500">
+                <span className="w-2 h-2 rounded-full" style={{ background: s.stroke }} />
+                {s.label}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
+        {[0, 0.25, 0.5, 0.75, 1].map(r => {
+          const y = padT + plotH - r * plotH
+          const v = Math.round(r * max)
+          return (
+            <g key={r}>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+              <text x={padL - 6} y={y + 3} textAnchor="end" fontSize={9} fill="#9ca3af">{v.toLocaleString()}</text>
+            </g>
+          )
+        })}
+        {series.map(s => {
+          const points = data.map((d, i) => pointFor(d[s.dataKey], i))
+          const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+          const fillPath = points.length > 0
+            ? `${path} L ${points[points.length - 1].x} ${padT + plotH} L ${points[0].x} ${padT + plotH} Z`
+            : ''
+          return (
+            <g key={s.dataKey}>
+              {fillPath && <path d={fillPath} fill={s.stroke} fillOpacity={0.08} />}
+              <path d={path} fill="none" stroke={s.stroke} strokeWidth={2} />
+              {points.map((p, i) => (
+                <circle key={i} cx={p.x} cy={p.y} r={2.5} fill={s.stroke} />
+              ))}
+            </g>
+          )
+        })}
+        {data.map((d, i) => {
+          if (data.length > 8 && i % 2 !== 0) return null
+          return (
+            <text
+              key={i}
+              x={padL + i * xStep}
+              y={padT + plotH + 14}
+              textAnchor="middle"
+              fontSize={9}
+              fill="#6b7280"
+            >{d.label}</text>
+          )
+        })}
+      </svg>
     </div>
   )
 }
