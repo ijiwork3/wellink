@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users } from 'lucide-react'
+import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users, AlertCircle } from 'lucide-react'
 import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
 
 const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
@@ -24,6 +24,9 @@ const FILLED = {
   type: '방문형' as '방문형' | '택배형',
   location: '강남/서초',
   storeName: '봄 요가 스튜디오',
+  // 택배형 전용 — 원본 mentionName(브랜드명) + product(상품이름) 분리 보강
+  brandName: '킹콩푸드',
+  shippedProductName: '한우 프리미엄 선물세트',
   platform: '인스타그램' as Platform,
   category: '맛집/푸드',
   description: '브랜드 소개와 캠페인 핵심 메시지를 담아주세요.',
@@ -48,7 +51,7 @@ const FILLED = {
 
 type Question = {
   id: string
-  type: 'short' | 'choice'
+  type: 'short' | 'long' | 'choice'  // 신규: 'long' (서술형) — 원본 'textarea' 동등
   title: string
   desc: string
   required: boolean
@@ -72,7 +75,9 @@ export default function CampaignNew() {
   const isFilled = isEdit || qa === 'filled' || qa === 'modal-complete'
   const init = isFilled ? FILLED : {
     type: '방문형' as '방문형' | '택배형',
-    location: '', storeName: '', platform: '인스타그램' as Platform, category: '맛집/푸드',
+    location: '', storeName: '',
+    brandName: '', shippedProductName: '',  // 택배형 전용 — 원본 보강
+    platform: '인스타그램' as Platform, category: '맛집/푸드',
     description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '',
     keywords: [] as string[], postType: '피드', precaution: '릴스 제작 우대',
     photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
@@ -94,12 +99,26 @@ export default function CampaignNew() {
     setForm(prev => ({ ...prev, platform, postType: types[0] ?? '' }))
   }
 
-  // 자동 캠페인 제목
-  const autoTitle = form.location && form.storeName ? `[${form.location}] ${form.storeName}` : ''
+  // 자동 캠페인 제목 — 방문형: [지역] 가게이름 / 택배형: 브랜드명 — 상품이름
+  const autoTitle = form.type === '방문형'
+    ? (form.location && form.storeName ? `[${form.location}] ${form.storeName}` : '')
+    : (form.brandName && form.shippedProductName ? `${form.brandName} — ${form.shippedProductName}` : '')
 
   // 총 결제 예정 금액 — 원본 정책: 참여자 수 × 10,000원 (수수료·리워드 통합 단가)
   const PER_PERSON_FEE = 10000
   const totalPay = useMemo(() => (Number(form.headcount) || 0) * PER_PERSON_FEE, [form.headcount])
+
+  // 편집 모드 — 캠페인 상태별 수정 가능 여부 (원본 정책 보강)
+  // PENDING(대기중)만 수정 가능. ACTIVE/CLOSED는 수정 불가.
+  const editStatusInfo = (() => {
+    if (!isEdit) return null
+    // 더미 환경 — qa=edit-active / qa=edit-closed 인 경우 잠금
+    if (qa === 'edit-active') return { editable: false, status: '모집중', reason: '모집 중인 캠페인은 일정·인원 등 일부 항목을 변경할 수 없습니다.' }
+    if (qa === 'edit-closed') return { editable: false, status: '종료', reason: '이미 종료된 캠페인은 수정할 수 없습니다.' }
+    return { editable: true, status: '대기중', reason: '' }
+  })()
+  // 편집 모드 — 현재 지원자 수 (원본 보강)
+  const currentApplicantCount = isEdit ? (qa === 'edit-active' ? 12 : qa === 'edit-closed' ? 0 : 3) : 0
 
   const addKeyword = () => {
     const v = keywordInput.trim().replace(/^#/, '')
@@ -110,7 +129,7 @@ export default function CampaignNew() {
   }
   const removeKeyword = (k: string) => setForm(p => ({ ...p, keywords: p.keywords.filter(x => x !== k) }))
 
-  const addQuestion = (type: 'short' | 'choice') => {
+  const addQuestion = (type: 'short' | 'long' | 'choice') => {
     setQuestions(q => [...q, {
       id: Math.random().toString(36).slice(2, 8),
       type, title: '', desc: '', required: false,
@@ -121,9 +140,23 @@ export default function CampaignNew() {
   const removeQ = (id: string) => setQuestions(q => q.filter(x => x.id !== id))
 
   const handleSubmit = () => {
-    if (!form.location || !form.storeName) { showToast('지역과 가게 이름을 입력해주세요', 'error'); return }
+    // 편집 잠금 — 원본 정책 (PENDING 외엔 차단)
+    if (isEdit && editStatusInfo && !editStatusInfo.editable) {
+      showToast(editStatusInfo.reason, 'error')
+      return
+    }
+    // 방문형: 지역+가게이름 / 택배형: 브랜드명+상품이름 (원본 분기)
+    if (form.type === '방문형') {
+      if (!form.location || !form.storeName) { showToast('지역과 가게 이름을 입력해주세요', 'error'); return }
+    } else {
+      if (!form.brandName || !form.shippedProductName) { showToast('브랜드명과 상품 이름을 입력해주세요', 'error'); return }
+    }
     if (!form.productName || !form.productPrice) { showToast('제공 상품 정보를 입력해주세요', 'error'); return }
     if (!form.recruitStart || !form.recruitEnd) { showToast('모집 기간을 설정해주세요', 'error'); return }
+    // 모집 인원 — 신규 등록 시 최소 5명 (원본 정책)
+    const hc = Number(form.headcount) || 0
+    if (!isEdit && hc < 5) { showToast('모집 인원은 최소 5명부터 가능합니다.', 'error'); return }
+    if (hc < 1) { showToast('모집 인원을 입력해주세요.', 'error'); return }
     setSubmitting(true)
     setTimeout(() => {
       setSubmitting(false)
@@ -147,10 +180,21 @@ export default function CampaignNew() {
         <h1 className="text-xl @md:text-2xl font-bold text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
         <p className="text-sm text-gray-500 mt-1">
           {isEdit
-            ? '내용을 수정하면 모든 지원자에게 [조건 변경 알림]이 발송됩니다.'
+            ? `내용을 수정하면 ${currentApplicantCount > 0 ? `현재 ${currentApplicantCount}명의 지원자에게 [조건 변경 알림]이 발송됩니다.` : '모든 지원자에게 [조건 변경 알림]이 발송됩니다.'}`
             : '인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.'}
         </p>
       </div>
+
+      {/* 편집 모드 잠금 배너 — 원본 정책 보강 (PENDING만 수정 가능) */}
+      {isEdit && editStatusInfo && !editStatusInfo.editable && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
+          <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
+            <p className="text-xs text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
+          </div>
+        </div>
+      )}
 
       {/* ── 섹션 1: 기본 정보 입력 ── */}
       <Section title="기본 정보 입력">
@@ -174,14 +218,26 @@ export default function CampaignNew() {
           </div>
         </Field>
 
-        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
-          <Field label="지역">
-            <Input value={form.location} onChange={v => set('location', v)} placeholder="예) 강남/서초" />
-          </Field>
-          <Field label="가게 이름">
-            <Input value={form.storeName} onChange={v => set('storeName', v)} placeholder="예) 킹콩정육점" />
-          </Field>
-        </div>
+        {/* 방문형: 지역+가게이름 / 택배형: 브랜드명+상품이름 (원본 정책 보강) */}
+        {form.type === '방문형' ? (
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+            <Field label="지역">
+              <Input value={form.location} onChange={v => set('location', v)} placeholder="예) 강남/서초" />
+            </Field>
+            <Field label="가게 이름">
+              <Input value={form.storeName} onChange={v => set('storeName', v)} placeholder="예) 킹콩정육점" />
+            </Field>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+            <Field label="브랜드명">
+              <Input value={form.brandName} onChange={v => set('brandName', v)} placeholder="예) 킹콩푸드" />
+            </Field>
+            <Field label="상품 이름">
+              <Input value={form.shippedProductName} onChange={v => set('shippedProductName', v)} placeholder="예) 한우 프리미엄 선물세트" />
+            </Field>
+          </div>
+        )}
 
         <Field label="캠페인 제목 (자동 생성)">
           <input
@@ -326,9 +382,12 @@ export default function CampaignNew() {
         </Field>
 
         <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 flex-wrap">
             <button onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
               <Plus size={12} />단답형 추가
+            </button>
+            <button onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+              <Plus size={12} />서술형 추가
             </button>
             <button onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
               <Plus size={12} />객관식 추가
@@ -345,7 +404,7 @@ export default function CampaignNew() {
                   <div className="flex items-center gap-2">
                     <GripVertical size={14} className="text-gray-300" />
                     <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
-                      질문 {i + 1} ({q.type === 'short' ? '단답형' : '객관식'})
+                      질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
                     </span>
                     <label className="ml-auto flex items-center gap-1 text-xs text-gray-600">
                       <input type="checkbox" checked={q.required} onChange={e => updateQ(q.id, { required: e.target.checked })} />
@@ -416,12 +475,16 @@ export default function CampaignNew() {
           <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-gray-900">총 모집 인원</p>
-              <p className="text-xs text-gray-500">캠페인에 참여시킬 인플루언서 인원 수를 입력해주세요.</p>
+              <p className="text-xs text-gray-500">
+                {isEdit
+                  ? `현재 ${currentApplicantCount.toLocaleString()}명의 지원자가 있습니다.`
+                  : '최소 5명 이상부터 진행 가능합니다.'}
+              </p>
             </div>
             <div className="relative">
               <input
                 type="number"
-                min="1"
+                min={isEdit ? '1' : '5'}
                 placeholder="20"
                 value={form.headcount}
                 onChange={e => set('headcount', e.target.value)}
