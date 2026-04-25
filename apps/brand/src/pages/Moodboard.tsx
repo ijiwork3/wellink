@@ -110,18 +110,19 @@ const ACCENT = [
 ]
 
 // ─── 그레이톤 10단계 ──────────────────────────────────────────────
-// 1: warm cream(베이지) → 5: pure neutral(현재) → 10: cool slate(청회색)
+// 1단계 = 원본(pure neutral) / 10단계 = cool slate
+// 카드는 전 단계 #ffffff 유지 / 라인은 전 단계 연하게 / 황색 없음
 const GRAY = [
-  { n:1,  pageBg:'#faf5ef', cardBg:'#fffdf5', border:'#e8dfd0', muted:'#7a6f5e', subtle:'#a8998a', pillBg:'#f0e8dc', navActive:'#ebe1d4' },
-  { n:2,  pageBg:'#faf7f2', cardBg:'#fffef8', border:'#e8e2d5', muted:'#787068', subtle:'#a49488', pillBg:'#ece6dd', navActive:'#e6e0d5' },
-  { n:3,  pageBg:'#faf8f6', cardBg:'#fffefc', border:'#eae5de', muted:'#75707a', subtle:'#a29a9c', pillBg:'#eae5de', navActive:'#e4dfd8' },
-  { n:4,  pageBg:'#fafaf8', cardBg:'#ffffff', border:'#eeeeed', muted:'#707178', subtle:'#9ea0a8', pillBg:'#ebebea', navActive:'#e5e5e4' },
-  { n:5,  pageBg:'#fafafa', cardBg:'#ffffff', border:'#f3f4f6', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f3f4f6', navActive:'#f3f4f6' },
-  { n:6,  pageBg:'#f9fafc', cardBg:'#ffffff', border:'#edf0f4', muted:'#647078', subtle:'#94a0aa', pillBg:'#edf0f4', navActive:'#e8edf2' },
-  { n:7,  pageBg:'#f6f9fb', cardBg:'#fbfdfe', border:'#e2eaf1', muted:'#5d6a74', subtle:'#8898a2', pillBg:'#e2eaf1', navActive:'#dbe4ec' },
-  { n:8,  pageBg:'#f3f6fa', cardBg:'#f9fbfd', border:'#d8e2ec', muted:'#566470', subtle:'#809099', pillBg:'#d8e2ec', navActive:'#d0dce8' },
-  { n:9,  pageBg:'#f0f4f8', cardBg:'#f6f9fb', border:'#cfd9e5', muted:'#4f5f6c', subtle:'#788a96', pillBg:'#cfd9e5', navActive:'#c8d3e0' },
-  { n:10, pageBg:'#eef2f6', cardBg:'#f4f7fb', border:'#cad3e0', muted:'#4a5a68', subtle:'#728490', pillBg:'#cad3e0', navActive:'#c1cdd9' },
+  { n:1,  pageBg:'#fafafa', cardBg:'#ffffff', border:'#f3f4f6', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f3f4f6', navActive:'#f3f4f6' },
+  { n:2,  pageBg:'#f9fafc', cardBg:'#ffffff', border:'#f0f2f6', muted:'#677280', subtle:'#97a2ae', pillBg:'#f0f2f6', navActive:'#f0f2f6' },
+  { n:3,  pageBg:'#f7f9fc', cardBg:'#ffffff', border:'#edf0f5', muted:'#637080', subtle:'#93a0ac', pillBg:'#edf0f5', navActive:'#edf0f5' },
+  { n:4,  pageBg:'#f5f8fb', cardBg:'#ffffff', border:'#e8ecf3', muted:'#5e6c78', subtle:'#8e9caa', pillBg:'#e8ecf3', navActive:'#e8ecf3' },
+  { n:5,  pageBg:'#f3f6fa', cardBg:'#ffffff', border:'#e4eaf2', muted:'#5a6874', subtle:'#8a98a6', pillBg:'#e4eaf2', navActive:'#e4eaf2' },
+  { n:6,  pageBg:'#f1f5f9', cardBg:'#ffffff', border:'#e0e8f0', muted:'#566470', subtle:'#8494a2', pillBg:'#e0e8f0', navActive:'#e0e8f0' },
+  { n:7,  pageBg:'#eef3f8', cardBg:'#ffffff', border:'#dce6ee', muted:'#52606c', subtle:'#809098', pillBg:'#dce6ee', navActive:'#dce6ee' },
+  { n:8,  pageBg:'#ecf1f7', cardBg:'#ffffff', border:'#d8e2ec', muted:'#4e5c68', subtle:'#7c8c96', pillBg:'#d8e2ec', navActive:'#d8e2ec' },
+  { n:9,  pageBg:'#e9eef5', cardBg:'#ffffff', border:'#d4dce8', muted:'#4a5864', subtle:'#788890', pillBg:'#d4dce8', navActive:'#d4dce8' },
+  { n:10, pageBg:'#e6ecf3', cardBg:'#ffffff', border:'#d0dae6', muted:'#466080', subtle:'#74848e', pillBg:'#d0dae6', navActive:'#d0dae6' },
 ]
 
 type P = typeof PRIMARY[0]
@@ -140,7 +141,7 @@ function Badge({ bg, text, children }: { bg: string; text: string; children: Rea
 }
 
 // ─── 공통 사이드바 ────────────────────────────────────────────────
-function Sidebar({ p, d, g, active }: { p: P; d: D; g: G; active: string }) {
+function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) {
   const navItems = [
     { key: 'dashboard', icon: <LayoutDashboard size={15} />, label: '대시보드', section: null },
     { key: 'profile',   icon: <BarChart3 size={15} />,       label: '프로필 인사이트', section: '분석' },
@@ -557,7 +558,7 @@ export default function Moodboard() {
   const [pi, setPi] = useState(0)
   const [di, setDi] = useState(0)
   const [ai, setAi] = useState(0)
-  const [gi, setGi] = useState(4)   // 기본값 5단계 (pure neutral)
+  const [gi, setGi] = useState(0)
   const p = PRIMARY[pi]
   const d = DEEP[di]
   const a = ACCENT[ai]
