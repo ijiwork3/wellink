@@ -81,7 +81,11 @@ export default function Notifications() {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const qa = useQAMode()
-  const [filter, setFilter] = useState<'all' | NotificationType>('all')
+  const initialFilter: 'all' | NotificationType =
+    qa === 'tab-campaign' ? 'campaign' :
+    qa === 'tab-message' ? 'message' :
+    qa === 'tab-system' ? 'system' : 'all'
+  const [filter, setFilter] = useState<'all' | NotificationType>(initialFilter)
   const [page, setPage] = useState(1)
   const [notifications, setNotifications] = useState<Notification[]>(
     qa === 'empty' ? [] : INITIAL_NOTIFICATIONS

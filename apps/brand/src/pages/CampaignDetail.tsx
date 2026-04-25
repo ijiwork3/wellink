@@ -584,22 +584,35 @@ export default function CampaignDetail() {
 
   const campaignStatus = statusConfig[campaign.status] ?? { label: campaign.status, cls: 'bg-gray-100 text-gray-600' }
 
+  // 지원자 → 선정 인플루언서 변환 (모든 필드 보존, 업로드 초기값 0)
+  const applicantToSelected = (a: typeof applicantsData[number]): typeof selectedApplicantsData[number] => ({
+    id: a.id,
+    name: a.name,
+    followers: a.followers,
+    followerCount: a.followerCount,
+    engagement: a.engagement,
+    fitScore: a.fitScore,
+    selectedAt: new Date().toISOString().slice(0, 10),
+    avatar: a.avatar,
+    postsCount: a.postsCount,
+    avgLikes: a.avgLikes,
+    avgComments: a.avgComments,
+    activityFields: a.activityFields,
+    phoneNumber: a.phoneNumber,
+    email: a.email,
+    address: a.address,
+    addressDetail: a.addressDetail,
+    uploadedPostCount: 0,
+    latestUploadedAt: null,
+    latestPostUrl: null,
+    allAnswers: a.allAnswers,
+  })
+
   // 지원자 관리 핸들러
   const handleSelectApplicant = (applicantId: number) => {
     const applicant = applicants.find(a => a.id === applicantId)
     if (applicant) {
-      setSelectedInfluencers(prev => [
-        ...prev,
-        {
-          id: applicant.id,
-          name: applicant.name,
-          followers: applicant.followers,
-          engagement: applicant.engagement,
-          fitScore: applicant.fitScore,
-          selectedAt: new Date().toISOString().slice(0, 10),
-          avatar: applicant.avatar,
-        },
-      ])
+      setSelectedInfluencers(prev => [...prev, applicantToSelected(applicant)])
     }
     setApplicants(prev => prev.filter(a => a.id !== applicantId))
     showToast('선정 완료! DM으로 가이드를 전달해 보세요.', 'success')
@@ -613,15 +626,7 @@ export default function CampaignDetail() {
     const toSelect = applicants.filter(a => checkedApplicants.has(a.id))
     setSelectedInfluencers(prev => [
       ...prev,
-      ...toSelect.map(a => ({
-        id: a.id,
-        name: a.name,
-        followers: a.followers,
-        engagement: a.engagement,
-        fitScore: a.fitScore,
-        selectedAt: new Date().toISOString().slice(0, 10),
-        avatar: a.avatar,
-      })),
+      ...toSelect.map(applicantToSelected),
     ])
     setApplicants(prev => prev.filter(a => !checkedApplicants.has(a.id)))
     setCheckedApplicants(new Set())
@@ -637,22 +642,33 @@ export default function CampaignDetail() {
     })
   }
 
-  // 선정 취소 — 컨펌 모달 후 실행
+  // 선정 취소 — 컨펌 모달 후 실행 (모든 필드 보존)
   const confirmDeselectInfluencer = (influencerId: number) => {
     const influencer = selectedInfluencers.find(i => i.id === influencerId)
     if (influencer) {
+      const inf = influencer as typeof selectedApplicantsData[number]
       setApplicants(prev => [
         ...prev,
         {
-          id: influencer.id,
-          name: influencer.name,
-          handle: influencer.name,
-          followers: influencer.followers,
-          fitScore: influencer.fitScore,
+          id: inf.id,
+          name: inf.name,
+          followers: inf.followers,
+          followerCount: inf.followerCount ?? 0,
+          fitScore: inf.fitScore,
           appliedAt: new Date().toISOString().slice(0, 10),
-          status: '검토중',
-          engagement: influencer.engagement,
-          avatar: influencer.avatar,
+          engagement: inf.engagement,
+          avatar: inf.avatar,
+          postsCount: inf.postsCount ?? 0,
+          avgLikes: inf.avgLikes ?? 0,
+          avgComments: inf.avgComments ?? 0,
+          recentActivityDays: 0,
+          activityFields: inf.activityFields ?? [],
+          primaryAnswer: inf.allAnswers?.[0]?.answer ?? '',
+          allAnswers: inf.allAnswers ?? [],
+          phoneNumber: inf.phoneNumber ?? '',
+          email: inf.email ?? '',
+          address: inf.address ?? '',
+          addressDetail: inf.addressDetail ?? '',
         },
       ])
     }

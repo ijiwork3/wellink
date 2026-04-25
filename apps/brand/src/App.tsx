@@ -255,6 +255,7 @@ function AppRoutes() {
       '/campaigns/new':      '새 캠페인 등록 — WELLINK AI',
       '/library':            '콘텐츠 라이브러리 — WELLINK AI',
       '/subscription':       '구독 관리 — WELLINK AI',
+      '/notifications':      '알림 센터 — WELLINK AI',
       '/mypage':             '마이페이지 — WELLINK AI',
       '/login':              '로그인 — WELLINK AI',
       '/signup':             '회원가입 — WELLINK AI',
