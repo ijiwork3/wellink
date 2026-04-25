@@ -19,20 +19,100 @@ const PRIMARY = [
   { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
 ]
 
-// ─── 나머지 10단계 (배지·차트B·차트C) ────────────────────────────
-// 배지는 emerald-400 / orange-400이 피크 — 그 이상 가면 "찐해짐"
-// 1~5: 연한 tint에서 vivid로 상승 / 6~10: vivid 유지하며 차트색 변화
+// ─── 나머지 10단계 ─────────────────────────────────────────────────
+// 배지: bg 밝기에 맞춰 text contrast 보정 (WCAG AA 기준 다크 텍스트 유지)
+// 하락 트렌드(trendDown) / 알림 점(dotA/B/C) / 아바타 5색(av1~av5) 포함
 const ACCENT = [
-  { n:  1, badgeActiveBg:'#d1fae5', badgeActiveText:'#065f46', badgePendingBg:'#fef3c7', badgePendingText:'#92400e', barB:'#93C5FD', barC:'#FDE68A' },
-  { n:  2, badgeActiveBg:'#a7f3d0', badgeActiveText:'#065f46', badgePendingBg:'#fde68a', badgePendingText:'#92400e', barB:'#60A5FA', barC:'#FCD34D' },
-  { n:  3, badgeActiveBg:'#6ee7b7', badgeActiveText:'#14532d', badgePendingBg:'#fcd34d', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#FBBF24' },
-  { n:  4, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fbbf24', badgePendingText:'#78350f', barB:'#3B82F6', barC:'#F97316' },
-  { n:  5, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#2563EB', barC:'#F97316' },
-  { n:  6, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#2563EB', barC:'#EA580C' },
-  { n:  7, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#EA580C' },
-  { n:  8, badgeActiveBg:'#4ade80', badgeActiveText:'#14532d', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#1D4ED8', barC:'#DC2626' },
-  { n:  9, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#fb923c', badgePendingText:'#7c2d12', barB:'#1E40AF', barC:'#DC2626' },
-  { n: 10, badgeActiveBg:'#34d399', badgeActiveText:'#064e3b', badgePendingBg:'#f97316', badgePendingText:'#7c2d12', barB:'#1E40AF', barC:'#B91C1C' },
+  // 1: 극소프트 파스텔
+  { n: 1,
+    badgeActiveBg: '#d1fae5', badgeActiveText: '#065f46',
+    badgePendingBg: '#fef3c7', badgePendingText: '#92400e',
+    barB: '#bae6fd', barC: '#fed7aa',
+    trendDown: '#fca5a5',
+    dotA: '#7dd3fc', dotB: '#86efac', dotC: '#fde68a',
+    av1: '#86efac', av2: '#93c5fd', av3: '#d8b4fe', av4: '#fca5a5', av5: '#fdba74',
+  },
+  // 2: 소프트
+  { n: 2,
+    badgeActiveBg: '#a7f3d0', badgeActiveText: '#065f46',
+    badgePendingBg: '#fde68a', badgePendingText: '#92400e',
+    barB: '#93c5fd', barC: '#fcd34d',
+    trendDown: '#fca5a5',
+    dotA: '#38bdf8', dotB: '#4ade80', dotC: '#fbbf24',
+    av1: '#4ade80', av2: '#60a5fa', av3: '#c084fc', av4: '#f472b6', av5: '#fb923c',
+  },
+  // 3: 미디엄 소프트
+  { n: 3,
+    badgeActiveBg: '#6ee7b7', badgeActiveText: '#14532d',
+    badgePendingBg: '#fcd34d', badgePendingText: '#78350f',
+    barB: '#60a5fa', barC: '#fbbf24',
+    trendDown: '#f87171',
+    dotA: '#0ea5e9', dotB: '#22c55e', dotC: '#f59e0b',
+    av1: '#34d399', av2: '#3b82f6', av3: '#a78bfa', av4: '#fb7185', av5: '#fb923c',
+  },
+  // 4: 비비드 시작 — bg 중간 밝기, 다크 텍스트 contrast ≥ 7:1
+  { n: 4,
+    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
+    badgePendingBg: '#fbbf24', badgePendingText: '#78350f',
+    barB: '#3b82f6', barC: '#f97316',
+    trendDown: '#ef4444',
+    dotA: '#0284c7', dotB: '#16a34a', dotC: '#d97706',
+    av1: '#22c55e', av2: '#2563eb', av3: '#8b5cf6', av4: '#e11d48', av5: '#ea580c',
+  },
+  // 5: 풀 비비드 — emerald-400 피크, 텍스트는 emerald-950으로 최대 contrast
+  { n: 5,
+    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
+    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
+    barB: '#2563eb', barC: '#ea580c',
+    trendDown: '#dc2626',
+    dotA: '#0369a1', dotB: '#15803d', dotC: '#b45309',
+    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#be123c', av5: '#c2410c',
+  },
+  // 6: 비비드 웜
+  { n: 6,
+    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
+    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
+    barB: '#1d4ed8', barC: '#ea580c',
+    trendDown: '#dc2626',
+    dotA: '#0369a1', dotB: '#059669', dotC: '#ea580c',
+    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#e11d48', av5: '#ea580c',
+  },
+  // 7: 비비드 쿨
+  { n: 7,
+    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
+    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
+    barB: '#1e40af', barC: '#dc2626',
+    trendDown: '#dc2626',
+    dotA: '#1e40af', dotB: '#059669', dotC: '#d97706',
+    av1: '#22c55e', av2: '#1e40af', av3: '#6d28d9', av4: '#e11d48', av5: '#c2410c',
+  },
+  // 8: 딥 블루
+  { n: 8,
+    badgeActiveBg: '#4ade80', badgeActiveText: '#14532d',
+    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
+    barB: '#1e3a8a', barC: '#dc2626',
+    trendDown: '#b91c1c',
+    dotA: '#1e3a8a', dotB: '#047857', dotC: '#b45309',
+    av1: '#16a34a', av2: '#1e3a8a', av3: '#5b21b6', av4: '#be123c', av5: '#c2410c',
+  },
+  // 9: 비비드 믹스
+  { n: 9,
+    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
+    badgePendingBg: '#fb923c', badgePendingText: '#7c2d12',
+    barB: '#1e40af', barC: '#dc2626',
+    trendDown: '#dc2626',
+    dotA: '#0369a1', dotB: '#15803d', dotC: '#b45309',
+    av1: '#10b981', av2: '#1d4ed8', av3: '#7c3aed', av4: '#be123c', av5: '#ea580c',
+  },
+  // 10: 맥스 비비드
+  { n: 10,
+    badgeActiveBg: '#34d399', badgeActiveText: '#064e3b',
+    badgePendingBg: '#f97316', badgePendingText: '#7c2d12',
+    barB: '#1e40af', barC: '#b91c1c',
+    trendDown: '#b91c1c',
+    dotA: '#0369a1', dotB: '#166534', dotC: '#92400e',
+    av1: '#059669', av2: '#1d4ed8', av3: '#7c3aed', av4: '#e11d48', av5: '#ea580c',
+  },
 ]
 
 type P = typeof PRIMARY[0]
@@ -126,6 +206,11 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
     { label: '이번달 도달',       value: '48.2K', trend: '+8.3%', up: true, icon: <Activity size={16}/> },
     { label: '검수대기',          value: '2',     trend: '-33%', up: false, icon: <Bell size={16}/> },
   ]
+  const notifications = [
+    { text: '이창민님이 콘텐츠를 제출했습니다', time: '5분 전',   dot: a.dotA, unread: true },
+    { text: '비건 신제품 론칭에 새 인플루언서 지원', time: '1시간 전', dot: a.dotB, unread: true },
+    { text: '구독이 5일 후 만료됩니다.',     time: '어제',   dot: a.dotC, unread: false },
+  ]
   return (
     <div className="flex h-full bg-[#fafafa]">
       <Sidebar p={p} active="dashboard" />
@@ -153,7 +238,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                   <span className="text-gray-400">{k.icon}</span>
                 </div>
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{k.value}</div>
-                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? p.green : '#ef4444' }}>
+                <div className="flex items-center gap-1 text-xs font-medium" style={{ color: k.up ? p.green : a.trendDown }}>
                   {k.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
                   {k.trend} <span className="font-normal text-gray-400">전월</span>
                 </div>
@@ -223,11 +308,7 @@ function DashboardScreen({ p, a }: { p: P; a: A }) {
                   style={{ backgroundColor: p.green }}
                 >3</span>
               </div>
-              {[
-                { text: '이창민님이 콘텐츠를 제출했습니다', time: '5분 전',   dot: '#38bdf8', unread: true },
-                { text: '비건 신제품 론칭에 새 인플루언서 지원', time: '1시간 전', dot: '#34d399', unread: true },
-                { text: '구독이 5일 후 만료됩니다.',     time: '어제',   dot: '#fbbf24', unread: false },
-              ].map((n, i) => (
+              {notifications.map((n, i) => (
                 <div
                   key={i}
                   className="px-5 py-3 border-b border-gray-50 last:border-0"
@@ -283,11 +364,11 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
     { label: '평균 참여율',    value: '3.4%' },
   ]
   const rows = [
-    { name: '이창민', cats: ['피트니스','크로스핏'], followers: '8,700',  eng: '4.1%', engHigh: true,  fit: 92, fitHigh: true,  authentic: '92.3%', color: '#4ade80', bookmarked: true  },
-    { name: '민경완', cats: ['운동'],               followers: '120K',    eng: '3.8%', engHigh: false, fit: 78, fitHigh: false, authentic: '78.5%', color: '#60a5fa', bookmarked: false },
-    { name: '장영훈', cats: ['필라테스'],            followers: '960',     eng: '2.8%', engHigh: false, fit: 65, fitHigh: false, authentic: '95.1%', color: '#c084fc', bookmarked: false },
-    { name: '김가애', cats: ['요가'],               followers: '18,900',  eng: '4.2%', engHigh: true,  fit: 88, fitHigh: true,  authentic: '88.7%', color: '#fb923c', bookmarked: true  },
-    { name: '박리나', cats: ['웰니스'],              followers: '7,120',   eng: '2.2%', engHigh: false, fit: 71, fitHigh: false, authentic: '85.2%', color: '#f472b6', bookmarked: false },
+    { name: '이창민', cats: ['피트니스','크로스핏'], followers: '8,700',  eng: '4.1%', engHigh: true,  fit: 92, fitHigh: true,  authentic: '92.3%', avColor: a.av1, bookmarked: true  },
+    { name: '민경완', cats: ['운동'],               followers: '120K',    eng: '3.8%', engHigh: false, fit: 78, fitHigh: false, authentic: '78.5%', avColor: a.av2, bookmarked: false },
+    { name: '장영훈', cats: ['필라테스'],            followers: '960',     eng: '2.8%', engHigh: false, fit: 65, fitHigh: false, authentic: '95.1%', avColor: a.av3, bookmarked: false },
+    { name: '김가애', cats: ['요가'],               followers: '18,900',  eng: '4.2%', engHigh: true,  fit: 88, fitHigh: true,  authentic: '88.7%', avColor: a.av4, bookmarked: true  },
+    { name: '박리나', cats: ['웰니스'],              followers: '7,120',   eng: '2.2%', engHigh: false, fit: 71, fitHigh: false, authentic: '85.2%', avColor: a.av5, bookmarked: false },
   ]
   return (
     <div className="flex h-full bg-[#fafafa]">
@@ -342,7 +423,7 @@ function InfluencerScreen({ p, a }: { p: P; a: A }) {
                   <tr key={i} className="hover:bg-gray-50 transition-colors cursor-pointer">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0" style={{ backgroundColor: r.color }}>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0" style={{ backgroundColor: r.avColor }}>
                           {r.name[0]}
                         </div>
                         <span className="text-sm font-medium text-gray-900">{r.name}</span>
@@ -416,8 +497,8 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
           </div>
           <div className="flex items-center gap-2">
             <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
-              {['최근 7일','최근 30일','이번 달'].map((p, i) => (
-                <span key={p} className={`text-xs px-3 py-1.5 rounded-lg cursor-pointer font-medium ${i === 1 ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}>{p}</span>
+              {['최근 7일','최근 30일','이번 달'].map((label, i) => (
+                <span key={label} className={`text-xs px-3 py-1.5 rounded-lg cursor-pointer font-medium ${i === 1 ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}>{label}</span>
               ))}
             </div>
             <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 bg-white">
@@ -435,7 +516,7 @@ function AnalyticsScreen({ p, a }: { p: P; a: A }) {
                   <span className="text-gray-400">{m.icon}</span>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 mb-2">{m.value}</p>
-                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? p.green : '#ef4444' }}>
+                <span className="text-[11px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? p.green : a.trendDown }}>
                   {m.up ? <TrendingUp size={10}/> : <TrendingDown size={10}/>}{m.change}
                 </span>
               </div>
@@ -554,6 +635,9 @@ export default function Moodboard() {
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgeActiveBg }}/>
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgePendingBg }}/>
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.trendDown }}/>
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.dotA }}/>
+            <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.av1 }}/>
           </div>
         </div>
       </div>
