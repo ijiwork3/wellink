@@ -168,8 +168,8 @@ export default function Campaigns() {
         </div>
 
         {/* 검색 + 필터 + 정렬 */}
-        <div className="flex items-center gap-2 px-3 @sm:px-5 py-3 border-b border-gray-100 flex-wrap">
-          <div className="relative flex-1 min-w-[180px]">
+        <div className="px-3 @sm:px-5 py-3 border-b border-gray-100 space-y-2 @sm:space-y-0 @sm:flex @sm:items-center @sm:gap-2 @sm:flex-wrap">
+          <div className="relative w-full @sm:flex-1 @sm:min-w-[180px]">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -179,27 +179,29 @@ export default function Campaigns() {
               className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
             />
           </div>
-          <select
-            value={platformFilter}
-            onChange={e => { setPlatformFilter(e.target.value); resetPage() }}
-            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-          >
-            {PLATFORMS.map(p => <option key={p} value={p}>{p === '전체' ? '플랫폼 전체' : p}</option>)}
-          </select>
-          <select
-            value={categoryFilter}
-            onChange={e => { setCategoryFilter(e.target.value); resetPage() }}
-            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-          >
-            {CATEGORIES.map(c => <option key={c} value={c}>{c === '전체' ? '카테고리 전체' : c}</option>)}
-          </select>
-          <select
-            value={sort}
-            onChange={e => { setSort(e.target.value as SortKey); resetPage() }}
-            className="text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
-          >
-            {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          <div className="grid grid-cols-3 gap-2 @sm:flex @sm:items-center @sm:gap-2">
+            <select
+              value={platformFilter}
+              onChange={e => { setPlatformFilter(e.target.value); resetPage() }}
+              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+            >
+              {PLATFORMS.map(p => <option key={p} value={p}>{p === '전체' ? '플랫폼 전체' : p}</option>)}
+            </select>
+            <select
+              value={categoryFilter}
+              onChange={e => { setCategoryFilter(e.target.value); resetPage() }}
+              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+            >
+              {CATEGORIES.map(c => <option key={c} value={c}>{c === '전체' ? '카테고리 전체' : c}</option>)}
+            </select>
+            <select
+              value={sort}
+              onChange={e => { setSort(e.target.value as SortKey); resetPage() }}
+              className="min-w-0 text-xs px-2.5 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 text-gray-700"
+            >
+              {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </select>
+          </div>
         </div>
 
         {/* 리스트 / 빈 상태 */}
@@ -228,12 +230,12 @@ export default function Campaigns() {
                   <Megaphone size={18} className="text-gray-400" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                     <StatusBadge status={c.status} dot={false} />
                     <PlatformBadge platform={c.platform} />
-                    <span className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate">{c.name}</span>
                   </div>
-                  <div className="flex items-center gap-3 @sm:gap-4 text-xs text-gray-500 flex-wrap">
+                  <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
+                  <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
                     <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
                     <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />지원자 {c.current}명</span>
                     <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
@@ -251,11 +253,11 @@ export default function Campaigns() {
 
         {/* 페이지네이션 */}
         {filtered.length > PAGE_SIZE && (
-          <div className="flex items-center justify-between gap-3 px-3 @sm:px-5 py-3 border-t border-gray-100">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between gap-2 px-3 @sm:px-5 py-3 border-t border-gray-100 flex-wrap">
+            <span className="text-xs text-gray-500 shrink-0">
               총 {filtered.length}개 · {safePage} / {totalPages}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-wrap justify-end">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={safePage === 1}
