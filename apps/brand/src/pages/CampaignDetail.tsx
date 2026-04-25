@@ -573,21 +573,22 @@ export default function CampaignDetail() {
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
   const safeMaxLikes = maxLikes || 1
 
-  // SVG 라인 차트 계산
+  // SVG 막대 차트 계산
   const chartW = 900
   const chartH = 260
-  const padL = 50
-  const padR = 30
+  const padL = 55
+  const padR = 20
   const padT = 24
-  const padB = 70
+  const padB = 60
   const plotW = chartW - padL - padR
   const plotH = chartH - padT - padB
-  const points = chartData.map((d, i) => ({
-    x: padL + (i / Math.max(1, chartData.length - 1)) * plotW,
-    y: padT + plotH - (d.likes / safeMaxLikes) * plotH,
+  const barGap = 6
+  const barW = Math.floor(plotW / Math.max(chartData.length, 1)) - barGap
+  const bars = chartData.map((d, i) => ({
+    x: padL + i * (barW + barGap),
+    barH: (d.likes / safeMaxLikes) * plotH,
     ...d,
   }))
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
 
   // 콘텐츠 순위 (승인된 것만, 좋아요 순)
   const rankedContents = [...approvedContents].sort((a, b) => b.likes - a.likes)
@@ -1329,6 +1330,7 @@ export default function CampaignDetail() {
                 </div>
                 <div className="relative">
                   <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
+                    {/* Y축 그리드 */}
                     {[0, 0.25, 0.5, 0.75, 1].map(r => {
                       const y = padT + plotH - r * plotH
                       const val = Math.round(r * safeMaxLikes)
@@ -1339,39 +1341,52 @@ export default function CampaignDetail() {
                         </g>
                       )
                     })}
-                    <path d={linePath} fill="none" stroke="var(--color-brand-green)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
-                    {points.map((p, i) => (
-                      <g key={i}
-                        onMouseEnter={() => setHoveredChartIdx(i)}
-                        onMouseLeave={() => setHoveredChartIdx(null)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <circle cx={p.x} cy={p.y} r={hoveredChartIdx === i ? 6 : 4} fill="var(--color-brand-green)" />
-                        <circle cx={p.x} cy={p.y} r={hoveredChartIdx === i ? 10 : 6} fill="var(--color-brand-green)" fillOpacity={0.15} />
-                        <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
-                        <text
-                          x={p.x}
-                          y={chartH - padB + 16}
-                          textAnchor="end"
-                          transform={`rotate(-40 ${p.x} ${chartH - padB + 16})`}
-                          fontSize={11}
-                          fill="#6b7280"
+                    {/* 막대 */}
+                    {bars.map((b, i) => {
+                      const barTop = padT + plotH - b.barH
+                      const isHovered = hoveredChartIdx === i
+                      return (
+                        <g key={i}
+                          onMouseEnter={() => setHoveredChartIdx(i)}
+                          onMouseLeave={() => setHoveredChartIdx(null)}
+                          style={{ cursor: 'pointer' }}
                         >
-                          {p.name.length > 6 ? `${p.name.slice(0, 6)}…` : p.name}
-                        </text>
-                        {hoveredChartIdx === i && (
-                          <g>
-                            <rect x={p.x - 70} y={p.y - 52} width={140} height={44} rx={6} fill="#1f2937" fillOpacity={0.92} />
-                            <text x={p.x} y={p.y - 34} textAnchor="middle" fontSize={10} fill="#d1d5db">
-                              {p.caption.length > 18 ? `${p.caption.slice(0, 18)}…` : p.caption}
-                            </text>
-                            <text x={p.x} y={p.y - 16} textAnchor="middle" fontSize={12} fill="white" fontWeight="600">
-                              ♥ {p.likes.toLocaleString()}
-                            </text>
-                          </g>
-                        )}
-                      </g>
-                    ))}
+                          {/* 막대 본체 */}
+                          <rect
+                            x={b.x}
+                            y={barTop}
+                            width={barW}
+                            height={b.barH}
+                            rx={4}
+                            fill={isHovered ? 'var(--color-brand-green)' : 'var(--color-brand-green)'}
+                            fillOpacity={isHovered ? 1 : 0.7}
+                          />
+                          {/* X축 라벨 */}
+                          <text
+                            x={b.x + barW / 2}
+                            y={padT + plotH + 16}
+                            textAnchor="end"
+                            transform={`rotate(-35 ${b.x + barW / 2} ${padT + plotH + 16})`}
+                            fontSize={11}
+                            fill="#6b7280"
+                          >
+                            {b.name.length > 5 ? `${b.name.slice(0, 5)}…` : b.name}
+                          </text>
+                          {/* 호버 툴팁 */}
+                          {isHovered && (
+                            <g>
+                              <rect x={b.x + barW / 2 - 72} y={barTop - 52} width={144} height={44} rx={6} fill="#1f2937" fillOpacity={0.92} />
+                              <text x={b.x + barW / 2} y={barTop - 34} textAnchor="middle" fontSize={10} fill="#d1d5db">
+                                {b.caption.length > 20 ? `${b.caption.slice(0, 20)}…` : b.caption}
+                              </text>
+                              <text x={b.x + barW / 2} y={barTop - 16} textAnchor="middle" fontSize={12} fill="white" fontWeight="600">
+                                ♥ {b.likes.toLocaleString()}
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      )
+                    })}
                   </svg>
                 </div>
           </div>
