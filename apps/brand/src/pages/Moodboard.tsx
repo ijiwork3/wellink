@@ -390,7 +390,10 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                           {r.name[0]}
                         </div>
                         <span className="text-sm font-medium text-gray-900">{r.name}</span>
-                        <Heart size={13} className={r.bookmarked ? 'text-red-500 fill-red-500' : 'text-gray-300'} />
+                        <Heart size={13}
+                          style={{ color: r.bookmarked ? a.av4 : g.subtle }}
+                          fill={r.bookmarked ? a.av4 : 'none'}
+                        />
                       </div>
                     </td>
                     <td className="py-3 px-4">
