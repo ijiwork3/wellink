@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, Search
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, Search, Bell
 } from 'lucide-react'
 import { useToast } from '@wellink/ui'
 
@@ -31,8 +31,9 @@ const sections = [
     ],
   },
   {
-    label: '구독',
+    label: '계정',
     items: [
+      { to: '/notifications', icon: <Bell size={15} />, label: '알림 센터' },
       { to: '/subscription', icon: <CreditCard size={15} />, label: '구독 관리' },
     ],
   },
