@@ -110,19 +110,19 @@ const ACCENT = [
 ]
 
 // ─── 그레이톤 10단계 ──────────────────────────────────────────────
-// 1단계 = 원본(pure neutral) / 10단계 = cool slate
-// 카드는 전 단계 #ffffff 유지 / 라인은 전 단계 연하게 / 황색 없음
+// 1단계 = 원본 / 10단계 = 다소 어두운 뉴트럴 그레이
+// 파란 끼 없음 — R≈G≈B 순수 회색 계열만 / 카드 전 단계 #ffffff
 const GRAY = [
   { n:1,  pageBg:'#fafafa', cardBg:'#ffffff', border:'#f3f4f6', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f3f4f6', navActive:'#f3f4f6' },
-  { n:2,  pageBg:'#f9fafc', cardBg:'#ffffff', border:'#f0f2f6', muted:'#677280', subtle:'#97a2ae', pillBg:'#f0f2f6', navActive:'#f0f2f6' },
-  { n:3,  pageBg:'#f7f9fc', cardBg:'#ffffff', border:'#edf0f5', muted:'#637080', subtle:'#93a0ac', pillBg:'#edf0f5', navActive:'#edf0f5' },
-  { n:4,  pageBg:'#f5f8fb', cardBg:'#ffffff', border:'#e8ecf3', muted:'#5e6c78', subtle:'#8e9caa', pillBg:'#e8ecf3', navActive:'#e8ecf3' },
-  { n:5,  pageBg:'#f3f6fa', cardBg:'#ffffff', border:'#e4eaf2', muted:'#5a6874', subtle:'#8a98a6', pillBg:'#e4eaf2', navActive:'#e4eaf2' },
-  { n:6,  pageBg:'#f1f5f9', cardBg:'#ffffff', border:'#e0e8f0', muted:'#566470', subtle:'#8494a2', pillBg:'#e0e8f0', navActive:'#e0e8f0' },
-  { n:7,  pageBg:'#eef3f8', cardBg:'#ffffff', border:'#dce6ee', muted:'#52606c', subtle:'#809098', pillBg:'#dce6ee', navActive:'#dce6ee' },
-  { n:8,  pageBg:'#ecf1f7', cardBg:'#ffffff', border:'#d8e2ec', muted:'#4e5c68', subtle:'#7c8c96', pillBg:'#d8e2ec', navActive:'#d8e2ec' },
-  { n:9,  pageBg:'#e9eef5', cardBg:'#ffffff', border:'#d4dce8', muted:'#4a5864', subtle:'#788890', pillBg:'#d4dce8', navActive:'#d4dce8' },
-  { n:10, pageBg:'#e6ecf3', cardBg:'#ffffff', border:'#d0dae6', muted:'#466080', subtle:'#74848e', pillBg:'#d0dae6', navActive:'#d0dae6' },
+  { n:2,  pageBg:'#f7f7f8', cardBg:'#ffffff', border:'#f0f0f2', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f0f0f2', navActive:'#f0f0f2' },
+  { n:3,  pageBg:'#f4f4f5', cardBg:'#ffffff', border:'#ebebed', muted:'#686878', subtle:'#989aaa', pillBg:'#ebebed', navActive:'#ebebed' },
+  { n:4,  pageBg:'#f1f1f3', cardBg:'#ffffff', border:'#e6e6e9', muted:'#656575', subtle:'#9596a6', pillBg:'#e6e6e9', navActive:'#e6e6e9' },
+  { n:5,  pageBg:'#eeeef0', cardBg:'#ffffff', border:'#e2e2e5', muted:'#626272', subtle:'#9292a2', pillBg:'#e2e2e5', navActive:'#e2e2e5' },
+  { n:6,  pageBg:'#ebebed', cardBg:'#ffffff', border:'#dedee2', muted:'#5f5f70', subtle:'#8e8e9e', pillBg:'#dedee2', navActive:'#dedee2' },
+  { n:7,  pageBg:'#e8e8eb', cardBg:'#ffffff', border:'#dadade', muted:'#5c5c6c', subtle:'#8a8a9a', pillBg:'#dadade', navActive:'#dadade' },
+  { n:8,  pageBg:'#e5e5e8', cardBg:'#ffffff', border:'#d6d6db', muted:'#595968', subtle:'#878796', pillBg:'#d6d6db', navActive:'#d6d6db' },
+  { n:9,  pageBg:'#e2e2e6', cardBg:'#ffffff', border:'#d2d2d8', muted:'#565664', subtle:'#848492', pillBg:'#d2d2d8', navActive:'#d2d2d8' },
+  { n:10, pageBg:'#dfdfe2', cardBg:'#ffffff', border:'#cecece', muted:'#535360', subtle:'#81818e', pillBg:'#cecece', navActive:'#cecece' },
 ]
 
 type P = typeof PRIMARY[0]
