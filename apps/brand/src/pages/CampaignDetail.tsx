@@ -228,6 +228,30 @@ export default function CampaignDetail() {
     qa === 'tab-selected-empty' ? [] : selectedApplicantsData
   )
   const [deselectModal, setDeselectModal] = useState<number | null>(null)
+  const [deleteCampaignModal, setDeleteCampaignModal] = useState(false)
+  const [editConfirmModal, setEditConfirmModal] = useState(false)
+
+  const handleShareCampaign = () => {
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    if (url && navigator.clipboard) {
+      navigator.clipboard.writeText(url)
+      showToast('캠페인 링크가 복사되었습니다', 'success')
+    } else {
+      showToast('링크 복사에 실패했습니다', 'error')
+    }
+  }
+  const handleEditCampaign = () => {
+    setEditConfirmModal(true)
+  }
+  const confirmEditCampaign = () => {
+    setEditConfirmModal(false)
+    navigate(`/campaigns/new?edit=${id ?? '1'}`)
+  }
+  const handleDeleteCampaign = () => {
+    setDeleteCampaignModal(false)
+    showToast('캠페인이 삭제되었습니다', 'success')
+    navigate('/campaigns')
+  }
 
   // 콘텐츠 다운로드 (플랜 권한 기반)
   const { plan, planLabel, canDownloadContent } = usePlanAccess()
@@ -443,17 +467,22 @@ export default function CampaignDetail() {
     { label: '콘텐츠 수', value: `${approvedContents.length}건`, icon: FileText },
   ]
 
-  const chartData = approvedContents.map(c => ({ name: c.influencer, likes: c.likes }))
+  // 콘텐츠가 많을 경우 Top 20 좋아요 기준으로 추려 라벨 가독성 확보
+  const CHART_MAX_POINTS = 20
+  const chartData = [...approvedContents]
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, CHART_MAX_POINTS)
+    .map(c => ({ name: c.influencer, likes: c.likes }))
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
   const safeMaxLikes = maxLikes || 1
 
   // SVG 라인 차트 계산
-  const chartW = 500
-  const chartH = 200
+  const chartW = 900
+  const chartH = 260
   const padL = 50
   const padR = 30
-  const padT = 20
-  const padB = 40
+  const padT = 24
+  const padB = 70
   const plotW = chartW - padL - padR
   const plotH = chartH - padT - padB
   const points = chartData.map((d, i) => ({
@@ -497,9 +526,9 @@ export default function CampaignDetail() {
             <h1 className="text-xl @md:text-2xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button title="공유" aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button>
-            <button title="정보 변경" aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
-            <button title="삭제" aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-gray-800 text-xs text-white"><Trash2 size={13} />삭제</button>
+            <button onClick={handleShareCampaign} title="공유" aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button>
+            <button onClick={handleEditCampaign} title="정보 변경" aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
+            <button onClick={() => setDeleteCampaignModal(true)} title="삭제" aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
           </div>
         </div>
 
@@ -1252,10 +1281,23 @@ export default function CampaignDetail() {
                 <g key={i}>
                   <circle cx={p.x} cy={p.y} r={4} fill="var(--color-brand-green)" />
                   <circle cx={p.x} cy={p.y} r={6} fill="var(--color-brand-green)" fillOpacity={0.2} />
-                  <text x={p.x} y={chartH - 8} textAnchor="middle" className="text-xs fill-gray-500">{p.name}</text>
-                  <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-xs fill-gray-700 font-medium">{p.likes}</text>
+                  <text
+                    x={p.x}
+                    y={chartH - padB + 16}
+                    textAnchor="end"
+                    transform={`rotate(-40 ${p.x} ${chartH - padB + 16})`}
+                    className="text-[10px] fill-gray-500"
+                  >
+                    {p.name.length > 8 ? `${p.name.slice(0, 8)}…` : p.name}
+                  </text>
+                  <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[10px] fill-gray-700 font-medium">{p.likes.toLocaleString()}</text>
                 </g>
               ))}
+              {chartData.length === CHART_MAX_POINTS && approvedContents.length > CHART_MAX_POINTS && (
+                <text x={chartW - padR} y={padT - 6} textAnchor="end" className="text-[10px] fill-gray-400">
+                  좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)
+                </text>
+              )}
             </svg>
           </div>
 
@@ -1507,6 +1549,36 @@ export default function CampaignDetail() {
             return target ? <><strong className="text-gray-700">{target.name}</strong>님의 선정을 취소합니다.</> : '선정을 취소합니다.'
           })()}{' '}
           해당 인플루언서는 다시 "검토중" 지원자 목록으로 돌아가며, 언제든 다시 선정할 수 있습니다.
+        </p>
+      </AlertModal>
+
+      {/* 캠페인 정보 변경 경고 모달 */}
+      <AlertModal
+        open={editConfirmModal}
+        onClose={() => setEditConfirmModal(false)}
+        title="정보를 변경하시겠습니까?"
+        confirmLabel="변경하기"
+        cancelLabel="취소"
+        variant="default"
+        onConfirm={confirmEditCampaign}
+      >
+        <p className="text-xs text-gray-500 whitespace-pre-line">
+          {`이미 ${applicants.length}명의 지원자가 있습니다.\n내용을 수정하면 모든 지원자에게 [조건 변경 알림]이 발송됩니다.\n\n빈번한 수정은 브랜드 신뢰도를 떨어뜨릴 수 있습니다.`}
+        </p>
+      </AlertModal>
+
+      {/* 캠페인 삭제 확인 모달 */}
+      <AlertModal
+        open={deleteCampaignModal}
+        onClose={() => setDeleteCampaignModal(false)}
+        title="캠페인을 삭제할까요?"
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="danger"
+        onConfirm={handleDeleteCampaign}
+      >
+        <p className="text-xs text-gray-500">
+          <strong className="text-gray-700">{campaign.name}</strong> 캠페인을 삭제합니다. 모집·콘텐츠·정산 데이터가 함께 사라지며 이 작업은 되돌릴 수 없습니다.
         </p>
       </AlertModal>
 

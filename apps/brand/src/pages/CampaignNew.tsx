@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users } from 'lucide-react'
 import { AlertModal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
 
@@ -63,10 +63,13 @@ const fmtKRW = (v: string | number) => {
 
 export default function CampaignNew() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const qa = useQAMode()
   const { showToast } = useToast()
 
-  const isFilled = qa === 'filled' || qa === 'modal-complete'
+  const editId = searchParams.get('edit')
+  const isEdit = !!editId
+  const isFilled = isEdit || qa === 'filled' || qa === 'modal-complete'
   const init = isFilled ? FILLED : {
     type: '방문형' as '방문형' | '택배형',
     location: '', storeName: '', platform: '인스타그램' as Platform, category: '맛집/푸드',
@@ -141,8 +144,12 @@ export default function CampaignNew() {
 
       {/* 페이지 타이틀 */}
       <div>
-        <h1 className="text-xl @md:text-2xl font-bold text-gray-900">새 캠페인 등록</h1>
-        <p className="text-sm text-gray-500 mt-1">인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.</p>
+        <h1 className="text-xl @md:text-2xl font-bold text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          {isEdit
+            ? '내용을 수정하면 모든 지원자에게 [조건 변경 알림]이 발송됩니다.'
+            : '인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.'}
+        </p>
       </div>
 
       {/* ── 섹션 1: 기본 정보 입력 ── */}
@@ -446,7 +453,7 @@ export default function CampaignNew() {
           disabled={submitting}
           className="flex items-center gap-1.5 px-4 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
         >
-          캠페인 등록하기
+          {isEdit ? '변경사항 저장' : '캠페인 등록하기'}
           <CheckCircle size={14} />
         </button>
       </div>

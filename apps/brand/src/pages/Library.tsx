@@ -16,7 +16,7 @@ import {
   ImageOff,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE } from '@wellink/ui'
+import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '../utils/fmtDate'
@@ -506,22 +506,35 @@ export default function Library() {
           </div>
         </div>
 
-        {/* Filter chips */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-gray-600 font-medium mr-1">상태</span>
-          {['전체', '승인', '검수중', '대기중', '반려'].map(s => (
-            <Chip key={s} label={s} active={statusFilter === s} onClick={() => setStatusFilter(s)} />
-          ))}
-          <div className="w-px h-5 bg-gray-200 mx-1" aria-hidden="true" />
-          <span className="text-xs text-gray-600 font-medium mr-1">플랫폼</span>
-          {['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'].map(p => (
-            <Chip key={p} label={p} active={platformFilter === p} onClick={() => setPlatformFilter(p)} />
-          ))}
-          <div className="w-px h-5 bg-gray-200 mx-1" aria-hidden="true" />
-          <span className="text-xs text-gray-600 font-medium mr-1">유형</span>
-          {['전체', '피드', '릴스', '스토리', '영상', '쇼츠'].map(t => (
-            <Chip key={t} label={t} active={typeFilter === t} onClick={() => setTypeFilter(t)} />
-          ))}
+        {/* Filter dropdowns */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-600 font-medium">상태</span>
+            <CustomSelect
+              value={statusFilter}
+              onChange={v => setStatusFilter(v)}
+              options={['전체', '승인', '검수중', '대기중', '반려'].map(s => ({ label: s, value: s }))}
+              className="w-32"
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-600 font-medium">플랫폼</span>
+            <CustomSelect
+              value={platformFilter}
+              onChange={v => setPlatformFilter(v)}
+              options={['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'].map(p => ({ label: p, value: p }))}
+              className="w-36"
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-600 font-medium">유형</span>
+            <CustomSelect
+              value={typeFilter}
+              onChange={v => setTypeFilter(v)}
+              options={['전체', '피드', '릴스', '스토리', '영상', '쇼츠'].map(t => ({ label: t, value: t }))}
+              className="w-32"
+            />
+          </div>
         </div>
       </div>
 
