@@ -16,14 +16,44 @@ import {
   type InfluencerSortKey,
 } from '@wellink/ui'
 
-// NOTE: 인플루언서 mock 데이터 — 추후 src/data/influencers.ts로 통합 예정
-const influencers = [
-  { id: 1, name: '이창민', platform: '인스타그램', followers: 8700, engagement: 4.1, posts: 234, authentic: 92.3, category: ['피트니스', '크로스핏'], lastActive: '2일 전', fitScore: 92 },
-  { id: 2, name: '민경완', platform: '인스타그램', followers: 120000, engagement: 3.8, posts: 412, authentic: 78.5, category: ['운동'], lastActive: '1일 전', fitScore: 78 },
-  { id: 3, name: '장영훈', platform: '인스타그램', followers: 960, engagement: 2.8, posts: 89, authentic: 95.1, category: ['필라테스'], lastActive: '5일 전', fitScore: 65 },
-  { id: 4, name: '김가애', platform: '인스타그램', followers: 18900, engagement: 4.2, posts: 567, authentic: 88.7, category: ['요가'], lastActive: '오늘', fitScore: 88 },
-  { id: 5, name: '박리나', platform: '인스타그램', followers: 7120, engagement: 2.23, posts: 178, authentic: 85.2, category: ['웰니스'], lastActive: '3일 전', fitScore: 71 },
+// 인플루언서 더미 데이터 100개 — 다양한 카테고리·팔로워 규모·엣지케이스 (avgLikes·avgComments 추가)
+type InfluencerCat = '피트니스' | '요가' | '웰니스' | '필라테스' | '운동' | '크로스핏'
+const INF_CAT_POOL: InfluencerCat[][] = [
+  ['피트니스', '크로스핏'], ['운동'], ['필라테스'], ['요가'], ['웰니스'],
+  ['피트니스'], ['요가', '웰니스'], ['크로스핏', '운동'], ['필라테스', '요가'], ['운동', '웰니스'],
 ]
+const INF_NAMES = [
+  '이창민', '민경완', '장영훈', '김가애', '박리나', '서유진', '한지수', '최민호', '윤아름', '강태현',
+  '임소희', '구하늘', '나은영', '도성재', '류지원', '명세현', '변하경', '심태웅', '엄혜린', '오지훈',
+]
+const LAST_ACTIVE_POOL = ['오늘', '1일 전', '2일 전', '3일 전', '5일 전', '1주 전', '2주 전', '3주 전']
+const influencers = Array.from({ length: 100 }, (_, i) => {
+  const baseFollowers = i % 7 === 0 ? 800 + (i * 31) % 800        // nano (~1만)
+    : i % 7 === 6 ? 1500000 + (i * 12300) % 500000                 // mega (100만+)
+    : i % 5 === 0 ? 150000 + (i * 4400) % 250000                   // macro
+    : 5000 + (i * 270) % 50000                                     // micro
+  const engagement = +(1.5 + (i * 7 % 50) / 10).toFixed(2)
+  const posts = 80 + (i * 17) % 600
+  const avgLikes = Math.floor(baseFollowers * (engagement / 100) * 0.7)
+  const avgComments = Math.max(2, Math.floor(avgLikes * (0.04 + (i % 5) * 0.01)))
+  const authentic = +(70 + (i * 13 % 25) + 0.5).toFixed(1)
+  const fitScore = Math.max(45, Math.min(98, 60 + (i * 11 % 40)))
+  const lastActive = LAST_ACTIVE_POOL[i % LAST_ACTIVE_POOL.length]
+  return {
+    id: i + 1,
+    name: i < INF_NAMES.length ? INF_NAMES[i] : `${INF_NAMES[i % INF_NAMES.length]}${Math.floor(i / INF_NAMES.length) + 1}`,
+    platform: '인스타그램',
+    followers: baseFollowers,
+    engagement,
+    posts,
+    avgLikes,
+    avgComments,
+    authentic,
+    category: INF_CAT_POOL[i % INF_CAT_POOL.length],
+    lastActive,
+    fitScore,
+  }
+})
 
 const campaigns = [
   { id: 1, name: '봄 요가 프로모션' },
@@ -313,15 +343,15 @@ export default function InfluencerList() {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              {['인플루언서', '카테고리', '팔로워', '참여율', 'Fit Score', '진성비율', '최근 콘텐츠', '액션'].map(h => (
-                <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h === '액션' ? <span className="sr-only">액션</span> : h}</th>
+              {['인플루언서', '카테고리', '팔로워', '게시물수', '평균 좋아요', '평균 댓글', '참여율', 'Fit Score', '진성비율', '최근 활동', '최근 콘텐츠', '액션'].map(h => (
+                <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h === '액션' ? <span className="sr-only">액션</span> : h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-16 text-center">
+                <td colSpan={12} className="py-16 text-center">
                   <Search size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
                   <p className="text-sm text-gray-500 font-medium">
                     {qa === 'filter-empty' ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다.'}
@@ -376,7 +406,16 @@ export default function InfluencerList() {
                 </td>
 
                 {/* 팔로워 */}
-                <td className="py-3 px-4 text-sm text-gray-700">{formatFollowers(inf.followers)}</td>
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{formatFollowers(inf.followers)}</td>
+
+                {/* 게시물수 — 신규, 원본 ApplicantList 동등 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{inf.posts.toLocaleString()}</td>
+
+                {/* 평균 좋아요 — 신규 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{formatFollowers(inf.avgLikes)}</td>
+
+                {/* 평균 댓글 — 신규 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{inf.avgComments.toLocaleString()}</td>
 
                 {/* 참여율 */}
                 <td className="py-3 px-4 text-sm font-medium">
@@ -402,6 +441,9 @@ export default function InfluencerList() {
                     {inf.authentic}%
                   </span>
                 </td>
+
+                {/* 최근 활동 — 신규 (원본 ApplicantList recentActivity 동등) */}
+                <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{inf.lastActive}</td>
 
                 {/* 최근 콘텐츠 미리보기 (3개 플레이스홀더) */}
                 <td className="py-3 px-4">
