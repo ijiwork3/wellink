@@ -24,7 +24,6 @@ export interface Notification {
 export const mockNotifications: Notification[] = [
   { id: 1, text: '이창민님이 콘텐츠를 제출했습니다 — 검수가 필요합니다.', time: '5분 전', dot: 'bg-sky-400', route: '/campaigns/1', unread: true },
   { id: 2, text: '비건 신제품 론칭에 새 인플루언서가 지원했습니다.', time: '1시간 전', dot: 'bg-emerald-400', route: '/campaigns/2', unread: true },
-  { id: 3, text: 'AI 리스트업이 완료되었습니다. 결과를 확인하세요.', time: '3시간 전', dot: 'bg-slate-400', route: '/influencers/ai', unread: true },
   { id: 4, text: '구독이 5일 후 만료됩니다. 갱신해 주세요.', time: '어제', dot: 'bg-amber-400', route: '/subscription', unread: false },
   { id: 5, text: '박리나님과의 협의가 수락되었습니다.', time: '2일 전', dot: 'bg-slate-400', route: '/influencers/manage', unread: false },
 ]

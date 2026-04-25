@@ -478,14 +478,6 @@ export default function InfluencerList() {
         open={!!selectedInfluencer && !proposalModal}
         onClose={() => setSelectedInfluencer(null)}
         size="lg"
-        footer={selectedInfluencer ? (
-          <button
-            onClick={() => setProposalModal(true)}
-            className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
-          >
-            캠페인에 제안 보내기
-          </button>
-        ) : undefined}
       >
         {selectedInfluencer && (
           <div>
@@ -509,6 +501,12 @@ export default function InfluencerList() {
                   ))}
                 </div>
               </div>
+              <button
+                onClick={() => setProposalModal(true)}
+                className="shrink-0 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+              >
+                캠페인에 제안 보내기
+              </button>
             </div>
 
             {/* 탭 (개요 / 최근 콘텐츠) */}
@@ -678,27 +676,7 @@ export default function InfluencerList() {
       </Modal>
 
       {/* 제안 모달 */}
-      <Modal
-        open={proposalModal}
-        onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }}
-        title="캠페인에 제안 보내기"
-        footer={!proposalSent ? (
-          <>
-            <button
-              onClick={() => setProposalModal(false)}
-              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
-            >
-              취소
-            </button>
-            <button
-              onClick={handleProposal}
-              className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150"
-            >
-              제안 보내기
-            </button>
-          </>
-        ) : undefined}
-      >
+      <Modal open={proposalModal} onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }} title="캠페인에 제안 보내기">
         {proposalSent ? (
           <div className="text-center py-6">
             <CheckCircle size={40} className="text-green-500 mx-auto mb-3" aria-hidden="true" />
@@ -728,6 +706,20 @@ export default function InfluencerList() {
                   <span className="text-sm text-gray-700">{c.name}</span>
                 </label>
               ))}
+            </div>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setProposalModal(false)}
+                className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleProposal}
+                className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150"
+              >
+                제안 보내기
+              </button>
             </div>
           </div>
         )}

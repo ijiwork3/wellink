@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS } from '@wellink/ui'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown } from 'lucide-react'
+import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
-import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { useQAMode } from '@wellink/ui'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 
 /* ─── 더미 데이터 ─── */
 const campaignsData: Record<string, {
@@ -50,58 +49,6 @@ const campaignsData: Record<string, {
   },
 }
 
-// 캠페인 확장 메타 (레퍼런스 PDF 기준)
-const campaignMeta: Record<string, {
-  location: string
-  storeName: string
-  recruitPeriod: string  // 'YYYY-MM-DD ~ YYYY-MM-DD'
-  announceDate: string
-  uploadPeriod: string
-  productName: string
-  productDetail: string
-  productPrice: number
-  rewardPoint: number
-  campaignType: '방문형' | '택배형'
-  postType: string
-  precaution: string
-  requiredKeywords: string[]
-  guideText: string
-}> = {
-  '1': {
-    location: '강남/서초',
-    storeName: '봄 요가 스튜디오',
-    recruitPeriod: '2026-04-25 ~ 2026-05-25',
-    announceDate: '2026-05-30',
-    uploadPeriod: '2026-04-25 ~ 2026-05-25',
-    productName: '4구 한우 프리미엄 선물세트 1.2kg',
-    productDetail: '등심 300g + 안심 300g + 채끝 300g + 특수부위 300g',
-    productPrice: 168000,
-    rewardPoint: 0,
-    campaignType: '방문형',
-    postType: '피드, 릴스',
-    precaution: '릴스 제작 우대',
-    requiredKeywords: ['#봄요가', '#요가스튜디오', '#강남요가'],
-    guideText: '구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.',
-  },
-  '2': {
-    location: '온라인',
-    storeName: '비건 뷰티',
-    recruitPeriod: '2026-04-10 ~ 2026-05-10',
-    announceDate: '2026-05-15',
-    uploadPeriod: '2026-05-15 ~ 2026-06-15',
-    productName: '비건 스킨케어 3종 세트',
-    productDetail: '클렌저 200ml + 토너 150ml + 크림 50ml',
-    productPrice: 89000,
-    rewardPoint: 30000,
-    campaignType: '택배형',
-    postType: '피드, 릴스',
-    precaution: '실사용 1주일 후 후기 필수',
-    requiredKeywords: ['#비건뷰티', '#클린뷰티'],
-    guideText: '최소 7일 사용 후 솔직한 리뷰를 작성해주세요.',
-  },
-}
-const fmtKRW = (n: number) => `₩${n.toLocaleString('ko-KR')}`
-
 // 지원자 관리 더미
 const applicantsData = [
   { id: 101, name: '최은지', followers: '12.3K', engagement: 4.2, fitScore: 92, appliedAt: '2026-04-17', avatar: 'bg-rose-200' },
@@ -128,18 +75,12 @@ const INFLUENCER_POOL = [
   { name: '강태현', id: '@taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
   { name: '임소희', id: '@sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
 ]
-type ContentPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
-type ContentSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
-// 정책 §8.3 — 플랫폼·서브타입 조합. 네이버 블로그·틱톡은 서브타입 없음(null).
-const PLATFORM_SUBTYPES: Array<{ platform: ContentPlatform; sub: ContentSubType | null }> = [
-  { platform: '인스타그램', sub: '피드' },
-  { platform: '인스타그램', sub: '릴스' },
-  { platform: '인스타그램', sub: '스토리' },
-  { platform: '유튜브',     sub: '영상' },
-  { platform: '유튜브',     sub: '쇼츠' },
-  { platform: '네이버 블로그', sub: null },
-  { platform: '틱톡',       sub: null },
-]
+type ContentPlatform = '인스타그램' | '유튜브' | '블로그'
+const PLATFORM_TYPE_MAP: Record<string, ContentPlatform> = {
+  '릴스': '인스타그램', '피드': '인스타그램', '스토리': '인스타그램',
+  '유튜브': '유튜브', '블로그': '블로그',
+}
+const TYPES = ['릴스', '피드', '스토리', '유튜브', '블로그'] as const
 const STATUSES: ContentStatus[] = ['검수중', '승인', '승인', '승인', '반려']
 const registeredContents = Array.from({ length: 100 }, (_, i) => {
   const inf = INFLUENCER_POOL[i % INFLUENCER_POOL.length]
@@ -153,14 +94,14 @@ const registeredContents = Array.from({ length: 100 }, (_, i) => {
   const viralScore = isZeroReach ? 0 : Math.min(99, 30 + (i * 71 % 70))
   const month = String(Math.floor(i / 30) + 3).padStart(2, '0')
   const day   = String((i % 28) + 1).padStart(2, '0')
-  const ps = PLATFORM_SUBTYPES[i % PLATFORM_SUBTYPES.length]
+  const type  = TYPES[i % TYPES.length]
   return {
     id: i + 1,
     thumbnail: inf.thumb,
     influencer: inf.name,
     instagramId: inf.id,
-    platform: ps.platform,
-    type: ps.sub,
+    platform: PLATFORM_TYPE_MAP[type] as ContentPlatform,
+    type,
     submittedAt: `2026-${month}-${day}`,
     reach, likes, comments, saves, shares, viralScore,
     status,
@@ -201,7 +142,6 @@ export default function CampaignDetail() {
   const { showToast } = useToast()
   const qa = useQAMode()
   const campaign = campaignsData[id ?? '1'] ?? campaignsData['1']
-  const meta = campaignMeta[id ?? '1'] ?? campaignMeta['1']
 
   const [activeTab, setActiveTab] = useState(() => tabFromQA(qa))
 
@@ -227,10 +167,8 @@ export default function CampaignDetail() {
   const [selectedInfluencers, setSelectedInfluencers] = useState(
     qa === 'tab-selected-empty' ? [] : selectedApplicantsData
   )
-  const [deselectModal, setDeselectModal] = useState<number | null>(null)
 
-  // 콘텐츠 다운로드 (플랜 권한 기반)
-  const { plan, planLabel, canDownloadContent } = usePlanAccess()
+  // 콘텐츠 다운로드 모달
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
@@ -245,7 +183,6 @@ export default function CampaignDetail() {
   const [contentPage, setContentPage] = useState(1)
   const [contentRejectModal, setContentRejectModal] = useState<number | null>(null)
   const [contentRejectFeedback, setContentRejectFeedback] = useState('')
-  const [contentDetailModal, setContentDetailModal] = useState<number | null>(null)
 
   // QA: modal-reject → 첫 번째 인플루언서로 반려 모달 미리 열기
   // 지원자 관리 탭 — 인플루언서 상태 관리 (반려 처리용)
@@ -368,8 +305,8 @@ export default function CampaignDetail() {
     })
   }
 
-  // 선정 취소 — 컨펌 모달 후 실행
-  const confirmDeselectInfluencer = (influencerId: number) => {
+  // 선정 취소
+  const handleDeselectInfluencer = (influencerId: number) => {
     const influencer = selectedInfluencers.find(i => i.id === influencerId)
     if (influencer) {
       setApplicants(prev => [
@@ -388,7 +325,6 @@ export default function CampaignDetail() {
       ])
     }
     setSelectedInfluencers(prev => prev.filter(i => i.id !== influencerId))
-    setDeselectModal(null)
     showToast('선정이 취소되었습니다.', 'info')
   }
 
@@ -402,18 +338,13 @@ export default function CampaignDetail() {
     })
   }
 
-  const handleDownload = () => {
+  const handleDownloadPayment = () => {
     if (isPaying) return
     setIsPaying(true)
     setDownloadModal(false)
     setSelectedContents(new Set())
     showToast('다운로드 준비 중입니다.', 'success')
     setTimeout(() => setIsPaying(false), TIMER_MS.STATE_FEEDBACK)
-  }
-
-  const goToSubscription = () => {
-    setDownloadModal(false)
-    navigate('/subscription')
   }
 
   // 반려
@@ -429,9 +360,6 @@ export default function CampaignDetail() {
     showToast('반려 피드백이 전달되었습니다.', 'info')
   }
 
-  // 성과 리포트는 승인된 콘텐츠만
-  const approvedContents = registeredContents.filter(c => contentStatuses[c.id] === '승인')
-
   // 성과 리포트 데이터
   const approvedReach = approvedContents.reduce((s, c) => s + c.reach, 0)
   const approvedEngagement = approvedContents.reduce((s, c) => s + c.likes + c.comments + c.saves, 0)
@@ -442,6 +370,9 @@ export default function CampaignDetail() {
     { label: '참여율', value: `${approvedEngRate}%`, icon: TrendingUp },
     { label: '콘텐츠 수', value: `${approvedContents.length}건`, icon: FileText },
   ]
+
+  // 성과 리포트는 승인된 콘텐츠만
+  const approvedContents = registeredContents.filter(c => contentStatuses[c.id] === '승인')
 
   const chartData = approvedContents.map(c => ({ name: c.influencer, likes: c.likes }))
   const maxLikes = chartData.length > 0 ? Math.max(...chartData.map(d => d.likes)) : 0
@@ -472,71 +403,29 @@ export default function CampaignDetail() {
 
   return (
     <div className="space-y-5">
-      {/* 페이지 타이틀 + 뒤로가기 */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      {/* 헤더 */}
+      <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/campaigns')}
           aria-label="이전"
-          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-150 text-gray-500"
         >
-          <ArrowLeft size={16} aria-hidden="true" />
+          <ArrowLeft size={18} aria-hidden="true" />
         </button>
-        <FileText size={16} className="text-gray-500" aria-hidden="true" />
-        <span className="font-medium">캠페인 상세</span>
-      </div>
-
-      {/* 헤더 카드 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-              <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
-              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
-              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
-            </div>
-            <h1 className="text-xl @md:text-2xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>{campaign.name}</h1>
+            <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>
+              {campaignStatus.label}
+            </span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button title="공유" aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button>
-            <button title="정보 변경" aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
-            <button title="삭제" aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-gray-800 text-xs text-white"><Trash2 size={13} />삭제</button>
-          </div>
-        </div>
-
-        {/* 일정 바 */}
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
-            <span className="text-gray-600 truncate">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
-            <span className="text-gray-600 truncate">{fmtDate(meta.announceDate)}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
-            <span className="text-gray-600 truncate">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
-          </div>
-        </div>
-
-        {/* KPI 4칸 */}
-        <div className="grid grid-cols-2 @md:grid-cols-4 gap-3">
-          <KpiCell label="지원자" value={`${applicants.length}`} />
-          <KpiCell label="모집 마감" value={(() => {
-            const end = meta.recruitPeriod?.split(' ~ ')[1]
-            if (!end) return '—'
-            const t = new Date(end).getTime()
-            if (isNaN(t)) return '—'
-            return `D-${Math.max(0, Math.ceil((t - Date.now()) / 86400000))}`
-          })()} />
-          <KpiCell label="제공 상품" value={meta.productName} small />
-          <KpiCell label="리워드" value={fmtKRW(meta.productPrice)} />
+          <p className="text-sm text-gray-500 mt-0.5">{campaign.category} · {campaign.period.split(' ~ ').map(fmtDate).join(' ~ ')}</p>
         </div>
       </div>
 
       {/* QA: 캠페인 종료 배너 */}
       {isClosed && (
-        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-sm px-4 py-3 rounded-xl">
+        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-sm px-4 py-3 rounded-xl mb-4">
           이 캠페인은 종료되었습니다.
         </div>
       )}
@@ -567,61 +456,40 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* 대표 이미지 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
-              <Image size={40} className="text-emerald-300" aria-hidden="true" />
-            </div>
-          </div>
-
-          {/* 캠페인 설명 */}
-          <Section title="캠페인 설명" icon={<FileText size={14} />}>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{campaign.description}</p>
-          </Section>
-
-          {/* 제공 내역 */}
-          <Section title="제공 내역" icon={<Crown size={14} />}>
-            <p className="text-sm font-semibold text-gray-900 mb-1">{meta.productName}</p>
-            <p className="text-sm text-gray-600 mb-3">{meta.productDetail}</p>
-            <ul className="text-xs text-gray-500 space-y-1 list-disc pl-4">
-              <li>제품을 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</li>
-              <li>제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</li>
-            </ul>
-          </Section>
-
-          {/* 캠페인 미션 — 3카드 */}
-          <Section title="캠페인 미션" icon={<TrendingUp size={14} />}>
-            <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2.5">
-              <MissionCard icon={<Search size={16} />} label="키워드" value="필수 포함" />
-              <MissionCard icon={<Camera size={16} />} label="게시 유형" value={meta.postType} />
-              <MissionCard icon={<Heart size={16} />} label="유의사항" value={meta.precaution} />
-            </div>
-          </Section>
-
-          {/* 필수 가이드 */}
-          <Section title="필수 가이드" icon={<FileText size={14} />}>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meta.guideText}</p>
-          </Section>
-
-          {/* 필수 키워드 */}
-          <Section title="필수 키워드" icon={<Search size={14} />}>
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {meta.requiredKeywords.map(k => (
-                <span key={k} className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">{k}</span>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <BarChart3 size={15} className="text-gray-400" aria-hidden="true" />
+              캠페인 기본 정보
+            </h2>
+            <div className="rounded-xl border border-gray-100 overflow-hidden">
+              {[
+                { label: '캠페인명', value: campaign.name },
+                { label: '상태', value: campaign.status, badge: true },
+                { label: '카테고리', value: campaign.category },
+                { label: '예산', value: campaign.budget },
+                { label: '기간', value: campaign.period.split(' ~ ').map(fmtDate).join(' ~ ') },
+                { label: '모집인원', value: `${campaign.headcount}명` },
+              ].map((row, idx, arr) => (
+                <div
+                  key={row.label}
+                  className={`flex gap-4 px-4 py-3 ${idx < arr.length - 1 ? 'border-b border-gray-50' : ''}`}
+                >
+                  <span className="text-xs text-gray-500 w-24 shrink-0">{row.label}</span>
+                  {row.badge ? (
+                    <span className={`text-xs font-medium rounded-full px-2 py-0.5 ${campaignStatus.cls}`}>
+                      {campaignStatus.label}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-900 font-medium">{row.value}</span>
+                  )}
+                </div>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard?.writeText(meta.requiredKeywords.join(' '))
-                showToast('키워드가 복사되었습니다', 'success')
-              }}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-gray-300 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              <Copy size={13} />
-              키워드 한 번에 복사하기
-            </button>
-          </Section>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">설명</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">{campaign.description}</p>
+          </div>
         </div>
       )}
 
@@ -778,7 +646,7 @@ export default function CampaignDetail() {
                     <td className="py-3 px-4 text-xs text-gray-500">{fmtDate(i.selectedAt)}</td>
                     <td className="py-3 px-4">
                       <button
-                        onClick={() => setDeselectModal(i.id)}
+                        onClick={() => handleDeselectInfluencer(i.id)}
                         disabled={isClosed}
                         className={`flex items-center gap-1 text-xs border px-3 py-1.5 rounded-xl transition-colors duration-150 ${
                           isClosed
@@ -873,8 +741,6 @@ export default function CampaignDetail() {
                 </button>
                 <button
                   onClick={() => {
-                    // 권한 없으면 선택 여부와 무관하게 즉시 구독 유도 모달
-                    if (!canDownloadContent) { setDownloadModal(true); return }
                     if (selectedContents.size === 0) { showToast('다운로드할 콘텐츠를 선택해주세요.', 'error'); return }
                     setDownloadModal(true)
                   }}
@@ -911,7 +777,7 @@ export default function CampaignDetail() {
             {/* 플랫폼 필터 + 정렬 */}
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex gap-1.5">
-                {(['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const).map(p => (
+                {(['전체', '인스타그램', '유튜브', '블로그'] as const).map(p => (
                   <button
                     key={p}
                     onClick={() => { setContentPlatform(p); setContentPage(1); setSelectedContents(new Set()) }}
@@ -942,21 +808,11 @@ export default function CampaignDetail() {
               </div>
             </div>
 
-            {/* 다운로드 권한 안내 — 권한 없는 경우에만 노출 (유료 플랜에는 굳이 무제한 안내 X) */}
-            {!canDownloadContent && (
-              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
-                <Info size={13} className="text-amber-500 shrink-0" aria-hidden="true" />
-                <p className="text-xs text-amber-700 flex-1">
-                  콘텐츠 다운로드는 <span className="font-semibold">유료 플랜</span> 구독 시 이용할 수 있습니다.
-                </p>
-                <button
-                  onClick={() => navigate('/subscription')}
-                  className="text-xs font-semibold text-amber-800 underline underline-offset-2 hover:text-amber-900 shrink-0"
-                >
-                  플랜 보기
-                </button>
-              </div>
-            )}
+            {/* 유료 다운로드 안내 */}
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
+              <Info size={13} className="text-amber-500 shrink-0" aria-hidden="true" />
+              <p className="text-xs text-amber-700">콘텐츠 다운로드는 건당 5,000원이 부과됩니다.</p>
+            </div>
 
             {/* 콘텐츠 카드 그리드 */}
             {filtered.length === 0 ? (
@@ -995,16 +851,13 @@ export default function CampaignDetail() {
                       {/* 썸네일 */}
                       <div
                         className={`relative w-full aspect-[3/4] ${c.thumbnail} flex items-center justify-center cursor-pointer`}
-                        onClick={() => setContentDetailModal(c.id)}
+                        onClick={() => toggleContentCheck(c.id)}
                       >
                         <Image size={36} className="text-white/50" aria-hidden="true" />
-                        {/* 선택 체크 — 클릭 독립 */}
-                        <div
-                          className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
-                            isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
-                          }`}
-                          onClick={e => { e.stopPropagation(); toggleContentCheck(c.id) }}
-                        >
+                        {/* 선택 체크 */}
+                        <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
+                          isChecked ? 'bg-brand-green border-brand-green' : 'bg-white/80 border-gray-300'
+                        }`}>
                           {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
                         </div>
                         {/* 플랫폼 + 유형 배지 */}
@@ -1012,14 +865,11 @@ export default function CampaignDetail() {
                         <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
                           c.platform === '인스타그램' ? 'bg-pink-500/90 text-white' :
                           c.platform === '유튜브' ? 'bg-red-500/90 text-white' :
-                          c.platform === '틱톡' ? 'bg-black/80 text-white' :
                           'bg-green-600/90 text-white'
-                        }`}>{c.platform}</span>
-                        {c.type && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
-                            {c.type}
-                          </span>
-                        )}
+                        }`}>{c.platform === '인스타그램' ? 'IG' : c.platform === '유튜브' ? 'YT' : 'Blog'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                          {c.type}
+                        </span>
                         </div>
                         {/* 바이럴 점수 */}
                         <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm ${
@@ -1306,162 +1156,58 @@ export default function CampaignDetail() {
         </div>
       )}
 
-      {/* 콘텐츠 상세 모달 */}
-      {(() => {
-        const dc = registeredContents.find(c => c.id === contentDetailModal)
-        if (!dc) return null
-        const dcStatus = contentStatuses[dc.id]
-        const dcEngRate = dc.reach > 0
-          ? ((dc.likes + dc.comments + dc.saves) / dc.reach * 100).toFixed(1)
-          : '0.0'
-        return (
-          <Modal
-            open={contentDetailModal !== null}
-            onClose={() => setContentDetailModal(null)}
-            title="콘텐츠 상세"
-            footer={
-              <>
-                {dcStatus === '검수중' && !isClosed && (
-                  <>
-                    <button
-                      onClick={() => { setContentStatuses(prev => ({ ...prev, [dc.id]: '승인' })); showToast(`${dc.influencer} 콘텐츠를 승인했습니다.`, 'success'); setContentDetailModal(null) }}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
-                    ><Check size={13} /> 승인</button>
-                    <button
-                      onClick={() => { setContentDetailModal(null); setContentRejectModal(dc.id) }}
-                      className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
-                    ><X size={13} /> 반려</button>
-                  </>
-                )}
-                <button
-                  onClick={() => { setContentDetailModal(null); toggleContentCheck(dc.id); setDownloadModal(true) }}
-                  className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-                ><Download size={13} /> 다운로드</button>
-              </>
-            }
-          >
-            <div className="space-y-3">
-              {/* 썸네일 */}
-              <div className={`w-full h-40 rounded-xl ${dc.thumbnail} flex items-center justify-center`}>
-                <Image size={36} className="text-white/40" aria-hidden="true" />
-              </div>
-              {/* 인플루언서 + 배지 */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
-                    {dc.influencer[0]}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{dc.influencer}</p>
-                    <p className="text-xs text-gray-400">{dc.instagramId}</p>
-                  </div>
+      {/* 콘텐츠 다운로드 결제 모달 */}
+      <Modal open={downloadModal} onClose={() => setDownloadModal(false)} title="콘텐츠 다운로드">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">등록된 콘텐츠를 다운로드하려면 결제가 필요합니다.</p>
+          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">단가</span>
+              <span className="text-gray-900 font-medium">1건당 5,000원</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">선택 콘텐츠</span>
+              <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
+            </div>
+            <div className="border-t border-gray-200 pt-2 mt-2">
+              <div className="flex justify-between">
+                <span className="text-sm font-semibold text-gray-700">총 금액</span>
+                <div className="text-right">
+                  <span className="text-lg font-bold text-gray-900">{(selectedContents.size * 5000).toLocaleString()}원</span>
+                  <span className="text-xs text-gray-400 ml-1">(VAT 포함)</span>
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    dc.platform === '인스타그램' ? 'bg-pink-100 text-pink-700' :
-                    dc.platform === '유튜브' ? 'bg-red-100 text-red-700' :
-                    dc.platform === '틱톡' ? 'bg-gray-200 text-gray-800' :
-                    'bg-green-100 text-green-700'
-                  }`}>{dc.type ? `${dc.platform} · ${dc.type}` : dc.platform}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
-                </div>
-              </div>
-              {/* 제출일 + 바이럴 */}
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>제출일 {dc.submittedAt}</span>
-                {dc.viralScore > 0 && (
-                  <span className={`font-bold px-2 py-0.5 rounded-full ${
-                    dc.viralScore >= 80 ? 'bg-green-100 text-green-700' :
-                    dc.viralScore >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
-                  }`}>바이럴 {dc.viralScore}점</span>
-                )}
-              </div>
-              {/* 지표 */}
-              <div className="grid grid-cols-6 gap-1 text-center bg-gray-50 rounded-xl py-2.5 px-2">
-                {[
-                  { label: '도달', value: fmtNumber(dc.reach) },
-                  { label: '좋아요', value: fmtNumber(dc.likes) },
-                  { label: '댓글', value: fmtNumber(dc.comments) },
-                  { label: '저장', value: fmtNumber(dc.saves) },
-                  { label: '공유', value: fmtNumber(dc.shares) },
-                  { label: '참여율', value: `${dcEngRate}%`, highlight: true },
-                ].map(m => (
-                  <div key={m.label}>
-                    <p className="text-[10px] text-gray-400 mb-0.5">{m.label}</p>
-                    <p className={`text-xs font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
-                  </div>
-                ))}
               </div>
             </div>
-          </Modal>
-        )
-      })()}
-
-      {/* 콘텐츠 다운로드 모달 — 플랜 권한 기반 */}
-      <Modal
-        open={downloadModal}
-        onClose={() => setDownloadModal(false)}
-        title="콘텐츠 다운로드"
-        footer={canDownloadContent ? (
+          </div>
+          <p className="text-xs text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
           <button
-            onClick={handleDownload}
-            disabled={isPaying || selectedContents.size === 0}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            onClick={handleDownloadPayment}
+            disabled={isPaying}
+            className="w-full bg-brand-green text-white py-3 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            다운로드
+            결제하기
           </button>
-        ) : (
-          <>
-            <button onClick={() => setDownloadModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={goToSubscription} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors">플랜 업그레이드</button>
-          </>
-        )}
-      >
-        {canDownloadContent ? (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600">선택한 콘텐츠를 다운로드합니다.</p>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">현재 플랜</span>
-                <span className="text-gray-900 font-medium">{planLabel}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">선택 콘텐츠</span>
-                <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-100">
-              <Crown size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-amber-900">유료 플랜 구독 시 이용 가능합니다</p>
-                <p className="text-xs text-amber-700">
-                  현재 <span className="font-semibold">{planLabel}</span> {plan ? '플랜' : ''} 상태에서는 콘텐츠 다운로드를 이용할 수 없습니다.
-                </p>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">선택 콘텐츠</span>
-                <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </Modal>
 
       {/* 등록 콘텐츠 반려 모달 */}
-      <Modal
-        open={contentRejectModal !== null}
-        onClose={() => { setContentRejectModal(null); setContentRejectFeedback('') }}
-        size="sm"
-        title="콘텐츠 반려"
-        footer={
-          <>
-            <button onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
+      <Modal open={contentRejectModal !== null} onClose={() => { setContentRejectModal(null); setContentRejectFeedback('') }} size="sm" title="콘텐츠 반려">
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600">반려 사유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
+          <textarea
+            value={contentRejectFeedback}
+            onChange={e => setContentRejectFeedback(e.target.value)}
+            placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
+            rows={4}
+            maxLength={500}
+            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-150 placeholder:text-gray-400"
+          />
+          <div className="text-right text-xs text-gray-400">{contentRejectFeedback.length}/500</div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >취소</button>
             <button
               onClick={() => {
                 if (contentRejectModal === null) return
@@ -1472,57 +1218,14 @@ export default function CampaignDetail() {
                 setContentRejectModal(null)
                 setContentRejectFeedback('')
               }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm hover:bg-red-600 transition-colors"
+              className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors"
             >반려 전송</button>
-          </>
-        }
-      >
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600">반려 사유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
-          <textarea
-            value={contentRejectFeedback}
-            onChange={e => setContentRejectFeedback(e.target.value)}
-            placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
-            rows={4}
-            maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all placeholder:text-gray-400"
-          />
-          <div className="text-right text-xs text-gray-400">{contentRejectFeedback.length}/500</div>
+          </div>
         </div>
       </Modal>
 
-      {/* 선정 취소 컨펌 모달 */}
-      <AlertModal
-        open={deselectModal !== null}
-        onClose={() => setDeselectModal(null)}
-        title="선정을 취소할까요?"
-        confirmLabel="선정 취소"
-        cancelLabel="아니요"
-        variant="danger"
-        onConfirm={() => deselectModal !== null && confirmDeselectInfluencer(deselectModal)}
-      >
-        <p className="text-xs text-gray-500">
-          {(() => {
-            const target = selectedInfluencers.find(i => i.id === deselectModal)
-            return target ? <><strong className="text-gray-700">{target.name}</strong>님의 선정을 취소합니다.</> : '선정을 취소합니다.'
-          })()}{' '}
-          해당 인플루언서는 다시 "검토중" 지원자 목록으로 돌아가며, 언제든 다시 선정할 수 있습니다.
-        </p>
-      </AlertModal>
-
       {/* 반려 모달 */}
-      <Modal
-        open={rejectModal !== null}
-        onClose={() => { setRejectModal(null); setFeedback('') }}
-        title="지원자 반려"
-        size="sm"
-        footer={
-          <>
-            <button onClick={() => { setRejectModal(null); setFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleReject} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm hover:bg-red-600 transition-colors">반려 전송</button>
-          </>
-        }
-      >
+      <Modal open={rejectModal !== null} onClose={() => { setRejectModal(null); setFeedback('') }} title="지원자 반려">
         <div className="space-y-3">
           <p className="text-sm text-gray-600">반려 이유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
           <textarea
@@ -1531,42 +1234,21 @@ export default function CampaignDetail() {
             placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
             rows={4}
             maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all"
+            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-150"
           />
-          <div className="text-right text-xs text-gray-400">{feedback.length}/500</div>
+          <div className="text-right text-xs text-gray-400 mt-0.5">{feedback.length}/500</div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setRejectModal(null); setFeedback('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+            >취소</button>
+            <button
+              onClick={handleReject}
+              className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors duration-150"
+            >반려 전송</button>
+          </div>
         </div>
       </Modal>
-    </div>
-  )
-}
-
-function KpiCell({ label, value, small }: { label: string; value: string; small?: boolean }) {
-  return (
-    <div className="bg-gray-50 rounded-xl px-3 py-2.5">
-      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-      <p className={`font-bold text-gray-900 truncate ${small ? 'text-sm' : 'text-base @md:text-lg'}`}>{value}</p>
-    </div>
-  )
-}
-
-function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @md:p-5">
-      <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
-        <span className="text-gray-500">{icon}</span>
-        {title}
-      </h2>
-      {children}
-    </div>
-  )
-}
-
-function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="border border-gray-100 rounded-xl px-3 py-3 text-center">
-      <div className="text-gray-400 mb-1.5 flex justify-center">{icon}</div>
-      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-gray-900">{value}</p>
     </div>
   )
 }

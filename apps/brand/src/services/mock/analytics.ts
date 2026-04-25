@@ -105,7 +105,7 @@ export interface ViralContent {
 export const mockViralContents: ViralContent[] = [
   { id: 1, creator: '이창민', campaign: '봄 요가 프로모션', type: '릴스', platform: '인스타그램', reach: 42000, likes: 3200, comments: 248, saves: 892, shares: 412, engRate: 11.3, thumbnailClass: 'bg-pink-300' },
   { id: 2, creator: '김가애', campaign: '봄 요가 프로모션', type: '피드', platform: '인스타그램', reach: 31000, likes: 2400, comments: 180, saves: 640, shares: 280, engRate: 10.6, thumbnailClass: 'bg-blue-300' },
-  { id: 3, creator: '한서연', campaign: '비건 신제품 론칭', type: '숏폼', platform: '유튜브', reach: 58000, likes: 4200, comments: 620, saves: 1120, shares: 780, engRate: 11.6, thumbnailClass: 'bg-emerald-300' },
+  { id: 3, creator: '한서연', campaign: '비건 신제품 론칭', type: '쇼츠', platform: '유튜브', reach: 58000, likes: 4200, comments: 620, saves: 1120, shares: 780, engRate: 11.6, thumbnailClass: 'bg-emerald-300' },
   { id: 4, creator: '정예린', campaign: '여름 홈트 챌린지', type: '릴스', platform: '인스타그램', reach: 27000, likes: 1980, comments: 142, saves: 520, shares: 198, engRate: 10.5, thumbnailClass: 'bg-indigo-300' },
-  { id: 5, creator: '김태우', campaign: '여름 홈트 챌린지', type: '숏폼', platform: '유튜브', reach: 44000, likes: 3600, comments: 480, saves: 980, shares: 620, engRate: 12.0, thumbnailClass: 'bg-green-300' },
+  { id: 5, creator: '김태우', campaign: '여름 홈트 챌린지', type: '쇼츠', platform: '유튜브', reach: 44000, likes: 3600, comments: 480, saves: 980, shares: 620, engRate: 12.0, thumbnailClass: 'bg-green-300' },
 ]

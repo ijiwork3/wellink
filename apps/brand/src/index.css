@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
@@ -14,7 +18,8 @@ body {
 
 #root {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  padding-top: 44px; /* GlobalQAHeader (fixed, 44px) 자리 확보 */
   text-align: left;
   border-inline: none;
   display: block;

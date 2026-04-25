@@ -24,6 +24,7 @@ export { default as CustomCheckbox } from './components/CustomCheckbox'
 
 // 피드백·레이어
 export { default as Modal }          from './components/Modal'
+export { default as AlertModal }     from './components/AlertModal'
 export { default as BottomSheet }    from './components/BottomSheet'
 export { default as Dropdown }       from './components/Dropdown'
 export { default as SNSPanel }       from './components/SNSPanel'

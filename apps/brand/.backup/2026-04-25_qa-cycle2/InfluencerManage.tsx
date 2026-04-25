@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Modal, AlertModal, BottomSheet } from '@wellink/ui'
+import { Modal, BottomSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
@@ -662,51 +662,66 @@ export default function InfluencerManage() {
         onClose={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }}
         title="새 그룹 만들기"
         size="sm"
-        footer={
-          <>
-            <button onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={createGroup} disabled={!newGroupName.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors">생성</button>
-          </>
-        }
       >
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
-          <input
-            type="text"
-            value={newGroupName}
-            onChange={e => { setNewGroupName(e.target.value); setNewGroupError('') }}
-            placeholder="예: VIP 인플루언서"
-            maxLength={GROUP_NAME_MAX + 1}
-            aria-invalid={!!newGroupError}
-            aria-describedby={newGroupError ? 'group-name-error' : undefined}
-            className={`w-full text-sm border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 transition-all ${
-              newGroupError ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200'
-            }`}
-            onKeyDown={e => e.key === 'Enter' && createGroup()}
-            autoFocus
-          />
-          <div className="flex items-start justify-between mt-1.5">
-            {newGroupError
-              ? <p id="group-name-error" role="alert" className="text-xs text-red-500">{newGroupError}</p>
-              : <span />
-            }
-            <span className={`text-xs ml-auto ${newGroupName.trim().length > GROUP_NAME_MAX ? 'text-red-500' : 'text-gray-400'}`}>
-              {newGroupName.trim().length}/{GROUP_NAME_MAX}
-            </span>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
+            <input
+              type="text"
+              value={newGroupName}
+              onChange={e => { setNewGroupName(e.target.value); setNewGroupError('') }}
+              placeholder="예: VIP 인플루언서"
+              maxLength={GROUP_NAME_MAX + 1}
+              aria-invalid={!!newGroupError}
+              aria-describedby={newGroupError ? 'group-name-error' : undefined}
+              className={`w-full text-sm border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 transition-all duration-150 ${
+                newGroupError ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200'
+              }`}
+              onKeyDown={e => e.key === 'Enter' && createGroup()}
+              autoFocus
+            />
+            <div className="flex items-start justify-between mt-1.5">
+              {newGroupError
+                ? <p id="group-name-error" role="alert" className="text-xs text-red-500">{newGroupError}</p>
+                : <span />
+              }
+              <span className={`text-xs ml-auto ${newGroupName.trim().length > GROUP_NAME_MAX ? 'text-red-500' : 'text-gray-400'}`}>
+                {newGroupName.trim().length}/{GROUP_NAME_MAX}
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+            >
+              취소
+            </button>
+            <button
+              onClick={createGroup}
+              disabled={!newGroupName.trim()}
+              className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+            >
+              생성
+            </button>
           </div>
         </div>
       </Modal>
 
       {/* 삭제 컨펌 */}
-      <AlertModal
-        open={confirm.open}
-        onClose={closeConfirm}
-        title={confirm.title}
-        description={confirm.description}
-        confirmLabel="삭제"
-        variant="danger"
-        onConfirm={() => { confirm.onConfirm(); closeConfirm() }}
-      />
+      <Modal open={confirm.open} onClose={closeConfirm} size="sm" title={confirm.title}>
+        <div className="space-y-4">
+          <p className="text-xs text-gray-500">{confirm.description}</p>
+          <div className="flex gap-2">
+            <button onClick={closeConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150">
+              취소
+            </button>
+            <button onClick={() => { confirm.onConfirm(); closeConfirm() }} className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors duration-150">
+              삭제
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* 인플루언서 상세 모달 */}
       {!!detailInfluencer && !proposalModal && (() => {
@@ -1101,18 +1116,7 @@ export default function InfluencerManage() {
       </Modal>
 
       {/* 제안 모달 */}
-      <Modal
-        open={proposalModal}
-        onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }}
-        title="캠페인에 제안 보내기"
-        size="sm"
-        footer={!proposalSent ? (
-          <>
-            <button onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150">취소</button>
-            <button onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150">제안 보내기</button>
-          </>
-        ) : undefined}
-      >
+      <Modal open={proposalModal} onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }} title="캠페인에 제안 보내기" size="sm">
         {proposalSent ? (
           <div className="text-center py-6">
             <p className="text-sm font-semibold text-gray-900">제안이 전송되었습니다!</p>
@@ -1144,6 +1148,11 @@ export default function InfluencerManage() {
                 </div>
               )
             })()}
+
+            <div className="flex gap-2 pt-1">
+              <button onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150">취소</button>
+              <button onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150">제안 보내기</button>
+            </div>
           </div>
         )}
       </Modal>

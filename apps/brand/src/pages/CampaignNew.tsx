@@ -1,11 +1,19 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users } from 'lucide-react'
-import { Modal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
+import { AlertModal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
 
-const PLATFORMS = ['Instagram', 'YouTube', '블로그', '틱톡']
+const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
+type Platform = typeof PLATFORMS[number]
+
+const POST_TYPE_MAP: Record<Platform, string[]> = {
+  '인스타그램':    ['피드', '릴스', '스토리'],
+  '유튜브':        ['영상', '쇼츠'],
+  '네이버 블로그': [],
+  '틱톡':          [],
+}
+
 const CATEGORIES = ['맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아']
-const POST_TYPES = ['피드, 릴스', '피드', '릴스', '스토리', '유튜브 쇼츠']
 const PRECAUTIONS = ['릴스 제작 우대', '체험 후기 필수', '없음']
 const PHOTO_COUNTS = ['3장 이상', '5장 이상', '7장 이상', '10장 이상']
 const VIDEO_COUNTS = ['1개 이상 (15초+)', '1개 이상 (30초+)', '2개 이상', '없음']
@@ -16,7 +24,7 @@ const FILLED = {
   type: '방문형' as '방문형' | '택배형',
   location: '강남/서초',
   storeName: '봄 요가 스튜디오',
-  platform: 'Instagram',
+  platform: '인스타그램' as Platform,
   category: '맛집/푸드',
   description: '브랜드 소개와 캠페인 핵심 메시지를 담아주세요.',
   productName: '4구 한우 프리미엄 선물세트 1.2kg',
@@ -24,7 +32,7 @@ const FILLED = {
   productPrice: '168000',
   rewardPoint: '0',
   keywords: ['#봄요가', '#강남요가'],
-  postType: '피드, 릴스',
+  postType: '피드',
   precaution: '릴스 제작 우대',
   photoCount: '5장 이상',
   videoCount: '1개 이상 (15초+)',
@@ -61,12 +69,12 @@ export default function CampaignNew() {
   const isFilled = qa === 'filled' || qa === 'modal-complete'
   const init = isFilled ? FILLED : {
     type: '방문형' as '방문형' | '택배형',
-    location: '', storeName: '', platform: 'Instagram', category: '맛집/푸드',
+    location: '', storeName: '', platform: '인스타그램' as Platform, category: '맛집/푸드',
     description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '',
-    keywords: [] as string[], postType: '피드, 릴스', precaution: '릴스 제작 우대',
+    keywords: [] as string[], postType: '피드', precaution: '릴스 제작 우대',
     photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
     recruitStart: '', recruitEnd: '', announceDate: '', uploadStart: '', uploadEnd: '',
-    headcount: '20',
+    headcount: '',
   }
 
   const [form, setForm] = useState(init)
@@ -77,16 +85,18 @@ export default function CampaignNew() {
 
   const set = <K extends keyof typeof form>(k: K, v: typeof form[K]) => setForm(p => ({ ...p, [k]: v }))
 
+  const handlePlatformChange = (p: string) => {
+    const platform = p as Platform
+    const types = POST_TYPE_MAP[platform]
+    setForm(prev => ({ ...prev, platform, postType: types[0] ?? '' }))
+  }
+
   // 자동 캠페인 제목
   const autoTitle = form.location && form.storeName ? `[${form.location}] ${form.storeName}` : ''
 
-  // 총 결제 예정 금액
-  const totalPay = useMemo(() => {
-    const price = Number(form.productPrice) || 0
-    const reward = Number(form.rewardPoint) || 0
-    const head = Number(form.headcount) || 0
-    return (price + reward) * head
-  }, [form.productPrice, form.rewardPoint, form.headcount])
+  // 총 결제 예정 금액 — 원본 정책: 참여자 수 × 10,000원 (수수료·리워드 통합 단가)
+  const PER_PERSON_FEE = 10000
+  const totalPay = useMemo(() => (Number(form.headcount) || 0) * PER_PERSON_FEE, [form.headcount])
 
   const addKeyword = () => {
     const v = keywordInput.trim().replace(/^#/, '')
@@ -115,7 +125,7 @@ export default function CampaignNew() {
     setTimeout(() => {
       setSubmitting(false)
       setCompletedModal(true)
-    }, TIMER_MS.MEDIUM)
+    }, TIMER_MS.FORM_SUBMIT)
   }
 
   return (
@@ -177,7 +187,7 @@ export default function CampaignNew() {
 
         <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
           <Field label="진행 플랫폼">
-            <Select value={form.platform} onChange={v => set('platform', v)} options={PLATFORMS} />
+            <Select value={form.platform} onChange={handlePlatformChange} options={[...PLATFORMS]} />
           </Field>
           <Field label="카테고리">
             <Select value={form.category} onChange={v => set('category', v)} options={CATEGORIES} />
@@ -280,9 +290,11 @@ export default function CampaignNew() {
 
         <Field label="미션 가이드">
           <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 mb-3">
+            {POST_TYPE_MAP[form.platform as Platform]?.length > 0 && (
             <SubField label="게시 유형">
-              <Select value={form.postType} onChange={v => set('postType', v)} options={POST_TYPES} />
+              <Select value={form.postType} onChange={v => set('postType', v)} options={POST_TYPE_MAP[form.platform as Platform]} />
             </SubField>
+            )}
             <SubField label="유의사항">
               <Select value={form.precaution} onChange={v => set('precaution', v)} options={PRECAUTIONS} />
             </SubField>
@@ -397,12 +409,13 @@ export default function CampaignNew() {
           <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-gray-900">총 모집 인원</p>
-              <p className="text-xs text-gray-500">최소 5명 이상부터 진행 가능합니다.</p>
+              <p className="text-xs text-gray-500">캠페인에 참여시킬 인플루언서 인원 수를 입력해주세요.</p>
             </div>
             <div className="relative">
               <input
                 type="number"
-                min="5"
+                min="1"
+                placeholder="20"
                 value={form.headcount}
                 onChange={e => set('headcount', e.target.value)}
                 className="w-24 text-sm text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
@@ -418,7 +431,7 @@ export default function CampaignNew() {
         <span className="text-sm font-semibold text-gray-800">총 결제 예정 금액</span>
         <div className="text-right">
           <p className="text-lg @md:text-xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
-          <p className="text-[10px] text-blue-500">기본 수수료 및 리워드 포함된 금액입니다 (VAT 별도)</p>
+          <p className="text-[10px] text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
         </div>
       </div>
 
@@ -439,18 +452,22 @@ export default function CampaignNew() {
       </div>
 
       {/* 완료 모달 */}
-      <Modal isOpen={completedModal} onClose={() => { setCompletedModal(false); navigate('/campaigns') }} title="캠페인이 등록되었습니다">
-        <div className="text-center py-2">
+      <AlertModal
+        open={completedModal}
+        onClose={() => { setCompletedModal(false); navigate('/campaigns') }}
+        title="캠페인이 등록되었습니다"
+        confirmLabel="캠페인 목록으로"
+        onConfirm={() => { setCompletedModal(false); navigate('/campaigns') }}
+        showCancel={false}
+        variant="confirm"
+      >
+        <div className="text-center py-1">
           <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
             <CheckCircle size={24} className="text-emerald-600" />
           </div>
-          <p className="text-sm text-gray-700 mb-4">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
-          <button
-            onClick={() => { setCompletedModal(false); navigate('/campaigns') }}
-            className="w-full bg-gray-900 text-white py-2.5 rounded-xl text-sm hover:bg-gray-800"
-          >캠페인 목록으로</button>
+          <p className="text-sm text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
         </div>
-      </Modal>
+      </AlertModal>
     </div>
   )
 }

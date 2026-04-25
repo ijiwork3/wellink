@@ -27,8 +27,8 @@ interface Content {
   id: number
   creator: string
   campaign: string
-  type?: '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
-  platform: '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+  type: '릴스' | '피드' | '스토리' | '숏폼'
+  platform: '인스타그램' | '유튜브' | '블로그'
   date: string
   reach: number
   likes: number
@@ -46,11 +46,11 @@ const contents: Content[] = [
   { id: 3, creator: '박리나', campaign: '봄 요가 프로모션', type: '스토리', platform: '인스타그램', date: '2026-04-01', reach: 2900, likes: 180, comments: 23, saves: 18, shareRate: 1.8, engagementRate: 7.6, status: '승인', thumbnailClass: 'bg-violet-300' },
   { id: 4, creator: '민경완', campaign: '봄 요가 프로모션', type: '피드', platform: '인스타그램', date: '2026-03-28', reach: 6700, likes: 420, comments: 67, saves: 89, shareRate: 2.9, engagementRate: 8.6, status: '검수중', thumbnailClass: 'bg-red-300' },
   { id: 5, creator: '장영훈', campaign: '비건 신제품 론칭', type: '릴스', platform: '인스타그램', date: '2026-03-25', reach: 1200, likes: 88, comments: 12, saves: 9, shareRate: 1.2, engagementRate: 9.1, status: '대기중', thumbnailClass: 'bg-yellow-200' },
-  { id: 6, creator: '한서연', campaign: '비건 신제품 론칭', type: '쇼츠', platform: '유튜브', date: '2026-04-06', reach: 15200, likes: 1240, comments: 189, saves: 312, shareRate: 5.8, engagementRate: 11.4, status: '승인', thumbnailClass: 'bg-emerald-300' },
-  { id: 7, creator: '오진석', campaign: '여름 캠페인', platform: '네이버 블로그', date: '2026-04-07', reach: 3400, likes: 210, comments: 34, saves: 45, shareRate: 2.1, engagementRate: 8.5, status: '검수중', thumbnailClass: 'bg-orange-300' },
+  { id: 6, creator: '한서연', campaign: '비건 신제품 론칭', type: '숏폼', platform: '유튜브', date: '2026-04-06', reach: 15200, likes: 1240, comments: 189, saves: 312, shareRate: 5.8, engagementRate: 11.4, status: '승인', thumbnailClass: 'bg-emerald-300' },
+  { id: 7, creator: '오진석', campaign: '여름 캠페인', type: '피드', platform: '블로그', date: '2026-04-07', reach: 3400, likes: 210, comments: 34, saves: 45, shareRate: 2.1, engagementRate: 8.5, status: '검수중', thumbnailClass: 'bg-orange-300' },
   { id: 8, creator: '정예린', campaign: '여름 캠페인', type: '릴스', platform: '인스타그램', date: '2026-04-08', reach: 9800, likes: 870, comments: 142, saves: 198, shareRate: 4.7, engagementRate: 12.3, status: '승인', thumbnailClass: 'bg-indigo-300' },
   { id: 9, creator: '최다은', campaign: '비건 신제품 론칭', type: '스토리', platform: '인스타그램', date: '2026-03-30', reach: 1800, likes: 95, comments: 11, saves: 14, shareRate: 1.0, engagementRate: 6.7, status: '대기중', thumbnailClass: 'bg-rose-300' },
-  { id: 10, creator: '김태우', campaign: '여름 캠페인', type: '쇼츠', platform: '유튜브', date: '2026-04-02', reach: 11400, likes: 920, comments: 156, saves: 230, shareRate: 5.2, engagementRate: 11.5, status: '승인', thumbnailClass: 'bg-green-300' },
+  { id: 10, creator: '김태우', campaign: '여름 캠페인', type: '숏폼', platform: '유튜브', date: '2026-04-02', reach: 11400, likes: 920, comments: 156, saves: 230, shareRate: 5.2, engagementRate: 11.5, status: '승인', thumbnailClass: 'bg-green-300' },
 ]
 
 /* ───── Thumbnail helpers ───── */
@@ -59,12 +59,10 @@ function thumbnailText(cls: string) {
   return cls.replace(/^bg-/, 'text-')
 }
 
-// 플랫폼별 배지 컬러 — 정책 §8.3
-const PLATFORM_BADGE_STYLE: Record<string, string> = {
-  '인스타그램':    'bg-pink-500/90 text-white',
-  '유튜브':        'bg-red-500/90 text-white',
-  '네이버 블로그': 'bg-green-600/90 text-white',
-  '틱톡':          'bg-black/80 text-white',
+const platformIcons: Record<string, string> = {
+  '인스타그램': '인스타그램',
+  '유튜브': '유튜브',
+  '블로그': '블로그',
 }
 
 /* ───── Campaign list ───── */
@@ -514,12 +512,12 @@ export default function Library() {
           ))}
           <div className="w-px h-5 bg-gray-200 mx-1" aria-hidden="true" />
           <span className="text-xs text-gray-600 font-medium mr-1">플랫폼</span>
-          {['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'].map(p => (
+          {['전체', '인스타그램', '유튜브', '블로그'].map(p => (
             <Chip key={p} label={p} active={platformFilter === p} onClick={() => setPlatformFilter(p)} />
           ))}
           <div className="w-px h-5 bg-gray-200 mx-1" aria-hidden="true" />
           <span className="text-xs text-gray-600 font-medium mr-1">유형</span>
-          {['전체', '피드', '릴스', '스토리', '영상', '쇼츠'].map(t => (
+          {['전체', '릴스', '피드', '스토리', '숏폼'].map(t => (
             <Chip key={t} label={t} active={typeFilter === t} onClick={() => setTypeFilter(t)} />
           ))}
         </div>
@@ -600,15 +598,12 @@ export default function Library() {
                     className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${c.thumbnailClass}/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                     onClick={() => setPreviewItem(c)}
                   >
-                    <ImageOff size={36} className={`${thumbnailText(c.thumbnailClass)} opacity-60`} aria-hidden="true" />
-                    <div className="absolute top-3 left-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
+                    <span className={`text-2xl font-bold ${thumbnailText(c.thumbnailClass)}`} aria-hidden="true">
+                      {platformIcons[c.platform]}
+                    </span>
+                    <div className="absolute top-3 right-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                     </div>
-                    {c.type && (
-                      <div className="absolute top-3 right-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
-                      </div>
-                    )}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/30 to-transparent h-12 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2" aria-hidden="true">
                       <Eye size={16} className="text-white" />
                     </div>
@@ -690,17 +685,13 @@ export default function Library() {
                         className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold ${c.thumbnailClass}/25 ${thumbnailText(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                         onClick={() => setPreviewItem(c)}
                       >
-                        <ImageOff size={16} className="opacity-60" aria-hidden="true" />
+                        <span aria-hidden="true">{platformIcons[c.platform]}</span>
                       </button>
                     </td>
                     <td className="py-3 px-3 text-sm font-medium text-gray-900">{c.creator}</td>
                     <td className="py-3 px-3 text-xs text-gray-600 max-w-[120px] truncate">{c.campaign}</td>
                     <td className="py-3 px-3">
-                      {c.type ? (
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                     </td>
                     <td className="py-3 px-3 text-xs text-gray-500">{c.platform}</td>
                     <td className="py-3 px-3 text-xs text-gray-500">{fmtDate(c.date)}</td>
@@ -743,149 +734,206 @@ export default function Library() {
       </div>{/* /tab-panel-content */}
 
       {/* ────── Preview Modal ────── */}
-      <Modal
-        open={!!previewItem}
-        onClose={closePreview}
-        title="콘텐츠 상세"
-        size="lg"
-        footer={previewItem ? (
-          <>
-            {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
-              <>
-                <button onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }} className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"><Check size={14} /> 승인</button>
-                <button onClick={() => openRejectConfirm(previewItem)} className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">반려</button>
-              </>
-            )}
-            <button onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')} className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"><Download size={14} /> 다운로드</button>
-          </>
-        ) : undefined}
-      >
+      <Modal open={!!previewItem} onClose={closePreview} title="콘텐츠 상세" size="lg">
         {previewItem && (() => {
           const modalDisplayStatus = approvedIds.has(previewItem.id) ? '승인' : rejectedIds.has(previewItem.id) ? '반려' : previewItem.status
           return (
-            <div className="space-y-4">
-              <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${previewItem.thumbnailClass}/25`} aria-hidden="true">
-                <ImageOff size={56} className={`${thumbnailText(previewItem.thumbnailClass)} opacity-60`} />
-                <div className="absolute top-3 left-3">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
-                  <p className="text-sm text-gray-500">{previewItem.campaign}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {previewItem.type && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
-                  )}
-                  <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { icon: <Eye size={14} />, label: '도달', value: fmtNumber(previewItem.reach) },
-                  { icon: <Heart size={14} />, label: '좋아요', value: fmtNumber(previewItem.likes) },
-                  { icon: <MessageCircle size={14} />, label: '댓글', value: fmtNumber(previewItem.comments) },
-                  { icon: <Bookmark size={14} />, label: '저장', value: fmtNumber(previewItem.saves) },
-                  { icon: <Share2 size={14} />, label: '공유율', value: previewItem.shareRate + '%' },
-                  { icon: <TrendingUp size={14} />, label: '참여율', value: previewItem.engagementRate + '%' },
-                ].map(stat => (
-                  <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">{stat.icon}<span className="text-xs">{stat.label}</span></div>
-                    <div className="text-base font-bold text-gray-900">{stat.value}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="text-xs text-gray-400 border-t border-gray-100 pt-3">{previewItem.platform} · {previewItem.date}</div>
-              {approvedIds.has(previewItem.id) && <p className="text-center text-sm text-brand-green font-medium">승인된 콘텐츠입니다</p>}
-              {rejectedIds.has(previewItem.id) && <p className="text-center text-sm text-red-400 font-medium">반려된 콘텐츠입니다</p>}
+          <div className="space-y-5">
+            <div className={`w-full aspect-video rounded-xl flex items-center justify-center ${previewItem.thumbnailClass}/25`} aria-hidden="true">
+              <span className={`text-5xl font-bold ${thumbnailText(previewItem.thumbnailClass)}`}>
+                {platformIcons[previewItem.platform]}
+              </span>
             </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
+                <p className="text-sm text-gray-500">{previewItem.campaign}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
+                <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: <Eye size={14} aria-hidden="true" />, label: '도달', value: fmtNumber(previewItem.reach) },
+                { icon: <Heart size={14} aria-hidden="true" />, label: '좋아요', value: fmtNumber(previewItem.likes) },
+                { icon: <MessageCircle size={14} aria-hidden="true" />, label: '댓글', value: fmtNumber(previewItem.comments) },
+                { icon: <Bookmark size={14} aria-hidden="true" />, label: '저장', value: fmtNumber(previewItem.saves) },
+                { icon: <Share2 size={14} aria-hidden="true" />, label: '공유율', value: previewItem.shareRate + '%' },
+                { icon: <TrendingUp size={14} aria-hidden="true" />, label: '참여율', value: previewItem.engagementRate + '%' },
+              ].map(stat => (
+                <div key={stat.label} role="group" aria-label={`${stat.label}: ${stat.value}`} className="bg-gray-50 rounded-xl p-3 text-center">
+                  <div className="flex items-center justify-center gap-1 text-gray-400 mb-1" aria-hidden="true">{stat.icon}<span className="text-xs">{stat.label}</span></div>
+                  <div className="text-base font-bold text-gray-900" aria-hidden="true">{stat.value}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
+              <span>{previewItem.platform} · {previewItem.date}</span>
+            </div>
+
+            {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }}
+                  className="flex-1 flex items-center justify-center gap-2 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Check size={15} aria-hidden="true" />
+                  승인
+                </button>
+                <button
+                  onClick={() => openRejectConfirm(previewItem)}
+                  className="flex-1 flex items-center justify-center gap-2 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
+                >
+                  반려
+                </button>
+              </div>
+            )}
+            {approvedIds.has(previewItem.id) && (
+              <div className="w-full text-center text-sm text-brand-green font-medium py-2">승인된 콘텐츠입니다</div>
+            )}
+            {rejectedIds.has(previewItem.id) && (
+              <div className="w-full text-center text-sm text-red-400 font-medium py-2">반려된 콘텐츠입니다</div>
+            )}
+            <button
+              onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+              className="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <Download size={15} aria-hidden="true" />
+              다운로드
+            </button>
+          </div>
           )
         })()}
       </Modal>
 
       {/* 반려 확인 모달 */}
-      <Modal
-        open={rejectConfirm.open}
-        onClose={closeRejectConfirm}
-        size="sm"
-        title="콘텐츠 반려"
-        footer={
-          <>
-            <button onClick={closeRejectConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleRejectConfirm} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm hover:bg-red-600 transition-colors">반려</button>
-          </>
-        }
-      >
-        <div className="space-y-3">
+      <Modal open={rejectConfirm.open} onClose={closeRejectConfirm} size="sm" title="콘텐츠 반려">
+        <div className="space-y-4">
           <div>
             <p className="text-sm font-semibold text-gray-900">{rejectConfirm.title}</p>
             <p className="text-xs text-gray-500 mt-1">{rejectConfirm.description}</p>
           </div>
-          <textarea
-            aria-label="반려 사유 (선택)"
-            value={rejectReason}
-            onChange={e => setRejectReason(e.target.value)}
-            placeholder="인플루언서에게 전달할 반려 사유를 입력해 주세요 (선택)"
-            maxLength={300}
-            rows={4}
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
-          />
-          <div className="text-right text-xs text-gray-400">{rejectReason.length}/300</div>
+          <div>
+            <textarea
+              aria-label="반려 사유 (선택)"
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder="인플루언서에게 전달할 반려 사유를 입력해 주세요 (선택)"
+              maxLength={300}
+              rows={4}
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-all duration-150 placeholder:text-gray-400"
+            />
+            <div className="text-right text-xs text-gray-400 mt-0.5">{rejectReason.length}/300</div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={closeRejectConfirm}
+              className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleRejectConfirm}
+              className="flex-1 bg-red-500 text-white py-2 rounded-xl text-sm hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
+            >
+              반려
+            </button>
+          </div>
         </div>
       </Modal>
 
       {/* 콘텐츠 다운로드 모달 — 플랜 권한 기반 */}
-      {(() => {
-        const count = downloadModal.scope === 'all' ? filtered.length : selectedIds.size
-        return (
-          <Modal
-            open={downloadModal.open}
-            onClose={() => !isPaying && setDownloadModal({ open: false, scope: 'selected' })}
-            size="sm"
-            title="콘텐츠 다운로드"
-            footer={canDownloadContent ? (
-              <>
-                <button onClick={() => setDownloadModal({ open: false, scope: 'selected' })} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
-                <button
-                  onClick={() => { setIsPaying(true); setTimeout(() => { setIsPaying(false); setDownloadModal({ open: false, scope: 'selected' }); showToast(`${count}건 다운로드를 시작합니다.`, 'success') }, 800) }}
-                  disabled={isPaying || count === 0}
-                  className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-50"
-                >{isPaying ? '준비 중…' : '다운로드'}</button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => setDownloadModal({ open: false, scope: 'selected' })} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-                <button onClick={() => { setDownloadModal({ open: false, scope: 'selected' }); navigate('/subscription') }} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors">플랜 업그레이드</button>
-              </>
-            )}
-          >
-            {canDownloadContent ? (
-              <div className="space-y-3">
+      <Modal
+        open={downloadModal.open}
+        onClose={() => !isPaying && setDownloadModal({ open: false, scope: 'selected' })}
+        size="sm"
+        title="콘텐츠 다운로드"
+      >
+        {(() => {
+          const count = downloadModal.scope === 'all' ? filtered.length : selectedIds.size
+          if (canDownloadContent) {
+            return (
+              <div className="space-y-4">
                 <p className="text-sm text-gray-600">선택한 콘텐츠를 다운로드합니다.</p>
                 <div className="space-y-2 text-sm bg-gray-50 rounded-xl p-4">
-                  <div className="flex justify-between"><span className="text-gray-500">현재 플랜</span><span className="font-medium">{planLabel}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'} {count}건</span></div>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-100">
-                  <Crown size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-amber-900">유료 플랜 구독 시 이용 가능합니다</p>
-                    <p className="text-xs text-amber-700">현재 <span className="font-semibold">{planLabel}</span> {plan ? '플랜' : ''} 상태에서는 콘텐츠 다운로드를 이용할 수 없습니다.</p>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">현재 플랜</span>
+                    <span className="text-gray-900 font-medium">{planLabel}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">다운로드 대상</span>
+                    <span className="text-gray-900 font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'} {count}건</span>
                   </div>
                 </div>
-                <div className="text-sm bg-gray-50 rounded-xl p-4">
-                  <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'} {count}건</span></div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setDownloadModal({ open: false, scope: 'selected' })}
+                    disabled={isPaying}
+                    className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsPaying(true)
+                      setTimeout(() => {
+                        setIsPaying(false)
+                        setDownloadModal({ open: false, scope: 'selected' })
+                        showToast(`${count}건 다운로드를 시작합니다.`, 'success')
+                      }, 800)
+                    }}
+                    disabled={isPaying || count === 0}
+                    className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors disabled:opacity-50"
+                  >
+                    {isPaying ? '준비 중…' : '다운로드'}
+                  </button>
                 </div>
               </div>
-            )}
-          </Modal>
-        )
-      })()}
+            )
+          }
+          return (
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-100">
+                <Crown size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-amber-900">유료 플랜 구독 시 이용 가능합니다</p>
+                  <p className="text-xs text-amber-700">
+                    현재 <span className="font-semibold">{planLabel}</span> {plan ? '플랜' : ''} 상태에서는 콘텐츠 다운로드를 이용할 수 없습니다. 플랜을 업그레이드하면 등록된 모든 콘텐츠를 무제한 다운로드할 수 있습니다.
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1 text-sm bg-gray-50 rounded-xl p-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">다운로드 대상</span>
+                  <span className="text-gray-900 font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'} {count}건</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDownloadModal({ open: false, scope: 'selected' })}
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    setDownloadModal({ open: false, scope: 'selected' })
+                    navigate('/subscription')
+                  }}
+                  className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+                >
+                  플랜 업그레이드
+                </button>
+              </div>
+            </div>
+          )
+        })()}
+      </Modal>
     </div>
   )
 }

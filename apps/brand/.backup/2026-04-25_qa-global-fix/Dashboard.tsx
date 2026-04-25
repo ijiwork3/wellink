@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
-import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { useQAMode } from '@wellink/ui'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
@@ -119,10 +119,6 @@ export default function Dashboard() {
   const [showAllNotifications, setShowAllNotifications] = useState(false)
   const [contentPeriod, setContentPeriod] = useState<ContentPeriod>('주간')
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
-  const device = useDeviceMode()
-  const isPhone = device === 'phone'
-  const { plan } = usePlanAccess()
-  const isPlanLocked = qa === 'plan-locked' || plan === '' || plan === 'focus'
 
   /* ── QA: 에러 상태 ── */
   if (qa === 'error') {
@@ -275,6 +271,12 @@ export default function Dashboard() {
 
   const now = new Date()
   const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
+
+  const device = useDeviceMode()
+  const isPhone = device === 'phone'
+  const { plan } = usePlanAccess()
+  // 전역 plan이 free/focus면 잠금. ?qa=plan-locked 도 호환 유지
+  const isPlanLocked = qa === 'plan-locked' || plan === '' || plan === 'focus'
 
   return (
     <div className="space-y-6">

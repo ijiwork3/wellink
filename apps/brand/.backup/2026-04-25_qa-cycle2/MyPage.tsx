@@ -11,7 +11,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
     </svg>
   )
 }
-import { Modal, AlertModal, TIMER_MS } from '@wellink/ui'
+import { Modal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 
@@ -537,27 +537,7 @@ export default function MyPage() {
       </div>}
 
       {/* 비밀번호 변경 모달 */}
-      <Modal
-        open={pwModal}
-        onClose={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
-        title="비밀번호 변경"
-        footer={
-          <>
-            <button
-              onClick={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
-            >
-              취소
-            </button>
-            <button
-              onClick={handlePasswordChange}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
-            >
-              변경하기
-            </button>
-          </>
-        }
-      >
+      <Modal open={pwModal} onClose={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }} title="비밀번호 변경">
         <div className="space-y-4">
           <div>
             <label htmlFor="pw-current" className="text-xs text-gray-500 mb-1.5 block">현재 비밀번호</label>
@@ -598,32 +578,25 @@ export default function MyPage() {
           {passwordError && (
             <p className="text-xs text-red-500 mt-1">{passwordError}</p>
           )}
-        </div>
-      </Modal>
-
-      {/* SNS 연결 모달 */}
-      <Modal
-        open={snsModal}
-        onClose={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
-        title="Instagram 연결"
-        footer={
-          <>
+          <div className="flex gap-2 pt-2">
             <button
-              onClick={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
+              onClick={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
-              onClick={handleSnsConnect}
-              disabled={snsHandle.trim() === ''}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={handlePasswordChange}
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
             >
-              연결
+              변경하기
             </button>
-          </>
-        }
-      >
+          </div>
+        </div>
+      </Modal>
+
+      {/* SNS 연결 모달 */}
+      <Modal open={snsModal} onClose={() => { setSnsModal(false); setSnsHandle('wellink_brand') }} title="Instagram 연결">
         <div className="space-y-4">
           <div className="flex justify-center">
             <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
@@ -645,44 +618,26 @@ export default function MyPage() {
               <p className="text-xs text-red-500 mt-1">아이디를 입력해야 연결할 수 있습니다.</p>
             )}
           </div>
-        </div>
-      </Modal>
-
-      {/* 멤버 초대 모달 */}
-      <Modal
-        open={inviteModal}
-        onClose={() => { setInviteModal(false); setInviteEmail('') }}
-        title="멤버 초대"
-        footer={
-          <>
+          <div className="flex gap-2 pt-2">
             <button
-              onClick={() => { setInviteModal(false); setInviteEmail('') }}
+              onClick={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
-              disabled={!inviteEmail.trim()}
-              onClick={() => {
-                const newMember: TeamMember = {
-                  id: Date.now(),
-                  name: inviteEmail.split('@')[0],
-                  email: inviteEmail,
-                  role: inviteRole,
-                  joinedAt: '2026-04-19',
-                }
-                setMembers(prev => [...prev, newMember])
-                setInviteModal(false)
-                setInviteEmail('')
-                showToast(`${inviteEmail}에 초대 메일을 발송했습니다.`, 'success')
-              }}
+              onClick={handleSnsConnect}
+              disabled={snsHandle.trim() === ''}
               className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              초대하기
+              연결
             </button>
-          </>
-        }
-      >
+          </div>
+        </div>
+      </Modal>
+
+      {/* 멤버 초대 모달 */}
+      <Modal open={inviteModal} onClose={() => { setInviteModal(false); setInviteEmail('') }} title="멤버 초대">
         <div className="space-y-4">
           <div>
             <label htmlFor="invite-email" className="text-xs text-gray-500 mb-1.5 block">이메일 주소</label>
@@ -713,37 +668,38 @@ export default function MyPage() {
               ))}
             </div>
           </div>
-        </div>
-      </Modal>
-
-      {/* 권한 변경 모달 */}
-      <Modal
-        open={!!changeRoleModal}
-        onClose={() => setChangeRoleModal(null)}
-        title="권한 변경"
-        footer={changeRoleModal ? (
-          <>
+          <div className="flex gap-2 pt-1">
             <button
-              onClick={() => setChangeRoleModal(null)}
+              onClick={() => { setInviteModal(false); setInviteEmail('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
+              disabled={!inviteEmail.trim()}
               onClick={() => {
-                setMembers(prev => prev.map(m =>
-                  m.id === changeRoleModal.id ? { ...m, role: changeRoleValue } : m
-                ))
-                setChangeRoleModal(null)
-                showToast(`${changeRoleModal.name}의 권한이 ${changeRoleValue}로 변경되었습니다.`, 'success')
+                const newMember: TeamMember = {
+                  id: Date.now(),
+                  name: inviteEmail.split('@')[0],
+                  email: inviteEmail,
+                  role: inviteRole,
+                  joinedAt: '2026-04-19',
+                }
+                setMembers(prev => [...prev, newMember])
+                setInviteModal(false)
+                setInviteEmail('')
+                showToast(`${inviteEmail}에 초대 메일을 발송했습니다.`, 'success')
               }}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              변경하기
+              초대하기
             </button>
-          </>
-        ) : undefined}
-      >
+          </div>
+        </div>
+      </Modal>
+
+      {/* 권한 변경 모달 */}
+      <Modal open={!!changeRoleModal} onClose={() => setChangeRoleModal(null)} title="권한 변경">
         {changeRoleModal && (
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
@@ -764,55 +720,61 @@ export default function MyPage() {
                 </button>
               ))}
             </div>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setChangeRoleModal(null)}
+                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setMembers(prev => prev.map(m =>
+                    m.id === changeRoleModal.id ? { ...m, role: changeRoleValue } : m
+                  ))
+                  setChangeRoleModal(null)
+                  showToast(`${changeRoleModal.name}의 권한이 ${changeRoleValue}로 변경되었습니다.`, 'success')
+                }}
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              >
+                변경하기
+              </button>
+            </div>
           </div>
         )}
       </Modal>
 
       {/* 멤버 삭제 모달 */}
-      <AlertModal
-        open={!!deleteModal}
-        onClose={() => setDeleteModal(null)}
-        title="멤버 삭제"
-        description={deleteModal ? `${deleteModal.name}(${deleteModal.email})을 팀에서 제거하시겠습니까?` : ''}
-        confirmLabel="삭제"
-        cancelLabel="취소"
-        variant="danger"
-        onConfirm={() => {
-          if (!deleteModal) return
-          setMembers(prev => prev.filter(m => m.id !== deleteModal.id))
-          showToast(`${deleteModal.name}이(가) 팀에서 제거되었습니다.`, 'info')
-          setDeleteModal(null)
-        }}
-      />
+      <Modal open={!!deleteModal} onClose={() => setDeleteModal(null)} title="멤버 삭제">
+        {deleteModal && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              <strong>{deleteModal.name}</strong>({deleteModal.email})을 팀에서 제거하시겠습니까?
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteModal(null)}
+                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setMembers(prev => prev.filter(m => m.id !== deleteModal.id))
+                  showToast(`${deleteModal.name}이(가) 팀에서 제거되었습니다.`, 'info')
+                  setDeleteModal(null)
+                }}
+                className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* 회원 탈퇴 모달 (QA: modal-withdraw) */}
-      <Modal
-        open={withdrawModal}
-        onClose={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
-        title="회원 탈퇴"
-        footer={
-          <>
-            <button
-              onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
-            >
-              취소
-            </button>
-            <button
-              disabled={withdrawConfirmText !== '탈퇴'}
-              onClick={() => {
-                setWithdrawModal(false)
-                setWithdrawConfirmText('')
-                showToast('탈퇴 처리가 완료되었습니다.', 'info')
-                setTimeout(() => navigate('/'), TIMER_MS.NAV_DELAY)
-              }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              탈퇴하기
-            </button>
-          </>
-        }
-      >
+      <Modal open={withdrawModal} onClose={() => { setWithdrawModal(false); setWithdrawConfirmText('') }} title="회원 탈퇴">
         <div className="space-y-4">
           <div className="bg-red-50 border border-red-100 rounded-xl p-4">
             <p className="text-sm font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
@@ -831,6 +793,26 @@ export default function MyPage() {
               placeholder="'탈퇴'를 입력해 주세요"
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-red-400 transition-colors"
             />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              disabled={withdrawConfirmText !== '탈퇴'}
+              onClick={() => {
+                setWithdrawModal(false)
+                setWithdrawConfirmText('')
+                showToast('탈퇴 처리가 완료되었습니다.', 'info')
+                setTimeout(() => navigate('/'), TIMER_MS.NAV_DELAY)
+              }}
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              탈퇴하기
+            </button>
           </div>
         </div>
       </Modal>

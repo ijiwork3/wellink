@@ -2,9 +2,9 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, LogOut
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Home
 } from 'lucide-react'
-import { useToast, auth } from '@wellink/ui'
+import { useToast } from '@wellink/ui'
 
 const sections = [
   {
@@ -43,7 +43,7 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
   const { showToast } = useToast()
   const isMyPageActive = location.pathname === '/mypage'
   return (
-    <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0">
+    <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0 min-h-0">
       {/* 로고 */}
       {!hideLogo && (
         <div className="px-5 pt-5 pb-4">
@@ -145,13 +145,6 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
               <p className="text-xs font-medium text-gray-900 truncate">웰링크 브랜드</p>
               <p className="text-[11px] text-gray-400 truncate">brand@wellink.ai</p>
             </div>
-          </button>
-          <button
-            onClick={() => { auth.clear(); navigate('/login') }}
-            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors duration-150 mt-1"
-          >
-            <LogOut size={14} className="shrink-0" />
-            로그아웃
           </button>
         </div>
       </div>

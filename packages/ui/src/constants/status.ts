@@ -67,14 +67,14 @@ export const AD_CAMPAIGN_STATUS = {
 } as const
 export type AdCampaignStatus = (typeof AD_CAMPAIGN_STATUS)[keyof typeof AD_CAMPAIGN_STATUS]
 
-// ContentType 색상 매핑 추가 (정책 §2-3)
-export type ContentType = '릴스' | '피드' | '스토리' | '숏폼' | '영상' | '이미지'
+// 정책 §8.3 — 플랫폼별 게시 유형
+// 인스타그램: 피드/릴스/스토리, 유튜브: 영상/쇼츠, 네이버 블로그·틱톡: 서브타입 없음
+export type ContentType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
 
 export const CONTENT_TYPE_STYLE: Record<ContentType, string> = {
-  '이미지': 'bg-sky-100 text-sky-700',
-  '릴스':  'bg-pink-100 text-pink-700',
   '피드':  'bg-blue-100 text-blue-700',
+  '릴스':  'bg-pink-100 text-pink-700',
   '스토리': 'bg-purple-100 text-purple-700',
-  '숏폼':  'bg-emerald-100 text-emerald-700',
   '영상':  'bg-orange-100 text-orange-700',
+  '쇼츠':  'bg-emerald-100 text-emerald-700',
 }

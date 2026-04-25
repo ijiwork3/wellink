@@ -286,22 +286,14 @@ function AppRoutes() {
 // 미사용 변수 제거를 위한 ref (TAB_MAP은 더 이상 사용 안 함)
 void BRAND_TAB_MAP
 
-function AppShell() {
-  const location = useLocation()
-  const showHeader = location.pathname !== '/moodboard'
-  return (
-    <div style={{ paddingTop: showHeader ? GLOBAL_QA_HEADER_HEIGHT : 0 }}>
-      <AppRoutes />
-    </div>
-  )
-}
-
 export default function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
         <ErrorBoundary>
-          <AppShell />
+          <div style={{ paddingTop: GLOBAL_QA_HEADER_HEIGHT }}>
+            <AppRoutes />
+          </div>
         </ErrorBoundary>
       </ToastProvider>
     </BrowserRouter>

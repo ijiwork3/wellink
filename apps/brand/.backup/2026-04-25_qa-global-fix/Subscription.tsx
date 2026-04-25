@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS } from '@wellink/ui'
-import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { Modal, useToast, useQAMode, TIMER_MS } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
 import { usePlanAccess } from '../hooks/usePlanAccess'
-import { setQAState } from '../qa-state'
-import type { QAPlan } from '../qa-state'
 
 const plans = [
   {
@@ -96,22 +93,14 @@ export default function Subscription() {
     setCurrentPlan(qa.startsWith('plan-') || qa === 'trial' ? planFromQA(qa) : globalPlan)
   }, [qa, globalPlan])
 
-  // 배너: URL ?qa= 또는 전역 qaPlan 중 하나라도 해당하면 표시
-  const showExpired       = qa === 'expired'       || qaPlan === 'expired'
-  const showPaymentFailed = qa === 'payment-failed' || qaPlan === 'payment-failed'
-  const showTrial         = qa === 'trial'          || qaPlan === 'trial'
-  // 만료/결제실패 시 카드 하이라이트는 마지막 유효 플랜(scale 기본)으로 표시
-  const displayPlan = (showExpired || showPaymentFailed) && !currentPlan ? 'scale' : currentPlan
+  void qaPlan
 
   const selectedPlan = plans.find(p => p.id === confirmModal)
 
   const handleConfirm = () => {
     setConfirmed(true)
     confirmTimerRef.current = setTimeout(() => {
-      if (confirmModal) {
-        setCurrentPlan(confirmModal)
-        setQAState({ plan: confirmModal as QAPlan })
-      }
+      if (confirmModal) setCurrentPlan(confirmModal)
       setConfirmModal(null)
       setConfirmed(false)
       showToast(`${selectedPlan?.name} 플랜으로 변경되었습니다.`, 'success')
@@ -204,10 +193,9 @@ export default function Subscription() {
           <p className="text-sm text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         {/* 현재 플랜 뱃지 */}
-        {displayPlan ? (
+        {currentPlan ? (
           <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
-            현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
-            {(showExpired || showPaymentFailed) && ' (만료)'}
+            현재: {plans.find(p => p.id === currentPlan)?.name ?? currentPlan} 플랜
           </span>
         ) : (
           <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">
@@ -217,7 +205,7 @@ export default function Subscription() {
       </div>
 
       {/* QA: 구독 만료 배너 */}
-      {showExpired && (
+      {qa === 'expired' && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
@@ -228,7 +216,7 @@ export default function Subscription() {
       )}
 
       {/* QA: 결제 실패 배너 */}
-      {showPaymentFailed && (
+      {qa === 'payment-failed' && (
         <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
@@ -245,7 +233,7 @@ export default function Subscription() {
       )}
 
       {/* QA: 무료 체험 중 배너 */}
-      {showTrial && (
+      {qa === 'trial' && (
         <div className="bg-brand-green/10 border border-brand-green/30 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -508,34 +496,26 @@ export default function Subscription() {
       )}
 
       {/* Infinite 도입 문의 모달 */}
-      <AlertModal
-        open={infiniteModal}
-        onClose={() => setInfiniteModal(false)}
-        title="도입 문의"
-        confirmLabel="확인"
-        onConfirm={() => setInfiniteModal(false)}
-        showCancel={false}
-      >
-        <p className="text-sm text-gray-600">웰링크 엔터프라이즈팀에 문의해 주세요.</p>
-        <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3 mt-2">
-          <span className="text-sm text-gray-500">이메일</span>
-          <span className="text-sm font-semibold text-gray-900">{ENTERPRISE_EMAIL}</span>
+      <Modal open={infiniteModal} onClose={() => setInfiniteModal(false)} title="도입 문의">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            웰링크 엔터프라이즈팀에 문의해 주세요.
+          </p>
+          <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+            <span className="text-sm text-gray-500">이메일</span>
+            <span className="text-sm font-semibold text-gray-900">{ENTERPRISE_EMAIL}</span>
+          </div>
+          <button
+            onClick={() => setInfiniteModal(false)}
+            className="w-full bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors duration-150"
+          >
+            확인
+          </button>
         </div>
-      </AlertModal>
+      </Modal>
 
-      {/* 플랜 변경 확인 모달 */}
-      <Modal
-        open={!!confirmModal}
-        onClose={handleCloseConfirmModal}
-        title="플랜 변경"
-        size="sm"
-        footer={!confirmed ? (
-          <>
-            <button onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed">확인</button>
-          </>
-        ) : undefined}
-      >
+      {/* 확인 모달 */}
+      <Modal open={!!confirmModal} onClose={handleCloseConfirmModal} title="플랜 변경">
         {confirmed ? (
           <div className="text-center py-6">
             <div className="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-3">
@@ -544,8 +524,10 @@ export default function Subscription() {
             <p className="text-sm font-semibold text-gray-900">플랜이 변경되었습니다!</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600"><strong>{selectedPlan?.name}</strong> 플랜으로 변경하시겠습니까?</p>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              <strong>{selectedPlan?.name}</strong> 플랜으로 변경하시겠습니까?
+            </p>
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">변경 플랜</span>
@@ -564,16 +546,32 @@ export default function Subscription() {
               {currentPlan && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">현재 플랜</span>
-                  <span className="text-gray-500">{plans.find(p => p.id === currentPlan)?.name ?? '없음'}</span>
+                  <span className="text-gray-500">
+                    {plans.find(p => p.id === currentPlan)?.name ?? '없음'}
+                  </span>
                 </div>
               )}
             </div>
+            {/* 다운그레이드 경고 */}
             {currentPlan === 'scale' && confirmModal === 'focus' && (
               <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl">
                 <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-                <p className="text-xs text-amber-700">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
+                <p className="text-xs text-amber-700">
+                  다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.
+                </p>
               </div>
             )}
+            <div className="flex gap-2">
+              <button
+                onClick={handleCloseConfirmModal}
+                className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+              >취소</button>
+              <button
+                onClick={handleConfirm}
+                disabled={confirmed}
+                className="flex-1 bg-brand-green text-white py-2 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+              >확인</button>
+            </div>
           </div>
         )}
       </Modal>

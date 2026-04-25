@@ -32,13 +32,15 @@ interface ModalProps {
   title?: string
   label?: string
   children: ReactNode
+  /** 하단 고정 푸터 — 버튼 영역. 스크롤에서 분리되어 항상 노출 */
+  footer?: ReactNode
   size?: 'sm' | 'md' | 'lg'
   closeOnBackdrop?: boolean
   showClose?: boolean
   fullscreen?: boolean
 }
 
-export default function Modal({ open, onClose, title, label, children, size = 'md', closeOnBackdrop = true, showClose = true, fullscreen = false }: ModalProps) {
+export default function Modal({ open, onClose, title, label, children, footer, size = 'md', closeOnBackdrop = true, showClose = true, fullscreen = false }: ModalProps) {
   const [visible, setVisible] = useState(false)
   const rafRef = useRef<number | null>(null)
   const focusRafRef = useRef<number | null>(null)
@@ -142,6 +144,11 @@ export default function Modal({ open, onClose, title, label, children, size = 'm
           </div>
         )}
         <div className="p-6 overflow-y-auto flex-1">{children}</div>
+        {footer && (
+          <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 shrink-0">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )
