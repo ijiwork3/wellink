@@ -366,6 +366,7 @@ export default function CampaignDetail() {
   const [contentRejectModal, setContentRejectModal] = useState<number | null>(null)
   const [contentRejectFeedback, setContentRejectFeedback] = useState('')
   const [contentDetailModal, setContentDetailModal] = useState<number | null>(null)
+  const [hoveredChartIdx, setHoveredChartIdx] = useState<number | null>(null)
 
   // QA: modal-reject → 첫 번째 인플루언서로 반려 모달 미리 열기
   // 지원자 관리 탭 — 인플루언서 상태 관리 (반려 처리용)
@@ -1311,10 +1312,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* 콘텐츠별 좋아요 비교 그래프 */}
-          {(() => {
-            const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
-            return (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 좋아요 비교</h3>
                   {approvedContents.length > CHART_MAX_POINTS && (
@@ -1336,13 +1334,12 @@ export default function CampaignDetail() {
                     <path d={linePath} fill="none" stroke="var(--color-brand-green)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
                     {points.map((p, i) => (
                       <g key={i}
-                        onMouseEnter={() => setHoveredIdx(i)}
-                        onMouseLeave={() => setHoveredIdx(null)}
+                        onMouseEnter={() => setHoveredChartIdx(i)}
+                        onMouseLeave={() => setHoveredChartIdx(null)}
                         style={{ cursor: 'pointer' }}
                       >
-                        <circle cx={p.x} cy={p.y} r={hoveredIdx === i ? 6 : 4} fill="var(--color-brand-green)" />
-                        <circle cx={p.x} cy={p.y} r={hoveredIdx === i ? 10 : 6} fill="var(--color-brand-green)" fillOpacity={0.15} />
-                        {/* 히트 영역 */}
+                        <circle cx={p.x} cy={p.y} r={hoveredChartIdx === i ? 6 : 4} fill="var(--color-brand-green)" />
+                        <circle cx={p.x} cy={p.y} r={hoveredChartIdx === i ? 10 : 6} fill="var(--color-brand-green)" fillOpacity={0.15} />
                         <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
                         <text
                           x={p.x}
@@ -1354,18 +1351,9 @@ export default function CampaignDetail() {
                         >
                           {p.name.length > 6 ? `${p.name.slice(0, 6)}…` : p.name}
                         </text>
-                        {/* 호버 툴팁 */}
-                        {hoveredIdx === i && (
+                        {hoveredChartIdx === i && (
                           <g>
-                            <rect
-                              x={p.x - 70}
-                              y={p.y - 52}
-                              width={140}
-                              height={44}
-                              rx={6}
-                              fill="#1f2937"
-                              fillOpacity={0.92}
-                            />
+                            <rect x={p.x - 70} y={p.y - 52} width={140} height={44} rx={6} fill="#1f2937" fillOpacity={0.92} />
                             <text x={p.x} y={p.y - 34} textAnchor="middle" fontSize={10} fill="#d1d5db">
                               {p.caption.length > 18 ? `${p.caption.slice(0, 18)}…` : p.caption}
                             </text>
@@ -1378,9 +1366,7 @@ export default function CampaignDetail() {
                     ))}
                   </svg>
                 </div>
-              </div>
-            )
-          })()}
+          </div>
 
           {/* 콘텐츠 순위 테이블 */}
           {(() => {
