@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search,
   Download,
@@ -145,12 +146,29 @@ const SUMMARY_STATS = {
 export default function Library() {
   const { showToast } = useToast()
   const qa = useQAMode()
+  const navigate = useNavigate()
   const { planLabel, canDownloadContent } = usePlanAccess()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialCampaign = searchParams.get('campaign') ?? ''
   const [search, setSearch] = useState('')
-  const [campaignFilter, setCampaignFilter] = useState('전체')
+  // URL ?campaign=<name>로 진입 시 해당 캠페인으로 자동 필터 (CampaignDetail '라이브러리에서 보기' 점프)
+  const [campaignFilter, setCampaignFilter] = useState(
+    initialCampaign && campaigns.includes(initialCampaign) ? initialCampaign : '전체'
+  )
   const [statusFilter, setStatusFilter] = useState('전체')
   const [platformFilter, setPlatformFilter] = useState('전체')
   const [typeFilter, setTypeFilter] = useState('전체')
+
+  // ?campaign 미매칭 시 검색어로 폴백 → 사용자가 어떤 캠페인에서 점프했는지 보이도록
+  useEffect(() => {
+    if (!initialCampaign) return
+    if (!campaigns.includes(initialCampaign)) setSearch(initialCampaign)
+    // URL 정리(다른 필터 보존)
+    const next = new URLSearchParams(searchParams)
+    next.delete('campaign')
+    setSearchParams(next, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   // 페이지네이션 — 신규
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 12  // grid 4 cols × 3 rows = 12 / list 12개
@@ -659,7 +677,12 @@ export default function Library() {
                       <span className="text-sm font-semibold text-gray-900 truncate max-w-[120px]">{c.creator}</span>
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
-                    <p className="text-xs text-gray-500 truncate mb-2">{c.campaign}</p>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
+                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline truncate mb-2"
+                      title={`'${c.campaign}' 캠페인으로 이동`}
+                    >{c.campaign}</button>
                     <div className="flex items-center gap-3 text-xs text-gray-400">
                       <span className="flex items-center gap-0.5">
                         <Eye size={11} aria-hidden="true" /> {fmtNumber(c.reach)}
@@ -736,7 +759,14 @@ export default function Library() {
                       </button>
                     </td>
                     <td className="py-3 px-3 text-sm font-medium text-gray-900">{c.creator}</td>
-                    <td className="py-3 px-3 text-xs text-gray-600 max-w-[120px] truncate">{c.campaign}</td>
+                    <td className="py-3 px-3 max-w-[120px]">
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
+                        className="text-xs text-gray-600 hover:text-brand-green hover:underline truncate w-full text-left"
+                        title={`'${c.campaign}' 캠페인으로 이동`}
+                      >{c.campaign}</button>
+                    </td>
                     <td className="py-3 px-3">
                       {c.type ? (
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>

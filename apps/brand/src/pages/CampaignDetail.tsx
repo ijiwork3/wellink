@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen } from 'lucide-react'
 import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -995,21 +995,26 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* 캠페인 설명 — 썸네일을 설명 안에 작게 두고 클릭 시 라이트박스 (원본 ToastEditorViewer 보강) */}
+          {/* 캠페인 설명 — 썸네일을 우측 상단에 부착, 클릭 시 라이트박스 (원본 ToastEditorViewer 보강) */}
           <Section title="캠페인 설명" icon={<FileText size={14} />}>
-            <button
-              type="button"
-              onClick={() => setCampaignImageOpen(true)}
-              aria-label="대표 이미지 크게 보기"
-              className="float-left mr-3 mb-2 w-32 @sm:w-40 rounded-lg overflow-hidden border border-gray-100 group hover:opacity-90 transition-opacity"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center relative">
-                <Image size={28} className="text-emerald-300" aria-hidden="true" />
-                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+            <div className="flex flex-col @sm:flex-row gap-4">
+              <button
+                type="button"
+                onClick={() => setCampaignImageOpen(true)}
+                aria-label="대표 이미지 크게 보기"
+                className="group relative w-full @sm:w-32 @md:w-40 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <div className="aspect-[4/3] flex items-center justify-center">
+                  <Image size={22} className="text-gray-300" aria-hidden="true" strokeWidth={1.5} />
+                </div>
+                <span className="absolute inset-x-0 bottom-0 px-2 py-1 text-[10px] font-medium text-white bg-gradient-to-t from-black/55 to-transparent flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
+                  크게 보기
+                </span>
+              </button>
+              <div className="min-w-0 flex-1">
+                <MarkdownView text={campaign.description} />
               </div>
-            </button>
-            <MarkdownView text={campaign.description} />
-            <div className="clear-both" />
+            </div>
           </Section>
 
           {/* 제공 내역 */}
@@ -1129,46 +1134,43 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* 검색 (이름·활동분야) — 신규, 원본 ApplicantList 동등 */}
-          <div className="relative max-w-sm">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-            <input
-              type="search"
-              placeholder="이름·활동분야로 검색"
-              value={applicantsSearch}
-              onChange={e => { setApplicantsSearch(e.target.value); setApplicantsPage(1) }}
-              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 placeholder:text-gray-400"
-            />
-          </div>
-
-          {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등.
-              질문 개수/글자 길이가 늘어도 안 깨지도록: 헤더(요약·토글) + 활성 칩 + 펼침 영역(질문 위·드롭다운 아래 그리드) */}
-          {dynamicQuestions.length > 0 && (() => {
+          {/* 검색 + 옵션 필터 — 한 패널로 통합. 검색은 항상 노출, 옵션은 펼침/접힘 */}
+          {(() => {
             const activeEntries = Object.entries(answerFilters).filter(([, v]) => v)
             const activeCount = activeEntries.length
+            const hasOptions = dynamicQuestions.length > 0
             return (
               <div className="bg-gray-50 rounded-xl border border-gray-100">
-                {/* 헤더 — 항상 표시 */}
-                <button
-                  type="button"
-                  onClick={() => setOptionFilterOpen(o => !o)}
-                  aria-expanded={optionFilterOpen}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-gray-100/60 transition-colors rounded-t-xl"
-                >
-                  <span className="text-xs font-medium text-gray-700 inline-flex items-center gap-2">
-                    옵션 필터
-                    {activeCount > 0 && (
-                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-[10px] font-semibold">{activeCount}</span>
-                    )}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
-                    {optionFilterOpen ? '접기' : `${dynamicQuestions.length}개 질문 펼치기`}
-                    <ChevronDown size={12} className={`transition-transform ${optionFilterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
-                  </span>
-                </button>
+                {/* 헤더: 검색 + (있을 때) 옵션 토글 */}
+                <div className="flex items-stretch gap-2 p-2 flex-wrap @sm:flex-nowrap">
+                  <div className="relative flex-1 min-w-[180px]">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" aria-hidden="true" />
+                    <input
+                      type="search"
+                      placeholder="이름·활동분야로 검색"
+                      value={applicantsSearch}
+                      onChange={e => { setApplicantsSearch(e.target.value); setApplicantsPage(1) }}
+                      className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 placeholder:text-gray-400"
+                    />
+                  </div>
+                  {hasOptions && (
+                    <button
+                      type="button"
+                      onClick={() => setOptionFilterOpen(o => !o)}
+                      aria-expanded={optionFilterOpen}
+                      className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      <span>옵션 필터</span>
+                      {activeCount > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-[10px] font-semibold">{activeCount}</span>
+                      )}
+                      <ChevronDown size={12} className={`transition-transform ${optionFilterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
 
                 {/* 활성 필터 칩 — 접힘 상태에서도 노출 */}
-                {activeCount > 0 && (
+                {hasOptions && activeCount > 0 && (
                   <div className="px-3 pb-2.5 flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
                     {activeEntries.map(([q, v]) => (
                       <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-[11px] text-gray-700">
@@ -1193,7 +1195,7 @@ export default function CampaignDetail() {
                 )}
 
                 {/* 펼침 영역 — 질문 라벨(상단) + 드롭다운(하단) 그리드 */}
-                {optionFilterOpen && (
+                {hasOptions && optionFilterOpen && (
                   <div className="p-3 border-t border-gray-100 grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3">
                     {dynamicQuestions.map(q => (
                       <div key={q.question} className="space-y-1 min-w-0">
@@ -1241,7 +1243,7 @@ export default function CampaignDetail() {
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
-                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">액션</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[160px]">액션</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -1288,17 +1290,17 @@ export default function CampaignDetail() {
                         className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                       >답변 보기</button>
                     </td>
-                    <td className="py-3 px-4 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
-                      <div className="flex gap-1.5">
+                    <td className="py-3 px-4 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] whitespace-nowrap">
+                      <div className="flex gap-1.5 flex-nowrap">
                         <button
                           onClick={() => handleSelectApplicant(a.id)}
-                          className="flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+                          className="inline-flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap shrink-0"
                         >
                           <Check size={12} aria-hidden="true" /> 선정
                         </button>
                         <button
                           onClick={() => setRejectModal(a.id)}
-                          className="flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150"
+                          className="inline-flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150 whitespace-nowrap shrink-0"
                         >
                           <X size={12} aria-hidden="true" /> 반려
                         </button>
@@ -1535,7 +1537,14 @@ export default function CampaignDetail() {
                 등록 콘텐츠
                 <span className="ml-1.5 text-xs font-normal text-gray-400">{filtered.length}건</span>
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => navigate(`/library?campaign=${encodeURIComponent(campaign.name)}`)}
+                  className="inline-flex items-center gap-1.5 text-xs text-gray-700 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                >
+                  <FolderOpen size={13} aria-hidden="true" />
+                  라이브러리에서 보기
+                </button>
                 <button
                   onClick={() => {
                     const visibleIds = new Set(filtered.map(c => c.id))
@@ -1546,7 +1555,7 @@ export default function CampaignDetail() {
                       setSelectedContents(prev => new Set([...prev, ...visibleIds]))
                     }
                   }}
-                  className="text-xs text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+                  className="text-xs text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
                 >
                   {filtered.every(c => selectedContents.has(c.id)) && filtered.length > 0 ? '선택 해제' : '전체 선택'}
                 </button>
@@ -1557,7 +1566,7 @@ export default function CampaignDetail() {
                     if (selectedContents.size === 0) { showToast('다운로드할 콘텐츠를 선택해주세요.', 'error'); return }
                     setDownloadModal(true)
                   }}
-                  className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
+                  className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
                 >
                   <Download size={13} aria-hidden="true" />
                   다운로드{selectedContents.size > 0 && ` (${selectedContents.size})`}
