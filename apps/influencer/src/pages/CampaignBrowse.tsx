@@ -164,11 +164,11 @@ export default function CampaignBrowse() {
 
         {/* 카드 그리드 */}
         {loading ? (
-          <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
             {filtered.map(c => (
               <CampaignCard
                 key={c.id}
@@ -250,7 +250,7 @@ export default function CampaignBrowse() {
       {/* 푸터 */}
       <footer className="bg-gray-900 text-white mt-8">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col @[640px]:flex-row @[640px]:items-center justify-between gap-4 mb-6">
             <div>
               <span className="text-base font-bold text-brand-green">WELLINK AI</span>
               <p className="text-xs text-gray-400 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>

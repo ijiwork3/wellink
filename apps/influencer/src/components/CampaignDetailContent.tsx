@@ -44,10 +44,10 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
   const wrapCls = inModal ? '' : '@container'
   const imgCls = inModal
     ? 'h-48 flex items-center justify-center text-7xl bg-brand-green/10 rounded-xl overflow-hidden mb-5'
-    : 'h-52 @sm:h-64 flex items-center justify-center text-8xl bg-brand-green/10 @sm:mx-6 @sm:mt-6 @sm:rounded-2xl overflow-hidden'
+    : 'h-52 @[640px]:h-64 flex items-center justify-center text-8xl bg-brand-green/10 @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden'
 
-  const sectionCls = inModal ? 'py-4' : 'border-t border-gray-100 px-4 py-5 @sm:px-6'
-  const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @sm:p-6'
+  const sectionCls = inModal ? 'py-4' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
+  const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @[640px]:p-6'
 
   return (
     <div className={wrapCls}>
@@ -61,8 +61,8 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
       {/* 이미지 배너 */}
       <div className={imgCls}>{campaign.image}</div>
 
-      <div className={inModal ? '' : '@sm:max-w-3xl @sm:mx-auto @sm:px-6 @sm:py-6'}>
-        <div className={inModal ? '' : '@sm:bg-white @sm:rounded-2xl @sm:shadow-sm @sm:border @sm:border-gray-100 @sm:overflow-hidden'}>
+      <div className={inModal ? '' : '@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6'}>
+        <div className={inModal ? '' : '@[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 @[640px]:overflow-hidden'}>
 
           {/* 브랜드 + 상태 + 관심등록 */}
           <div className={firstSectionCls}>
@@ -111,7 +111,7 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
           </div>
 
           {/* 기간/채널 */}
-          <div className={`${sectionCls} grid grid-cols-1 @sm:grid-cols-2 gap-3`} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+          <div className={`${sectionCls} grid grid-cols-1 @[640px]:grid-cols-2 gap-3`} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
               <Calendar size={17} className="text-brand-green" aria-hidden="true" />
               <div>

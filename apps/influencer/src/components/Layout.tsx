@@ -31,7 +31,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
       </a>
 
       {/* GNB */}
-      <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 @sm:px-6 bg-white border-b border-gray-100 z-40">
+      <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 @[640px]:px-6 bg-white border-b border-gray-100 z-40">
         {onBack ? (
           /* 2뎁스: 뒤로가기 + 페이지 타이틀 */
           <>
@@ -54,7 +54,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
                 <button
                   onClick={() => setDrawerOpen(true)}
                   aria-label="메뉴 열기"
-                  className="hidden @sm:flex @lg:hidden p-1.5 -ml-1 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="hidden @[640px]:flex @[1024px]:hidden p-1.5 -ml-1 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <Menu size={20} className="text-gray-700" />
                 </button>
@@ -71,7 +71,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { auth.clear(); navigate('/login') }}
-                className="hidden @sm:block text-sm px-3 @sm:px-3.5 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
+                className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
               >
                 로그아웃
               </button>
@@ -84,10 +84,10 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
       <div className="flex-1 overflow-y-auto flex flex-col">
         {profileHeader && <ProfileHeader />}
         {showSidebar ? (
-          <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @sm:px-6 @sm:py-6 pb-20 @sm:pb-6">
+          <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @[640px]:px-6 @[640px]:py-6 pb-20 @[640px]:pb-6">
             <div className="flex gap-6">
               {/* SideNav: 컨테이너 lg 이상에서만 표시 */}
-              <div className="hidden @sm:block">
+              <div className="hidden @[640px]:block">
                 <SideNav />
               </div>
               <main id="main-content" className="flex-1 min-w-0" style={{ animation: 'fadeIn 0.15s ease-out' }}>
@@ -96,7 +96,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             </div>
           </div>
         ) : (
-          <main id="main-content" className={`flex-1 ${bottomTab ? 'pb-20 @sm:pb-0' : ''}`} style={{ animation: 'fadeIn 0.15s ease-out' }}>
+          <main id="main-content" className={`flex-1 ${bottomTab ? 'pb-20 @[640px]:pb-0' : ''}`} style={{ animation: 'fadeIn 0.15s ease-out' }}>
             {children}
           </main>
         )}
@@ -136,7 +136,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
 
       {/* 하단 탭바: 컨테이너 sm 미만에서만 표시 */}
       {bottomTab && (
-        <div className="@sm:hidden">
+        <div className="@[640px]:hidden">
           <BottomTabBar />
         </div>
       )}

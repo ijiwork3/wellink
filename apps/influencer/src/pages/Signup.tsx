@@ -241,7 +241,7 @@ export default function Signup() {
           {/* 활동 분야 — CustomCheckbox */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2.5">활동 분야</label>
-            <div className="grid grid-cols-2 @sm:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 @[640px]:grid-cols-4 gap-2.5">
               {activityFields.map((field) => (
                 <CustomCheckbox
                   key={field}
