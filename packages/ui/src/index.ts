@@ -40,6 +40,7 @@ export { auth } from './utils/auth'
 
 // 유틸 훅
 export { useQAMode } from './utils/useQAMode'
+export { useIsTouchDevice } from './utils/useIsTouchDevice'
 
 // 인플루언서 공통 정렬 정책
 export {

@@ -1,20 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
+import { useIsTouchDevice } from '../utils/useIsTouchDevice'
 import BottomSheet from './BottomSheet'
-
-/** 768px 미만이면 모바일로 간주 */
-function useIsMobile(breakpoint = 768): boolean {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window === 'undefined' ? false : window.innerWidth < breakpoint
-  )
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < breakpoint)
-    window.addEventListener('resize', handler)
-    return () => window.removeEventListener('resize', handler)
-  }, [breakpoint])
-  return isMobile
-}
 
 /**
  * DateRangePicker — 분석 페이지 공통 기간 선택 컴포넌트
@@ -45,7 +33,7 @@ export default function DateRangePicker({
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
+  const isMobile = useIsTouchDevice()
 
   useEffect(() => {
     if (!open || isMobile) return
