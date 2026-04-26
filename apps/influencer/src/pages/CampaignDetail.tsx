@@ -54,7 +54,11 @@ export default function CampaignDetail() {
 
   return (
     <Layout showSidebar={false} pageTitle={campaign.name} onBack={goBack}>
-      <CampaignDetailContent campaign={campaign} />
+      <CampaignDetailContent
+        campaign={campaign}
+        forceApplied={qa === 'applied'}
+        forceClosed={qa === 'closed'}
+      />
     </Layout>
   )
 }

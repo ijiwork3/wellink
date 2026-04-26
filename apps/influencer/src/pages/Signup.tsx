@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
-import { CustomCheckbox, useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS } from '@wellink/ui'
+import { CustomCheckbox, useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS, auth } from '@wellink/ui'
 import { BRAND_URL, CONTACT_EMAIL } from '../config/urls'
 import { ACTIVITY_FIELDS as activityFields } from '../services/mock/profile'
 
@@ -82,6 +82,7 @@ export default function Signup() {
     setIsSubmitting(true)
     setTimeout(() => {
       setIsSubmitting(false)
+      auth.set('influencer')
       navigate('/home')
     }, TIMER_MS.FORM_SUBMIT)
   }

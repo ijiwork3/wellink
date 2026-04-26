@@ -9,6 +9,8 @@ import type { Campaign } from '../services/mock/campaigns'
 interface CampaignDetailContentProps {
   campaign: Campaign
   inModal?: boolean
+  forceApplied?: boolean
+  forceClosed?: boolean
 }
 
 function groupConditions(conditions: string[]) {
@@ -23,13 +25,13 @@ function groupConditions(conditions: string[]) {
   return { follower, content, etc }
 }
 
-export default function CampaignDetailContent({ campaign, inModal = false }: CampaignDetailContentProps) {
+export default function CampaignDetailContent({ campaign, inModal = false, forceApplied = false, forceClosed = false }: CampaignDetailContentProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [liked, setLiked] = useState(false)
-  const applied = false
+  const applied = forceApplied
 
-  const isClosed = campaign.status === '종료'
+  const isClosed = forceClosed || campaign.status === '종료'
 
   // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
   const wrapCls = inModal ? '' : '@container'
