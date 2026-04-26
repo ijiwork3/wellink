@@ -991,9 +991,9 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* 대표 이미지 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
+          {/* 대표 이미지 — 데스크탑에서 너무 커지지 않도록 max-w 제한, 좌측 정렬 */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-md">
+            <div className="aspect-[4/3] bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
               <Image size={40} className="text-emerald-300" aria-hidden="true" />
             </div>
           </div>
@@ -1132,26 +1132,32 @@ export default function CampaignDetail() {
             />
           </div>
 
-          {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등 */}
+          {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등.
+              질문이 길어질 수 있어 라벨은 상단, 드롭다운은 하단 분리 레이아웃 */}
           {dynamicQuestions.length > 0 && (
-            <div className="flex flex-col @sm:flex-row @sm:flex-wrap @sm:items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-medium text-gray-500 @sm:mr-1">옵션 필터</span>
-              {dynamicQuestions.map(q => (
-                <div key={q.question} className="w-full @sm:w-auto @sm:max-w-[220px]">
-                  <CustomSelect
-                    value={answerFilters[q.question] ?? ''}
-                    onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
-                    options={[{ label: `${q.question} (전체)`, value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
-                    className="text-xs"
-                  />
-                </div>
-              ))}
-              {Object.values(answerFilters).some(v => v) && (
-                <button
-                  onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
-                  className="text-xs text-brand-green hover:underline @sm:ml-1 self-start @sm:self-auto"
-                >초기화</button>
-              )}
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-medium text-gray-500">옵션 필터</span>
+                {Object.values(answerFilters).some(v => v) && (
+                  <button
+                    onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
+                    className="text-xs text-brand-green hover:underline"
+                  >초기화</button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3">
+                {dynamicQuestions.map(q => (
+                  <div key={q.question} className="space-y-1">
+                    <label className="block text-xs text-gray-600 leading-snug" title={q.question}>{q.question}</label>
+                    <CustomSelect
+                      value={answerFilters[q.question] ?? ''}
+                      onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
+                      options={[{ label: '전체', value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
+                      className="text-xs w-full"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
