@@ -248,9 +248,18 @@ export default function InfluencerList() {
 
   const sorted = useMemo(() => sortInfluencers(filtered, sortKey), [filtered, sortKey])
 
-  const perPage = 5
+  const perPage = 10
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage))
-  const paginated = sorted.slice((page - 1) * perPage, page * perPage)
+  const safePage = Math.min(page, totalPages)
+  const paginated = sorted.slice((safePage - 1) * perPage, safePage * perPage)
+  // 페이지네이션 윈도우 — 1, …, current±1, …, last (모바일 줄바꿈 방지)
+  const pageList = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+    .reduce<(number | '…')[]>((acc, p) => {
+      if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
+      acc.push(p)
+      return acc
+    }, [])
 
   const handleProposal = () => {
     if (!selectedCampaign) { showToast('캠페인을 선택해주세요.', 'error'); return }
@@ -482,32 +491,36 @@ export default function InfluencerList() {
         </table>
         </div>
 
-        {/* 페이지네이션 */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-50" aria-live="polite" aria-atomic="true">
-          <span className="text-xs text-gray-500">총 {filtered.length}명 중 {paginated.length}명 표시</span>
-          <div className="flex items-center gap-1">
+        {/* 페이지네이션 — 윈도우 축약 (1·…·current±1·…·last) */}
+        <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-50 flex-wrap" aria-live="polite" aria-atomic="true">
+          <span className="text-xs text-gray-500 shrink-0">총 {filtered.length}명 · {safePage} / {totalPages}</span>
+          <div className="flex items-center gap-1 flex-wrap justify-end">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               aria-label="이전 페이지"
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors duration-150"
-              disabled={page === 1}
+              disabled={safePage === 1}
             >
               <ChevronLeft size={15} aria-hidden="true" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-              <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={`w-7 h-7 rounded-lg text-xs transition-colors duration-150 ${page === p ? 'bg-brand-green text-white' : 'hover:bg-gray-100 text-gray-600'}`}
-              >
-                {p}
-              </button>
-            ))}
+            {pageList.map((p, i) =>
+              p === '…' ? (
+                <span key={`gap-${i}`} className="text-xs text-gray-400 px-1 select-none">…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`w-7 h-7 rounded-lg text-xs transition-colors duration-150 ${safePage === p ? 'bg-brand-green text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+                >
+                  {p}
+                </button>
+              )
+            )}
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               aria-label="다음 페이지"
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors duration-150"
-              disabled={page === totalPages}
+              disabled={safePage === totalPages}
             >
               <ChevronRight size={15} aria-hidden="true" />
             </button>
@@ -519,7 +532,7 @@ export default function InfluencerList() {
       <Modal
         open={!!selectedInfluencer && !proposalModal}
         onClose={() => setSelectedInfluencer(null)}
-        size="lg"
+        size="md"
         footer={selectedInfluencer ? (
           <button
             onClick={() => setProposalModal(true)}
