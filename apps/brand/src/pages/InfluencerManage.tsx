@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Modal, AlertModal, BottomSheet } from '@wellink/ui'
+import { Modal, AlertModal, BottomSheet, CustomSelect } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
@@ -362,16 +362,12 @@ export default function InfluencerManage() {
         </button>
       </div>
         {/* 공통 정렬 — 인플루언서 프로필 화면 통일 정책 */}
-        <select
+        <CustomSelect
           value={sortKey}
-          onChange={e => setSortKey(e.target.value as InfluencerSortKey)}
-          aria-label="정렬"
-          className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 hover:border-gray-300 focus:outline-none focus:border-brand-green transition-colors"
-        >
-          {INFLUENCER_SORT_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+          onChange={(v: string) => setSortKey(v as InfluencerSortKey)}
+          options={INFLUENCER_SORT_OPTIONS.map(opt => ({ label: opt.label, value: opt.value }))}
+          className="w-40"
+        />
       </div>
       </div>
 
