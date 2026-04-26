@@ -7,7 +7,7 @@ import CampaignCard from '../components/CampaignCard'
 import CampaignDetailContent from '../components/CampaignDetailContent'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice } from '@wellink/ui'
+import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast } from '@wellink/ui'
 import { BRAND_URL, HELP_EMAIL } from '../config/urls'
 
 function SkeletonCard() {
@@ -35,6 +35,7 @@ export default function CampaignBrowse() {
   const qa = useQAMode()
   const navigate = useNavigate()
   const isTouch = useIsTouchDevice()
+  const { showToast } = useToast()
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
@@ -129,7 +130,11 @@ export default function CampaignBrowse() {
               </button>
             )}
           </div>
-          <button className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
+          <button
+            onClick={() => showToast('상세 필터 기능은 준비 중이에요', 'info')}
+            className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors"
+            aria-label="상세 필터"
+          >
             <SlidersHorizontal size={16} />
           </button>
         </div>

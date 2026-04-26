@@ -212,7 +212,7 @@ export default function Media() {
                 {MOCK_CONTENT.map(post => (
                   <div key={post.id} className="aspect-square bg-brand-green/5 rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group cursor-pointer">
                     <span className="text-2xl">{post.emoji}</span>
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
                       <span className="text-white text-[10px] font-medium flex items-center gap-0.5">
                         <Heart size={9} fill="white" />
                         {post.likes}
