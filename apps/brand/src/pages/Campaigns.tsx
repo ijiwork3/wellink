@@ -5,7 +5,7 @@ import {
   MoreVertical, Copy, Share2, XCircle, Trash2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
@@ -557,47 +557,12 @@ export default function Campaigns() {
         )}
 
         {/* 페이지네이션 */}
-        {filtered.length > PAGE_SIZE && (
-          <div className="flex items-center justify-between gap-2 px-3 @sm:px-5 py-3 border-t border-gray-100 flex-wrap">
-            <span className="text-xs text-gray-500 shrink-0">
-              총 {filtered.length}개 · {safePage} / {totalPages}
-            </span>
-            <div className="flex items-center gap-1 flex-wrap justify-end">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              >이전</button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
-                .reduce<(number | '…')[]>((acc, p) => {
-                  if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
-                  acc.push(p)
-                  return acc
-                }, [])
-                .map((p, i) =>
-                  p === '…' ? (
-                    <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                        safePage === p
-                          ? 'bg-gray-100 text-gray-900'
-                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >{p}</button>
-                  )
-                )}
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              >다음</button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          total={filtered.length}
+          page={safePage}
+          pageSize={PAGE_SIZE}
+          onChange={setPage}
+        />
       </div>
 
       {/* 확인 모달 */}

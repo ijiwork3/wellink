@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker } from '@wellink/ui'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown } from 'lucide-react'
+import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -383,8 +383,12 @@ export default function CampaignDetail() {
   const [applicantsSortKey, setApplicantsSortKey] = useState<ApplicantSortKey>('followerCount')
   const [applicantsSortDesc, setApplicantsSortDesc] = useState(true)
   const [answersModalId, setAnswersModalId] = useState<number | null>(null)
+  // 캠페인 정보 — 대표 이미지 라이트박스
+  const [campaignImageOpen, setCampaignImageOpen] = useState(false)
   // 객관식 질문별 동적 옵션 필터 (원본 selectedFilters)
   const [answerFilters, setAnswerFilters] = useState<Record<string, string>>({})
+  // 옵션 필터 펼침/접힘 — 질문 많을 때 화면 절약
+  const [optionFilterOpen, setOptionFilterOpen] = useState(false)
 
   // 선정된 지원자 state
   // QA: tab-selected-empty → 빈 배열
@@ -991,16 +995,21 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* 대표 이미지 — 데스크탑에서 너무 커지지 않도록 max-w 제한, 좌측 정렬 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-md">
-            <div className="aspect-[4/3] bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center">
-              <Image size={40} className="text-emerald-300" aria-hidden="true" />
-            </div>
-          </div>
-
-          {/* 캠페인 설명 — 원본 ToastEditorViewer 마크다운 뷰어 보강 (경량) */}
+          {/* 캠페인 설명 — 썸네일을 설명 안에 작게 두고 클릭 시 라이트박스 (원본 ToastEditorViewer 보강) */}
           <Section title="캠페인 설명" icon={<FileText size={14} />}>
+            <button
+              type="button"
+              onClick={() => setCampaignImageOpen(true)}
+              aria-label="대표 이미지 크게 보기"
+              className="float-left mr-3 mb-2 w-32 @sm:w-40 rounded-lg overflow-hidden border border-gray-100 group hover:opacity-90 transition-opacity"
+            >
+              <div className="aspect-[4/3] bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center relative">
+                <Image size={28} className="text-emerald-300" aria-hidden="true" />
+                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+              </div>
+            </button>
             <MarkdownView text={campaign.description} />
+            <div className="clear-both" />
           </Section>
 
           {/* 제공 내역 */}
@@ -1133,33 +1142,75 @@ export default function CampaignDetail() {
           </div>
 
           {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등.
-              질문이 길어질 수 있어 라벨은 상단, 드롭다운은 하단 분리 레이아웃 */}
-          {dynamicQuestions.length > 0 && (
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-medium text-gray-500">옵션 필터</span>
-                {Object.values(answerFilters).some(v => v) && (
-                  <button
-                    onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
-                    className="text-xs text-brand-green hover:underline"
-                  >초기화</button>
+              질문 개수/글자 길이가 늘어도 안 깨지도록: 헤더(요약·토글) + 활성 칩 + 펼침 영역(질문 위·드롭다운 아래 그리드) */}
+          {dynamicQuestions.length > 0 && (() => {
+            const activeEntries = Object.entries(answerFilters).filter(([, v]) => v)
+            const activeCount = activeEntries.length
+            return (
+              <div className="bg-gray-50 rounded-xl border border-gray-100">
+                {/* 헤더 — 항상 표시 */}
+                <button
+                  type="button"
+                  onClick={() => setOptionFilterOpen(o => !o)}
+                  aria-expanded={optionFilterOpen}
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-gray-100/60 transition-colors rounded-t-xl"
+                >
+                  <span className="text-xs font-medium text-gray-700 inline-flex items-center gap-2">
+                    옵션 필터
+                    {activeCount > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-[10px] font-semibold">{activeCount}</span>
+                    )}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
+                    {optionFilterOpen ? '접기' : `${dynamicQuestions.length}개 질문 펼치기`}
+                    <ChevronDown size={12} className={`transition-transform ${optionFilterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  </span>
+                </button>
+
+                {/* 활성 필터 칩 — 접힘 상태에서도 노출 */}
+                {activeCount > 0 && (
+                  <div className="px-3 pb-2.5 flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
+                    {activeEntries.map(([q, v]) => (
+                      <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-[11px] text-gray-700">
+                        <span className="truncate max-w-[160px]" title={`${q}: ${v}`}>
+                          <span className="text-gray-400">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setAnswerFilters(prev => ({ ...prev, [q]: '' })); setApplicantsPage(1) }}
+                          aria-label={`${q} 필터 제거`}
+                          className="w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+                        >
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
+                      className="text-[11px] text-brand-green hover:underline ml-1 self-center"
+                    >전체 해제</button>
+                  </div>
+                )}
+
+                {/* 펼침 영역 — 질문 라벨(상단) + 드롭다운(하단) 그리드 */}
+                {optionFilterOpen && (
+                  <div className="p-3 border-t border-gray-100 grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3">
+                    {dynamicQuestions.map(q => (
+                      <div key={q.question} className="space-y-1 min-w-0">
+                        <label className="block text-xs text-gray-600 leading-snug break-words" title={q.question}>{q.question}</label>
+                        <CustomSelect
+                          value={answerFilters[q.question] ?? ''}
+                          onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
+                          options={[{ label: '전체', value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
+                          className="text-xs w-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-              <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3">
-                {dynamicQuestions.map(q => (
-                  <div key={q.question} className="space-y-1">
-                    <label className="block text-xs text-gray-600 leading-snug" title={q.question}>{q.question}</label>
-                    <CustomSelect
-                      value={answerFilters[q.question] ?? ''}
-                      onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
-                      options={[{ label: '전체', value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
-                      className="text-xs w-full"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            )
+          })()}
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
@@ -1188,9 +1239,9 @@ export default function CampaignDetail() {
                   <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">참여율 {sortIcon('engagement')}</th>
                   <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">Fit Score {sortIcon('fitScore')}</th>
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
-                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">액션</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">액션</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -1230,14 +1281,14 @@ export default function CampaignDetail() {
                       <span className="text-xs text-gray-400 ml-0.5">점</span>
                     </td>
                     <td className="py-3 px-4 text-xs text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
+                    <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => setAnswersModalId(a.id)}
                         className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                       >답변 보기</button>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleSelectApplicant(a.id)}
@@ -1741,10 +1792,9 @@ export default function CampaignDetail() {
 
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* 기간 필터 — DateRangePicker 통일 (분석 페이지 정책 §6) */}
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-xs text-gray-500">집계 기간</span>
+          <div className="flex justify-end">
             <DateRangePicker
               period={reportPeriod === 'daily' ? '일간' : reportPeriod === 'weekly' ? '주간' : '월간'}
               dateOffset={reportDateOffset}
@@ -1800,9 +1850,9 @@ export default function CampaignDetail() {
                 <h3 className="text-sm font-semibold text-gray-900">TOP 인플루언서</h3>
                 <span className="text-xs text-gray-400">· 좋아요 + 댓글 + 조회수 합산</span>
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2">
                 {topInfluencers.map((inf, idx) => (
-                  <div key={inf.name} className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between rounded-xl bg-gray-50 px-4 py-3 gap-2 @sm:gap-3">
+                  <div key={inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-3 gap-2">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
@@ -1812,7 +1862,7 @@ export default function CampaignDetail() {
                         <p className="text-xs text-gray-500">콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap @sm:justify-end pl-11 @sm:pl-0">
+                    <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap pl-11">
                       <span className="text-gray-500">좋아요 <strong className="text-gray-900">{fmtNumber(inf.likes)}</strong></span>
                       <span className="text-gray-500">댓글 <strong className="text-gray-900">{fmtNumber(inf.comments)}</strong></span>
                       <span className="text-gray-500">조회 <strong className="text-gray-900">{fmtNumber(inf.views)}</strong></span>
@@ -2249,6 +2299,34 @@ export default function CampaignDetail() {
           </div>
         )}
       </Modal>
+
+      {/* 캠페인 대표 이미지 라이트박스 — 클릭 시 딤드 + 크게 보기 */}
+      {campaignImageOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="캠페인 대표 이미지"
+          onClick={() => setCampaignImageOpen(false)}
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-6 cursor-zoom-out"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="relative max-w-3xl w-full max-h-[85vh] rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 cursor-default"
+          >
+            <button
+              type="button"
+              onClick={() => setCampaignImageOpen(false)}
+              aria-label="닫기"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700"
+            >
+              <X size={18} />
+            </button>
+            <div className="aspect-[4/3] flex items-center justify-center">
+              <Image size={80} className="text-emerald-300" aria-hidden="true" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 신청 답변 보기 모달 — 신규, 원본 ApplicantList 보강 */}
       {(() => {
@@ -2726,50 +2804,3 @@ function TrendChart({
   )
 }
 
-/** 공통 페이지네이션 — 캠페인 목록과 동일한 UI */
-function Pagination({ total, page, pageSize, onChange }: { total: number; page: number; pageSize: number; onChange: (p: number) => void }) {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const safePage = Math.min(page, totalPages)
-  if (total <= pageSize) return null
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
-    .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
-    .reduce<(number | '…')[]>((acc, p) => {
-      if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
-      acc.push(p)
-      return acc
-    }, [])
-  return (
-    <div className="flex items-center justify-between gap-2 px-3 @sm:px-5 py-3 border-t border-gray-100 flex-wrap">
-      <span className="text-xs text-gray-500 shrink-0">
-        총 {total}개 · {safePage} / {totalPages}
-      </span>
-      <div className="flex items-center gap-1 flex-wrap justify-end">
-        <button
-          onClick={() => onChange(Math.max(1, safePage - 1))}
-          disabled={safePage === 1}
-          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-        >이전</button>
-        {pages.map((p, i) =>
-          p === '…' ? (
-            <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
-          ) : (
-            <button
-              key={p}
-              onClick={() => onChange(p)}
-              className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                safePage === p
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
-            >{p}</button>
-          )
-        )}
-        <button
-          onClick={() => onChange(Math.min(totalPages, safePage + 1))}
-          disabled={safePage === totalPages}
-          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-        >다음</button>
-      </div>
-    </div>
-  )
-}

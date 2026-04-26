@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, AlertCircle } from 'lucide-react'
-import { useToast, ErrorState } from '@wellink/ui'
+import { useToast, ErrorState, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 
 /** 알림 센터 — 원본 NotificationView.tsx 동등 (광고주) */
@@ -225,25 +225,13 @@ export default function Notifications() {
           </div>
         )}
 
-        {/* 페이지네이션 — 신규 (원본은 전체 표시) */}
-        {filtered.length > PAGE_SIZE && (
-          <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
-            <span className="text-xs text-gray-500">총 {filtered.length}개 · {safePage} / {totalPages}</span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-              >이전</button>
-              <span className="text-xs text-gray-600 px-2">{safePage} / {totalPages}</span>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-              >다음</button>
-            </div>
-          </div>
-        )}
+        {/* 페이지네이션 */}
+        <Pagination
+          total={filtered.length}
+          page={safePage}
+          pageSize={PAGE_SIZE}
+          onChange={setPage}
+        />
       </div>
 
       {/* 안내 카드 */}

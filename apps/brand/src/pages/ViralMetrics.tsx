@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, Info, Award } from 'lucide-react'
-import { ErrorState, useToast, DateRangePicker, Tooltip, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
+import { ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -493,24 +493,12 @@ export default function ViralMetrics() {
               </table>
             </div>
             {/* 페이지네이션 */}
-            {sorted.length > VC_PAGE_SIZE && (
-              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
-                <span className="text-xs text-gray-500">총 {sorted.length}개 · {safePage} / {totalPages}</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setContentPage(p => Math.max(1, p - 1))}
-                    disabled={safePage === 1}
-                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  >이전</button>
-                  <span className="text-xs text-gray-600 px-2">{safePage} / {totalPages}</span>
-                  <button
-                    onClick={() => setContentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={safePage === totalPages}
-                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  >다음</button>
-                </div>
-              </div>
-            )}
+            <Pagination
+              total={sorted.length}
+              page={safePage}
+              pageSize={VC_PAGE_SIZE}
+              onChange={setContentPage}
+            />
           </div>
         )
       })()}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, ChevronLeft, ChevronRight, Users, Lock } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, Users, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Modal, AlertModal, BottomSheet, CustomSelect } from '@wellink/ui'
+import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
@@ -550,62 +550,13 @@ export default function InfluencerManage() {
             ))}
           </div>
 
-          {/* 페이지네이션 — 모바일 대응: 윈도우(±1) + 첫/끝 + 생략(...) */}
-          {totalPages > 1 && (() => {
-            // 모바일: 양옆 1개씩 / 데스크톱: 양옆 2개씩
-            const window = isMobile ? 1 : 2
-            const pages: (number | 'ellipsis')[] = []
-            const add = (n: number | 'ellipsis') => pages.push(n)
-            const start = Math.max(2, page - window)
-            const end = Math.min(totalPages - 1, page + window)
-            add(1)
-            if (start > 2) add('ellipsis')
-            for (let p = start; p <= end; p++) add(p)
-            if (end < totalPages - 1) add('ellipsis')
-            if (totalPages > 1) add(totalPages)
-            return (
-              <nav aria-label="페이지 네비게이션" className="flex items-center justify-center gap-1 sm:gap-1.5 pt-4 pb-2 flex-wrap">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  aria-label="이전 페이지"
-                  className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft size={14} aria-hidden="true" />
-                </button>
-                {pages.map((p, idx) =>
-                  p === 'ellipsis' ? (
-                    <span key={`e-${idx}`} className="min-w-[24px] text-center text-xs text-gray-400 select-none">…</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      aria-current={page === p ? 'page' : undefined}
-                      aria-label={`${p}페이지`}
-                      className={`min-w-[32px] h-8 px-2 rounded-lg text-sm transition-colors ${
-                        page === p
-                          ? 'bg-brand-green text-white font-medium'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                )}
-                <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  aria-label="다음 페이지"
-                  className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRight size={14} aria-hidden="true" />
-                </button>
-              </nav>
-            )
-          })()}
-          <p className="text-center text-xs text-gray-400 pb-4">
-            {page} / {totalPages} 페이지
-          </p>
+          {/* 페이지네이션 */}
+          <Pagination
+            total={filteredInfluencers.length}
+            page={page}
+            pageSize={PAGE_SIZE}
+            onChange={setPage}
+          />
         </>
       )}
 

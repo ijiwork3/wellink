@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
-import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -557,24 +557,12 @@ export default function AdPerformance() {
               </div>
             )}
             {/* 페이지네이션 */}
-            {visibleList.length > CAMPAIGN_PAGE_SIZE && (
-              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
-                <span className="text-xs text-gray-500">총 {visibleList.length}개 · {safePage} / {totalPages}</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setCampaignPage(p => Math.max(1, p - 1))}
-                    disabled={safePage === 1}
-                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                  >이전</button>
-                  <span className="text-xs text-gray-600 px-2">{safePage} / {totalPages}</span>
-                  <button
-                    onClick={() => setCampaignPage(p => Math.min(totalPages, p + 1))}
-                    disabled={safePage === totalPages}
-                    className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                  >다음</button>
-                </div>
-              </div>
-            )}
+            <Pagination
+              total={visibleList.length}
+              page={safePage}
+              pageSize={CAMPAIGN_PAGE_SIZE}
+              onChange={setCampaignPage}
+            />
           </div>
         )
       })()}

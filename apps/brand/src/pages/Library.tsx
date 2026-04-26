@@ -15,7 +15,7 @@ import {
   Crown,
   ImageOff,
 } from 'lucide-react'
-import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect } from '@wellink/ui'
+import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '../utils/fmtDate'
@@ -677,7 +677,7 @@ export default function Library() {
             })}
           </div>
           {/* 페이지네이션 — grid 모드 */}
-          <LibPagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
+          <Pagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
         </div>
       ) : (
         /* ───── List (Table) View ───── */
@@ -781,7 +781,7 @@ export default function Library() {
           </table>
           </div>
           {/* 페이지네이션 — list 모드 */}
-          <LibPagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
+          <Pagination total={filtered.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
         </div>
       )}
       </div>{/* /tab-panel-content */}
@@ -1034,45 +1034,3 @@ export default function Library() {
   )
 }
 
-/* ───── Pagination ───── */
-function LibPagination({ total, page, pageSize, onChange }: { total: number; page: number; pageSize: number; onChange: (p: number) => void }) {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  if (total <= pageSize) return null
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
-    .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-    .reduce<(number | '…')[]>((acc, p) => {
-      if (acc.length && p - (acc[acc.length - 1] as number) > 1) acc.push('…')
-      acc.push(p)
-      return acc
-    }, [])
-  return (
-    <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 flex-wrap">
-      <span className="text-xs text-gray-500 shrink-0">총 {total}개 · {page} / {totalPages}</span>
-      <div className="flex items-center gap-1 flex-wrap justify-end">
-        <button
-          onClick={() => onChange(Math.max(1, page - 1))}
-          disabled={page === 1}
-          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-        >이전</button>
-        {pages.map((p, i) =>
-          p === '…' ? (
-            <span key={`gap-${i}`} className="text-xs text-gray-400 px-1">…</span>
-          ) : (
-            <button
-              key={p}
-              onClick={() => onChange(p)}
-              className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                page === p ? 'bg-gray-100 text-gray-900' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
-            >{p}</button>
-          )
-        )}
-        <button
-          onClick={() => onChange(Math.min(totalPages, page + 1))}
-          disabled={page === totalPages}
-          className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-        >다음</button>
-      </div>
-    </div>
-  )
-}
