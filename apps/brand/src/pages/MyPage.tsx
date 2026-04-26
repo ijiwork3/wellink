@@ -14,6 +14,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
 import { Modal, AlertModal, TIMER_MS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 
 const tabs = ['광고주 정보', '팀 멤버', '구독 관리'] as const
 
@@ -43,6 +44,7 @@ export default function MyPage() {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const qa = useQAMode()
+  const { planLabel, isSubscribed } = usePlanAccess()
   // QA: tab-settings → '구독 관리' / tab-team → '팀 멤버' 탭 초기 활성화
   const [activeTab, setActiveTab] = useState<typeof tabs[number]>(
     qa === 'tab-settings' ? '구독 관리' :
@@ -251,7 +253,7 @@ export default function MyPage() {
             <div className="flex items-center justify-between mb-1">
               <div>
                 <h2 className="text-base font-bold text-gray-900">팀 멤버 관리</h2>
-                <p className="text-xs text-gray-500 mt-0.5">현재 Scale 플랜 · 최대 5명까지 초대할 수 있습니다.</p>
+                <p className="text-xs text-gray-500 mt-0.5">{isSubscribed ? `현재 ${planLabel} 플랜` : planLabel} · 플랜별 한도까지 초대할 수 있습니다.</p>
               </div>
               <button
                 onClick={() => setInviteModal(true)}
@@ -318,9 +320,15 @@ export default function MyPage() {
               <h2 className="text-base font-bold text-gray-900">구독 관리</h2>
               <p className="text-xs text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
             </div>
-            <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
-              현재: Scale 플랜
-            </span>
+            {isSubscribed ? (
+              <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+                현재: {planLabel} 플랜
+              </span>
+            ) : (
+              <span className="text-xs font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
+                {planLabel}
+              </span>
+            )}
           </div>
           <button
             onClick={() => navigate('/subscription')}
