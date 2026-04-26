@@ -228,7 +228,7 @@ export default function InfluencerList() {
 
   const filtered = useMemo(() => influencers.filter(inf => {
     if (search && !inf.name.includes(search)) return false
-    if (category && !inf.category.includes(category)) return false
+    if (category && !inf.category.includes(category as InfluencerCat)) return false
     if (fitScoreFilter === '85+' && inf.fitScore < FITSCORE_THRESHOLD.excellent) return false
     if (fitScoreFilter === '70+' && inf.fitScore < FITSCORE_THRESHOLD.average) return false
     if (fitScoreFilter === 'under70' && inf.fitScore >= FITSCORE_THRESHOLD.average) return false

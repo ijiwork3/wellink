@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info, Heart, MessageCircle, Award } from 'lucide-react'
+import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info, Award } from 'lucide-react'
 import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'

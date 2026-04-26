@@ -125,23 +125,6 @@ interface ConfirmState {
 }
 const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
 
-/* ───── Chip (module-level to avoid re-mount per render) ───── */
-function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      className={`text-sm px-3 py-1.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-        active
-          ? 'bg-brand-green text-white border-brand-green'
-          : 'border-gray-200 text-gray-600 hover:border-gray-400'
-      }`}
-    >
-      {label}
-    </button>
-  )
-}
-
 /* ───── Summary stats (module-level since contents is static) ───── */
 // Top Performer: 이번 달 게시 콘텐츠 중 참여율 1위
 const NOW = new Date()
