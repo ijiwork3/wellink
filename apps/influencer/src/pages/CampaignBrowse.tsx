@@ -6,7 +6,7 @@ import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
+import { useQAMode, TIMER_MS, CustomSelect, ChipSelect } from '@wellink/ui'
 import { BRAND_URL, HELP_EMAIL } from '../config/urls'
 
 function SkeletonCard() {
@@ -124,32 +124,24 @@ export default function CampaignBrowse() {
         </div>
 
         {/* 카테고리 탭 + 정렬 */}
-        <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
-        <div className="flex gap-2 flex-wrap flex-1">
-          {BROWSE_CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => { setSelectedCategory(cat); setSearch('') }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
-                selectedCategory === cat
-                  ? 'text-white bg-brand-green shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green/40 hover:text-brand-green'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <CustomSelect
-          value={sort}
-          onChange={v => setSort(v as SortKey)}
-          options={[
-            { label: '마감 임박순', value: 'deadline' },
-            { label: '리워드 높은순', value: 'reward' },
-            { label: '최신 등록순', value: 'recent' },
-          ]}
-          className="shrink-0 w-32"
-        />
+        <div className="mb-5 flex items-start gap-2">
+          <ChipSelect
+            options={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
+            value={selectedCategory}
+            onChange={v => { setSelectedCategory(v); setSearch('') }}
+            className="flex-1"
+            selectClassName="w-full"
+          />
+          <CustomSelect
+            value={sort}
+            onChange={v => setSort(v as SortKey)}
+            options={[
+              { label: '마감 임박순', value: 'deadline' },
+              { label: '리워드 높은순', value: 'reward' },
+              { label: '최신 등록순', value: 'recent' },
+            ]}
+            className="shrink-0 w-32"
+          />
         </div>
 
         {/* 결과 수 */}
