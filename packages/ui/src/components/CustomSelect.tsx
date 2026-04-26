@@ -108,8 +108,8 @@ export default function CustomSelect<T extends string | string[] = string>({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={`w-full flex items-center justify-between gap-2 border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150 cursor-pointer
-          ${open ? 'border-gray-400 ring-2 ring-gray-200' : 'border-gray-200 hover:border-gray-300'}
-          focus-visible:ring-2 focus-visible:ring-brand-green/30 focus-visible:border-brand-green focus-visible:outline-none`}
+          ${open ? 'border-brand-green ring-2 ring-brand-green/50' : 'border-gray-200 hover:border-gray-300'}
+          focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green focus-visible:outline-none`}
       >
         <span className={hasValue ? 'text-gray-900' : 'text-gray-400'}>{displayLabel()}</span>
         <ChevronDown

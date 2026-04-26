@@ -212,7 +212,7 @@ export default function Media() {
               value={urlInput}
               onChange={e => setUrlInput(e.target.value)}
               placeholder={connectModal.placeholder}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all mb-4"
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all mb-4"
               onKeyDown={e => e.key === 'Enter' && handleConnect()}
             />
             <div className="flex gap-3">

@@ -118,10 +118,13 @@ export default function Dashboard() {
   const qa = useQAMode()
   const [showAllNotifications, setShowAllNotifications] = useState(false)
   const [contentPeriod, setContentPeriod] = useState<ContentPeriod>('주간')
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
   const device = useDeviceMode()
   const isPhone = device === 'phone'
   const { plan, planLabel, isSubscribed } = usePlanAccess()
+  // 구독 만료 알림은 구독자에게만 의미 있음 — 미구독에는 노출 금지 (정합성)
+  const [notifications, setNotifications] = useState(() =>
+    isSubscribed ? INITIAL_NOTIFICATIONS : INITIAL_NOTIFICATIONS.filter(n => n.id !== 4),
+  )
   const isPlanLocked = qa === 'plan-locked' || plan === '' || plan === 'focus'
   // 배너 메시지: 미구독은 가입 권유, Focus는 업그레이드 권유 — 동일 잠금 상태지만 워딩 분기
   const lockedBannerMessage = !isSubscribed

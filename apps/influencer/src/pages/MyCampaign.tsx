@@ -160,7 +160,7 @@ export default function MyCampaign() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="캠페인 또는 브랜드 검색"
-            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:border-brand-green focus:bg-white transition-colors"
+            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green focus:bg-white transition-colors"
           />
         </div>
 
@@ -296,7 +296,7 @@ export default function MyCampaign() {
               value={contentUrl}
               onChange={e => setContentUrl(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleContentSubmit()}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="https://instagram.com/p/..."
             />
           </div>

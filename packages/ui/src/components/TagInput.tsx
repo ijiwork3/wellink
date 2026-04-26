@@ -65,7 +65,7 @@ export default function TagInput({
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2 focus-visible:ring-brand-green transition-all"
+          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
         />
         <button
           type="button"

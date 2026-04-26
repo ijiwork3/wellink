@@ -21,7 +21,7 @@ const Toggle = memo(function Toggle({ checked, onChange, className = '', label }
       aria-label={label}
       onClick={onChange}
       className={`relative inline-flex w-11 h-6 items-center rounded-full transition-colors duration-200
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/30 focus-visible:ring-offset-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-offset-2
         ${checked ? 'bg-brand-green' : 'bg-gray-200'} ${className}`}
     >
       <span
