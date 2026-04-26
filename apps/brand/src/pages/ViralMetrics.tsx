@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, Info, Award } from 'lucide-react'
-import { ErrorState, useToast, DateRangePicker, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
+import { ErrorState, useToast, DateRangePicker, Tooltip, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -344,7 +344,7 @@ export default function ViralMetrics() {
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
             <h3 className="text-sm font-semibold text-gray-900">콘텐츠 등급 분포</h3>
-            <span title="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다."><Info size={11} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={11} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <GradeDonut data={viralContentData} />
         </div>

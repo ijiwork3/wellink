@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
-import { KPICard, StatusBadge, ErrorState, DateRangePicker, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -584,7 +584,7 @@ export default function AdPerformance() {
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-1.5">
             <h3 className="text-sm font-semibold text-gray-900">일별 광고 성과</h3>
-            <span title={AD_SECTION_HINTS_KO.dailyPerformance}><Info size={12} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-violet-500 inline-block" />지출</span>
@@ -599,14 +599,14 @@ export default function AdPerformance() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-sm font-semibold text-gray-900">CTR 추이</h3>
-            <span title={AD_SECTION_HINTS_KO.ctrTrend}><Info size={12} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-sm font-semibold text-gray-900">일별 클릭</h3>
-            <span title={AD_SECTION_HINTS_KO.dailyClicks}><Info size={12} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" />
         </div>
@@ -617,7 +617,7 @@ export default function AdPerformance() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-sm font-semibold text-gray-900">도달 출처</h3>
-            <span title={AD_SECTION_HINTS_KO.reachSource}><Info size={12} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
             data={[
@@ -629,7 +629,7 @@ export default function AdPerformance() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-sm font-semibold text-gray-900">참여 출처</h3>
-            <span title={AD_SECTION_HINTS_KO.engagementSource}><Info size={12} className="text-gray-400 cursor-help" aria-hidden="true" /></span>
+            <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
             data={[

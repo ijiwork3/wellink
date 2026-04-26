@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge } from '@wellink/ui'
+import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -842,9 +842,9 @@ export default function CampaignDetail() {
             <h1 className="text-xl @md:text-2xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={handleShareCampaign} title="공유" aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button>
-            <button onClick={handleEditCampaign} title="정보 변경" aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
-            <button onClick={() => setDeleteCampaignModal(true)} title="삭제" aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
+            <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button></Tooltip>
+            <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
+            <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
           </div>
         </div>
 
@@ -1155,7 +1155,6 @@ export default function CampaignDetail() {
                       <button
                         onClick={() => setAnswersModalId(a.id)}
                         className="text-xs text-blue-600 hover:underline whitespace-nowrap"
-                        title="전체 답변 보기"
                       >답변 보기</button>
                     </td>
                     <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
