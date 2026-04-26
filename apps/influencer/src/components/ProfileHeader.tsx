@@ -1,9 +1,18 @@
 import { useState } from 'react'
 import { Link2, X } from 'lucide-react'
 import { SNSPanel } from '@wellink/ui'
+import { mockProfile, mockCampaignSummary } from '../services/mock/profile'
+
+const stats = [
+  { label: '지원 완료', value: mockCampaignSummary.applied },
+  { label: '참여중', value: mockCampaignSummary.ongoing, highlight: true },
+  { label: '참여 완료', value: mockCampaignSummary.completed },
+  { label: '탈락', value: mockCampaignSummary.eliminated },
+]
 
 export default function ProfileHeader() {
   const [snsOpen, setSnsOpen] = useState(false)
+  const initial = mockProfile.name.charAt(0)
 
   return (
     <div className="@container bg-white border-b border-gray-100 px-4 py-4 @[640px]:px-6 @[640px]:py-5">
@@ -12,14 +21,14 @@ export default function ProfileHeader() {
         <div className="flex items-start gap-3 @[640px]:gap-4 flex-1">
           {/* 아바타 */}
           <div className="w-12 h-12 text-lg @[640px]:w-16 @[640px]:h-16 @[640px]:text-2xl rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm bg-brand-green">
-            김
+            {initial}
           </div>
 
           {/* 이름 & 소개 */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-0.5 @[640px]:mb-1">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-base @[640px]:text-lg font-bold text-gray-900 truncate">김찬기님</span>
+                <span className="text-base @[640px]:text-lg font-bold text-gray-900 truncate">{mockProfile.name}님</span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-green/10 text-brand-green flex-shrink-0">
                   인플루언서
                 </span>
@@ -38,22 +47,19 @@ export default function ProfileHeader() {
               헬스·필라테스 전문 인플루언서 | 건강한 라이프스타일을 공유합니다
             </p>
 
-            {/* 통계 */}
-            <div className="flex items-center gap-4 @[640px]:gap-6">
-              <div className="text-center">
-                <p className="text-base @[640px]:text-xl font-bold text-gray-900">2,450</p>
-                <p className="text-xs text-gray-500">포인트</p>
-              </div>
-              <div className="w-px h-6 @[640px]:h-8 bg-gray-100" />
-              <div className="text-center">
-                <p className="text-base @[640px]:text-xl font-bold text-gray-900">8</p>
-                <p className="text-xs text-gray-500">등록 콘텐츠</p>
-              </div>
-              <div className="w-px h-6 @[640px]:h-8 bg-gray-100" />
-              <div className="text-center">
-                <p className="text-base @[640px]:text-xl font-bold text-gray-900">3</p>
-                <p className="text-xs text-gray-500">진행 캠페인</p>
-              </div>
+            {/* 통계 4개 */}
+            <div className="flex items-center gap-3 @[640px]:gap-5 flex-wrap">
+              {stats.map((s, i) => (
+                <div key={s.label} className="flex items-center gap-3 @[640px]:gap-5">
+                  {i > 0 && <div className="w-px h-6 @[640px]:h-8 bg-gray-100" />}
+                  <div className="text-center">
+                    <p className={`text-base @[640px]:text-xl font-bold ${s.highlight ? 'text-brand-green' : 'text-gray-900'}`}>
+                      {s.value}
+                    </p>
+                    <p className="text-xs text-gray-500">{s.label}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -63,7 +69,7 @@ export default function ProfileHeader() {
           <SNSPanel
             platforms={[
               { id: 'naver', connected: false },
-              { id: 'instagram', connected: true, handle: 'chanstyler' },
+              { id: 'instagram', connected: true, handle: mockProfile.instagram },
               { id: 'youtube', connected: false },
             ]}
           />
@@ -94,7 +100,7 @@ export default function ProfileHeader() {
             <SNSPanel
               platforms={[
                 { id: 'naver', connected: false },
-                { id: 'instagram', connected: true, handle: 'chanstyler' },
+                { id: 'instagram', connected: true, handle: mockProfile.instagram },
                 { id: 'youtube', connected: false },
               ]}
             />

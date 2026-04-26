@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
 import { CustomCheckbox, useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS } from '@wellink/ui'
 import { BRAND_URL, CONTACT_EMAIL } from '../config/urls'
-
-const activityFields = ['피트니스', '요가', '영양·식단', '뷰티', '라이프스타일', '스포츠', '아웃도어', '멘탈헬스']
+import { ACTIVITY_FIELDS as activityFields } from '../services/mock/profile'
 
 const FILLED_FORM = {
   name: '김인플루', email: 'influencer@wellink.co.kr', password: 'pass1234!',
