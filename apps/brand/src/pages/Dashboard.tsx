@@ -121,8 +121,13 @@ export default function Dashboard() {
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
   const device = useDeviceMode()
   const isPhone = device === 'phone'
-  const { plan } = usePlanAccess()
+  const { plan, planLabel, isSubscribed } = usePlanAccess()
   const isPlanLocked = qa === 'plan-locked' || plan === '' || plan === 'focus'
+  // 배너 메시지: 미구독은 가입 권유, Focus는 업그레이드 권유 — 동일 잠금 상태지만 워딩 분기
+  const lockedBannerMessage = !isSubscribed
+    ? '미구독 상태입니다. Focus 이상 플랜에서 전체 분석이 가능합니다.'
+    : `현재 ${planLabel} 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.`
+  const lockedBannerCta = !isSubscribed ? '플랜 가입' : '플랜 업그레이드'
 
   /* ── QA: 에러 상태 ── */
   if (qa === 'error') {
@@ -282,12 +287,12 @@ export default function Dashboard() {
       {isPlanLocked && (
         <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-sm">
           <Lock size={14} className="shrink-0" aria-hidden="true" />
-          <span>현재 포커스 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.</span>
+          <span>{lockedBannerMessage}</span>
           <button
             onClick={() => navigate('/subscription')}
             className="ml-auto text-xs font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0"
           >
-            플랜 업그레이드
+            {lockedBannerCta}
           </button>
         </div>
       )}
