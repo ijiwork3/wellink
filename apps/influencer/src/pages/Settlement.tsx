@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, useToast, useQAMode, ErrorState, fmtNumber, fmtDate } from '@wellink/ui'
+import { mockProfile } from '../services/mock/profile'
 
 type SettlementStatus = '정산가능' | '지급완료' | '정산대기'
 
@@ -28,8 +29,8 @@ const STATUS_BADGE: Record<SettlementStatus, string> = {
   '정산대기': 'bg-amber-50 text-amber-700 border border-amber-200',
 }
 
-const HAS_BUSINESS_REG = true
-const HAS_BANK_ACCOUNT = false
+const HAS_BUSINESS_REG = mockProfile.hasBusinessReg
+const HAS_BANK_ACCOUNT = mockProfile.hasBankAccount
 
 export default function Settlement() {
   const qa = useQAMode()

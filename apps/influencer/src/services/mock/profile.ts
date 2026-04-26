@@ -19,6 +19,8 @@ export interface InfluencerProfile {
   selectedFields: string[]
   influencerType: string
   phone: string
+  hasBusinessReg: boolean
+  hasBankAccount: boolean
 }
 
 export interface CampaignSummary {
@@ -36,6 +38,8 @@ export const mockProfile: InfluencerProfile = {
   selectedFields: ['헬스/웨이트', '필라테스'],
   influencerType: 'individual',
   phone: '010-1234-5678',
+  hasBusinessReg: true,
+  hasBankAccount: false,
 }
 
 export const mockCampaignSummary: CampaignSummary = {
