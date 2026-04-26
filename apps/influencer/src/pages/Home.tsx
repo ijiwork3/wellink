@@ -4,7 +4,7 @@ import Layout from '../components/Layout'
 import { useQAMode, fmtDate, StatusBadge, fmtFollowers } from '@wellink/ui'
 import type { ParticipationStatus } from '@wellink/ui'
 import { mockMyCampaigns, mockBookmarkedCampaigns } from '../services/mock/campaigns'
-import { mockProfile, mockCampaignSummary } from '../services/mock/profile'
+import { mockProfile, mockCampaignSummary, mockInstaStats } from '../services/mock/profile'
 
 const SUMMARY_CARDS = [
   { label: '지원 완료', key: 'applied' as const,   color: 'text-gray-900' },
@@ -49,7 +49,7 @@ export default function Home() {
         <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
           <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 👋</p>
           <p className="text-lg font-bold">{mockProfile.name}님</p>
-          <p className="text-xs opacity-70 mt-1">@{mockProfile.instagram} · {fmtFollowers(8700)} 팔로워</p>
+          <p className="text-xs opacity-70 mt-1">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
         </div>
 
         {/* 활동 통계 */}
@@ -166,9 +166,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-3 divide-x divide-gray-50 px-2 py-3">
             {[
-              { label: '팔로워', value: fmtFollowers(8700) },
-              { label: '참여율', value: '4.1%', highlight: true },
-              { label: '게시물', value: '142' },
+              { label: '팔로워', value: fmtFollowers(mockInstaStats.followers) },
+              { label: '참여율', value: `${mockInstaStats.engagementRate}%`, highlight: true },
+              { label: '게시물', value: String(mockInstaStats.posts) },
             ].map(item => (
               <div key={item.label} className="text-center px-3">
                 <p className={`text-base font-bold ${item.highlight ? 'text-brand-green' : 'text-gray-900'}`}>{item.value}</p>

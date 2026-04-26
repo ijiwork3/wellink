@@ -5,6 +5,7 @@ import Layout from '../components/Layout'
 import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
+import { mockInstaStats } from '../services/mock/profile'
 
 interface Platform {
   id: string
@@ -32,15 +33,6 @@ const PLATFORM_META: Omit<Platform, 'connected' | 'url' | 'followers' | 'engagem
   { id: 'naver',     name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', description: '블로그 URL을 연결하면 신청 시 자동 검증돼요', placeholder: 'https://blog.naver.com/아이디' },
   { id: 'youtube',   name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', description: '채널 URL을 연결하면 구독자 수가 자동 확인돼요', placeholder: 'https://www.youtube.com/@채널명' },
 ]
-
-const MOCK_INSTA_STATS = {
-  followers: 8700,
-  posts: 142,
-  avgLikes: 312,
-  avgComments: 18,
-  engagementRate: 4.1,
-  lastActive: '2시간 전',
-}
 
 const MOCK_CONTENT: ContentPost[] = [
   { id: '1', emoji: '🏋️', likes: 420, comments: 23, date: '4/24' },
@@ -171,42 +163,42 @@ export default function Media() {
                   <Users size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">팔로워</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{fmtFollowers(MOCK_INSTA_STATS.followers)}</p>
+                <p className="text-sm font-bold text-gray-900">{fmtFollowers(mockInstaStats.followers)}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Image size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">게시물</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.posts}</p>
+                <p className="text-sm font-bold text-gray-900">{mockInstaStats.posts}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <TrendingUp size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">참여율</p>
                 </div>
-                <p className={`text-sm font-bold ${getEngagementColor(MOCK_INSTA_STATS.engagementRate)}`}>{MOCK_INSTA_STATS.engagementRate}%</p>
+                <p className={`text-sm font-bold ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Heart size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">평균 좋아요</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.avgLikes}</p>
+                <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgLikes}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <MessageCircle size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">평균 댓글</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.avgComments}</p>
+                <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgComments}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Clock size={11} className="text-gray-400" />
                   <p className="text-[10px] text-gray-500">최근 활동</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.lastActive}</p>
+                <p className="text-sm font-bold text-gray-900">{mockInstaStats.lastActive}</p>
               </div>
             </div>
 

@@ -48,3 +48,21 @@ export const mockCampaignSummary: CampaignSummary = {
   completed: 1,
   eliminated: 1,
 }
+
+export interface InstaStats {
+  followers: number
+  posts: number
+  avgLikes: number
+  avgComments: number
+  engagementRate: number
+  lastActive: string
+}
+
+export const mockInstaStats: InstaStats = {
+  followers: 8700,
+  posts: 142,
+  avgLikes: 312,
+  avgComments: 18,
+  engagementRate: 4.1,
+  lastActive: '2시간 전',
+}
