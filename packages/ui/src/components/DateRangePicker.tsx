@@ -1,6 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
+import BottomSheet from './BottomSheet'
+
+/** 768px 미만이면 모바일로 간주 */
+function useIsMobile(breakpoint = 768): boolean {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window === 'undefined' ? false : window.innerWidth < breakpoint
+  )
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [breakpoint])
+  return isMobile
+}
 
 /**
  * DateRangePicker — 분석 페이지 공통 기간 선택 컴포넌트
@@ -31,15 +45,16 @@ export default function DateRangePicker({
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
-    if (!open) return
+    if (!open || isMobile) return
     const handler = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
-  }, [open])
+  }, [open, isMobile])
 
   return (
     <div className="flex items-center flex-wrap gap-2">
@@ -86,7 +101,7 @@ export default function DateRangePicker({
         >
           <ChevronRight size={14} className="text-gray-500" aria-hidden="true" />
         </button>
-        {open && (
+        {open && !isMobile && (
           <DatePickerPopover
             period={period}
             dateOffset={dateOffset}
@@ -94,6 +109,17 @@ export default function DateRangePicker({
           />
         )}
       </div>
+      {isMobile && (
+        <BottomSheet open={open} onClose={() => setOpen(false)} title={`${period} 선택`}>
+          <div className="px-4 py-2">
+            <DatePickerBody
+              period={period}
+              dateOffset={dateOffset}
+              onSelect={(offset) => { onDateOffsetChange(offset); setOpen(false) }}
+            />
+          </div>
+        </BottomSheet>
+      )}
     </div>
   )
 }
@@ -118,12 +144,24 @@ function DatePickerPopover({
       className="absolute top-full right-0 mt-2 z-20 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-[300px] block"
       style={{ maxWidth: 'calc(100vw - 32px)' }}
     >
-      {period === '일간' && <DailyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
-      {period === '주간' && <WeeklyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
-      {period === '월간' && <MonthlyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
-      {period === '연간' && <YearlyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
+      <DatePickerBody period={period} dateOffset={dateOffset} onSelect={onSelect} />
     </div>
   )
+}
+
+function DatePickerBody({
+  period,
+  dateOffset,
+  onSelect,
+}: {
+  period: DatePeriod
+  dateOffset: number
+  onSelect: (offset: number) => void
+}) {
+  if (period === '일간') return <DailyCalendar dateOffset={dateOffset} onSelect={onSelect} />
+  if (period === '주간') return <WeeklyCalendar dateOffset={dateOffset} onSelect={onSelect} />
+  if (period === '월간') return <MonthlyCalendar dateOffset={dateOffset} onSelect={onSelect} />
+  return <YearlyCalendar dateOffset={dateOffset} onSelect={onSelect} />
 }
 
 /* ── 일간: 월 단위 캘린더(7×6), 월 navigator로 과거 무제한 ── */
