@@ -538,7 +538,7 @@ export default function Campaigns() {
                           <Trash2 size={12} aria-hidden="true" /> 삭제
                         </button>
                       ) : (
-                        <Tooltip content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
+                        <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
                           <span
                             className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-400 cursor-not-allowed"
                             aria-disabled="true"

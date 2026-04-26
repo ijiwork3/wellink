@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip } from '@wellink/ui'
+import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -406,6 +406,8 @@ export default function CampaignDetail() {
   // 성과 리포트 — 기간 필터 (원본 PeriodFilter)
   type ReportPeriod = 'daily' | 'weekly' | 'monthly'
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('daily')
+  // 신규 — 기간 슬라이드(캘린더). 0 = 현재, 음수 = 과거. 데이터는 mock이라 라벨/필터 동작만 자리 잡음
+  const [reportDateOffset, setReportDateOffset] = useState(0)
 
   const handleShareCampaign = () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -912,7 +914,7 @@ export default function CampaignDetail() {
             {canDeleteCampaign ? (
               <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
             ) : (
-              <Tooltip content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
+              <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
                 <span aria-disabled="true" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-xs text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
               </Tooltip>
             )}
@@ -1734,26 +1736,19 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
         <div className="space-y-5">
-          {/* 기간 필터 — 신규, 원본 PeriodFilter 보강 */}
-          <div className="flex items-center justify-end gap-2 flex-wrap">
-            <span className="text-xs text-gray-500 mr-1">집계 기간</span>
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              {([
-                { value: 'daily', label: '일간' },
-                { value: 'weekly', label: '주간' },
-                { value: 'monthly', label: '월간' },
-              ] as const).map(p => (
-                <button
-                  key={p.value}
-                  onClick={() => setReportPeriod(p.value)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    reportPeriod === p.value
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
-                  }`}
-                >{p.label}</button>
-              ))}
-            </div>
+          {/* 기간 필터 — DateRangePicker 통일 (분석 페이지 정책 §6) */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="text-xs text-gray-500">집계 기간</span>
+            <DateRangePicker
+              period={reportPeriod === 'daily' ? '일간' : reportPeriod === 'weekly' ? '주간' : '월간'}
+              dateOffset={reportDateOffset}
+              periods={['일간', '주간', '월간']}
+              onPeriodChange={(p) => {
+                setReportPeriod(p === '일간' ? 'daily' : p === '주간' ? 'weekly' : 'monthly')
+                setReportDateOffset(0)
+              }}
+              onDateOffsetChange={setReportDateOffset}
+            />
           </div>
 
           {/* KPI 카드 5개 — 원본 ReportView summary 보강 */}
