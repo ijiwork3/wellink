@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 type SortKey = 'deadline' | 'reward' | 'recent'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
@@ -36,6 +36,10 @@ export default function CampaignBrowse() {
   const navigate = useNavigate()
   const isTouch = useIsTouchDevice()
   const { showToast } = useToast()
+  const location = useLocation()
+  // navigation key가 'default'면 탭/북마크 직접 진입 → 일반 헤더
+  // 앱 내부 navigate()로 진입했으면 뒤로가기 헤더
+  const showBack = location.key !== 'default'
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
@@ -90,7 +94,7 @@ export default function CampaignBrowse() {
 
   if (qa === 'error') {
     return (
-      <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
           <XCircle size={44} className="text-red-300" />
           <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
@@ -103,7 +107,7 @@ export default function CampaignBrowse() {
   }
 
   return (
-    <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={() => navigate(-1)}>
+    <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
       <div className="px-6 py-10" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 10%, transparent) 0%, rgba(255,255,255,0) 60%)' }}>
         <div className="max-w-screen-xl mx-auto">
