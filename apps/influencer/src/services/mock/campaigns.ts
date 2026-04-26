@@ -1,5 +1,13 @@
 // Mock data — replace with API calls when backend is ready
 
+export interface CampaignQuestion {
+  id: string
+  question: string
+  required: boolean
+  type: 'text' | 'radio'
+  options?: string[]
+}
+
 export interface Campaign {
   id: number
   brand: string
@@ -16,6 +24,9 @@ export interface Campaign {
   headcount: number
   applied: number
   conditions?: string[]
+  type?: 'delivery' | 'visit'
+  keywords?: string[]
+  questions?: CampaignQuestion[]
 }
 
 export const mockCampaigns: Campaign[] = [
@@ -35,6 +46,12 @@ export const mockCampaigns: Campaign[] = [
     headcount: 15,
     applied: 8,
     conditions: ['인스타그램 팔로워 1,000명 이상', '피드 게시물 1개 필수', '스토리 2개 이상'],
+    type: 'delivery',
+    keywords: ['그린푸드', '비건프로틴', '식물성단백질', '웰니스'],
+    questions: [
+      { id: 'q1', question: '현재 운동 루틴을 간략히 알려주세요.', required: true, type: 'text' },
+      { id: 'q2', question: '비건 식단을 실천하고 계신가요?', required: true, type: 'radio', options: ['네, 완전 비건입니다', '일부 실천 중입니다', '아니오'] },
+    ],
   },
   {
     id: 2,
@@ -52,6 +69,11 @@ export const mockCampaigns: Campaign[] = [
     headcount: 10,
     applied: 9,
     conditions: ['운동 관련 콘텐츠 계정', '인스타그램 또는 유튜브 채널 보유', '피드 또는 릴스 1개 이상'],
+    type: 'delivery',
+    keywords: ['SMILEATO', '크로스핏', '보충제', '스포츠영양'],
+    questions: [
+      { id: 'q1', question: '주로 어떤 운동을 하시나요?', required: true, type: 'text' },
+    ],
   },
   {
     id: 3,
@@ -69,6 +91,8 @@ export const mockCampaigns: Campaign[] = [
     headcount: 5,
     applied: 3,
     conditions: ['요가 또는 필라테스 관련 계정', '피드 게시물 1개 이상', '제품 태그 필수'],
+    type: 'delivery',
+    keywords: ['ENUF', '요가매트', '필라테스', '홈트'],
   },
   {
     id: 4,

@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
 import CampaignDetail from './pages/CampaignDetail'
+import CampaignApply from './pages/CampaignApply'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Settlement from './pages/Settlement'
@@ -80,9 +81,18 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '기본 (미신청)', path: '/campaigns/1' },
       { label: '로딩 스켈레톤', path: '/campaigns/1?qa=loading' },
       { label: '신청 완료 상태', path: '/campaigns/1?qa=applied' },
-      { label: '신청 모달 열림', path: '/campaigns/1?qa=modal-apply' },
       { label: '마감된 캠페인', path: '/campaigns/1?qa=closed' },
       { label: '에러', path: '/campaigns/1?qa=error' },
+    ],
+  },
+
+  /* ────────────────── 캠페인 신청 폼 ────────────────── */
+  {
+    label: '캠페인 신청 폼',
+    children: [
+      { label: '배송형 + 커스텀 질문 (캠페인 1)', path: '/campaigns/1/apply' },
+      { label: '배송형 (캠페인 2)', path: '/campaigns/2/apply' },
+      { label: '타입 미지정 (캠페인 3)', path: '/campaigns/3/apply' },
     ],
   },
 
@@ -163,6 +173,7 @@ function AppRoutes() {
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
         <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
         <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
+        <Route path="/campaigns/:id/apply" element={<ProtectedRoute><CampaignApply /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
         <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Heart, UserCircle, Link2 } from 'lucide-react'
+import { LayoutDashboard, Heart, UserCircle, Link2, Wallet } from 'lucide-react'
 
 const sections = [
   {
@@ -7,6 +7,7 @@ const sections = [
     items: [
       { label: '나의 캠페인', path: '/campaigns/my', icon: LayoutDashboard },
       { label: '관심 캠페인', path: '/home', icon: Heart },
+      { label: '정산', path: '/settlement', icon: Wallet },
     ],
   },
   {

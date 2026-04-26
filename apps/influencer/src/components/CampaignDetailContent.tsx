@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText } from 'lucide-react'
-import { Modal, SEMANTIC_COLORS, PROGRESS_THRESHOLD, TIMER_MS } from '@wellink/ui'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy } from 'lucide-react'
+import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
@@ -27,18 +27,9 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [liked, setLiked] = useState(false)
-  const [applied, setApplied] = useState(false)
-  const [applyModalOpen, setApplyModalOpen] = useState(false)
-  const [successModal, setSuccessModal] = useState(false)
+  const applied = false
 
   const isClosed = campaign.status === '종료'
-
-  const handleApply = () => {
-    setApplied(true)
-    setApplyModalOpen(false)
-    setSuccessModal(true)
-    setTimeout(() => setSuccessModal(false), TIMER_MS.SUCCESS_MODAL_CLOSE)
-  }
 
   // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
   const wrapCls = inModal ? '' : '@container'
@@ -133,7 +124,48 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
                 <p className="text-sm font-semibold text-gray-900">{campaign.channel}</p>
               </div>
             </div>
+            {campaign.type && (
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
+                {campaign.type === 'delivery'
+                  ? <Package size={17} className="text-brand-green" aria-hidden="true" />
+                  : <Footprints size={17} className="text-blue-500" aria-hidden="true" />
+                }
+                <div>
+                  <p className="text-xs text-gray-500">캠페인 유형</p>
+                  <p className={`text-sm font-semibold ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
+                    {campaign.type === 'delivery' ? '배송형' : '방문형'}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* 필수 키워드 */}
+          {(campaign.keywords ?? []).length > 0 && (
+            <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                  <Hash size={14} className="text-brand-green" />필수 키워드
+                </p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(campaign.keywords!.map(k => `#${k}`).join(' '))
+                    showToast('키워드가 복사되었어요!', 'success')
+                  }}
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-brand-green transition-colors"
+                >
+                  <Copy size={12} />한 번에 복사
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {campaign.keywords!.map(k => (
+                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green/10 text-xs font-medium text-brand-green">
+                    #{k}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 보상 */}
           {campaign.reward && (
@@ -192,7 +224,7 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
               </div>
             ) : (
               <button
-                onClick={() => setApplyModalOpen(true)}
+                onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
                 className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 ${campaign.status === '마감임박' ? 'animate-pulse' : ''}`}
               >
                 신청하기
@@ -202,38 +234,6 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
         </div>
       </div>
 
-      {/* 신청 확인 모달 */}
-      <Modal open={applyModalOpen} onClose={() => setApplyModalOpen(false)} title="캠페인 신청">
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            <span className="font-semibold text-gray-900">{campaign.name}</span>에 신청하시겠습니까?
-          </p>
-          <div className="p-3 rounded-xl text-sm bg-brand-green/5 text-brand-green-text">
-            신청 후 브랜드 검토 → 선정 결과 알림 → 제품 수령 → 콘텐츠 게시 순으로 진행됩니다.
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button onClick={() => setApplyModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all duration-150">취소</button>
-            <button onClick={handleApply} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90">신청하기</button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* 신청 완료 모달 */}
-      {successModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" role="dialog" aria-modal="true">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 mx-4" style={{ animation: 'scaleIn 0.2s ease-out' }}>
-            <div className="w-20 h-20 rounded-full bg-brand-green/10 flex items-center justify-center">
-              <CheckCircle2 size={40} className="text-brand-green" />
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-gray-900">신청 완료!</p>
-              <p className="text-sm text-gray-500 mt-1">브랜드 검토 후 결과를 알려드릴게요</p>
-            </div>
-            <button onClick={() => { setSuccessModal(false); navigate('/campaigns/my') }} className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green">나의 캠페인 확인</button>
-            <button onClick={() => { setSuccessModal(false); navigate('/campaigns/browse') }} className="w-full py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50">계속 둘러보기</button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
