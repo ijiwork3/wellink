@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, XCircle, RefreshCw, Phone, Lock } from 'lucide-react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { User, Activity, Pencil, Check, X, XCircle, RefreshCw, Phone, Lock, LogOut } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth } from '@wellink/ui'
 import { Toggle, Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -19,6 +19,7 @@ const inputClass = `${inputBase} w-full`
 
 export default function Profile() {
   const qa = useQAMode()
+  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(qa === 'edit')
   const [name, setName] = useState(mockProfile.name)
   const [draftName, setDraftName] = useState(mockProfile.name)
@@ -274,8 +275,14 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* 회원탈퇴 */}
-        <div className="flex justify-center pt-1 pb-4">
+        {/* 로그아웃 + 회원탈퇴 */}
+        <div className="flex flex-col items-center gap-3 pt-1 pb-4">
+          <button
+            onClick={() => { auth.clear(); navigate('/login') }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <LogOut size={14} />로그아웃
+          </button>
           <button onClick={() => setWithdrawModalOpen(true)} className="text-xs text-gray-400 hover:text-red-400 underline underline-offset-2 transition-colors">
             회원탈퇴
           </button>

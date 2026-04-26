@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass, Edit2 } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -252,11 +252,18 @@ export default function MyCampaign() {
                         </button>
                       )
                       if (action === '상세보기' && c.postUrl) return (
-                        <button key="콘텐츠수정"
-                          onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                          className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors">
-                          <Edit2 size={11} />콘텐츠 수정
-                        </button>
+                        <React.Fragment key="검수중-actions">
+                          <button
+                            onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                            className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors">
+                            <Edit2 size={11} />콘텐츠 수정
+                          </button>
+                          <button
+                            onClick={() => navigate(`/campaigns/${c.id}`)}
+                            className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                            상세보기
+                          </button>
+                        </React.Fragment>
                       )
                       if (action === '수정') return (
                         <button key={action}

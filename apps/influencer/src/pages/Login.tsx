@@ -53,7 +53,7 @@ export default function Login() {
       return
     }
     auth.set('influencer')
-    navigate('/campaigns/browse')
+    navigate('/home')
   }
 
   return (
