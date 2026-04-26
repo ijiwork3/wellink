@@ -621,13 +621,35 @@ export default function CampaignDetail() {
   })
 
   // 지원자 관리 핸들러
+  /** 인플루언서 자동 알림 mock — 클라 정책 §54-59
+   *  실제 발송은 BE 책임. 광고주 측에는 토스트로 발송 사실을 명시해 인플루언서 인지 보장.
+   *  트리거: 검토중→콘텐츠대기(선정) / 콘텐츠대기→검토중(선정 취소) / 검토중→미선정(반려) / 검수중→완료·반려 */
+  const sendNotificationMock = (
+    kind: 'select' | 'select-cancel' | 'reject' | 'content-approve' | 'content-reject',
+    targetCount: number,
+  ) => {
+    const labels: Record<typeof kind, string> = {
+      'select':         '선정 알림',
+      'select-cancel':  '선정 취소 알림',
+      'reject':         '미선정 안내',
+      'content-approve':'콘텐츠 승인 알림',
+      'content-reject': '콘텐츠 반려 안내',
+    }
+    // BE 연동 자리. 현재는 mock — 실제 구현 시 인플루언서 알림센터 + 푸시·이메일 연동
+    if (typeof console !== 'undefined') {
+      console.info('[mock notification]', kind, `to ${targetCount}명`)
+    }
+    return labels[kind]
+  }
+
   const handleSelectApplicant = (applicantId: number) => {
     const applicant = applicants.find(a => a.id === applicantId)
     if (applicant) {
       setSelectedInfluencers(prev => [...prev, applicantToSelected(applicant)])
     }
     setApplicants(prev => prev.filter(a => a.id !== applicantId))
-    showToast('선정 완료! DM으로 가이드를 전달해 보세요.', 'success')
+    sendNotificationMock('select', 1)
+    showToast('선정 완료! 인플루언서에게 알림이 발송되었습니다.', 'success')
   }
 
   const handleBulkSelect = () => {
@@ -641,8 +663,10 @@ export default function CampaignDetail() {
       ...toSelect.map(applicantToSelected),
     ])
     setApplicants(prev => prev.filter(a => !checkedApplicants.has(a.id)))
+    const count = toSelect.length
     setCheckedApplicants(new Set())
-    showToast(`선정 완료! DM으로 가이드를 전달해 보세요.`, 'success')
+    sendNotificationMock('select', count)
+    showToast(`${count}명 선정 완료! 인플루언서에게 알림이 발송되었습니다.`, 'success')
   }
 
   const toggleCheck = (applicantId: number) => {
@@ -686,7 +710,8 @@ export default function CampaignDetail() {
     }
     setSelectedInfluencers(prev => prev.filter(i => i.id !== influencerId))
     setDeselectModal(null)
-    showToast('선정이 취소되었습니다.', 'info')
+    sendNotificationMock('select-cancel', 1)
+    showToast('선정이 취소되었습니다. 인플루언서에게 알림이 발송되었습니다.', 'info')
   }
 
   // 콘텐츠 다운로드
@@ -723,7 +748,8 @@ export default function CampaignDetail() {
     }
     setRejectModal(null)
     setFeedback('')
-    showToast('반려 피드백이 전달되었습니다.', 'info')
+    sendNotificationMock('reject', 1)
+    showToast('반려 피드백이 전달되었습니다. 인플루언서에게 알림이 발송되었습니다.', 'info')
   }
 
   // 성과 리포트는 승인된 콘텐츠만
@@ -1608,7 +1634,8 @@ export default function CampaignDetail() {
                             <button
                               onClick={() => {
                                 setContentStatuses(prev => ({ ...prev, [c.id]: '승인' }))
-                                showToast(`${c.influencer} 콘텐츠를 승인했습니다.`, 'success')
+                                sendNotificationMock('content-approve', 1)
+                                showToast(`${c.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
                               }}
                               className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-2 rounded-xl text-xs font-medium hover:bg-brand-green-hover transition-colors"
                             >
@@ -2001,7 +2028,7 @@ export default function CampaignDetail() {
                 {dcStatus === '검수중' && !isClosed && (
                   <>
                     <button
-                      onClick={() => { setContentStatuses(prev => ({ ...prev, [dc.id]: '승인' })); showToast(`${dc.influencer} 콘텐츠를 승인했습니다.`, 'success'); setContentDetailModal(null) }}
+                      onClick={() => { setContentStatuses(prev => ({ ...prev, [dc.id]: '승인' })); sendNotificationMock('content-approve', 1); showToast(`${dc.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success'); setContentDetailModal(null) }}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
                     ><Check size={13} /> 승인</button>
                     <button
@@ -2303,7 +2330,8 @@ export default function CampaignDetail() {
                 if (!contentRejectFeedback.trim()) { showToast('반려 사유를 입력해주세요.', 'error'); return }
                 setContentStatuses(prev => ({ ...prev, [contentRejectModal]: '반려' }))
                 const name = registeredContents.find(c => c.id === contentRejectModal)?.influencer ?? ''
-                showToast(`${name} 콘텐츠를 반려했습니다.`, 'error')
+                sendNotificationMock('content-reject', 1)
+                showToast(`${name} 콘텐츠를 반려했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'error')
                 setContentRejectModal(null)
                 setContentRejectFeedback('')
               }}
