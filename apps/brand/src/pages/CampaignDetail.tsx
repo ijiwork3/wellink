@@ -499,10 +499,14 @@ export default function CampaignDetail() {
   }
 
   // 콘텐츠 다운로드 (플랜 권한 기반)
-  const { plan, planLabel, canDownloadContent } = usePlanAccess()
+  const { planLabel, canDownloadContent } = usePlanAccess()
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
+  // 미구독자 다운로드 흐름 — 플랜 선택 → 결제 단계 (모달 내 다단계)
+  type DownloadStep = 'plan-select' | 'payment'
+  const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')
+  const [pickedPlan, setPickedPlan] = useState<'focus' | 'scale' | 'enterprise'>('scale')
 
   // 콘텐츠 검수 상태 (등록 콘텐츠 탭)
   const [contentStatuses, setContentStatuses] = useState<Record<number, ContentStatus>>(
@@ -733,9 +737,23 @@ export default function CampaignDetail() {
     setTimeout(() => setIsPaying(false), TIMER_MS.STATE_FEEDBACK)
   }
 
-  const goToSubscription = () => {
+  const closeDownloadModal = () => {
     setDownloadModal(false)
-    navigate('/subscription')
+    setDownloadStep('plan-select')
+  }
+
+  const handlePayAndDownload = () => {
+    if (isPaying) return
+    setIsPaying(true)
+    showToast('PG 결제 진행 중입니다... (mock)', 'info')
+    setTimeout(() => {
+      // 결제 성공 mock — 실제로는 PG 응답 후 plan 활성화 + 다운로드 트리거
+      closeDownloadModal()
+      setSelectedContents(new Set())
+      setIsPaying(false)
+      const planName = pickedPlan === 'focus' ? 'Focus' : pickedPlan === 'scale' ? 'Scale' : 'Enterprise'
+      showToast(`${planName} 플랜 결제가 완료되었습니다. 다운로드를 시작합니다.`, 'success')
+    }, 1500)
   }
 
   // 반려
@@ -2101,11 +2119,12 @@ export default function CampaignDetail() {
         )
       })()}
 
-      {/* 콘텐츠 다운로드 모달 — 플랜 권한 기반 */}
+      {/* 콘텐츠 다운로드 모달 — 구독자: 즉시 다운로드 / 미구독자: 플랜 선택 → 결제 → 다운로드 */}
       <Modal
         open={downloadModal}
-        onClose={() => setDownloadModal(false)}
-        title="콘텐츠 다운로드"
+        onClose={closeDownloadModal}
+        title={canDownloadContent ? '콘텐츠 다운로드' : (downloadStep === 'plan-select' ? '구독 후 다운로드 가능' : '결제 진행')}
+        size={canDownloadContent ? 'sm' : 'md'}
         footer={canDownloadContent ? (
           <button
             onClick={handleDownload}
@@ -2114,10 +2133,31 @@ export default function CampaignDetail() {
           >
             다운로드
           </button>
+        ) : downloadStep === 'plan-select' ? (
+          <>
+            <button onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
+            {pickedPlan === 'enterprise' ? (
+              <button
+                onClick={() => { closeDownloadModal(); window.location.href = 'mailto:enterprise@wellink.ai?subject=Enterprise 플랜 문의' }}
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+              >
+                문의하기
+              </button>
+            ) : (
+              <button
+                onClick={() => setDownloadStep('payment')}
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+              >
+                결제하기
+              </button>
+            )}
+          </>
         ) : (
           <>
-            <button onClick={() => setDownloadModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={goToSubscription} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors">플랜 업그레이드</button>
+            <button onClick={() => setDownloadStep('plan-select')} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-60">이전</button>
+            <button onClick={handlePayAndDownload} disabled={isPaying} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+              {isPaying ? '결제 중...' : '결제 완료'}
+            </button>
           </>
         )}
       >
@@ -2136,22 +2176,74 @@ export default function CampaignDetail() {
             </div>
             <p className="text-xs text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
           </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-100">
-              <Crown size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-amber-900">유료 플랜 구독 시 이용 가능합니다</p>
-                <p className="text-xs text-amber-700">
-                  현재 <span className="font-semibold">{planLabel}</span> {plan ? '플랜' : ''} 상태에서는 콘텐츠 다운로드를 이용할 수 없습니다.
-                </p>
+        ) : downloadStep === 'plan-select' ? (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
+              <Crown size={16} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="space-y-0.5">
+                <p className="text-sm font-semibold text-amber-900">콘텐츠 다운로드는 유료 플랜 전용 기능입니다</p>
+                <p className="text-xs text-amber-700">선택 콘텐츠 <span className="font-semibold">{selectedContents.size}건</span> · 현재 <span className="font-semibold">{planLabel}</span></p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3">
+            <div className="space-y-2">
+              {([
+                { id: 'focus' as const,      name: 'Focus',      price: '₩99,000/월',  desc: '소규모 캠페인 1~3건 운영, 기본 분석' },
+                { id: 'scale' as const,      name: 'Scale',      price: '₩299,000/월', desc: '다중 캠페인, 인플루언서 관리, 고급 필터', recommend: true },
+                { id: 'enterprise' as const, name: 'Enterprise', price: '문의',         desc: '무제한 캠페인, 고급 분석, 전담 매니저' },
+              ]).map(p => {
+                const active = pickedPlan === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setPickedPlan(p.id)}
+                    className={`w-full text-left p-3 rounded-xl border transition-colors ${
+                      active ? 'border-brand-green bg-brand-green/5' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full border-2 shrink-0 ${active ? 'border-brand-green' : 'border-gray-300'}`}>
+                          {active && <span className="w-2 h-2 rounded-full bg-brand-green" />}
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">{p.name}</span>
+                        {p.recommend && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900 shrink-0">{p.price}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 ml-6">{p.desc}</p>
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-[11px] text-gray-400">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">선택 콘텐츠</span>
-                <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
+                <span className="text-gray-500">선택한 플랜</span>
+                <span className="text-gray-900 font-semibold">{pickedPlan === 'focus' ? 'Focus' : 'Scale'} 플랜</span>
               </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">결제 금액</span>
+                <span className="text-gray-900 font-semibold">{pickedPlan === 'focus' ? '₩99,000' : '₩299,000'} / 월</span>
+              </div>
+              <div className="flex justify-between text-sm border-t border-gray-200 pt-2 mt-2">
+                <span className="text-gray-500">다운로드 콘텐츠</span>
+                <span className="text-gray-900 font-medium">{selectedContents.size}건 (즉시 다운로드)</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs text-gray-500">결제 수단을 입력해 주세요</p>
+              <div className="space-y-2">
+                <input type="text" placeholder="카드 번호 (1234-5678-9012-3456)" disabled className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="MM/YY" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+                  <input type="text" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-400">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>
             </div>
           </div>
         )}
