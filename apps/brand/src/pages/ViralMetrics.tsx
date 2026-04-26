@@ -409,42 +409,48 @@ export default function ViralMetrics() {
               </button>
             </div>
             {/* 필터·정렬 컨트롤 — 신규 (원본 SortKey/ContentFilter/GradeFilter 보강) */}
-            <div className="px-5 py-3 border-b border-gray-50 flex flex-wrap items-center gap-2">
-              <span className="text-[11px] text-gray-500">유형</span>
-              <CustomSelect
-                value={contentFilter}
-                onChange={v => { setContentFilter(v as ContentFilter); setContentPage(1) }}
-                options={(['전체', '릴스', '피드', '스토리', '영상', '쇼츠'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
-                className="text-xs"
-              />
-              <span className="text-[11px] text-gray-500 ml-2">등급</span>
-              <CustomSelect
-                value={gradeFilter}
-                onChange={v => { setGradeFilter(v as GradeFilterT); setContentPage(1) }}
-                options={[
-                  { label: '전체', value: '전체' },
-                  { label: 'A (우수)', value: 'A' },
-                  { label: 'B', value: 'B' },
-                  { label: 'C', value: 'C' },
-                  { label: 'D', value: 'D' },
-                  { label: 'E', value: 'E' },
-                  { label: '점수 산정중', value: 'processing' },
-                ]}
-                className="text-xs"
-              />
-              <span className="text-[11px] text-gray-500 ml-2">정렬</span>
-              <CustomSelect
-                value={contentSort}
-                onChange={v => { setContentSort(v as ContentSort); setContentPage(1) }}
-                options={[
-                  { label: '최신순', value: 'createdAt' },
-                  { label: '조회 많은순', value: 'views' },
-                  { label: '좋아요 많은순', value: 'likes' },
-                  { label: '댓글 많은순', value: 'comments' },
-                  { label: '참여 많은순', value: 'engagement' },
-                ]}
-                className="text-xs ml-auto"
-              />
+            <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-1 @sm:grid-cols-3 gap-2 @sm:gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-[11px] text-gray-500">유형</span>
+                <CustomSelect
+                  value={contentFilter}
+                  onChange={v => { setContentFilter(v as ContentFilter); setContentPage(1) }}
+                  options={(['전체', '릴스', '피드', '스토리', '영상', '쇼츠'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
+                  className="text-xs"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-[11px] text-gray-500">등급</span>
+                <CustomSelect
+                  value={gradeFilter}
+                  onChange={v => { setGradeFilter(v as GradeFilterT); setContentPage(1) }}
+                  options={[
+                    { label: '전체', value: '전체' },
+                    { label: 'A (우수)', value: 'A' },
+                    { label: 'B', value: 'B' },
+                    { label: 'C', value: 'C' },
+                    { label: 'D', value: 'D' },
+                    { label: 'E', value: 'E' },
+                    { label: '점수 산정중', value: 'processing' },
+                  ]}
+                  className="text-xs"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-[11px] text-gray-500">정렬</span>
+                <CustomSelect
+                  value={contentSort}
+                  onChange={v => { setContentSort(v as ContentSort); setContentPage(1) }}
+                  options={[
+                    { label: '최신순', value: 'createdAt' },
+                    { label: '조회 많은순', value: 'views' },
+                    { label: '좋아요 많은순', value: 'likes' },
+                    { label: '댓글 많은순', value: 'comments' },
+                    { label: '참여 많은순', value: 'engagement' },
+                  ]}
+                  className="text-xs"
+                />
+              </label>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
