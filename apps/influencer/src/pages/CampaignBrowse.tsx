@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
+
+type SortKey = 'deadline' | 'reward' | 'recent'
 import { useNavigate } from 'react-router-dom'
 import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -34,7 +36,7 @@ export default function CampaignBrowse() {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
-  const [sort, setSort] = useState<'deadline' | 'reward' | 'recent'>('deadline')
+  const [sort, setSort] = useState<SortKey>('deadline')
   const [loading, setLoading] = useState(true)
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
 
@@ -140,7 +142,7 @@ export default function CampaignBrowse() {
         </div>
         <CustomSelect
           value={sort}
-          onChange={v => setSort(v as typeof sort)}
+          onChange={v => setSort(v as SortKey)}
           options={[
             { label: '마감 임박순', value: 'deadline' },
             { label: '리워드 높은순', value: 'reward' },
