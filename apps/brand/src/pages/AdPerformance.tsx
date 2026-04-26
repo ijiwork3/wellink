@@ -311,7 +311,7 @@ export default function AdPerformance() {
       </div>
 
       {/* KPI 카드 8개 — 원본 KPI_LABELS 동등 (지출/ROAS/결과/결과당비용/도달/클릭/CTR/CPC) */}
-      <div className="grid grid-cols-2 @sm:grid-cols-4 @lg:grid-cols-8 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="광고 지출"
           value={isZero ? '₩0' : fmtPrice(kpi.spend)}
@@ -455,7 +455,7 @@ export default function AdPerformance() {
                       {isCampaignOpen && (
                         <div className="border-t border-gray-100 p-4">
                           {/* 캠페인 KPI 8개 — 원본 동등 */}
-                          <div className="grid grid-cols-2 @sm:grid-cols-4 @lg:grid-cols-8 gap-x-4 gap-y-3 mb-4">
+                          <div className="grid grid-cols-2 @sm:grid-cols-4 gap-x-4 gap-y-3 mb-4">
                             {([
                               { k: '지출', v: fmtPrice(c.totalSpend) },
                               { k: 'ROAS', v: `${c.roas}x` },
@@ -496,7 +496,7 @@ export default function AdPerformance() {
                                   {isSetOpen && (
                                     <div className="border-t border-gray-100 p-3">
                                       {/* 광고세트 KPI */}
-                                      <div className="grid grid-cols-2 @sm:grid-cols-4 @lg:grid-cols-8 gap-x-3 gap-y-2 mb-3">
+                                      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-x-3 gap-y-2 mb-3">
                                         {([
                                           { k: '지출', v: fmtPrice(set.spend) },
                                           { k: 'ROAS', v: `${set.roas}x` },
