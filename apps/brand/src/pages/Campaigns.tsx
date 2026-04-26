@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
-  MoreVertical, Copy, Share2, XCircle, Trash2,
+  MoreVertical, Copy, Share2, Trash2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
@@ -146,8 +146,8 @@ export default function Campaigns() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [confirm, setConfirm] = useState<
     | null
-    | { kind: 'cancel-one' | 'delete-one'; id: number; name: string }
-    | { kind: 'cancel-bulk' | 'delete-bulk'; ids: number[] }
+    | { kind: 'delete-one'; id: number; name: string }
+    | { kind: 'delete-bulk'; ids: number[] }
   >(null)
   const { showToast } = useToast()
 
@@ -201,9 +201,7 @@ export default function Campaigns() {
   }
   const handleConfirmAction = () => {
     if (!confirm) return
-    if (confirm.kind === 'cancel-one') showToast(`'${confirm.name}' 캠페인을 취소했습니다 (mock)`, 'success')
-    else if (confirm.kind === 'delete-one') showToast(`'${confirm.name}' 캠페인을 삭제했습니다 (mock)`, 'success')
-    else if (confirm.kind === 'cancel-bulk') { showToast(`${confirm.ids.length}건 일괄 취소 (mock)`, 'success'); clearSelection() }
+    if (confirm.kind === 'delete-one') showToast(`'${confirm.name}' 캠페인을 삭제했습니다 (mock)`, 'success')
     else if (confirm.kind === 'delete-bulk') { showToast(`${confirm.ids.length}건 일괄 삭제 (mock)`, 'success'); clearSelection() }
     setConfirm(null)
   }
@@ -360,13 +358,6 @@ export default function Campaigns() {
               {selectedIds.size}건 선택됨
             </span>
             <div className="ml-auto flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setConfirm({ kind: 'cancel-bulk', ids: Array.from(selectedIds) })}
-                className="inline-flex items-center gap-1 text-xs text-orange-600 hover:bg-orange-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <XCircle size={12} aria-hidden="true" /> 일괄 취소
-              </button>
               {allDeletable ? (
                 <button
                   type="button"
@@ -376,7 +367,7 @@ export default function Campaigns() {
                   <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
                 </button>
               ) : (
-                <Tooltip content="지원자가 있는 캠페인이 포함되어 있어 삭제할 수 없습니다.">
+                <Tooltip content="지원자가 있는 캠페인이 포함되어 있어 삭제할 수 없습니다. 채널톡으로 문의해주세요.">
                   <span
                     className="inline-flex items-center gap-1 text-xs text-gray-400 px-2 py-1 rounded-md cursor-not-allowed"
                     aria-disabled="true"
@@ -456,7 +447,6 @@ export default function Campaigns() {
               const showDDay = c.status !== '종료' && c.status !== '완료'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
               const isSelected = selectedIds.has(c.id)
-              const canCancel = c.status !== '종료' && c.status !== '완료'
               const canDelete = c.current === 0
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
@@ -539,15 +529,6 @@ export default function Campaigns() {
                       <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 text-left">
                         <Share2 size={12} aria-hidden="true" /> 링크 복사
                       </button>
-                      {canCancel && (
-                        <button
-                          type="button"
-                          onClick={() => setConfirm({ kind: 'cancel-one', id: c.id, name: c.name })}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-orange-600 hover:bg-orange-50 text-left"
-                        >
-                          <XCircle size={12} aria-hidden="true" /> 캠페인 취소
-                        </button>
-                      )}
                       {canDelete ? (
                         <button
                           type="button"
@@ -557,7 +538,7 @@ export default function Campaigns() {
                           <Trash2 size={12} aria-hidden="true" /> 삭제
                         </button>
                       ) : (
-                        <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
+                        <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 채널톡으로 문의해주세요.">
                           <span
                             className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-400 cursor-not-allowed"
                             aria-disabled="true"
@@ -589,20 +570,16 @@ export default function Campaigns() {
         open={!!confirm}
         onClose={() => setConfirm(null)}
         title={
-          confirm?.kind === 'cancel-one'   ? '캠페인을 취소하시겠습니까?'
-          : confirm?.kind === 'delete-one' ? '캠페인을 삭제하시겠습니까?'
-          : confirm?.kind === 'cancel-bulk'? `${confirm.ids.length}건의 캠페인을 취소하시겠습니까?`
+          confirm?.kind === 'delete-one' ? '캠페인을 삭제하시겠습니까?'
           : confirm?.kind === 'delete-bulk'? `${confirm.ids.length}건의 캠페인을 삭제하시겠습니까?`
           : ''
         }
         description={
-          confirm?.kind === 'cancel-one'   ? `'${confirm.name}' 캠페인이 취소됩니다. 위약금이 발생할 수 있습니다.`
-          : confirm?.kind === 'delete-one' ? `'${confirm.name}' 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`
-          : confirm?.kind === 'cancel-bulk'? '선택한 캠페인이 모두 취소됩니다. 위약금이 발생할 수 있습니다.'
+          confirm?.kind === 'delete-one' ? `'${confirm.name}' 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`
           : confirm?.kind === 'delete-bulk'? '선택한 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.'
           : ''
         }
-        confirmLabel={confirm?.kind?.startsWith('cancel') ? '캠페인 취소' : '삭제'}
+        confirmLabel="삭제"
         cancelLabel="닫기"
         variant="danger"
         onConfirm={handleConfirmAction}

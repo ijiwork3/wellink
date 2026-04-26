@@ -634,6 +634,12 @@ export function MockupShell<S extends string, T extends string>({
   // 고유 ID (스크린샷 대상 지정용)
   const mockupId = useRef(`qa-mockup-${++shellCounter}`).current;
 
+  // ui 패키지의 useIsTouchDevice가 목업 device를 인식할 수 있도록 root에 attribute 부여
+  useEffect(() => {
+    document.documentElement.dataset.mockupDevice = deviceMode;
+    return () => { delete document.documentElement.dataset.mockupDevice; };
+  }, [deviceMode]);
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-200 flex flex-col">
       {/* 상단 QA 바 */}
@@ -659,7 +665,7 @@ export function MockupShell<S extends string, T extends string>({
             flexShrink: 0,
             ['container-type' as string]: 'inline-size',
           } as CSSProperties}
-          className={`overflow-hidden flex flex-col ${containerClassName ?? 'bg-white'}`}
+          className={`relative overflow-hidden flex flex-col ${containerClassName ?? 'bg-white'}`}
         >
           <DeviceModeContext.Provider value={deviceMode}>
             {children}

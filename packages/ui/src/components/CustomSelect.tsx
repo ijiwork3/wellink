@@ -21,6 +21,7 @@ interface CustomSelectProps<T extends string | string[] = string> {
   placeholder?: string
   multiple?: boolean
   className?: string
+  forceTouch?: boolean
 }
 
 export default function CustomSelect<T extends string | string[] = string>({
@@ -30,12 +31,13 @@ export default function CustomSelect<T extends string | string[] = string>({
   placeholder = '선택하세요',
   multiple = false,
   className = '',
+  forceTouch = false,
 }: CustomSelectProps<T>) {
   const [open, setOpen] = useState(false)
   const [activeIdx, setActiveIdx] = useState(-1)
   const ref = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const isTouch = useIsTouchDevice()
+  const isTouch = forceTouch || useIsTouchDevice()
 
   useEffect(() => {
     if (isTouch) return // 모바일은 BottomSheet이 자체 backdrop-close 처리

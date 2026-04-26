@@ -39,7 +39,7 @@ const sections = [
   },
 ]
 
-export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?: () => void; hideLogo?: boolean } = {}) {
+export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = false }: { onNavigate?: () => void; hideLogo?: boolean; fullWidth?: boolean } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
   const { showToast } = useToast()
@@ -56,7 +56,7 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
     [q]
   )
   return (
-    <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 flex flex-col h-full sticky top-0 min-h-0">
+    <aside className={`${fullWidth ? 'w-full h-full' : 'w-[220px] shrink-0 sticky top-0'} bg-white border-r border-gray-100 flex flex-col min-h-0`}>
       {/* 로고 */}
       {!hideLogo && (
         <div className="px-5 pt-5 pb-4">
