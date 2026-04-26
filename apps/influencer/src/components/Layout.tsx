@@ -70,13 +70,6 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate('/profile')}
-                aria-label="마이페이지로 이동"
-                className="hidden @sm:block text-sm text-gray-600 hover:text-gray-900 transition-colors duration-150 font-medium"
-              >
-                마이페이지
-              </button>
-              <button
                 onClick={() => { auth.clear(); navigate('/login') }}
                 className="hidden @sm:block text-sm px-3 @sm:px-3.5 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
               >
