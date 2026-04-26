@@ -1061,21 +1061,22 @@ export default function CampaignDetail() {
 
           {/* 동적 답변 필터 (객관식 질문별) — 신규, 원본 selectedFilters 동등 */}
           {dynamicQuestions.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-medium text-gray-500 mr-1">옵션 필터</span>
+            <div className="flex flex-col @sm:flex-row @sm:flex-wrap @sm:items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span className="text-xs font-medium text-gray-500 @sm:mr-1">옵션 필터</span>
               {dynamicQuestions.map(q => (
-                <CustomSelect
-                  key={q.question}
-                  value={answerFilters[q.question] ?? ''}
-                  onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
-                  options={[{ label: `${q.question} (전체)`, value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
-                  className="text-xs max-w-[220px]"
-                />
+                <div key={q.question} className="w-full @sm:w-auto @sm:max-w-[220px]">
+                  <CustomSelect
+                    value={answerFilters[q.question] ?? ''}
+                    onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
+                    options={[{ label: `${q.question} (전체)`, value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
+                    className="text-xs"
+                  />
+                </div>
               ))}
               {Object.values(answerFilters).some(v => v) && (
                 <button
                   onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
-                  className="text-xs text-brand-green hover:underline ml-1"
+                  className="text-xs text-brand-green hover:underline @sm:ml-1 self-start @sm:self-auto"
                 >초기화</button>
               )}
             </div>
@@ -1729,7 +1730,7 @@ export default function CampaignDetail() {
               </div>
               <div className="space-y-2">
                 {topInfluencers.map((inf, idx) => (
-                  <div key={inf.name} className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 gap-3">
+                  <div key={inf.name} className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between rounded-xl bg-gray-50 px-4 py-3 gap-2 @sm:gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
@@ -1739,7 +1740,7 @@ export default function CampaignDetail() {
                         <p className="text-xs text-gray-500">콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 text-xs flex-wrap justify-end">
+                    <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap @sm:justify-end pl-11 @sm:pl-0">
                       <span className="text-gray-500">좋아요 <strong className="text-gray-900">{fmtNumber(inf.likes)}</strong></span>
                       <span className="text-gray-500">댓글 <strong className="text-gray-900">{fmtNumber(inf.comments)}</strong></span>
                       <span className="text-gray-500">조회 <strong className="text-gray-900">{fmtNumber(inf.views)}</strong></span>
