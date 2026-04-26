@@ -626,7 +626,7 @@ export default function Library() {
                     className={`absolute top-3 left-3 z-10 w-5 h-5 rounded border-2 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isSelected
                         ? 'border-brand-green bg-brand-green'
-                        : 'border-white/80 bg-white/80 opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+                        : 'border-white/80 bg-white/80 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
                     }`}
                   >
                     {isSelected && <Check size={12} className="text-white" aria-hidden="true" />}
@@ -648,7 +648,7 @@ export default function Library() {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       </div>
                     )}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/30 to-transparent h-12 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2" aria-hidden="true">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/30 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2" aria-hidden="true">
                       <Eye size={16} className="text-white" />
                     </div>
                   </button>
