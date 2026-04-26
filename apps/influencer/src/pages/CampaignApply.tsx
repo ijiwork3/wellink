@@ -23,7 +23,7 @@ export default function CampaignApply() {
   const isViewMode = searchParams.get('mode') === 'view'
   const appliedData = mockAppliedData[id ?? '']
 
-  const [phone, setPhone] = useState(isViewMode ? (appliedData?.phone ?? '') : '')
+  const [phone, setPhone] = useState(isViewMode ? (appliedData?.phone ?? mockProfile.phone) : '')
   const [agreed1, setAgreed1] = useState(isViewMode)
   const [agreed2, setAgreed2] = useState(isViewMode)
   const [answers, setAnswers] = useState<Record<string, string>>(isViewMode ? (appliedData?.answers ?? {}) : {})

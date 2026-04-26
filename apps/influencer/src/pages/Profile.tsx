@@ -185,7 +185,7 @@ export default function Profile() {
             {/* 이메일 (읽기 전용) */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">이메일</label>
-              <p className="text-sm text-gray-400 px-3 py-2.5 bg-gray-50 rounded-xl">chanki@example.com</p>
+              <p className="text-sm text-gray-400 px-3 py-2.5 bg-gray-50 rounded-xl">{mockProfile.email}</p>
             </div>
 
             {/* 전화번호 */}

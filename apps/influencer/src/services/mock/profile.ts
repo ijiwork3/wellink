@@ -13,6 +13,7 @@ export const INFLUENCER_TYPES = [
 
 export interface InfluencerProfile {
   name: string
+  email: string
   instagram: string
   marketing: boolean
   selectedFields: string[]
@@ -29,6 +30,7 @@ export interface CampaignSummary {
 
 export const mockProfile: InfluencerProfile = {
   name: '김찬기',
+  email: 'chanki@wellink.co.kr',
   instagram: 'chanstyler',
   marketing: true,
   selectedFields: ['헬스/웨이트', '필라테스'],
