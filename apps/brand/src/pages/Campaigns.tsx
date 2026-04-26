@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
-  Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search,
+  Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, getDDay, getDDayBadgeStyle } from '@wellink/ui'
@@ -77,16 +77,69 @@ type SortKey = typeof SORTS[number]['value']
 
 const fmtBudget = (n: number) => n === 0 ? '-' : `₩${(n / 10000).toFixed(0)}만`
 
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-700">
+      {label}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="text-gray-400 hover:text-gray-700 -mr-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
+        aria-label={`${label} 제거`}
+      >
+        <X size={10} aria-hidden="true" />
+      </button>
+    </span>
+  )
+}
+
 export default function Campaigns() {
   const navigate = useNavigate()
   const qa = useQAMode()
-  const [activeTab, setActiveTab] = useState<Tab>('전체')
-  const [search, setSearch] = useState('')
-  const [platformFilter, setPlatformFilter] = useState<string>('전체')
-  const [categoryFilter, setCategoryFilter] = useState<string>('전체')
-  const [sort, setSort] = useState<SortKey>('deadline')
-  const [page, setPage] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URL ←→ state 초기값 동기화 (한 번만)
+  const isTab = (v: string | null): v is Tab => !!v && (tabs as readonly string[]).includes(v)
+  const isSort = (v: string | null): v is SortKey => !!v && SORTS.some(s => s.value === v)
+
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const v = searchParams.get('tab'); return isTab(v) ? v : '전체'
+  })
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '')
+  const [platformFilter, setPlatformFilter] = useState<string>(() => searchParams.get('platform') ?? '전체')
+  const [categoryFilter, setCategoryFilter] = useState<string>(() => searchParams.get('category') ?? '전체')
+  const [sort, setSort] = useState<SortKey>(() => {
+    const v = searchParams.get('sort'); return isSort(v) ? v : 'deadline'
+  })
+  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get('page')) || 1))
   const PAGE_SIZE = 10
+
+  // state → URL 동기화 (기본값은 URL에서 제거해 깔끔하게)
+  useEffect(() => {
+    const next = new URLSearchParams()
+    if (activeTab !== '전체')         next.set('tab', activeTab)
+    if (search)                       next.set('q', search)
+    if (platformFilter !== '전체')    next.set('platform', platformFilter)
+    if (categoryFilter !== '전체')    next.set('category', categoryFilter)
+    if (sort !== 'deadline')          next.set('sort', sort)
+    if (page !== 1)                   next.set('page', String(page))
+    // QA 파라미터 보존
+    const qaParam = searchParams.get('qa')
+    if (qaParam) next.set('qa', qaParam)
+    setSearchParams(next, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, search, platformFilter, categoryFilter, sort, page])
+
+  const hasActiveFilters =
+    search !== '' || platformFilter !== '전체' || categoryFilter !== '전체' || activeTab !== '전체'
+
+  const resetAllFilters = () => {
+    setActiveTab('전체')
+    setSearch('')
+    setPlatformFilter('전체')
+    setCategoryFilter('전체')
+    setPage(1)
+  }
 
   if (qa === 'loading') {
     return (
@@ -187,17 +240,27 @@ export default function Campaigns() {
 
         {/* 검색 + 필터 + 정렬 */}
         <div className="px-3 @sm:px-5 py-3 border-b border-gray-100 space-y-2 @sm:space-y-0 @sm:flex @sm:items-center @sm:gap-2 @sm:flex-wrap">
-          <div className="relative w-full @sm:flex-1 @sm:min-w-[180px]">
+          <div className="relative w-full @sm:flex-1 @sm:min-w-[200px]">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={search}
               onChange={e => { setSearch(e.target.value); resetPage() }}
               placeholder="캠페인명 검색"
-              className="w-full pl-8 pr-3 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+              className="w-full pl-8 pr-8 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => { setSearch(''); resetPage() }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                aria-label="검색어 지우기"
+              >
+                <X size={12} />
+              </button>
+            )}
           </div>
-          <div className="grid grid-cols-3 gap-2 @sm:flex @sm:items-center @sm:gap-2">
+          <div className="grid grid-cols-2 gap-2 @sm:flex @sm:items-center @sm:gap-2">
             <CustomSelect
               value={platformFilter}
               onChange={v => { setPlatformFilter(v); resetPage() }}
@@ -214,24 +277,59 @@ export default function Campaigns() {
               value={sort}
               onChange={v => { setSort(v as SortKey); resetPage() }}
               options={SORTS.map(s => ({ label: s.label, value: s.value }))}
-              className="@sm:w-36"
+              className="col-span-2 @sm:col-span-1 @sm:w-36"
             />
           </div>
         </div>
+
+        {/* 활성 필터 칩 */}
+        {hasActiveFilters && (
+          <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] text-gray-400 shrink-0">적용된 필터:</span>
+            {activeTab !== '전체' && (
+              <FilterChip label={`상태: ${activeTab}`} onRemove={() => { setActiveTab('전체'); resetPage() }} />
+            )}
+            {search && (
+              <FilterChip label={`검색: ${search}`} onRemove={() => { setSearch(''); resetPage() }} />
+            )}
+            {platformFilter !== '전체' && (
+              <FilterChip label={`플랫폼: ${platformFilter}`} onRemove={() => { setPlatformFilter('전체'); resetPage() }} />
+            )}
+            {categoryFilter !== '전체' && (
+              <FilterChip label={`카테고리: ${categoryFilter}`} onRemove={() => { setCategoryFilter('전체'); resetPage() }} />
+            )}
+            <button
+              type="button"
+              onClick={resetAllFilters}
+              className="ml-auto inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <RotateCcw size={11} aria-hidden="true" />
+              초기화
+            </button>
+          </div>
+        )}
 
         {/* 리스트 / 빈 상태 */}
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
             <Megaphone size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 mb-3">
               {qaEmpty
                 ? '등록된 캠페인이 없습니다.'
-                : (search || platformFilter !== '전체' || categoryFilter !== '전체')
+                : hasActiveFilters
                 ? '조건에 맞는 캠페인이 없습니다.'
-                : activeTab !== '전체'
-                ? `'${activeTab}' 상태의 캠페인이 없습니다.`
                 : '등록된 캠페인이 없습니다.'}
             </p>
+            {!qaEmpty && hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                className="inline-flex items-center gap-1 text-xs text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+              >
+                <RotateCcw size={12} aria-hidden="true" />
+                필터 초기화
+              </button>
+            )}
           </div>
         ) : (
           <ul className="divide-y divide-gray-50">
