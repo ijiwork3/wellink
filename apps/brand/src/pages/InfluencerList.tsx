@@ -305,7 +305,7 @@ export default function InfluencerList() {
             aria-label="인플루언서 검색"
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all duration-150"
           />
         </div>
         <div className="w-full @sm:w-36">

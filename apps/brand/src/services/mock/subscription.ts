@@ -36,8 +36,8 @@ export const mockSubscriptionPlans: SubscriptionPlan[] = [
     style: 'green',
   },
   {
-    id: 'infinite',
-    name: 'Infinite',
+    id: 'enterprise',
+    name: 'Enterprise',
     price: '커스텀',
     unit: '',
     tag: null,

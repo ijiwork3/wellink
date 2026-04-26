@@ -5,4 +5,4 @@
 
 /** 기본 인풋 클래스 — Signup·폼 등에서 사용 */
 export const INPUT_BASE =
-  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all duration-150'
+  'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all duration-150'

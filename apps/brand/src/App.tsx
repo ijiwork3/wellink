@@ -193,7 +193,7 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '로딩 스켈레톤', path: '/subscription?qa=loading' },
       { label: 'Scale 플랜 활성 (기본)', path: '/subscription' },
       { label: 'Focus 플랜 활성', path: '/subscription?qa=plan-focus' },
-      { label: 'Infinite 플랜 활성', path: '/subscription?qa=plan-infinite' },
+      { label: 'Enterprise 플랜 활성', path: '/subscription?qa=plan-enterprise' },
       { label: '무료 체험 중 (Trial D-7)', path: '/subscription?qa=trial' },
       { label: '미구독 (무료 상태)', path: '/subscription?qa=plan-free' },
       { label: '결제 수단 없음', path: '/subscription?qa=no-payment' },

@@ -1055,7 +1055,7 @@ export default function CampaignDetail() {
               placeholder="이름·활동분야로 검색"
               value={applicantsSearch}
               onChange={e => { setApplicantsSearch(e.target.value); setApplicantsPage(1) }}
-              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 placeholder:text-gray-400"
+              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 placeholder:text-gray-400"
             />
           </div>
 
@@ -2293,7 +2293,7 @@ export default function CampaignDetail() {
             placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
             rows={4}
             maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all placeholder:text-gray-400"
+            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
           <div className="text-right text-xs text-gray-400">{contentRejectFeedback.length}/500</div>
         </div>
@@ -2372,7 +2372,7 @@ export default function CampaignDetail() {
             placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
             rows={4}
             maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all"
+            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
           />
           <div className="text-right text-xs text-gray-400">{feedback.length}/500</div>
         </div>

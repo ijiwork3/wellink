@@ -3,13 +3,18 @@ import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
 import { auth } from '@wellink/ui'
+import { ArrowLeft } from 'lucide-react'
 
 interface LayoutProps {
   children: React.ReactNode
   showSidebar?: boolean
+  showBottomTab?: boolean
+  pageTitle?: string
+  onBack?: () => void
 }
 
-export default function Layout({ children, showSidebar = true }: LayoutProps) {
+export default function Layout({ children, showSidebar = true, showBottomTab, pageTitle, onBack }: LayoutProps) {
+  const bottomTab = showBottomTab ?? showSidebar
   const navigate = useNavigate()
 
   return (
@@ -64,14 +69,14 @@ export default function Layout({ children, showSidebar = true }: LayoutProps) {
             </div>
           </div>
         ) : (
-          <main id="main-content" className="flex-1" style={{ animation: 'fadeIn 0.15s ease-out' }}>
+          <main id="main-content" className={`flex-1 ${bottomTab ? 'pb-20 @sm:pb-0' : ''}`} style={{ animation: 'fadeIn 0.15s ease-out' }}>
             {children}
           </main>
         )}
       </div>
 
-      {/* 하단 탭바: 컨테이너 lg 미만에서만 표시 */}
-      {showSidebar && (
+      {/* 하단 탭바: 컨테이너 sm 미만에서만 표시 */}
+      {bottomTab && (
         <div className="@sm:hidden">
           <BottomTabBar />
         </div>

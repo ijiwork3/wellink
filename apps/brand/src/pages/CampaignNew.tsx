@@ -271,7 +271,7 @@ export default function CampaignNew() {
             onChange={e => set('description', e.target.value)}
             rows={6}
             placeholder="캠페인 소개 / 제공 내역 / 참여 방법을 작성해주세요."
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
           />
         </Field>
       </Section>
@@ -288,7 +288,7 @@ export default function CampaignNew() {
             onChange={e => set('productDetail', e.target.value)}
             rows={3}
             placeholder="제공되는 상품의 구성이나 특징을 자세히 적어주세요."
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
           />
         </Field>
 
@@ -332,7 +332,7 @@ export default function CampaignNew() {
               onChange={e => setKeywordInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
               placeholder="예) 킹콩정육점, 수원한우선물세트 (엔터로 추가)"
-              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
             <button
               onClick={addKeyword}
@@ -373,7 +373,7 @@ export default function CampaignNew() {
             onChange={e => set('guideText', e.target.value)}
             rows={5}
             placeholder={'구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.\n\n예시) 1. 고기 굽는 소리가 들리게 영상 촬영\n      2. 보지기 포장 상태 언박싱 컷 필수'}
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           />
         </Field>
 
@@ -488,7 +488,7 @@ export default function CampaignNew() {
                 placeholder="20"
                 value={form.headcount}
                 onChange={e => set('headcount', e.target.value)}
-                className="w-24 text-sm text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="w-24 text-sm text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">명</span>
             </div>
@@ -579,7 +579,7 @@ function Input({ value, onChange, placeholder, className = '' }: { value: string
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition-colors ${className}`}
+      className={`w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-colors ${className}`}
     />
   )
 }
@@ -601,7 +601,7 @@ function DateInput({ value, min, onChange }: { value: string; min?: string; onCh
       value={value}
       min={min}
       onChange={e => onChange(e.target.value)}
-      className="flex-1 text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200 cursor-pointer"
+      className="flex-1 text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
     />
   )
 }

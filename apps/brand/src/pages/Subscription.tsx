@@ -42,7 +42,7 @@ const plans = [
     style: 'green' as const,
   },
   {
-    id: 'infinite',
+    id: 'enterprise',
     name: 'Enterprise',
     price: '커스텀',
     unit: '',
@@ -69,7 +69,7 @@ const paymentHistory = [
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
   if (qa === 'plan-focus')    return 'focus'
-  if (qa === 'plan-infinite') return 'infinite'
+  if (qa === 'plan-enterprise') return 'enterprise'
   if (qa === 'plan-free')     return ''   // 미구독
   if (qa === 'trial')         return 'scale'  // 무료 체험 중 → Scale 활성
   return 'scale'                          // 기본 / plan-scale
@@ -84,7 +84,7 @@ export default function Subscription() {
   )
   const [confirmModal, setConfirmModal] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(false)
-  const [infiniteModal, setInfiniteModal] = useState(false)
+  const [enterpriseModal, setEnterpriseModal] = useState(false)
   const { showToast } = useToast()
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // 신규 — 해지·환불·해지 예약 (원본 보강)
@@ -490,7 +490,7 @@ export default function Subscription() {
           </div>
         ))}
 
-        {/* Infinite — 검정 배경 */}
+        {/* Enterprise — 검정 배경 */}
         {plans.filter(p => p.style === 'dark').map(plan => (
           <div
             key={plan.id}
@@ -523,7 +523,7 @@ export default function Subscription() {
             <button
               onClick={() => {
                 if (plan.id !== currentPlan) {
-                  setInfiniteModal(true)
+                  setEnterpriseModal(true)
                 }
               }}
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors duration-150 ${
@@ -623,14 +623,14 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* Infinite 도입 문의 모달 */}
+      {/* Enterprise 도입 문의 모달 */}
       <AlertModal
-        open={infiniteModal}
-        onClose={() => setInfiniteModal(false)}
+        open={enterpriseModal}
+        onClose={() => setEnterpriseModal(false)}
         title="도입 문의"
         confirmLabel="확인"
         size="sm"
-        onConfirm={() => setInfiniteModal(false)}
+        onConfirm={() => setEnterpriseModal(false)}
         showCancel={false}
       >
         <p className="text-sm text-gray-600">웰링크 엔터프라이즈팀에 문의해 주세요.</p>
