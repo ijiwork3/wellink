@@ -5,7 +5,7 @@ import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip } fro
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE } from '@wellink/ui'
+import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
@@ -396,6 +396,7 @@ export default function CampaignDetail() {
   const PAGE_SIZE = 10
   const [deselectModal, setDeselectModal] = useState<number | null>(null)
   const [deleteCampaignModal, setDeleteCampaignModal] = useState(false)
+  const [cancelCampaignModal, setCancelCampaignModal] = useState(false)
   const [editConfirmModal, setEditConfirmModal] = useState(false)
   // 신규 — 선정된 지원자 업로드 필터 + 업로드 현황 모달 (원본 page.tsx + ApplicantList 'SELECTED' 보강)
   type UploadFilter = 'all' | 'uploaded' | 'not-uploaded'
@@ -582,7 +583,18 @@ export default function CampaignDetail() {
     )
   }
 
-  const campaignStatus = statusConfig[campaign.status] ?? { label: campaign.status, cls: 'bg-gray-100 text-gray-600' }
+  // 마감임박 자동 파생 (모집중 + D-3 이내) — 목록과 동일 정책
+  const recruitEnd = (campaignMeta[id ?? '']?.recruitPeriod ?? '').split(' ~ ')[1]
+  const displayStatus = (() => {
+    if (campaign.status === '모집중' && recruitEnd) {
+      const d = getDDay(recruitEnd)
+      if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= 3)) {
+        return '마감임박'
+      }
+    }
+    return campaign.status
+  })()
+  const campaignStatus = statusConfig[displayStatus] ?? { label: displayStatus, cls: 'bg-gray-100 text-gray-600' }
 
   // 지원자 → 선정 인플루언서 변환 (모든 필드 보존, 업로드 초기값 0)
   const applicantToSelected = (a: typeof applicantsData[number]): typeof selectedApplicantsData[number] => ({
@@ -816,6 +828,12 @@ export default function CampaignDetail() {
   const isPhone = device === 'phone'
   const isClosed = qa === 'campaign-closed'
 
+  // 취소·삭제 가능 여부 (목록 정책과 동일)
+  // - 취소: 종료/완료 status는 불가
+  // - 삭제: 지원자 0명일 때만 가능 (원본 정책)
+  const canCancelCampaign = !isClosed && campaign.status !== '완료' && campaign.status !== '종료'
+  const canDeleteCampaign = applicants.length === 0
+
   return (
     <div className="space-y-5">
       {/* 페이지 타이틀 + 뒤로가기 */}
@@ -844,7 +862,16 @@ export default function CampaignDetail() {
           <div className="flex items-center gap-1 shrink-0">
             <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button></Tooltip>
             <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
-            <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
+            {canCancelCampaign && (
+              <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-xs text-orange-700"><X size={13} />캠페인 취소</button>
+            )}
+            {canDeleteCampaign ? (
+              <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-xs text-red-600"><Trash2 size={13} />삭제</button>
+            ) : (
+              <Tooltip content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
+                <span aria-disabled="true" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-xs text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
+              </Tooltip>
+            )}
           </div>
         </div>
 
@@ -2348,6 +2375,26 @@ export default function CampaignDetail() {
       >
         <p className="text-xs text-gray-500">
           <strong className="text-gray-700">{campaign.name}</strong> 캠페인을 삭제합니다. 모집·콘텐츠·정산 데이터가 함께 사라지며 이 작업은 되돌릴 수 없습니다.
+        </p>
+      </AlertModal>
+
+      {/* 캠페인 취소 확인 모달 */}
+      <AlertModal
+        open={cancelCampaignModal}
+        onClose={() => setCancelCampaignModal(false)}
+        title="캠페인을 취소할까요?"
+        confirmLabel="캠페인 취소"
+        cancelLabel="닫기"
+        variant="danger"
+        size="sm"
+        onConfirm={() => {
+          setCancelCampaignModal(false)
+          showToast(`'${campaign.name}' 캠페인을 취소했습니다 (mock)`, 'success')
+          navigate('/campaigns')
+        }}
+      >
+        <p className="text-xs text-gray-500 whitespace-pre-line">
+          {`현재 ${applicants.length}명의 지원자가 있습니다.\n캠페인을 취소하면 모든 지원자에게 자동 알림이 발송되며, 위약금이 발생할 수 있습니다.\n\n계약 조건에 따라 환불·정산 정책이 적용됩니다.`}
         </p>
       </AlertModal>
 
