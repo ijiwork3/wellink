@@ -1969,6 +1969,7 @@ export default function CampaignDetail() {
             open={contentDetailModal !== null}
             onClose={() => setContentDetailModal(null)}
             title="콘텐츠 상세"
+            size="md"
             footer={
               <>
                 {dcStatus === '검수중' && !isClosed && (
@@ -2307,6 +2308,7 @@ export default function CampaignDetail() {
         confirmLabel="선정 취소"
         cancelLabel="아니요"
         variant="danger"
+        size="sm"
         onConfirm={() => deselectModal !== null && confirmDeselectInfluencer(deselectModal)}
       >
         <p className="text-xs text-gray-500">
@@ -2326,6 +2328,7 @@ export default function CampaignDetail() {
         confirmLabel="변경하기"
         cancelLabel="취소"
         variant="default"
+        size="sm"
         onConfirm={confirmEditCampaign}
       >
         <p className="text-xs text-gray-500 whitespace-pre-line">
@@ -2341,6 +2344,7 @@ export default function CampaignDetail() {
         confirmLabel="삭제"
         cancelLabel="취소"
         variant="danger"
+        size="sm"
         onConfirm={handleDeleteCampaign}
       >
         <p className="text-xs text-gray-500">

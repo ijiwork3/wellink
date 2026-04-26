@@ -27,7 +27,7 @@ interface AlertModalProps {
   confirmLoadingLabel?: string
   loading?: boolean
   variant?: 'default' | 'danger' | 'confirm'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** false면 취소 버튼 숨김 */
   showCancel?: boolean
 }
@@ -60,7 +60,7 @@ export default function AlertModal({
   confirmLoadingLabel,
   loading = false,
   variant = 'default',
-  size = 'sm',
+  size = 'xs',
   showCancel = true,
 }: AlertModalProps) {
   const styles = VARIANT_STYLES[variant]

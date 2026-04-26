@@ -532,7 +532,7 @@ export default function InfluencerList() {
       <Modal
         open={!!selectedInfluencer && !proposalModal}
         onClose={() => setSelectedInfluencer(null)}
-        size="md"
+        size="lg"
         footer={selectedInfluencer ? (
           <button
             onClick={() => setProposalModal(true)}
@@ -587,8 +587,8 @@ export default function InfluencerList() {
 
             {detailTab === 'overview' && (
               <div className="space-y-4">
-                {/* 지표 그리드 */}
-                <div className="grid grid-cols-3 gap-3">
+                {/* 지표 그리드 — 모바일 2cols, 태블릿+ 3cols */}
+                <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3">
                   {[
                     ['팔로워', formatFollowers(selectedInfluencer.followers), 'text-gray-900'],
                     ['게시물 수', `${selectedInfluencer.posts}개`, 'text-gray-900'],
