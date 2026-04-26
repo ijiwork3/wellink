@@ -6,6 +6,7 @@ import {
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
@@ -19,7 +20,7 @@ const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: st
 }
 
 type Campaign = {
-  id: number; name: string; status: '모집중' | '대기중' | '종료';
+  id: number; name: string; status: CampaignStatus;
   total: number; current: number; deadline: string; budget: number;
   category: string; platform: string;
 }
@@ -27,8 +28,9 @@ type Campaign = {
 const SEED_CAMPAIGNS: Campaign[] = [
   { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램' },
   { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브' },
-  { id: 3, name: '여름 홈트 챌린지', status: '종료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램' },
+  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램' },
   { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그' },
+  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램' },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
@@ -41,17 +43,19 @@ const NAME_TEMPLATES: Record<string, string[]> = {
 }
 const PLATFORM_LIST = ['인스타그램', '유튜브', '네이버 블로그', '틱톡']
 const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
-const STATUS_LIST: Campaign['status'][] = ['모집중', '대기중', '종료']
+const STATUS_LIST: CampaignStatus[] = ['대기중', '모집중', '진행중', '완료', '종료']
 
-const generated: Campaign[] = Array.from({ length: 96 }, (_, i) => {
-  const id = i + 5
+const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
+  const id = i + 6
   const category = CATEGORY_LIST[i % CATEGORY_LIST.length]
   const tplList = NAME_TEMPLATES[category]
   const baseName = tplList[i % tplList.length]
   const status = STATUS_LIST[i % STATUS_LIST.length]
   const platform = PLATFORM_LIST[i % PLATFORM_LIST.length]
   const total = 5 + (i % 8) * 5
-  const current = status === '종료' ? total : status === '대기중' ? 0 : Math.floor(total * ((i % 5) + 1) / 6)
+  const current = status === '대기중' ? 0
+                : status === '모집중' ? Math.floor(total * ((i % 5) + 1) / 6)
+                : total
   const month = ((i % 6) + 1).toString().padStart(2, '0')
   const day = ((i % 27) + 1).toString().padStart(2, '0')
   const deadline = `2026-${month}-${day}`
@@ -61,8 +65,22 @@ const generated: Campaign[] = Array.from({ length: 96 }, (_, i) => {
 
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
-const tabs = ['전체', '대기중', '모집중', '종료'] as const
+const tabs = ['전체', '대기중', '모집중', '마감임박', '진행중', '완료', '종료'] as const
 type Tab = typeof tabs[number]
+
+/**
+ * 표시용 status 파생 — 모집중 + D-Day 3일 이하 = '마감임박'으로 노출
+ * (원 데이터 status는 보존, UI 분류 전용)
+ */
+function deriveDisplayStatus(c: Campaign): CampaignStatus {
+  if (c.status === '모집중') {
+    const d = getDDay(c.deadline)
+    if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= 3)) {
+      return '마감임박'
+    }
+  }
+  return c.status
+}
 
 const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
 const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
@@ -218,12 +236,13 @@ export default function Campaigns() {
   const filtered = useMemo(() => {
     if (qaEmpty) return []
     const q = search.trim().toLowerCase()
-    const list = campaigns.filter(c =>
-      (activeTab === '전체' || c.status === activeTab) &&
-      (platformFilter === '전체' || c.platform === platformFilter) &&
-      (categoryFilter === '전체' || c.category === categoryFilter) &&
-      (!q || c.name.toLowerCase().includes(q))
-    )
+    const list = campaigns.filter(c => {
+      const display = deriveDisplayStatus(c)
+      return (activeTab === '전체' || display === activeTab) &&
+        (platformFilter === '전체' || c.platform === platformFilter) &&
+        (categoryFilter === '전체' || c.category === categoryFilter) &&
+        (!q || c.name.toLowerCase().includes(q))
+    })
     const sorted = [...list]
     const tieBreak = (a: Campaign, b: Campaign) => b.id - a.id // 동률 → 최신순
     sorted.sort((a, b) => {
@@ -408,10 +427,11 @@ export default function Campaigns() {
               const cat = CATEGORY_ICON[c.category] ?? { Icon: Megaphone, bg: 'bg-gray-100', fg: 'text-gray-400' }
               const CatIcon = cat.Icon
               const dday = getDDay(c.deadline)
-              const showDDay = c.status !== '종료'
+              const display = deriveDisplayStatus(c)
+              const showDDay = c.status !== '종료' && c.status !== '완료'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
               const isSelected = selectedIds.has(c.id)
-              const canCancel = c.status !== '종료'
+              const canCancel = c.status !== '종료' && c.status !== '완료'
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
               <li
@@ -442,7 +462,7 @@ export default function Campaigns() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      <StatusBadge status={c.status} dot={false} />
+                      <StatusBadge status={display} dot={false} />
                       <PlatformBadge platform={c.platform} />
                       {showDDay && (
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
@@ -450,7 +470,7 @@ export default function Campaigns() {
                     </div>
                     <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
                     <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
-                      <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
+                      <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)} 23:59 KST</span>
                       <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />{c.current}/{c.total}명</span>
                       <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
                     </div>
