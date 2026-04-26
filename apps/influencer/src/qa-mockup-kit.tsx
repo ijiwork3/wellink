@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
-import { useQAState, setQAState, resetQAState, QA_PLAN_OPTIONS, type QAPlan } from './qa-state';
+import { useQAState, setQAState, resetQAState, type QAPlan } from './qa-state';
 
 // ─────────────────────────────────────────────────────────────
 // 타입 & 상수
