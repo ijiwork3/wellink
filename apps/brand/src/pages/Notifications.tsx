@@ -218,7 +218,7 @@ export default function Notifications() {
                   <p className="text-xs text-gray-500 line-clamp-2">{item.desc}</p>
                 </div>
                 {item.link && (
-                  <div className="text-gray-400 shrink-0">
+                  <div className="text-gray-400 shrink-0 self-center">
                     <ChevronRight size={16} aria-hidden="true" />
                   </div>
                 )}
