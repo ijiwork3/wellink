@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass } from 'lucide-react'
+import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass, Edit2 } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, StatusBadge } from '@wellink/ui'
 import type { ParticipationStatus } from '@wellink/ui'
@@ -249,6 +249,13 @@ export default function MyCampaign() {
                           onClick={() => setSubmitModal(c)}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity">
                           <Upload size={12} />콘텐츠 제출
+                        </button>
+                      )
+                      if (action === '상세보기' && c.postUrl) return (
+                        <button key="콘텐츠수정"
+                          onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                          className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors">
+                          <Edit2 size={11} />콘텐츠 수정
                         </button>
                       )
                       if (action === '수정') return (

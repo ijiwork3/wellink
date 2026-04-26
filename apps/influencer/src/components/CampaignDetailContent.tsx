@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy } from 'lucide-react'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -63,18 +63,36 @@ export default function CampaignDetailContent({ campaign, inModal = false }: Cam
                 <StatusBadge status={campaign.status} />
                 <PlatformBadge platform={campaign.channel} />
               </div>
-              <button
-                onClick={() => {
-                  setLiked(!liked)
-                  showToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
-                }}
-                aria-pressed={liked}
-                aria-label={liked ? '좋아요 취소' : '좋아요'}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 ${liked ? 'border-red-300' : 'border-gray-200'}`}
-              >
-                <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
-                <span className={`text-sm ${liked ? 'text-red-500' : 'text-gray-500'}`}>{liked ? '관심등록됨' : '관심등록'}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/campaigns/${campaign.id}`
+                    if (navigator.share) {
+                      navigator.share({ title: campaign.name, text: `${campaign.brand} · ${campaign.name}`, url })
+                    } else {
+                      navigator.clipboard.writeText(url)
+                      showToast('링크가 복사되었어요!', 'success')
+                    }
+                  }}
+                  aria-label="공유하기"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 transition-all duration-150 hover:bg-gray-50"
+                >
+                  <Share2 size={15} className="text-gray-500" aria-hidden="true" />
+                  <span className="text-sm text-gray-500">공유</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setLiked(!liked)
+                    showToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
+                  }}
+                  aria-pressed={liked}
+                  aria-label={liked ? '좋아요 취소' : '좋아요'}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 ${liked ? 'border-red-300' : 'border-gray-200'}`}
+                >
+                  <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
+                  <span className={`text-sm ${liked ? 'text-red-500' : 'text-gray-500'}`}>{liked ? '관심등록됨' : '관심등록'}</span>
+                </button>
+              </div>
             </div>
 
             <h2 className="text-xl font-bold text-gray-900 mb-4">{campaign.name}</h2>

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { CheckCircle2, MapPin, Package, Footprints } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, User, AtSign } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns } from '../services/mock/campaigns'
+import { mockProfile } from '../services/mock/profile'
 import { useToast } from '@wellink/ui'
 
 function formatPhone(v: string) {
@@ -112,6 +113,19 @@ export default function CampaignApply() {
               }
               {campaign.reward && <span className="text-xs text-gray-500">· {campaign.reward}</span>}
             </div>
+          </div>
+        </div>
+
+        {/* 신청자 정보 (읽기 전용) */}
+        <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5">
+          <p className="text-xs font-semibold text-gray-500 mb-1">신청자 정보</p>
+          <div className="flex items-center gap-2.5">
+            <User size={14} className="text-gray-400 flex-shrink-0" />
+            <span className="text-sm text-gray-900">{mockProfile.name}</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <AtSign size={14} className="text-gray-400 flex-shrink-0" />
+            <span className="text-sm text-gray-900">@{mockProfile.instagram}</span>
           </div>
         </div>
 

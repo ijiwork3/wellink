@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { Link2, XCircle, RefreshCw, Users, TrendingUp, CheckCircle2 } from 'lucide-react'
+import { Link2, XCircle, RefreshCw, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -19,10 +19,39 @@ interface Platform {
   placeholder: string
 }
 
+interface ContentPost {
+  id: string
+  emoji: string
+  likes: number
+  comments: number
+  date: string
+}
+
 const PLATFORM_META: Omit<Platform, 'connected' | 'url' | 'followers' | 'engagementRate'>[] = [
   { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', description: '아이디를 연결하면 팔로워 수가 자동으로 확인돼요', placeholder: '@인스타그램 아이디' },
   { id: 'naver',     name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', description: '블로그 URL을 연결하면 신청 시 자동 검증돼요', placeholder: 'https://blog.naver.com/아이디' },
   { id: 'youtube',   name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', description: '채널 URL을 연결하면 구독자 수가 자동 확인돼요', placeholder: 'https://www.youtube.com/@채널명' },
+]
+
+const MOCK_INSTA_STATS = {
+  followers: 8700,
+  posts: 142,
+  avgLikes: 312,
+  avgComments: 18,
+  engagementRate: 4.1,
+  lastActive: '2시간 전',
+}
+
+const MOCK_CONTENT: ContentPost[] = [
+  { id: '1', emoji: '🏋️', likes: 420, comments: 23, date: '4/24' },
+  { id: '2', emoji: '🧘', likes: 381, comments: 15, date: '4/22' },
+  { id: '3', emoji: '🥗', likes: 298, comments: 11, date: '4/20' },
+  { id: '4', emoji: '🏃', likes: 275, comments: 9,  date: '4/18' },
+  { id: '5', emoji: '💪', likes: 341, comments: 20, date: '4/16' },
+  { id: '6', emoji: '🚴', likes: 190, comments: 7,  date: '4/14' },
+  { id: '7', emoji: '🤸', likes: 258, comments: 13, date: '4/12' },
+  { id: '8', emoji: '🏊', likes: 219, comments: 8,  date: '4/10' },
+  { id: '9', emoji: '⛹️', likes: 177, comments: 5,  date: '4/8' },
 ]
 
 export default function Media() {
@@ -114,11 +143,102 @@ export default function Media() {
   }
 
   const connectedCount = platforms.filter(p => p.connected).length
+  const instaPlatform = platforms.find(p => p.id === 'instagram')
 
   return (
     <Layout>
       <div className="space-y-4 max-w-lg">
-        {/* 헤더 */}
+        {/* 인스타그램 통계 패널 — 연결된 경우만 */}
+        {instaPlatform?.connected && (
+          <div className="bg-white rounded-2xl border border-brand-green/20 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-base">📷</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">@{instaPlatform.url}</p>
+                  <p className="text-[11px] text-gray-400">인스타그램</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-brand-green/10 text-brand-green-text flex items-center gap-1">
+                <CheckCircle2 size={10} />연결됨
+              </span>
+            </div>
+
+            {/* 6개 통계 그리드 */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Users size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">팔로워</p>
+                </div>
+                <p className="text-sm font-bold text-gray-900">{fmtFollowers(MOCK_INSTA_STATS.followers)}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Image size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">게시물</p>
+                </div>
+                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.posts}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <TrendingUp size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">참여율</p>
+                </div>
+                <p className={`text-sm font-bold ${getEngagementColor(MOCK_INSTA_STATS.engagementRate)}`}>{MOCK_INSTA_STATS.engagementRate}%</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Heart size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">평균 좋아요</p>
+                </div>
+                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.avgLikes}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <MessageCircle size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">평균 댓글</p>
+                </div>
+                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.avgComments}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Clock size={11} className="text-gray-400" />
+                  <p className="text-[10px] text-gray-500">최근 활동</p>
+                </div>
+                <p className="text-sm font-bold text-gray-900">{MOCK_INSTA_STATS.lastActive}</p>
+              </div>
+            </div>
+
+            {/* 콘텐츠 썸네일 그리드 */}
+            <div>
+              <div className="flex items-center gap-1.5 mb-2">
+                <BarChart3 size={13} className="text-brand-green" />
+                <p className="text-xs font-semibold text-gray-700">최근 콘텐츠</p>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {MOCK_CONTENT.map(post => (
+                  <div key={post.id} className="aspect-square bg-brand-green/5 rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group cursor-pointer">
+                    <span className="text-2xl">{post.emoji}</span>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
+                      <span className="text-white text-[10px] font-medium flex items-center gap-0.5">
+                        <Heart size={9} fill="white" />
+                        {post.likes}
+                      </span>
+                      <span className="text-white text-[10px] flex items-center gap-0.5">
+                        <MessageCircle size={9} />
+                        {post.comments}
+                      </span>
+                    </div>
+                    <p className="text-[9px] text-gray-400">{post.date}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SNS 관리 헤더 */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link2 size={16} className="text-brand-green" />

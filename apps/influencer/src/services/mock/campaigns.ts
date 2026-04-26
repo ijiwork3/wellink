@@ -196,12 +196,13 @@ export interface MyCampaign {
   reward: string
   rewardAmount: number
   contentDeadline?: string
+  postUrl?: string
 }
 
 export const mockMyCampaigns: MyCampaign[] = [
   { id: '1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램', appliedAt: '2026-03-15', deadline: '2026-04-26', status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요', reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-04-26' },
   { id: '2', name: '필라테스 스튜디오 체험', brand: '바디앤핏', channel: '인스타그램', appliedAt: '2026-03-10', deadline: '2026-04-30', status: '지원완료', progress: '브랜드 검토 중', reward: '50,000원', rewardAmount: 50000 },
-  { id: '3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '검수중', progress: '게시 콘텐츠 확인 중', reward: '120,000원', rewardAmount: 120000 },
+  { id: '3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그', appliedAt: '2026-02-28', deadline: '2026-04-10', status: '검수중', progress: '게시 콘텐츠 확인 중', reward: '120,000원', rewardAmount: 120000, postUrl: 'https://blog.naver.com/chanstyler/12345' },
   { id: '4', name: '헬스 보충제 캠페인', brand: 'SMILEATO', channel: '인스타그램', appliedAt: '2026-02-10', deadline: '2026-03-20', status: '완료', progress: '정산 가능', reward: '95,000원', rewardAmount: 95000 },
   { id: '5', name: '요가 스트레칭 밴드', brand: '필라핏', channel: '인스타그램', appliedAt: '2026-03-01', deadline: '2026-04-05', status: '미선정', progress: '미선정', reward: '60,000원', rewardAmount: 60000 },
 ]
