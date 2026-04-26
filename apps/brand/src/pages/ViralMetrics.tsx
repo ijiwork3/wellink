@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info, Heart, MessageCircle, Award } from 'lucide-react'
-import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect } from '@wellink/ui'
+import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -28,10 +28,12 @@ const kpiByMode: Record<ViewMode, { reach: number; shares: number; saves: number
 // 100개 바이럴 콘텐츠 더미 — 원본 ContentScoreItem 동등 (finalScore/grade/performanceScore/momentumScore)
 type ViralContentType = '릴스' | '피드' | '스토리' | '영상' | '쇼츠'
 type ContentGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'
+type ViralPlatform = 'instagram' | 'youtube' | 'tiktok'
 type ViralContent = {
   id: string
   title: string
   influencer: string
+  platform: ViralPlatform
   type: ViralContentType
   reach: number
   likes: number
@@ -78,11 +80,18 @@ const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, i) => {
   const shares = isProcessing ? 0 : Math.floor(likes * (0.15 + (i % 6) * 0.02))
   const monthIdx = (i * 7) % 4 + 1
   const dayIdx = ((i * 11) % 28) + 1
+  const type = VC_TYPES[i % VC_TYPES.length]
+  const platform: ViralPlatform = type === '영상'
+    ? 'youtube'
+    : type === '쇼츠'
+      ? (i % 2 === 0 ? 'youtube' : 'tiktok')
+      : 'instagram'
   return {
     id: `v-${i + 1}`,
     title: i < VC_TITLES.length ? VC_TITLES[i] : `${VC_TITLES[i % VC_TITLES.length]} #${Math.floor(i / VC_TITLES.length) + 1}`,
     influencer: VC_INFLUENCERS[i % VC_INFLUENCERS.length],
-    type: VC_TYPES[i % VC_TYPES.length],
+    platform,
+    type,
     reach, likes, comments, saves, shares,
     viralScore,
     performanceScore,
@@ -456,7 +465,7 @@ export default function ViralMetrics() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-50">
-                    {['콘텐츠', '인플루언서', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
+                    {['콘텐츠', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
                       <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -472,9 +481,12 @@ export default function ViralMetrics() {
                           <span className="text-sm text-gray-900 max-w-[160px] truncate" title={item.title}>{item.title}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500">{item.influencer}</td>
-                      <td className="py-3 px-4">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                      <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{item.influencer}</td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <PlatformBadge platform={item.platform} />
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                       </td>
                       <td className="py-3 px-4">
                         <GradePill grade={item.grade} />
@@ -484,11 +496,11 @@ export default function ViralMetrics() {
                       <td className="py-3 px-4 text-sm text-gray-700">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
                       <td className="py-3 px-4 text-sm text-gray-700">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
                       <td className="py-3 px-4 text-sm text-gray-700">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 whitespace-nowrap">
                         {item.grade === 'processing' ? (
                           <span className="text-xs text-gray-400">산정 중</span>
                         ) : (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-[110px]">
                             <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                               <div
                                 className="h-full rounded-full"
@@ -508,7 +520,7 @@ export default function ViralMetrics() {
                   ))}
                   {paginated.length === 0 && (
                     <tr>
-                      <td colSpan={10} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
+                      <td colSpan={11} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
                     </tr>
                   )}
                 </tbody>

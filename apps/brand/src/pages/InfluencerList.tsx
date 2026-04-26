@@ -347,13 +347,26 @@ export default function InfluencerList() {
       </div>
 
       {/* 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden @container">
         <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              {['인플루언서', '카테고리', '팔로워', '게시물수', '평균 좋아요', '평균 댓글', '참여율', 'Fit Score', '진성비율', '최근 활동', '최근 콘텐츠', '액션'].map(h => (
-                <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h === '액션' ? <span className="sr-only">액션</span> : h}</th>
+              {[
+                { h: '인플루언서', cls: '' },
+                { h: '카테고리',  cls: 'hidden @md:table-cell' },
+                { h: '팔로워',    cls: '' },
+                { h: '게시물수',  cls: 'hidden @lg:table-cell' },
+                { h: '평균 좋아요', cls: 'hidden @lg:table-cell' },
+                { h: '평균 댓글',   cls: 'hidden @xl:table-cell' },
+                { h: '참여율',    cls: '' },
+                { h: 'Fit Score', cls: '' },
+                { h: '진성비율',  cls: 'hidden @lg:table-cell' },
+                { h: '최근 활동', cls: 'hidden @xl:table-cell' },
+                { h: '최근 콘텐츠', cls: 'hidden @xl:table-cell' },
+                { h: '액션',      cls: '' },
+              ].map(({ h, cls }) => (
+                <th key={h} scope="col" className={`text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap ${cls}`}>{h === '액션' ? <span className="sr-only">액션</span> : h}</th>
               ))}
             </tr>
           </thead>
@@ -390,7 +403,7 @@ export default function InfluencerList() {
                     <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                       {inf.name[0]}
                     </div>
-                    <span className="text-sm font-medium text-gray-900">{inf.name}</span>
+                    <span className="text-sm font-medium text-gray-900 whitespace-nowrap">{inf.name}</span>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
@@ -406,10 +419,10 @@ export default function InfluencerList() {
                 </td>
 
                 {/* 카테고리 */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 hidden @md:table-cell">
                   <div className="flex gap-1 flex-wrap">
                     {inf.category.map(c => (
-                      <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
+                      <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap">{c}</span>
                     ))}
                   </div>
                 </td>
@@ -417,17 +430,17 @@ export default function InfluencerList() {
                 {/* 팔로워 */}
                 <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{formatFollowers(inf.followers)}</td>
 
-                {/* 게시물수 — 신규, 원본 ApplicantList 동등 */}
-                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{inf.posts.toLocaleString()}</td>
+                {/* 게시물수 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap hidden @lg:table-cell">{inf.posts.toLocaleString()}</td>
 
-                {/* 평균 좋아요 — 신규 */}
-                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{formatFollowers(inf.avgLikes)}</td>
+                {/* 평균 좋아요 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap hidden @lg:table-cell">{formatFollowers(inf.avgLikes)}</td>
 
-                {/* 평균 댓글 — 신규 */}
-                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{inf.avgComments.toLocaleString()}</td>
+                {/* 평균 댓글 */}
+                <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap hidden @xl:table-cell">{inf.avgComments.toLocaleString()}</td>
 
                 {/* 참여율 */}
-                <td className="py-3 px-4 text-sm font-medium">
+                <td className="py-3 px-4 text-sm font-medium whitespace-nowrap">
                   <span className={getEngagementColor(inf.engagement)}>
                     {inf.engagement}%
                   </span>
@@ -445,17 +458,17 @@ export default function InfluencerList() {
                 </td>
 
                 {/* 진성비율 */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 hidden @lg:table-cell whitespace-nowrap">
                   <span className={`text-sm font-medium ${getAuthenticColor(inf.authentic)}`}>
                     {inf.authentic}%
                   </span>
                 </td>
 
-                {/* 최근 활동 — 신규 (원본 ApplicantList recentActivity 동등) */}
-                <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{inf.lastActive}</td>
+                {/* 최근 활동 */}
+                <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap hidden @xl:table-cell">{inf.lastActive}</td>
 
-                {/* 최근 콘텐츠 미리보기 (3개 플레이스홀더) */}
-                <td className="py-3 px-4">
+                {/* 최근 콘텐츠 미리보기 */}
+                <td className="py-3 px-4 hidden @xl:table-cell">
                   <div className="flex gap-1.5">
                     {[
                       'bg-gradient-to-br from-pink-100 to-pink-200',

@@ -35,7 +35,6 @@ const SYSTEM_TITLES = [
 ]
 const MESSAGE_TITLES = [
   '새로운 메시지',
-  'DM 답장이 도착했습니다',
   '제안에 인플루언서가 답변했습니다',
   '캠페인 문의가 도착했습니다',
 ]
@@ -55,7 +54,6 @@ const SYSTEM_DESCS = [
 ]
 const MESSAGE_DESCS = [
   "인플루언서 '@yoga_jimin'님으로부터 새로운 메시지가 도착했습니다.",
-  "'@fitfoodie_kr'님이 보낸 메시지에 답변이 도착했습니다.",
   "'@daily_hana'님이 캠페인 제안을 수락했습니다.",
   "'@beauty_sora'님이 캠페인 관련 문의를 보냈습니다.",
 ]

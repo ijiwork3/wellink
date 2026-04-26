@@ -43,7 +43,7 @@ const plans = [
   },
   {
     id: 'infinite',
-    name: 'Infinite',
+    name: 'Enterprise',
     price: '커스텀',
     unit: '',
     tag: null,
@@ -214,8 +214,9 @@ export default function Subscription() {
             {(showExpired || showPaymentFailed) && ' (만료)'}
           </span>
         ) : (
-          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">
-            미구독 (무료)
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-300">
+            <AlertTriangle size={12} aria-hidden="true" />
+            미구독 · 무료 플랜
           </span>
         )}
       </div>
@@ -273,15 +274,13 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* QA: 미구독 안내 배너 */}
-      {qa === 'plan-free' && (
-        <div className="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
-          <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center shrink-0 mt-0.5">
-            <span className="text-white text-xs font-bold">i</span>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">현재 무료 플랜을 이용 중입니다</p>
-            <p className="text-xs text-gray-500 mt-0.5">플랜을 선택해 인플루언서 매칭 기능을 시작하세요.</p>
+      {/* 미구독 안내 배너 — 무료 플랜 / QA plan-free */}
+      {(qa === 'plan-free' || (!displayPlan && !showExpired && !showPaymentFailed)) && (
+        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-amber-800">현재 무료 플랜을 이용 중입니다</p>
+            <p className="text-xs text-amber-700 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
           </div>
         </div>
       )}
