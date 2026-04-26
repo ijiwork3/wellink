@@ -9,9 +9,10 @@ interface CampaignCardProps {
   liked?: boolean
   onToggleLike?: (id: number) => void
   showLike?: boolean
+  onCardClick?: (campaign: Campaign) => void
 }
 
-const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true }: CampaignCardProps) {
+const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true, onCardClick }: CampaignCardProps) {
   const navigate = useNavigate()
   const [heartAnim, setHeartAnim] = useState(false)
   const isUrgent = campaign.status === '마감임박'
@@ -28,7 +29,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
   return (
     <div
       className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all duration-150"
-      onClick={() => navigate(`/campaigns/${campaign.id}`)}
+      onClick={() => onCardClick ? onCardClick(campaign) : navigate(`/campaigns/${campaign.id}`)}
     >
       {/* 마감임박 상단 띠 */}
       {isUrgent && (

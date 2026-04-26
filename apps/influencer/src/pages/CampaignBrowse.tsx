@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
-
 type SortKey = 'deadline' | 'reward' | 'recent'
 import { useNavigate } from 'react-router-dom'
 import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
+import CampaignDetailContent from '../components/CampaignDetailContent'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect, ChipSelect } from '@wellink/ui'
+import type { Campaign } from '../services/mock/campaigns'
+import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice } from '@wellink/ui'
 import { BRAND_URL, HELP_EMAIL } from '../config/urls'
 
 function SkeletonCard() {
@@ -33,12 +34,22 @@ function SkeletonCard() {
 export default function CampaignBrowse() {
   const qa = useQAMode()
   const navigate = useNavigate()
+  const isTouch = useIsTouchDevice()
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const [sort, setSort] = useState<SortKey>('deadline')
   const [loading, setLoading] = useState(true)
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
+  const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null)
+
+  const handleCardClick = (campaign: Campaign) => {
+    if (isTouch) {
+      navigate(`/campaigns/${campaign.id}`)
+    } else {
+      setDetailCampaign(campaign)
+    }
+  }
 
   useEffect(() => {
     if (qa === 'loading') return
@@ -78,7 +89,7 @@ export default function CampaignBrowse() {
 
   if (qa === 'error') {
     return (
-      <Layout showSidebar={false} showBottomTab>
+      <Layout>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
           <XCircle size={44} className="text-red-300" />
           <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
@@ -91,7 +102,7 @@ export default function CampaignBrowse() {
   }
 
   return (
-    <Layout showSidebar={false} showBottomTab>
+    <Layout>
       {/* 헤더 */}
       <div className="px-6 py-10" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 10%, transparent) 0%, rgba(255,255,255,0) 60%)' }}>
         <div className="max-w-screen-xl mx-auto">
@@ -164,6 +175,7 @@ export default function CampaignBrowse() {
                 campaign={c}
                 liked={likedIds.has(c.id)}
                 onToggleLike={toggleLike}
+                onCardClick={handleCardClick}
               />
             ))}
           </div>
@@ -219,6 +231,21 @@ export default function CampaignBrowse() {
           </div>
         )
       })()}
+
+      {/* PC 캠페인 상세 모달 */}
+      {detailCampaign && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+          onClick={() => setDetailCampaign(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <CampaignDetailContent campaign={detailCampaign} inModal />
+          </div>
+        </div>
+      )}
 
       {/* 푸터 */}
       <footer className="bg-gray-900 text-white mt-8">

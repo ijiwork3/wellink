@@ -1,9 +1,21 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect } from '@wellink/ui'
+import {
+  Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search,
+  Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
+} from 'lucide-react'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, getDDay, getDDayBadgeStyle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
+
+const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
+  '맛집/푸드':     { Icon: Utensils, bg: 'bg-orange-50',   fg: 'text-orange-500' },
+  '뷰티/패션':     { Icon: Sparkles, bg: 'bg-pink-50',     fg: 'text-pink-500' },
+  '피트니스':      { Icon: Dumbbell, bg: 'bg-emerald-50',  fg: 'text-emerald-600' },
+  '여행':          { Icon: Plane,    bg: 'bg-sky-50',      fg: 'text-sky-500' },
+  '라이프스타일':  { Icon: Home,     bg: 'bg-violet-50',   fg: 'text-violet-500' },
+  '육아':          { Icon: Baby,     bg: 'bg-amber-50',    fg: 'text-amber-500' },
+}
 
 type Campaign = {
   id: number; name: string; status: '모집중' | '대기중' | '종료';
@@ -58,6 +70,8 @@ const SORTS = [
   { value: 'recent', label: '최근 등록순' },
   { value: 'budget-desc', label: '예산 높은순' },
   { value: 'budget-asc', label: '예산 낮은순' },
+  { value: 'applicants-desc', label: '지원자 많은순' },
+  { value: 'progress-desc', label: '모집률 높은순' },
 ] as const
 type SortKey = typeof SORTS[number]['value']
 
@@ -119,12 +133,16 @@ export default function Campaigns() {
       (!q || c.name.toLowerCase().includes(q))
     )
     const sorted = [...list]
+    const tieBreak = (a: Campaign, b: Campaign) => b.id - a.id // 동률 → 최신순
     sorted.sort((a, b) => {
-      if (sort === 'deadline') return a.deadline.localeCompare(b.deadline)
-      if (sort === 'recent') return b.id - a.id
-      if (sort === 'budget-desc') return b.budget - a.budget
-      if (sort === 'budget-asc') return a.budget - b.budget
-      return 0
+      let primary = 0
+      if (sort === 'deadline')          primary = a.deadline.localeCompare(b.deadline)
+      else if (sort === 'recent')       primary = b.id - a.id
+      else if (sort === 'budget-desc')  primary = b.budget - a.budget
+      else if (sort === 'budget-asc')   primary = a.budget - b.budget
+      else if (sort === 'applicants-desc') primary = b.current - a.current
+      else if (sort === 'progress-desc')   primary = (b.current / Math.max(b.total, 1)) - (a.current / Math.max(a.total, 1))
+      return primary !== 0 ? primary : tieBreak(a, b)
     })
     return sorted
   }, [qaEmpty, search, activeTab, platformFilter, categoryFilter, sort])
@@ -217,25 +235,43 @@ export default function Campaigns() {
           </div>
         ) : (
           <ul className="divide-y divide-gray-50">
-            {paged.map(c => (
+            {paged.map(c => {
+              const cat = CATEGORY_ICON[c.category] ?? { Icon: Megaphone, bg: 'bg-gray-100', fg: 'text-gray-400' }
+              const CatIcon = cat.Icon
+              const dday = getDDay(c.deadline)
+              const showDDay = c.status !== '종료'
+              const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
+              return (
               <li
                 key={c.id}
                 onClick={() => navigate(`/campaigns/${c.id}`)}
                 className="flex items-center gap-3 @sm:gap-4 px-3 @sm:px-5 py-3.5 @sm:py-4 hover:bg-gray-50 cursor-pointer transition-colors group"
               >
-                <div className="w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                  <Megaphone size={18} className="text-gray-400" aria-hidden="true" />
+                <div className={`w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
+                  <CatIcon size={20} className={cat.fg} aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                     <StatusBadge status={c.status} dot={false} />
                     <PlatformBadge platform={c.platform} />
+                    {showDDay && (
+                      <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                    )}
                   </div>
                   <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
                   <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
                     <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
-                    <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />지원자 {c.current}명</span>
+                    <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />{c.current}/{c.total}명</span>
                     <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden max-w-[200px]">
+                      <div
+                        className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-gray-400' : 'bg-brand-green'}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-gray-400 tabular-nums shrink-0">{pct}%</span>
                   </div>
                 </div>
                 <div className="hidden @sm:flex items-center gap-1 text-xs text-gray-400 group-hover:text-gray-700 transition-colors shrink-0">
@@ -244,7 +280,8 @@ export default function Campaigns() {
                 </div>
                 <ChevronRight size={16} className="@sm:hidden text-gray-300 shrink-0" aria-hidden="true" />
               </li>
-            ))}
+              )
+            })}
           </ul>
         )}
 
