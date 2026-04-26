@@ -68,11 +68,15 @@ export default function DateRangePicker({
           onClick={() => setOpen(o => !o)}
           aria-label="기간 선택"
           aria-expanded={open}
-          className="inline-flex items-center gap-1 px-2 min-w-[110px] text-center justify-center text-xs font-medium text-gray-700 hover:bg-gray-50 rounded transition-colors"
+          className={`inline-flex items-center gap-1 px-2 py-1 min-w-[110px] text-center justify-center text-xs font-medium rounded transition-colors ${
+            open
+              ? 'bg-gray-100 text-gray-900'
+              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+          }`}
         >
-          <Calendar size={12} className="text-gray-400" aria-hidden="true" />
+          <Calendar size={12} className="text-gray-500" aria-hidden="true" />
           <span className="whitespace-nowrap">{getDateLabel(period, dateOffset)}</span>
-          <ChevronDown size={12} className={`text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+          <ChevronDown size={12} className={`text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
         <button
           onClick={() => onDateOffsetChange(Math.min(0, dateOffset + 1))}
@@ -111,7 +115,8 @@ function DatePickerPopover({
     <div
       role="dialog"
       aria-label="기간 선택"
-      className="absolute top-full right-0 mt-2 z-20 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-[300px]"
+      className="absolute top-full right-0 mt-2 z-20 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-[300px] block"
+      style={{ maxWidth: 'calc(100vw - 32px)' }}
     >
       {period === '일간' && <DailyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
       {period === '주간' && <WeeklyCalendar dateOffset={dateOffset} onSelect={onSelect} />}
