@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, ErrorState, TIMER_MS, SEMANTIC_COLORS } from '@wellink/ui'
+import { Modal, ErrorState, TIMER_MS, SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { mockCampaigns as campaigns } from '../services/mock/campaigns'
 import { useQAMode } from '@wellink/ui'
@@ -187,7 +187,7 @@ export default function CampaignDetail() {
                   </div>
                   <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full ${pct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
+                      className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>

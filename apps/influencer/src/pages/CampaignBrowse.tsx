@@ -4,7 +4,7 @@ import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS } from '@wellink/ui'
+import { useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
 import { BRAND_URL, HELP_EMAIL } from '../config/urls'
 
 function SkeletonCard() {
@@ -34,6 +34,7 @@ export default function CampaignBrowse() {
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
+  const [sort, setSort] = useState<'deadline' | 'reward' | 'recent'>('deadline')
   const [loading, setLoading] = useState(true)
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
 
@@ -56,12 +57,20 @@ export default function CampaignBrowse() {
     })
   }
 
-  const baseFiltered = useMemo(() => mockCampaigns.filter(c => {
-    const matchCat = selectedCategory === '전체' || c.category === selectedCategory
-    const q = search.trim().toLowerCase()
-    const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
-    return matchCat && matchSearch
-  }), [selectedCategory, search])
+  const baseFiltered = useMemo(() => {
+    const filtered = mockCampaigns.filter(c => {
+      const matchCat = selectedCategory === '전체' || c.category === selectedCategory
+      const q = search.trim().toLowerCase()
+      const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
+      return matchCat && matchSearch
+    })
+    return [...filtered].sort((a, b) => {
+      if (sort === 'reward') return (b.rewardAmount ?? 0) - (a.rewardAmount ?? 0)
+      if (sort === 'recent') return b.id - a.id
+      // deadline: 마감 임박순
+      return new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
+    })
+  }, [selectedCategory, search, sort])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
 
@@ -112,8 +121,9 @@ export default function CampaignBrowse() {
           </button>
         </div>
 
-        {/* 카테고리 탭 */}
-        <div className="flex gap-2 flex-wrap mb-5">
+        {/* 카테고리 탭 + 정렬 */}
+        <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
+        <div className="flex gap-2 flex-wrap flex-1">
           {BROWSE_CATEGORIES.map(cat => (
             <button
               key={cat}
@@ -127,6 +137,17 @@ export default function CampaignBrowse() {
               {cat}
             </button>
           ))}
+        </div>
+        <CustomSelect
+          value={sort}
+          onChange={v => setSort(v as typeof sort)}
+          options={[
+            { label: '마감 임박순', value: 'deadline' },
+            { label: '리워드 높은순', value: 'reward' },
+            { label: '최신 등록순', value: 'recent' },
+          ]}
+          className="shrink-0 w-32"
+        />
         </div>
 
         {/* 결과 수 */}

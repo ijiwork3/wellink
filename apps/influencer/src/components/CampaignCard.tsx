@@ -1,7 +1,7 @@
 import { useState, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Users, Gift } from 'lucide-react'
-import { StatusBadge, PlatformBadge, fmtDate, TIMER_MS } from '@wellink/ui'
+import { StatusBadge, PlatformBadge, TIMER_MS, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
 
 interface CampaignCardProps {
@@ -16,6 +16,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
   const [heartAnim, setHeartAnim] = useState(false)
   const isUrgent = campaign.status === '마감임박'
   const progressPct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
+  const dday = getDDay(campaign.applyEnd)
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -56,7 +57,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
         {/* 모집률 바 */}
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100">
           <div
-            className={`h-full ${progressPct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
+            className={`h-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -86,7 +87,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
             <Users size={11} />
             {campaign.applied}/{campaign.headcount}명 모집
           </span>
-          <span>마감 {fmtDate(campaign.applyEnd)}</span>
+          <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, XCircle, RefreshCw, Users, TrendingUp, CheckCircle2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR } from '@wellink/ui'
+import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 
@@ -163,7 +163,7 @@ export default function Media() {
                     <div className="flex items-center gap-3 mt-2">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
                         <Users size={11} className="text-gray-400" />
-                        <strong>{p.followers.toLocaleString()}</strong> 팔로워
+                        <strong>{fmtFollowers(p.followers)}</strong> 팔로워
                       </span>
                       {p.engagementRate != null && (
                         <span className="flex items-center gap-1 text-xs">
