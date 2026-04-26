@@ -23,14 +23,15 @@ type Campaign = {
   id: number; name: string; status: CampaignStatus;
   total: number; current: number; deadline: string; budget: number;
   category: string; platform: string;
+  imageUrl?: string  // 캠페인 대표 이미지 — 원본 displayImgUrl 동등
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램' },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브' },
-  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램' },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그' },
-  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램' },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160' },
+  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160' },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160' },
+  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160' },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
@@ -60,7 +61,10 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const day = ((i % 27) + 1).toString().padStart(2, '0')
   const deadline = `2026-${month}-${day}`
   const budget = (i % 7 + 1) * 500000
-  return { id, name: `${baseName} #${id}`, status, total, current, deadline, budget, category, platform }
+  return {
+    id, name: `${baseName} #${id}`, status, total, current, deadline, budget, category, platform,
+    imageUrl: `https://picsum.photos/seed/wellink-${id}/160/160`,
+  }
 })
 
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
@@ -473,8 +477,17 @@ export default function Campaigns() {
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goDetail() } }}
                   className="flex-1 flex items-center gap-3 @sm:gap-4 min-w-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                 >
-                  <div className={`w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
-                    <CatIcon size={20} className={cat.fg} aria-hidden="true" />
+                  <div className={`relative w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg overflow-hidden ${cat.bg} flex items-center justify-center shrink-0`}>
+                    {c.imageUrl ? (
+                      <img
+                        src={c.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                    ) : null}
+                    {!c.imageUrl && <CatIcon size={20} className={cat.fg} aria-hidden="true" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">

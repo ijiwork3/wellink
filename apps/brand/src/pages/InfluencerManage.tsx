@@ -107,7 +107,21 @@ export default function InfluencerManage() {
   const device = useDeviceMode()
   const isMobile = device !== 'desktop'
 
-  const [influencers, setInfluencers] = useState<Influencer[]>(ALL_INFLUENCERS)
+  // 진입 시 sessionStorage(wl_bookmarks)에서 찜한 ID만 필터 — 원본 SavedInfluencers 동등.
+  // 키가 비었으면 시연용 더미 80명을 기본 찜으로 (첫 진입 빈 상태 방지)
+  const [influencers, setInfluencers] = useState<Influencer[]>(() => {
+    try {
+      const raw = sessionStorage.getItem('wl_bookmarks')
+      if (raw) {
+        const ids = new Set<number>(JSON.parse(raw))
+        if (ids.size > 0) return ALL_INFLUENCERS.filter(inf => ids.has(inf.id))
+      }
+    } catch { /* 파싱 실패 무시 */ }
+    // 첫 진입: 80명 기본 찜 + sessionStorage 시드
+    const seed = ALL_INFLUENCERS.slice(0, 80)
+    try { sessionStorage.setItem('wl_bookmarks', JSON.stringify(seed.map(inf => inf.id))) } catch { /* noop */ }
+    return seed
+  })
   const [page, setPage] = useState(1)
   const [sortKey, setSortKey] = useState<InfluencerSortKey>(DEFAULT_INFLUENCER_SORT)
 
