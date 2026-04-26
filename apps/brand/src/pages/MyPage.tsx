@@ -777,6 +777,7 @@ export default function MyPage() {
         confirmLabel="삭제"
         cancelLabel="취소"
         variant="danger"
+        size="sm"
         onConfirm={() => {
           if (!deleteModal) return
           setMembers(prev => prev.filter(m => m.id !== deleteModal.id))

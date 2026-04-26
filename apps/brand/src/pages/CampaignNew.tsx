@@ -527,6 +527,7 @@ export default function CampaignNew() {
         onClose={() => { setCompletedModal(false); navigate('/campaigns') }}
         title="캠페인이 등록되었습니다"
         confirmLabel="캠페인 목록으로"
+        size="sm"
         onConfirm={() => { setCompletedModal(false); navigate('/campaigns') }}
         showCancel={false}
         variant="confirm"

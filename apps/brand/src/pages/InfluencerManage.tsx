@@ -705,6 +705,7 @@ export default function InfluencerManage() {
         description={confirm.description}
         confirmLabel="삭제"
         variant="danger"
+        size="sm"
         onConfirm={() => { confirm.onConfirm(); closeConfirm() }}
       />
 
