@@ -14,6 +14,7 @@
 
 import { X } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useIsTouchDevice } from '../utils/useIsTouchDevice'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 const getFocusableElements = (container: HTMLElement | null): HTMLElement[] =>
@@ -47,6 +48,9 @@ interface ModalProps {
 
 export default function Modal({ open, onClose, title, label, children, footer, size = 'sm', closeOnBackdrop = true, showClose = true, fullscreen = false }: ModalProps) {
   const [visible, setVisible] = useState(false)
+  const isTouch = useIsTouchDevice()
+  // 모바일/태블릿에서 lg/xl은 자동 풀스크린 — 좁은 화면에서 가로 잘림·세로 스크롤 폭주 방지
+  const effectiveFullscreen = fullscreen || (isTouch && (size === 'lg' || size === 'xl'))
   const rafRef = useRef<number | null>(null)
   const focusRafRef = useRef<number | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
@@ -117,7 +121,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm ${fullscreen ? 'items-stretch' : 'items-center justify-center overflow-y-auto p-4'}`}
+      className={`fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm ${effectiveFullscreen ? 'items-stretch' : 'items-center justify-center overflow-y-auto p-4'}`}
       onClick={closeOnBackdrop ? (e) => { if (e.target === e.currentTarget) onCloseRef.current() } : undefined}
     >
       <div
@@ -128,7 +132,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
         aria-label={!title ? (label ?? '대화상자') : undefined}
         tabIndex={-1}
         className={`bg-white shadow-2xl flex flex-col transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-          fullscreen
+          effectiveFullscreen
             ? 'w-full rounded-none h-full overflow-hidden'
             : `rounded-2xl ${sizeCls} w-full max-h-[85vh]`
         }`}
