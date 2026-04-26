@@ -24,14 +24,15 @@ type Campaign = {
   total: number; current: number; deadline: string; budget: number;
   category: string; platform: string;
   imageUrl?: string  // 캠페인 대표 이미지 — 원본 displayImgUrl 동등
+  createdAt: string  // 캠페인 등록일 (YYYY-MM-DD) — 원본 createdAt 동등, 최근 등록순 정렬·관리에 사용
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160' },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160' },
-  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160' },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160' },
-  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160' },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18' },
+  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05' },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25' },
+  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12' },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
@@ -60,10 +61,15 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const month = ((i % 6) + 1).toString().padStart(2, '0')
   const day = ((i % 27) + 1).toString().padStart(2, '0')
   const deadline = `2026-${month}-${day}`
+  // 등록일은 마감 7~30일 전으로 추정 (i 기반 결정성 유지)
+  const createdMonth = (((i % 6) + 1) - 1 || 1).toString().padStart(2, '0')
+  const createdDay = (((i % 20) + 1)).toString().padStart(2, '0')
+  const createdAt = `2026-${createdMonth}-${createdDay}`
   const budget = (i % 7 + 1) * 500000
   return {
     id, name: `${baseName} #${id}`, status, total, current, deadline, budget, category, platform,
     imageUrl: `https://picsum.photos/seed/wellink-${id}/160/160`,
+    createdAt,
   }
 })
 
@@ -252,7 +258,7 @@ export default function Campaigns() {
     sorted.sort((a, b) => {
       let primary = 0
       if (sort === 'deadline')          primary = a.deadline.localeCompare(b.deadline)
-      else if (sort === 'recent')       primary = b.id - a.id
+      else if (sort === 'recent')       primary = b.createdAt.localeCompare(a.createdAt) || (b.id - a.id)
       else if (sort === 'budget-desc')  primary = b.budget - a.budget
       else if (sort === 'budget-asc')   primary = a.budget - b.budget
       else if (sort === 'applicants-desc') primary = b.current - a.current
