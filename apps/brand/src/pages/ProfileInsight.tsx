@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
-import { KPICard, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS } from '@wellink/ui'
+import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles } from 'lucide-react'
+import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
-import { getDateLabel } from '../utils/getDateLabel'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 
 const periods = ['일간', '주간', '월간', '연간'] as const
@@ -346,6 +345,7 @@ export default function ProfileInsight() {
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   const [activeMetrics, setActiveMetrics] = useState<MetricKey[]>(['likes', 'reach'])
+  const [aiRefreshing, setAiRefreshing] = useState(false)
 
   const toggleMetric = (metric: MetricKey) => {
     setActiveMetrics(prev =>
@@ -431,45 +431,49 @@ export default function ProfileInsight() {
           <h1 className="text-xl font-bold text-gray-900">프로필 인사이트</h1>
           <p className="text-sm text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* 기간 탭 */}
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
-            {periods.map(p => (
-              <button
-                key={p}
-                onClick={() => { setPeriod(p); setDateOffset(0) }}
-                className={`text-xs px-3 py-1.5 rounded-md transition-all ${
-                  period === p
-                    ? 'bg-white shadow-sm font-semibold text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+        <DateRangePicker
+          period={period}
+          dateOffset={dateOffset}
+          onPeriodChange={setPeriod}
+          onDateOffsetChange={setDateOffset}
+        />
+      </div>
+
+      {/* AI 프로필 분석 카드 — 원본 AIAnalysisCard 보강 (상단) */}
+      <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100 rounded-2xl p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-purple-600" aria-hidden="true" />
+            <h3 className="text-sm font-bold text-gray-900">AI 프로필 분석</h3>
           </div>
-          {/* 날짜 이동 */}
-          <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-1">
-            <button
-              onClick={() => setDateOffset(o => o - 1)}
-              className="p-0.5 rounded hover:bg-gray-100 transition-colors"
-              aria-label="이전 기간"
-            >
-              <ChevronLeft size={14} className="text-gray-500" />
-            </button>
-            <span className="text-xs font-medium text-gray-700 min-w-[90px] text-center">
-              {getDateLabel(period, dateOffset)}
-            </span>
-            <button
-              onClick={() => setDateOffset(o => Math.min(0, o + 1))}
-              disabled={dateOffset >= 0}
-              aria-label="다음 기간"
-              className="p-0.5 rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronRight size={14} className="text-gray-500" />
-            </button>
-          </div>
+          <button
+            onClick={() => { setAiRefreshing(true); setTimeout(() => setAiRefreshing(false), 1800) }}
+            disabled={aiRefreshing}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          >
+            {aiRefreshing ? (
+              <>
+                <Loader2 size={12} className="animate-spin" aria-hidden="true" />
+                분석 중…
+              </>
+            ) : (
+              <>
+                <Sparkles size={12} aria-hidden="true" />
+                다시 분석
+              </>
+            )}
+          </button>
         </div>
+        {aiRefreshing ? (
+          <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="AI 분석 진행 중">
+            <div className="h-3 w-3/4 bg-purple-200/50 rounded" />
+            <div className="h-3 w-full bg-purple-200/50 rounded" />
+            <div className="h-3 w-5/6 bg-purple-200/50 rounded" />
+            <div className="h-3 w-2/3 bg-purple-200/50 rounded" />
+          </div>
+        ) : (
+          <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{PROFILE_AI_SUMMARY}</p>
+        )}
       </div>
 
       {/* KPI 카드 4개 */}
@@ -510,17 +514,6 @@ export default function ProfileInsight() {
           icon={<BarChart2 size={16} />}
           tooltip="콘텐츠가 화면에 노출된 총 횟수 (중복 포함)"
         />
-      </div>
-
-      {/* AI 프로필 분석 카드 — 원본 AIAnalysisCard 보강 */}
-      <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-100 rounded-2xl p-5">
-        <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-white/80 flex items-center justify-center text-emerald-600 text-base">✨</span>
-            <h3 className="text-sm font-bold text-gray-900">AI 프로필 분석</h3>
-          </div>
-        </div>
-        <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{PROFILE_AI_SUMMARY}</p>
       </div>
 
       {/* 전환 KPI 3개 — 원본 buildProfileConversionMetrics 보강 */}

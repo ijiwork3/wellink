@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, ChevronLeft, ChevronRight, Calendar, Info, Award } from 'lucide-react'
-import { ErrorState, useToast, fmtNumber, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge } from '@wellink/ui'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award } from 'lucide-react'
+import { ErrorState, useToast, DateRangePicker, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
-import { getDateLabel, type DatePeriod } from '../utils/getDateLabel'
 
 type ViewMode = 'daily' | 'weekly' | 'monthly' | 'yearly'
 
@@ -14,6 +13,13 @@ const VIEW_MODE_TO_PERIOD: Record<ViewMode, DatePeriod> = {
   weekly: '주간',
   monthly: '월간',
   yearly: '연간',
+}
+
+const PERIOD_TO_VIEW_MODE: Record<DatePeriod, ViewMode> = {
+  '일간': 'daily',
+  '주간': 'weekly',
+  '월간': 'monthly',
+  '연간': 'yearly',
 }
 
 // 뷰 모드별 KPI 더미 데이터
@@ -246,10 +252,6 @@ export default function ViralMetrics() {
     yearly:  { reach: '+42.1%', shares: '+58.3%', saves: '+51.2%', viral: '+24.6%' },
   }
 
-  const viewModeLabels: Record<ViewMode, string> = {
-    daily: '일간', weekly: '주간', monthly: '월간', yearly: '연간'
-  }
-
   return (
     <div className="space-y-6">
       {/* 헤더 + 날짜 네비게이션 */}
@@ -259,48 +261,12 @@ export default function ViralMetrics() {
           <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
 
-        {/* 날짜 네비게이션 */}
-        <div className="flex items-center gap-2 @sm:gap-3 flex-wrap">
-          {/* 뷰 모드 토글 */}
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
-            {(['daily', 'weekly', 'monthly', 'yearly'] as ViewMode[]).map(mode => (
-              <button
-                key={mode}
-                onClick={() => { setViewMode(mode); setDateOffset(0) }}
-                className={`text-sm px-3 py-1.5 rounded-md transition-all ${
-                  viewMode === mode ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {viewModeLabels[mode]}
-              </button>
-            ))}
-          </div>
-
-          {/* 날짜 이전/다음 */}
-          <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-1">
-            <button
-              onClick={() => setDateOffset(o => o - 1)}
-              aria-label="이전 기간"
-              className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-500"
-            >
-              <ChevronLeft size={14} />
-            </button>
-            <div className="flex items-center gap-1.5 px-2">
-              <Calendar size={12} className="text-gray-400" />
-              <span className="text-xs font-medium text-gray-700 whitespace-nowrap min-w-[120px] text-center">
-                {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}
-              </span>
-            </div>
-            <button
-              onClick={() => setDateOffset(o => Math.min(o + 1, 0))}
-              disabled={dateOffset >= 0}
-              aria-label="다음 기간"
-              className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-500 disabled:opacity-30"
-            >
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        </div>
+        <DateRangePicker
+          period={VIEW_MODE_TO_PERIOD[viewMode]}
+          dateOffset={dateOffset}
+          onPeriodChange={(p) => setViewMode(PERIOD_TO_VIEW_MODE[p])}
+          onDateOffsetChange={setDateOffset}
+        />
       </div>
 
       {/* 월간·연간 데이터 부정확 안내 배너 */}

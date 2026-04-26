@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ChevronLeft, ChevronRight, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Calendar, Loader2 } from 'lucide-react'
-import { KPICard, StatusBadge, ErrorState, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
+import { useState } from 'react'
+import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
+import { KPICard, StatusBadge, ErrorState, DateRangePicker, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
-import { getDateLabel } from '../utils/getDateLabel'
 
 const periods = ['일간', '주간', '월간', '연간'] as const
 type Period = (typeof periods)[number]
@@ -180,20 +179,6 @@ export default function AdPerformance() {
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null)
   const [expandedAdSet, setExpandedAdSet] = useState<string | null>(null)
   const [aiRefreshing, setAiRefreshing] = useState(false)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
-  const datePickerRef = useRef<HTMLDivElement>(null)
-
-  // 외부 클릭 시 닫기
-  useEffect(() => {
-    if (!datePickerOpen) return
-    const handler = (e: MouseEvent) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
-        setDatePickerOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [datePickerOpen])
 
   /* ── QA: 로딩 ── */
   if (qa === 'loading') {
@@ -270,49 +255,12 @@ export default function AdPerformance() {
           <p className="text-sm text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
         <div className="flex items-center flex-wrap gap-2">
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
-            {periods.map(p => (
-              <button
-                key={p}
-                onClick={() => { setPeriod(p); setDateOffset(0) }}
-                className={`text-sm px-3 py-1.5 rounded-md transition-all ${
-                  period === p ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-          <div ref={datePickerRef} className="relative flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-2 py-1">
-            <button onClick={() => setDateOffset(o => o - 1)} aria-label="이전 기간" className="p-2 rounded hover:bg-gray-100 transition-colors">
-              <ChevronLeft size={14} className="text-gray-500" aria-hidden="true" />
-            </button>
-            <button
-              onClick={() => setDatePickerOpen(o => !o)}
-              aria-label="기간 선택"
-              aria-expanded={datePickerOpen}
-              className="inline-flex items-center gap-1 px-2 min-w-[110px] text-center justify-center text-xs font-medium text-gray-700 hover:bg-gray-50 rounded transition-colors"
-            >
-              <Calendar size={12} className="text-gray-400" aria-hidden="true" />
-              <span className="whitespace-nowrap">{getDateLabel(period, dateOffset)}</span>
-              <ChevronDown size={12} className={`text-gray-400 transition-transform ${datePickerOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
-            </button>
-            <button
-              onClick={() => setDateOffset(o => Math.min(0, o + 1))}
-              disabled={dateOffset >= 0}
-              aria-label="다음 기간"
-              className="p-2 rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronRight size={14} className="text-gray-500" aria-hidden="true" />
-            </button>
-            {datePickerOpen && (
-              <DatePickerPopover
-                period={period}
-                dateOffset={dateOffset}
-                onSelect={(offset) => { setDateOffset(offset); setDatePickerOpen(false) }}
-              />
-            )}
-          </div>
+          <DateRangePicker
+            period={period}
+            dateOffset={dateOffset}
+            onPeriodChange={setPeriod}
+            onDateOffsetChange={setDateOffset}
+          />
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
             className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white"
@@ -724,48 +672,6 @@ export default function AdPerformance() {
             </div>
           ))}
         </div>
-      </div>
-    </div>
-  )
-}
-
-/** 기간 선택 팝오버 — 일/주/월/연 단위로 offset 직접 선택 */
-function DatePickerPopover({ period, dateOffset, onSelect }: { period: Period; dateOffset: number; onSelect: (offset: number) => void }) {
-  // 일간: 30일, 주간: 12주, 월간: 12개월, 연간: 5년
-  const items: { offset: number; label: string }[] = (() => {
-    if (period === '연간') {
-      return Array.from({ length: 5 }, (_, i) => ({ offset: -i, label: getDateLabel('연간', -i) }))
-    }
-    if (period === '월간') {
-      return Array.from({ length: 12 }, (_, i) => ({ offset: -i, label: getDateLabel('월간', -i) }))
-    }
-    if (period === '주간') {
-      return Array.from({ length: 12 }, (_, i) => ({ offset: -i, label: getDateLabel('주간', -i) }))
-    }
-    return Array.from({ length: 30 }, (_, i) => ({ offset: -i, label: getDateLabel('일간', -i) }))
-  })()
-  const cols = period === '일간' ? 'grid-cols-5' : period === '주간' || period === '월간' ? 'grid-cols-3' : 'grid-cols-1'
-  return (
-    <div
-      role="dialog"
-      aria-label="기간 선택"
-      className="absolute top-full right-0 mt-2 z-20 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-[300px] max-h-[320px] overflow-y-auto"
-    >
-      <div className="text-[11px] font-semibold text-gray-500 mb-2 px-1">{period} 선택</div>
-      <div className={`grid gap-1.5 ${cols}`}>
-        {items.map(({ offset, label }) => (
-          <button
-            key={offset}
-            onClick={() => onSelect(offset)}
-            className={`text-xs px-2 py-1.5 rounded-lg transition-colors text-center ${
-              offset === dateOffset
-                ? 'bg-brand-green text-white font-semibold'
-                : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
       </div>
     </div>
   )
