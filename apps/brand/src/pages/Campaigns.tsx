@@ -5,7 +5,7 @@ import {
   MoreVertical, Copy, Share2, XCircle, Trash2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
@@ -341,7 +341,10 @@ export default function Campaigns() {
         </div>
 
         {/* 일괄 액션 바 */}
-        {selectedIds.size > 0 && (
+        {selectedIds.size > 0 && (() => {
+          const selectedList = campaigns.filter(c => selectedIds.has(c.id))
+          const allDeletable = selectedList.every(c => c.current === 0)
+          return (
           <div className="px-3 @sm:px-5 py-2 border-b border-brand-green/20 bg-brand-green/5 flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-brand-green-text">
               {selectedIds.size}건 선택됨
@@ -354,13 +357,24 @@ export default function Campaigns() {
               >
                 <XCircle size={12} aria-hidden="true" /> 일괄 취소
               </button>
-              <button
-                type="button"
-                onClick={() => setConfirm({ kind: 'delete-bulk', ids: Array.from(selectedIds) })}
-                className="inline-flex items-center gap-1 text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
-              </button>
+              {allDeletable ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirm({ kind: 'delete-bulk', ids: Array.from(selectedIds) })}
+                  className="inline-flex items-center gap-1 text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
+                </button>
+              ) : (
+                <Tooltip content="지원자가 있는 캠페인이 포함되어 있어 삭제할 수 없습니다.">
+                  <span
+                    className="inline-flex items-center gap-1 text-xs text-gray-400 px-2 py-1 rounded-md cursor-not-allowed"
+                    aria-disabled="true"
+                  >
+                    <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
+                  </span>
+                </Tooltip>
+              )}
               <button
                 type="button"
                 onClick={clearSelection}
@@ -370,7 +384,8 @@ export default function Campaigns() {
               </button>
             </div>
           </div>
-        )}
+          )
+        })()}
 
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
@@ -432,6 +447,7 @@ export default function Campaigns() {
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
               const isSelected = selectedIds.has(c.id)
               const canCancel = c.status !== '종료' && c.status !== '완료'
+              const canDelete = c.current === 0
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
               <li
@@ -513,13 +529,24 @@ export default function Campaigns() {
                           <XCircle size={12} aria-hidden="true" /> 캠페인 취소
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setConfirm({ kind: 'delete-one', id: c.id, name: c.name })}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 text-left"
-                      >
-                        <Trash2 size={12} aria-hidden="true" /> 삭제
-                      </button>
+                      {canDelete ? (
+                        <button
+                          type="button"
+                          onClick={() => setConfirm({ kind: 'delete-one', id: c.id, name: c.name })}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 text-left"
+                        >
+                          <Trash2 size={12} aria-hidden="true" /> 삭제
+                        </button>
+                      ) : (
+                        <Tooltip content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
+                          <span
+                            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-400 cursor-not-allowed"
+                            aria-disabled="true"
+                          >
+                            <Trash2 size={12} aria-hidden="true" /> 삭제
+                          </span>
+                        </Tooltip>
+                      )}
                     </div>
                   </Dropdown>
                 </div>
