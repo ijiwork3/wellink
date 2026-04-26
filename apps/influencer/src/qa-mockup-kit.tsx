@@ -26,9 +26,11 @@ import { useState, useEffect, useRef, useCallback, createContext, useContext, ty
 import {
   Smartphone, Tablet, Monitor,
   Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera,
+  AlertCircle, Loader2, Link2, Inbox,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
+import { useQAState, setQAState, resetQAState, QA_PLAN_OPTIONS, type QAPlan } from './qa-state';
 
 // ─────────────────────────────────────────────────────────────
 // 타입 & 상수
@@ -675,3 +677,182 @@ export function MockupShell<S extends string, T extends string>({
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────
+// GlobalQAHeader — 광고주 앱과 동일한 상단 고정 QA 헤더
+// ─────────────────────────────────────────────────────────────
+
+export const GLOBAL_QA_HEADER_HEIGHT = 44;
+
+export function GlobalQAHeader<S extends string, T extends string>({
+  title = '웰링크 인플루언서 POC',
+  pathItems,
+  onNavigate,
+  accentColor = QA_ACCENT_COLOR,
+}: {
+  title?: string;
+  pathItems: StatusItem[];
+  onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
+  accentColor?: string;
+}) {
+  const qaState = useQAState();
+
+  return (
+    <div
+      className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between gap-3 px-4 bg-slate-900 text-white border-b border-slate-700"
+      style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
+    >
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
+        <span className="text-xs font-semibold tracking-tight">{title}</span>
+      </div>
+
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
+        <ToggleChip
+          active={qaState.instaConnected}
+          onClick={() => setQAState({ instaConnected: !qaState.instaConnected })}
+          icon={<Link2 size={11} />}
+          label={qaState.instaConnected ? '인스타 연결' : '인스타 미연결'}
+          accentColor={accentColor}
+        />
+        <ToggleChip
+          active={qaState.loading}
+          onClick={() => setQAState({ loading: !qaState.loading })}
+          icon={<Loader2 size={11} className={qaState.loading ? 'animate-spin' : ''} />}
+          label="로딩"
+          accentColor={accentColor}
+        />
+        <ToggleChip
+          active={qaState.error}
+          onClick={() => setQAState({ error: !qaState.error })}
+          icon={<AlertCircle size={11} />}
+          label="에러"
+          accentColor={accentColor}
+        />
+        <ToggleChip
+          active={qaState.empty}
+          onClick={() => setQAState({ empty: !qaState.empty })}
+          icon={<Inbox size={11} />}
+          label="값 없음"
+          accentColor={accentColor}
+        />
+        <button
+          onClick={() => resetQAState()}
+          className="text-[10px] text-slate-400 hover:text-white px-2 py-1 transition-colors"
+          title="QA 상태 초기화"
+        >
+          초기화
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ToggleChip({
+  active, onClick, icon, label, accentColor,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  accentColor: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors border"
+      style={
+        active
+          ? { background: accentColor, borderColor: accentColor, color: '#fff' }
+          : { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }
+      }
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function GlobalPathDropdown<S extends string, T extends string>({
+  items, onNavigate,
+}: {
+  items: StatusItem[];
+  onNavigate: (result: { state?: S; tab?: T; path?: string }) => void;
+  accentColor: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSelect = (item: StatusItem) => {
+    if (item.onSelect) { item.onSelect(); setOpen(false); return; }
+    if (item.path) onNavigate({ path: item.path });
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-colors"
+      >
+        <span>경로</span>
+        <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1 w-60 max-h-[70vh] overflow-y-auto bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-[1100] py-1">
+          {items.map((item, i) => (
+            <div key={i}>
+              {item.children ? (
+                <>
+                  <button
+                    onClick={() => setExpanded(expanded === item.label ? null : item.label)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-slate-300 hover:bg-slate-700 transition-colors"
+                  >
+                    <span>{item.label}</span>
+                    <ChevronRight size={11} className={`transition-transform ${expanded === item.label ? 'rotate-90' : ''}`} />
+                  </button>
+                  {expanded === item.label && item.children.map((child, j) => (
+                    <button
+                      key={j}
+                      onClick={() => handleSelect(child)}
+                      className="w-full text-left px-5 py-1.5 text-[11px] text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+                    >
+                      {child.label}
+                    </button>
+                  ))}
+                </>
+              ) : (
+                item.onSelect || item.path ? (
+                  <button
+                    onClick={() => handleSelect(item)}
+                    className="w-full text-left px-3 py-2 text-[11px] text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                ) : (
+                  <div className="px-3 pt-2 pb-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    {item.label}
+                  </div>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// QAPlan 타입 재export (인플루언서에서 직접 쓸 경우 대비)
+export type { QAPlan };

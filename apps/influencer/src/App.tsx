@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { Settings, X } from 'lucide-react'
 import Login from './pages/Login'
 import Home from './pages/Home'
 import CampaignBrowse from './pages/CampaignBrowse'
@@ -9,68 +10,10 @@ import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
-import { MockupShell, type StatusItem } from './qa-mockup-kit'
+import { GlobalQAHeader, GLOBAL_QA_HEADER_HEIGHT, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
-const INF_TAB_MAP: Record<string, string> = {
-  home: '/home',
-  browse: '/campaigns/browse',
-  my: '/campaigns/my',
-  profile: '/profile',
-  media: '/media',
-}
-
-const STATE_ITEMS: StatusItem[] = [
-  {
-    label: '로그인 상태',
-    children: [
-      { label: '로그인됨 (홈)', path: '/home' },
-      { label: '비로그인 (로그인 화면)', path: '/login' },
-    ],
-  },
-  {
-    label: 'SNS 연결 상태',
-    children: [
-      { label: '인스타그램만 연결 (기본)', path: '/media' },
-      { label: '전체 미연결', path: '/media?qa=all-disconnected' },
-      { label: '전체 연결됨', path: '/media?qa=all-connected' },
-    ],
-  },
-  {
-    label: '글로벌 에러',
-    children: [
-      { label: '홈 에러', path: '/home?qa=error' },
-      { label: '캠페인 탐색 에러', path: '/campaigns/browse?qa=error' },
-      { label: '나의 캠페인 에러', path: '/campaigns/my?qa=error' },
-      { label: '캠페인 상세 에러', path: '/campaigns/1?qa=error' },
-      { label: '프로필 에러', path: '/profile?qa=error' },
-      { label: 'SNS 관리 에러', path: '/media?qa=error' },
-    ],
-  },
-  {
-    label: '글로벌 로딩',
-    children: [
-      { label: '홈 로딩', path: '/home?qa=loading' },
-      { label: '캠페인 탐색 로딩', path: '/campaigns/browse?qa=loading' },
-      { label: '나의 캠페인 로딩', path: '/campaigns/my?qa=loading' },
-      { label: '캠페인 상세 로딩', path: '/campaigns/1?qa=loading' },
-      { label: '프로필 로딩', path: '/profile?qa=loading' },
-      { label: 'SNS 관리 로딩', path: '/media?qa=loading' },
-    ],
-  },
-]
-
 const STATUS_ITEMS: StatusItem[] = [
-  /* ────────────────── 정상 ────────────────── */
-  {
-    label: '정상',
-    children: [
-      { label: '홈 (관심 캠페인)', path: '/home' },
-      { label: '캠페인 탐색', path: '/campaigns/browse' },
-      { label: '나의 캠페인', path: '/campaigns/my' },
-    ],
-  },
-
   /* ────────────────── 온보딩 ────────────────── */
   {
     label: '온보딩',
@@ -86,7 +29,7 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── 홈 (관심 캠페인) ────────────────── */
+  /* ────────────────── 홈 ────────────────── */
   {
     label: '홈 (관심 캠페인)',
     children: [
@@ -183,19 +126,27 @@ const STATUS_ITEMS: StatusItem[] = [
   },
 ]
 
+void GLOBAL_QA_HEADER_HEIGHT
+
 function AppRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [qaOpen, setQaOpen] = useState(false)
+
+  const handleNavigate = ({ path }: { path?: string }) => {
+    if (path) { navigate(path); setQaOpen(false) }
+  }
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/home':              '홈 — WELLINK AI',
-      '/campaigns/browse':  '캠페인 탐색 — WELLINK AI',
-      '/campaigns/my':      '나의 캠페인 — WELLINK AI',
-      '/profile':           '프로필 — WELLINK AI',
-      '/media':             'SNS 관리 — WELLINK AI',
-      '/login':             '로그인 — WELLINK AI',
-      '/signup':            '회원가입 — WELLINK AI',
+      '/home':             '홈 — WELLINK AI',
+      '/campaigns/browse': '캠페인 탐색 — WELLINK AI',
+      '/campaigns/my':     '나의 캠페인 — WELLINK AI',
+      '/profile':          '프로필 — WELLINK AI',
+      '/media':            'SNS 관리 — WELLINK AI',
+      '/settlement':       '정산 — WELLINK AI',
+      '/login':            '로그인 — WELLINK AI',
+      '/signup':           '회원가입 — WELLINK AI',
     }
     const path = location.pathname
     const title = titles[path] ?? (path.startsWith('/campaigns/') ? '캠페인 상세 — WELLINK AI' : 'WELLINK AI')
@@ -203,46 +154,53 @@ function AppRoutes() {
   }, [location.pathname])
 
   return (
-    <MockupShell
-      appLabel="[인플루언서 포털]"
-      screenLabel={`[인플루언서 포털] ${location.pathname}${location.search}`}
-      validStates={[]}
-      tabMap={INF_TAB_MAP}
-      stateItems={STATE_ITEMS}
-      statusItems={STATUS_ITEMS}
-      onNavigate={({ path }) => path && navigate(path)}
-      onReset={() => navigate('/home')}
-      accentColor="var(--color-brand-green)"
-      defaultDevice="desktop"
-      containerClassName="bg-white"
-    >
-      <div className="w-full h-full overflow-y-auto">
-        <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            {/* 보호 경로 — 인증 필요 */}
-            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
-            <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
-            <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
-            <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
-          </Routes>
-        </ErrorBoundary>
-      </div>
-    </MockupShell>
+    <>
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
+        <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
+        <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
+        <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+
+      <button
+        onClick={() => setQaOpen(o => !o)}
+        aria-label="QA 패널 열기"
+        className="fixed bottom-4 right-4 z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+      >
+        {qaOpen ? <X size={16} /> : <Settings size={16} />}
+        <span>QA</span>
+      </button>
+
+      {qaOpen && (
+        <GlobalQAHeader
+          title="웰링크 인플루언서 POC"
+          pathItems={STATUS_ITEMS}
+          onNavigate={handleNavigate}
+          accentColor="var(--color-brand-green)"
+        />
+      )}
+    </>
   )
+}
+
+function AppShell() {
+  return <AppRoutes />
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppShell />
+        </ErrorBoundary>
       </ToastProvider>
     </BrowserRouter>
   )
