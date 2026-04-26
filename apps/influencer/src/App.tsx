@@ -11,6 +11,7 @@ import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
+import Favorites from './pages/Favorites'
 import { GlobalQAHeader, GLOBAL_QA_HEADER_HEIGHT, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
@@ -32,12 +33,21 @@ const STATUS_ITEMS: StatusItem[] = [
 
   /* ────────────────── 홈 ────────────────── */
   {
-    label: '홈 (관심 캠페인)',
+    label: '홈 (대시보드)',
     children: [
-      { label: '기본 (북마크 있음)', path: '/home' },
+      { label: '기본', path: '/home' },
       { label: '로딩 스켈레톤', path: '/home?qa=loading' },
-      { label: '빈 상태 — 북마크 없음', path: '/home?qa=empty' },
-      { label: '에러', path: '/home?qa=error' },
+    ],
+  },
+
+  /* ────────────────── 관심 캠페인 ────────────────── */
+  {
+    label: '관심 캠페인',
+    children: [
+      { label: '기본 (북마크 있음)', path: '/campaigns/favorites' },
+      { label: '로딩 스켈레톤', path: '/campaigns/favorites?qa=loading' },
+      { label: '빈 상태 — 북마크 없음', path: '/campaigns/favorites?qa=empty' },
+      { label: '에러', path: '/campaigns/favorites?qa=error' },
     ],
   },
 
@@ -93,6 +103,7 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '배송형 + 커스텀 질문 (캠페인 1)', path: '/campaigns/1/apply' },
       { label: '배송형 (캠페인 2)', path: '/campaigns/2/apply' },
       { label: '타입 미지정 (캠페인 3)', path: '/campaigns/3/apply' },
+      { label: '신청 정보 보기 (view 모드)', path: '/campaigns/2/apply?mode=view' },
     ],
   },
 
@@ -150,8 +161,9 @@ function AppRoutes() {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/home':             '홈 — WELLINK AI',
-      '/campaigns/browse': '캠페인 탐색 — WELLINK AI',
-      '/campaigns/my':     '나의 캠페인 — WELLINK AI',
+      '/campaigns/browse':    '캠페인 탐색 — WELLINK AI',
+      '/campaigns/favorites': '관심 캠페인 — WELLINK AI',
+      '/campaigns/my':        '나의 캠페인 — WELLINK AI',
       '/profile':          '프로필 — WELLINK AI',
       '/media':            'SNS 관리 — WELLINK AI',
       '/settlement':       '정산 — WELLINK AI',
@@ -171,6 +183,7 @@ function AppRoutes() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
+        <Route path="/campaigns/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
         <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
         <Route path="/campaigns/:id/apply" element={<ProtectedRoute><CampaignApply /></ProtectedRoute>} />

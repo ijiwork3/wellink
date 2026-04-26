@@ -1,80 +1,41 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift, Bookmark, XCircle, RefreshCw, Compass } from 'lucide-react'
+import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
-import type { BookmarkedCampaign } from '../services/mock/campaigns'
+import { useQAMode, fmtDate, StatusBadge, fmtFollowers } from '@wellink/ui'
+import type { ParticipationStatus } from '@wellink/ui'
+import { mockMyCampaigns, mockBookmarkedCampaigns } from '../services/mock/campaigns'
+import { mockProfile, mockCampaignSummary } from '../services/mock/profile'
 
-const STATUS_STYLE: Record<string, string> = {
-  '모집중':   'bg-brand-green/10 text-brand-green-text',
-  '마감임박': 'bg-orange-50 text-orange-600',
-  '종료':     'bg-gray-100 text-gray-400',
-}
+const SUMMARY_CARDS = [
+  { label: '지원 완료', key: 'applied' as const,   color: 'text-gray-900' },
+  { label: '참여중',    key: 'ongoing' as const,    color: 'text-brand-green' },
+  { label: '참여 완료', key: 'completed' as const,  color: 'text-gray-900' },
+  { label: '탈락',      key: 'eliminated' as const, color: 'text-red-400' },
+]
 
 export default function Home() {
-  const qa = useQAMode()
   const navigate = useNavigate()
-  const { showToast } = useToast()
-  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set(mockBookmarkedCampaigns.map(c => c.id)))
+  const qa = useQAMode()
 
-  const toggleBookmark = (id: string) => {
-    const wasBookmarked = bookmarks.has(id)
-    setBookmarks(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
-      return next
-    })
-    showToast(wasBookmarked ? '관심 캠페인에서 제거했어요.' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
-  }
-
-  const visible: BookmarkedCampaign[] = qa === 'empty' ? [] : mockBookmarkedCampaigns.filter(c => bookmarks.has(c.id))
+  const activeCampaigns = mockMyCampaigns.filter(c =>
+    ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status)
+  )
+  const urgentCampaigns = mockMyCampaigns.filter(c => {
+    if (c.status !== '콘텐츠대기' || !c.contentDeadline) return false
+    const diff = new Date(c.contentDeadline).getTime() - Date.now()
+    return diff > 0 && diff < 1000 * 60 * 60 * 24 * 3
+  })
+  const bookmarkCount = mockBookmarkedCampaigns.length
 
   if (qa === 'loading') {
     return (
       <Layout>
         <div className="space-y-4 animate-pulse">
-          <div className="flex items-center justify-between">
-            <div className="h-5 bg-gray-100 rounded-xl w-28" />
-            <div className="h-7 bg-gray-100 rounded-xl w-24" />
+          <div className="h-24 bg-gray-100 rounded-2xl" />
+          <div className="grid grid-cols-2 gap-3">
+            {[1,2,3,4].map(i => <div key={i} className="h-20 bg-gray-100 rounded-2xl" />)}
           </div>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-14 h-14 rounded-xl bg-gray-100 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="flex gap-2">
-                    <div className="h-4 bg-gray-100 rounded-full w-14" />
-                    <div className="h-4 bg-gray-100 rounded-full w-10" />
-                  </div>
-                  <div className="h-4 bg-gray-100 rounded-xl w-3/4" />
-                  <div className="h-3 bg-gray-100 rounded-xl w-1/2" />
-                </div>
-                <div className="w-7 h-7 bg-gray-100 rounded-full shrink-0" />
-              </div>
-              <div className="h-8 bg-gray-100 rounded-xl" />
-              <div className="flex gap-3 items-center">
-                <div className="h-3 bg-gray-100 rounded-xl w-16" />
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full" />
-                <div className="h-3 bg-gray-100 rounded-xl w-14" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </Layout>
-    )
-  }
-
-  if (qa === 'error') {
-    return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">관심 캠페인을 불러오지 못했어요</p>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
-            <RefreshCw size={14} />다시 시도
-          </button>
+          <div className="h-36 bg-gray-100 rounded-2xl" />
         </div>
       </Layout>
     )
@@ -83,96 +44,157 @@ export default function Home() {
   return (
     <Layout>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900">관심 캠페인</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{visible.length}개 저장됨</p>
-          </div>
-          <button
-            onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
-          >
-            <Compass size={12} />
-            캠페인 탐색
-          </button>
+
+        {/* 인사말 배너 */}
+        <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
+          <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 👋</p>
+          <p className="text-lg font-bold">{mockProfile.name}님</p>
+          <p className="text-xs opacity-70 mt-1">@{mockProfile.instagram} · {fmtFollowers(8700)} 팔로워</p>
         </div>
 
-        {visible.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 py-16 flex flex-col items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
-              <Heart size={24} className="text-red-300" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">저장한 캠페인이 없어요</p>
-              <p className="text-xs text-gray-400 mt-0.5">마음에 드는 캠페인에 북마크를 눌러보세요</p>
-            </div>
-            <button onClick={() => navigate('/campaigns/browse')} className="mt-1 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity">
-              캠페인 둘러보기
+        {/* 활동 통계 */}
+        <div className="grid grid-cols-4 gap-2">
+          {SUMMARY_CARDS.map(card => (
+            <button
+              key={card.key}
+              onClick={() => navigate('/campaigns/my')}
+              className="bg-white rounded-2xl border border-gray-100 p-3 text-center hover:border-gray-200 hover:shadow-sm transition-all"
+            >
+              <p className={`text-xl font-bold ${card.color}`}>{mockCampaignSummary[card.key]}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{card.label}</p>
             </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {visible.map(c => {
-              const { label: ddayLabel, color: ddayColor } = getDDay(c.deadline)
-              const progressPct = Math.min(100, Math.round((c.applied / (c.headcount || 1)) * 100))
-              return (
-                <div
+          ))}
+        </div>
+
+        {/* 마감 임박 알림 */}
+        {urgentCampaigns.length > 0 && (
+          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle size={14} className="text-orange-500 shrink-0" />
+              <p className="text-xs font-semibold text-orange-700">콘텐츠 제출 마감 임박!</p>
+            </div>
+            <div className="space-y-1.5">
+              {urgentCampaigns.map(c => (
+                <button
                   key={c.id}
-                  className="bg-white rounded-2xl border border-gray-100 p-4 cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150"
-                  onClick={() => navigate(`/campaigns/${c.id}`)}
+                  onClick={() => navigate('/campaigns/my')}
+                  className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-50 transition-colors"
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                      style={{ backgroundColor: c.thumbnailBg }}
-                    >
-                      {c.thumbnailEmoji}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${STATUS_STYLE[c.status] ?? 'bg-gray-100 text-gray-500'}`}>
-                          {c.status}
-                        </span>
-                        <span className={`text-[10px] font-medium ${ddayColor}`}>{ddayLabel}</span>
-                      </div>
-                      <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{c.brand} · {c.channel}</p>
-                    </div>
-                    <button
-                      onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                      aria-label={bookmarks.has(c.id) ? '북마크 해제' : '북마크'}
-                      className="shrink-0 p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
-                    >
-                      <Bookmark
-                        size={16}
-                        className={bookmarks.has(c.id) ? 'text-brand-green fill-brand-green' : 'text-gray-300'}
-                      />
-                    </button>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-900 truncate">{c.name}</p>
+                    <p className="text-[10px] text-orange-500">{fmtDate(c.contentDeadline!)}까지</p>
                   </div>
-
-                  <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green/5 border border-brand-green/10">
-                    <Gift size={11} className="text-brand-green shrink-0" />
-                    <span className="text-xs font-medium text-gray-700 truncate">{c.reward}</span>
-                  </div>
-
-                  <div className="mt-2.5 flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-[11px] text-gray-400 shrink-0">
-                      <Users size={11} />{c.applied}/{c.headcount}명
-                    </span>
-                    <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${progressPct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
-                        style={{ width: `${progressPct}%` }}
-                      />
-                    </div>
-                    <span className="text-[11px] text-gray-400 shrink-0">마감 {fmtDate(c.deadline)}</span>
-                  </div>
-                </div>
-              )
-            })}
+                  <ChevronRight size={13} className="text-gray-400 shrink-0 ml-2" />
+                </button>
+              ))}
+            </div>
           </div>
         )}
+
+        {/* 진행 중인 캠페인 */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+            <p className="text-sm font-semibold text-gray-900">진행 중인 캠페인</p>
+            <button
+              onClick={() => navigate('/campaigns/my')}
+              className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
+            >
+              전체보기 <ChevronRight size={13} />
+            </button>
+          </div>
+          {activeCampaigns.length === 0 ? (
+            <div className="py-10 text-center">
+              <p className="text-xs text-gray-400">진행 중인 캠페인이 없어요</p>
+              <button
+                onClick={() => navigate('/campaigns/browse')}
+                className="mt-3 px-4 py-2 rounded-xl text-xs font-medium text-white bg-brand-green"
+              >
+                캠페인 찾아보기
+              </button>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {activeCampaigns.slice(0, 3).map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => navigate('/campaigns/my')}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1 min-w-0 pr-2">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <StatusBadge status={c.status as ParticipationStatus} size="sm" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{c.progress}</p>
+                  </div>
+                  <ChevronRight size={14} className="text-gray-300 shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 빠른 메뉴 */}
+        <div className="grid grid-cols-3 gap-3">
+          <QuickMenu
+            icon={<Compass size={20} className="text-brand-green" />}
+            label="캠페인 탐색"
+            onClick={() => navigate('/campaigns/browse')}
+          />
+          <QuickMenu
+            icon={<Heart size={20} className="text-red-400" />}
+            label={`관심 캠페인 ${bookmarkCount}`}
+            onClick={() => navigate('/campaigns/favorites')}
+          />
+          <QuickMenu
+            icon={<Wallet size={20} className="text-blue-400" />}
+            label="정산"
+            onClick={() => navigate('/settlement')}
+          />
+        </div>
+
+        {/* SNS 지표 요약 */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+            <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
+            <button
+              onClick={() => navigate('/media')}
+              className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
+            >
+              자세히 <ChevronRight size={13} />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 divide-x divide-gray-50 px-2 py-3">
+            {[
+              { label: '팔로워', value: fmtFollowers(8700) },
+              { label: '참여율', value: '4.1%', highlight: true },
+              { label: '게시물', value: '142' },
+            ].map(item => (
+              <div key={item.label} className="text-center px-3">
+                <p className={`text-base font-bold ${item.highlight ? 'text-brand-green' : 'text-gray-900'}`}>{item.value}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{item.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
+            <TrendingUp size={12} className="text-brand-green" />
+            <p className="text-[11px] text-gray-500">인스타그램 <span className="font-medium text-gray-700">@{mockProfile.instagram}</span> 연결됨</p>
+          </div>
+        </div>
+
       </div>
     </Layout>
+  )
+}
+
+function QuickMenu({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-2 py-4 hover:border-gray-200 hover:shadow-sm transition-all"
+    >
+      {icon}
+      <span className="text-[11px] font-medium text-gray-600 text-center leading-tight">{label}</span>
+    </button>
   )
 }

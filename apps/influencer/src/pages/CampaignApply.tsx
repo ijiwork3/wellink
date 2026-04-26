@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { CheckCircle2, MapPin, Package, Footprints, User, AtSign } from 'lucide-react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil } from 'lucide-react'
 import Layout from '../components/Layout'
-import { mockCampaigns } from '../services/mock/campaigns'
+import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
 import { useToast } from '@wellink/ui'
 
@@ -16,18 +16,22 @@ function formatPhone(v: string) {
 export default function CampaignApply() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { showToast } = useToast()
   const campaign = mockCampaigns.find(c => c.id === Number(id))
 
-  const [phone, setPhone] = useState('')
-  const [agreed1, setAgreed1] = useState(false)
-  const [agreed2, setAgreed2] = useState(false)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [deliveryName, setDeliveryName] = useState('')
-  const [deliveryPhone, setDeliveryPhone] = useState('')
-  const [deliveryZip, setDeliveryZip] = useState('')
-  const [deliveryAddr, setDeliveryAddr] = useState('')
-  const [deliveryAddrDetail, setDeliveryAddrDetail] = useState('')
+  const isViewMode = searchParams.get('mode') === 'view'
+  const appliedData = mockAppliedData[id ?? '']
+
+  const [phone, setPhone] = useState(isViewMode ? (appliedData?.phone ?? '') : '')
+  const [agreed1, setAgreed1] = useState(isViewMode)
+  const [agreed2, setAgreed2] = useState(isViewMode)
+  const [answers, setAnswers] = useState<Record<string, string>>(isViewMode ? (appliedData?.answers ?? {}) : {})
+  const [deliveryName, setDeliveryName] = useState(isViewMode ? (appliedData?.deliveryName ?? '') : '')
+  const [deliveryPhone, setDeliveryPhone] = useState(isViewMode ? (appliedData?.deliveryPhone ?? '') : '')
+  const [deliveryZip, setDeliveryZip] = useState(isViewMode ? (appliedData?.deliveryZip ?? '') : '')
+  const [deliveryAddr, setDeliveryAddr] = useState(isViewMode ? (appliedData?.deliveryAddr ?? '') : '')
+  const [deliveryAddrDetail, setDeliveryAddrDetail] = useState(isViewMode ? (appliedData?.deliveryAddrDetail ?? '') : '')
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
 
@@ -96,9 +100,27 @@ export default function CampaignApply() {
     )
   }
 
+  const pageTitle = isViewMode ? '신청 정보 확인' : `${campaign.name} 신청`
+
   return (
-    <Layout showSidebar={false} pageTitle={`${campaign.name} 신청`} onBack={() => navigate(-1)}>
+    <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)}>
       <div className="max-w-lg mx-auto px-4 py-6 pb-24 space-y-6">
+
+        {/* view 모드 배너 */}
+        {isViewMode && (
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={15} className="text-brand-green flex-shrink-0" />
+              <span className="text-sm font-medium text-brand-green-text">신청 완료된 정보입니다</span>
+            </div>
+            <button
+              onClick={() => navigate(`/campaigns/${id}/apply`)}
+              className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green/30 rounded-lg px-2.5 py-1 hover:bg-brand-green/10 transition-colors"
+            >
+              <Pencil size={11} />수정하기
+            </button>
+          </div>
+        )}
 
         {/* 캠페인 요약 */}
         <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
@@ -130,74 +152,93 @@ export default function CampaignApply() {
         </div>
 
         {/* 연락처 */}
-        <Section title="연락처" required>
-          <input
-            type="tel"
-            value={phone}
-            onChange={e => setPhone(formatPhone(e.target.value))}
-            placeholder="010-0000-0000"
-            className={fieldCls(errors.phone)}
-          />
-          {errors.phone && <p className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요.</p>}
+        <Section title="연락처" required={!isViewMode}>
+          {isViewMode ? (
+            <ViewField value={phone || mockProfile.phone} />
+          ) : (
+            <>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(formatPhone(e.target.value))}
+                placeholder="010-0000-0000"
+                className={fieldCls(errors.phone)}
+              />
+              {errors.phone && <p className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요.</p>}
+            </>
+          )}
         </Section>
 
         {/* 배송 정보 (배송형만) */}
         {isDelivery && (
-          <Section title="배송 정보" required icon={<MapPin size={14} className="text-brand-green" />}>
+          <Section title="배송 정보" required={!isViewMode} icon={<MapPin size={14} className="text-brand-green" />}>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">수령인 이름 <span className="text-red-500">*</span></label>
-                <input
-                  value={deliveryName}
-                  onChange={e => setDeliveryName(e.target.value)}
-                  placeholder="배송받는 분의 이름"
-                  className={fieldCls(errors.deliveryName)}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">연락처 <span className="text-red-500">*</span></label>
-                <input
-                  type="tel"
-                  value={deliveryPhone}
-                  onChange={e => setDeliveryPhone(formatPhone(e.target.value))}
-                  placeholder="010-0000-0000"
-                  className={fieldCls(errors.deliveryPhone)}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">주소 <span className="text-red-500">*</span></label>
-                <div className="flex gap-2 mb-2">
+                <label className="text-xs text-gray-500 mb-1 block">수령인 이름{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                {isViewMode ? (
+                  <ViewField value={deliveryName} />
+                ) : (
                   <input
-                    value={deliveryZip}
-                    readOnly
-                    placeholder="우편번호"
-                    className={`${fieldCls(false)} flex-1`}
+                    value={deliveryName}
+                    onChange={e => setDeliveryName(e.target.value)}
+                    placeholder="배송받는 분의 이름"
+                    className={fieldCls(errors.deliveryName)}
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // 실제 환경에서는 Kakao 우편번호 API 연동
-                      setDeliveryZip('06234')
-                      setDeliveryAddr('서울 강남구 테헤란로 123')
-                    }}
-                    className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                  >
-                    주소 검색
-                  </button>
-                </div>
-                <input
-                  value={deliveryAddr}
-                  readOnly
-                  placeholder="기본 주소"
-                  className={`${fieldCls(errors.deliveryAddr)} mb-2`}
-                />
-                <input
-                  value={deliveryAddrDetail}
-                  onChange={e => setDeliveryAddrDetail(e.target.value)}
-                  placeholder="상세 주소 (예: 101동 202호)"
-                  className={fieldCls(false)}
-                />
-                {errors.deliveryAddr && <p className="text-xs text-red-500 mt-1">주소를 입력해 주세요.</p>}
+                )}
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">연락처{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                {isViewMode ? (
+                  <ViewField value={deliveryPhone} />
+                ) : (
+                  <input
+                    type="tel"
+                    value={deliveryPhone}
+                    onChange={e => setDeliveryPhone(formatPhone(e.target.value))}
+                    placeholder="010-0000-0000"
+                    className={fieldCls(errors.deliveryPhone)}
+                  />
+                )}
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">주소{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                {isViewMode ? (
+                  <ViewField value={`(${deliveryZip}) ${deliveryAddr}${deliveryAddrDetail ? ' ' + deliveryAddrDetail : ''}`} />
+                ) : (
+                  <>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        value={deliveryZip}
+                        readOnly
+                        placeholder="우편번호"
+                        className={`${fieldCls(false)} flex-1`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeliveryZip('06234')
+                          setDeliveryAddr('서울 강남구 테헤란로 123')
+                        }}
+                        className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                      >
+                        주소 검색
+                      </button>
+                    </div>
+                    <input
+                      value={deliveryAddr}
+                      readOnly
+                      placeholder="기본 주소"
+                      className={`${fieldCls(errors.deliveryAddr)} mb-2`}
+                    />
+                    <input
+                      value={deliveryAddrDetail}
+                      onChange={e => setDeliveryAddrDetail(e.target.value)}
+                      placeholder="상세 주소 (예: 101동 202호)"
+                      className={fieldCls(false)}
+                    />
+                    {errors.deliveryAddr && <p className="text-xs text-red-500 mt-1">주소를 입력해 주세요.</p>}
+                  </>
+                )}
               </div>
             </div>
           </Section>
@@ -211,9 +252,11 @@ export default function CampaignApply() {
                 <div key={q.id}>
                   <label className="text-sm font-medium text-gray-800 block mb-2">
                     {q.question}
-                    {q.required && <span className="text-red-500 ml-0.5">*</span>}
+                    {q.required && !isViewMode && <span className="text-red-500 ml-0.5">*</span>}
                   </label>
-                  {q.type === 'radio' && q.options ? (
+                  {isViewMode ? (
+                    <ViewField value={answers[q.id] ?? '—'} />
+                  ) : q.type === 'radio' && q.options ? (
                     <div className="space-y-2">
                       {q.options.map(opt => (
                         <label key={opt} className="flex items-center gap-2.5 cursor-pointer">
@@ -246,32 +289,51 @@ export default function CampaignApply() {
         )}
 
         {/* 약관 동의 */}
-        <Section title="약관 동의" required>
-          <div className="space-y-3">
-            <AgreementRow
-              checked={agreed1}
-              onChange={setAgreed1}
-              error={errors.agreed1}
-              text="초상권 활용에 동의합니다."
-            />
-            <AgreementRow
-              checked={agreed2}
-              onChange={setAgreed2}
-              error={errors.agreed2}
-              text="캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다."
-            />
-          </div>
-        </Section>
+        {!isViewMode && (
+          <Section title="약관 동의" required>
+            <div className="space-y-3">
+              <AgreementRow
+                checked={agreed1}
+                onChange={setAgreed1}
+                error={errors.agreed1}
+                text="초상권 활용에 동의합니다."
+              />
+              <AgreementRow
+                checked={agreed2}
+                onChange={setAgreed2}
+                error={errors.agreed2}
+                text="캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다."
+              />
+            </div>
+          </Section>
+        )}
 
-        {/* 제출 버튼 */}
-        <button
-          onClick={handleSubmit}
-          className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity"
-        >
-          신청하기
-        </button>
+        {/* 제출 / 닫기 버튼 */}
+        {isViewMode ? (
+          <button
+            onClick={() => navigate('/campaigns/my')}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            돌아가기
+          </button>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity"
+          >
+            신청하기
+          </button>
+        )}
       </div>
     </Layout>
+  )
+}
+
+function ViewField({ value }: { value: string }) {
+  return (
+    <div className="w-full px-3.5 py-2.5 rounded-xl border border-gray-100 bg-gray-50 text-sm text-gray-700">
+      {value}
+    </div>
   )
 }
 

@@ -4,7 +4,7 @@ import { Search, ClipboardList, Heart, User } from 'lucide-react'
 const tabs = [
   { label: '탐색',    path: '/campaigns/browse', icon: Search },
   { label: '내 캠페인', path: '/campaigns/my',     icon: ClipboardList },
-  { label: '관심',    path: '/home',              icon: Heart },
+  { label: '관심',    path: '/campaigns/favorites', icon: Heart },
   { label: '마이페이지', path: '/profile',          icon: User },
 ]
 

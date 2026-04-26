@@ -231,3 +231,29 @@ export const mockBookmarkedCampaigns: BookmarkedCampaign[] = [
 ]
 
 export const BROWSE_CATEGORIES = ['전체', '뷰티·패션', '피트니스·스포츠', '맛집·푸드', '라이프스타일', '육아·펫']
+
+export interface AppliedData {
+  phone: string
+  deliveryName?: string
+  deliveryPhone?: string
+  deliveryZip?: string
+  deliveryAddr?: string
+  deliveryAddrDetail?: string
+  answers: Record<string, string>
+}
+
+// campaignId → 신청 데이터 (나의캠페인 view 모드용)
+export const mockAppliedData: Record<string, AppliedData> = {
+  '2': {
+    phone: '010-1234-5678',
+    deliveryName: '김찬기',
+    deliveryPhone: '010-1234-5678',
+    deliveryZip: '06234',
+    deliveryAddr: '서울 강남구 테헤란로 123',
+    deliveryAddrDetail: '101동 202호',
+    answers: {
+      q1: '매일 아침 6시 헬스장, 주 5회 웨이트 트레이닝 및 주 2회 러닝',
+      q2: '일부 실천 중입니다',
+    },
+  },
+}

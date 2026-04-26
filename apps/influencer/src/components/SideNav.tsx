@@ -6,7 +6,7 @@ const sections = [
     title: '활동 관리',
     items: [
       { label: '나의 캠페인', path: '/campaigns/my', icon: LayoutDashboard },
-      { label: '관심 캠페인', path: '/home', icon: Heart },
+      { label: '관심 캠페인', path: '/campaigns/favorites', icon: Heart },
       { label: '정산', path: '/settlement', icon: Wallet },
     ],
   },
