@@ -147,7 +147,7 @@ export default function Sidebar({ onNavigate, hideLogo = false }: { onNavigate?:
           <ExternalLink size={12} className="shrink-0 opacity-60" />
         </button>
         <button
-          onClick={() => window.open('https://wellink.co.kr/blog', '_blank', 'noopener,noreferrer')}
+          onClick={() => window.open('https://pnutbtr.inblog.io/', '_blank', 'noopener,noreferrer')}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-2"
         >
           <Lightbulb size={15} />
