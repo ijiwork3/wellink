@@ -1054,7 +1054,7 @@ export default function InfluencerManage() {
       })()}
 
       {/* 콘텐츠 상세 모달 — 게시물 원본 미리보기 + 전체 지표 + 캡션 */}
-      <Modal open={contentDetail !== null} onClose={() => setContentDetail(null)} title={contentDetail?.type === 'feed' ? '피드 상세' : '릴스 상세'} size="sm">
+      <Modal open={contentDetail !== null} onClose={() => setContentDetail(null)} title={contentDetail?.type === 'feed' ? '피드 상세' : '릴스 상세'} size="md">
         {contentDetail && (
           <div className="space-y-4">
             <div className={`bg-gradient-to-br ${contentDetail.bg} rounded-xl flex items-center justify-center relative ${contentDetail.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[280px] mx-auto'}`}>
@@ -1105,7 +1105,7 @@ export default function InfluencerManage() {
         open={proposalModal}
         onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }}
         title="캠페인에 제안 보내기"
-        size="sm"
+        size="md"
         footer={!proposalSent ? (
           <>
             <button onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150">취소</button>

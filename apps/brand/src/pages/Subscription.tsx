@@ -630,6 +630,7 @@ export default function Subscription() {
         onClose={() => setInfiniteModal(false)}
         title="도입 문의"
         confirmLabel="확인"
+        size="sm"
         onConfirm={() => setInfiniteModal(false)}
         showCancel={false}
       >
@@ -703,6 +704,7 @@ export default function Subscription() {
         confirmLabel="해지하기"
         cancelLabel="유지"
         variant="danger"
+        size="sm"
         onConfirm={() => {
           setCancelStatus('cancel_scheduled')
           setCancelModal(false)
@@ -723,6 +725,7 @@ export default function Subscription() {
         confirmLabel="환불 요청"
         cancelLabel="취소"
         variant="danger"
+        size="sm"
         onConfirm={() => {
           setRefundModal(false)
           setCancelStatus('active')

@@ -737,6 +737,7 @@ export default function InfluencerList() {
         open={proposalModal}
         onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }}
         title="캠페인에 제안 보내기"
+        size="md"
         footer={!proposalSent ? (
           <>
             <button

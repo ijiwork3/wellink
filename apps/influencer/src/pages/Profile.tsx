@@ -41,7 +41,7 @@ export default function Profile() {
   const toggleField = (f: string) => {
     setDraftFields(prev => {
       const next = new Set(prev)
-      if (next.has(f)) next.delete(f) else next.add(f)
+      if (next.has(f)) { next.delete(f) } else { next.add(f) }
       return next
     })
   }
