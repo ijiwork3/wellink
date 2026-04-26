@@ -89,7 +89,7 @@ export default function CampaignBrowse() {
 
   if (qa === 'error') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={() => navigate(-1)}>
         <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
           <XCircle size={44} className="text-red-300" />
           <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
@@ -102,7 +102,7 @@ export default function CampaignBrowse() {
   }
 
   return (
-    <Layout showProfileHeader={false}>
+    <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={() => navigate(-1)}>
       {/* 헤더 */}
       <div className="px-6 py-10" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 10%, transparent) 0%, rgba(255,255,255,0) 60%)' }}>
         <div className="max-w-screen-xl mx-auto">

@@ -2,9 +2,10 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
+  MoreVertical, Copy, Share2, XCircle, Trash2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, getDDay, getDDayBadgeStyle } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
@@ -114,6 +115,14 @@ export default function Campaigns() {
   const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get('page')) || 1))
   const PAGE_SIZE = 10
 
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [confirm, setConfirm] = useState<
+    | null
+    | { kind: 'cancel-one' | 'delete-one'; id: number; name: string }
+    | { kind: 'cancel-bulk' | 'delete-bulk'; ids: number[] }
+  >(null)
+  const { showToast } = useToast()
+
   // state → URL 동기화 (기본값은 URL에서 제거해 깔끔하게)
   useEffect(() => {
     const next = new URLSearchParams()
@@ -139,6 +148,36 @@ export default function Campaigns() {
     setPlatformFilter('전체')
     setCategoryFilter('전체')
     setPage(1)
+  }
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+  const clearSelection = () => setSelectedIds(new Set())
+
+  const handleDuplicate = (c: Campaign) => {
+    showToast(`'${c.name}' 복제 (mock)`, 'info')
+  }
+  const handleShare = async (c: Campaign) => {
+    const url = `${window.location.origin}/campaigns/${c.id}`
+    try {
+      await navigator.clipboard.writeText(url)
+      showToast('캠페인 링크가 복사되었습니다', 'success')
+    } catch {
+      showToast('링크 복사 실패', 'error')
+    }
+  }
+  const handleConfirmAction = () => {
+    if (!confirm) return
+    if (confirm.kind === 'cancel-one') showToast(`'${confirm.name}' 캠페인을 취소했습니다 (mock)`, 'success')
+    else if (confirm.kind === 'delete-one') showToast(`'${confirm.name}' 캠페인을 삭제했습니다 (mock)`, 'success')
+    else if (confirm.kind === 'cancel-bulk') { showToast(`${confirm.ids.length}건 일괄 취소 (mock)`, 'success'); clearSelection() }
+    else if (confirm.kind === 'delete-bulk') { showToast(`${confirm.ids.length}건 일괄 삭제 (mock)`, 'success'); clearSelection() }
+    setConfirm(null)
   }
 
   if (qa === 'loading') {
@@ -282,6 +321,38 @@ export default function Campaigns() {
           </div>
         </div>
 
+        {/* 일괄 액션 바 */}
+        {selectedIds.size > 0 && (
+          <div className="px-3 @sm:px-5 py-2 border-b border-brand-green/20 bg-brand-green/5 flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-semibold text-brand-green-text">
+              {selectedIds.size}건 선택됨
+            </span>
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setConfirm({ kind: 'cancel-bulk', ids: Array.from(selectedIds) })}
+                className="inline-flex items-center gap-1 text-xs text-orange-600 hover:bg-orange-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <XCircle size={12} aria-hidden="true" /> 일괄 취소
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirm({ kind: 'delete-bulk', ids: Array.from(selectedIds) })}
+                className="inline-flex items-center gap-1 text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
+              </button>
+              <button
+                type="button"
+                onClick={clearSelection}
+                className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                선택 해제
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
           <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
@@ -339,44 +410,99 @@ export default function Campaigns() {
               const dday = getDDay(c.deadline)
               const showDDay = c.status !== '종료'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
+              const isSelected = selectedIds.has(c.id)
+              const canCancel = c.status !== '종료'
+              const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
               <li
                 key={c.id}
-                onClick={() => navigate(`/campaigns/${c.id}`)}
-                className="flex items-center gap-3 @sm:gap-4 px-3 @sm:px-5 py-3.5 @sm:py-4 hover:bg-gray-50 cursor-pointer transition-colors group"
+                className={`flex items-center gap-3 @sm:gap-4 px-3 @sm:px-5 py-3.5 @sm:py-4 hover:bg-gray-50 transition-colors group ${isSelected ? 'bg-brand-green/5' : ''}`}
               >
-                <div className={`w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
-                  <CatIcon size={20} className={cat.fg} aria-hidden="true" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                    <StatusBadge status={c.status} dot={false} />
-                    <PlatformBadge platform={c.platform} />
-                    {showDDay && (
-                      <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
-                    )}
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleSelect(c.id)}
+                  onClick={e => e.stopPropagation()}
+                  aria-label={`${c.name} 선택`}
+                  className={`shrink-0 w-4 h-4 rounded border-gray-300 text-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-opacity ${
+                    isSelected || selectedIds.size > 0
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100'
+                  }`}
+                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={goDetail}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goDetail() } }}
+                  className="flex-1 flex items-center gap-3 @sm:gap-4 min-w-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
+                >
+                  <div className={`w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
+                    <CatIcon size={20} className={cat.fg} aria-hidden="true" />
                   </div>
-                  <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
-                  <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
-                    <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
-                    <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />{c.current}/{c.total}명</span>
-                    <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
-                  </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden max-w-[200px]">
-                      <div
-                        className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-gray-400' : 'bg-brand-green'}`}
-                        style={{ width: `${pct}%` }}
-                      />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <StatusBadge status={c.status} dot={false} />
+                      <PlatformBadge platform={c.platform} />
+                      {showDDay && (
+                        <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                      )}
                     </div>
-                    <span className="text-[10px] text-gray-400 tabular-nums shrink-0">{pct}%</span>
+                    <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
+                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
+                      <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
+                      <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />{c.current}/{c.total}명</span>
+                      <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden max-w-[200px]">
+                        <div
+                          className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-gray-400' : 'bg-brand-green'}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] text-gray-400 tabular-nums shrink-0">{pct}%</span>
+                    </div>
                   </div>
+                  <ChevronRight size={16} className="text-gray-300 shrink-0 group-hover:text-gray-500 transition-colors" aria-hidden="true" />
                 </div>
-                <div className="hidden @sm:flex items-center gap-1 text-xs text-gray-400 group-hover:text-gray-700 transition-colors shrink-0">
-                  <span>관리하기</span>
-                  <ChevronRight size={14} aria-hidden="true" />
+                <div className="shrink-0" onClick={e => e.stopPropagation()}>
+                  <Dropdown
+                    trigger={
+                      <span
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        aria-label="캠페인 액션"
+                      >
+                        <MoreVertical size={16} aria-hidden="true" />
+                      </span>
+                    }
+                  >
+                    <div className="py-1 min-w-[140px]">
+                      <button type="button" onClick={() => handleDuplicate(c)} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 text-left">
+                        <Copy size={12} aria-hidden="true" /> 복제
+                      </button>
+                      <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 text-left">
+                        <Share2 size={12} aria-hidden="true" /> 링크 복사
+                      </button>
+                      {canCancel && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirm({ kind: 'cancel-one', id: c.id, name: c.name })}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-orange-600 hover:bg-orange-50 text-left"
+                        >
+                          <XCircle size={12} aria-hidden="true" /> 캠페인 취소
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setConfirm({ kind: 'delete-one', id: c.id, name: c.name })}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 text-left"
+                      >
+                        <Trash2 size={12} aria-hidden="true" /> 삭제
+                      </button>
+                    </div>
+                  </Dropdown>
                 </div>
-                <ChevronRight size={16} className="@sm:hidden text-gray-300 shrink-0" aria-hidden="true" />
               </li>
               )
             })}
@@ -426,6 +552,30 @@ export default function Campaigns() {
           </div>
         )}
       </div>
+
+      {/* 확인 모달 */}
+      <AlertModal
+        open={!!confirm}
+        onClose={() => setConfirm(null)}
+        title={
+          confirm?.kind === 'cancel-one'   ? '캠페인을 취소하시겠습니까?'
+          : confirm?.kind === 'delete-one' ? '캠페인을 삭제하시겠습니까?'
+          : confirm?.kind === 'cancel-bulk'? `${confirm.ids.length}건의 캠페인을 취소하시겠습니까?`
+          : confirm?.kind === 'delete-bulk'? `${confirm.ids.length}건의 캠페인을 삭제하시겠습니까?`
+          : ''
+        }
+        description={
+          confirm?.kind === 'cancel-one'   ? `'${confirm.name}' 캠페인이 취소됩니다. 위약금이 발생할 수 있습니다.`
+          : confirm?.kind === 'delete-one' ? `'${confirm.name}' 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`
+          : confirm?.kind === 'cancel-bulk'? '선택한 캠페인이 모두 취소됩니다. 위약금이 발생할 수 있습니다.'
+          : confirm?.kind === 'delete-bulk'? '선택한 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.'
+          : ''
+        }
+        confirmLabel={confirm?.kind?.startsWith('cancel') ? '캠페인 취소' : '삭제'}
+        cancelLabel="닫기"
+        variant="danger"
+        onConfirm={handleConfirmAction}
+      />
     </div>
   )
 }
