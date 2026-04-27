@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
-import { Search, CheckCircle, Heart, Sparkles, Target, Lightbulb, TrendingUp, Image, MessageCircle, Users } from 'lucide-react'
+import { Search, CheckCircle, Heart, Sparkles, Target, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp } from 'lucide-react'
 import { CustomSelect, Pagination, TIMER_MS } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -55,10 +55,39 @@ const influencers = Array.from({ length: 100 }, (_, i) => {
   }
 })
 
-const campaigns = [
-  { id: 1, name: '봄 요가 프로모션' },
-  { id: 2, name: '비건 신제품 론칭' },
+// 정책서 § 6-1 — status가 '대기중' | '모집중' | '진행중' 인 캠페인만 제안 가능
+type CampaignProposalStatus = '대기중' | '모집중' | '진행중' | '종료' | '완료'
+interface ProposalCampaign {
+  id: number
+  name: string
+  summary: string
+  period: string
+  reward: string
+  status: CampaignProposalStatus
+}
+const campaigns: ProposalCampaign[] = [
+  {
+    id: 1,
+    name: '봄 요가 프로모션',
+    summary: '봄맞이 요가복 신상 라인 협찬 및 콘텐츠 1건. 봄 시즌에 어울리는 라이트 톤 스타일링과 일상 속 요가 루틴을 자연스럽게 녹여낸 피드/릴스를 함께 제작해주세요.',
+    period: '2026-04-15 ~ 2026-05-15',
+    reward: '제품 협찬 + 콘텐츠 비 30만원',
+    status: '모집중',
+  },
+  {
+    id: 2,
+    name: '비건 신제품 론칭',
+    summary: '신규 비건 단백질 바 시식 후기 콘텐츠 1건. 운동 전후 간편 영양 보충 시나리오로 자연스럽게 노출 부탁드립니다.',
+    period: '2026-05-01 ~ 2026-05-31',
+    reward: '제품 협찬 + 콘텐츠 비 25만원',
+    status: '진행중',
+  },
 ]
+const PROPOSABLE_STATUSES: CampaignProposalStatus[] = ['대기중', '모집중', '진행중']
+const proposableCampaigns = campaigns.filter(c => PROPOSABLE_STATUSES.includes(c.status))
+const getAppliedCampaignIds = (influencerId: number): number[] => {
+  return influencerId % 3 === 0 ? [campaigns[0]?.id].filter((id): id is number => typeof id === 'number') : []
+}
 
 // 카테고리 옵션 — 데이터 정책 v1 §2-4 (결정 필요 항목, 확정 시 업데이트)
 // 현재: 웰링크 앱 내 실제 사용 카테고리 기준
@@ -118,6 +147,7 @@ export default function InfluencerList() {
   const [detailTab, setDetailTab] = useState('overview')
   const [proposalModal, setProposalModal] = useState(qa === 'modal-proposal')
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null)
+  const [proposalExpandedId, setProposalExpandedId] = useState<number | null>(null)
   const [proposalSent, setProposalSent] = useState(false)
   const [proposedSet, setProposedSet] = useState<Set<number>>(new Set())
   const [page, setPage] = useState(1)
@@ -480,6 +510,15 @@ export default function InfluencerList() {
                     <span className="text-xs border border-gray-100 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed">
                       제안 완료
                     </span>
+                  ) : proposableCampaigns.length === 0 ? (
+                    <button
+                      type="button"
+                      disabled
+                      title="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요."
+                      className="text-xs border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed"
+                    >
+                      제안하기
+                    </button>
                   ) : (
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
@@ -511,12 +550,31 @@ export default function InfluencerList() {
         onClose={() => setSelectedInfluencer(null)}
         size="lg"
         footer={selectedInfluencer ? (
-          <button
-            onClick={() => setProposalModal(true)}
-            className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
-          >
-            캠페인에 제안 보내기
-          </button>
+          proposableCampaigns.length === 0 ? (
+            <div className="w-full space-y-2">
+              <button
+                type="button"
+                disabled
+                title="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요."
+                className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
+              >
+                캠페인에 제안 보내기
+              </button>
+              <p className="text-xs text-gray-500 text-center">
+                진행 중인 캠페인이 없습니다.{' '}
+                <a href="/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">
+                  캠페인 등록
+                </a>
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={() => setProposalModal(true)}
+              className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
+            >
+              캠페인에 제안 보내기
+            </button>
+          )
         ) : undefined}
       >
         {selectedInfluencer && (
@@ -709,10 +767,10 @@ export default function InfluencerList() {
         )}
       </Modal>
 
-      {/* 제안 모달 */}
+      {/* 제안 모달 — 아코디언 UI (정책서 § 6-2) */}
       <Modal
         open={proposalModal}
-        onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false) }}
+        onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false); setProposalExpandedId(null) }}
         title="캠페인에 제안 보내기"
         size="md"
         footer={!proposalSent ? (
@@ -742,25 +800,66 @@ export default function InfluencerList() {
             <p className="text-sm text-gray-600">
               <strong>{selectedInfluencer?.name}</strong>님에게 제안을 보낼 캠페인을 선택하세요.
             </p>
-            <div className="space-y-2">
-              {campaigns.map(c => (
-                <label
-                  key={c.id}
-                  className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-150 ${
-                    selectedCampaign === c.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="campaign"
-                    value={c.id}
-                    checked={selectedCampaign === c.id}
-                    onChange={() => setSelectedCampaign(c.id)}
-                    className="accent-gray-900"
-                  />
-                  <span className="text-sm text-gray-700">{c.name}</span>
-                </label>
-              ))}
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+              {proposableCampaigns.map(c => {
+                const appliedIds = selectedInfluencer ? getAppliedCampaignIds(selectedInfluencer.id) : []
+                const hasApplied = appliedIds.includes(c.id)
+                const isSelected = selectedCampaign === c.id
+                const isExpanded = proposalExpandedId === c.id
+                return (
+                  <div
+                    key={c.id}
+                    className={`border rounded-xl transition-all duration-150 ${
+                      isSelected
+                        ? 'border-gray-900 bg-gray-50'
+                        : hasApplied
+                          ? 'border-gray-200 bg-gray-50/50'
+                          : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setProposalExpandedId(isExpanded ? null : c.id)}
+                      className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
+                      aria-expanded={isExpanded}
+                    >
+                      <input
+                        type="radio"
+                        name="campaign"
+                        value={c.id}
+                        checked={isSelected}
+                        disabled={hasApplied}
+                        onChange={() => { if (!hasApplied) setSelectedCampaign(c.id) }}
+                        onClick={e => e.stopPropagation()}
+                        className="accent-gray-900 disabled:cursor-not-allowed"
+                      />
+                      <span className={`text-sm flex-1 truncate ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
+                      {hasApplied && (
+                        <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
+                      )}
+                      {isExpanded ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
+                    </button>
+                    {isExpanded && (
+                      <div className="border-t border-gray-100 px-3 py-3 text-xs">
+                        <dl className="flex flex-col gap-y-3">
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">개요</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-line break-words">{c.summary}</dd>
+                          </div>
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">기간</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
+                          </div>
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">리워드</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
