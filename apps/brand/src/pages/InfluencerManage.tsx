@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, Target, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -7,7 +7,7 @@ import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { getEngagementColor, getFitScoreColor, getFitScoreBadge, getAuthenticColor, getRecommendedCampaignType } from '@wellink/ui'
+import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
 import {
   INFLUENCER_SORT_OPTIONS,
   DEFAULT_INFLUENCER_SORT,
@@ -480,10 +480,6 @@ export default function InfluencerManage() {
                     <span className="text-xs text-gray-400">참여율</span>
                     <span className={`text-sm font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
                   </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xs text-gray-400">핏 스코어</span>
-                    <span className={`text-sm font-semibold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
-                  </div>
                 </div>
 
                 {/* 최근 피드 썸네일 영역 — 항상 동일 높이 (썸네일 3장 그리드 높이)
@@ -751,13 +747,27 @@ export default function InfluencerManage() {
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-500" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
                         <span className="font-semibold text-gray-700">{formatFollowers(inf.followers)}</span>
                       </span>
-                      <button
-                        onClick={() => showToast('인스타그램으로 이동합니다.', 'info')}
-                        className="flex items-center gap-0.5 text-xs text-brand-green hover:underline"
-                      >
-                        <ExternalLink size={11} aria-hidden="true" />
-                        인스타 바로가기
-                      </button>
+                      {inf.instagramId ? (
+                        <a
+                          href={`https://instagram.com/${inf.instagramId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-0.5 text-xs text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                        >
+                          <ExternalLink size={11} aria-hidden="true" />
+                          인스타 바로가기
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="flex items-center gap-0.5 text-xs text-gray-400 cursor-not-allowed"
+                          title="인스타그램 username이 등록되지 않았습니다."
+                        >
+                          <ExternalLink size={11} aria-hidden="true" />
+                          인스타 바로가기
+                        </button>
+                      )}
                     </div>
                     {/* 3행: 바이오(인스타 소개글) */}
                     <p className="text-xs text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
@@ -794,14 +804,10 @@ export default function InfluencerManage() {
                       ['최근 활동', inf.lastActive, 'text-gray-900'],
                       ['참여율', `${inf.engagement}%`, getEngagementColor(inf.engagement)],
                       ['진성 비율', `${inf.authentic}%`, getAuthenticColor(inf.authentic)],
-                      ['Fit Score', null, ''],
                     ].map(([label, value, cls]) => (
                       <div key={label} className="bg-gray-50 rounded-lg p-2.5">
                         <div className="text-xs text-gray-400 mb-1">{label}</div>
-                        {label === 'Fit Score'
-                          ? <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}>{inf.fitScore}</span>
-                          : <div className={`text-sm font-semibold ${cls}`}>{value}</div>
-                        }
+                        <div className={`text-sm font-semibold ${cls}`}>{value}</div>
                       </div>
                     ))}
                   </div>
@@ -913,22 +919,11 @@ export default function InfluencerManage() {
                     <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
                     <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
                   </div>
-                  <div className={`grid gap-2.5 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-3'}`}>
-                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2"><Target size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">브랜드 핏 스코어</span></div>
-                      <div className="flex items-end gap-1 mb-1.5">
-                        <span className={`text-2xl font-bold ${getFitScoreColor(inf.fitScore)}`}>{inf.fitScore}</span>
-                        <span className="text-xs text-gray-400 mb-1">/100</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
-                        <div className={`h-full rounded-full ${inf.fitScore >= 85 ? 'bg-green-500' : inf.fitScore >= 70 ? 'bg-amber-400' : 'bg-gray-400'}`} style={{ width: `${inf.fitScore}%` }} />
-                      </div>
-                      <p className="text-xs text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
-                    </div>
+                  <div className={`grid gap-2.5 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2"><TrendingUp size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">추천 캠페인</span></div>
-                      <p className="text-xs font-bold text-gray-900 mb-1.5">{getRecommendedCampaignType(inf.fitScore)}</p>
-                      <p className="text-xs text-gray-500 leading-snug">평균 대비 <span className="font-semibold text-gray-700">{inf.fitScore >= 85 ? '2.3배' : inf.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율</p>
+                      <p className="text-xs font-bold text-gray-900 mb-1.5">{inf.engagement >= 4 ? '브랜디드 콘텐츠' : inf.engagement >= 2 ? '제품 리뷰' : '인지도 강화'}</p>
+                      <p className="text-xs text-gray-500 leading-snug">평균 대비 <span className="font-semibold text-gray-700">{inf.engagement >= 4 ? '2.3배' : inf.engagement >= 2 ? '1.7배' : '1.2배'}</span> 높은 참여율</p>
                     </div>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">협업 팁</span></div>

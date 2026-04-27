@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
-import { Search, CheckCircle, Heart, Sparkles, Target, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp } from 'lucide-react'
 import { CustomSelect, Pagination, TIMER_MS } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -7,8 +7,8 @@ import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { AVATAR_COLORS } from '@wellink/ui'
-import { getEngagementColor, getAuthenticColor, getFitScoreBadge, getFitScoreLabel, getFitScoreColor, getRecommendedCampaignType } from '@wellink/ui'
-import { FITSCORE_THRESHOLD, ENGAGEMENT_THRESHOLD } from '@wellink/ui'
+import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
+import { ENGAGEMENT_THRESHOLD } from '@wellink/ui'
 import {
   INFLUENCER_SORT_OPTIONS,
   DEFAULT_INFLUENCER_SORT,
@@ -101,13 +101,7 @@ const categoryOptions = [
   { label: '크로스핏', value: '크로스핏' },
 ]
 
-// 핏스코어 — 데이터 정책 v1 §2-1: 85+ 우수(green) / 70~84 보통(amber) / 70미만 개선필요(gray)
-const fitScoreOptions = [
-  { label: '핏 스코어', value: '' },
-  { label: '85점 이상 (우수)', value: '85+' },
-  { label: '70점 이상 (보통)', value: '70+' },
-  { label: '70점 미만 (개선필요)', value: 'under70' },
-]
+// Fit Score 필터/노출은 v1.1부터 제거 (캠페인 매칭 컨텍스트에서만 사용 — § 03 캠페인 상세)
 
 // 참여율 필터 — 데이터 정책 v1 §2-3: 4%+ 높음, 2~4% 보통, 2% 미만 낮음
 const engagementOptions = [
@@ -137,7 +131,6 @@ export default function InfluencerList() {
   const qa = useQAMode()
   const [search, setSearch] = useState(qa === 'empty-search' || qa === 'filter-empty' ? '매칭없는검색어' : '')
   const [category, setCategory] = useState(qa === 'filter-empty' ? '뷰티/패션' : '')
-  const [fitScoreFilter, setFitScoreFilter] = useState('')
   const [engagementFilter, setEngagementFilter] = useState('')
   const [followerTier, setFollowerTier] = useState('')
   // QA: modal-detail → 첫 번째 인플루언서로 상세 모달 미리 열기
@@ -259,20 +252,16 @@ export default function InfluencerList() {
   const filtered = useMemo(() => influencers.filter(inf => {
     if (search && !inf.name.includes(search)) return false
     if (category && !inf.category.includes(category as InfluencerCat)) return false
-    if (fitScoreFilter === '85+' && inf.fitScore < FITSCORE_THRESHOLD.excellent) return false
-    if (fitScoreFilter === '70+' && inf.fitScore < FITSCORE_THRESHOLD.average) return false
-    if (fitScoreFilter === 'under70' && inf.fitScore >= FITSCORE_THRESHOLD.average) return false
     if (engagementFilter === 'high' && inf.engagement < ENGAGEMENT_THRESHOLD.high) return false
     if (engagementFilter === 'mid' && (inf.engagement < ENGAGEMENT_THRESHOLD.low || inf.engagement >= ENGAGEMENT_THRESHOLD.high)) return false
     if (engagementFilter === 'low' && inf.engagement >= ENGAGEMENT_THRESHOLD.low) return false
     if (followerTier && getFollowerTier(inf.followers) !== followerTier) return false
     return true
-  }), [search, category, fitScoreFilter, engagementFilter, followerTier])
+  }), [search, category, engagementFilter, followerTier])
 
   const summaryStats = useMemo(() => [
     { label: '전체 인플루언서', value: influencers.length + '명' },
     { label: '즐겨찾기', value: bookmarked.size + '명' },
-    { label: '평균 Fit Score', value: Math.round(influencers.reduce((s, i) => s + i.fitScore, 0) / influencers.length) + '점' },
     { label: '평균 참여율', value: (influencers.filter(i => i.engagement > 0).reduce((s, i) => s + i.engagement, 0) / influencers.filter(i => i.engagement > 0).length).toFixed(1) + '%' },
   ], [bookmarked.size])
 
@@ -339,13 +328,6 @@ export default function InfluencerList() {
         </div>
         <div className="w-full @sm:w-36">
           <CustomSelect
-            value={fitScoreFilter}
-            onChange={v => { setFitScoreFilter(v); setPage(1) }}
-            options={fitScoreOptions}
-          />
-        </div>
-        <div className="w-full @sm:w-36">
-          <CustomSelect
             value={engagementFilter}
             onChange={v => { setEngagementFilter(v); setPage(1) }}
             options={engagementOptions}
@@ -382,7 +364,6 @@ export default function InfluencerList() {
                 { h: '평균 좋아요', cls: 'hidden @lg:table-cell' },
                 { h: '평균 댓글',   cls: 'hidden @xl:table-cell' },
                 { h: '참여율',    cls: '' },
-                { h: 'Fit Score', cls: '' },
                 { h: '진성비율',  cls: 'hidden @lg:table-cell' },
                 { h: '최근 활동', cls: 'hidden @xl:table-cell' },
                 { h: '최근 콘텐츠', cls: 'hidden @xl:table-cell' },
@@ -395,14 +376,14 @@ export default function InfluencerList() {
           <tbody className="divide-y divide-gray-50">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={12} className="py-16 text-center">
+                <td colSpan={11} className="py-16 text-center">
                   <Search size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
                   <p className="text-sm text-gray-500 font-medium">
                     {qa === 'filter-empty' ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다.'}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">필터를 조정해보세요.</p>
                   <button
-                    onClick={() => { setSearch(''); setCategory(''); setFitScoreFilter(''); setEngagementFilter(''); setFollowerTier(''); setPage(1) }}
+                    onClick={() => { setSearch(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setPage(1) }}
                     className="mt-3 text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
                   >
                     필터 초기화
@@ -465,17 +446,6 @@ export default function InfluencerList() {
                 <td className="py-3 px-4 text-sm font-medium whitespace-nowrap">
                   <span className={getEngagementColor(inf.engagement)}>
                     {inf.engagement}%
-                  </span>
-                </td>
-
-                {/* Fit Score (원형 배지) */}
-                <td className="py-3 px-4">
-                  <span
-                    className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${getFitScoreBadge(inf.fitScore)}`}
-                    aria-label={`Fit Score ${inf.fitScore} — ${getFitScoreLabel(inf.fitScore)}`}
-                    title={`Fit Score ${inf.fitScore} — ${getFitScoreLabel(inf.fitScore)}`}
-                  >
-                    {inf.fitScore}
                   </span>
                 </td>
 
@@ -586,12 +556,6 @@ export default function InfluencerList() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-lg font-bold text-gray-900">{selectedInfluencer.name}</h2>
-                  <span
-                    className={`text-xs font-bold rounded-full px-2.5 py-1 ${getFitScoreBadge(selectedInfluencer.fitScore)}`}
-                    aria-label={`Fit Score ${selectedInfluencer.fitScore} — ${getFitScoreLabel(selectedInfluencer.fitScore)}`}
-                  >
-                    Fit {selectedInfluencer.fitScore} ({getFitScoreLabel(selectedInfluencer.fitScore)})
-                  </span>
                 </div>
                 <div className="flex gap-2 mt-1 flex-wrap">
                   {selectedInfluencer.category.map(c => (
@@ -646,12 +610,6 @@ export default function InfluencerList() {
                       {selectedInfluencer.authentic}%
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xs text-gray-500 mb-1">Fit Score</div>
-                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold ${getFitScoreBadge(selectedInfluencer.fitScore)}`}>
-                      {selectedInfluencer.fitScore}
-                    </span>
-                  </div>
                 </div>
 
                 {/* AI 인사이트 가이드 */}
@@ -661,43 +619,22 @@ export default function InfluencerList() {
                     <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
                     <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
                   </div>
-                  <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2.5">
-                    {/* 카드 1: 핏 스코어 */}
-                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <Target size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-xs font-semibold text-gray-600">브랜드 핏 스코어</span>
-                      </div>
-                      <div className="flex items-end gap-1 mb-1.5">
-                        <span className={`text-2xl font-bold ${getFitScoreColor(selectedInfluencer.fitScore)}`}>
-                          {selectedInfluencer.fitScore}
-                        </span>
-                        <span className="text-xs text-gray-400 mb-1">/100</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
-                        <div
-                          className="h-full rounded-full bg-brand-green"
-                          style={{ width: `${selectedInfluencer.fitScore}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-400 leading-snug">카테고리 매칭도 · 팔로워 겹침률 기반</p>
-                    </div>
-
-                    {/* 카드 2: 추천 캠페인 타입 */}
+                  <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2.5">
+                    {/* 카드 1: 추천 캠페인 (참여율 기반) */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
                         <TrendingUp size={12} className="text-gray-400" aria-hidden="true" />
                         <span className="text-xs font-semibold text-gray-600">추천 캠페인</span>
                       </div>
                       <p className="text-xs font-bold text-gray-900 mb-1.5">
-                        {getRecommendedCampaignType(selectedInfluencer.fitScore)}
+                        {selectedInfluencer.engagement >= 4 ? '브랜디드 콘텐츠' : selectedInfluencer.engagement >= 2 ? '제품 리뷰' : '인지도 강화'}
                       </p>
                       <p className="text-xs text-gray-500 leading-snug">
-                        평균 대비 <span className="font-semibold text-gray-700">{selectedInfluencer.fitScore >= 85 ? '2.3배' : selectedInfluencer.fitScore >= 70 ? '1.7배' : '1.2배'}</span> 높은 참여율
+                        평균 대비 <span className="font-semibold text-gray-700">{selectedInfluencer.engagement >= 4 ? '2.3배' : selectedInfluencer.engagement >= 2 ? '1.7배' : '1.2배'}</span> 높은 참여율
                       </p>
                     </div>
 
-                    {/* 카드 3: 협업 팁 */}
+                    {/* 카드 2: 협업 팁 */}
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Lightbulb size={12} className="text-gray-400" aria-hidden="true" />
