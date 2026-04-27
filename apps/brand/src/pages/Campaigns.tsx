@@ -25,6 +25,7 @@ type Campaign = {
   category: string; platform: string;
   imageUrl?: string  // 캠페인 대표 이미지 — 원본 displayImgUrl 동등
   createdAt: string  // 캠페인 등록일 (YYYY-MM-DD) — 원본 createdAt 동등, 최근 등록순 정렬·관리에 사용
+  selectedCount?: number  // 선정 인원 (정책서 § 7-2) — 광고주가 지원자 중 선정한 수
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
@@ -58,6 +59,10 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const current = status === '대기중' ? 0
                 : status === '모집중' ? Math.floor(total * ((i % 5) + 1) / 6)
                 : total
+  // 선정 인원: 진행중·완료·종료는 모집과 동일, 모집중은 일부만 선정, 대기중은 0 (정책서 § 7-2)
+  const selectedCount = status === '대기중' ? 0
+                      : status === '모집중' ? Math.max(0, current - Math.ceil(current / 3))
+                      : current
   const month = ((i % 6) + 1).toString().padStart(2, '0')
   const day = ((i % 27) + 1).toString().padStart(2, '0')
   const deadline = `2026-${month}-${day}`
@@ -67,7 +72,7 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const createdAt = `2026-${createdMonth}-${createdDay}`
   const budget = (i % 7 + 1) * 500000
   return {
-    id, name: `${baseName} #${id}`, status, total, current, deadline, budget, category, platform,
+    id, name: `${baseName} #${id}`, status, total, current, selectedCount, deadline, budget, category, platform,
     imageUrl: `https://picsum.photos/seed/wellink-${id}/160/160`,
     createdAt,
   }
@@ -79,13 +84,18 @@ const tabs = ['전체', '대기중', '모집중', '마감임박', '진행중', '
 type Tab = typeof tabs[number]
 
 /**
- * 표시용 status 파생 — 모집중 + D-Day 3일 이하 = '마감임박'으로 노출
+ * 마감임박 D-Day 임계값 (정책서 § 4 Q4) — 추후 변경 가능성 대비 상수로 관리
+ */
+const URGENT_THRESHOLD_DAYS = 3
+
+/**
+ * 표시용 status 파생 — 모집중 + D-Day 임계값 이하 = '마감임박'으로 노출
  * (원 데이터 status는 보존, UI 분류 전용)
  */
 function deriveDisplayStatus(c: Campaign): CampaignStatus {
   if (c.status === '모집중') {
     const d = getDDay(c.deadline)
-    if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= 3)) {
+    if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= URGENT_THRESHOLD_DAYS)) {
       return '마감임박'
     }
   }
@@ -496,7 +506,12 @@ export default function Campaigns() {
                     <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
                     <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
                       <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
-                      <span className="flex items-center gap-1"><Users size={11} aria-hidden="true" />{c.current}/{c.total}명</span>
+                      {/* 인원 3분할 — 지원 / 선정 / 모집 (정책서 § 7-2) */}
+                      <span className="flex items-center gap-1">
+                        <Users size={11} aria-hidden="true" />
+                        <span className="hidden @sm:inline">지원 {c.current} · 선정 {c.selectedCount ?? 0} · 모집 {c.total}</span>
+                        <span className="@sm:hidden">{c.current} · {c.selectedCount ?? 0} · {c.total}</span>
+                      </span>
                       <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
                     </div>
                     <div className="mt-2 flex items-center gap-2">
@@ -529,24 +544,7 @@ export default function Campaigns() {
                       <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 text-left">
                         <Share2 size={12} aria-hidden="true" /> 링크 복사
                       </button>
-                      {canDelete ? (
-                        <button
-                          type="button"
-                          onClick={() => setConfirm({ kind: 'delete-one', id: c.id, name: c.name })}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 text-left"
-                        >
-                          <Trash2 size={12} aria-hidden="true" /> 삭제
-                        </button>
-                      ) : (
-                        <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 채널톡으로 문의해주세요.">
-                          <span
-                            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-400 cursor-not-allowed"
-                            aria-disabled="true"
-                          >
-                            <Trash2 size={12} aria-hidden="true" /> 삭제
-                          </span>
-                        </Tooltip>
-                      )}
+                      {/* 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 삭제를 번거롭게) */}
                     </div>
                   </Dropdown>
                 </div>

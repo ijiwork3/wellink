@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp } from 'lucide-react'
-import { CustomSelect, Pagination, TIMER_MS } from '@wellink/ui'
+import { CustomSelect, Pagination, TIMER_MS, Tooltip } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -165,7 +165,7 @@ export default function InfluencerList() {
           <p className="text-sm text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
         </div>
         {/* KPI 4개 스켈레톤 */}
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 animate-pulse">
+        <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3 animate-pulse">
           {[0, 1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
               <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
@@ -297,7 +297,7 @@ export default function InfluencerList() {
       </div>
 
       {/* 요약 통계 */}
-      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3">
         {summaryStats.map(stat => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
             <p className="text-xs text-gray-400">{stat.label}</p>
@@ -481,14 +481,15 @@ export default function InfluencerList() {
                       제안 완료
                     </span>
                   ) : proposableCampaigns.length === 0 ? (
-                    <button
-                      type="button"
-                      disabled
-                      title="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요."
-                      className="text-xs border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed"
-                    >
-                      제안하기
-                    </button>
+                    <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
+                      <button
+                        type="button"
+                        disabled
+                        className="text-xs border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed"
+                      >
+                        제안하기
+                      </button>
+                    </Tooltip>
                   ) : (
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
@@ -522,14 +523,15 @@ export default function InfluencerList() {
         footer={selectedInfluencer ? (
           proposableCampaigns.length === 0 ? (
             <div className="w-full space-y-2">
-              <button
-                type="button"
-                disabled
-                title="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요."
-                className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
-              >
-                캠페인에 제안 보내기
-              </button>
+              <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
+                <button
+                  type="button"
+                  disabled
+                  className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                >
+                  캠페인에 제안 보내기
+                </button>
+              </Tooltip>
               <p className="text-xs text-gray-500 text-center">
                 진행 중인 캠페인이 없습니다.{' '}
                 <a href="/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">

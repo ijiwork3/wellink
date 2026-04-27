@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination } from '@wellink/ui'
+import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
@@ -35,6 +35,7 @@ interface Influencer {
   addedAt: number // timestamp ms — BE 연동 시 서버 값으로 교체
   recentThumbnails: string[] // 최근 피드 썸네일 URL (0~3장). 빈 배열 = 콘텐츠 없음
   isPrivate?: boolean // 비공개 계정 — 썸네일 노출 불가
+  scrapingStatus?: 'in_progress' | 'completed' // 회원가입 후 인스타 스크래핑 진행 상태. 정책서 § 11-1
 }
 
 // 캠페인 컨텍스트 — 제안 시 자동 첨부 (§17.6)
@@ -106,6 +107,8 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const thumbCount = thumbCase === 1 ? 0 : thumbCase === 2 ? 1 : thumbCase === 3 ? 2 : 3
   const recentThumbnails = isPrivate ? [] : Array.from({ length: thumbCount }, (_, t) => `mock://thumb-${i}-${t}`)
   // 앞쪽 인덱스일수록 최근 추가 (index 0 = 오늘, 이후 하루씩 과거)
+  // 스크래핑 상태 시뮬레이션 — 최근 추가된 (i < 5) 인플루언서만 in_progress (정책서 § 11-1)
+  const scrapingStatus: 'in_progress' | 'completed' = i < 5 ? 'in_progress' : 'completed'
   return {
     ...src,
     id: i + 1,
@@ -113,6 +116,7 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
     addedAt: NOW - i * DAY_MS,
     recentThumbnails,
     isPrivate,
+    scrapingStatus,
   }
 }).sort((a, b) => b.addedAt - a.addedAt)
 
@@ -731,7 +735,9 @@ export default function InfluencerManage() {
                     {/* 1행: 이름 + 상태 배지들 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
                       <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
-                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                      {inf.scrapingStatus === 'in_progress' && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                      )}
                       <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
@@ -758,15 +764,16 @@ export default function InfluencerManage() {
                           인스타 바로가기
                         </a>
                       ) : (
-                        <button
-                          type="button"
-                          disabled
-                          className="flex items-center gap-0.5 text-xs text-gray-400 cursor-not-allowed"
-                          title="인스타그램 username이 등록되지 않았습니다."
-                        >
-                          <ExternalLink size={11} aria-hidden="true" />
-                          인스타 바로가기
-                        </button>
+                        <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
+                          <button
+                            type="button"
+                            disabled
+                            className="flex items-center gap-0.5 text-xs text-gray-400 cursor-not-allowed"
+                          >
+                            <ExternalLink size={11} aria-hidden="true" />
+                            인스타 바로가기
+                          </button>
+                        </Tooltip>
                       )}
                     </div>
                     {/* 3행: 바이오(인스타 소개글) */}
@@ -1021,14 +1028,15 @@ export default function InfluencerManage() {
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
                 {proposableCampaigns.length === 0 ? (
                   <div className="space-y-2">
-                    <button
-                      type="button"
-                      disabled
-                      title="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요."
-                      className="w-full bg-brand-green/50 text-white text-sm py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
-                    >
-                      캠페인에 제안 보내기
-                    </button>
+                    <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
+                      <button
+                        type="button"
+                        disabled
+                        className="w-full bg-brand-green/50 text-white text-sm py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                      >
+                        캠페인에 제안 보내기
+                      </button>
+                    </Tooltip>
                     <p className="text-xs text-gray-500 text-center">
                       진행 중인 캠페인이 없습니다.{' '}
                       <button
