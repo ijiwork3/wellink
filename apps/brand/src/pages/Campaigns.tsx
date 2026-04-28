@@ -80,7 +80,8 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
 
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
-const tabs = ['전체', '대기중', '모집중', '마감임박', '진행중', '완료', '종료'] as const
+// 탭 라벨은 표시 친절화 라벨 기준 (정책서 § 4-0) — deriveDisplayStatus 결과와 매칭됨
+const tabs = ['전체', '지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중', '완료', '종료'] as const
 type Tab = typeof tabs[number]
 
 /**
@@ -132,9 +133,14 @@ function needsSelection(c: Campaign): boolean {
 
 /**
  * 표시용 status 파생 — 정책서 § 4-0 친절화
+ * 사용자 피드백: "대기중을 보고 지원자 대기인지 콘텐츠 업로드 대기인지 한눈에 파악이 어려움"
+ * → 라벨 자체를 컨텍스트가 드러나도록 분기
+ *
  * - 모집중 + D-Day 임계값 이하 = '마감임박'
  * - 모집 마감 후 미선정 = '선정 필요' (광고주 액션 필요)
- * - 진행중 + 선정 인원 < 모집 인원 = '업로드 대기'(향후) — 현 mock 데이터 기준 단순화
+ * - 원본 status='대기중' = '지원자 대기' (모집 시작 후 지원 0건일 때 의미가 명확)
+ * - 원본 status='진행중' = '콘텐츠 업로드 대기' 또는 '콘텐츠 등록 중' (선정 마감 → 인플루언서 업로드 대기)
+ *   — 현재 mock에선 단순히 라벨만 친절화
  * (원 데이터 status는 보존, UI 분류 전용)
  */
 function deriveDisplayStatus(c: Campaign): CampaignStatus {
@@ -145,6 +151,9 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
       return '마감임박'
     }
   }
+  // 라벨 친절화 (정책서 § 4-0)
+  if (c.status === '대기중') return '지원자 대기'
+  if (c.status === '진행중') return '콘텐츠 등록 중'
   return c.status
 }
 
@@ -153,10 +162,14 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
  */
 function getStatusTooltip(status: string): string | null {
   switch (status) {
-    case '대기중':       return '지원자 발생을 기다리는 단계입니다.'
-    case '선정 필요':    return '모집이 끝났습니다. 지원자 선정을 진행해주세요.'
-    case '진행중':       return '인플루언서가 콘텐츠를 등록하는 단계입니다.'
-    default:             return null
+    case '지원자 대기':    return '캠페인이 게시된 후 첫 지원자를 기다리는 단계입니다.'
+    case '모집중':         return '지원자가 모집되고 있습니다. 마감일까지 자유롭게 지원받습니다.'
+    case '마감임박':       return '모집 마감이 3일 이내입니다. 곧 선정 단계로 넘어갑니다.'
+    case '선정 필요':      return '모집이 끝났습니다. 지원자 선정을 진행해주세요.'
+    case '콘텐츠 등록 중': return '선정된 인플루언서가 콘텐츠를 제작·업로드 중입니다.'
+    case '완료':           return '콘텐츠 검수가 완료되어 캠페인이 마무리되었습니다.'
+    case '종료':           return '캠페인이 종료되었습니다.'
+    default:               return null
   }
 }
 

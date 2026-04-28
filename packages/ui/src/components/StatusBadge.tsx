@@ -39,12 +39,14 @@ const alert:   Cfg = { bg: 'bg-rose-100',    text: 'text-rose-600',    dot: 'bg-
 
 const statusConfig: Record<string, Cfg> = {
   // active
-  '모집중':     active,
-  '진행중':     active,
+  '모집중':         active,
+  '진행중':         active,
+  '콘텐츠 등록 중': active, // 친절화 라벨 (정책서 § 4-0)
   // pending
-  '대기중':     pending,
-  '신청완료':   pending,
-  '콘텐츠대기': pending,
+  '대기중':       pending,
+  '지원자 대기':  pending, // 친절화 라벨 (정책서 § 4-0)
+  '신청완료':     pending,
+  '콘텐츠대기':   pending,
   // review
   '검수중':     review,
   // done

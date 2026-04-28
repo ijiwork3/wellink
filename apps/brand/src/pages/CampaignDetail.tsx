@@ -385,6 +385,8 @@ export default function CampaignDetail() {
   const [checkedApplicants, setCheckedApplicants] = useState<Set<number>>(new Set())
   // 선정 예정 단계 (정책서 § 6-4) — 신청 → [선정 예정 (내부 전용)] → 선정 확정 (인플루언서 노출)
   const [pendingApplicants, setPendingApplicants] = useState<Set<number>>(new Set())
+  // 콘텐츠 인라인 미리보기 모달 (정책서 § 6-3-1) — 리스트에서 바로 피드/릴스 확인
+  const [previewModal, setPreviewModal] = useState<{ applicantId: number; type: 'feed' | 'reels' } | null>(null)
   // 선정 확정 알림 모달
   const [confirmSelectionModal, setConfirmSelectionModal] = useState<{ ids: number[]; name?: string } | null>(null)
   const [applicantsPage, setApplicantsPage] = useState(1)
@@ -1147,7 +1149,11 @@ export default function CampaignDetail() {
           if (applicantsSortKey === k) setApplicantsSortDesc(d => !d)
           else { setApplicantsSortKey(k); setApplicantsSortDesc(true) }
         }
-        const sortIcon = (k: ApplicantSortKey) => applicantsSortKey === k ? (applicantsSortDesc ? '▼' : '▲') : ''
+        // 정렬 가능 컬럼 인디케이터 (정책서 § 6-3) — 활성: ▼/▲ 짙게, 비활성: ▼ 흐리게 (정렬 가능 표시)
+        const sortIcon = (k: ApplicantSortKey) =>
+          applicantsSortKey === k
+            ? <span className="ml-0.5 text-gray-700">{applicantsSortDesc ? '▼' : '▲'}</span>
+            : <span className="ml-0.5 text-gray-300">▼</span>
         return (
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -1347,17 +1353,27 @@ export default function CampaignDetail() {
                       ) : (
                         <div className="flex items-center gap-1.5">
                           {a.previewFeed ? (
-                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${a.previewFeed} flex items-center justify-center cursor-pointer`} title="최근 피드">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewModal({ applicantId: a.id, type: 'feed' })}
+                              className={`w-12 h-12 rounded-lg bg-gradient-to-br ${a.previewFeed} flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-brand-green/50 transition-all`}
+                              aria-label={`${a.name} 최근 피드 미리보기`}
+                            >
                               <Image size={14} className="text-white/60" aria-hidden="true" />
-                            </div>
+                            </button>
                           ) : (
                             <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center" />
                           )}
                           {a.previewReels ? (
-                            <div className={`w-8 h-12 rounded-lg bg-gradient-to-br ${a.previewReels} flex items-center justify-center relative cursor-pointer`} title="최근 릴스">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewModal({ applicantId: a.id, type: 'reels' })}
+                              className={`w-8 h-12 rounded-lg bg-gradient-to-br ${a.previewReels} flex items-center justify-center relative cursor-pointer hover:ring-2 hover:ring-brand-green/50 transition-all`}
+                              aria-label={`${a.name} 최근 릴스 미리보기`}
+                            >
                               <Image size={12} className="text-white/60" aria-hidden="true" />
                               <span className="absolute top-0.5 right-0.5 text-[8px] bg-black/40 text-white px-0.5 rounded">릴스</span>
-                            </div>
+                            </button>
                           ) : (
                             <div className="w-8 h-12 rounded-lg bg-gray-50 flex items-center justify-center" />
                           )}
@@ -2751,6 +2767,60 @@ export default function CampaignDetail() {
           <strong className="text-gray-700">{campaign.name}</strong> 캠페인을 삭제합니다. 모집·콘텐츠·정산 데이터가 함께 사라지며 이 작업은 되돌릴 수 없습니다.
         </p>
       </AlertModal>
+
+      {/* 콘텐츠 인라인 미리보기 모달 (정책서 § 6-3-1) */}
+      <Modal
+        open={previewModal !== null}
+        onClose={() => setPreviewModal(null)}
+        title={previewModal?.type === 'feed' ? '최근 피드 미리보기' : '최근 릴스 미리보기'}
+        size="md"
+      >
+        {(() => {
+          if (!previewModal) return null
+          const target = applicants.find(a => a.id === previewModal.applicantId)
+          if (!target) return null
+          const bg = previewModal.type === 'feed' ? target.previewFeed : target.previewReels
+          const aspect = previewModal.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[400px] mx-auto'
+          return (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold`}>
+                  {target.name[0]}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">@{target.instagramId}</p>
+                  <p className="text-xs text-gray-400">{target.name} · 팔로워 {target.followers}</p>
+                </div>
+              </div>
+              {bg ? (
+                <div className={`${aspect} bg-gradient-to-br ${bg} rounded-xl flex items-center justify-center relative`}>
+                  <Image size={36} className="text-white/60" aria-hidden="true" />
+                  {previewModal.type === 'reels' && (
+                    <span className="absolute top-3 right-3 text-xs bg-black/60 text-white px-2 py-0.5 rounded-full">릴스</span>
+                  )}
+                </div>
+              ) : (
+                <div className={`${aspect} bg-gray-50 rounded-xl flex items-center justify-center text-xs text-gray-400`}>콘텐츠 없음</div>
+              )}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-gray-50 rounded-lg p-2">
+                  <p className="text-xs text-gray-400">평균 좋아요</p>
+                  <p className="text-sm font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-2">
+                  <p className="text-xs text-gray-400">평균 댓글</p>
+                  <p className="text-sm font-semibold text-gray-900">{fmtNumber(target.avgComments)}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-2">
+                  <p className="text-xs text-gray-400">참여율</p>
+                  <p className="text-sm font-semibold text-gray-900">{target.engagement}%</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 Instagram 스크래핑 후 표시됩니다.</p>
+            </div>
+          )
+        })()}
+      </Modal>
 
       {/* 캠페인 취소 확인 모달 */}
       <AlertModal

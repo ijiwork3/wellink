@@ -4,13 +4,16 @@
 
 /** 캠페인 상태 (브랜드 관점) */
 export const CAMPAIGN_STATUS = {
-  PENDING:    '대기중',     // 모집 시작 전
-  RECRUITING: '모집중',     // 지원 접수 중
-  IN_PROGRESS:'진행중',     // 콘텐츠 제작 중
-  DONE:       '완료',       // 콘텐츠 승인 완료
-  CLOSED:     '종료',       // 조기 종료
-  RUSHING:    '마감임박',   // 마감 3일 이하 자동 전환
-  NEEDS_SEL:  '선정 필요',  // 모집 마감 후 미선정 (광고주 액션 필요) — 정책서 § 4-0
+  PENDING:        '대기중',         // (BE 원본) 모집 시작 전
+  RECRUITING:     '모집중',         // 지원 접수 중
+  IN_PROGRESS:    '진행중',         // (BE 원본) 콘텐츠 제작 중
+  DONE:           '완료',           // 콘텐츠 승인 완료
+  CLOSED:         '종료',           // 조기 종료
+  RUSHING:        '마감임박',       // 마감 3일 이하 자동 전환
+  NEEDS_SEL:      '선정 필요',      // 모집 마감 후 미선정 (정책서 § 4-0)
+  // 친절화 표시 라벨 (정책서 § 4-0) — deriveDisplayStatus 분기용
+  WAITING_APPLY:  '지원자 대기',    // status='대기중' 표시 라벨
+  UPLOADING:      '콘텐츠 등록 중', // status='진행중' 표시 라벨
 } as const
 
 export type CampaignStatus = typeof CAMPAIGN_STATUS[keyof typeof CAMPAIGN_STATUS]
@@ -31,13 +34,15 @@ export type ParticipationStatus = typeof PARTICIPATION_STATUS[keyof typeof PARTI
 
 /** 캠페인 상태 배지 스타일 */
 export const CAMPAIGN_STATUS_STYLE: Record<CampaignStatus, string> = {
-  '대기중':    'bg-amber-50 text-amber-700',
-  '모집중':    'bg-brand-green/10 text-brand-green-text',
-  '진행중':    'bg-emerald-100 text-emerald-700',
-  '완료':      'bg-brand-green/10 text-brand-green-text',
-  '종료':      'bg-gray-100 text-gray-500',
-  '마감임박':  'bg-orange-100 text-orange-700',
-  '선정 필요': 'bg-rose-100 text-rose-700',
+  '대기중':        'bg-amber-50 text-amber-700',
+  '지원자 대기':    'bg-amber-50 text-amber-700',
+  '모집중':        'bg-brand-green/10 text-brand-green-text',
+  '진행중':        'bg-emerald-100 text-emerald-700',
+  '콘텐츠 등록 중': 'bg-emerald-100 text-emerald-700',
+  '완료':          'bg-brand-green/10 text-brand-green-text',
+  '종료':          'bg-gray-100 text-gray-500',
+  '마감임박':      'bg-orange-100 text-orange-700',
+  '선정 필요':     'bg-rose-100 text-rose-700',
 }
 
 /** 인플루언서 참여 상태 배지 스타일 */
