@@ -50,7 +50,7 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * QA 빌드 버전 — 정책 라운드별로 증가 (n.nnn)
  * brand 앱과 동기화됨. 자세한 라운드 변경 이력은 brand/src/qa-mockup-kit.tsx 참조
  */
-export const QA_VERSION = '1.008';
+export const QA_VERSION = '1.009';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
@@ -720,6 +720,13 @@ export function GlobalQAHeader<S extends string, T extends string>({
       <div className="flex items-center gap-2 shrink-0">
         <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
         <span className="text-xs font-semibold tracking-tight">{title}</span>
+        <span
+          className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
+          title={`QA 빌드 v${QA_VERSION}`}
+          aria-label={`QA 빌드 버전 ${QA_VERSION}`}
+        >
+          v{QA_VERSION}
+        </span>
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap">

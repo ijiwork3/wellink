@@ -57,8 +57,9 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * 1.006  다중 탭 선택 + 다운로드 건당 결제 + StatusBadge '선정 필요' 보강
  * 1.007  캠페인 목록 일괄 삭제·체크박스 제거 (정책서 § 8 — 의도적으로 번거롭게 일관성 강화)
  * 1.008  꼼꼼 검증 보강: 인라인 미리보기 클릭→모달 / 정렬 인디케이터 비활성 표기 / 칩 라벨 친절화('지원자 대기'·'콘텐츠 등록 중')
+ * 1.009  GlobalQAHeader(상단 다크 바)에도 버전 배지 노출 — 광고주가 실제로 보는 위치에 표시
  */
-export const QA_VERSION = '1.008';
+export const QA_VERSION = '1.009';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
@@ -739,6 +740,13 @@ export function GlobalQAHeader<S extends string, T extends string>({
       <div className="flex items-center gap-2 shrink-0">
         <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
         <span className="text-xs font-semibold tracking-tight">{title}</span>
+        <span
+          className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
+          title={`QA 빌드 v${QA_VERSION}`}
+          aria-label={`QA 빌드 버전 ${QA_VERSION}`}
+        >
+          v{QA_VERSION}
+        </span>
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap">
