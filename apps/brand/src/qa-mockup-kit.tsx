@@ -46,6 +46,18 @@ export const DEVICE_BASE: Record<DeviceMode, { w: number; h: number; radius: str
 
 const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
 
+/**
+ * QA 빌드 버전 — 정책 라운드별로 증가 (n.nnn)
+ * 1.000  정책서 v1 + UX/UI 고도화 초기
+ * 1.001  Q1~Q6 클라이언트 답변 반영 (Fit Score 이관·스크래핑 배지·인스타 링크 등)
+ * 1.002  캠페인 제안 모달 (disabled·아코디언·이미 신청함)
+ * 1.003  캠페인 목록 피드백 8건 + 캠페인 상세 피드백 11건 정책서
+ * 1.004  P0/P1 회귀 수정 + 캠페인 목록 코드 부분 반영 (D-Day 상수·인원 3분할·삭제 위치)
+ * 1.005  캠페인 목록·상세 P2 코드 일괄 반영 (선정 예정·릴스 미리보기·AI 캠페인 생성·KPI 정리)
+ * 1.006  다중 탭 선택 + 다운로드 건당 결제 + StatusBadge '선정 필요' 보강
+ */
+export const QA_VERSION = '1.006';
+
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
 // ─────────────────────────────────────────────────────────────
@@ -542,8 +554,17 @@ function QATopBar<S extends string, T extends string>({
 }) {
   return (
     <div className="flex items-center justify-between px-4 h-[58px] flex-shrink-0">
-      {/* 좌: 디바이스 토글 */}
-      <DeviceToggle deviceMode={deviceMode} setDeviceMode={setDeviceMode} />
+      {/* 좌: 디바이스 토글 + QA 버전 */}
+      <div className="flex items-center gap-2">
+        <DeviceToggle deviceMode={deviceMode} setDeviceMode={setDeviceMode} />
+        <span
+          className="font-mono text-[10px] font-semibold tracking-wider px-2 py-1 rounded-md bg-slate-900 text-white shadow-sm"
+          title={`QA 빌드 v${QA_VERSION}`}
+          aria-label={`QA 빌드 버전 ${QA_VERSION}`}
+        >
+          v{QA_VERSION}
+        </span>
+      </div>
       {/* 중앙: 경로 배지 */}
       <ScreenBadge label={screenLabel} />
       {/* 우: 상태 + 경로 드롭다운 */}

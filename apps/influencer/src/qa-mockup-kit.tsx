@@ -46,6 +46,12 @@ export const DEVICE_BASE: Record<DeviceMode, { w: number; h: number; radius: str
 
 const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
 
+/**
+ * QA 빌드 버전 — 정책 라운드별로 증가 (n.nnn)
+ * brand 앱과 동기화됨. 자세한 라운드 변경 이력은 brand/src/qa-mockup-kit.tsx 참조
+ */
+export const QA_VERSION = '1.006';
+
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
 // ─────────────────────────────────────────────────────────────
@@ -547,8 +553,17 @@ function QATopBar<S extends string, T extends string>({
 }) {
   return (
     <div className="flex items-center justify-between px-4 h-[58px] flex-shrink-0">
-      {/* 좌: 디바이스 토글 */}
-      <DeviceToggle deviceMode={deviceMode} setDeviceMode={setDeviceMode} />
+      {/* 좌: 디바이스 토글 + QA 버전 */}
+      <div className="flex items-center gap-2">
+        <DeviceToggle deviceMode={deviceMode} setDeviceMode={setDeviceMode} />
+        <span
+          className="font-mono text-[10px] font-semibold tracking-wider px-2 py-1 rounded-md bg-slate-900 text-white shadow-sm"
+          title={`QA 빌드 v${QA_VERSION}`}
+          aria-label={`QA 빌드 버전 ${QA_VERSION}`}
+        >
+          v{QA_VERSION}
+        </span>
+      </div>
       {/* 중앙: 경로 배지 */}
       <ScreenBadge label={screenLabel} />
       {/* 우: 상태 + 경로 드롭다운 */}
