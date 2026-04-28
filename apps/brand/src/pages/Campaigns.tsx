@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
-  MoreVertical, Copy, Share2, Trash2,
+  MoreVertical, Copy, Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
@@ -259,11 +259,11 @@ export default function Campaigns() {
   }, [aiModalStep])
   const PAGE_SIZE = 10
 
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  // 캠페인 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 번거롭게)
+  // 일괄 삭제·체크박스 다중 선택 모두 제거: 단건 삭제는 상세 진입 후 헤더 액션으로 수행
   const [confirm, setConfirm] = useState<
     | null
     | { kind: 'delete-one'; id: number; name: string }
-    | { kind: 'delete-bulk'; ids: number[] }
   >(null)
   const { showToast } = useToast()
 
@@ -294,15 +294,6 @@ export default function Campaigns() {
     setPage(1)
   }
 
-  const toggleSelect = (id: number) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-  const clearSelection = () => setSelectedIds(new Set())
-
   const handleDuplicate = (c: Campaign) => {
     showToast(`'${c.name}' 복제 (mock)`, 'info')
   }
@@ -318,7 +309,6 @@ export default function Campaigns() {
   const handleConfirmAction = () => {
     if (!confirm) return
     if (confirm.kind === 'delete-one') showToast(`'${confirm.name}' 캠페인을 삭제했습니다 (mock)`, 'success')
-    else if (confirm.kind === 'delete-bulk') { showToast(`${confirm.ids.length}건 일괄 삭제 (mock)`, 'success'); clearSelection() }
     setConfirm(null)
   }
 
@@ -491,45 +481,7 @@ export default function Campaigns() {
           </div>
         </div>
 
-        {/* 일괄 액션 바 */}
-        {selectedIds.size > 0 && (() => {
-          const selectedList = campaigns.filter(c => selectedIds.has(c.id))
-          const allDeletable = selectedList.every(c => c.current === 0)
-          return (
-          <div className="px-3 @sm:px-5 py-2 border-b border-brand-green/20 bg-brand-green/5 flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-semibold text-brand-green-text">
-              {selectedIds.size}건 선택됨
-            </span>
-            <div className="ml-auto flex items-center gap-1">
-              {allDeletable ? (
-                <button
-                  type="button"
-                  onClick={() => setConfirm({ kind: 'delete-bulk', ids: Array.from(selectedIds) })}
-                  className="inline-flex items-center gap-1 text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
-                </button>
-              ) : (
-                <Tooltip content="지원자가 있는 캠페인이 포함되어 있어 삭제할 수 없습니다. 채널톡으로 문의해주세요.">
-                  <span
-                    className="inline-flex items-center gap-1 text-xs text-gray-400 px-2 py-1 rounded-md cursor-not-allowed"
-                    aria-disabled="true"
-                  >
-                    <Trash2 size={12} aria-hidden="true" /> 일괄 삭제
-                  </span>
-                </Tooltip>
-              )}
-              <button
-                type="button"
-                onClick={clearSelection}
-                className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                선택 해제
-              </button>
-            </div>
-          </div>
-          )
-        })()}
+        {/* 일괄 삭제 액션바는 정책서 § 8 (의도적으로 삭제를 번거롭게) 에 따라 제거 — 캠페인 상세에서만 단건 삭제 */}
 
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
@@ -597,25 +549,12 @@ export default function Campaigns() {
               const display = deriveDisplayStatus(c)
               const showDDay = c.status !== '종료' && c.status !== '완료'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
-              const isSelected = selectedIds.has(c.id)
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
               <li
                 key={c.id}
-                className={`flex items-center gap-3 @sm:gap-4 px-3 @sm:px-5 py-3.5 @sm:py-4 hover:bg-gray-50 transition-colors group ${isSelected ? 'bg-brand-green/5' : ''}`}
+                className="flex items-center gap-3 @sm:gap-4 px-3 @sm:px-5 py-3.5 @sm:py-4 hover:bg-gray-50 transition-colors group"
               >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelect(c.id)}
-                  onClick={e => e.stopPropagation()}
-                  aria-label={`${c.name} 선택`}
-                  className={`shrink-0 w-4 h-4 rounded border-gray-300 text-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-opacity ${
-                    isSelected || selectedIds.size > 0
-                      ? 'opacity-100'
-                      : 'opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100'
-                  }`}
-                />
                 <div
                   role="button"
                   tabIndex={0}
@@ -728,16 +667,8 @@ export default function Campaigns() {
       <AlertModal
         open={!!confirm}
         onClose={() => setConfirm(null)}
-        title={
-          confirm?.kind === 'delete-one' ? '캠페인을 삭제하시겠습니까?'
-          : confirm?.kind === 'delete-bulk'? `${confirm.ids.length}건의 캠페인을 삭제하시겠습니까?`
-          : ''
-        }
-        description={
-          confirm?.kind === 'delete-one' ? `'${confirm.name}' 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`
-          : confirm?.kind === 'delete-bulk'? '선택한 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.'
-          : ''
-        }
+        title={confirm?.kind === 'delete-one' ? '캠페인을 삭제하시겠습니까?' : ''}
+        description={confirm?.kind === 'delete-one' ? `'${confirm.name}' 캠페인이 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.` : ''}
         confirmLabel="삭제"
         cancelLabel="닫기"
         variant="danger"

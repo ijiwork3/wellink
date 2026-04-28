@@ -50,7 +50,7 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * QA 빌드 버전 — 정책 라운드별로 증가 (n.nnn)
  * brand 앱과 동기화됨. 자세한 라운드 변경 이력은 brand/src/qa-mockup-kit.tsx 참조
  */
-export const QA_VERSION = '1.006';
+export const QA_VERSION = '1.007';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
