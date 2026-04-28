@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '../utils/fmtDate'
 
 /* ───── Mock Data ───── */
@@ -147,7 +146,7 @@ export default function Library() {
   const { showToast } = useToast()
   const qa = useQAMode()
   const navigate = useNavigate()
-  const { planLabel, canDownloadContent } = usePlanAccess()
+  // 다운로드는 건당 결제 (정책서 § 2-1) — usePlanAccess 분기 제거
   const [searchParams, setSearchParams] = useSearchParams()
   const initialCampaign = searchParams.get('campaign') ?? ''
   const [search, setSearch] = useState('')
@@ -181,12 +180,9 @@ export default function Library() {
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
-  // 유료 다운로드 결제 모달 — 캠페인 상세와 동일한 다단계 흐름 (plan-select → payment)
+  // 다운로드 건당 결제 모달 (정책서 § 2-1)
   const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' }>({ open: false, scope: 'selected' })
   const [isPaying, setIsPaying] = useState(false)
-  type DownloadStep = 'plan-select' | 'payment'
-  const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')
-  const [pickedPlan, setPickedPlan] = useState<'focus' | 'scale' | 'enterprise'>('scale')
 
   const sortListboxRef = useRef<HTMLDivElement>(null)
   const [focusSortKey, setFocusSortKey] = useState<SortKey | null>(null)
@@ -918,7 +914,6 @@ export default function Library() {
         const closeDownloadModal = () => {
           if (isPaying) return
           setDownloadModal({ open: false, scope: 'selected' })
-          setDownloadStep('plan-select')
         }
         const handlePayAndDownload = () => {
           if (isPaying) return

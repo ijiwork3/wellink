@@ -598,7 +598,6 @@ export default function Campaigns() {
               const showDDay = c.status !== '종료' && c.status !== '완료'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
               const isSelected = selectedIds.has(c.id)
-              const canDelete = c.current === 0
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (
               <li

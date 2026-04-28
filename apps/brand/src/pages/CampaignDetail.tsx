@@ -621,6 +621,7 @@ export default function CampaignDetail() {
   const applicantToSelected = (a: typeof applicantsData[number]): typeof selectedApplicantsData[number] => ({
     id: a.id,
     name: a.name,
+    instagramId: a.instagramId,
     followers: a.followers,
     followerCount: a.followerCount,
     engagement: a.engagement,
@@ -733,6 +734,7 @@ export default function CampaignDetail() {
         {
           id: inf.id,
           name: inf.name,
+          instagramId: inf.instagramId,
           followers: inf.followers,
           followerCount: inf.followerCount ?? 0,
           fitScore: inf.fitScore,
@@ -750,6 +752,9 @@ export default function CampaignDetail() {
           email: inf.email ?? '',
           address: inf.address ?? '',
           addressDetail: inf.addressDetail ?? '',
+          previewFeed: null,
+          previewReels: null,
+          isPrivate: false,
         },
       ])
     }
