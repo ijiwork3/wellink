@@ -56,6 +56,7 @@ const statusConfig: Record<string, Cfg> = {
   // alert
   '반려':       alert,
   '마감임박':   alert,
+  '선정 필요': alert, // 광고주 액션 필요 — 정책서 § 4-0
   // 광고 게재 상태
   '게재중':     active,
   '일시중지':   pending,

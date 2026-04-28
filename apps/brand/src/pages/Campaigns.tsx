@@ -138,7 +138,7 @@ function needsSelection(c: Campaign): boolean {
  * (원 데이터 status는 보존, UI 분류 전용)
  */
 function deriveDisplayStatus(c: Campaign): CampaignStatus {
-  if (needsSelection(c)) return '선정 필요' as CampaignStatus
+  if (needsSelection(c)) return '선정 필요'
   if (c.status === '모집중') {
     const d = getDDay(c.deadline)
     if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= URGENT_THRESHOLD_DAYS)) {
