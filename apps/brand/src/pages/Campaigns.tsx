@@ -5,7 +5,7 @@ import {
   MoreVertical, Copy, Share2, Trash2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
@@ -89,10 +89,56 @@ type Tab = typeof tabs[number]
 const URGENT_THRESHOLD_DAYS = 3
 
 /**
- * 표시용 status 파생 — 모집중 + D-Day 임계값 이하 = '마감임박'으로 노출
+ * 콘텐츠 등록 마감 후 자동 대기 기간 (정책서 § 7-1) — 마감일 이후에도 14일까지는 등록을 기다림
+ */
+const UPLOAD_GRACE_DAYS = 14
+
+/**
+ * 컨텍스트별 마감일 라벨 산출 (정책서 § 7-1)
+ *
+ * 반환: { prefix, deadline, gracePassed, graceDaysLeft }
+ * - prefix: "모집 ~" / "등록 ~" / "종료" 등
+ * - graceDaysLeft: 등록 마감 후 추가 대기 잔여 일수 (양수면 표시)
+ */
+function getCampaignDeadlineMeta(c: Campaign): { prefix: string; muted: boolean; graceText?: string } {
+  const display = deriveDisplayStatus(c)
+  if (display === '완료' || display === '종료') {
+    return { prefix: '종료', muted: true }
+  }
+  if (display === '진행중') {
+    const d = getDDay(c.deadline)
+    if (d.label.startsWith('D+')) {
+      const passed = Number(d.label.slice(2))
+      const left = UPLOAD_GRACE_DAYS - passed
+      if (left > 0) {
+        return { prefix: '등록 ~', muted: false, graceText: `등록 마감 D+${passed} · 추가 등록 대기 중` }
+      }
+    }
+    return { prefix: '등록 ~', muted: false }
+  }
+  return { prefix: '모집 ~', muted: false }
+}
+
+/**
+ * "선정 필요" 판정 — 모집중인데 D-Day가 지난(마감 후) + 미선정 캠페인 (정책서 § 4-2)
+ */
+function needsSelection(c: Campaign): boolean {
+  if (c.status !== '모집중') return false
+  const d = getDDay(c.deadline)
+  // D+1 이상이면 마감일 경과
+  const passed = d.label.startsWith('D+')
+  return passed && (c.selectedCount ?? 0) < c.current
+}
+
+/**
+ * 표시용 status 파생 — 정책서 § 4-0 친절화
+ * - 모집중 + D-Day 임계값 이하 = '마감임박'
+ * - 모집 마감 후 미선정 = '선정 필요' (광고주 액션 필요)
+ * - 진행중 + 선정 인원 < 모집 인원 = '업로드 대기'(향후) — 현 mock 데이터 기준 단순화
  * (원 데이터 status는 보존, UI 분류 전용)
  */
 function deriveDisplayStatus(c: Campaign): CampaignStatus {
+  if (needsSelection(c)) return '선정 필요' as CampaignStatus
   if (c.status === '모집중') {
     const d = getDDay(c.deadline)
     if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= URGENT_THRESHOLD_DAYS)) {
@@ -100,6 +146,18 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
     }
   }
   return c.status
+}
+
+/**
+ * 칩 보조 설명 (Tooltip 컨텐츠) — 정책서 § 4-0
+ */
+function getStatusTooltip(status: string): string | null {
+  switch (status) {
+    case '대기중':       return '지원자 발생을 기다리는 단계입니다.'
+    case '선정 필요':    return '모집이 끝났습니다. 지원자 선정을 진행해주세요.'
+    case '진행중':       return '인플루언서가 콘텐츠를 등록하는 단계입니다.'
+    default:             return null
+  }
 }
 
 const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
@@ -151,6 +209,34 @@ export default function Campaigns() {
     const v = searchParams.get('sort'); return isSort(v) ? v : 'deadline'
   })
   const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get('page')) || 1))
+
+  // AI 캠페인 생성 (정책서 § 16) — input → loading → result
+  const [aiModalStep, setAiModalStep] = useState<null | 'input' | 'loading' | 'result'>(null)
+  const [aiProgress, setAiProgress] = useState(0)
+  const [aiPhase, setAiPhase] = useState<1 | 2 | 3 | 4>(1)
+  const [aiInput, setAiInput] = useState({ brand: '', category: '피트니스', headcount: 5, requirement: '' })
+  useEffect(() => {
+    if (aiModalStep !== 'loading') return
+    setAiProgress(0); setAiPhase(1)
+    const start = Date.now()
+    const total = 90_000
+    const tick = setInterval(() => {
+      const elapsed = Date.now() - start
+      const ratio = Math.min(0.99, elapsed / total)
+      const pct = Math.round(ratio * 100)
+      setAiProgress(pct)
+      if (pct < 22) setAiPhase(1)
+      else if (pct < 50) setAiPhase(2)
+      else if (pct < 83) setAiPhase(3)
+      else setAiPhase(4)
+      if (elapsed >= total) {
+        clearInterval(tick)
+        setAiProgress(100)
+        setAiModalStep('result')
+      }
+    }, 250)
+    return () => clearInterval(tick)
+  }, [aiModalStep])
   const PAGE_SIZE = 10
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
@@ -263,7 +349,14 @@ export default function Campaigns() {
     })
     const sorted = [...list]
     const tieBreak = (a: Campaign, b: Campaign) => b.id - a.id // 동률 → 최신순
+    // 1차: 전체 탭에서는 "선정 필요" 캠페인을 상단 고정 (정책서 § 4-2)
+    const isAllTab = activeTab === '전체'
     sorted.sort((a, b) => {
+      if (isAllTab) {
+        const aNeeds = needsSelection(a) ? 1 : 0
+        const bNeeds = needsSelection(b) ? 1 : 0
+        if (aNeeds !== bNeeds) return bNeeds - aNeeds
+      }
       let primary = 0
       if (sort === 'deadline')          primary = a.deadline.localeCompare(b.deadline)
       else if (sort === 'recent')       primary = b.createdAt.localeCompare(a.createdAt) || (b.id - a.id)
@@ -286,13 +379,23 @@ export default function Campaigns() {
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h1 className="text-xl @md:text-2xl font-bold text-gray-900">캠페인 목록</h1>
-        <button
-          onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          <Plus size={14} aria-hidden="true" />
-          새 캠페인 등록
-        </button>
+        <div className="flex items-center gap-2">
+          {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
+          <button
+            onClick={() => setAiModalStep('input')}
+            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:bg-brand-green/5 transition-colors"
+          >
+            <Sparkles size={14} aria-hidden="true" />
+            AI로 만들기
+          </button>
+          <button
+            onClick={() => navigate('/campaigns/new')}
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <Plus size={14} aria-hidden="true" />
+            새 캠페인 등록
+          </button>
+        </div>
       </div>
 
       {/* 본문 카드 */}
@@ -497,23 +600,44 @@ export default function Campaigns() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      <StatusBadge status={display} dot={false} />
+                      {/* 칩 친절화 — 액션 필요 단계는 Tooltip 보조 설명 (정책서 § 4-0) */}
+                      {(() => {
+                        const tooltip = getStatusTooltip(display)
+                        const badge = <StatusBadge status={display} dot={false} />
+                        return tooltip ? <Tooltip content={tooltip} multiline>{badge}</Tooltip> : badge
+                      })()}
                       <PlatformBadge platform={c.platform} />
                       {showDDay && (
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
                       )}
                     </div>
                     <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
-                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs text-gray-500 flex-wrap">
-                      <span className="flex items-center gap-1"><Calendar size={11} aria-hidden="true" />{fmtDate(c.deadline)}</span>
+                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs flex-wrap">
+                      {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
+                      {(() => {
+                        const meta = getCampaignDeadlineMeta(c)
+                        return (
+                          <span className={`flex items-center gap-1 ${meta.muted ? 'text-gray-400' : 'font-medium text-gray-700'}`}>
+                            <Calendar size={11} aria-hidden="true" />
+                            <span>{meta.prefix} {fmtDate(c.deadline)}</span>
+                          </span>
+                        )
+                      })()}
                       {/* 인원 3분할 — 지원 / 선정 / 모집 (정책서 § 7-2) */}
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 text-gray-500">
                         <Users size={11} aria-hidden="true" />
                         <span className="hidden @sm:inline">지원 {c.current} · 선정 {c.selectedCount ?? 0} · 모집 {c.total}</span>
                         <span className="@sm:hidden">{c.current} · {c.selectedCount ?? 0} · {c.total}</span>
                       </span>
-                      <span className="flex items-center gap-1"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
+                      <span className="flex items-center gap-1 text-gray-500"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
                     </div>
+                    {/* 등록 마감 + 추가 대기 기간 보조 안내 (정책서 § 7-1) */}
+                    {(() => {
+                      const meta = getCampaignDeadlineMeta(c)
+                      return meta.graceText ? (
+                        <p className="text-[11px] text-gray-400 mt-0.5">{meta.graceText}</p>
+                      ) : null
+                    })()}
                     <div className="mt-2 flex items-center gap-2">
                       <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden max-w-[200px]">
                         <div
@@ -582,6 +706,129 @@ export default function Campaigns() {
         variant="danger"
         onConfirm={handleConfirmAction}
       />
+
+      {/* AI 캠페인 생성 모달 (정책서 § 16) */}
+      <Modal
+        open={aiModalStep !== null}
+        onClose={() => { if (aiModalStep !== 'loading') setAiModalStep(null) }}
+        title={aiModalStep === 'input' ? 'AI 캠페인 생성' : aiModalStep === 'loading' ? 'AI가 캠페인을 만들고 있어요' : 'AI 생성 결과 검토'}
+        size="lg"
+      >
+        {aiModalStep === 'input' && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">브랜드/제품 한 줄 소개</label>
+              <textarea
+                value={aiInput.brand}
+                onChange={e => setAiInput(v => ({ ...v, brand: e.target.value }))}
+                rows={3}
+                placeholder="예: 자연 유래 성분으로 만든 비건 단백질 바, 운동 후 간편 영양 보충"
+                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">카테고리</label>
+                <CustomSelect
+                  value={aiInput.category}
+                  onChange={v => setAiInput(av => ({ ...av, category: v }))}
+                  options={['피트니스', '뷰티/패션', '맛집/푸드', '여행', '라이프스타일', '육아'].map(c => ({ label: c, value: c }))}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">모집 인원</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={aiInput.headcount}
+                  onChange={e => setAiInput(v => ({ ...v, headcount: Number(e.target.value) || 0 }))}
+                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">추가 요청사항 (선택)</label>
+              <textarea
+                value={aiInput.requirement}
+                onChange={e => setAiInput(v => ({ ...v, requirement: e.target.value }))}
+                rows={2}
+                placeholder="예: 봄 시즌 톤, 운동 전후 시나리오 자연스럽게 노출"
+                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => setAiModalStep(null)} className="text-sm text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">취소</button>
+              <button
+                onClick={() => setAiModalStep('loading')}
+                disabled={!aiInput.brand.trim()}
+                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <Sparkles size={14} aria-hidden="true" />
+                AI로 캠페인 생성하기
+              </button>
+            </div>
+          </div>
+        )}
+
+        {aiModalStep === 'loading' && (
+          <div className="py-6 text-center space-y-5 bg-gradient-to-br from-brand-green/5 to-blue-50 rounded-xl px-4">
+            <div className="flex justify-center">
+              <div className="relative w-16 h-16">
+                <Sparkles size={32} className="text-brand-green animate-pulse absolute inset-0 m-auto" aria-hidden="true" />
+                <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="28" stroke="rgba(0,0,0,0.06)" strokeWidth="4" fill="none" />
+                  <circle cx="32" cy="32" r="28" stroke="currentColor" className="text-brand-green" strokeWidth="4" fill="none"
+                    strokeDasharray={`${aiProgress * 1.76} 176`} strokeLinecap="round" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">
+                {aiPhase === 1 ? '캠페인 컨셉 분석 중...' : aiPhase === 2 ? '추천 인플루언서 매칭 검토 중...' : aiPhase === 3 ? '캠페인 가이드 작성 중...' : '마무리 중...'}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">최대 1분 30초 정도 소요됩니다.</p>
+            </div>
+            <div className="max-w-xs mx-auto">
+              <div className="h-1.5 bg-white rounded-full overflow-hidden">
+                <div className="h-full bg-brand-green transition-all duration-300" style={{ width: `${aiProgress}%` }} />
+              </div>
+              <p className="text-[11px] text-gray-400 mt-1.5">{aiProgress}%</p>
+            </div>
+          </div>
+        )}
+
+        {aiModalStep === 'result' && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 bg-brand-green/5 border border-brand-green/20 rounded-xl px-3 py-2">
+              <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
+              <span className="text-xs text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">캠페인명</p>
+                <p className="font-semibold text-gray-900">{aiInput.brand.split(',')[0].slice(0, 30) || '신규 캠페인'} 체험단 모집</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">기간 (추천)</p>
+                <p className="text-gray-700">모집 2주 · 콘텐츠 등록 3주</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">캠페인 설명</p>
+                <p className="text-gray-700 whitespace-pre-line bg-gray-50 rounded-lg p-3 text-xs leading-relaxed">{aiInput.brand}{aiInput.requirement ? `\n\n요청: ${aiInput.requirement}` : ''}</p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => setAiModalStep('loading')} className="text-sm text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">다시 생성</button>
+              <button
+                onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
+                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90"
+              >
+                이대로 등록 화면으로
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

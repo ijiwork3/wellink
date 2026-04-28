@@ -796,7 +796,7 @@ export default function Library() {
                           <Eye size={14} aria-hidden="true" />
                         </button>
                         <button
-                          onClick={() => showToast(`${c.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+                          onClick={() => { setSelectedIds(new Set([c.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
                           aria-label={`${c.creator} 다운로드`}
                           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                         >

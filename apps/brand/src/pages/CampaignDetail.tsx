@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles } from 'lucide-react'
 import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -173,6 +173,7 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
   return {
     id: 1000 + i,
     name: i < APPLICANT_NAME_POOL.length ? name : `${name}${Math.floor(i / APPLICANT_NAME_POOL.length) + 1}`,
+    instagramId: `${name.toLowerCase().replace(/[가-힣]/g, '')}_ig${i + 1}`, // 인스타그램 username (정책서 § 6-3)
     followers,
     followerCount: followersN,
     engagement,
@@ -191,6 +192,10 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
     email,
     address,
     addressDetail,
+    // 인라인 미리보기 — 최근 피드 1장 + 릴스 1개 (정책서 § 6-3-1)
+    previewFeed: i % 7 === 0 ? null : `from-${['pink', 'blue', 'green', 'amber', 'violet', 'emerald'][i % 6]}-200 to-${['pink', 'blue', 'green', 'amber', 'violet', 'emerald'][i % 6]}-300`,
+    previewReels: i % 5 === 0 ? null : `from-${['rose', 'sky', 'lime', 'orange', 'fuchsia'][i % 5]}-200 to-${['rose', 'sky', 'lime', 'orange', 'fuchsia'][i % 5]}-300`,
+    isPrivate: i % 13 === 0,
   }
 })
 
@@ -219,7 +224,8 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
   const addressDetail = `${200 + (i % 20)}동 ${String((i * 17) % 1500 + 201).padStart(4, '0')}호`
   // 업로드 상태 — i % 3 == 0 미등록, i % 3 == 1 등록(1건), i % 3 == 2 등록(2건)
   const uploadedPostCount = i % 3 === 0 ? 0 : (i % 3 === 1 ? 1 : 2)
-  const latestUploadedAt = uploadedPostCount > 0 ? `2026-${String(((i * 7) % 30 < 20 ? 5 : 6)).padStart(2, '0')}-${String(((i * 11) % 28) + 1).padStart(2, '0')}` : null
+  // 최초 등록일 (정책서 § 7-2 — "최근" → "최초"로 변경)
+  const firstUploadedAt = uploadedPostCount > 0 ? `2026-${String(((i * 7) % 30 < 20 ? 5 : 6)).padStart(2, '0')}-${String(((i * 11) % 28) + 1).padStart(2, '0')}` : null
   const latestPostUrl = uploadedPostCount > 0 ? `https://www.instagram.com/p/sample-${1000 + i}/` : null
   const allAnswers = [
     { question: '주요 콘텐츠 유형', answer: PRIMARY_ANSWER_POOL[(i + 2) % PRIMARY_ANSWER_POOL.length], orderNumber: 1 },
@@ -230,6 +236,7 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
   return {
     id: 2000 + i,
     name: i < SELECTED_NAME_POOL.length ? name : `${name}${Math.floor(i / SELECTED_NAME_POOL.length) + 1}`,
+    instagramId: `${name.toLowerCase().replace(/[가-힣]/g, '')}_sel${i + 1}`,
     followers,
     followerCount: followersN,
     engagement,
@@ -245,7 +252,7 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
     address,
     addressDetail,
     uploadedPostCount,
-    latestUploadedAt,
+    firstUploadedAt,
     latestPostUrl,
     allAnswers,
   }
@@ -376,6 +383,10 @@ export default function CampaignDetail() {
     qa === 'tab-applicants-empty' || campaign.status === '대기중' ? [] : applicantsData
   )
   const [checkedApplicants, setCheckedApplicants] = useState<Set<number>>(new Set())
+  // 선정 예정 단계 (정책서 § 6-4) — 신청 → [선정 예정 (내부 전용)] → 선정 확정 (인플루언서 노출)
+  const [pendingApplicants, setPendingApplicants] = useState<Set<number>>(new Set())
+  // 선정 확정 알림 모달
+  const [confirmSelectionModal, setConfirmSelectionModal] = useState<{ ids: number[]; name?: string } | null>(null)
   const [applicantsPage, setApplicantsPage] = useState(1)
   // 신규 — 검색·정렬·답변 모달 (원본 ApplicantList 보강)
   const [applicantsSearch, setApplicantsSearch] = useState('')
@@ -474,7 +485,7 @@ export default function CampaignDetail() {
     const questionCount = selectedInfluencers.reduce((max, s) => Math.max(max, (s as { allAnswers?: unknown[] }).allAnswers?.length ?? 0), 0)
     const headers = [
       '이름', '연락처', '이메일', '팔로워', '게시물수', '평균좋아요', '평균댓글',
-      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '업로드상태', '등록게시글수', '최근등록일', '게시글URL', '선정일',
+      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '업로드상태', '등록게시글수', '최초등록일', '게시글URL', '선정일',
       ...Array.from({ length: questionCount }, (_, idx) => [`질문${idx + 1}`, `답변${idx + 1}`]).flat(),
     ]
     const rows = selectedInfluencers.map(s => {
@@ -486,7 +497,7 @@ export default function CampaignDetail() {
       return [
         sx.name, sx.phoneNumber ?? '-', sx.email ?? '-', sx.followers, sx.postsCount ?? '-', sx.avgLikes ?? '-', sx.avgComments ?? '-',
         sx.engagement, sx.fitScore, sx.activityFields?.join(', ') ?? '-', sx.address ?? '-', sx.addressDetail ?? '-',
-        (sx.uploadedPostCount ?? 0) > 0 ? '등록 완료' : '미등록', sx.uploadedPostCount ?? 0, sx.latestUploadedAt ?? '-', sx.latestPostUrl ?? '-',
+        (sx.uploadedPostCount ?? 0) > 0 ? '등록 완료' : '미등록', sx.uploadedPostCount ?? 0, sx.firstUploadedAt ?? '-', sx.latestPostUrl ?? '-',
         sx.selectedAt,
         ...answerCells,
       ]
@@ -625,7 +636,7 @@ export default function CampaignDetail() {
     address: a.address,
     addressDetail: a.addressDetail,
     uploadedPostCount: 0,
-    latestUploadedAt: null,
+    firstUploadedAt: null,
     latestPostUrl: null,
     allAnswers: a.allAnswers,
   })
@@ -652,31 +663,55 @@ export default function CampaignDetail() {
     return labels[kind]
   }
 
-  const handleSelectApplicant = (applicantId: number) => {
-    const applicant = applicants.find(a => a.id === applicantId)
-    if (applicant) {
-      setSelectedInfluencers(prev => [...prev, applicantToSelected(applicant)])
-    }
-    setApplicants(prev => prev.filter(a => a.id !== applicantId))
-    sendNotificationMock('select', 1)
-    showToast('선정 완료! 인플루언서에게 알림이 발송되었습니다.', 'success')
+  // 선정 예정 — 내부 전용, 인플루언서에게 알림 미발송 (정책서 § 6-4)
+  const handlePendApplicant = (applicantId: number) => {
+    setPendingApplicants(prev => new Set(prev).add(applicantId))
+    showToast('선정 예정 처리되었습니다. 확정 시 인플루언서에게 알림이 갑니다.', 'info')
   }
 
-  const handleBulkSelect = () => {
-    if (checkedApplicants.size === 0) {
-      showToast('선정할 지원자를 선택해주세요.', 'error')
-      return
-    }
-    const toSelect = applicants.filter(a => checkedApplicants.has(a.id))
+  const handleUnpendApplicant = (applicantId: number) => {
+    setPendingApplicants(prev => {
+      const next = new Set(prev)
+      next.delete(applicantId)
+      return next
+    })
+    showToast('선정 예정이 취소되었습니다. 인플루언서에게는 영향이 없습니다.', 'info')
+  }
+
+  // 선정 확정 — AlertModal 확인 후 실행 (단방향)
+  const handleConfirmSelection = (applicantIds: number[]) => {
+    const toSelect = applicants.filter(a => applicantIds.includes(a.id))
+    if (toSelect.length === 0) return
     setSelectedInfluencers(prev => [
       ...prev,
       ...toSelect.map(applicantToSelected),
     ])
-    setApplicants(prev => prev.filter(a => !checkedApplicants.has(a.id)))
-    const count = toSelect.length
+    setApplicants(prev => prev.filter(a => !applicantIds.includes(a.id)))
+    setPendingApplicants(prev => {
+      const next = new Set(prev)
+      applicantIds.forEach(id => next.delete(id))
+      return next
+    })
     setCheckedApplicants(new Set())
-    sendNotificationMock('select', count)
-    showToast(`${count}명 선정 완료! 인플루언서에게 알림이 발송되었습니다.`, 'success')
+    setConfirmSelectionModal(null)
+    sendNotificationMock('select', toSelect.length)
+    showToast(`${toSelect.length}명 선정이 확정되었습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
+  }
+
+  // 일괄 선정 예정 (구. 일괄 선정)
+  const handleBulkPend = () => {
+    if (checkedApplicants.size === 0) {
+      showToast('선정 예정 처리할 지원자를 선택해주세요.', 'error')
+      return
+    }
+    setPendingApplicants(prev => {
+      const next = new Set(prev)
+      checkedApplicants.forEach(id => next.add(id))
+      return next
+    })
+    const count = checkedApplicants.size
+    setCheckedApplicants(new Set())
+    showToast(`${count}명 선정 예정 처리되었습니다.`, 'info')
   }
 
   const toggleCheck = (applicantId: number) => {
@@ -794,7 +829,7 @@ export default function CampaignDetail() {
   const approvedEngRate = approvedViews > 0
     ? (approvedEngagement / approvedViews * 100).toFixed(1)
     : (approvedReach > 0 ? (approvedEngagement / approvedReach * 100).toFixed(1) : '0.0')
-  // KPI 5개 — 원본 동등 (총 콘텐츠 / 총 좋아요 / 총 비디오 재생수 / 총 공유 / 총 댓글)
+  // KPI 4개 — 정책서 § 9-1 (누적 조회수 = 총 비디오 재생수와 동일하므로 통합)
   const reportKPI = [
     { label: '총 콘텐츠', value: `${approvedContents.length}건`, icon: FileText },
     { label: '총 좋아요', value: fmtNumber(approvedLikes), icon: Heart },
@@ -802,20 +837,21 @@ export default function CampaignDetail() {
     { label: '총 공유 수', value: fmtNumber(approvedShares), icon: Share2 },
     { label: '총 댓글 수', value: fmtNumber(approvedComments), icon: Info },
   ]
-  // TOP 인플루언서 (인플루언서 단위 집계, 좋아요+댓글+조회수 합산 정렬, 상위 5명) — 원본 보강
+  // TOP 인플루언서 (정책서 § 9-4) — 산식 변경: 좋아요+댓글+공유+저장 (재생수 제외)
+  // 사유: 비디오 재생수는 릴스 전용 지표로 피드 중심 인플루언서가 부당하게 평가절하됨
   const topInfluencers = (() => {
-    const map = new Map<string, { name: string; likes: number; comments: number; views: number; contents: number }>()
+    const map = new Map<string, { name: string; likes: number; comments: number; shares: number; saves: number; contents: number }>()
     for (const c of approvedContents) {
-      const isVideo = c.type === '릴스' || c.type === '영상' || c.type === '쇼츠' || c.type === '스토리'
-      const ex = map.get(c.influencer) ?? { name: c.influencer, likes: 0, comments: 0, views: 0, contents: 0 }
+      const ex = map.get(c.influencer) ?? { name: c.influencer, likes: 0, comments: 0, shares: 0, saves: 0, contents: 0 }
       ex.likes += c.likes
       ex.comments += c.comments
-      ex.views += isVideo ? c.reach : 0
+      ex.shares += c.shares ?? 0
+      ex.saves += c.saves ?? 0
       ex.contents += 1
       map.set(c.influencer, ex)
     }
     return Array.from(map.values())
-      .sort((a, b) => (b.likes + b.comments + b.views) - (a.likes + a.comments + a.views))
+      .sort((a, b) => (b.likes + b.comments + b.shares + b.saves) - (a.likes + a.comments + a.shares + a.saves))
       .slice(0, 5)
   })()
   // 기간별 시계열 — 원본 ReportView trendResults 동등
@@ -1117,13 +1153,22 @@ export default function CampaignDetail() {
             </h2>
             <div className="flex gap-2 flex-wrap">
               <button
-                onClick={handleBulkSelect}
+                onClick={handleBulkPend}
                 disabled={applicants.length === 0}
                 className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <UserCheck size={13} aria-hidden="true" />
-                일괄 선정
+                일괄 선정 예정
               </button>
+              {pendingApplicants.size > 0 && (
+                <button
+                  onClick={() => setConfirmSelectionModal({ ids: Array.from(pendingApplicants) })}
+                  className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-xs hover:bg-brand-green-hover transition-colors duration-150"
+                >
+                  <Check size={13} aria-hidden="true" />
+                  선정 예정 {pendingApplicants.size}명 일괄 확정
+                </button>
+              )}
               <button
                 onClick={handleExportApplicants}
                 className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs hover:bg-gray-50 transition-colors duration-150"
@@ -1233,13 +1278,31 @@ export default function CampaignDetail() {
                     />
                   </th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
                   <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
                   <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
                   <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
                   <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
-                  <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">참여율 {sortIcon('engagement')}</th>
-                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">Fit Score {sortIcon('fitScore')}</th>
+                  <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1">
+                      참여율
+                      <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
+                        <Info size={11} className="text-gray-400 cursor-help" />
+                      </Tooltip>
+                      {sortIcon('engagement')}
+                    </span>
+                  </th>
+                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1">
+                      <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
+                      Fit Score
+                      <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
+                        <Info size={11} className="text-gray-400 cursor-help" />
+                      </Tooltip>
+                      {sortIcon('fitScore')}
+                    </span>
+                  </th>
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
@@ -1263,8 +1326,38 @@ export default function CampaignDetail() {
                         <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                           {a.name[0]}
                         </div>
-                        <span className="text-sm font-medium text-gray-900 truncate max-w-[100px]">{a.name}</span>
+                        <div className="min-w-0">
+                          {/* username 메인 + 본명 보조 (정책서 § 6-3) */}
+                          <span className="block text-sm font-medium text-gray-900 truncate max-w-[140px]">@{a.instagramId}</span>
+                          <span className="block text-xs text-gray-400 truncate max-w-[140px]">{a.name}</span>
+                        </div>
                       </div>
+                    </td>
+                    {/* 콘텐츠 미리보기 (피드 1 + 릴스 1) — 정책서 § 6-3-1 */}
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {a.isPrivate ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                          <Image size={12} aria-hidden="true" /> 비공개
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-1.5">
+                          {a.previewFeed ? (
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${a.previewFeed} flex items-center justify-center cursor-pointer`} title="최근 피드">
+                              <Image size={14} className="text-white/60" aria-hidden="true" />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center" />
+                          )}
+                          {a.previewReels ? (
+                            <div className={`w-8 h-12 rounded-lg bg-gradient-to-br ${a.previewReels} flex items-center justify-center relative cursor-pointer`} title="최근 릴스">
+                              <Image size={12} className="text-white/60" aria-hidden="true" />
+                              <span className="absolute top-0.5 right-0.5 text-[8px] bg-black/40 text-white px-0.5 rounded">릴스</span>
+                            </div>
+                          ) : (
+                            <div className="w-8 h-12 rounded-lg bg-gray-50 flex items-center justify-center" />
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
@@ -1279,8 +1372,10 @@ export default function CampaignDetail() {
                     <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgComments)}</td>
                     <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="text-sm font-semibold text-gray-900">{a.fitScore}</span>
-                      <span className="text-xs text-gray-400 ml-0.5">점</span>
+                      {/* Fit Score AI 브랜딩 — 그라디언트 배지 (정책서 § 13-1-0) */}
+                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
+                        {a.fitScore}
+                      </span>
                     </td>
                     <td className="py-3 px-4 text-xs text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
                     <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
@@ -1291,19 +1386,42 @@ export default function CampaignDetail() {
                       >답변 보기</button>
                     </td>
                     <td className="py-3 px-4 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] whitespace-nowrap">
+                      {/* 선정 예정 단계 (정책서 § 6-4) — 신청 → 선정 예정 → 선정 확정 */}
                       <div className="flex gap-1.5 flex-nowrap">
-                        <button
-                          onClick={() => handleSelectApplicant(a.id)}
-                          className="inline-flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap shrink-0"
-                        >
-                          <Check size={12} aria-hidden="true" /> 선정
-                        </button>
-                        <button
-                          onClick={() => setRejectModal(a.id)}
-                          className="inline-flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150 whitespace-nowrap shrink-0"
-                        >
-                          <X size={12} aria-hidden="true" /> 반려
-                        </button>
+                        {pendingApplicants.has(a.id) ? (
+                          <>
+                            <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-xl whitespace-nowrap shrink-0">
+                              선정 예정
+                            </span>
+                            <button
+                              onClick={() => setConfirmSelectionModal({ ids: [a.id], name: a.name })}
+                              className="inline-flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap shrink-0"
+                            >
+                              <Check size={12} aria-hidden="true" /> 확정
+                            </button>
+                            <button
+                              onClick={() => handleUnpendApplicant(a.id)}
+                              className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-2 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap shrink-0"
+                            >
+                              취소
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handlePendApplicant(a.id)}
+                              className="inline-flex items-center gap-1 text-xs bg-white border border-brand-green text-brand-green px-3 py-1.5 rounded-xl hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap shrink-0"
+                            >
+                              <Check size={12} aria-hidden="true" /> 선정 예정
+                            </button>
+                            <button
+                              onClick={() => setRejectModal(a.id)}
+                              className="inline-flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150 whitespace-nowrap shrink-0"
+                            >
+                              <X size={12} aria-hidden="true" /> 반려
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -1400,12 +1518,27 @@ export default function CampaignDetail() {
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
                       <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">팔로워</th>
-                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">참여율</th>
-                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">Fit Score</th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1">
+                          참여율
+                          <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
+                            <Info size={11} className="text-gray-400 cursor-help" />
+                          </Tooltip>
+                        </span>
+                      </th>
+                      <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1">
+                          <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
+                          Fit Score
+                          <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
+                            <Info size={11} className="text-gray-400 cursor-help" />
+                          </Tooltip>
+                        </span>
+                      </th>
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">연락처</th>
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">주소</th>
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">업로드 상태</th>
-                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">최근 등록일</th>
+                      <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">최초 등록일</th>
                       <th scope="col" className="text-right text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">등록 게시글</th>
                       <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
                       <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">선정일</th>
@@ -1420,7 +1553,10 @@ export default function CampaignDetail() {
                             <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                               {i.name[0]}
                             </div>
-                            <span className="text-sm font-medium text-gray-900 whitespace-nowrap">{i.name}</span>
+                            <div className="min-w-0">
+                              <span className="block text-sm font-medium text-gray-900 truncate max-w-[140px]">@{i.instagramId}</span>
+                              <span className="block text-xs text-gray-400 truncate max-w-[140px]">{i.name}</span>
+                            </div>
                           </div>
                         </td>
                         <td className="py-3 px-4">
@@ -1433,8 +1569,9 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
                         <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
                         <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <span className="text-sm font-semibold text-gray-900">{i.fitScore}</span>
-                          <span className="text-xs text-gray-400 ml-0.5">점</span>
+                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
+                            {i.fitScore}
+                          </span>
                         </td>
                         <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
                         <td className="py-3 px-4 text-xs text-gray-600 max-w-[220px] truncate" title={`${i.address ?? ''} ${i.addressDetail ?? ''}`}>{i.address ?? '-'} {i.addressDetail ?? ''}</td>
@@ -1445,7 +1582,7 @@ export default function CampaignDetail() {
                             <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600">미등록</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.latestUploadedAt ?? '-'}</td>
+                        <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.firstUploadedAt ?? '-'}</td>
                         <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{(i.uploadedPostCount ?? 0) > 0 ? `${i.uploadedPostCount}개` : '-'}</td>
                         <td className="py-3 px-4">
                           <button
@@ -1666,14 +1803,16 @@ export default function CampaignDetail() {
                           </span>
                         )}
                         </div>
-                        {/* 바이럴 점수 */}
-                        <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm ${
-                          c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
-                          c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
-                          c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
-                        }`}>
-                          {c.viralScore === 0 ? '—' : `${c.viralScore}점`}
-                        </div>
+                        {/* 콘텐츠 점수 (정책서 § 8-2) */}
+                        <Tooltip content="콘텐츠의 도달·참여·반응을 종합한 자체 산출 점수입니다. (검증 단계 — 자세한 산식은 후속 정의)" multiline>
+                          <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
+                            c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
+                            c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
+                            c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
+                          }`}>
+                            {c.viralScore === 0 ? '—' : `${c.viralScore}점`}
+                          </div>
+                        </Tooltip>
                       </div>
 
                       {/* 정보 영역 */}
@@ -1832,22 +1971,18 @@ export default function CampaignDetail() {
             })}
           </div>
 
-          {/* 누적 조회수 + 평균 참여율 — 원본 ReportView 우측 요약 카드 보강 */}
-          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
-              <div className="flex items-center gap-1.5 mb-2">
-                <Eye size={13} className="text-gray-400" aria-hidden="true" />
-                <span className="text-xs text-gray-500">누적 조회수</span>
-              </div>
-              <div className="text-2xl font-bold text-gray-900">{fmtNumber(approvedViews)}</div>
-            </div>
+          {/* 평균 참여율 — 누적 조회수는 § 9-1 KPI '총 비디오 재생수'에 통합되어 단독 카드 제거 */}
+          <div className="grid grid-cols-1 gap-3 @sm:gap-4">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
               <div className="flex items-center gap-1.5 mb-2">
                 <Info size={13} className="text-gray-400" aria-hidden="true" />
-                <span className="text-xs text-gray-500">평균 참여율</span>
+                <span className="text-xs text-gray-500">평균 참여율 (릴스 기준)</span>
+                <Tooltip content="피드는 조회수가 비공개라 평균 참여율은 릴스 콘텐츠의 (좋아요 + 댓글 + 공유) ÷ 조회수로 산출합니다." multiline>
+                  <Info size={11} className="text-gray-400 cursor-help" />
+                </Tooltip>
               </div>
               <div className="text-2xl font-bold text-gray-900">{approvedEngRate}%</div>
-              <p className="mt-2 text-[11px] text-gray-400">(좋아요 + 댓글 + 공유) / 조회수 기준</p>
+              <p className="mt-2 text-[11px] text-gray-400">(좋아요 + 댓글 + 공유) / 릴스 조회수 기준</p>
             </div>
           </div>
 
@@ -1857,7 +1992,7 @@ export default function CampaignDetail() {
               <div className="flex items-center gap-2 mb-4">
                 <Users size={16} className="text-gray-400" aria-hidden="true" />
                 <h3 className="text-sm font-semibold text-gray-900">TOP 인플루언서</h3>
-                <span className="text-xs text-gray-400">· 좋아요 + 댓글 + 조회수 합산</span>
+                <span className="text-xs text-gray-400">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
               </div>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2">
                 {topInfluencers.map((inf, idx) => (
@@ -1874,7 +2009,8 @@ export default function CampaignDetail() {
                     <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap pl-11">
                       <span className="text-gray-500">좋아요 <strong className="text-gray-900">{fmtNumber(inf.likes)}</strong></span>
                       <span className="text-gray-500">댓글 <strong className="text-gray-900">{fmtNumber(inf.comments)}</strong></span>
-                      <span className="text-gray-500">조회 <strong className="text-gray-900">{fmtNumber(inf.views)}</strong></span>
+                      <span className="text-gray-500">공유 <strong className="text-gray-900">{fmtNumber(inf.shares)}</strong></span>
+                      <span className="text-gray-500">저장 <strong className="text-gray-900">{fmtNumber(inf.saves)}</strong></span>
                     </div>
                   </div>
                 ))}
@@ -1896,15 +2032,19 @@ export default function CampaignDetail() {
             </div>
           )}
 
-          {/* 중요 콘텐츠 TOP 3 — 바이럴 점수 기준 */}
+          {/* 중요 릴스 콘텐츠 TOP 3 (정책서 § 9-3) — 릴스 한정, 콘텐츠 점수(바이럴 점수) 기준 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div className="flex items-center gap-2 mb-4">
               <Crown size={16} className="text-amber-500" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-gray-900">중요 콘텐츠 TOP 3</h3>
-              <span className="text-xs text-gray-400">· 바이럴 점수 기준</span>
+              <h3 className="text-sm font-semibold text-gray-900">중요 릴스 콘텐츠 TOP 3</h3>
+              <span className="text-xs text-gray-400">· 릴스 한정 · 콘텐츠 점수 기준</span>
+              <Tooltip content="콘텐츠 점수는 도달·참여·반응을 종합한 자체 산출 점수입니다. 자세한 산식은 검증 단계입니다." multiline>
+                <Info size={11} className="text-gray-400 cursor-help" />
+              </Tooltip>
             </div>
             <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
               {[...approvedContents]
+                .filter(c => c.type === '릴스' || c.type === '영상' || c.type === '쇼츠')
                 .sort((a, b) => b.viralScore - a.viralScore)
                 .slice(0, 3)
                 .map((c, idx) => {
@@ -2471,7 +2611,7 @@ export default function CampaignDetail() {
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">등록 시점</p>
                       <p className="text-sm font-semibold text-gray-900 mt-1">
-                        {detail.latestUploadedAt ? fmtDate(detail.latestUploadedAt) : '미등록'}
+                        {detail.firstUploadedAt ? fmtDate(detail.firstUploadedAt) : '미등록'}
                       </p>
                     </div>
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
@@ -2533,6 +2673,27 @@ export default function CampaignDetail() {
           <div className="text-right text-xs text-gray-400">{contentRejectFeedback.length}/500</div>
         </div>
       </Modal>
+
+      {/* 선정 확정 컨펌 모달 (정책서 § 6-4) — 확정 시 인플루언서에게 알림 + 이후 변경 불가 */}
+      <AlertModal
+        open={confirmSelectionModal !== null}
+        onClose={() => setConfirmSelectionModal(null)}
+        title="선정을 확정하시겠습니까?"
+        confirmLabel="선정 확정"
+        cancelLabel="취소"
+        variant="danger"
+        size="sm"
+        onConfirm={() => confirmSelectionModal && handleConfirmSelection(confirmSelectionModal.ids)}
+      >
+        <p className="text-xs text-gray-500">
+          {confirmSelectionModal?.name ? (
+            <><strong className="text-gray-700">{confirmSelectionModal.name}</strong>님의 선정을 확정합니다.</>
+          ) : confirmSelectionModal ? (
+            <>선정 예정 <strong className="text-gray-700">{confirmSelectionModal.ids.length}</strong>명을 확정합니다.</>
+          ) : null}{' '}
+          확정 시 인플루언서에게 선정 알림이 발송되며, <strong className="text-gray-700">이후 선정을 변경할 수 없습니다.</strong>
+        </p>
+      </AlertModal>
 
       {/* 선정 취소 컨펌 모달 */}
       <AlertModal
