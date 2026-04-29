@@ -1760,8 +1760,8 @@ export default function CampaignDetail() {
               </div>
             </div>
 
-            {/* 필터 + 정렬 (상태/플랫폼/정렬 단일 행) */}
-            <div className="grid grid-cols-3 gap-2 @sm:flex @sm:items-center @sm:gap-2">
+            {/* 필터 + 정렬 — 모바일은 1열(stacked), 태블릿+ flex 한 줄 */}
+            <div className="grid grid-cols-1 gap-2 @sm:flex @sm:items-center @sm:gap-2">
               <CustomSelect
                 value={contentFilter}
                 onChange={v => { setContentFilter(v as typeof contentFilter); setContentPage(1); setSelectedContents(new Set()) }}
