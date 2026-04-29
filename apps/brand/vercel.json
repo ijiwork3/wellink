@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "npm run build -w apps/brand",
+  "buildCommand": "npm run build -w wellink-brand",
   "outputDirectory": "apps/brand/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
