@@ -260,16 +260,16 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
 
 // 등록 콘텐츠 더미 100개 — 검수중/승인/반려 + 0값(reach=0) 엣지케이스 포함
 const INFLUENCER_POOL = [
-  { name: '이창민', id: '@changmin_fit', thumb: 'bg-gradient-to-br from-pink-200 to-pink-300' },
-  { name: '김가애', id: '@gaga_daily',   thumb: 'bg-gradient-to-br from-yellow-200 to-yellow-300' },
-  { name: '박리나', id: '@rina_life',    thumb: 'bg-gradient-to-br from-purple-200 to-purple-300' },
-  { name: '민경완', id: '@kyeong_w',     thumb: 'bg-gradient-to-br from-blue-200 to-blue-300' },
-  { name: '서유진', id: '@yujin_s',      thumb: 'bg-gradient-to-br from-green-200 to-green-300' },
-  { name: '한지수', id: '@jisu_han',     thumb: 'bg-gradient-to-br from-rose-200 to-rose-300' },
-  { name: '최민호', id: '@minho_choi',   thumb: 'bg-gradient-to-br from-indigo-200 to-indigo-300' },
-  { name: '윤아름', id: '@areum_y',      thumb: 'bg-gradient-to-br from-teal-200 to-teal-300' },
-  { name: '강태현', id: '@taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
-  { name: '임소희', id: '@sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
+  { name: '이창민', id: 'changmin_fit', thumb: 'bg-gradient-to-br from-pink-200 to-pink-300' },
+  { name: '김가애', id: 'gaga_daily',   thumb: 'bg-gradient-to-br from-yellow-200 to-yellow-300' },
+  { name: '박리나', id: 'rina_life',    thumb: 'bg-gradient-to-br from-purple-200 to-purple-300' },
+  { name: '민경완', id: 'kyeong_w',     thumb: 'bg-gradient-to-br from-blue-200 to-blue-300' },
+  { name: '서유진', id: 'yujin_s',      thumb: 'bg-gradient-to-br from-green-200 to-green-300' },
+  { name: '한지수', id: 'jisu_han',     thumb: 'bg-gradient-to-br from-rose-200 to-rose-300' },
+  { name: '최민호', id: 'minho_choi',   thumb: 'bg-gradient-to-br from-indigo-200 to-indigo-300' },
+  { name: '윤아름', id: 'areum_y',      thumb: 'bg-gradient-to-br from-teal-200 to-teal-300' },
+  { name: '강태현', id: 'taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
+  { name: '임소희', id: 'sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
 ]
 type ContentPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
 type ContentSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
@@ -2025,9 +2025,9 @@ export default function CampaignDetail() {
                 <h3 className="text-sm font-semibold text-gray-900">TOP 인플루언서</h3>
                 <span className="text-xs text-gray-400">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
               </div>
-              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
                 {topInfluencers.map((inf, idx) => (
-                  <div key={inf.instagramId || inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-3 gap-2">
+                  <div key={inf.instagramId || inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-4 gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
@@ -2049,17 +2049,15 @@ export default function CampaignDetail() {
             </div>
           )}
 
-          {/* 시계열 차트 3종 (좋아요 / 비디오 재생 / 공유·댓글) — 원본 ReportView PerformanceChart 보강 */}
+          {/* 시계열 차트 3종 — 항상 1열 (각 차트 내부 가로 스크롤로 확인) */}
           {trendData.length > 0 && (
-            <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <TrendChart title="좋아요 추이" data={trendData} dataKey="likes" stroke="#ef4444" />
               <TrendChart title="비디오 재생수 추이" data={trendData} dataKey="views" stroke="#3b82f6" />
-              <div className="@lg:col-span-2">
-                <TrendChart title="공유·댓글 추이" data={trendData} multi={[
-                  { dataKey: 'shares', label: '공유', stroke: '#10b981' },
-                  { dataKey: 'comments', label: '댓글', stroke: '#f59e0b' },
-                ]} />
-              </div>
+              <TrendChart title="공유·댓글 추이" data={trendData} multi={[
+                { dataKey: 'shares', label: '공유', stroke: '#10b981' },
+                { dataKey: 'comments', label: '댓글', stroke: '#f59e0b' },
+              ]} />
             </div>
           )}
 
@@ -2103,19 +2101,19 @@ export default function CampaignDetail() {
                           )}
                         </div>
                       </div>
-                      {/* 지표 */}
-                      <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-50 text-center">
-                        <div>
-                          <p className="text-xs text-gray-400 mb-0.5">도달</p>
-                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.reach)}</p>
+                      {/* 지표 — 카드 폭이 좁아 값 겹침 방지 위해 stacked (라벨·값 한 행씩) */}
+                      <div className="flex flex-col gap-1 pt-2 border-t border-gray-50">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="text-xs text-gray-400 shrink-0">도달</p>
+                          <p className="text-sm font-bold text-gray-800 truncate">{fmtNumber(c.reach)}</p>
                         </div>
-                        <div>
-                          <p className="text-xs text-gray-400 mb-0.5">좋아요</p>
-                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.likes)}</p>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="text-xs text-gray-400 shrink-0">좋아요</p>
+                          <p className="text-sm font-bold text-gray-800 truncate">{fmtNumber(c.likes)}</p>
                         </div>
-                        <div>
-                          <p className="text-xs text-gray-400 mb-0.5">참여율</p>
-                          <p className="text-sm font-bold text-brand-green">{engRate}%</p>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="text-xs text-gray-400 shrink-0">참여율</p>
+                          <p className="text-sm font-bold text-brand-green truncate">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -2132,8 +2130,8 @@ export default function CampaignDetail() {
                     <span className="text-xs text-gray-400">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
                   )}
                 </div>
-                <div className="relative">
-                  <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible">
+                <div className="relative overflow-x-auto overflow-y-hidden">
+                  <svg width={chartW} height={chartH} viewBox={`0 0 ${chartW} ${chartH}`} className="overflow-visible block" style={{ minWidth: chartW }}>
                     {/* Y축 그리드 */}
                     {[0, 0.25, 0.5, 0.75, 1].map(r => {
                       const y = padT + plotH - r * plotH
@@ -2226,8 +2224,8 @@ export default function CampaignDetail() {
                                 {rank}
                               </span>
                             </td>
-                            <td className="py-3 px-4 max-w-[180px]">
-                              <p className="text-sm font-medium text-gray-900 truncate">{c.caption}</p>
+                            <td className="py-3 px-4 whitespace-nowrap">
+                              <p className="text-sm font-medium text-gray-900">{c.caption}</p>
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap leading-tight">
                               <p className="text-sm font-bold text-gray-900">@{c.instagramId}</p>
@@ -3066,10 +3064,13 @@ function TrendChart({
           </div>
         )}
       </div>
+      <div className="overflow-x-auto overflow-y-hidden -mx-1">
       <svg
-        width="100%"
+        width={W}
+        height={H}
         viewBox={`0 0 ${W} ${H}`}
-        className="overflow-visible cursor-crosshair touch-none select-none"
+        className="overflow-visible cursor-crosshair touch-none select-none mx-1 block"
+        style={{ minWidth: W }}
         onPointerDown={handleDown}
         onPointerMove={handleMove}
         onPointerUp={handleUp}
@@ -3109,11 +3110,12 @@ function TrendChart({
             <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" fontSize={10} fill="#6b7280">{data[data.length - 1].label}</text>
           </>
         )}
-        {/* 호버 인디케이터 + 툴팁 */}
+        {/* 호버/탭 인디케이터 + 툴팁 (모바일은 더 크게) */}
         {hoverIdx !== null && (() => {
           const hx = padL + hoverIdx * xStep
-          const tipW = Math.max(108, 60 + series.length * 28)
-          const tipH = 22 + series.length * 14
+          // 모바일 터치 가독성을 위해 툴팁 크기·폰트 확대
+          const tipW = Math.max(170, 110 + series.length * 36)
+          const tipH = 32 + series.length * 20
           const tx = Math.max(padL, Math.min(W - padR - tipW, hx - tipW / 2))
           const ty = 4
           return (
@@ -3121,15 +3123,15 @@ function TrendChart({
               <line x1={hx} y1={padT} x2={hx} y2={padT + plotH} stroke="#9ca3af" strokeWidth={1} strokeDasharray="3 3" />
               {series.map(s => {
                 const p = pointFor(data[hoverIdx][s.dataKey], hoverIdx)
-                return <circle key={s.dataKey} cx={p.x} cy={p.y} r={4} fill="white" stroke={s.stroke} strokeWidth={2} />
+                return <circle key={s.dataKey} cx={p.x} cy={p.y} r={5} fill="white" stroke={s.stroke} strokeWidth={2.5} />
               })}
-              <rect x={tx} y={ty} width={tipW} height={tipH} rx={6} fill="#111827" opacity={0.94} />
-              <text x={tx + 8} y={ty + 13} fontSize={10} fontWeight={600} fill="white">{data[hoverIdx].label}</text>
+              <rect x={tx} y={ty} width={tipW} height={tipH} rx={8} fill="#111827" opacity={0.94} />
+              <text x={tx + 12} y={ty + 18} fontSize={13} fontWeight={700} fill="white">{data[hoverIdx].label}</text>
               {series.map((s, i) => (
                 <g key={s.dataKey}>
-                  <circle cx={tx + 11} cy={ty + 24 + i * 14} r={2.5} fill={s.stroke} />
-                  <text x={tx + 18} y={ty + 27 + i * 14} fontSize={10} fill="#e5e7eb">
-                    {s.label}: <tspan fontWeight={600} fill="white">{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
+                  <circle cx={tx + 16} cy={ty + 36 + i * 20} r={3.5} fill={s.stroke} />
+                  <text x={tx + 26} y={ty + 40 + i * 20} fontSize={12} fill="#e5e7eb">
+                    {s.label}: <tspan fontWeight={700} fill="white">{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
                   </text>
                 </g>
               ))}
@@ -3137,6 +3139,7 @@ function TrendChart({
           )
         })()}
       </svg>
+      </div>
     </div>
   )
 }

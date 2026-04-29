@@ -48,7 +48,7 @@ export default function BottomSheet({ open, onClose, title, children }: BottomSh
 
   return (
     <div
-      className="absolute inset-0 z-[100] flex flex-col justify-end bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/40 backdrop-blur-sm"
       style={{ opacity: visible ? 1 : 0, transition: 'opacity 200ms ease' }}
       onClick={e => { if (e.target === e.currentTarget) onCloseRef.current() }}
     >
