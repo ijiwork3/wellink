@@ -1338,7 +1338,7 @@ export default function CampaignDetail() {
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
-                  <th scope="col" aria-label="액션" className="py-3 px-4 sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[110px] @md:min-w-[130px]"></th>
+                  <th scope="col" aria-label="액션" className="py-3 px-2 sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[60px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -1425,41 +1425,51 @@ export default function CampaignDetail() {
                         className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                       >답변 보기</button>
                     </td>
-                    <td className="py-2 px-3 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                    <td className="py-2 px-2 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       {pendingApplicants.has(a.id) ? (
-                        <div className="flex flex-col gap-1 min-w-[100px]">
-                          <span className="inline-flex items-center justify-center text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                        <div className="flex flex-col items-stretch gap-1 min-w-[64px]">
+                          <span className="inline-flex items-center justify-center text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1 py-0.5 rounded-md whitespace-nowrap">
                             선정 예정
                           </span>
-                          <div className="flex flex-col gap-1 @md:flex-row">
+                          <Tooltip content="선정 확정">
                             <button
                               onClick={() => setConfirmSelectionModal({ ids: [a.id], name: a.name })}
-                              className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-brand-green text-white px-2 py-1 rounded-lg hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
+                              aria-label="선정 확정"
+                              className="w-full inline-flex items-center justify-center bg-brand-green text-white p-1.5 rounded-md hover:bg-brand-green-hover transition-colors duration-150"
                             >
-                              <Check size={11} aria-hidden="true" /> 확정
+                              <Check size={14} aria-hidden="true" />
                             </button>
+                          </Tooltip>
+                          <Tooltip content="선정 취소">
                             <button
                               onClick={() => handleUnpendApplicant(a.id)}
-                              className="@md:flex-1 inline-flex items-center justify-center text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap"
+                              aria-label="선정 취소"
+                              className="w-full inline-flex items-center justify-center text-gray-500 border border-gray-200 p-1.5 rounded-md hover:bg-gray-50 transition-colors duration-150"
                             >
-                              취소
+                              <X size={14} aria-hidden="true" />
                             </button>
-                          </div>
+                          </Tooltip>
                         </div>
                       ) : (
-                        <div className="flex flex-col gap-1 min-w-[100px] @md:flex-row">
-                          <button
-                            onClick={() => handlePendApplicant(a.id)}
-                            className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-white border border-brand-green text-brand-green px-2 py-1.5 rounded-lg hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap"
-                          >
-                            <Check size={11} aria-hidden="true" /> 선정
-                          </button>
-                          <button
-                            onClick={() => setRejectModal(a.id)}
-                            className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs text-red-500 border border-red-200 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors duration-150 whitespace-nowrap"
-                          >
-                            <X size={11} aria-hidden="true" /> 반려
-                          </button>
+                        <div className="flex flex-col items-stretch gap-1 min-w-[40px]">
+                          <Tooltip content="선정 예정">
+                            <button
+                              onClick={() => handlePendApplicant(a.id)}
+                              aria-label="선정 예정"
+                              className="w-full inline-flex items-center justify-center bg-white border border-brand-green text-brand-green p-1.5 rounded-md hover:bg-brand-green/5 transition-colors duration-150"
+                            >
+                              <Check size={14} aria-hidden="true" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip content="반려">
+                            <button
+                              onClick={() => setRejectModal(a.id)}
+                              aria-label="반려"
+                              className="w-full inline-flex items-center justify-center text-red-500 border border-red-200 p-1.5 rounded-md hover:bg-red-50 transition-colors duration-150"
+                            >
+                              <X size={14} aria-hidden="true" />
+                            </button>
+                          </Tooltip>
                         </div>
                       )}
                     </td>
