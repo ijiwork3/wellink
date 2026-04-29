@@ -444,7 +444,7 @@ export default function ViralMetrics() {
                           <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                             <Image size={14} className="text-gray-400" />
                           </div>
-                          <span className="text-sm text-gray-900 max-w-[160px] truncate" title={item.title}>{item.title}</span>
+                          <span className="text-sm text-gray-900 whitespace-nowrap">{item.title}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{item.influencer}</td>
