@@ -838,26 +838,28 @@ export default function CampaignDetail() {
   const approvedEngRate = approvedViews > 0
     ? (approvedEngagement / approvedViews * 100).toFixed(1)
     : (approvedReach > 0 ? (approvedEngagement / approvedReach * 100).toFixed(1) : '0.0')
-  // KPI 4개 — 정책서 § 9-1 (누적 조회수 = 총 비디오 재생수와 동일하므로 통합)
-  const reportKPI = [
+  // KPI 6개 — 정책서 § 9-1 (평균 참여율 통합 / 누적 조회수 = 총 비디오 재생수와 동일하므로 통합)
+  const reportKPI: { label: string; value: string; icon: typeof FileText; tooltip?: string }[] = [
     { label: '총 콘텐츠', value: `${approvedContents.length}건`, icon: FileText },
     { label: '총 좋아요', value: fmtNumber(approvedLikes), icon: Heart },
     { label: '총 비디오 재생수', value: fmtNumber(approvedViews), icon: Eye },
     { label: '총 공유 수', value: fmtNumber(approvedShares), icon: Share2 },
     { label: '총 댓글 수', value: fmtNumber(approvedComments), icon: Info },
+    { label: '평균 참여율 (릴스)', value: `${approvedEngRate}%`, icon: TrendingUp, tooltip: '피드는 조회수가 비공개라 릴스 콘텐츠의 (좋아요 + 댓글 + 공유) ÷ 조회수로 산출합니다.' },
   ]
   // TOP 인플루언서 (정책서 § 9-4) — 산식 변경: 좋아요+댓글+공유+저장 (재생수 제외)
   // 사유: 비디오 재생수는 릴스 전용 지표로 피드 중심 인플루언서가 부당하게 평가절하됨
   const topInfluencers = (() => {
-    const map = new Map<string, { name: string; likes: number; comments: number; shares: number; saves: number; contents: number }>()
+    const map = new Map<string, { instagramId: string; name: string; likes: number; comments: number; shares: number; saves: number; contents: number }>()
     for (const c of approvedContents) {
-      const ex = map.get(c.influencer) ?? { name: c.influencer, likes: 0, comments: 0, shares: 0, saves: 0, contents: 0 }
+      const key = c.instagramId || c.influencer
+      const ex = map.get(key) ?? { instagramId: c.instagramId, name: c.influencer, likes: 0, comments: 0, shares: 0, saves: 0, contents: 0 }
       ex.likes += c.likes
       ex.comments += c.comments
       ex.shares += c.shares ?? 0
       ex.saves += c.saves ?? 0
       ex.contents += 1
-      map.set(c.influencer, ex)
+      map.set(key, ex)
     }
     return Array.from(map.values())
       .sort((a, b) => (b.likes + b.comments + b.shares + b.saves) - (a.likes + a.comments + a.shares + a.saves))
@@ -1994,35 +1996,25 @@ export default function CampaignDetail() {
             />
           </div>
 
-          {/* KPI 카드 5개 — 원본 ReportView summary 보강 */}
-          <div className="grid grid-cols-2 @sm:grid-cols-3 @md:grid-cols-5 gap-3 @sm:gap-4">
+          {/* KPI 6개 — 2×3 고정 (말줄임 방지). 평균 참여율은 6번째에 통합 */}
+          <div className="grid grid-cols-2 gap-3 @sm:gap-4">
             {reportKPI.map(k => {
               const Icon = k.icon
               return (
-                <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
+                <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5 min-w-0">
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Icon size={13} className="text-gray-400" aria-hidden="true" />
-                    <span className="text-xs text-gray-500">{k.label}</span>
+                    <Icon size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <span className="text-xs text-gray-500 truncate">{k.label}</span>
+                    {k.tooltip && (
+                      <Tooltip content={k.tooltip} multiline>
+                        <Info size={11} className="text-gray-400 cursor-help shrink-0" />
+                      </Tooltip>
+                    )}
                   </div>
-                  <div className="text-xl @sm:text-2xl @md:text-3xl font-bold text-gray-900 tracking-tight">{k.value}</div>
+                  <div className="text-xl @sm:text-2xl font-bold text-gray-900 tracking-tight break-words">{k.value}</div>
                 </div>
               )
             })}
-          </div>
-
-          {/* 평균 참여율 — 누적 조회수는 § 9-1 KPI '총 비디오 재생수'에 통합되어 단독 카드 제거 */}
-          <div className="grid grid-cols-1 gap-3 @sm:gap-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
-              <div className="flex items-center gap-1.5 mb-2">
-                <Info size={13} className="text-gray-400" aria-hidden="true" />
-                <span className="text-xs text-gray-500">평균 참여율 (릴스 기준)</span>
-                <Tooltip content="피드는 조회수가 비공개라 평균 참여율은 릴스 콘텐츠의 (좋아요 + 댓글 + 공유) ÷ 조회수로 산출합니다." multiline>
-                  <Info size={11} className="text-gray-400 cursor-help" />
-                </Tooltip>
-              </div>
-              <div className="text-2xl font-bold text-gray-900">{approvedEngRate}%</div>
-              <p className="mt-2 text-[11px] text-gray-400">(좋아요 + 댓글 + 공유) / 릴스 조회수 기준</p>
-            </div>
           </div>
 
           {/* TOP 인플루언서 (인플루언서 단위 Top 5) — 원본 ReportView 보강 */}
@@ -2035,14 +2027,14 @@ export default function CampaignDetail() {
               </div>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2">
                 {topInfluencers.map((inf, idx) => (
-                  <div key={inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-3 gap-2">
+                  <div key={inf.instagramId || inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-3 gap-2">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
                       }`}>{idx + 1}</div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{inf.name}</p>
-                        <p className="text-xs text-gray-500">콘텐츠 {inf.contents}개</p>
+                      <div className="min-w-0 leading-tight">
+                        <p className="text-sm font-bold text-gray-900 truncate">@{inf.instagramId}</p>
+                        <p className="text-[11px] text-gray-400 truncate mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap pl-11">
@@ -2102,10 +2094,10 @@ export default function CampaignDetail() {
                       <div>
                         <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
                         <div className="flex items-center gap-1 mt-1 flex-wrap">
-                          <span className="text-xs text-gray-400">@{c.influencer}</span>
+                          <span className="text-xs text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
                           <PlatformBadge platform={c.platform} />
                           {c.type && (
-                            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                               {c.type}
                             </span>
                           )}
@@ -2217,7 +2209,7 @@ export default function CampaignDetail() {
                     <thead>
                       <tr className="bg-gray-50/50 border-b border-gray-100">
                         {['순위', '콘텐츠', '인플루언서', '유형', '도달', '좋아요', '참여율'].map(h => (
-                          <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4">{h}</th>
+                          <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -2237,20 +2229,23 @@ export default function CampaignDetail() {
                             <td className="py-3 px-4 max-w-[180px]">
                               <p className="text-sm font-medium text-gray-900 truncate">{c.caption}</p>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{c.influencer}</td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-1 flex-wrap">
+                            <td className="py-3 px-4 whitespace-nowrap leading-tight">
+                              <p className="text-sm font-bold text-gray-900">@{c.instagramId}</p>
+                              <p className="text-[11px] text-gray-400 mt-0.5">본명 · {c.influencer}</p>
+                            </td>
+                            <td className="py-3 px-4 whitespace-nowrap">
+                              <div className="inline-flex items-center gap-1">
                                 <PlatformBadge platform={c.platform} />
                                 {c.type && (
-                                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                                     {c.type}
                                   </span>
                                 )}
                               </div>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-700">{fmtNumber(c.reach)}</td>
-                            <td className="py-3 px-4 text-sm text-gray-700">{c.likes.toLocaleString()}</td>
-                            <td className="py-3 px-4">
+                            <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
+                            <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
+                            <td className="py-3 px-4 whitespace-nowrap">
                               <span className="text-sm font-semibold text-brand-green">{engRate}%</span>
                             </td>
                           </tr>

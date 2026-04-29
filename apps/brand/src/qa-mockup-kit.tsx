@@ -63,8 +63,9 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * 1.012  username·본명 시각 구별 강화 (전 화면 통일) + 차트 X축 → 호버 툴팁(첫·끝 라벨만 노출)
  * 1.013  차트 모바일 터치 인터랙션: 탭 즉시 툴팁 + 드래그 시 따라옴 (PointerCapture)
  * 1.014  캠페인 상세 헤더 KPI 2×2 고정 + 일정바 2/1 분할 + truncate→break-words (말줄임 방지)
+ * 1.015  TOP 인플루언서 username 메인 + 콘텐츠 순위 인플루언서 username 메인 + 유형 배지 wrap 방지 + 성과리포트 KPI 2×3 (평균 참여율 통합) + @{c.influencer} 버그 수정
  */
-export const QA_VERSION = '1.014';
+export const QA_VERSION = '1.015';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달
