@@ -1,5 +1,6 @@
 {
-  "installCommand": "npm install --workspaces --include-workspace-root",
-  "buildCommand": "npm run build -w packages/ui && npm run build -w apps/brand",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build -w apps/brand",
+  "outputDirectory": "apps/brand/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
