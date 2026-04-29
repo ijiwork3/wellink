@@ -2340,8 +2340,8 @@ export default function CampaignDetail() {
                   }`}>바이럴 {dc.viralScore}점</span>
                 )}
               </div>
-              {/* 지표 */}
-              <div className="grid grid-cols-6 gap-1 text-center bg-gray-50 rounded-xl py-2.5 px-2">
+              {/* 지표 — 모바일 3×2, 태블릿+ 한 줄 6열 */}
+              <div className="grid grid-cols-3 @sm:grid-cols-6 gap-y-2 gap-x-1 text-center bg-gray-50 rounded-xl py-2.5 px-2">
                 {[
                   { label: '도달', value: fmtNumber(dc.reach) },
                   { label: '좋아요', value: fmtNumber(dc.likes) },
