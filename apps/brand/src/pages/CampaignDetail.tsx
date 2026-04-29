@@ -1809,7 +1809,7 @@ export default function CampaignDetail() {
                 )}
               </div>
             ) : (
-              <div className={`grid gap-4 ${device === 'desktop' ? 'grid-cols-4' : device === 'tablet' ? 'grid-cols-3' : 'grid-cols-1'}`}>
+              <div className="grid gap-4 grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 @xl:grid-cols-4">
                 {paginated.map(c => {
                   const isChecked = selectedContents.has(c.id)
                   const status = contentStatuses[c.id]
