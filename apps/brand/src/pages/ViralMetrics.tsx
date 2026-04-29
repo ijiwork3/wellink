@@ -324,7 +324,7 @@ export default function ViralMetrics() {
       </div>
 
       {/* 릴스 평균 조회수 + 등급 분포 — 원본 ViralMetricsSection 보강 */}
-      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
         {/* 릴스 평균 조회수 카드 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-2">
@@ -384,7 +384,7 @@ export default function ViralMetrics() {
               </button>
             </div>
             {/* 필터·정렬 컨트롤 — 신규 (원본 SortKey/ContentFilter/GradeFilter 보강) */}
-            <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-1 @sm:grid-cols-3 gap-2 @sm:gap-3">
+            <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-2 @sm:gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-[11px] text-gray-500">유형</span>
                 <CustomSelect
