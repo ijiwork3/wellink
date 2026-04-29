@@ -1,6 +1,3 @@
 {
-  "installCommand": "echo skip",
-  "buildCommand": "npm install -g pnpm@9.15.0 && pnpm install --prefer-offline --frozen-lockfile=false && pnpm --filter @wellink/ui build && pnpm --filter wellink-brand build",
-  "outputDirectory": "apps/brand/dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
