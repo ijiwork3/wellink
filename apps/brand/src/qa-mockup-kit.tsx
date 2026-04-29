@@ -62,8 +62,9 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * 1.011  캠페인 피드백 일괄 반영: 다중 탭 토글 제거 / 헤더 제목 줄바꿈 개선 / 점수 위치 버그 수정 / 선정 예정 필터 / 참여율·Fit Score 컬럼 앞으로 / 액션 컬럼 compact / 피드·릴스 네비게이터 / TOP3 가로스크롤 / 차트 X축 개선
  * 1.012  username·본명 시각 구별 강화 (전 화면 통일) + 차트 X축 → 호버 툴팁(첫·끝 라벨만 노출)
  * 1.013  차트 모바일 터치 인터랙션: 탭 즉시 툴팁 + 드래그 시 따라옴 (PointerCapture)
+ * 1.014  캠페인 상세 헤더 KPI 2×2 고정 + 일정바 2/1 분할 + truncate→break-words (말줄임 방지)
  */
-export const QA_VERSION = '1.013';
+export const QA_VERSION = '1.014';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달

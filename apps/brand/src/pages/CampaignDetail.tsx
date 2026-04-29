@@ -972,24 +972,24 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* 일정 바 */}
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
-          <div className="flex items-center gap-2 text-xs">
+        {/* 일정 바 — 모집·발표 한 행, 업로드 단독 행 (말줄임 방지) */}
+        <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3">
+          <div className="flex items-center gap-2 text-xs min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
-            <span className="text-gray-600 truncate">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
-            <span className="text-gray-600 truncate">{fmtDate(meta.announceDate)}</span>
+            <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="col-span-2 flex items-center gap-2 text-xs min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
-            <span className="text-gray-600 truncate">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="text-gray-600 break-words">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
         </div>
 
-        {/* KPI 4칸 */}
-        <div className="grid grid-cols-2 @md:grid-cols-4 gap-3">
+        {/* KPI — 2×2 고정 (4칸 한 줄에 모두 넣으면 말줄임 발생) */}
+        <div className="grid grid-cols-2 gap-3">
           <KpiCell label="지원자" value={`${applicants.length}`} />
           <KpiCell label="모집 마감" value={(() => {
             const end = meta.recruitPeriod?.split(' ~ ')[1]
@@ -2915,9 +2915,9 @@ export default function CampaignDetail() {
 
 function KpiCell({ label, value, small }: { label: string; value: string; small?: boolean }) {
   return (
-    <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+    <div className="bg-gray-50 rounded-xl px-3 py-2.5 min-w-0">
       <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-      <p className={`font-bold text-gray-900 truncate ${small ? 'text-sm' : 'text-base @md:text-lg'}`}>{value}</p>
+      <p className={`font-bold text-gray-900 break-words ${small ? 'text-sm leading-snug' : 'text-base @md:text-lg leading-tight'}`}>{value}</p>
     </div>
   )
 }
