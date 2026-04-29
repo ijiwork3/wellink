@@ -199,16 +199,12 @@ export default function InfluencerManage() {
 
   const closeConfirm = () => setConfirm(defaultConfirm)
 
-  const removeBookmark = (id: number, name: string) =>
-    openConfirm(
-      `'${name}'을 찜 목록에서 제거할까요?`,
-      '찜 목록에서 제외됩니다. 언제든 다시 찜할 수 있어요.',
-      () => setInfluencers(prev => {
-        const updated = prev.filter(inf => inf.id !== id)
-        sessionStorage.setItem('wl_bookmarks', JSON.stringify(updated.map(inf => inf.id)))
-        return updated
-      })
-    )
+  const removeBookmark = (id: number, _name: string) =>
+    setInfluencers(prev => {
+      const updated = prev.filter(inf => inf.id !== id)
+      sessionStorage.setItem('wl_bookmarks', JSON.stringify(updated.map(inf => inf.id)))
+      return updated
+    })
 
   const addToGroup = (infId: number, group: string) => {
     setInfluencers(prev => prev.map(inf =>
