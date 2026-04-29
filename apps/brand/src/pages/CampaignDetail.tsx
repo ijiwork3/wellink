@@ -1078,7 +1078,7 @@ export default function CampaignDetail() {
 
           {/* 캠페인 미션 — 3카드 */}
           <Section title="캠페인 미션" icon={<TrendingUp size={14} />}>
-            <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 @md:grid-cols-3 gap-2.5">
               <MissionCard icon={<Search size={16} />} label="키워드" value="필수 포함" />
               <MissionCard icon={<Camera size={16} />} label="게시 유형" value={meta.postType} />
               <MissionCard icon={<Heart size={16} />} label="유의사항" value={meta.precaution} />
@@ -1273,7 +1273,7 @@ export default function CampaignDetail() {
 
                 {/* 펼침 영역 — 질문 라벨(상단) + 드롭다운(하단) 그리드 */}
                 {hasOptions && optionFilterOpen && (
-                  <div className="p-3 border-t border-gray-100 grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3">
+                  <div className="p-3 border-t border-gray-100 grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-3 gap-3">
                     {dynamicQuestions.map(q => (
                       <div key={q.question} className="space-y-1 min-w-0">
                         <label className="block text-xs text-gray-600 leading-snug break-words" title={q.question}>{q.question}</label>
@@ -2081,7 +2081,7 @@ export default function CampaignDetail() {
                 <Info size={11} className="text-gray-400 cursor-help" />
               </Tooltip>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-1 @sm:grid @sm:grid-cols-3 @sm:overflow-visible @sm:pb-0">
+            <div className="flex gap-3 overflow-x-auto pb-1 @md:grid @md:grid-cols-3 @md:overflow-visible @md:pb-0">
               {[...approvedContents]
                 .filter(c => c.type === '릴스' || c.type === '영상' || c.type === '쇼츠')
                 .sort((a, b) => b.viralScore - a.viralScore)
@@ -2092,7 +2092,7 @@ export default function CampaignDetail() {
                   const borderColor = idx === 0 ? 'border-amber-200' : 'border-gray-100'
                   const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
                   return (
-                    <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3 min-w-[260px] @sm:min-w-0 shrink-0 @sm:shrink`}>
+                    <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3 min-w-[260px] @md:min-w-0 shrink-0 @md:shrink`}>
                       {/* 상단: 순위 + 점수 */}
                       <div className="flex items-center justify-between">
                         <span className="text-base" aria-hidden="true">{medals[idx]}</span>
