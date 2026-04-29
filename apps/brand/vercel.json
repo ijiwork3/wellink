@@ -1,4 +1,5 @@
 {
-  "buildCommand": "npm install -g pnpm && pnpm install --frozen-lockfile=false && pnpm --filter @wellink/ui build && pnpm --filter wellink-brand build",
+  "installCommand": "npm install --workspaces --include-workspace-root",
+  "buildCommand": "npm run build -w packages/ui && npm run build -w apps/brand",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
