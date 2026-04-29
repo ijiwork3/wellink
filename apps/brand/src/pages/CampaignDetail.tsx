@@ -1356,9 +1356,9 @@ export default function CampaignDetail() {
                         <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                           {a.name[0]}
                         </div>
-                        <div className="min-w-0">
-                          <span className="block text-sm font-medium text-gray-900 truncate max-w-[140px]">@{a.instagramId}</span>
-                          <span className="block text-xs text-gray-400 truncate max-w-[140px]">{a.name}</span>
+                        <div className="min-w-0 leading-tight">
+                          <span className="block text-sm font-bold text-gray-900 truncate max-w-[140px]">@{a.instagramId}</span>
+                          <span className="block text-[11px] text-gray-400 truncate max-w-[140px] mt-0.5">본명 · {a.name}</span>
                         </div>
                       </div>
                     </td>
@@ -1590,9 +1590,9 @@ export default function CampaignDetail() {
                             <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                               {i.name[0]}
                             </div>
-                            <div className="min-w-0">
-                              <span className="block text-sm font-medium text-gray-900 truncate max-w-[140px]">@{i.instagramId}</span>
-                              <span className="block text-xs text-gray-400 truncate max-w-[140px]">{i.name}</span>
+                            <div className="min-w-0 leading-tight">
+                              <span className="block text-sm font-bold text-gray-900 truncate max-w-[140px]">@{i.instagramId}</span>
+                              <span className="block text-[11px] text-gray-400 truncate max-w-[140px] mt-0.5">본명 · {i.name}</span>
                             </div>
                           </div>
                         </td>
@@ -1862,9 +1862,9 @@ export default function CampaignDetail() {
                             <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
                               {c.influencer[0]}
                             </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-gray-900 truncate">{c.influencer}</p>
-                              <p className="text-xs text-gray-400 truncate">{c.instagramId}</p>
+                            <div className="min-w-0 leading-tight">
+                              <p className="text-sm font-bold text-gray-900 truncate">@{c.instagramId}</p>
+                              <p className="text-[11px] text-gray-400 truncate mt-0.5">본명 · {c.influencer}</p>
                             </div>
                           </div>
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
@@ -2312,9 +2312,9 @@ export default function CampaignDetail() {
                   <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
                     {dc.influencer[0]}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{dc.influencer}</p>
-                    <p className="text-xs text-gray-400">{dc.instagramId}</p>
+                  <div className="leading-tight">
+                    <p className="text-sm font-bold text-gray-900">@{dc.instagramId}</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">본명 · {dc.influencer}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -2809,9 +2809,9 @@ export default function CampaignDetail() {
                 <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold`}>
                   {target.name[0]}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">@{target.instagramId}</p>
-                  <p className="text-xs text-gray-400">{target.name} · 팔로워 {target.followers}</p>
+                <div className="flex-1 min-w-0 leading-tight">
+                  <p className="text-sm font-bold text-gray-900">@{target.instagramId}</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">본명 · {target.name} · 팔로워 {target.followers}</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
@@ -3020,7 +3020,7 @@ function TrendChart({
   stroke?: string
   multi?: { dataKey: keyof Omit<TrendPoint, 'label' | 'sortKey'>; label: string; stroke: string }[]
 }) {
-  const W = 600, H = 200, padL = 40, padR = 12, padT = 16, padB = 32
+  const W = 600, H = 200, padL = 40, padR = 12, padT = 16, padB = 28
   const plotW = W - padL - padR, plotH = H - padT - padB
   const series = multi ?? (dataKey && stroke ? [{ dataKey, label: title, stroke }] : [])
   const allValues = series.flatMap(s => data.map(d => d[s.dataKey]))
@@ -3030,6 +3030,16 @@ function TrendChart({
     x: padL + i * xStep,
     y: padT + plotH - (v / max) * plotH,
   })
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+  const handleMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget
+    const rect = svg.getBoundingClientRect()
+    const xRatio = (e.clientX - rect.left) / rect.width
+    const xInVB = xRatio * W
+    if (xInVB < padL || xInVB > padL + plotW) { setHoverIdx(null); return }
+    const idx = Math.round((xInVB - padL) / Math.max(xStep, 0.0001))
+    if (idx >= 0 && idx < data.length) setHoverIdx(idx)
+  }
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
       <div className="flex items-center justify-between mb-3">
@@ -3045,7 +3055,13 @@ function TrendChart({
           </div>
         )}
       </div>
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
+      <svg
+        width="100%"
+        viewBox={`0 0 ${W} ${H}`}
+        className="overflow-visible cursor-crosshair"
+        onPointerMove={handleMove}
+        onPointerLeave={() => setHoverIdx(null)}
+      >
         {[0, 0.25, 0.5, 0.75, 1].map(r => {
           const y = padT + plotH - r * plotH
           const v = Math.round(r * max)
@@ -3072,20 +3088,40 @@ function TrendChart({
             </g>
           )
         })}
-        {data.map((d, i) => {
-          const step = data.length > 14 ? 3 : data.length > 7 ? 2 : 1
-          if (i % step !== 0) return null
+        {/* X축: 첫·마지막 라벨만 (호버로 상세 확인) */}
+        {data.length > 0 && (
+          <>
+            <text x={padL} y={padT + plotH + 16} textAnchor="start" fontSize={10} fill="#6b7280">{data[0].label}</text>
+            <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" fontSize={10} fill="#6b7280">{data[data.length - 1].label}</text>
+          </>
+        )}
+        {/* 호버 인디케이터 + 툴팁 */}
+        {hoverIdx !== null && (() => {
+          const hx = padL + hoverIdx * xStep
+          const tipW = Math.max(108, 60 + series.length * 28)
+          const tipH = 22 + series.length * 14
+          const tx = Math.max(padL, Math.min(W - padR - tipW, hx - tipW / 2))
+          const ty = 4
           return (
-            <text
-              key={i}
-              x={padL + i * xStep}
-              y={padT + plotH + 15}
-              textAnchor="middle"
-              fontSize={10}
-              fill="#6b7280"
-            >{d.label}</text>
+            <g pointerEvents="none">
+              <line x1={hx} y1={padT} x2={hx} y2={padT + plotH} stroke="#9ca3af" strokeWidth={1} strokeDasharray="3 3" />
+              {series.map(s => {
+                const p = pointFor(data[hoverIdx][s.dataKey], hoverIdx)
+                return <circle key={s.dataKey} cx={p.x} cy={p.y} r={4} fill="white" stroke={s.stroke} strokeWidth={2} />
+              })}
+              <rect x={tx} y={ty} width={tipW} height={tipH} rx={6} fill="#111827" opacity={0.94} />
+              <text x={tx + 8} y={ty + 13} fontSize={10} fontWeight={600} fill="white">{data[hoverIdx].label}</text>
+              {series.map((s, i) => (
+                <g key={s.dataKey}>
+                  <circle cx={tx + 11} cy={ty + 24 + i * 14} r={2.5} fill={s.stroke} />
+                  <text x={tx + 18} y={ty + 27 + i * 14} fontSize={10} fill="#e5e7eb">
+                    {s.label}: <tspan fontWeight={600} fill="white">{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
+                  </text>
+                </g>
+              ))}
+            </g>
           )
-        })}
+        })()}
       </svg>
     </div>
   )
