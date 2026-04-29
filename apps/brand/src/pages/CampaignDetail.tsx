@@ -1623,7 +1623,7 @@ export default function CampaignDetail() {
                           </span>
                         </td>
                         <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600 max-w-[220px] truncate" title={`${i.address ?? ''} ${i.addressDetail ?? ''}`}>{i.address ?? '-'} {i.addressDetail ?? ''}</td>
+                        <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
                             <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">등록 완료</span>
