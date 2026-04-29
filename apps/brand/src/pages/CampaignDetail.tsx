@@ -1251,7 +1251,7 @@ export default function CampaignDetail() {
                   <div className="px-3 pb-2.5 flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
                     {activeEntries.map(([q, v]) => (
                       <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-[11px] text-gray-700">
-                        <span className="truncate max-w-[160px]" title={`${q}: ${v}`}>
+                        <span className="break-words">
                           <span className="text-gray-400">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
                         </span>
                         <button
