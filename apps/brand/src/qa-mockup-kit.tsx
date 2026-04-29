@@ -65,8 +65,9 @@ const QA_CHROME_HEIGHT = 116; // 상단바 58px + 하단바 58px
  * 1.014  캠페인 상세 헤더 KPI 2×2 고정 + 일정바 2/1 분할 + truncate→break-words (말줄임 방지)
  * 1.015  TOP 인플루언서 username 메인 + 콘텐츠 순위 인플루언서 username 메인 + 유형 배지 wrap 방지 + 성과리포트 KPI 2×3 (평균 참여율 통합) + @{c.influencer} 버그 수정
  * 1.016  @@username 버그 수정 (INFLUENCER_POOL id에서 @ 제거) / 차트 모바일 툴팁 확대 + 가로 스크롤 / 추이 차트 1열 / 중요 릴스 카드 metrics stacked / 콘텐츠 순위·좋아요 비교 가로 스크롤 / TOP 인플루언서 갭 확대 / BottomSheet absolute→fixed
+ * 1.017  지원자 관리 액션 컬럼: 헤더 라벨 제거 + 모바일 버튼 세로 배치 (@md 이상 가로 유지)
  */
-export const QA_VERSION = '1.016';
+export const QA_VERSION = '1.017';
 
 // ─────────────────────────────────────────────────────────────
 // DeviceModeContext — MockupShell의 deviceMode를 하위 컴포넌트에 전달

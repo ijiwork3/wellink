@@ -1338,7 +1338,7 @@ export default function CampaignDetail() {
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
-                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[130px]">액션</th>
+                  <th scope="col" aria-label="액션" className="py-3 px-4 sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[110px] @md:min-w-[130px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -1427,36 +1427,36 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-2 px-3 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       {pendingApplicants.has(a.id) ? (
-                        <div className="flex flex-col gap-1 min-w-[110px]">
+                        <div className="flex flex-col gap-1 min-w-[100px]">
                           <span className="inline-flex items-center justify-center text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg whitespace-nowrap">
                             선정 예정
                           </span>
-                          <div className="flex gap-1">
+                          <div className="flex flex-col gap-1 @md:flex-row">
                             <button
                               onClick={() => setConfirmSelectionModal({ ids: [a.id], name: a.name })}
-                              className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-brand-green text-white px-2 py-1 rounded-lg hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
+                              className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-brand-green text-white px-2 py-1 rounded-lg hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
                             >
                               <Check size={11} aria-hidden="true" /> 확정
                             </button>
                             <button
                               onClick={() => handleUnpendApplicant(a.id)}
-                              className="flex-1 inline-flex items-center justify-center text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap"
+                              className="@md:flex-1 inline-flex items-center justify-center text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap"
                             >
                               취소
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <div className="flex gap-1 min-w-[110px]">
+                        <div className="flex flex-col gap-1 min-w-[100px] @md:flex-row">
                           <button
                             onClick={() => handlePendApplicant(a.id)}
-                            className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-white border border-brand-green text-brand-green px-2 py-1.5 rounded-lg hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap"
+                            className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-white border border-brand-green text-brand-green px-2 py-1.5 rounded-lg hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap"
                           >
                             <Check size={11} aria-hidden="true" /> 선정
                           </button>
                           <button
                             onClick={() => setRejectModal(a.id)}
-                            className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs text-red-500 border border-red-200 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors duration-150 whitespace-nowrap"
+                            className="@md:flex-1 inline-flex items-center justify-center gap-0.5 text-xs text-red-500 border border-red-200 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors duration-150 whitespace-nowrap"
                           >
                             <X size={11} aria-hidden="true" /> 반려
                           </button>
