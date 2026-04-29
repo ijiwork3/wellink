@@ -219,7 +219,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* KPI */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
             {kpis.map((k, i) => (
               <div key={i} className="border shadow-sm rounded-xl p-5 flex flex-col gap-3" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
                 <div className="flex items-center justify-between">
@@ -236,8 +236,8 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           </div>
 
           {/* 캠페인 테이블 + 알림 */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2 border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
+          <div className="grid grid-cols-1 @lg:grid-cols-3 gap-4">
+            <div className="@lg:col-span-2 border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: g.border }}>
                 <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
                 <button className="text-xs flex items-center gap-1" style={{ color: d.color }}>전체보기 <ArrowRight size={11}/></button>
@@ -301,7 +301,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           {/* 빠른 실행 */}
           <div>
             <h2 className="text-sm font-semibold text-gray-900 mb-3">빠른 실행</h2>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
               {[
                 { icon: <Megaphone size={18}/>, label: '새 캠페인',     sub: '캠페인 만들기',   primary: true },
                 { icon: <Users size={18}/>,    label: '인플루언서 탐색', sub: '전체 리스트 보기', primary: false },
@@ -352,7 +352,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           <button className="px-4 py-2.5 rounded-xl text-sm font-medium text-white" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
             {summary.map((stat, i) => (
               <div key={i} className="border shadow-sm rounded-xl px-4 py-3" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
                 <p className="text-xs" style={{ color: g.subtle }}>{stat.label}</p>
@@ -471,7 +471,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
             {metrics.map((m, i) => (
               <div key={i} className="border shadow-sm rounded-xl p-5" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
                 <div className="flex items-center justify-between mb-3">
