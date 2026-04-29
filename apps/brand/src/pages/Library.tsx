@@ -307,7 +307,7 @@ export default function Library() {
             <div className="h-9 w-28 bg-gray-200 rounded-xl" />
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-4 gap-4">
           {[0, 1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
               <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
@@ -320,7 +320,7 @@ export default function Library() {
           <div className="h-9 w-20 bg-gray-200 rounded-xl" />
           <div className="h-9 w-24 bg-gray-200 rounded-xl" />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-3 gap-4">
           {[0, 1, 2, 3, 4, 5].map(i => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="aspect-video bg-gray-200" />
@@ -390,7 +390,7 @@ export default function Library() {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
@@ -622,7 +622,7 @@ export default function Library() {
             <span className="text-xs text-gray-500">전체 선택 ({filtered.length})</span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 @lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
             {paginated.map(c => {
               const isSelected = selectedIds.has(c.id)
               const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
@@ -852,7 +852,7 @@ export default function Library() {
                   <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3">
                 {[
                   { icon: <Eye size={14} />, label: '도달', value: fmtNumber(previewItem.reach) },
                   { icon: <Heart size={14} />, label: '좋아요', value: fmtNumber(previewItem.likes) },
