@@ -165,7 +165,7 @@ export default function InfluencerList() {
           <p className="text-sm text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
         </div>
         {/* KPI 4개 스켈레톤 */}
-        <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3 animate-pulse">
+        <div className="grid grid-cols-2 @md:grid-cols-3 gap-3 animate-pulse">
           {[0, 1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
               <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
@@ -297,7 +297,7 @@ export default function InfluencerList() {
       </div>
 
       {/* 요약 통계 */}
-      <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
         {summaryStats.map(stat => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
             <p className="text-xs text-gray-400">{stat.label}</p>
@@ -589,7 +589,7 @@ export default function InfluencerList() {
             {detailTab === 'overview' && (
               <div className="space-y-4">
                 {/* 지표 그리드 — 모바일 2cols, 태블릿+ 3cols */}
-                <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
                   {[
                     ['팔로워', formatFollowers(selectedInfluencer.followers), 'text-gray-900'],
                     ['게시물 수', `${selectedInfluencer.posts}개`, 'text-gray-900'],

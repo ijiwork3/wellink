@@ -144,7 +144,7 @@ export default function Subscription() {
           <div className="h-7 w-24 bg-gray-100 rounded-full" />
         </div>
         {/* 플랜 카드 3개 스켈레톤 */}
-        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
               <div className="space-y-2">
@@ -362,7 +362,7 @@ export default function Subscription() {
                 이번 달 사용량 현황
                 <span className="text-[10px] font-normal text-gray-400">(매월 결제일 초기화)</span>
               </h3>
-              <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
                 {usage.map(f => {
                   const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
                   const isOver = f.used >= f.limit
@@ -399,7 +399,7 @@ export default function Subscription() {
       })()}
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰색 배경 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div

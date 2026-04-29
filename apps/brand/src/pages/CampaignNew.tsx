@@ -447,7 +447,7 @@ export default function CampaignNew() {
       {/* ── 섹션 4: 일정 및 모집 인원 ── */}
       <Section title="일정 및 모집 인원">
         <Field label={<span className="flex items-center gap-1"><Calendar size={13} /> 모집 일정</span>}>
-          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
             <SubField label="모집 기간">
               <div className="flex items-center gap-1.5">
                 <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />

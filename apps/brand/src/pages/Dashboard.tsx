@@ -169,7 +169,7 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
           {[
             { step: '01', title: '캠페인 등록', desc: '제품과 캠페인 정보를 입력하세요' },
             { step: '02', title: '인플루언서 매칭', desc: 'AI가 적합한 인플루언서를 추천합니다' },
@@ -201,18 +201,18 @@ export default function Dashboard() {
         {/* 요약 배너 스켈레톤 */}
         <div className="h-16 bg-gray-100 rounded-xl" />
         {/* KPI 4개 스켈레톤 */}
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => (
             <div key={i} className="bg-gray-100 rounded-xl h-32" />
           ))}
         </div>
         {/* 섹션 2개 스켈레톤 */}
-        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
           <div className="col-span-2 bg-gray-100 rounded-xl h-48" />
           <div className="bg-gray-100 rounded-xl h-48" />
         </div>
         {/* 콘텐츠 성과 스켈레톤 */}
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => (
             <div key={i} className="bg-gray-100 rounded-xl h-24" />
           ))}
@@ -238,7 +238,7 @@ export default function Dashboard() {
           </button>
         </div>
         {/* 0값 KPI */}
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[
             { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} aria-hidden="true" /> },
             { title: '진행중 인플루언서', value: '0', sub: '참여 인원 없음', icon: <Users size={16} aria-hidden="true" /> },
@@ -328,7 +328,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── KPI 카드 ── */}
-      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         {kpis.map(kpi => {
           const isPositive = kpi.trend >= 0
           return (
@@ -355,7 +355,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
-      <div className="grid grid-cols-1 @sm:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
         {/* 활성 캠페인 현황 */}
         <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
@@ -502,7 +502,7 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {contentByPeriod[contentPeriod].map(item => {
             const isPositive = item.change >= 0
             const lineColor = isPositive ? 'var(--color-sparkline-success)' : 'var(--color-sparkline-alert)'
@@ -543,7 +543,7 @@ export default function Dashboard() {
           </div>
         )}
         <h2 className="text-sm font-semibold text-gray-900 mb-3">빠른 실행</h2>
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
           {[
             { icon: <Megaphone size={18} aria-hidden="true" />, label: '새 캠페인',      sub: '캠페인 만들기',    route: '/campaigns/new',     primary: true },
             { icon: <Users size={18} aria-hidden="true" />,     label: '인플루언서 탐색', sub: '전체 리스트 보기', route: '/influencers/list',  primary: false },

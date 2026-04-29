@@ -181,7 +181,7 @@ export default function ViralMetrics() {
           <div className="h-9 w-64 bg-gray-100 rounded-xl" />
         </div>
         {/* KPI 4개 스켈레톤 */}
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => (
             <div key={i} className="bg-gray-100 rounded-xl h-32" />
           ))}
@@ -254,13 +254,12 @@ export default function ViralMetrics() {
 
   return (
     <div className="space-y-6">
-      {/* 헤더 + 날짜 네비게이션 */}
-      <div className="flex flex-col @sm:flex-row @sm:items-start @sm:justify-between gap-3">
+      {/* 헤더 — 제목과 날짜 네비게이션을 분리 (제목 한 행, 날짜 picker 아래 행) */}
+      <div className="space-y-3">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
+          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none whitespace-nowrap">Beta</span>
         </div>
-
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
           dateOffset={dateOffset}
@@ -280,7 +279,7 @@ export default function ViralMetrics() {
       )}
 
       {/* KPI 카드 4개 — 지표 중심 */}
-      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-gray-500">총 바이럴 도달</span>
@@ -548,7 +547,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
           return <path key={a.label} d={d} fill={a.color} />
         })}
       </svg>
-      <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-1 min-w-[120px]">
+      <div className="flex-1 grid grid-cols-1 @md:grid-cols-2 gap-x-3 gap-y-1 min-w-[120px]">
         {arr.map(a => (
           <div key={a.label} className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-1 text-[11px] text-gray-700">

@@ -373,11 +373,11 @@ export default function ProfileInsight() {
           </div>
           <div className="h-9 w-36 bg-gray-100 rounded-xl" />
         </div>
-        <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
         </div>
         <div className="bg-gray-100 rounded-xl h-64" />
-        <div className="grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
+        <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
           <div className="col-span-3 bg-gray-100 rounded-xl h-48" />
           <div className="col-span-2 bg-gray-100 rounded-xl h-48" />
         </div>
@@ -425,8 +425,8 @@ export default function ProfileInsight() {
 
   return (
     <div className="space-y-6">
-      {/* 헤더 + 기간 탭 + 날짜 네비게이션 */}
-      <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
+      {/* 헤더 — 제목과 날짜 네비게이션 분리 */}
+      <div className="space-y-3">
         <div>
           <h1 className="text-xl font-bold text-gray-900">프로필 인사이트</h1>
           <p className="text-sm text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
@@ -477,7 +477,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* KPI 카드 4개 */}
-      <div className="grid grid-cols-2 @sm:grid-cols-4 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="팔로워 수"
           value={fmtNumber(kpi.followers)}
@@ -521,7 +521,7 @@ export default function ProfileInsight() {
         const conv = conversionByPeriod[period]
         const ctr = conv.profileViews > 0 ? +((conv.websiteClicks / conv.profileViews) * 100).toFixed(1) : 0
         return (
-          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
+          <div className="grid grid-cols-1 @md:grid-cols-3 gap-3 @sm:gap-4">
             <KPICard
               title="프로필 방문"
               value={fmtNumber(conv.profileViews)}
@@ -592,7 +592,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
-      <div className="grid grid-cols-2 @sm:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
+      <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 (3/5) */}
         <div className="col-span-2 @sm:col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">콘텐츠 유형별 성과</h3>
