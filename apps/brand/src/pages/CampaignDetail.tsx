@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -402,6 +402,8 @@ export default function CampaignDetail() {
   const [answerFilters, setAnswerFilters] = useState<Record<string, string>>({})
   // 옵션 필터 펼침/접힘 — 질문 많을 때 화면 절약
   const [optionFilterOpen, setOptionFilterOpen] = useState(false)
+  // 선정 예정만 보기 필터
+  const [pendingOnlyFilter, setPendingOnlyFilter] = useState(false)
 
   // 선정된 지원자 state
   // QA: tab-selected-empty → 빈 배열
@@ -943,17 +945,19 @@ export default function CampaignDetail() {
 
       {/* 헤더 카드 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-              <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
-              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
-              <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                <span className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
+                <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
+                <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
+              </div>
+              <h1 className="text-lg @md:text-xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
             </div>
-            <h1 className="text-xl @md:text-2xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
+            <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0"><Share2 size={16} /></button></Tooltip>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"><Share2 size={16} /></button></Tooltip>
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700"><Edit2 size={13} />정보 변경</button>
             {canCancelCampaign && (
               <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-xs text-orange-700"><X size={13} />캠페인 취소</button>
@@ -1111,6 +1115,9 @@ export default function CampaignDetail() {
         // 검색·정렬·동적 답변 필터 (원본 ApplicantList 기능 보강)
         const q = applicantsSearch.trim().toLowerCase()
         let filtered = applicants
+        if (pendingOnlyFilter) {
+          filtered = filtered.filter(a => pendingApplicants.has(a.id))
+        }
         if (q) {
           filtered = filtered.filter(a =>
             a.name.toLowerCase().includes(q) ||
@@ -1163,6 +1170,18 @@ export default function CampaignDetail() {
               {totalCount !== applicants.length && <span className="text-xs text-gray-400 font-normal">(전체 {applicants.length}명)</span>}
             </h2>
             <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setPendingOnlyFilter(v => !v)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition-colors duration-150 ${
+                  pendingOnlyFilter
+                    ? 'bg-amber-50 border-amber-300 text-amber-700'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Filter size={12} aria-hidden="true" />
+                선정 예정만
+                {pendingOnlyFilter && <span className="ml-0.5 font-semibold">{pendingApplicants.size}</span>}
+              </button>
               <button
                 onClick={handleBulkPend}
                 disabled={applicants.length === 0}
@@ -1289,12 +1308,6 @@ export default function CampaignDetail() {
                     />
                   </th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
-                  <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
-                  <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
-                  <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
-                  <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
                   <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
                     <span className="inline-flex items-center gap-1">
                       참여율
@@ -1314,10 +1327,16 @@ export default function CampaignDetail() {
                       {sortIcon('fitScore')}
                     </span>
                   </th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
+                  <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
                   <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-xs font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
                   <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
-                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[160px]">액션</th>
+                  <th scope="col" className="text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[130px]">액션</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -1338,11 +1357,16 @@ export default function CampaignDetail() {
                           {a.name[0]}
                         </div>
                         <div className="min-w-0">
-                          {/* username 메인 + 본명 보조 (정책서 § 6-3) */}
                           <span className="block text-sm font-medium text-gray-900 truncate max-w-[140px]">@{a.instagramId}</span>
                           <span className="block text-xs text-gray-400 truncate max-w-[140px]">{a.name}</span>
                         </div>
                       </div>
+                    </td>
+                    <td className="py-3 px-4 text-sm font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-green/10 text-brand-green">
+                        {a.fitScore}
+                      </span>
                     </td>
                     {/* 콘텐츠 미리보기 (피드 1 + 릴스 1) — 정책서 § 6-3-1 */}
                     <td className="py-3 px-4 whitespace-nowrap">
@@ -1391,13 +1415,6 @@ export default function CampaignDetail() {
                     <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.postsCount)}</td>
                     <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgLikes)}</td>
                     <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgComments)}</td>
-                    <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{a.engagement}%</td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
-                      {/* Fit Score AI 브랜딩 — 그라디언트 배지 (정책서 § 13-1-0) */}
-                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
-                        {a.fitScore}
-                      </span>
-                    </td>
                     <td className="py-3 px-4 text-xs text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
                     <td className="py-3 px-4 text-xs text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
                     <td className="py-3 px-4 text-center">
@@ -1406,44 +1423,43 @@ export default function CampaignDetail() {
                         className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                       >답변 보기</button>
                     </td>
-                    <td className="py-3 px-4 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] whitespace-nowrap">
-                      {/* 선정 예정 단계 (정책서 § 6-4) — 신청 → 선정 예정 → 선정 확정 */}
-                      <div className="flex gap-1.5 flex-nowrap">
-                        {pendingApplicants.has(a.id) ? (
-                          <>
-                            <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-xl whitespace-nowrap shrink-0">
-                              선정 예정
-                            </span>
+                    <td className="py-2 px-3 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                      {pendingApplicants.has(a.id) ? (
+                        <div className="flex flex-col gap-1 min-w-[110px]">
+                          <span className="inline-flex items-center justify-center text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                            선정 예정
+                          </span>
+                          <div className="flex gap-1">
                             <button
                               onClick={() => setConfirmSelectionModal({ ids: [a.id], name: a.name })}
-                              className="inline-flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap shrink-0"
+                              className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-brand-green text-white px-2 py-1 rounded-lg hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
                             >
-                              <Check size={12} aria-hidden="true" /> 확정
+                              <Check size={11} aria-hidden="true" /> 확정
                             </button>
                             <button
                               onClick={() => handleUnpendApplicant(a.id)}
-                              className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-2 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap shrink-0"
+                              className="flex-1 inline-flex items-center justify-center text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors duration-150 whitespace-nowrap"
                             >
                               취소
                             </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => handlePendApplicant(a.id)}
-                              className="inline-flex items-center gap-1 text-xs bg-white border border-brand-green text-brand-green px-3 py-1.5 rounded-xl hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap shrink-0"
-                            >
-                              <Check size={12} aria-hidden="true" /> 선정 예정
-                            </button>
-                            <button
-                              onClick={() => setRejectModal(a.id)}
-                              className="inline-flex items-center gap-1 text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors duration-150 whitespace-nowrap shrink-0"
-                            >
-                              <X size={12} aria-hidden="true" /> 반려
-                            </button>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-1 min-w-[110px]">
+                          <button
+                            onClick={() => handlePendApplicant(a.id)}
+                            className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs bg-white border border-brand-green text-brand-green px-2 py-1.5 rounded-lg hover:bg-brand-green/5 transition-colors duration-150 whitespace-nowrap"
+                          >
+                            <Check size={11} aria-hidden="true" /> 선정
+                          </button>
+                          <button
+                            onClick={() => setRejectModal(a.id)}
+                            className="flex-1 inline-flex items-center justify-center gap-0.5 text-xs text-red-500 border border-red-200 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors duration-150 whitespace-nowrap"
+                          >
+                            <X size={11} aria-hidden="true" /> 반려
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -1825,15 +1841,17 @@ export default function CampaignDetail() {
                         )}
                         </div>
                         {/* 콘텐츠 점수 (정책서 § 8-2) */}
-                        <Tooltip content="콘텐츠의 도달·참여·반응을 종합한 자체 산출 점수입니다. (검증 단계 — 자세한 산식은 후속 정의)" multiline>
-                          <div className={`absolute bottom-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
-                            c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
-                            c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
-                            c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
-                          }`}>
-                            {c.viralScore === 0 ? '—' : `${c.viralScore}점`}
-                          </div>
-                        </Tooltip>
+                        <div className="absolute bottom-3 right-3">
+                          <Tooltip content="콘텐츠의 도달·참여·반응을 종합한 자체 산출 점수입니다. (검증 단계 — 자세한 산식은 후속 정의)" multiline>
+                            <div className={`text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
+                              c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
+                              c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
+                              c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
+                            }`}>
+                              {c.viralScore === 0 ? '—' : `${c.viralScore}점`}
+                            </div>
+                          </Tooltip>
+                        </div>
                       </div>
 
                       {/* 정보 영역 */}
@@ -2063,7 +2081,7 @@ export default function CampaignDetail() {
                 <Info size={11} className="text-gray-400 cursor-help" />
               </Tooltip>
             </div>
-            <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-1 @sm:grid @sm:grid-cols-3 @sm:overflow-visible @sm:pb-0">
               {[...approvedContents]
                 .filter(c => c.type === '릴스' || c.type === '영상' || c.type === '쇼츠')
                 .sort((a, b) => b.viralScore - a.viralScore)
@@ -2074,7 +2092,7 @@ export default function CampaignDetail() {
                   const borderColor = idx === 0 ? 'border-amber-200' : 'border-gray-100'
                   const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
                   return (
-                    <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3`}>
+                    <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3 min-w-[260px] @sm:min-w-0 shrink-0 @sm:shrink`}>
                       {/* 상단: 순위 + 점수 */}
                       <div className="flex items-center justify-between">
                         <span className="text-base" aria-hidden="true">{medals[idx]}</span>
@@ -2777,19 +2795,42 @@ export default function CampaignDetail() {
       >
         {(() => {
           if (!previewModal) return null
-          const target = applicants.find(a => a.id === previewModal.applicantId)
+          const previewable = applicants.filter(a => !a.isPrivate && (previewModal.type === 'feed' ? a.previewFeed : a.previewReels))
+          const curIdx = previewable.findIndex(a => a.id === previewModal.applicantId)
+          const target = previewable[curIdx]
           if (!target) return null
           const bg = previewModal.type === 'feed' ? target.previewFeed : target.previewReels
           const aspect = previewModal.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[400px] mx-auto'
+          const hasPrev = curIdx > 0
+          const hasNext = curIdx < previewable.length - 1
           return (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold`}>
                   {target.name[0]}
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900">@{target.instagramId}</p>
                   <p className="text-xs text-gray-400">{target.name} · 팔로워 {target.followers}</p>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setPreviewModal({ applicantId: previewable[curIdx - 1].id, type: previewModal.type })}
+                    disabled={!hasPrev}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    aria-label="이전"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <span className="text-xs text-gray-400 min-w-[40px] text-center">{curIdx + 1} / {previewable.length}</span>
+                  <button
+                    onClick={() => setPreviewModal({ applicantId: previewable[curIdx + 1].id, type: previewModal.type })}
+                    disabled={!hasNext}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    aria-label="다음"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
               </div>
               {bg ? (
@@ -3032,14 +3073,15 @@ function TrendChart({
           )
         })}
         {data.map((d, i) => {
-          if (data.length > 8 && i % 2 !== 0) return null
+          const step = data.length > 14 ? 3 : data.length > 7 ? 2 : 1
+          if (i % step !== 0) return null
           return (
             <text
               key={i}
               x={padL + i * xStep}
-              y={padT + plotH + 14}
+              y={padT + plotH + 15}
               textAnchor="middle"
-              fontSize={9}
+              fontSize={10}
               fill="#6b7280"
             >{d.label}</text>
           )

@@ -212,27 +212,13 @@ export default function Campaigns() {
   const isTab = (v: string | null): v is Tab => !!v && (tabs as readonly string[]).includes(v)
   const isSort = (v: string | null): v is SortKey => !!v && SORTS.some(s => s.value === v)
 
-  // 다중 탭 선택 (정책서 § 4-1) — Cmd/Ctrl 클릭으로 토글, "전체"는 단일 전용
-  const [activeTabs, setActiveTabs] = useState<Tab[]>(() => {
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
     const raw = searchParams.get('tab')
-    if (!raw) return ['전체']
-    const list = raw.split(',').filter(isTab)
-    if (list.length === 0) return ['전체']
-    if (list.includes('전체')) return ['전체']
-    return list
+    return isTab(raw) ? raw : '전체'
   })
-  const isAllTabActive = activeTabs.length === 1 && activeTabs[0] === '전체'
-  const handleTabClick = (tab: Tab, e?: { metaKey?: boolean; ctrlKey?: boolean }) => {
-    const multi = !!(e?.metaKey || e?.ctrlKey)
-    if (tab === '전체' || !multi) {
-      setActiveTabs([tab])
-    } else if (activeTabs.includes(tab)) {
-      const next = activeTabs.filter(t => t !== tab)
-      setActiveTabs(next.length === 0 ? ['전체'] : next)
-    } else {
-      const next = activeTabs.filter(t => t !== '전체')
-      setActiveTabs([...next, tab])
-    }
+  const isAllTabActive = activeTab === '전체'
+  const handleTabClick = (tab: Tab) => {
+    setActiveTab(tab)
     setPage(1)
   }
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '')
@@ -283,7 +269,7 @@ export default function Campaigns() {
   // state → URL 동기화 (기본값은 URL에서 제거해 깔끔하게)
   useEffect(() => {
     const next = new URLSearchParams()
-    if (!isAllTabActive)              next.set('tab', activeTabs.join(','))
+    if (!isAllTabActive)              next.set('tab', activeTab)
     if (search)                       next.set('q', search)
     if (platformFilter !== '전체')    next.set('platform', platformFilter)
     if (categoryFilter !== '전체')    next.set('category', categoryFilter)
@@ -294,13 +280,13 @@ export default function Campaigns() {
     if (qaParam) next.set('qa', qaParam)
     setSearchParams(next, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTabs, search, platformFilter, categoryFilter, sort, page])
+  }, [activeTab, search, platformFilter, categoryFilter, sort, page])
 
   const hasActiveFilters =
     search !== '' || platformFilter !== '전체' || categoryFilter !== '전체' || !isAllTabActive
 
   const resetAllFilters = () => {
-    setActiveTabs(['전체'])
+    setActiveTab('전체')
     setSearch('')
     setPlatformFilter('전체')
     setCategoryFilter('전체')
@@ -366,7 +352,7 @@ export default function Campaigns() {
     const list = campaigns.filter(c => {
       const display = deriveDisplayStatus(c)
       // 다중 탭: "전체" 활성이면 모두 / 그 외엔 활성 탭 중 하나라도 매치되면 통과
-      const tabMatch = isAllTabActive || activeTabs.includes(display as Tab)
+      const tabMatch = isAllTabActive || activeTab === (display as Tab)
       return tabMatch &&
         (platformFilter === '전체' || c.platform === platformFilter) &&
         (categoryFilter === '전체' || c.category === categoryFilter) &&
@@ -391,7 +377,7 @@ export default function Campaigns() {
       return primary !== 0 ? primary : tieBreak(a, b)
     })
     return sorted
-  }, [qaEmpty, search, activeTabs, isAllTabActive, platformFilter, categoryFilter, sort])
+  }, [qaEmpty, search, activeTab, isAllTabActive, platformFilter, categoryFilter, sort])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
@@ -424,30 +410,20 @@ export default function Campaigns() {
 
       {/* 본문 카드 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* 탭 — 다중 선택 (정책서 § 4-1): Cmd/Ctrl 클릭으로 토글 */}
         <div className="flex items-center gap-1 px-2 @sm:px-4 border-b border-gray-100 overflow-x-auto">
-          {tabs.map(tab => {
-            const isActive = activeTabs.includes(tab)
-            return (
-              <button
-                key={tab}
-                onClick={(e) => handleTabClick(tab, e)}
-                title={tab !== '전체' ? 'Cmd/Ctrl + 클릭으로 여러 탭 비교' : undefined}
-                className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
-                  isActive
-                    ? 'border-gray-900 font-semibold text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {tab}
-              </button>
-            )
-          })}
-          {!isAllTabActive && activeTabs.length >= 2 && (
-            <span className="ml-2 text-xs bg-brand-green/10 text-brand-green px-2 py-0.5 rounded-full whitespace-nowrap">
-              {activeTabs.length} 선택됨
-            </span>
-          )}
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => handleTabClick(tab)}
+              className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
+                activeTab === tab
+                  ? 'border-gray-900 font-semibold text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* 검색 + 필터 + 정렬 */}
@@ -500,17 +476,12 @@ export default function Campaigns() {
         {hasActiveFilters && (
           <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] text-gray-400 shrink-0">적용된 필터:</span>
-            {!isAllTabActive && activeTabs.map(t => (
+            {!isAllTabActive && (
               <FilterChip
-                key={t}
-                label={`상태: ${t}`}
-                onRemove={() => {
-                  const next = activeTabs.filter(x => x !== t)
-                  setActiveTabs(next.length === 0 ? ['전체'] : next)
-                  resetPage()
-                }}
+                label={`상태: ${activeTab}`}
+                onRemove={() => { setActiveTab('전체'); resetPage() }}
               />
-            ))}
+            )}
             {search && (
               <FilterChip label={`검색: ${search}`} onRemove={() => { setSearch(''); resetPage() }} />
             )}
