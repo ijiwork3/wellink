@@ -1358,9 +1358,9 @@ export default function CampaignDetail() {
                         <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                           {a.name[0]}
                         </div>
-                        <div className="min-w-0 leading-tight">
-                          <span className="block text-sm font-bold text-gray-900 truncate max-w-[140px]">@{a.instagramId}</span>
-                          <span className="block text-[11px] text-gray-400 truncate max-w-[140px] mt-0.5">본명 · {a.name}</span>
+                        <div className="leading-tight">
+                          <span className="block text-sm font-bold text-gray-900 whitespace-nowrap">@{a.instagramId}</span>
+                          <span className="block text-[11px] text-gray-400 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
                         </div>
                       </div>
                     </td>
@@ -1602,9 +1602,9 @@ export default function CampaignDetail() {
                             <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
                               {i.name[0]}
                             </div>
-                            <div className="min-w-0 leading-tight">
-                              <span className="block text-sm font-bold text-gray-900 truncate max-w-[140px]">@{i.instagramId}</span>
-                              <span className="block text-[11px] text-gray-400 truncate max-w-[140px] mt-0.5">본명 · {i.name}</span>
+                            <div className="leading-tight">
+                              <span className="block text-sm font-bold text-gray-900 whitespace-nowrap">@{i.instagramId}</span>
+                              <span className="block text-[11px] text-gray-400 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
                             </div>
                           </div>
                         </td>
