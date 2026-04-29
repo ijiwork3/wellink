@@ -3031,14 +3031,30 @@ function TrendChart({
     y: padT + plotH - (v / max) * plotH,
   })
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
-  const handleMove = (e: React.PointerEvent<SVGSVGElement>) => {
+  const updateFromPointer = (e: React.PointerEvent<SVGSVGElement>) => {
     const svg = e.currentTarget
     const rect = svg.getBoundingClientRect()
     const xRatio = (e.clientX - rect.left) / rect.width
     const xInVB = xRatio * W
-    if (xInVB < padL || xInVB > padL + plotW) { setHoverIdx(null); return }
-    const idx = Math.round((xInVB - padL) / Math.max(xStep, 0.0001))
+    const clamped = Math.max(padL, Math.min(padL + plotW, xInVB))
+    const idx = Math.round((clamped - padL) / Math.max(xStep, 0.0001))
     if (idx >= 0 && idx < data.length) setHoverIdx(idx)
+  }
+  const handleDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    updateFromPointer(e)
+  }
+  const handleMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    // 모바일(터치): 캡처된 동안만 갱신 / 데스크톱(마우스): 항상 갱신
+    if (e.pointerType === 'mouse' || e.currentTarget.hasPointerCapture(e.pointerId)) {
+      updateFromPointer(e)
+    }
+  }
+  const handleUp = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+  }
+  const handleLeave = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (e.pointerType === 'mouse') setHoverIdx(null)
   }
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
@@ -3058,9 +3074,12 @@ function TrendChart({
       <svg
         width="100%"
         viewBox={`0 0 ${W} ${H}`}
-        className="overflow-visible cursor-crosshair"
+        className="overflow-visible cursor-crosshair touch-none select-none"
+        onPointerDown={handleDown}
         onPointerMove={handleMove}
-        onPointerLeave={() => setHoverIdx(null)}
+        onPointerUp={handleUp}
+        onPointerCancel={handleUp}
+        onPointerLeave={handleLeave}
       >
         {[0, 0.25, 0.5, 0.75, 1].map(r => {
           const y = padT + plotH - r * plotH
