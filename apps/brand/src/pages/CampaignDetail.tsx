@@ -1887,8 +1887,8 @@ export default function CampaignDetail() {
                         {/* 제출일 */}
                         <p className="text-xs text-gray-400">제출일 {c.submittedAt}</p>
 
-                        {/* 지표 3×2 */}
-                        <div className="grid grid-cols-3 gap-y-2 text-center border-t border-gray-50 pt-3">
+                        {/* 지표 — 항상 2×3 (3열은 좁은 카드에서 값 겹침) */}
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-2 text-center border-t border-gray-50 pt-3">
                           {[
                             { label: '도달', value: fmtNumber(c.reach) },
                             { label: '좋아요', value: fmtNumber(c.likes) },
