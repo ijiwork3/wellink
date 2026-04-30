@@ -275,13 +275,13 @@ export default function MyPage() {
                 </div>
                 {/* 정보 */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{member.name}</p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_BADGE[member.role]}`}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm font-semibold text-gray-900 break-words">{member.name}</p>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${ROLE_BADGE[member.role]}`}>
                       {member.role}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">{member.email}</p>
+                  <p className="text-xs text-gray-500 mt-0.5 break-all">{member.email}</p>
                   <p className="text-xs text-gray-400 mt-0.5">합류일 {member.joinedAt}</p>
                 </div>
                 {/* 액션 */}
