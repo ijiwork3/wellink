@@ -2645,7 +2645,7 @@ export default function CampaignDetail() {
                       <p className="text-xs text-gray-500">팔로워 {detail.followers} · Fit Score {detail.fitScore}점</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2">
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">게시글 수</p>
                       <p className="text-lg font-bold text-gray-900 mt-1">{detail.uploadedPostCount ?? 0}개</p>
@@ -2846,7 +2846,7 @@ export default function CampaignDetail() {
               ) : (
                 <div className={`${aspect} bg-gray-50 rounded-xl flex items-center justify-center text-xs text-gray-400`}>콘텐츠 없음</div>
               )}
-              <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 rounded-lg p-2">
                   <p className="text-xs text-gray-400">평균 좋아요</p>
                   <p className="text-sm font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
