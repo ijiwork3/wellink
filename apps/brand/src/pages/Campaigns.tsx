@@ -106,7 +106,7 @@ function getCampaignDeadlineMeta(c: Campaign): { prefix: string; muted: boolean;
   if (display === '완료' || display === '종료') {
     return { prefix: '종료', muted: true }
   }
-  if (display === '진행중') {
+  if (display === '콘텐츠 등록 중') {
     const d = getDDay(c.deadline)
     if (d.label.startsWith('D+')) {
       const passed = Number(d.label.slice(2))
