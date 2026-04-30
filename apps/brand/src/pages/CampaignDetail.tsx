@@ -955,7 +955,7 @@ export default function CampaignDetail() {
                 <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
                 <span className="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
               </div>
-              <h1 className="text-lg @md:text-xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
+              <h1 className="text-lg @md:text-xl font-bold text-gray-900 break-words">[{meta.location}] {campaign.name}</h1>
             </div>
             <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0"><Share2 size={16} /></button></Tooltip>
           </div>
