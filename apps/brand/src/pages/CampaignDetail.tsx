@@ -2100,7 +2100,7 @@ export default function CampaignDetail() {
                       </div>
                       {/* 콘텐츠 제목 */}
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 leading-snug break-words">{c.caption}</p>
+                        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
                         <div className="flex items-center gap-1 mt-1 flex-wrap">
                           <span className="text-xs text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
                           <PlatformBadge platform={c.platform} />
