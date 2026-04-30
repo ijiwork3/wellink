@@ -571,7 +571,7 @@ export default function Campaigns() {
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
                       )}
                     </div>
-                    <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 truncate mb-1">{c.name}</p>
+                    <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 break-words mb-1">{c.name}</p>
                     <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-xs flex-wrap">
                       {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
                       {(() => {
