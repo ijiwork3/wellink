@@ -669,8 +669,8 @@ export default function Library() {
                   </button>
 
                   <div className="p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-900 truncate max-w-[120px]">{c.creator}</span>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <span className="text-sm font-semibold text-gray-900 min-w-0 break-words">{c.creator}</span>
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
                     <button
