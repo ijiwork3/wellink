@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, RotateCcw, ExternalLink } from 'lucide-react'
 import { CustomSelect, Pagination, TIMER_MS, Tooltip } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
@@ -386,7 +386,7 @@ export default function InfluencerList() {
           return next
         })
       }
-      setContentSubTab('feed'); setContentSort('latest')
+      setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null)
       setSelectedInfluencer(null)
       showToast(`${influencerName}님에게 제안을 전송했습니다.`, 'success')
     }, TIMER_MS.MOCK_SEND)
@@ -542,7 +542,7 @@ export default function InfluencerList() {
                   </p>
                   <p className="text-xs text-gray-400 mt-1">필터를 조정해보세요.</p>
                   <button
-                    onClick={() => { setSearch(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setPage(1) }}
+                    onClick={() => { setSearch(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setShowBookmarkedOnly(false); setPage(1) }}
                     className="mt-3 text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
                   >
                     필터 초기화
@@ -697,9 +697,9 @@ export default function InfluencerList() {
               </Tooltip>
               <p className="text-xs text-gray-500 text-center">
                 진행 중인 캠페인이 없습니다.{' '}
-                <a href="/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">
+                <Link to="/company/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">
                   캠페인 등록
-                </a>
+                </Link>
               </p>
             </div>
           ) : (

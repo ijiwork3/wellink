@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -178,6 +178,13 @@ export default function InfluencerManage() {
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null)
   const [proposalSent, setProposalSent] = useState(false)
   const [proposalExpandedId, setProposalExpandedId] = useState<number | null>(null)
+  const [proposedSet, setProposedSet] = useState<Set<number>>(() => {
+    try {
+      const raw = sessionStorage.getItem('wl_proposed')
+      if (raw) return new Set<number>(JSON.parse(raw) as number[])
+    } catch {}
+    return new Set<number>()
+  })
 
   const GROUP_NAME_MAX = 30
 
@@ -199,12 +206,16 @@ export default function InfluencerManage() {
 
   const closeConfirm = () => setConfirm(defaultConfirm)
 
-  const removeBookmark = (id: number, _name: string) =>
-    setInfluencers(prev => {
-      const updated = prev.filter(inf => inf.id !== id)
-      sessionStorage.setItem('wl_bookmarks', JSON.stringify(updated.map(inf => inf.id)))
-      return updated
-    })
+  const removeBookmark = (id: number, name: string) =>
+    openConfirm(
+      `'${name}'을 찜 목록에서 제거할까요?`,
+      '찜 목록에서 제외됩니다. 언제든 다시 찜할 수 있어요.',
+      () => setInfluencers(prev => {
+        const updated = prev.filter(inf => inf.id !== id)
+        sessionStorage.setItem('wl_bookmarks', JSON.stringify(updated.map(inf => inf.id)))
+        return updated
+      })
+    )
 
   const addToGroup = (infId: number, group: string) => {
     setInfluencers(prev => prev.map(inf =>
@@ -238,12 +249,24 @@ export default function InfluencerManage() {
   const handleProposal = () => {
     if (!selectedCampaign) { showToast('캠페인을 선택해주세요.', 'error'); return }
     const influencerName = detailInfluencer?.name
+    const influencerId = detailInfluencer?.id
     setProposalSent(true)
     setTimeout(() => {
       setProposalModal(false)
       setProposalSent(false)
       setSelectedCampaign(null)
+      if (influencerId !== undefined) {
+        setProposedSet(prev => {
+          const next = new Set(prev).add(influencerId)
+          try { sessionStorage.setItem('wl_proposed', JSON.stringify(Array.from(next))) } catch {}
+          return next
+        })
+      }
       setDetailInfluencer(null)
+      setDetailTab('overview')
+      setContentSubTab('feed')
+      setContentSort('latest')
+      setContentDetail(null)
       showToast(`${influencerName}님에게 제안을 전송했습니다.`, 'success')
     }, TIMER_MS.MOCK_SEND)
   }
@@ -266,6 +289,22 @@ export default function InfluencerManage() {
     setNewGroupModal(false)
     showToast('그룹이 생성되었습니다.', 'success')
   }
+
+  // ── 탭 필터 + 정렬 + 페이지네이션 (Rules of Hooks: early return 이전에 선언) ──
+  const tabs = ['전체', ...groups]
+  const filteredInfluencers = useMemo(() => {
+    const filtered = activeTab === '전체'
+      ? influencers
+      : influencers.filter(inf => inf.groups.includes(activeTab))
+    return sortInfluencers(filtered, sortKey)
+  }, [influencers, activeTab, sortKey])
+
+  const totalPages = Math.max(1, Math.ceil(filteredInfluencers.length / PAGE_SIZE))
+  useEffect(() => { if (page > totalPages) setPage(1) }, [page, totalPages])
+  const pagedInfluencers = filteredInfluencers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // 탭/정렬 변경 시 1페이지로 리셋
+  useEffect(() => { setPage(1) }, [activeTab, sortKey])
 
   // ── QA 상태 ───────────────────────────────────────────────
   if (qa === 'loading') {
@@ -315,7 +354,7 @@ export default function InfluencerManage() {
           <p className="text-sm font-semibold text-gray-400 mb-1">찜한 인플루언서가 없습니다</p>
           <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
           <button
-            onClick={() => navigate('/influencers/list')}
+            onClick={() => navigate('/company/dashboard/influencers')}
             className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             인플루언서 찾아보기
@@ -324,22 +363,6 @@ export default function InfluencerManage() {
       </div>
     )
   }
-
-  // ── 탭 필터 + 정렬 + 페이지네이션 ─────────────────────────
-  const tabs = ['전체', ...groups]
-  const filteredInfluencers = useMemo(() => {
-    const filtered = activeTab === '전체'
-      ? influencers
-      : influencers.filter(inf => inf.groups.includes(activeTab))
-    return sortInfluencers(filtered, sortKey)
-  }, [influencers, activeTab, sortKey])
-
-  const totalPages = Math.max(1, Math.ceil(filteredInfluencers.length / PAGE_SIZE))
-  useEffect(() => { if (page > totalPages) setPage(1) }, [page, totalPages])
-  const pagedInfluencers = filteredInfluencers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-
-  // 탭/정렬 변경 시 1페이지로 리셋
-  useEffect(() => { setPage(1) }, [activeTab, sortKey])
 
   // "그룹에 추가" 드롭다운/바텀시트에 보여줄 그룹 목록
   const getAddableGroups = (inf: Influencer) => groups.filter(g => !inf.groups.includes(g))
@@ -427,7 +450,7 @@ export default function InfluencerManage() {
             <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
             <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
             <button
-              onClick={() => navigate('/influencers/list')}
+              onClick={() => navigate('/company/dashboard/influencers')}
               className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
             >
               인플루언서 찾아보기
@@ -441,7 +464,7 @@ export default function InfluencerManage() {
               <div
                 key={inf.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow duration-150"
-                onClick={() => { setDetailInfluencer(inf); setDetailTab('overview') }}
+                onClick={() => { setDetailInfluencer(inf); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
               >
                 {/* 프로필 행 */}
                 <div className="flex items-start gap-3 mb-3">
@@ -657,7 +680,7 @@ export default function InfluencerManage() {
             maxLength={GROUP_NAME_MAX + 1}
             aria-invalid={!!newGroupError}
             aria-describedby={newGroupError ? 'group-name-error' : undefined}
-            className={`w-full text-sm border rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 transition-all ${
+            className={`w-full text-sm border rounded-xl px-3 py-2.5 focus-visible:outline-none focus-visible:ring-2 transition-all ${
               newGroupError ? 'border-red-400 focus-visible:ring-red-300/50' : 'border-gray-200 focus-visible:ring-brand-green/50'
             }`}
             onKeyDown={e => e.key === 'Enter' && createGroup()}
@@ -714,7 +737,7 @@ export default function InfluencerManage() {
         return (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
+            onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
           >
             <div
               className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-2xl mx-4'}`}
@@ -736,7 +759,7 @@ export default function InfluencerManage() {
                       )}
                       <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
                       <button
-                        onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest') }}
+                        onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
                         aria-label="닫기"
                         className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0"
                       >
@@ -901,7 +924,9 @@ export default function InfluencerManage() {
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
                           <p className="text-xs font-semibold text-gray-500">최근 콘텐츠 캡션 워드클라우드</p>
-                          <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center cursor-default" title="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">i</span>
+                          <Tooltip content="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">
+                            <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center cursor-default">i</span>
+                          </Tooltip>
                         </div>
                         <span className="text-xs text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
                       </div>
@@ -1022,7 +1047,12 @@ export default function InfluencerManage() {
               </div>
 
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
-                {proposableCampaigns.length === 0 ? (
+                {proposedSet.has(inf.id) ? (
+                  <div className="w-full flex items-center justify-center gap-2 py-1.5">
+                    <CheckCircle size={15} className="text-green-500" aria-hidden="true" />
+                    <span className="text-sm text-gray-500">이미 제안을 보냈습니다</span>
+                  </div>
+                ) : proposableCampaigns.length === 0 ? (
                   <div className="space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
                       <button
@@ -1037,7 +1067,7 @@ export default function InfluencerManage() {
                       진행 중인 캠페인이 없습니다.{' '}
                       <button
                         type="button"
-                        onClick={() => navigate('/campaigns/new')}
+                        onClick={() => navigate('/company/campaigns/new')}
                         className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover"
                       >
                         캠페인 등록
