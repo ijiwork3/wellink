@@ -1875,8 +1875,8 @@ export default function CampaignDetail() {
                               {c.influencer[0]}
                             </div>
                             <div className="min-w-0 leading-tight">
-                              <p className="text-sm font-bold text-gray-900 truncate">@{c.instagramId}</p>
-                              <p className="text-[11px] text-gray-400 truncate mt-0.5">본명 · {c.influencer}</p>
+                              <p className="text-sm font-bold text-gray-900 break-words">@{c.instagramId}</p>
+                              <p className="text-[11px] text-gray-400 break-words mt-0.5">본명 · {c.influencer}</p>
                             </div>
                           </div>
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
@@ -2014,7 +2014,7 @@ export default function CampaignDetail() {
                 <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5 min-w-0">
                   <div className="flex items-center gap-1.5 mb-3">
                     <Icon size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
-                    <span className="text-xs text-gray-500 truncate">{k.label}</span>
+                    <span className="text-xs text-gray-500 break-words">{k.label}</span>
                     {k.tooltip && (
                       <Tooltip content={k.tooltip} multiline>
                         <Info size={11} className="text-gray-400 cursor-help shrink-0" />
@@ -2043,8 +2043,8 @@ export default function CampaignDetail() {
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
                       }`}>{idx + 1}</div>
                       <div className="min-w-0 leading-tight">
-                        <p className="text-sm font-bold text-gray-900 truncate">@{inf.instagramId}</p>
-                        <p className="text-[11px] text-gray-400 truncate mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
+                        <p className="text-sm font-bold text-gray-900 break-words">@{inf.instagramId}</p>
+                        <p className="text-[11px] text-gray-400 break-words mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-x-3 gap-y-1 text-xs flex-wrap pl-11">
@@ -2115,15 +2115,15 @@ export default function CampaignDetail() {
                       <div className="flex flex-col gap-1 pt-2 border-t border-gray-50">
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-xs text-gray-400 shrink-0">도달</p>
-                          <p className="text-sm font-bold text-gray-800 truncate">{fmtNumber(c.reach)}</p>
+                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-xs text-gray-400 shrink-0">좋아요</p>
-                          <p className="text-sm font-bold text-gray-800 truncate">{fmtNumber(c.likes)}</p>
+                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-xs text-gray-400 shrink-0">참여율</p>
-                          <p className="text-sm font-bold text-brand-green truncate">{engRate}%</p>
+                          <p className="text-sm font-bold text-brand-green">{engRate}%</p>
                         </div>
                       </div>
                     </div>

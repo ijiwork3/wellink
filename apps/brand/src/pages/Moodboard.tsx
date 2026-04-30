@@ -182,8 +182,8 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
         <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer">
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ backgroundColor: g.pillBg, color: g.muted }}>W</div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-900 truncate">웰링크 브랜드</p>
-            <p className="text-[11px] truncate" style={{ color: g.subtle }}>brand@wellink.ai</p>
+            <p className="text-xs font-medium text-gray-900 break-words">웰링크 브랜드</p>
+            <p className="text-[11px] break-words" style={{ color: g.subtle }}>brand@wellink.ai</p>
           </div>
         </div>
       </div>

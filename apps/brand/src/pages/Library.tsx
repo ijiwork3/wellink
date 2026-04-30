@@ -548,32 +548,32 @@ export default function Library() {
         </div>
 
         {/* Filter dropdowns */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-600 font-medium">상태</span>
+        <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs text-gray-600 font-medium shrink-0">상태</span>
             <CustomSelect
               value={statusFilter}
               onChange={v => setStatusFilter(v)}
               options={['전체', '승인', '검수중', '대기중', '반려'].map(s => ({ label: s, value: s }))}
-              className="w-32"
+              className="flex-1 min-w-0"
             />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-600 font-medium">플랫폼</span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs text-gray-600 font-medium shrink-0">플랫폼</span>
             <CustomSelect
               value={platformFilter}
               onChange={v => setPlatformFilter(v)}
               options={['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'].map(p => ({ label: p, value: p }))}
-              className="w-36"
+              className="flex-1 min-w-0"
             />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-600 font-medium">유형</span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs text-gray-600 font-medium shrink-0">유형</span>
             <CustomSelect
               value={typeFilter}
               onChange={v => setTypeFilter(v)}
               options={['전체', '피드', '릴스', '스토리', '영상', '쇼츠'].map(t => ({ label: t, value: t }))}
-              className="w-32"
+              className="flex-1 min-w-0"
             />
           </div>
         </div>
@@ -676,7 +676,7 @@ export default function Library() {
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
-                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline truncate mb-2"
+                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2"
                       title={`'${c.campaign}' 캠페인으로 이동`}
                     >{c.campaign}</button>
                     <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -755,11 +755,11 @@ export default function Library() {
                       </button>
                     </td>
                     <td className="py-3 px-3 text-sm font-medium text-gray-900">{c.creator}</td>
-                    <td className="py-3 px-3 max-w-[120px]">
+                    <td className="py-3 px-3">
                       <button
                         type="button"
                         onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
-                        className="text-xs text-gray-600 hover:text-brand-green hover:underline truncate w-full text-left"
+                        className="text-xs text-gray-600 hover:text-brand-green hover:underline line-clamp-2 w-full text-left"
                         title={`'${c.campaign}' 캠페인으로 이동`}
                       >{c.campaign}</button>
                     </td>

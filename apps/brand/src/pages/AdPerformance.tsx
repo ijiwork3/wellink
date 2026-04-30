@@ -441,7 +441,7 @@ export default function AdPerformance() {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-medium text-sm text-gray-900 truncate">{c.campaignName}</span>
+                              <span className="font-medium text-sm text-gray-900 break-words">{c.campaignName}</span>
                               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                               <StatusBadge status={c.status} dot={false} />
                             </div>
@@ -523,7 +523,7 @@ export default function AdPerformance() {
                                                 <span className="text-[10px] font-bold text-white bg-emerald-600 px-1.5 py-0.5 rounded">소재</span>
                                                 <span className="text-xs font-medium text-gray-900">{ad.adName}</span>
                                               </div>
-                                              <p className="text-[11px] text-gray-500 mt-0.5 truncate">{ad.message}</p>
+                                              <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>
                                               <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-1 flex-wrap">
                                                 <span>지출 <strong className="text-gray-900">{fmtPrice(ad.spend)}</strong></span>
                                                 <span>ROAS <strong className={getRoasColor(ad.roas)}>{ad.roas}x</strong></span>
