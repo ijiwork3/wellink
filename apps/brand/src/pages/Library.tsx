@@ -102,15 +102,15 @@ const PLATFORM_BADGE_STYLE: Record<string, string> = {
 const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
 
 /* ───── Sort helpers ───── */
-type SortKey = '최신순' | '도달순' | '좋아요순'
-const SORT_KEYS: SortKey[] = ['최신순', '도달순', '좋아요순']
+type SortKey = '최신순' | '도달순' | '참여율 높은순'
+const SORT_KEYS: SortKey[] = ['최신순', '도달순', '참여율 높은순']
 
 function sortContents(items: Content[], key: SortKey): Content[] {
   const sorted = [...items]
   switch (key) {
     case '최신순': return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     case '도달순': return sorted.sort((a, b) => b.reach - a.reach)
-    case '좋아요순': return sorted.sort((a, b) => b.likes - a.likes)
+    case '참여율 높은순': return sorted.sort((a, b) => b.engagementRate - a.engagementRate)
     default: return sorted
   }
 }
@@ -149,7 +149,9 @@ export default function Library() {
   // 다운로드는 건당 결제 (정책서 § 2-1) — usePlanAccess 분기 제거
   const [searchParams, setSearchParams] = useSearchParams()
   const initialCampaign = searchParams.get('campaign') ?? ''
-  const [search, setSearch] = useState('')
+  // URL ?q= 딥링크 지원 (정책서 § 5, CampaignDetail에서 검색어 자동 채움)
+  const initialQ = searchParams.get('q') ?? ''
+  const [search, setSearch] = useState(initialQ)
   // URL ?campaign=<name>로 진입 시 해당 캠페인으로 자동 필터 (CampaignDetail '라이브러리에서 보기' 점프)
   const [campaignFilter, setCampaignFilter] = useState(
     initialCampaign && campaigns.includes(initialCampaign) ? initialCampaign : '전체'
@@ -160,12 +162,15 @@ export default function Library() {
 
   // ?campaign 미매칭 시 검색어로 폴백 → 사용자가 어떤 캠페인에서 점프했는지 보이도록
   useEffect(() => {
-    if (!initialCampaign) return
-    if (!campaigns.includes(initialCampaign)) setSearch(initialCampaign)
-    // URL 정리(다른 필터 보존)
     const next = new URLSearchParams(searchParams)
-    next.delete('campaign')
-    setSearchParams(next, { replace: true })
+    let changed = false
+    if (initialCampaign) {
+      if (!campaigns.includes(initialCampaign)) setSearch(initialCampaign)
+      next.delete('campaign')
+      changed = true
+    }
+    if (initialQ) { next.delete('q'); changed = true }
+    if (changed) setSearchParams(next, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // 페이지네이션 — 신규
@@ -177,6 +182,7 @@ export default function Library() {
   const [sortOpen, setSortOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(qa === 'view-list' ? 'list' : 'grid')
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
@@ -247,6 +253,15 @@ export default function Library() {
       cancelAnimationFrame(rafId)
     }
   }, [sortOpen])
+
+  const toggleLike = useCallback((id: number) => {
+    setLikedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
 
   /* ── Filter & Sort — hooks rule 준수: early return 전에 위치 ── */
   const filtered = useMemo(() => qa === 'empty' ? [] : sortContents(
@@ -355,7 +370,7 @@ export default function Library() {
   }, [selectedIds.size, filtered])
 
   const isAllSelected = filtered.length > 0 && selectedIds.size === filtered.length
-  const { totalReach, totalLikes, avgEngagement, topPerformer } = SUMMARY_STATS
+  const { totalReach, avgEngagement, topPerformer } = SUMMARY_STATS
 
   /* ─────────── Render ─────────── */
 
@@ -389,8 +404,8 @@ export default function Library() {
         </div>
       </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
+      {/* Summary Stats — 정책서 § 3: 총 콘텐츠·총 도달·평균 참여율 3개 */}
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
@@ -398,10 +413,6 @@ export default function Library() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 도달</div>
           <div className="text-xl font-bold text-gray-900">{fmtNumber(totalReach)}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="text-xs text-gray-500 mb-1">총 좋아요</div>
-          <div className="text-xl font-bold text-gray-900">{fmtNumber(totalLikes)}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
@@ -484,8 +495,17 @@ export default function Library() {
               aria-label="콘텐츠 검색"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-colors"
+              className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-colors"
             />
+            {search && (
+              <button
+                onClick={() => { setSearch(''); setPage(1) }}
+                aria-label="검색어 초기화"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            )}
           </div>
 
           {/* View mode toggle */}
@@ -584,26 +604,34 @@ export default function Library() {
       <div id="tab-panel-content" role="tabpanel" aria-labelledby={`tab-${campaignFilter}`}>
 
       {filtered.length === 0 ? (
-        /* Empty State */
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-            <ImageOff size={28} className="text-gray-400" aria-hidden="true" />
-          </div>
-          <p className="text-sm font-medium text-gray-500 mb-1">콘텐츠가 없습니다</p>
-          <p className="text-xs text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
-          <button
-            onClick={() => {
-              setSearch('')
-              setCampaignFilter('전체')
-              setStatusFilter('전체')
-              setPlatformFilter('전체')
-              setTypeFilter('전체')
-            }}
-            className="mt-4 text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            필터 초기화
-          </button>
-        </div>
+        /* Empty State — 2케이스 분기 (정책서 § 9) */
+        (() => {
+          const hasFilters = search || campaignFilter !== '전체' || statusFilter !== '전체' || platformFilter !== '전체' || typeFilter !== '전체'
+          return (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+                <ImageOff size={28} className="text-gray-400" aria-hidden="true" />
+              </div>
+              {hasFilters ? (
+                <>
+                  <p className="text-sm font-medium text-gray-500 mb-1">조건에 맞는 콘텐츠가 없습니다</p>
+                  <p className="text-xs text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
+                  <button
+                    onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformFilter('전체'); setTypeFilter('전체') }}
+                    className="mt-4 text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    필터 초기화
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-gray-500 mb-1">아직 등록된 콘텐츠가 없습니다</p>
+                  <p className="text-xs text-gray-400">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
+                </>
+              )}
+            </div>
+          )
+        })()
       ) : viewMode === 'grid' ? (
         /* ───── Grid View ───── */
         <div>
@@ -677,18 +705,33 @@ export default function Library() {
                       type="button"
                       onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
                       className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2"
-                      title={`'${c.campaign}' 캠페인으로 이동`}
                     >{c.campaign}</button>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <div className="flex items-center gap-3 text-xs text-gray-400 mb-2">
                       <span className="flex items-center gap-0.5">
-                        <Eye size={11} aria-hidden="true" /> {fmtNumber(c.reach)}
+                        <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
                       </span>
                       <span className="flex items-center gap-0.5">
-                        <Heart size={11} aria-hidden="true" /> {fmtNumber(c.likes)}
+                        <Heart size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.likes)}
                       </span>
                       <span className="flex items-center gap-0.5">
-                        <MessageCircle size={11} aria-hidden="true" /> {c.comments}
+                        <MessageCircle size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
                       </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); toggleLike(c.id) }}
+                        aria-label={likedIds.has(c.id) ? '좋아요 취소' : '좋아요'}
+                        aria-pressed={likedIds.has(c.id)}
+                        className="p-1 rounded-full hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >
+                        <Heart
+                          size={14}
+                          aria-hidden="true"
+                          className={likedIds.has(c.id) ? 'text-red-500 fill-red-500' : 'text-gray-300 hover:text-red-400'}
+                        />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -842,7 +885,15 @@ export default function Library() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
+                    {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
+                      <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
+                        <Crown size={11} aria-hidden="true" />
+                        높은 참여율
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500">{previewItem.campaign}</p>
                 </div>
                 <div className="flex items-center gap-2">

@@ -182,7 +182,9 @@ export default function InfluencerManage() {
     try {
       const raw = sessionStorage.getItem('wl_proposed')
       if (raw) return new Set<number>(JSON.parse(raw) as number[])
-    } catch {}
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
+    }
     return new Set<number>()
   })
 
@@ -258,7 +260,7 @@ export default function InfluencerManage() {
       if (influencerId !== undefined) {
         setProposedSet(prev => {
           const next = new Set(prev).add(influencerId)
-          try { sessionStorage.setItem('wl_proposed', JSON.stringify(Array.from(next))) } catch {}
+          try { sessionStorage.setItem('wl_proposed', JSON.stringify(Array.from(next))) } catch (e) { if (import.meta.env.DEV) console.warn('[sessionStorage]', e) }
           return next
         })
       }
