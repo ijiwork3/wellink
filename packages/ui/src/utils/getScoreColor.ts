@@ -13,10 +13,10 @@ import {
   CTR_THRESHOLD,
 } from '../constants/thresholds'
 
-/** 참여율 색상: 4%+ 초록, 2~4% 회색, 2% 미만 빨강 */
+/** 참여율 색상: 4%+ 초록, 2~4% 앰버, 2% 미만 빨강 */
 export function getEngagementColor(rate: number): string {
   if (rate >= ENGAGEMENT_THRESHOLD.high) return 'text-green-600'
-  if (rate >= ENGAGEMENT_THRESHOLD.low) return 'text-gray-500'
+  if (rate >= ENGAGEMENT_THRESHOLD.low) return 'text-amber-600'
   return 'text-red-500'
 }
 

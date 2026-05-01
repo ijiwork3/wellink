@@ -160,9 +160,9 @@ export default function InfluencerManage() {
 
   // 상세 모달
   const [detailInfluencer, setDetailInfluencer] = useState<Influencer | null>(null)
-  const [detailTab, setDetailTab] = useState('overview')
   const [contentSubTab, setContentSubTab] = useState<'feed' | 'reels'>('feed')
   const [contentSort, setContentSort] = useState<'latest' | 'likes' | 'comments'>('latest')
+  const [contentModalPage, setContentModalPage] = useState(1)
   const [contentDetail, setContentDetail] = useState<{
     bg: string
     likes: number
@@ -265,7 +265,6 @@ export default function InfluencerManage() {
         })
       }
       setDetailInfluencer(null)
-      setDetailTab('overview')
       setContentSubTab('feed')
       setContentSort('latest')
       setContentDetail(null)
@@ -321,7 +320,7 @@ export default function InfluencerManage() {
             <div key={i} className="h-9 rounded-full bg-gray-200" style={{ width: w + 'px' }} />
           ))}
         </div>
-        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
+        <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
           {[0, 1, 2].map(i => (
             <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
               <div className="flex items-center gap-3 mb-3">
@@ -426,7 +425,7 @@ export default function InfluencerManage() {
           value={sortKey}
           onChange={(v: string) => setSortKey(v as InfluencerSortKey)}
           options={INFLUENCER_SORT_OPTIONS.map(opt => ({ label: opt.label, value: opt.value }))}
-          className="w-40"
+          className="shrink-0"
         />
       </div>
       </div>
@@ -461,12 +460,12 @@ export default function InfluencerManage() {
         )
       ) : (
         <>
-          <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
+          <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
             {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow duration-150"
-                onClick={() => { setDetailInfluencer(inf); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
+                onClick={() => { setDetailInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
               >
                 {/* 프로필 행 */}
                 <div className="flex items-start gap-3 mb-3">
@@ -726,12 +725,12 @@ export default function InfluencerManage() {
         const reelsCount = 2 + (s % 3)
         const imgCount = 1 + (s % 2)
         const totalContent = feedCount + reelsCount + imgCount
-        const feedContents = Array.from({ length: Math.min(feedCount, 9) }, (_, i) => ({
+        const feedContents = Array.from({ length: 12 }, (_, i) => ({
           bg: bgOptions[(s + i) % bgOptions.length],
           likes: Math.round((s * 137 + i * 79) % 3000 + 100),
           comments: Math.round((s * 53 + i * 31) % 150 + 5),
         }))
-        const reelsContents = Array.from({ length: reelsCount }, (_, i) => ({
+        const reelsContents = Array.from({ length: 9 }, (_, i) => ({
           bg: bgOptions[(s * 2 + i) % bgOptions.length],
           likes: Math.round((s * 97 + i * 113) % 2000 + 50),
           comments: Math.round((s * 41 + i * 17) % 80 + 2),
@@ -739,7 +738,7 @@ export default function InfluencerManage() {
         return (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
+            onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
           >
             <div
               className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-2xl mx-4'}`}
@@ -761,7 +760,7 @@ export default function InfluencerManage() {
                       )}
                       <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
                       <button
-                        onClick={() => { setDetailInfluencer(null); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
+                        onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                         aria-label="닫기"
                         className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0"
                       >
@@ -801,21 +800,13 @@ export default function InfluencerManage() {
                     <p className="text-xs text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
                   </div>
                 </div>
-                <div role="tablist" className="flex border-b border-gray-100 -mx-6 px-6">
-                  {[['overview', '개요'], ['content', '최근 콘텐츠']].map(([key, label]) => (
-                    <button key={key} role="tab" aria-selected={detailTab === key} onClick={() => setDetailTab(key)}
-                      className={`text-sm px-3 py-2.5 border-b-2 transition-all duration-150 ${detailTab === key ? 'border-gray-900 font-semibold text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
+                <div className="border-b border-gray-100 -mx-6" />
               </div>
 
               {/* 스크롤 콘텐츠 */}
               <div className="overflow-y-auto px-6 py-4" style={{ flex: '1 1 0', minHeight: 0 }}>
 
-            {detailTab === 'overview' && (
-              <div className="space-y-5">
+            <div className="space-y-5">
                 {/* 공통 프로필 정보 */}
                 <div className="border border-gray-100 rounded-xl p-4">
                   <p className="text-xs font-semibold text-gray-500 mb-3">공통 프로필 정보</p>
@@ -962,10 +953,12 @@ export default function InfluencerManage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+            </div>
 
-            {detailTab === 'content' && (() => {
+            {/* 최근 콘텐츠 섹션 */}
+            <div className="mt-2 pt-4 border-t border-gray-100">
+              <p className="text-sm font-semibold text-gray-900 mb-3">최근 콘텐츠</p>
+            {(() => {
               const isFeed = contentSubTab === 'feed'
               const baseItems = isFeed ? feedContents : reelsContents
               const sorted = [...baseItems].sort((a, b) => {
@@ -973,13 +966,15 @@ export default function InfluencerManage() {
                 if (contentSort === 'comments') return b.comments - a.comments
                 return 0 // latest: 원래 순서 유지
               })
+              const CONTENT_PER_PAGE = 6
+              const pagedItems = sorted.slice((contentModalPage - 1) * CONTENT_PER_PAGE, contentModalPage * CONTENT_PER_PAGE)
               return (
                 <div>
                   {/* 서브탭 + 정렬 */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex gap-0">
                       {(['feed', 'reels'] as const).map(tab => (
-                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest') }}
+                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
                           className={`text-xs px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
                           {tab === 'feed' ? '피드' : '릴스'}
                         </button>
@@ -987,7 +982,7 @@ export default function InfluencerManage() {
                     </div>
                     <div className="flex gap-1">
                       {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
-                        <button key={val} onClick={() => setContentSort(val)}
+                        <button key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
                           className={`text-xs px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
                           {label}
                         </button>
@@ -1012,7 +1007,8 @@ export default function InfluencerManage() {
 
                   {/* 그리드 */}
                   <div className="grid grid-cols-3 gap-2">
-                    {sorted.map((c, i) => {
+                    {pagedItems.map((c, i) => {
+                      const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
                       const saves = Math.round(c.likes * 0.18)
                       const views = !isFeed ? Math.round(c.likes * 4.2 + 500) : undefined
                       const captions = [
@@ -1024,12 +1020,12 @@ export default function InfluencerManage() {
                         '주말은 회복 운동으로! 폼롤러 스트레칭 추천합니다.',
                       ]
                       return (
-                        <div key={i} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+                        <div key={globalIdx} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
                           onClick={() => setContentDetail({
                             bg: c.bg, likes: c.likes, comments: c.comments, saves, views,
-                            caption: captions[(s + i) % captions.length],
-                            postedAt: `${(i % 7) + 1}일 전`,
-                            type: contentSubTab, index: i,
+                            caption: captions[(s + globalIdx) % captions.length],
+                            postedAt: `${(globalIdx % 7) + 1}일 전`,
+                            type: contentSubTab, index: globalIdx,
                           })}>
                           <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
                             <Image size={18} className="text-white/50" aria-hidden="true" />
@@ -1043,9 +1039,18 @@ export default function InfluencerManage() {
                       )
                     })}
                   </div>
+                  <Pagination
+                    total={sorted.length}
+                    page={contentModalPage}
+                    pageSize={CONTENT_PER_PAGE}
+                    onChange={setContentModalPage}
+                    showSummary={false}
+                    className="mt-3"
+                  />
                 </div>
               )
             })()}
+            </div>
               </div>
 
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
@@ -1062,7 +1067,7 @@ export default function InfluencerManage() {
                         disabled
                         className="w-full bg-brand-green/50 text-white text-sm py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
                       >
-                        캠페인에 제안 보내기
+                        캠페인 제안보내기
                       </button>
                     </Tooltip>
                     <p className="text-xs text-gray-500 text-center">
@@ -1081,7 +1086,7 @@ export default function InfluencerManage() {
                     onClick={() => setProposalModal(true)}
                     className="w-full bg-brand-green text-white text-sm py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
                   >
-                    캠페인에 제안 보내기
+                    캠페인 제안보내기
                   </button>
                 )}
               </div>
@@ -1141,7 +1146,7 @@ export default function InfluencerManage() {
       <Modal
         open={proposalModal}
         onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false); setProposalExpandedId(null) }}
-        title="캠페인에 제안 보내기"
+        title="캠페인 제안보내기"
         size="md"
         footer={!proposalSent ? (
           <>

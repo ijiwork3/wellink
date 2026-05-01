@@ -113,7 +113,7 @@ export default function CustomSelect<T extends string | string[] = string>({
           ${open ? 'border-brand-green ring-2 ring-brand-green/50' : 'border-gray-200 hover:border-gray-300'}
           focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green focus-visible:outline-none`}
       >
-        <span className={hasValue ? 'text-gray-900' : 'text-gray-400'}>{displayLabel()}</span>
+        <span className={`truncate whitespace-nowrap ${hasValue ? 'text-gray-900' : 'text-gray-400'}`}>{displayLabel()}</span>
         <ChevronDown
           size={14}
           aria-hidden="true"
@@ -125,7 +125,7 @@ export default function CustomSelect<T extends string | string[] = string>({
         <div
           ref={listRef}
           role="listbox"
-          className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-[280px] overflow-y-auto"
+          className="absolute z-50 mt-1 min-w-full w-max bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-[280px] overflow-y-auto"
         >
           {options.map((opt, idx) => (
             <OptionRow
@@ -178,7 +178,7 @@ function OptionRow({
       role="option"
       aria-selected={selected}
       onClick={onSelect}
-      className={`flex items-center justify-between ${padding} text-sm cursor-pointer transition-colors duration-100 rounded-lg
+      className={`flex items-center justify-between gap-3 ${padding} text-sm cursor-pointer transition-colors duration-100 rounded-lg whitespace-nowrap
         ${selected
           ? 'text-gray-900 font-medium hover:bg-gray-50'
           : active

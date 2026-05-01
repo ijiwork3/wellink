@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, RotateCcw, ExternalLink } from 'lucide-react'
+import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
 import { CustomSelect, Pagination, TIMER_MS, Tooltip } from '@wellink/ui'
 import { Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -45,6 +45,7 @@ const INF_BIOS = [
   '요가 지도자 | 내면의 평화를 찾는 여정',
 ]
 const INF_TYPES: InfluencerType[] = ['개인 인플루언서', '개인 인플루언서', '개인 인플루언서', '크루/그룹', '센터', '행사']
+const PLATFORM_POOL = ['인스타그램', '인스타그램', '인스타그램', '유튜브', '틱톡', '인스타그램', '유튜브']
 const LAST_ACTIVE_POOL = ['오늘', '1일 전', '2일 전', '3일 전', '5일 전', '1주 전', '2주 전', '3주 전']
 const influencers = Array.from({ length: 100 }, (_, i) => {
   const baseFollowers = i % 7 === 0 ? 800 + (i * 31) % 800        // nano (~1만)
@@ -75,6 +76,7 @@ const influencers = Array.from({ length: 100 }, (_, i) => {
     category: INF_CAT_POOL[i % INF_CAT_POOL.length],
     lastActive,
     fitScore,
+    platform: PLATFORM_POOL[i % PLATFORM_POOL.length],
     scrapingStatus: (i < 5 ? 'in_progress' : 'completed') as 'in_progress' | 'completed',
   }
 })
@@ -130,18 +132,32 @@ const categoryOptions = [
 // 참여율 필터 — 데이터 정책 v1 §2-3: 4%+ 높음, 2~4% 보통, 2% 미만 낮음
 const engagementOptions = [
   { label: '참여율', value: '' },
-  { label: '높음 (4% 이상)', value: 'high' },
-  { label: '보통 (2~4%)', value: 'mid' },
-  { label: '낮음 (2% 미만)', value: 'low' },
+  { label: '4%~', value: 'high' },
+  { label: '2~4%', value: 'mid' },
+  { label: '~2%', value: 'low' },
 ]
 
-// 팔로워 Tier 필터 — 데이터 정책 v1 §2-2
 const followerTierOptions = [
-  { label: '팔로워급', value: '' },
-  { label: '나노 (~1만)', value: 'nano' },
-  { label: '마이크로 (1만~10만)', value: 'micro' },
-  { label: '매크로 (10만~100만)', value: 'macro' },
-  { label: '메가 (100만+)', value: 'mega' },
+  { label: '팔로워수', value: '' },
+  { label: '1만 미만', value: 'nano' },
+  { label: '1만~10만', value: 'micro' },
+  { label: '10만~100만', value: 'macro' },
+  { label: '100만 이상', value: 'mega' },
+]
+
+const joinTypeOptions = [
+  { label: '가입 타입', value: '' },
+  { label: '개인 인플루언서', value: '개인 인플루언서' },
+  { label: '크루/그룹', value: '크루/그룹' },
+  { label: '센터', value: '센터' },
+  { label: '행사', value: '행사' },
+]
+
+const platformOptions = [
+  { label: '활동 유형', value: '' },
+  { label: '인스타그램', value: '인스타그램' },
+  { label: '유튜브', value: '유튜브' },
+  { label: '틱톡', value: '틱톡' },
 ]
 
 const THUMB_GRADIENTS = [
@@ -157,27 +173,15 @@ function getFollowerTier(followers: number): string {
   return 'mega'
 }
 
-function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
-      {label}
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={`${label} 필터 제거`}
-        className="ml-0.5 text-gray-500 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
-      >
-        <X size={10} aria-hidden="true" />
-      </button>
-    </span>
-  )
-}
 
 export default function InfluencerList() {
   const qa = useQAMode()
   const [params, setParams] = useSearchParams()
 
   const [search, setSearch] = useState(() =>
+    qa === 'empty-search' || qa === 'filter-empty' ? '매칭없는검색어' : (qa ? '' : (params.get('q') ?? ''))
+  )
+  const [searchInput, setSearchInput] = useState(() =>
     qa === 'empty-search' || qa === 'filter-empty' ? '매칭없는검색어' : (qa ? '' : (params.get('q') ?? ''))
   )
   const [category, setCategory] = useState(() =>
@@ -189,16 +193,19 @@ export default function InfluencerList() {
   const [followerTier, setFollowerTier] = useState(() =>
     qa ? '' : (params.get('tier') ?? '')
   )
-  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(() =>
-    qa ? false : params.get('bm') === '1'
+  const [joinType, setJoinType] = useState(() =>
+    qa ? '' : (params.get('jtype') ?? '')
+  )
+  const [platform, setPlatform] = useState(() =>
+    qa ? '' : (params.get('plt') ?? '')
   )
   // QA: modal-detail → 첫 번째 인플루언서로 상세 모달 미리 열기
   const [selectedInfluencer, setSelectedInfluencer] = useState<typeof influencers[0] | null>(
     qa === 'modal-detail' || qa === 'modal-proposal' ? influencers[0] : null
   )
-  const [detailTab, setDetailTab] = useState('overview')
   const [contentSubTab, setContentSubTab] = useState<'feed' | 'reels'>('feed')
   const [contentSort, setContentSort] = useState<'latest' | 'likes' | 'comments'>('latest')
+  const [contentModalPage, setContentModalPage] = useState(1)
   const [contentDetail, setContentDetail] = useState<{
     bg: string; likes: number; comments: number; saves: number; views?: number;
     caption: string; postedAt: string; type: 'feed' | 'reels'; index: number
@@ -230,6 +237,48 @@ export default function InfluencerList() {
     return new Set<number>()
   })
   const { showToast } = useToast()
+  const tableScrollRef = useRef<HTMLDivElement>(null)
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+  const [btnTop, setBtnTop] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = tableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanScrollLeft(el.scrollLeft > 0)
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update)
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      // tableRef(실제 <table> 높이 기준) → 빈 공간에 버튼 떠있는 문제 방지
+      const el = tableRef.current ?? tableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (tableRef.current) ro.observe(tableRef.current)
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
+
+  const scrollTable = (dir: 'left' | 'right') => {
+    tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
+  }
 
   // URL ↔ 필터 상태 동기화 (QA 모드에서는 건너뜀)
   useEffect(() => {
@@ -239,15 +288,13 @@ export default function InfluencerList() {
     if (category) next.set('cat', category)
     if (engagementFilter) next.set('eng', engagementFilter)
     if (followerTier) next.set('tier', followerTier)
+    if (joinType) next.set('jtype', joinType)
+    if (platform) next.set('plt', platform)
     if (sortKey !== DEFAULT_INFLUENCER_SORT) next.set('sort', sortKey)
-    if (showBookmarkedOnly) next.set('bm', '1')
     setParams(next, { replace: true })
-  }, [search, category, engagementFilter, followerTier, sortKey, showBookmarkedOnly, qa, setParams])
+  }, [search, category, engagementFilter, followerTier, joinType, platform, sortKey, qa, setParams])
 
-  const hasActiveFilters = !!(category || engagementFilter || followerTier || showBookmarkedOnly)
-  const resetAllFilters = useCallback(() => {
-    setSearch(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setShowBookmarkedOnly(false); setPage(1)
-  }, [])
+  const hasActiveFilters = !!(category || engagementFilter || followerTier || joinType || platform)
 
   // 모든 hook을 조기 return 이전에 선언 (Rules of Hooks)
   const toggleBookmark = useCallback((id: number) => {
@@ -275,9 +322,10 @@ export default function InfluencerList() {
     if (engagementFilter === 'mid' && (inf.engagement < ENGAGEMENT_THRESHOLD.low || inf.engagement >= ENGAGEMENT_THRESHOLD.high)) return false
     if (engagementFilter === 'low' && inf.engagement >= ENGAGEMENT_THRESHOLD.low) return false
     if (followerTier && getFollowerTier(inf.followers) !== followerTier) return false
-    if (showBookmarkedOnly && !bookmarked.has(inf.id)) return false
+    if (joinType && inf.type !== joinType) return false
+    if (platform && inf.platform !== platform) return false
     return true
-  }), [search, category, engagementFilter, followerTier, showBookmarkedOnly, bookmarked])
+  }), [search, category, engagementFilter, followerTier, joinType, platform])
 
   const summaryStats = useMemo(() => [
     { label: '전체 인플루언서', value: influencers.length + '명' },
@@ -386,7 +434,7 @@ export default function InfluencerList() {
           return next
         })
       }
-      setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null)
+      setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1)
       setSelectedInfluencer(null)
       showToast(`${influencerName}님에게 제안을 전송했습니다.`, 'success')
     }, TIMER_MS.MOCK_SEND)
@@ -410,109 +458,87 @@ export default function InfluencerList() {
       </div>
 
       {/* 검색 & 필터 */}
-      <div className="flex flex-col @sm:flex-row gap-2.5 flex-wrap items-center">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
-          <input
-            type="text"
-            placeholder="이름으로 검색..."
-            aria-label="인플루언서 검색"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-all duration-150"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => { setSearch(''); setPage(1) }}
-              aria-label="검색어 초기화"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full p-0.5"
-            >
-              <X size={13} aria-hidden="true" />
-            </button>
-          )}
-        </div>
-        <div className="w-full @sm:w-36">
-          <CustomSelect
-            value={category}
-            onChange={v => { setCategory(v); setPage(1) }}
-            options={categoryOptions}
-          />
-        </div>
-        <div className="w-full @sm:w-36">
-          <CustomSelect
-            value={engagementFilter}
-            onChange={v => { setEngagementFilter(v); setPage(1) }}
-            options={engagementOptions}
-          />
-        </div>
-        <div className="w-full @sm:w-40">
-          <CustomSelect
-            value={followerTier}
-            onChange={v => { setFollowerTier(v); setPage(1) }}
-            options={followerTierOptions}
-          />
-        </div>
-        {/* 공통 정렬 — 인플루언서 프로필 화면 통일 정책 */}
-        <div className="w-full @sm:w-44">
-          <CustomSelect
-            value={sortKey}
-            onChange={v => { setSortKey(v as InfluencerSortKey); setPage(1) }}
-            options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))}
-          />
-        </div>
-        {/* 찜만 보기 토글 */}
-        <button
-          type="button"
-          onClick={() => { setShowBookmarkedOnly(v => !v); setPage(1) }}
-          aria-pressed={showBookmarkedOnly}
-          className={`w-full @sm:w-auto shrink-0 inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-xl border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-            showBookmarkedOnly
-              ? 'bg-red-50 border-red-200 text-red-500 font-medium'
-              : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
-          }`}
-        >
-          <Heart size={13} className={showBookmarkedOnly ? 'fill-red-500 text-red-500' : ''} aria-hidden="true" />
-          찜만 보기
-        </button>
-      </div>
-
-      {/* 활성 필터 칩 */}
-      {hasActiveFilters && (
-        <div className="flex items-center gap-2 flex-wrap -mt-1">
-          {category && (
-            <FilterChip label={`카테고리: ${category}`} onRemove={() => { setCategory(''); setPage(1) }} />
-          )}
-          {engagementFilter && (
-            <FilterChip
-              label={engagementOptions.find(o => o.value === engagementFilter)?.label ?? engagementFilter}
-              onRemove={() => { setEngagementFilter(''); setPage(1) }}
+      <div className="flex flex-col gap-2.5">
+        {/* 1행: 검색창 + 검색 버튼 */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <input
+              type="text"
+              placeholder="이름으로 검색..."
+              aria-label="인플루언서 검색"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }}
+              className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-all duration-150"
             />
-          )}
-          {followerTier && (
-            <FilterChip
-              label={followerTierOptions.find(o => o.value === followerTier)?.label ?? followerTier}
-              onRemove={() => { setFollowerTier(''); setPage(1) }}
-            />
-          )}
-          {showBookmarkedOnly && (
-            <FilterChip label="찜만 보기" onRemove={() => { setShowBookmarkedOnly(false); setPage(1) }} />
-          )}
+            {searchInput && (
+              <button
+                type="button"
+                onClick={() => { setSearchInput(''); setSearch(''); setPage(1) }}
+                aria-label="검색어 초기화"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full p-0.5"
+              >
+                <X size={13} aria-hidden="true" />
+              </button>
+            )}
+          </div>
           <button
             type="button"
-            onClick={resetAllFilters}
-            className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+            onClick={() => { setSearch(searchInput); setPage(1) }}
+            className="shrink-0 px-4 py-2 bg-brand-green text-white text-sm font-medium rounded-xl hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
-            <RotateCcw size={10} aria-hidden="true" />
-            초기화
+            검색
           </button>
+          <CustomSelect value={sortKey} onChange={v => { setSortKey(v as InfluencerSortKey); setPage(1) }} options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))} className="shrink-0" />
         </div>
+        {/* 2행: 필터 — flex-wrap 없음으로 항상 1행 유지, overflow-x-auto 미사용(드롭다운 클리핑 방지) */}
+        <div className="flex gap-2 items-center">
+          <CustomSelect value={category} onChange={v => { setCategory(v); setPage(1) }} options={categoryOptions} className="shrink-0" />
+          <CustomSelect value={engagementFilter} onChange={v => { setEngagementFilter(v); setPage(1) }} options={engagementOptions} className="shrink-0" />
+          <CustomSelect value={followerTier} onChange={v => { setFollowerTier(v); setPage(1) }} options={followerTierOptions} className="shrink-0" />
+          <CustomSelect value={joinType} onChange={v => { setJoinType(v); setPage(1) }} options={joinTypeOptions} className="shrink-0" />
+          <CustomSelect value={platform} onChange={v => { setPlatform(v); setPage(1) }} options={platformOptions} className="shrink-0" />
+        </div>
+      </div>
+
+
+      {/* fixed 플로팅 스크롤 버튼 — 테이블 visible 영역 중앙에 동적 배치 */}
+      {btnTop !== null && canScrollLeft && (
+        <button
+          type="button"
+          onClick={() => scrollTable('left')}
+          aria-label="왼쪽으로 스크롤"
+          style={{ top: btnTop }}
+          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+        >
+          <ChevronLeft size={15} />
+        </button>
+      )}
+      {btnTop !== null && canScrollRight && (
+        <button
+          type="button"
+          onClick={() => scrollTable('right')}
+          aria-label="오른쪽으로 스크롤"
+          style={{ top: btnTop }}
+          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+        >
+          <ChevronRight size={15} />
+        </button>
       )}
 
       {/* 테이블 */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden @container">
-        <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="relative" ref={tableWrapperRef}>
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden @container relative">
+          {/* 그라데이션 페이드 오버레이 */}
+          {canScrollLeft && (
+            <div className="absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />
+          )}
+          {canScrollRight && (
+            <div className="absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />
+          )}
+          <div className="overflow-x-auto" ref={tableScrollRef}>
+        <table className="w-full" ref={tableRef}>
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
               {[
@@ -542,7 +568,7 @@ export default function InfluencerList() {
                   </p>
                   <p className="text-xs text-gray-400 mt-1">필터를 조정해보세요.</p>
                   <button
-                    onClick={() => { setSearch(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setShowBookmarkedOnly(false); setPage(1) }}
+                    onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setPlatform(''); setPage(1) }}
                     className="mt-3 text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
                   >
                     필터 초기화
@@ -553,11 +579,11 @@ export default function InfluencerList() {
               <tr
                 key={inf.id}
                 className="hover:bg-gray-50 cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:bg-brand-green/5"
-                onClick={() => { setSelectedInfluencer(inf); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
+                onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                 role="button"
                 tabIndex={0}
                 aria-label={`${inf.name} 상세 보기`}
-                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInfluencer(inf); setDetailTab('overview'); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) } }}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) } }}
               >
                 {/* 인플루언서 (이름 + 북마크) */}
                 <td className="py-3 px-4">
@@ -643,7 +669,7 @@ export default function InfluencerList() {
                       <button
                         type="button"
                         disabled
-                        className="text-xs border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed"
+                        className="text-xs border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed whitespace-nowrap"
                       >
                         제안하기
                       </button>
@@ -652,7 +678,7 @@ export default function InfluencerList() {
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
                       disabled={proposalSent}
-                      className="text-xs border border-gray-200 text-gray-600 px-3 py-1.5 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="text-xs border border-gray-200 text-gray-600 px-3 py-1.5 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                     >
                       제안하기
                     </button>
@@ -665,18 +691,19 @@ export default function InfluencerList() {
         </div>
 
         {/* 페이지네이션 */}
-        <Pagination
-          total={sorted.length}
-          page={safePage}
-          pageSize={perPage}
-          onChange={setPage}
-        />
+          <Pagination
+            total={sorted.length}
+            page={safePage}
+            pageSize={perPage}
+            onChange={setPage}
+          />
+        </div>
       </div>
 
       {/* 인플루언서 상세 모달 */}
       <Modal
         open={!!selectedInfluencer && !proposalModal}
-        onClose={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) }}
+        onClose={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
         size="lg"
         footer={selectedInfluencer ? (
           proposedSet.has(selectedInfluencer.id) ? (
@@ -692,7 +719,7 @@ export default function InfluencerList() {
                   disabled
                   className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
                 >
-                  캠페인에 제안 보내기
+                  캠페인 제안보내기
                 </button>
               </Tooltip>
               <p className="text-xs text-gray-500 text-center">
@@ -707,7 +734,7 @@ export default function InfluencerList() {
               onClick={() => setProposalModal(true)}
               className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
             >
-              캠페인에 제안 보내기
+              캠페인 제안보내기
             </button>
           )
         ) : undefined}
@@ -763,27 +790,9 @@ export default function InfluencerList() {
               </div>
             </div>
 
-            {/* 탭 (개요 / 최근 콘텐츠) */}
-            <div role="tablist" className="flex border-b border-gray-100 mb-4 -mx-6 px-6">
-              {[['overview', '개요'], ['content', '최근 콘텐츠']].map(([key, label]) => (
-                <button
-                  key={key}
-                  role="tab"
-                  aria-selected={detailTab === key}
-                  onClick={() => setDetailTab(key)}
-                  className={`text-sm px-3 py-2.5 border-b-2 transition-all duration-150 ${
-                    detailTab === key
-                      ? 'border-gray-900 font-semibold text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <div className="border-b border-gray-100 mb-4 -mx-6" />
 
-            {detailTab === 'overview' && (
-              <div className="space-y-4">
+            <div className="space-y-4">
                 {/* 지표 그리드 — 모바일 2cols, 태블릿+ 3cols */}
                 <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
                   {[
@@ -849,17 +858,19 @@ export default function InfluencerList() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+            </div>
 
-            {detailTab === 'content' && (() => {
+            {/* 최근 콘텐츠 섹션 */}
+            <div className="mt-2 pt-4 border-t border-gray-100">
+              <p className="text-sm font-semibold text-gray-900 mb-3">최근 콘텐츠</p>
+            {(() => {
               const s = selectedInfluencer.id
               const bgOptions = [
                 'from-pink-100 to-pink-200', 'from-blue-100 to-blue-200',
                 'from-green-100 to-green-200', 'from-yellow-100 to-yellow-200',
                 'from-purple-100 to-purple-200', 'from-amber-100 to-amber-200',
               ]
-              const makeItems = (offset: number) => Array.from({ length: 6 }, (_, i) => ({
+              const makeItems = (offset: number) => Array.from({ length: 12 }, (_, i) => ({
                 bg: bgOptions[(s + i + offset) % bgOptions.length],
                 likes: Math.round((s * 137 + i * 79 + offset * 13) % 900 + 100),
                 comments: Math.round((s * 53 + i * 31 + offset * 7) % 80 + 10),
@@ -872,6 +883,8 @@ export default function InfluencerList() {
                 if (contentSort === 'comments') return b.comments - a.comments
                 return 0
               })
+              const CONTENT_PER_PAGE = 6
+              const pagedItems = sortedItems.slice((contentModalPage - 1) * CONTENT_PER_PAGE, contentModalPage * CONTENT_PER_PAGE)
               const avgLikes = Math.round(feedItems.reduce((sum, c) => sum + c.likes, 0) / feedItems.length)
               const avgComments = Math.round(feedItems.reduce((sum, c) => sum + c.comments, 0) / feedItems.length)
               const avgReelsViews = Math.round(reelsItems.reduce((sum, c) => sum + c.likes * 4.2, 0) / reelsItems.length)
@@ -891,7 +904,7 @@ export default function InfluencerList() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex gap-0">
                       {(['feed', 'reels'] as const).map(tab => (
-                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest') }}
+                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
                           className={`text-xs px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
                           {tab === 'feed' ? '피드' : '릴스'}
                         </button>
@@ -899,7 +912,7 @@ export default function InfluencerList() {
                     </div>
                     <div className="flex gap-1">
                       {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
-                        <button key={val} onClick={() => setContentSort(val)}
+                        <button key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
                           className={`text-xs px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
                           {label}
                         </button>
@@ -922,16 +935,17 @@ export default function InfluencerList() {
                   </div>
                   {/* 콘텐츠 그리드 */}
                   <div className="grid grid-cols-3 gap-2">
-                    {sortedItems.map((c, i) => {
+                    {pagedItems.map((c, i) => {
+                      const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
                       const saves = Math.round(c.likes * 0.18)
                       const views = !isFeed ? Math.round(c.likes * 4.2 + 500) : undefined
                       return (
-                        <div key={i} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow duration-150"
+                        <div key={globalIdx} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow duration-150"
                           onClick={() => setContentDetail({
                             bg: c.bg, likes: c.likes, comments: c.comments, saves, views,
-                            caption: captions[(s + i) % captions.length],
-                            postedAt: `${(i % 7) + 1}일 전`,
-                            type: contentSubTab, index: i,
+                            caption: captions[(s + globalIdx) % captions.length],
+                            postedAt: `${(globalIdx % 7) + 1}일 전`,
+                            type: contentSubTab, index: globalIdx,
                           })}>
                           <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
                             <Image size={18} className="text-white/50" aria-hidden="true" />
@@ -949,9 +963,18 @@ export default function InfluencerList() {
                       )
                     })}
                   </div>
+                  <Pagination
+                    total={sortedItems.length}
+                    page={contentModalPage}
+                    pageSize={CONTENT_PER_PAGE}
+                    onChange={setContentModalPage}
+                    showSummary={false}
+                    className="mt-3"
+                  />
                 </div>
               )
             })()}
+            </div>
           </div>
         )}
       </Modal>
@@ -1009,7 +1032,7 @@ export default function InfluencerList() {
       <Modal
         open={proposalModal}
         onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false); setProposalExpandedId(null) }}
-        title="캠페인에 제안 보내기"
+        title="캠페인 제안보내기"
         size="md"
         footer={!proposalSent ? (
           <>

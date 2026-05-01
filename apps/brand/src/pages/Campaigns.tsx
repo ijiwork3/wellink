@@ -453,19 +453,19 @@ export default function Campaigns() {
               value={platformFilter}
               onChange={v => { setPlatformFilter(v); resetPage() }}
               options={PLATFORMS.map(p => ({ label: p === '전체' ? '플랫폼 전체' : p, value: p }))}
-              className="@sm:w-36"
+              className="@sm:shrink-0"
             />
             <CustomSelect
               value={categoryFilter}
               onChange={v => { setCategoryFilter(v); resetPage() }}
               options={CATEGORIES.map(c => ({ label: c === '전체' ? '카테고리 전체' : c, value: c }))}
-              className="@sm:w-36"
+              className="@sm:shrink-0"
             />
             <CustomSelect
               value={sort}
               onChange={v => { setSort(v as SortKey); resetPage() }}
               options={SORTS.map(s => ({ label: s.label, value: s.value }))}
-              className="col-span-2 @sm:col-span-1 @sm:w-36"
+              className="col-span-2 @sm:col-span-1 @sm:shrink-0"
             />
           </div>
         </div>
