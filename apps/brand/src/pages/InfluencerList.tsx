@@ -705,6 +705,7 @@ export default function InfluencerList() {
         open={!!selectedInfluencer && !proposalModal}
         onClose={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
         size="lg"
+        showClose={false}
         footer={selectedInfluencer ? (
           proposedSet.has(selectedInfluencer.id) ? (
             <div className="w-full flex items-center justify-center gap-2 py-1.5">
@@ -746,13 +747,20 @@ export default function InfluencerList() {
                 {selectedInfluencer.name[0]}
               </div>
               <div className="flex-1 min-w-0">
-                {/* 1행: 이름 + 상태 배지 */}
-                <div className="flex items-center gap-1.5 flex-wrap">
+                {/* 1행: 이름 + 상태 배지 + X */}
+                <div className="flex items-center gap-1.5 flex-wrap pr-1">
                   <h2 className="text-base font-bold text-gray-900 leading-tight">{selectedInfluencer.name}</h2>
                   {selectedInfluencer.scrapingStatus === 'in_progress' && (
                     <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
                   )}
                   <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{selectedInfluencer.type}</span>
+                  <button
+                    onClick={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
+                    aria-label="닫기"
+                    className="ml-auto text-gray-400 hover:text-gray-600 transition-colors duration-150 p-1.5 -mr-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    <X size={18} aria-hidden="true" />
+                  </button>
                 </div>
                 {/* 2행: 팔로워 + 인스타 바로가기 */}
                 <div className="flex items-center gap-2 mt-1">
