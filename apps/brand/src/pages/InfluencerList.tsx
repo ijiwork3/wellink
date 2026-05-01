@@ -7,6 +7,7 @@ import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { fmtFollowers as formatFollowers } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { useDeviceMode } from '../qa-mockup-kit'
 import { AVATAR_COLORS } from '@wellink/ui'
 import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
 import { ENGAGEMENT_THRESHOLD } from '@wellink/ui'
@@ -176,6 +177,7 @@ function getFollowerTier(followers: number): string {
 
 export default function InfluencerList() {
   const qa = useQAMode()
+  const device = useDeviceMode()
   const [params, setParams] = useSearchParams()
 
   const [search, setSearch] = useState(() =>
@@ -701,291 +703,223 @@ export default function InfluencerList() {
       </div>
 
       {/* 인플루언서 상세 모달 */}
-      <Modal
-        open={!!selectedInfluencer && !proposalModal}
-        onClose={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
-        size="lg"
-        showClose={false}
-        footer={selectedInfluencer ? (
-          proposedSet.has(selectedInfluencer.id) ? (
-            <div className="w-full flex items-center justify-center gap-2 py-1.5">
-              <CheckCircle size={15} className="text-green-500" aria-hidden="true" />
-              <span className="text-sm text-gray-500">이미 제안을 보냈습니다</span>
-            </div>
-          ) : proposableCampaigns.length === 0 ? (
-            <div className="w-full space-y-2">
-              <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                <button
-                  type="button"
-                  disabled
-                  className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
-                >
-                  캠페인 제안보내기
-                </button>
-              </Tooltip>
-              <p className="text-xs text-gray-500 text-center">
-                진행 중인 캠페인이 없습니다.{' '}
-                <Link to="/company/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">
-                  캠페인 등록
-                </Link>
-              </p>
-            </div>
-          ) : (
-            <button
-              onClick={() => setProposalModal(true)}
-              className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
+      {/* 인플루언서 상세 — InfluencerManage와 동일한 커스텀 overlay 구조 */}
+      {selectedInfluencer && !proposalModal && (() => {
+        const inf = selectedInfluencer
+        const closeDetail = () => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }
+        const s = inf.id
+        const bgOptions = ['from-pink-100 to-pink-200','from-blue-100 to-blue-200','from-green-100 to-green-200','from-yellow-100 to-yellow-200','from-purple-100 to-purple-200','from-amber-100 to-amber-200']
+        const makeItems = (offset: number) => Array.from({ length: 12 }, (_, i) => ({
+          bg: bgOptions[(s + i + offset) % bgOptions.length],
+          likes: Math.round((s * 137 + i * 79 + offset * 13) % 900 + 100),
+          comments: Math.round((s * 53 + i * 31 + offset * 7) % 80 + 10),
+        }))
+        const feedItems = makeItems(0)
+        const reelsItems = makeItems(3)
+        const avgLikes = Math.round(feedItems.reduce((sum, c) => sum + c.likes, 0) / feedItems.length)
+        const avgComments = Math.round(feedItems.reduce((sum, c) => sum + c.comments, 0) / feedItems.length)
+        const avgReelsViews = Math.round(reelsItems.reduce((sum, c) => sum + c.likes * 4.2, 0) / reelsItems.length)
+        const avgReelsEng = (reelsItems.reduce((sum, c) => sum + c.likes / (inf.followers || 1) * 100, 0) / reelsItems.length).toFixed(1)
+        const baseItems = contentSubTab === 'feed' ? feedItems : reelsItems
+        const sortedItems = [...baseItems].sort((a, b) => {
+          if (contentSort === 'likes') return b.likes - a.likes
+          if (contentSort === 'comments') return b.comments - a.comments
+          return 0
+        })
+        const CONTENT_PER_PAGE = 6
+        const pagedItems = sortedItems.slice((contentModalPage - 1) * CONTENT_PER_PAGE, contentModalPage * CONTENT_PER_PAGE)
+        const captions = [
+          '오늘의 운동 루틴 공유합니다 💪 꾸준함이 답이에요.',
+          '새 시즌 컬렉션 협찬으로 받았어요. 핏감이 진짜 좋네요!',
+          '아침 요가로 하루를 시작하면 마음까지 가벼워져요 🧘',
+          '비건 단백질 바 먹어봤는데 이건 진짜 맛있다 👍',
+          '오랜만에 새벽 러닝, 공기가 다르네요.',
+          '주말은 회복 운동으로! 폼롤러 스트레칭 추천합니다.',
+        ]
+        const isFeed = contentSubTab === 'feed'
+        return (
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={closeDetail}
+          >
+            <div
+              className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-2xl mx-4'}`}
+              style={{ height: device === 'phone' ? '100%' : '90%' }}
+              onClick={e => e.stopPropagation()}
             >
-              캠페인 제안보내기
-            </button>
-          )
-        ) : undefined}
-      >
-        {selectedInfluencer && (
-          <div>
-            <div className="flex items-start gap-3 mb-4 -mt-1">
-              <div className={`w-14 h-14 rounded-full ${AVATAR_COLORS[selectedInfluencer.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
-                {selectedInfluencer.name[0]}
-              </div>
-              <div className="flex-1 min-w-0">
-                {/* 1행: 이름 + 상태 배지 + X */}
-                <div className="flex items-center gap-1.5 flex-wrap pr-1">
-                  <h2 className="text-base font-bold text-gray-900 leading-tight">{selectedInfluencer.name}</h2>
-                  {selectedInfluencer.scrapingStatus === 'in_progress' && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
-                  )}
-                  <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{selectedInfluencer.type}</span>
-                  <button
-                    onClick={() => { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
-                    aria-label="닫기"
-                    className="ml-auto text-gray-400 hover:text-gray-600 transition-colors duration-150 p-1.5 -mr-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                  >
-                    <X size={18} aria-hidden="true" />
-                  </button>
+              {/* 고정 헤더 */}
+              <div className="shrink-0 px-6 pt-5 pb-0">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`w-14 h-14 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
+                    {inf.name[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {/* 1행: 이름 + 배지 + X */}
+                    <div className="flex items-center gap-1.5 flex-wrap pr-1">
+                      <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
+                      {inf.scrapingStatus === 'in_progress' && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                      )}
+                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
+                      <button onClick={closeDetail} aria-label="닫기" className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0">
+                        <X size={16} aria-hidden="true" />
+                      </button>
+                    </div>
+                    {/* 2행: 팔로워 + 인스타 */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-500" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+                        <span className="font-semibold text-gray-700">{formatFollowers(inf.followers)}</span>
+                      </span>
+                      {inf.instagramId ? (
+                        <a href={`https://instagram.com/${inf.instagramId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-xs text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">
+                          <ExternalLink size={11} aria-hidden="true" />인스타 바로가기
+                        </a>
+                      ) : (
+                        <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
+                          <button type="button" disabled className="flex items-center gap-0.5 text-xs text-gray-400 cursor-not-allowed">
+                            <ExternalLink size={11} aria-hidden="true" />인스타 바로가기
+                          </button>
+                        </Tooltip>
+                      )}
+                    </div>
+                    {/* 3행: bio */}
+                    <p className="text-xs text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
+                  </div>
                 </div>
-                {/* 2행: 팔로워 + 인스타 바로가기 */}
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-500 flex items-center gap-1">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-500" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-                    <span className="font-semibold text-gray-700">{formatFollowers(selectedInfluencer.followers)}</span>
-                  </span>
-                  {selectedInfluencer.instagramId ? (
-                    <a
-                      href={`https://instagram.com/${selectedInfluencer.instagramId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-0.5 text-xs text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-                    >
-                      <ExternalLink size={11} aria-hidden="true" />
-                      인스타 바로가기
-                    </a>
-                  ) : (
-                    <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
-                      <button type="button" disabled className="flex items-center gap-0.5 text-xs text-gray-400 cursor-not-allowed">
-                        <ExternalLink size={11} aria-hidden="true" />
-                        인스타 바로가기
+                <div className="border-b border-gray-100 -mx-6" />
+              </div>
+
+              {/* 스크롤 콘텐츠 */}
+              <div className="overflow-y-auto px-6 py-4" style={{ flex: '1 1 0', minHeight: 0 }}>
+                <div className="space-y-5">
+                  {/* 지표 그리드 */}
+                  <div className="border border-gray-100 rounded-xl p-4">
+                    <p className="text-xs font-semibold text-gray-500 mb-3">공통 프로필 정보</p>
+                    <div className="flex gap-1.5 flex-wrap mb-3">
+                      {inf.category.map(c => (
+                        <span key={c} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {[
+                        ['팔로워', formatFollowers(inf.followers), 'text-gray-900'],
+                        ['게시물 수', `${inf.posts}개`, 'text-gray-900'],
+                        ['최근 활동', inf.lastActive, 'text-gray-900'],
+                        ['참여율', `${inf.engagement}%`, getEngagementColor(inf.engagement)],
+                        ['진성 비율', `${inf.authentic}%`, getAuthenticColor(inf.authentic)],
+                      ].map(([label, value, cls]) => (
+                        <div key={label} className="bg-gray-50 rounded-lg p-2.5">
+                          <div className="text-xs text-gray-400 mb-1">{label}</div>
+                          <div className={`text-sm font-semibold ${cls}`}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* AI 인사이트 */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
+                      <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
+                      <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
+                    </div>
+                    <div className={`grid gap-2.5 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
+                        <div className="flex items-center gap-1.5 mb-2"><TrendingUp size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">추천 캠페인</span></div>
+                        <p className="text-xs font-bold text-gray-900 mb-1.5">{inf.engagement >= 4 ? '브랜디드 콘텐츠' : inf.engagement >= 2 ? '제품 리뷰' : '인지도 강화'}</p>
+                        <p className="text-xs text-gray-500 leading-snug">평균 대비 <span className="font-semibold text-gray-700">{inf.engagement >= 4 ? '2.3배' : inf.engagement >= 2 ? '1.7배' : '1.2배'}</span> 높은 참여율</p>
+                      </div>
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
+                        <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-xs font-semibold text-gray-600">협업 팁</span></div>
+                        <p className="text-xs text-gray-600 leading-snug">{inf.authentic >= 60 ? '월·목 오전 포스팅이 최고 도달률' : '스토리 연동 세트 콘텐츠 효과적'}</p>
+                        <p className="text-xs text-gray-400 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 최근 콘텐츠 */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <p className="text-sm font-semibold text-gray-900 mb-3">최근 콘텐츠</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex gap-0">
+                        {(['feed', 'reels'] as const).map(tab => (
+                          <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
+                            className={`text-xs px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+                            {tab === 'feed' ? '피드' : '릴스'}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-1">
+                        {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
+                          <button key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
+                            className={`text-xs px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex gap-3 text-xs text-gray-400 mb-3">
+                      {isFeed ? (
+                        <><span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span><span>평균 댓글 <span className="font-semibold text-gray-600">{avgComments}</span></span></>
+                      ) : (
+                        <><span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span><span>평균 참여율 <span className="font-semibold text-gray-600">{avgReelsEng}%</span></span></>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {pagedItems.map((c, i) => {
+                        const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
+                        const saves = Math.round(c.likes * 0.18)
+                        const views = !isFeed ? Math.round(c.likes * 4.2 + 500) : undefined
+                        return (
+                          <div key={globalIdx} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow duration-150"
+                            onClick={() => setContentDetail({ bg: c.bg, likes: c.likes, comments: c.comments, saves, views, caption: captions[(s + globalIdx) % captions.length], postedAt: `${(globalIdx % 7) + 1}일 전`, type: contentSubTab, index: globalIdx })}>
+                            <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
+                              <Image size={18} className="text-white/50" aria-hidden="true" />
+                              {!isFeed && <span className="absolute top-1.5 right-1.5 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
+                            </div>
+                            <div className="px-2 py-1.5 bg-white flex gap-2">
+                              <span className="flex items-center gap-0.5 text-xs text-gray-400"><Heart size={9} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}</span>
+                              <span className="flex items-center gap-0.5 text-xs text-gray-400"><MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <Pagination total={sortedItems.length} page={contentModalPage} pageSize={CONTENT_PER_PAGE} onChange={setContentModalPage} showSummary={false} className="mt-3" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 고정 푸터 */}
+              <div className="border-t border-gray-100 px-6 py-4 shrink-0">
+                {proposedSet.has(inf.id) ? (
+                  <div className="w-full flex items-center justify-center gap-2 py-1.5">
+                    <CheckCircle size={15} className="text-green-500" aria-hidden="true" />
+                    <span className="text-sm text-gray-500">이미 제안을 보냈습니다</span>
+                  </div>
+                ) : proposableCampaigns.length === 0 ? (
+                  <div className="w-full space-y-2">
+                    <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
+                      <button type="button" disabled className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed">
+                        캠페인 제안보내기
                       </button>
                     </Tooltip>
-                  )}
-                </div>
-                {/* 3행: bio */}
-                <p className="text-xs text-gray-400 mt-1.5 leading-snug">{selectedInfluencer.bio}</p>
-                {/* 4행: 카테고리 칩 */}
-                <div className="flex gap-1.5 flex-wrap mt-2">
-                  {selectedInfluencer.category.map(c => (
-                    <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
-                  ))}
-                </div>
+                    <p className="text-xs text-gray-500 text-center">
+                      진행 중인 캠페인이 없습니다.{' '}
+                      <Link to="/company/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">캠페인 등록</Link>
+                    </p>
+                  </div>
+                ) : (
+                  <button onClick={() => setProposalModal(true)} className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium">
+                    캠페인 제안보내기
+                  </button>
+                )}
               </div>
             </div>
-
-            <div className="border-b border-gray-100 mb-4 -mx-6" />
-
-            <div className="space-y-4">
-                {/* 지표 그리드 — 모바일 2cols, 태블릿+ 3cols */}
-                <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
-                  {[
-                    ['팔로워', formatFollowers(selectedInfluencer.followers), 'text-gray-900'],
-                    ['게시물 수', `${selectedInfluencer.posts}개`, 'text-gray-900'],
-                    ['최근 활동', selectedInfluencer.lastActive, 'text-gray-900'],
-                  ].map(([label, value, cls]) => (
-                    <div key={label} className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-xs text-gray-500 mb-1">{label}</div>
-                      <div className={`text-sm font-semibold ${cls}`}>{value}</div>
-                    </div>
-                  ))}
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xs text-gray-500 mb-1">참여율</div>
-                    <div className={`text-sm font-semibold ${getEngagementColor(selectedInfluencer.engagement)}`}>
-                      {selectedInfluencer.engagement}%
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xs text-gray-500 mb-1">진성 비율</div>
-                    <div className={`text-sm font-semibold ${getAuthenticColor(selectedInfluencer.authentic)}`}>
-                      {selectedInfluencer.authentic}%
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI 인사이트 가이드 */}
-                <div>
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
-                    <p className="text-sm font-semibold text-gray-900">AI 인사이트 가이드</p>
-                    <span className="text-xs font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
-                  </div>
-                  <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2.5">
-                    {/* 카드 1: 추천 캠페인 (참여율 기반) */}
-                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <TrendingUp size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-xs font-semibold text-gray-600">추천 캠페인</span>
-                      </div>
-                      <p className="text-xs font-bold text-gray-900 mb-1.5">
-                        {selectedInfluencer.engagement >= 4 ? '브랜디드 콘텐츠' : selectedInfluencer.engagement >= 2 ? '제품 리뷰' : '인지도 강화'}
-                      </p>
-                      <p className="text-xs text-gray-500 leading-snug">
-                        평균 대비 <span className="font-semibold text-gray-700">{selectedInfluencer.engagement >= 4 ? '2.3배' : selectedInfluencer.engagement >= 2 ? '1.7배' : '1.2배'}</span> 높은 참여율
-                      </p>
-                    </div>
-
-                    {/* 카드 2: 협업 팁 */}
-                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <Lightbulb size={12} className="text-gray-400" aria-hidden="true" />
-                        <span className="text-xs font-semibold text-gray-600">협업 팁</span>
-                      </div>
-                      <p className="text-xs text-gray-600 leading-snug">
-                        {selectedInfluencer.authentic >= 60
-                          ? '월·목 오전 포스팅이 최고 도달률'
-                          : '스토리 연동 세트 콘텐츠 효과적'}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1.5">
-                        주 {selectedInfluencer.authentic >= 60 ? '3' : '2'}회 업로드 패턴
-                      </p>
-                    </div>
-                  </div>
-                </div>
-            </div>
-
-            {/* 최근 콘텐츠 섹션 */}
-            <div className="mt-2 pt-4 border-t border-gray-100">
-              <p className="text-sm font-semibold text-gray-900 mb-3">최근 콘텐츠</p>
-            {(() => {
-              const s = selectedInfluencer.id
-              const bgOptions = [
-                'from-pink-100 to-pink-200', 'from-blue-100 to-blue-200',
-                'from-green-100 to-green-200', 'from-yellow-100 to-yellow-200',
-                'from-purple-100 to-purple-200', 'from-amber-100 to-amber-200',
-              ]
-              const makeItems = (offset: number) => Array.from({ length: 12 }, (_, i) => ({
-                bg: bgOptions[(s + i + offset) % bgOptions.length],
-                likes: Math.round((s * 137 + i * 79 + offset * 13) % 900 + 100),
-                comments: Math.round((s * 53 + i * 31 + offset * 7) % 80 + 10),
-              }))
-              const feedItems = makeItems(0)
-              const reelsItems = makeItems(3)
-              const baseItems = contentSubTab === 'feed' ? feedItems : reelsItems
-              const sortedItems = [...baseItems].sort((a, b) => {
-                if (contentSort === 'likes') return b.likes - a.likes
-                if (contentSort === 'comments') return b.comments - a.comments
-                return 0
-              })
-              const CONTENT_PER_PAGE = 6
-              const pagedItems = sortedItems.slice((contentModalPage - 1) * CONTENT_PER_PAGE, contentModalPage * CONTENT_PER_PAGE)
-              const avgLikes = Math.round(feedItems.reduce((sum, c) => sum + c.likes, 0) / feedItems.length)
-              const avgComments = Math.round(feedItems.reduce((sum, c) => sum + c.comments, 0) / feedItems.length)
-              const avgReelsViews = Math.round(reelsItems.reduce((sum, c) => sum + c.likes * 4.2, 0) / reelsItems.length)
-              const avgReelsEng = (reelsItems.reduce((sum, c) => sum + c.likes / (selectedInfluencer.followers || 1) * 100, 0) / reelsItems.length).toFixed(1)
-              const captions = [
-                '오늘의 운동 루틴 공유합니다 💪 꾸준함이 답이에요.',
-                '새 시즌 컬렉션 협찬으로 받았어요. 핏감이 진짜 좋네요!',
-                '아침 요가로 하루를 시작하면 마음까지 가벼워져요 🧘',
-                '비건 단백질 바 먹어봤는데 이건 진짜 맛있다 👍',
-                '오랜만에 새벽 러닝, 공기가 다르네요.',
-                '주말은 회복 운동으로! 폼롤러 스트레칭 추천합니다.',
-              ]
-              const isFeed = contentSubTab === 'feed'
-              return (
-                <div>
-                  {/* 서브탭 + 정렬 */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex gap-0">
-                      {(['feed', 'reels'] as const).map(tab => (
-                        <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
-                          className={`text-xs px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-                          {tab === 'feed' ? '피드' : '릴스'}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex gap-1">
-                      {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
-                        <button key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
-                          className={`text-xs px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 통계 요약 */}
-                  <div className="flex gap-3 text-xs text-gray-400 mb-3">
-                    {isFeed ? (
-                      <>
-                        <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span>
-                        <span>평균 댓글 <span className="font-semibold text-gray-600">{avgComments}</span></span>
-                      </>
-                    ) : (
-                      <>
-                        <span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span>
-                        <span>평균 참여율 <span className="font-semibold text-gray-600">{avgReelsEng}%</span></span>
-                      </>
-                    )}
-                  </div>
-                  {/* 콘텐츠 그리드 */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {pagedItems.map((c, i) => {
-                      const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
-                      const saves = Math.round(c.likes * 0.18)
-                      const views = !isFeed ? Math.round(c.likes * 4.2 + 500) : undefined
-                      return (
-                        <div key={globalIdx} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow duration-150"
-                          onClick={() => setContentDetail({
-                            bg: c.bg, likes: c.likes, comments: c.comments, saves, views,
-                            caption: captions[(s + globalIdx) % captions.length],
-                            postedAt: `${(globalIdx % 7) + 1}일 전`,
-                            type: contentSubTab, index: globalIdx,
-                          })}>
-                          <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
-                            <Image size={18} className="text-white/50" aria-hidden="true" />
-                            {!isFeed && <span className="absolute top-1.5 right-1.5 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
-                          </div>
-                          <div className="px-2 py-1.5 bg-white flex gap-2">
-                            <span className="flex items-center gap-0.5 text-xs text-gray-400">
-                              <Heart size={9} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}
-                            </span>
-                            <span className="flex items-center gap-0.5 text-xs text-gray-400">
-                              <MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}
-                            </span>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <Pagination
-                    total={sortedItems.length}
-                    page={contentModalPage}
-                    pageSize={CONTENT_PER_PAGE}
-                    onChange={setContentModalPage}
-                    showSummary={false}
-                    className="mt-3"
-                  />
-                </div>
-              )
-            })()}
-            </div>
           </div>
-        )}
-      </Modal>
+        )
+      })()}
 
       {/* 콘텐츠 상세 모달 */}
       <Modal
