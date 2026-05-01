@@ -1,22 +1,15 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
-import { CustomSelect, Pagination, TIMER_MS, Tooltip } from '@wellink/ui'
-import { Modal } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
-import { fmtFollowers as formatFollowers } from '@wellink/ui'
-import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { useDeviceMode } from '../qa-mockup-kit'
-import { AVATAR_COLORS } from '@wellink/ui'
-import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
-import { ENGAGEMENT_THRESHOLD } from '@wellink/ui'
 import {
-  INFLUENCER_SORT_OPTIONS,
-  DEFAULT_INFLUENCER_SORT,
-  sortInfluencers,
+  CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState,
+  fmtFollowers as formatFollowers, AVATAR_COLORS,
+  getEngagementColor, getAuthenticColor, ENGAGEMENT_THRESHOLD,
+  INFLUENCER_SORT_OPTIONS, DEFAULT_INFLUENCER_SORT, sortInfluencers,
   type InfluencerSortKey,
 } from '@wellink/ui'
+import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 // 인플루언서 더미 데이터 100개 — 다양한 카테고리·팔로워 규모·엣지케이스 (avgLikes·avgComments 추가)
 type InfluencerCat = '피트니스' | '요가' | '웰니스' | '필라테스' | '운동' | '크로스핏'
@@ -242,6 +235,7 @@ export default function InfluencerList() {
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
+  const modalScrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [btnTop, setBtnTop] = useState<number | null>(null)
@@ -277,6 +271,10 @@ export default function InfluencerList() {
     if (tableRef.current) ro.observe(tableRef.current)
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
   }, [])
+
+  useEffect(() => {
+    modalScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [contentModalPage])
 
   const scrollTable = (dir: 'left' | 'right') => {
     tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
@@ -715,7 +713,7 @@ export default function InfluencerList() {
           comments: Math.round((s * 53 + i * 31 + offset * 7) % 80 + 10),
         }))
         const feedItems = makeItems(0)
-        const reelsItems = makeItems(3)
+        const reelsItems = makeItems(3).slice(0, 9)
         const avgLikes = Math.round(feedItems.reduce((sum, c) => sum + c.likes, 0) / feedItems.length)
         const avgComments = Math.round(feedItems.reduce((sum, c) => sum + c.comments, 0) / feedItems.length)
         const avgReelsViews = Math.round(reelsItems.reduce((sum, c) => sum + c.likes * 4.2, 0) / reelsItems.length)
@@ -791,7 +789,7 @@ export default function InfluencerList() {
               </div>
 
               {/* 스크롤 콘텐츠 */}
-              <div className="overflow-y-auto px-6 py-4" style={{ flex: '1 1 0', minHeight: 0 }}>
+              <div ref={modalScrollRef} className="overflow-y-auto px-6 py-4" style={{ flex: '1 1 0', minHeight: 0 }}>
                 <div className="space-y-5">
                   {/* 지표 그리드 */}
                   <div className="border border-gray-100 rounded-xl p-4">
