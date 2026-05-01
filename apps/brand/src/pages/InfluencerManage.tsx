@@ -321,7 +321,7 @@ export default function InfluencerManage() {
             <div key={i} className="h-9 rounded-full bg-gray-200" style={{ width: w + 'px' }} />
           ))}
         </div>
-        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3 @5xl:grid-cols-4'}`}>
+        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
           {[0, 1, 2].map(i => (
             <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
               <div className="flex items-center gap-3 mb-3">
@@ -461,7 +461,7 @@ export default function InfluencerManage() {
         )
       ) : (
         <>
-          <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3 @5xl:grid-cols-4'}`}>
+          <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
             {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}
