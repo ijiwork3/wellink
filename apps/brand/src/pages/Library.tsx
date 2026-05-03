@@ -686,7 +686,7 @@ export default function Library() {
                     onClick={() => setPreviewItem(c)}
                   >
                     <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-9">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                     </div>
                     {c.type && (
@@ -694,8 +694,9 @@ export default function Library() {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       </div>
                     )}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/30 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2" aria-hidden="true">
-                      <Eye size={16} className="text-white" />
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2 gap-1" aria-hidden="true">
+                      <Eye size={13} className="text-white" />
+                      <span className="text-[11px] text-white font-medium">미리보기</span>
                     </div>
                   </button>
 
