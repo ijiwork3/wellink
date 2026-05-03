@@ -267,6 +267,7 @@ export default function Library() {
   }, [updateTabScroll])
 
   useEffect(() => {
+    if (viewMode !== 'list') return
     const el = tableScrollRef.current
     if (!el) return
     const update = () => {
@@ -278,9 +279,10 @@ export default function Library() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
+  }, [viewMode])
 
   useEffect(() => {
+    if (viewMode !== 'list') { setTableBtnTop(null); return }
     const update = () => {
       const el = tableRef.current ?? tableWrapperRef.current
       if (!el) return
@@ -295,7 +297,7 @@ export default function Library() {
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
-  }, [])
+  }, [viewMode])
 
   const handleSortKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!sortOpen) return
