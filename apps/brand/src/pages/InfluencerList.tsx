@@ -492,13 +492,13 @@ export default function InfluencerList() {
           </button>
           <CustomSelect value={sortKey} onChange={v => { setSortKey(v as InfluencerSortKey); setPage(1) }} options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))} className="shrink-0" />
         </div>
-        {/* 2행: 필터 — flex-wrap 없음으로 항상 1행 유지, overflow-x-auto 미사용(드롭다운 클리핑 방지) */}
-        <div className="flex gap-2 items-center">
-          <CustomSelect value={category} onChange={v => { setCategory(v); setPage(1) }} options={categoryOptions} className="shrink-0" />
-          <CustomSelect value={engagementFilter} onChange={v => { setEngagementFilter(v); setPage(1) }} options={engagementOptions} className="shrink-0" />
-          <CustomSelect value={followerTier} onChange={v => { setFollowerTier(v); setPage(1) }} options={followerTierOptions} className="shrink-0" />
-          <CustomSelect value={joinType} onChange={v => { setJoinType(v); setPage(1) }} options={joinTypeOptions} className="shrink-0" />
-          <CustomSelect value={platform} onChange={v => { setPlatform(v); setPage(1) }} options={platformOptions} className="shrink-0" />
+        {/* 2행: 필터 — 좁은 화면 grid 2열, 넓은 화면(@lg 768px+) 5열 1행 */}
+        <div className="grid grid-cols-2 @lg:grid-cols-5 gap-2">
+          <CustomSelect value={category} onChange={v => { setCategory(v); setPage(1) }} options={categoryOptions} />
+          <CustomSelect value={engagementFilter} onChange={v => { setEngagementFilter(v); setPage(1) }} options={engagementOptions} />
+          <CustomSelect value={followerTier} onChange={v => { setFollowerTier(v); setPage(1) }} options={followerTierOptions} />
+          <CustomSelect value={joinType} onChange={v => { setJoinType(v); setPage(1) }} options={joinTypeOptions} />
+          <CustomSelect value={platform} onChange={v => { setPlatform(v); setPage(1) }} options={platformOptions} />
         </div>
       </div>
 
@@ -718,6 +718,11 @@ export default function InfluencerList() {
         const avgComments = Math.round(feedItems.reduce((sum, c) => sum + c.comments, 0) / feedItems.length)
         const avgReelsViews = Math.round(reelsItems.reduce((sum, c) => sum + c.likes * 4.2, 0) / reelsItems.length)
         const avgReelsEng = (reelsItems.reduce((sum, c) => sum + c.likes / (inf.followers || 1) * 100, 0) / reelsItems.length).toFixed(1)
+        const avgSaves = Math.round(((s * 89 + 20) % 600) + 30)
+        const feedCount = 6 + (s % 4)
+        const reelsCount = 2 + (s % 3)
+        const imgCount = 1 + (s % 2)
+        const totalContent = feedCount + reelsCount + imgCount
         const baseItems = contentSubTab === 'feed' ? feedItems : reelsItems
         const sortedItems = [...baseItems].sort((a, b) => {
           if (contentSort === 'likes') return b.likes - a.likes
@@ -815,6 +820,105 @@ export default function InfluencerList() {
                     </div>
                   </div>
 
+                  {/* 성과 지표 + 최근 콘텐츠 분석 */}
+                  <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                    <div className="border border-gray-100 rounded-xl p-4">
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <MessageCircle size={13} className="text-gray-400" />
+                        <p className="text-xs font-semibold text-gray-500">성과 지표</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          ['평균 댓글', `${avgComments}개`],
+                          ['평균 좋아요', formatFollowers(avgLikes)],
+                          ['평균 저장 수', formatFollowers(avgSaves)],
+                          ['릴스 평균 조회수', formatFollowers(avgReelsViews)],
+                          ['릴스 평균 참여율', `${avgReelsEng}%`],
+                        ].map(([label, value]) => (
+                          <div key={label}>
+                            <p className="text-xs text-gray-400">{label}</p>
+                            <p className="text-sm font-semibold text-gray-900">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="border border-gray-100 rounded-xl p-4">
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <Image size={13} className="text-gray-400" />
+                        <p className="text-xs font-semibold text-gray-500">최근 콘텐츠 분석</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0">
+                          {(() => {
+                            const items = [
+                              { pct: feedCount / totalContent, color: '#f97316' },
+                              { pct: reelsCount / totalContent, color: '#8b5cf6' },
+                              { pct: imgCount / totalContent, color: '#22c55e' },
+                            ]
+                            let offset = 0
+                            const r = 24, cx = 32, cy = 32, stroke = 10
+                            const circ = 2 * Math.PI * r
+                            return items.map((item, i) => {
+                              const dash = item.pct * circ
+                              const el = (
+                                <circle key={i} cx={cx} cy={cy} r={r}
+                                  fill="none" stroke={item.color} strokeWidth={stroke}
+                                  strokeDasharray={`${dash} ${circ - dash}`}
+                                  strokeDashoffset={-offset * circ}
+                                  transform="rotate(-90 32 32)"
+                                />
+                              )
+                              offset += item.pct
+                              return el
+                            })
+                          })()}
+                          <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-gray-700" fontSize="12" fontWeight="bold">{totalContent}</text>
+                        </svg>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-400 shrink-0" />피드 {feedCount}개 ({Math.round(feedCount/totalContent*100)}%)</div>
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />릴스 {reelsCount}개 ({Math.round(reelsCount/totalContent*100)}%)</div>
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />이미지 {imgCount}개 ({Math.round(imgCount/totalContent*100)}%)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 최근 콘텐츠 캡션 워드클라우드 */}
+                  {(() => {
+                    const wordPool = [
+                      { word: inf.category[0] ? `#${inf.category[0]}` : '#fitness', weight: 5 },
+                      { word: '#daily', weight: 4 },
+                      { word: '#workout', weight: 4 },
+                      { word: '#healthy', weight: 3 },
+                      { word: '#lifestyle', weight: 3 },
+                      { word: '#motivation', weight: 2 },
+                      { word: '#goodmorning', weight: 2 },
+                      { word: '#follow', weight: 1 },
+                      { word: '#like4like', weight: 1 },
+                    ]
+                    const sizes = ['text-xl font-black', 'text-lg font-bold', 'text-base font-bold', 'text-sm font-semibold', 'text-xs font-medium']
+                    const colors = ['text-gray-900', 'text-blue-700', 'text-teal-600', 'text-gray-600', 'text-gray-400']
+                    return (
+                      <div className="border border-gray-100 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-xs font-semibold text-gray-500">최근 콘텐츠 캡션 워드클라우드</p>
+                            <Tooltip content="최근 게시물 캡션에서 많이 등장한 단어를 크기별로 보여줍니다">
+                              <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center cursor-default">i</span>
+                            </Tooltip>
+                          </div>
+                          <span className="text-xs text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1.5 leading-snug">
+                          {wordPool.map(({ word, weight }, i) => (
+                            <span key={word} className={`${sizes[Math.min(5 - weight, 4)]} ${colors[i % colors.length]}`}>{word}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
+
                   {/* AI 인사이트 */}
                   <div>
                     <div className="flex items-center gap-1.5 mb-3">
@@ -899,7 +1003,7 @@ export default function InfluencerList() {
                 ) : proposableCampaigns.length === 0 ? (
                   <div className="w-full space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                      <button type="button" disabled className="w-full bg-brand-green/50 text-white text-sm px-4 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed">
+                      <button type="button" disabled className="w-full bg-brand-green/50 text-white text-sm py-3 rounded-xl font-medium opacity-50 cursor-not-allowed">
                         캠페인 제안보내기
                       </button>
                     </Tooltip>
@@ -909,7 +1013,7 @@ export default function InfluencerList() {
                     </p>
                   </div>
                 ) : (
-                  <button onClick={() => setProposalModal(true)} className="w-full bg-brand-green text-white text-sm px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium">
+                  <button onClick={() => setProposalModal(true)} className="w-full bg-brand-green text-white text-sm py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium">
                     캠페인 제안보내기
                   </button>
                 )}
