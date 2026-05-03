@@ -8,7 +8,6 @@ import {
   List,
   ChevronDown,
   Check,
-  Heart,
   MessageCircle,
   Bookmark,
   Share2,
@@ -185,7 +184,6 @@ export default function Library() {
   const [sortOpen, setSortOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(qa === 'view-list' ? 'list' : 'grid')
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
@@ -257,14 +255,6 @@ export default function Library() {
     }
   }, [sortOpen])
 
-  const toggleLike = useCallback((id: number) => {
-    setLikedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
 
   /* ── Filter & Sort — hooks rule 준수: early return 전에 위치 ── */
   const filtered = useMemo(() => qa === 'empty' ? [] : sortContents(
@@ -686,14 +676,12 @@ export default function Library() {
                     onClick={() => setPreviewItem(c)}
                   >
                     <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
-                    <div className="absolute top-3 left-9">
+                    <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
-                    </div>
-                    {c.type && (
-                      <div className="absolute top-3 right-3">
+                      {c.type && (
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2 gap-1" aria-hidden="true">
                       <Eye size={13} className="text-white" />
                       <span className="text-[11px] text-white font-medium">미리보기</span>
@@ -721,22 +709,7 @@ export default function Library() {
                         <MessageCircle size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
-                      <button
-                        type="button"
-                        onClick={e => { e.stopPropagation(); toggleLike(c.id) }}
-                        aria-label={likedIds.has(c.id) ? '좋아요 취소' : '좋아요'}
-                        aria-pressed={likedIds.has(c.id)}
-                        className="p-1 rounded-full hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                      >
-                        <Heart
-                          size={14}
-                          aria-hidden="true"
-                          className={likedIds.has(c.id) ? 'text-red-500 fill-red-500' : 'text-gray-300 hover:text-red-400'}
-                        />
-                      </button>
-                    </div>
+                    <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
                   </div>
                 </div>
               )
