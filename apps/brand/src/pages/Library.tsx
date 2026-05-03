@@ -393,31 +393,9 @@ export default function Library() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col @sm:flex-row @sm:items-center @sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
-          <p className="text-sm text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedIds.size > 0 && (
-            <button
-              onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
-              className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-xl text-sm transition-colors hover:bg-brand-green-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <Download size={14} aria-hidden="true" />
-              선택 다운로드 ({selectedIds.size})
-            </button>
-          )}
-          {filtered.length > 0 && (
-            <button
-              onClick={() => setDownloadModal({ open: true, scope: 'all' })}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <Download size={14} aria-hidden="true" />
-              전체 다운로드
-            </button>
-          )}
-        </div>
+      <div>
+        <h1 className="text-xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
+        <p className="text-sm text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
       </div>
 
       {/* Summary Stats — 정책서 § 3: 총 콘텐츠·총 도달·평균 참여율 3개 */}
@@ -468,7 +446,7 @@ export default function Library() {
           <button
             onClick={() => tabListRef.current?.scrollBy({ left: -140, behavior: 'smooth' })}
             aria-label="이전 탭"
-            className="absolute left-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-r from-white via-white/90 to-transparent pr-3 focus-visible:outline-none"
+            className="absolute left-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-r from-gray-50 via-gray-50/80 to-transparent pr-3 focus-visible:outline-none"
           >
             <ChevronLeft size={16} className="text-gray-400" aria-hidden="true" />
           </button>
@@ -513,7 +491,7 @@ export default function Library() {
           <button
             onClick={() => tabListRef.current?.scrollBy({ left: 140, behavior: 'smooth' })}
             aria-label="다음 탭"
-            className="absolute right-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-l from-white via-white/90 to-transparent pl-3 focus-visible:outline-none"
+            className="absolute right-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-l from-gray-50 via-gray-50/80 to-transparent pl-3 focus-visible:outline-none"
           >
             <ChevronRight size={16} className="text-gray-400" aria-hidden="true" />
           </button>
@@ -685,6 +663,24 @@ export default function Library() {
               {isAllSelected && <Check size={12} className="text-white" aria-hidden="true" />}
             </button>
             <span className="text-xs text-gray-500">전체 선택 ({filtered.length})</span>
+            <div className="ml-auto flex items-center gap-1.5">
+              {selectedIds.size > 0 && (
+                <button
+                  onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
+                  className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-xs font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Download size={11} aria-hidden="true" />
+                  선택 ({selectedIds.size})
+                </button>
+              )}
+              <button
+                onClick={() => setDownloadModal({ open: true, scope: 'all' })}
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-xs hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Download size={11} aria-hidden="true" />
+                전체
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
@@ -765,6 +761,25 @@ export default function Library() {
       ) : (
         /* ───── List (Table) View ───── */
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          {/* List view download bar */}
+          <div className="flex items-center justify-end gap-1.5 px-3 py-2 border-b border-gray-100">
+            {selectedIds.size > 0 && (
+              <button
+                onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
+                className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-xs font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Download size={11} aria-hidden="true" />
+                선택 ({selectedIds.size})
+              </button>
+            )}
+            <button
+              onClick={() => setDownloadModal({ open: true, scope: 'all' })}
+              className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-xs hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <Download size={11} aria-hidden="true" />
+              전체
+            </button>
+          </div>
           <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
