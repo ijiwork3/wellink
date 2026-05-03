@@ -416,6 +416,7 @@ export default function CampaignDetail() {
   const [deselectModal, setDeselectModal] = useState<number | null>(null)
   const [deleteCampaignModal, setDeleteCampaignModal] = useState(false)
   const [cancelCampaignModal, setCancelCampaignModal] = useState(false)
+  const [isCancelled, setIsCancelled] = useState(false)
   const [editConfirmModal, setEditConfirmModal] = useState(false)
   // 신규 — 선정된 지원자 업로드 필터 + 업로드 현황 모달 (원본 page.tsx + ApplicantList 'SELECTED' 보강)
   type UploadFilter = 'all' | 'uploaded' | 'not-uploaded'
@@ -611,6 +612,7 @@ export default function CampaignDetail() {
   // 마감임박 자동 파생 (모집중 + D-3 이내) — 목록과 동일 정책
   const recruitEnd = (campaignMeta[id ?? '']?.recruitPeriod ?? '').split(' ~ ')[1]
   const displayStatus = (() => {
+    if (isCancelled) return '취소'
     if (campaign.status === '모집중' && recruitEnd) {
       const d = getDDay(recruitEnd)
       if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= 3)) {
@@ -923,12 +925,12 @@ export default function CampaignDetail() {
 
   const device = useDeviceMode()
   const isPhone = device === 'phone'
-  const isClosed = qa === 'campaign-closed'
+  const isClosed = qa === 'campaign-closed' || isCancelled
 
   // 취소·삭제 가능 여부 (목록 정책과 동일)
   // - 취소: 종료/완료 status는 불가
   // - 삭제: 지원자 0명일 때만 가능 (원본 정책)
-  const canCancelCampaign = !isClosed && campaign.status !== '완료' && campaign.status !== '종료'
+  const canCancelCampaign = !isCancelled && !isClosed && campaign.status !== '완료' && campaign.status !== '종료'
   const canDeleteCampaign = applicants.length === 0
 
   return (
@@ -2877,8 +2879,8 @@ export default function CampaignDetail() {
         size="sm"
         onConfirm={() => {
           setCancelCampaignModal(false)
-          showToast(`'${campaign.name}' 캠페인을 취소했습니다 (mock)`, 'success')
-          navigate('/campaigns')
+          setIsCancelled(true)
+          showToast(`'${campaign.name}' 캠페인이 취소되었습니다. 지원자에게 알림이 발송됩니다.`, 'success')
         }}
       >
         <p className="text-xs text-gray-500 whitespace-pre-line">

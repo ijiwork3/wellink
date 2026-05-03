@@ -46,7 +46,7 @@ const NAME_TEMPLATES: Record<string, string[]> = {
 }
 const PLATFORM_LIST = ['인스타그램', '유튜브', '네이버 블로그', '틱톡']
 const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
-const STATUS_LIST: CampaignStatus[] = ['대기중', '모집중', '진행중', '완료', '종료']
+const STATUS_LIST: CampaignStatus[] = ['대기중', '모집중', '진행중', '완료', '종료', '취소']
 
 const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const id = i + 6
@@ -81,7 +81,7 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
 // 탭 라벨은 표시 친절화 라벨 기준 (정책서 § 4-0) — deriveDisplayStatus 결과와 매칭됨
-const tabs = ['전체', '지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중', '완료', '종료'] as const
+const tabs = ['전체', '지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중', '완료', '종료', '취소'] as const
 type Tab = typeof tabs[number]
 
 /**
@@ -103,7 +103,7 @@ const UPLOAD_GRACE_DAYS = 14
  */
 function getCampaignDeadlineMeta(c: Campaign): { prefix: string; muted: boolean; graceText?: string } {
   const display = deriveDisplayStatus(c)
-  if (display === '완료' || display === '종료') {
+  if (display === '완료' || display === '종료' || display === '취소') {
     return { prefix: '종료', muted: true }
   }
   if (display === '콘텐츠 등록 중') {
@@ -154,6 +154,7 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
   // 라벨 친절화 (정책서 § 4-0)
   if (c.status === '대기중') return '지원자 대기'
   if (c.status === '진행중') return '콘텐츠 등록 중'
+  if (c.status === '취소') return '취소'
   return c.status
 }
 
@@ -169,6 +170,7 @@ function getStatusTooltip(status: string): string | null {
     case '콘텐츠 등록 중': return '선정된 인플루언서가 콘텐츠를 제작·업로드 중입니다.'
     case '완료':           return '콘텐츠 검수가 완료되어 캠페인이 마무리되었습니다.'
     case '종료':           return '캠페인이 종료되었습니다.'
+    case '취소':           return '광고주에 의해 취소된 캠페인입니다.'
     default:               return null
   }
 }
@@ -531,7 +533,7 @@ export default function Campaigns() {
               const CatIcon = cat.Icon
               const dday = getDDay(c.deadline)
               const display = deriveDisplayStatus(c)
-              const showDDay = c.status !== '종료' && c.status !== '완료'
+              const showDDay = c.status !== '종료' && c.status !== '완료' && c.status !== '취소'
               const pct = c.total > 0 ? Math.min(100, Math.round((c.current / c.total) * 100)) : 0
               const goDetail = () => navigate(`/campaigns/${c.id}`)
               return (

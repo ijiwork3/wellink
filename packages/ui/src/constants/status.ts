@@ -11,6 +11,7 @@ export const CAMPAIGN_STATUS = {
   CLOSED:         '종료',           // 조기 종료
   RUSHING:        '마감임박',       // 마감 3일 이하 자동 전환
   NEEDS_SEL:      '선정 필요',      // 모집 마감 후 미선정 (정책서 § 4-0)
+  CANCELLED:      '취소',           // 광고주가 수동으로 취소한 캠페인
   // 친절화 표시 라벨 (정책서 § 4-0) — deriveDisplayStatus 분기용
   WAITING_APPLY:  '지원자 대기',    // status='대기중' 표시 라벨
   UPLOADING:      '콘텐츠 등록 중', // status='진행중' 표시 라벨
@@ -43,6 +44,7 @@ export const CAMPAIGN_STATUS_STYLE: Record<CampaignStatus, string> = {
   '종료':          'bg-gray-100 text-gray-500',
   '마감임박':      'bg-orange-100 text-orange-700',
   '선정 필요':     'bg-rose-100 text-rose-700',
+  '취소':          'bg-red-50 text-red-400',
 }
 
 /** 인플루언서 참여 상태 배지 스타일 */
