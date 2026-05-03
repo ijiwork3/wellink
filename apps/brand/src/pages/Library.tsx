@@ -325,6 +325,20 @@ export default function Library() {
 
   const closePreview = useCallback(() => setPreviewItem(null), [])
 
+  const toggleSelect = useCallback((id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedIds.size === filtered.length) setSelectedIds(new Set())
+    else setSelectedIds(new Set(filtered.map(c => c.id)))
+  }, [selectedIds.size, filtered])
+
   if (qa === 'loading') {
     return (
       <div className="space-y-4 animate-pulse">
@@ -369,21 +383,6 @@ export default function Library() {
   if (qa === 'error') {
     return <ErrorState message="라이브러리를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
-
-  /* ── Selection helpers ── */
-  const toggleSelect = useCallback((id: number) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
-
-  const toggleSelectAll = useCallback(() => {
-    if (selectedIds.size === filtered.length) setSelectedIds(new Set())
-    else setSelectedIds(new Set(filtered.map(c => c.id)))
-  }, [selectedIds.size, filtered])
 
   const isAllSelected = filtered.length > 0 && selectedIds.size === filtered.length
   const { totalReach, avgEngagement, topPerformer } = SUMMARY_STATS
