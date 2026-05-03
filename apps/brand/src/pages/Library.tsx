@@ -473,7 +473,7 @@ export default function Library() {
       </div>
 
       {/* Summary Stats — 정책서 § 3: 총 콘텐츠·총 도달·평균 참여율 3개 */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
