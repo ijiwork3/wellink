@@ -7,6 +7,8 @@ import {
   LayoutGrid,
   List,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Check,
   MessageCircle,
   Bookmark,
@@ -193,6 +195,8 @@ export default function Library() {
 
   const sortListboxRef = useRef<HTMLDivElement>(null)
   const [focusSortKey, setFocusSortKey] = useState<SortKey | null>(null)
+  const tabListRef = useRef<HTMLDivElement>(null)
+  const [tabScroll, setTabScroll] = useState({ left: false, right: false })
 
   const [focusTabId, setFocusTabId] = useState<string | null>(null)
 
@@ -212,6 +216,25 @@ export default function Library() {
     document.getElementById(focusTabId)?.focus()
     setFocusTabId(null)
   }, [focusTabId])
+
+  const updateTabScroll = useCallback(() => {
+    const el = tabListRef.current
+    if (!el) return
+    setTabScroll({
+      left: el.scrollLeft > 2,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 2,
+    })
+  }, [])
+
+  useEffect(() => {
+    const el = tabListRef.current
+    if (!el) return
+    updateTabScroll()
+    el.addEventListener('scroll', updateTabScroll, { passive: true })
+    const ro = new ResizeObserver(updateTabScroll)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', updateTabScroll); ro.disconnect() }
+  }, [updateTabScroll])
 
   const handleSortKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!sortOpen) return
@@ -388,7 +411,7 @@ export default function Library() {
           {filtered.length > 0 && (
             <button
               onClick={() => setDownloadModal({ open: true, scope: 'all' })}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Download size={14} aria-hidden="true" />
               전체 다운로드
@@ -440,40 +463,61 @@ export default function Library() {
       )}
 
       {/* Campaign Tab Filter */}
-      <div
-        className="flex gap-1 border-b border-gray-200 overflow-x-auto scrollbar-none"
-        role="tablist"
-        aria-label="캠페인 필터"
-        onKeyDown={handleTabKeyDown}
-      >
-        {campaigns.map(camp => {
-          const count = camp === '전체' ? contents.length : contents.filter(c => c.campaign === camp).length
-          const isActive = campaignFilter === camp
-          const tabId = `tab-${camp}`
-          return (
-            <button
-              key={camp}
-              id={tabId}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls="tab-panel-content"
-              tabIndex={isActive ? 0 : -1}
-              onClick={() => setCampaignFilter(camp)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                isActive
-                  ? 'border-brand-green font-semibold text-gray-900'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {camp}
-              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                isActive ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
-              }`}>
-                {count}
-              </span>
-            </button>
-          )
-        })}
+      <div className="relative border-b border-gray-200">
+        {tabScroll.left && (
+          <button
+            onClick={() => tabListRef.current?.scrollBy({ left: -140, behavior: 'smooth' })}
+            aria-label="이전 탭"
+            className="absolute left-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-r from-white via-white/90 to-transparent pr-3 focus-visible:outline-none"
+          >
+            <ChevronLeft size={16} className="text-gray-400" aria-hidden="true" />
+          </button>
+        )}
+        <div
+          ref={tabListRef}
+          className="flex gap-1 overflow-x-auto scrollbar-none"
+          role="tablist"
+          aria-label="캠페인 필터"
+          onKeyDown={handleTabKeyDown}
+        >
+          {campaigns.map(camp => {
+            const count = camp === '전체' ? contents.length : contents.filter(c => c.campaign === camp).length
+            const isActive = campaignFilter === camp
+            const tabId = `tab-${camp}`
+            return (
+              <button
+                key={camp}
+                id={tabId}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls="tab-panel-content"
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setCampaignFilter(camp)}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                  isActive
+                    ? 'border-brand-green font-semibold text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {camp}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                  isActive ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+        {tabScroll.right && (
+          <button
+            onClick={() => tabListRef.current?.scrollBy({ left: 140, behavior: 'smooth' })}
+            aria-label="다음 탭"
+            className="absolute right-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-l from-white via-white/90 to-transparent pl-3 focus-visible:outline-none"
+          >
+            <ChevronRight size={16} className="text-gray-400" aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {/* Search + Filters Row */}
@@ -698,7 +742,7 @@ export default function Library() {
                       onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
                       className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2"
                     >{c.campaign}</button>
-                    <div className="flex items-center gap-3 text-xs text-gray-400 mb-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
                       <span className="flex items-center gap-0.5">
                         <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
                       </span>
