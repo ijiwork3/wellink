@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
+  Heart,
   MessageCircle,
   Bookmark,
   Share2,
