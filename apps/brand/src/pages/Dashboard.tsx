@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Megaphone, Users, Activity, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Zap, Search,
-  Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock
+  Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
+  ChevronLeft, ChevronRight
 } from 'lucide-react'
 import { StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -131,6 +132,48 @@ export default function Dashboard() {
     ? '미구독 상태입니다. Focus 이상 플랜에서 전체 분석이 가능합니다.'
     : `현재 ${planLabel} 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.`
   const lockedBannerCta = !isSubscribed ? '플랜 가입' : '플랜 업그레이드'
+
+  const tableScrollRef = useRef<HTMLDivElement>(null)
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
+  const [canTableScrollRight, setCanTableScrollRight] = useState(false)
+  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = tableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTableScrollLeft(el.scrollLeft > 0)
+      setCanTableScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update)
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = tableRef.current ?? tableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (tableRef.current) ro.observe(tableRef.current)
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
+
+  const scrollTable = (dir: 'left' | 'right') => {
+    tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
+  }
 
   /* ── QA: 에러 상태 ── */
   if (qa === 'error') {
@@ -367,62 +410,96 @@ export default function Dashboard() {
               전체보기 <ArrowRight size={12} />
             </button>
           </div>
-          <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-50 bg-gray-50/50">
-                {['캠페인명', '상태', '진행률', '마감일', ''].map(h => (
-                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {campaigns.map(c => {
-                const pct = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
-                const { label: ddayLabel, pulse: ddayPulse, color: ddayTextColor } = getDDay(c.deadline)
-                const ddayBadgeStyle = getDDayBadgeStyle(ddayTextColor, ddayPulse)
-                return (
-                  <tr
-                    key={c.id}
-                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
-                    onClick={() => navigate(`/campaigns/${c.id}`)}
-                  >
-                    <td className="py-3.5 px-4 text-sm font-medium text-gray-900">{c.name}</td>
-                    <td className="py-3.5 px-4">
-                      <StatusBadge status={c.status} />
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 bg-gray-100 rounded-full h-1.5">
-                          <div
-                            className={`h-1.5 rounded-full transition-all duration-300 ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-red-500' : 'bg-brand-green'}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-gray-500">{pct}%</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
-                        <span className={`text-xs ${ddayBadgeStyle}`}>
-                          {ddayLabel}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <button
-                        onClick={() => navigate(`/campaigns/${c.id}`)}
-                        className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
-                      >
-                        상세보기 <ArrowRight size={11} />
-                      </button>
-                    </td>
+
+          {/* fixed 플로팅 스크롤 버튼 */}
+          {tableBtnTop !== null && canTableScrollLeft && (
+            <button
+              type="button"
+              onClick={() => scrollTable('left')}
+              aria-label="왼쪽으로 스크롤"
+              style={{ top: tableBtnTop }}
+              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+            >
+              <ChevronLeft size={15} />
+            </button>
+          )}
+          {tableBtnTop !== null && canTableScrollRight && (
+            <button
+              type="button"
+              onClick={() => scrollTable('right')}
+              aria-label="오른쪽으로 스크롤"
+              style={{ top: tableBtnTop }}
+              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+            >
+              <ChevronRight size={15} />
+            </button>
+          )}
+
+          <div className="relative" ref={tableWrapperRef}>
+            {/* 그라데이션 페이드 오버레이 */}
+            {canTableScrollLeft && (
+              <div className="absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />
+            )}
+            {canTableScrollRight && (
+              <div className="absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />
+            )}
+            <div className="overflow-x-auto" ref={tableScrollRef}>
+              <table className="w-full" ref={tableRef}>
+                <thead>
+                  <tr className="border-b border-gray-50 bg-gray-50/50">
+                    {['캠페인명', '상태', '진행률', '마감일', ''].map(h => (
+                      <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                    ))}
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {campaigns.map(c => {
+                    const pct = c.total > 0 ? Math.round((c.current / c.total) * 100) : 0
+                    const { label: ddayLabel, pulse: ddayPulse, color: ddayTextColor } = getDDay(c.deadline)
+                    const ddayBadgeStyle = getDDayBadgeStyle(ddayTextColor, ddayPulse)
+                    return (
+                      <tr
+                        key={c.id}
+                        className="border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                        onClick={() => navigate(`/campaigns/${c.id}`)}
+                      >
+                        <td className="py-3.5 px-4 text-sm font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <StatusBadge status={c.status} />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 bg-gray-100 rounded-full h-1.5">
+                              <div
+                                className={`h-1.5 rounded-full transition-all duration-300 ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-red-500' : 'bg-brand-green'}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-gray-500 whitespace-nowrap">{pct}%</span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
+                            <span className={`text-xs ${ddayBadgeStyle}`}>
+                              {ddayLabel}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <button
+                            onClick={() => navigate(`/campaigns/${c.id}`)}
+                            className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
+                          >
+                            상세보기 <ArrowRight size={11} />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
