@@ -57,6 +57,17 @@ const LIB_PS: Array<{ p: LibPlatform; t: LibSubType | undefined }> = [
   { p: '네이버 블로그', t: undefined },
   { p: '틱톡', t: undefined },
 ]
+// 플랫폼+유형 통합 필터 옵션 — 유효한 조합만 노출
+const PLATFORM_TYPE_OPTIONS: Array<{ label: string; value: string; platform: LibPlatform | null; type: LibSubType | null }> = [
+  { label: '전체', value: '전체', platform: null, type: null },
+  { label: '인스타그램 · 피드', value: '인스타그램_피드', platform: '인스타그램', type: '피드' },
+  { label: '인스타그램 · 릴스', value: '인스타그램_릴스', platform: '인스타그램', type: '릴스' },
+  { label: '인스타그램 · 스토리', value: '인스타그램_스토리', platform: '인스타그램', type: '스토리' },
+  { label: '유튜브 · 영상', value: '유튜브_영상', platform: '유튜브', type: '영상' },
+  { label: '유튜브 · 쇼츠', value: '유튜브_쇼츠', platform: '유튜브', type: '쇼츠' },
+  { label: '네이버 블로그', value: '네이버 블로그', platform: '네이버 블로그', type: null },
+  { label: '틱톡', value: '틱톡', platform: '틱톡', type: null },
+]
 const THUMB_POOL = ['from-pink-100 to-pink-200', 'from-blue-100 to-blue-200', 'from-violet-100 to-violet-200', 'from-red-100 to-red-200', 'from-yellow-100 to-yellow-200', 'from-emerald-100 to-emerald-200', 'from-orange-100 to-orange-200', 'from-indigo-100 to-indigo-200', 'from-rose-100 to-rose-200', 'from-green-100 to-green-200', 'from-cyan-100 to-cyan-200', 'from-lime-100 to-lime-200', 'from-amber-100 to-amber-200', 'from-fuchsia-100 to-fuchsia-200', 'from-teal-100 to-teal-200']
 const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '대기중', '반려']
 const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
@@ -185,8 +196,7 @@ export default function Library() {
     initialCampaign && campaigns.includes(initialCampaign) ? initialCampaign : '전체'
   )
   const [statusFilter, setStatusFilter] = useState('전체')
-  const [platformFilter, setPlatformFilter] = useState('전체')
-  const [typeFilter, setTypeFilter] = useState('전체')
+  const [platformTypeFilter, setPlatformTypeFilter] = useState('전체')
 
   // ?campaign 미매칭 시 검색어로 폴백 → 사용자가 어떤 캠페인에서 점프했는지 보이도록
   useEffect(() => {
@@ -348,15 +358,17 @@ export default function Library() {
       const matchSearch = c.creator.includes(search) || c.campaign.includes(search)
       const matchCampaign = campaignFilter === '전체' || c.campaign === campaignFilter
       const matchStatus = statusFilter === '전체' || c.status === statusFilter
-      const matchPlatform = platformFilter === '전체' || c.platform === platformFilter
-      const matchType = typeFilter === '전체' || c.type === typeFilter
-      return matchSearch && matchCampaign && matchStatus && matchPlatform && matchType
+      const ptOpt = PLATFORM_TYPE_OPTIONS.find(o => o.value === platformTypeFilter)
+      const matchPlatformType = !ptOpt || ptOpt.platform === null
+        ? true
+        : c.platform === ptOpt.platform && (ptOpt.type === null || c.type === ptOpt.type)
+      return matchSearch && matchCampaign && matchStatus && matchPlatformType
     }),
     sortKey,
-  ), [qa, search, campaignFilter, statusFilter, platformFilter, typeFilter, sortKey])
+  ), [qa, search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
 
   // 검색·필터·정렬 변경 시 페이지 1로 리셋
-  useEffect(() => { setPage(1) }, [search, campaignFilter, statusFilter, platformFilter, typeFilter, sortKey])
+  useEffect(() => { setPage(1) }, [search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
 
   // 페이지네이션 슬라이스 — 신규
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
@@ -645,7 +657,7 @@ export default function Library() {
         </div>
 
         {/* Filter dropdowns */}
-        <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="text-xs text-gray-600 font-medium shrink-0">상태</span>
             <CustomSelect
@@ -656,20 +668,11 @@ export default function Library() {
             />
           </div>
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs text-gray-600 font-medium shrink-0">플랫폼</span>
+            <span className="text-xs text-gray-600 font-medium shrink-0">채널</span>
             <CustomSelect
-              value={platformFilter}
-              onChange={v => setPlatformFilter(v)}
-              options={['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'].map(p => ({ label: p, value: p }))}
-              className="flex-1 min-w-0"
-            />
-          </div>
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs text-gray-600 font-medium shrink-0">유형</span>
-            <CustomSelect
-              value={typeFilter}
-              onChange={v => setTypeFilter(v)}
-              options={['전체', '피드', '릴스', '스토리', '영상', '쇼츠'].map(t => ({ label: t, value: t }))}
+              value={platformTypeFilter}
+              onChange={v => setPlatformTypeFilter(v)}
+              options={PLATFORM_TYPE_OPTIONS.map(o => ({ label: o.label, value: o.value }))}
               className="flex-1 min-w-0"
             />
           </div>
@@ -683,7 +686,7 @@ export default function Library() {
       {filtered.length === 0 ? (
         /* Empty State — 2케이스 분기 (정책서 § 9) */
         (() => {
-          const hasFilters = search || campaignFilter !== '전체' || statusFilter !== '전체' || platformFilter !== '전체' || typeFilter !== '전체'
+          const hasFilters = search || campaignFilter !== '전체' || statusFilter !== '전체' || platformTypeFilter !== '전체'
           return (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
               <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
@@ -694,7 +697,7 @@ export default function Library() {
                   <p className="text-sm font-medium text-gray-500 mb-1">조건에 맞는 콘텐츠가 없습니다</p>
                   <p className="text-xs text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
                   <button
-                    onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformFilter('전체'); setTypeFilter('전체') }}
+                    onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
                     className="mt-4 text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >
                     필터 초기화
