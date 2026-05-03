@@ -53,7 +53,7 @@ const LIB_PS: Array<{ p: LibPlatform; t: LibSubType | undefined }> = [
   { p: '네이버 블로그', t: undefined },
   { p: '틱톡', t: undefined },
 ]
-const THUMB_POOL = ['bg-pink-300', 'bg-blue-300', 'bg-violet-300', 'bg-red-300', 'bg-yellow-200', 'bg-emerald-300', 'bg-orange-300', 'bg-indigo-300', 'bg-rose-300', 'bg-green-300', 'bg-cyan-300', 'bg-lime-300', 'bg-amber-300', 'bg-fuchsia-300', 'bg-teal-300']
+const THUMB_POOL = ['from-pink-100 to-pink-200', 'from-blue-100 to-blue-200', 'from-violet-100 to-violet-200', 'from-red-100 to-red-200', 'from-yellow-100 to-yellow-200', 'from-emerald-100 to-emerald-200', 'from-orange-100 to-orange-200', 'from-indigo-100 to-indigo-200', 'from-rose-100 to-rose-200', 'from-green-100 to-green-200', 'from-cyan-100 to-cyan-200', 'from-lime-100 to-lime-200', 'from-amber-100 to-amber-200', 'from-fuchsia-100 to-fuchsia-200', 'from-teal-100 to-teal-200']
 const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '대기중', '반려']
 const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   const creator = CREATOR_POOL[i % CREATOR_POOL.length]
@@ -86,8 +86,11 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
 
 /* ───── Thumbnail helpers ───── */
 
-function thumbnailText(cls: string) {
-  return cls.replace(/^bg-/, 'text-')
+function thumbnailIconColor(cls: string) {
+  return cls ? 'text-white/60' : 'text-gray-300'
+}
+function thumbnailBg(cls: string) {
+  return cls ? `bg-gradient-to-br ${cls}` : 'bg-gray-100'
 }
 
 // 플랫폼별 배지 컬러 — 정책 §8.3
@@ -405,7 +408,7 @@ export default function Library() {
       </div>
 
       {/* Summary Stats — 정책서 § 3: 총 콘텐츠·총 도달·평균 참여율 3개 */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 @md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{contents.length}</div>
@@ -679,10 +682,10 @@ export default function Library() {
                   <button
                     type="button"
                     aria-label={`${c.creator} 콘텐츠 미리보기`}
-                    className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${c.thumbnailClass}/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+                    className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                     onClick={() => setPreviewItem(c)}
                   >
-                    <ImageOff size={36} className={`${thumbnailText(c.thumbnailClass)} opacity-60`} aria-hidden="true" />
+                    <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                     <div className="absolute top-3 left-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                     </div>
@@ -791,10 +794,10 @@ export default function Library() {
                       <button
                         type="button"
                         aria-label={`${c.creator} 콘텐츠 미리보기`}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold ${c.thumbnailClass}/25 ${thumbnailText(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                         onClick={() => setPreviewItem(c)}
                       >
-                        <ImageOff size={16} className="opacity-60" aria-hidden="true" />
+                        <ImageOff size={16} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                       </button>
                     </td>
                     <td className="py-3 px-3 text-sm font-medium text-gray-900">{c.creator}</td>
@@ -877,8 +880,8 @@ export default function Library() {
           const modalDisplayStatus = approvedIds.has(previewItem.id) ? '승인' : rejectedIds.has(previewItem.id) ? '반려' : previewItem.status
           return (
             <div className="space-y-4">
-              <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${previewItem.thumbnailClass}/25`} aria-hidden="true">
-                <ImageOff size={56} className={`${thumbnailText(previewItem.thumbnailClass)} opacity-60`} />
+              <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${thumbnailBg(previewItem.thumbnailClass)}`} aria-hidden="true">
+                <ImageOff size={56} className={thumbnailIconColor(previewItem.thumbnailClass)} />
                 <div className="absolute top-3 left-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
                 </div>
