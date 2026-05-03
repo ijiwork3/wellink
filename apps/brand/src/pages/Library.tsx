@@ -691,7 +691,7 @@ export default function Library() {
                 <div
                   key={c.id}
                   className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer group relative ${
-                    isSelected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'
+                    isSelected ? 'border-brand-green ring-1 ring-brand-green' : 'border-gray-100'
                   }`}
                 >
                   {/* Checkbox — 항상 tabIndex=0으로 키보드 접근 보장, 미선택 시 시각적으로만 숨김 */}
