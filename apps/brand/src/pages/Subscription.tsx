@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw } from 'lucide-react'
+import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
@@ -91,6 +91,45 @@ export default function Subscription() {
   const [cancelStatus, setCancelStatus] = useState<'active' | 'cancel_scheduled'>('active')
   const [cancelModal, setCancelModal] = useState(false)
   const [refundModal, setRefundModal] = useState(false)
+
+  // 테이블 가로스크롤
+  const tableScrollRef = useRef<HTMLDivElement>(null)
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
+  const [canTableScrollRight, setCanTableScrollRight] = useState(false)
+  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = tableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTableScrollLeft(el.scrollLeft > 0)
+      setCanTableScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = tableRef.current ?? tableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (tableRef.current) ro.observe(tableRef.current)
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
 
   // QA 파라미터 변경 시 상태 동기화
   useEffect(() => {
@@ -588,28 +627,47 @@ export default function Subscription() {
           <div className="px-5 py-4 border-b border-gray-50">
             <h3 className="text-sm font-semibold text-gray-900">최근 결제 내역</h3>
           </div>
-          <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                {['내용', '금액', '날짜', '상태'].map(h => (
-                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-5">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {[...paymentHistory].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => (
-                <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
-                  <td className="py-3 px-5 text-sm font-medium text-gray-900">{p.desc}</td>
-                  <td className="py-3 px-5 text-sm text-gray-900">{p.amount}</td>
-                  <td className="py-3 px-5 text-sm text-gray-600">{fmtDate(p.date)}</td>
-                  <td className="py-3 px-5">
-                    <span className="text-xs bg-brand-green/10 text-brand-green-text px-2 py-0.5 rounded-full font-medium">{p.status}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* 가로스크롤 화살표 버튼 */}
+          {tableBtnTop !== null && canTableScrollLeft && (
+            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
+              style={{ top: tableBtnTop }}
+              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+              <ChevronLeft size={15} />
+            </button>
+          )}
+          {tableBtnTop !== null && canTableScrollRight && (
+            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
+              style={{ top: tableBtnTop }}
+              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+              <ChevronRight size={15} />
+            </button>
+          )}
+          <div className="relative" ref={tableWrapperRef}>
+            {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+            {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+            <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
+              <table className="w-full" ref={tableRef}>
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100">
+                    {['내용', '금액', '날짜', '상태'].map(h => (
+                      <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-5 whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {[...paymentHistory].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => (
+                    <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="py-3 px-5 text-sm font-medium text-gray-900">{p.desc}</td>
+                      <td className="py-3 px-5 text-sm text-gray-900 whitespace-nowrap">{p.amount}</td>
+                      <td className="py-3 px-5 text-sm text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
+                      <td className="py-3 px-5 whitespace-nowrap">
+                        <span className="text-xs bg-brand-green/10 text-brand-green-text px-2 py-0.5 rounded-full font-medium">{p.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

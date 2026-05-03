@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, Info, Award } from 'lucide-react'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -167,6 +167,45 @@ export default function ViralMetrics() {
   const [gradeFilter, setGradeFilter] = useState<GradeFilterT>('전체')
   const [contentPage, setContentPage] = useState(1)
   const VC_PAGE_SIZE = 10
+
+  // 테이블 가로 스크롤 화살표
+  const tableScrollRef = useRef<HTMLDivElement>(null)
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
+  const [canTableScrollRight, setCanTableScrollRight] = useState(false)
+  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = tableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTableScrollLeft(el.scrollLeft > 0)
+      setCanTableScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = tableRef.current ?? tableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (tableRef.current) ro.observe(tableRef.current)
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
 
   /* ── QA: 로딩 스켈레톤 ── */
   if (qa === 'loading') {
@@ -349,6 +388,22 @@ export default function ViralMetrics() {
         </div>
       </div>
 
+      {/* 테이블 가로 스크롤 — 고정 화살표 버튼 */}
+      {tableBtnTop !== null && canTableScrollLeft && (
+        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
+          style={{ top: tableBtnTop }}
+          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+          <ChevronLeft size={15} />
+        </button>
+      )}
+      {tableBtnTop !== null && canTableScrollRight && (
+        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
+          style={{ top: tableBtnTop }}
+          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+          <ChevronRight size={15} />
+        </button>
+      )}
+
       {/* 콘텐츠별 바이럴 성과 테이블 (필터·정렬·페이지네이션 보강) */}
       {(() => {
         // 필터링·정렬
@@ -426,8 +481,11 @@ export default function ViralMetrics() {
                 />
               </label>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="relative" ref={tableWrapperRef}>
+              {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+              {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+              <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
+              <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-50">
                     {['콘텐츠', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
@@ -453,14 +511,14 @@ export default function ViralMetrics() {
                       <td className="py-3 px-4 whitespace-nowrap">
                         <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 whitespace-nowrap">
                         <GradePill grade={item.grade} />
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-700 font-medium">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700 font-medium whitespace-nowrap">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         {item.grade === 'processing' ? (
                           <span className="text-xs text-gray-400">산정 중</span>
@@ -490,6 +548,7 @@ export default function ViralMetrics() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
             {/* 페이지네이션 */}
             <Pagination
