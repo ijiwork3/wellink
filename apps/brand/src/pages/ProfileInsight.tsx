@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
 import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -347,6 +347,44 @@ export default function ProfileInsight() {
   const [activeMetrics, setActiveMetrics] = useState<MetricKey[]>(['likes', 'reach'])
   const [aiRefreshing, setAiRefreshing] = useState(false)
 
+  const tableScrollRef = useRef<HTMLDivElement>(null)
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
+  const [canTableScrollRight, setCanTableScrollRight] = useState(false)
+  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = tableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTableScrollLeft(el.scrollLeft > 0)
+      setCanTableScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = tableRef.current ?? tableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (tableRef.current) ro.observe(tableRef.current)
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
+
   const toggleMetric = (metric: MetricKey) => {
     setActiveMetrics(prev =>
       prev.includes(metric)
@@ -642,55 +680,73 @@ export default function ProfileInsight() {
       </div>
 
       {/* 최근 게시물 상세 */}
+      {tableBtnTop !== null && canTableScrollLeft && (
+        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
+          style={{ top: tableBtnTop }}
+          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+          <ChevronLeft size={15} />
+        </button>
+      )}
+      {tableBtnTop !== null && canTableScrollRight && (
+        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
+          style={{ top: tableBtnTop }}
+          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+          <ChevronRight size={15} />
+        </button>
+      )}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
         </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <th scope="col" className="text-left text-xs font-medium text-gray-400 pb-3 pr-4">기간</th>
-                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">도달</th>
-                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">좋아요</th>
-                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">댓글</th>
-                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4">저장</th>
-                <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3">참여율</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {trendData.map((d, i) => {
-                const isNull = d.reach === null
-                return (
-                  <tr key={i} className={`transition-colors ${isNull ? '' : 'hover:bg-gray-50'}`}>
-                    <td className={`py-2.5 pr-4 text-xs ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{d.label}</td>
-                    {isNull ? (
-                      <td colSpan={5} className="py-2.5 text-center text-xs text-gray-300">데이터 없음</td>
-                    ) : (
-                      <>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.reach as number)}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.likes as number)}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.comments as number)}</td>
-                        <td className="py-2.5 px-4 text-right text-xs text-gray-700">{fmtNumber(d.saves as number)}</td>
-                        <td className="py-2.5 text-right">
-                          {(() => {
-                            const engRate = (((d.likes as number) + (d.comments as number) + (d.saves as number)) / (d.reach as number) * 100).toFixed(1)
-                            const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
-                            const isBad  = parseFloat(engRate) < 2.5
-                            return (
-                              <span className={`text-xs font-semibold ${isGood ? 'text-brand-green' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
-                                {engRate}%
-                              </span>
-                            )
-                          })()}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+        <div className="relative" ref={tableWrapperRef}>
+          {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+          {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+          <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
+            <table className="w-full text-sm" ref={tableRef}>
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th scope="col" className="text-left text-xs font-medium text-gray-400 pb-3 pr-4 whitespace-nowrap">기간</th>
+                  <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">도달</th>
+                  <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">좋아요</th>
+                  <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">댓글</th>
+                  <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">저장</th>
+                  <th scope="col" className="text-right text-xs font-medium text-gray-400 pb-3 whitespace-nowrap">참여율</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {trendData.map((d, i) => {
+                  const isNull = d.reach === null
+                  return (
+                    <tr key={i} className={`transition-colors ${isNull ? '' : 'hover:bg-gray-50'}`}>
+                      <td className={`py-2.5 pr-4 text-xs whitespace-nowrap ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{d.label}</td>
+                      {isNull ? (
+                        <td colSpan={5} className="py-2.5 text-center text-xs text-gray-300 whitespace-nowrap">데이터 없음</td>
+                      ) : (
+                        <>
+                          <td className="py-2.5 px-4 text-right text-xs text-gray-700 whitespace-nowrap">{fmtNumber(d.reach as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-xs text-gray-700 whitespace-nowrap">{fmtNumber(d.likes as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-xs text-gray-700 whitespace-nowrap">{fmtNumber(d.comments as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-xs text-gray-700 whitespace-nowrap">{fmtNumber(d.saves as number)}</td>
+                          <td className="py-2.5 text-right whitespace-nowrap">
+                            {(() => {
+                              const engRate = (((d.likes as number) + (d.comments as number) + (d.saves as number)) / (d.reach as number) * 100).toFixed(1)
+                              const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
+                              const isBad  = parseFloat(engRate) < 2.5
+                              return (
+                                <span className={`text-xs font-semibold ${isGood ? 'text-brand-green' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                                  {engRate}%
+                                </span>
+                              )
+                            })()}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
