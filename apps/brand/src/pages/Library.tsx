@@ -17,6 +17,8 @@ import {
   TrendingUp,
   Crown,
   ImageOff,
+  Sparkles,
+  Tag,
 } from 'lucide-react'
 import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -105,6 +107,27 @@ const PLATFORM_BADGE_STYLE: Record<string, string> = {
 
 /* ───── Campaign list ───── */
 const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
+
+/* ───── Modal helpers ───── */
+const HASHTAG_POOL: Record<string, string[]> = {
+  '봄 요가 프로모션':  ['요가', '봄운동', '요가일상', '건강', '웰니스', '필라테스'],
+  '비건 신제품 론칭':  ['비건', '식물성', '클린뷰티', '비건라이프', '신제품', '지속가능'],
+  '여름 캠페인':       ['여름', '서머룩', '여름일상', '시즌', '썸머', '여름스타일'],
+  '주방 가전 런칭':    ['주방', '홈쿠킹', '쿠킹', '신가전', '주방인테리어', '요리'],
+  '겨울 운동 챌린지':  ['겨울운동', '운동챌린지', '홈트', '겨울건강', '다이어트', '챌린지'],
+}
+
+function modalInsight(c: Content, saveRate: number, commentRate: number, diffPct: number): string {
+  const lines: string[] = []
+  if (c.reach === 0) return '집계 데이터가 없어 분석을 생성할 수 없습니다.'
+  if (saveRate >= 3) lines.push(`저장률 ${saveRate.toFixed(1)}%로 구매 전환 의도가 높습니다.`)
+  else if (saveRate < 1) lines.push(`저장률이 낮아 브랜드 인지 목적에 적합한 콘텐츠입니다.`)
+  if (diffPct >= 20) lines.push(`캠페인 평균 대비 참여율이 ${diffPct}% 높아 확산 잠재력이 있습니다.`)
+  else if (diffPct <= -20) lines.push(`캠페인 평균 대비 참여율이 ${Math.abs(diffPct)}% 낮아 보완이 필요합니다.`)
+  else lines.push(`캠페인 평균 수준의 참여율을 유지하고 있습니다.`)
+  if (commentRate > 1) lines.push(`댓글 반응이 활발해 진성 팬 기반이 강한 크리에이터입니다.`)
+  return lines.slice(0, 2).join(' ')
+}
 
 /* ───── Sort helpers ───── */
 type SortKey = '최신순' | '도달순' | '참여율 높은순'
@@ -897,6 +920,7 @@ export default function Library() {
         onClose={closePreview}
         title="콘텐츠 상세"
         size="lg"
+        noDividers
         footer={previewItem ? (
           <>
             {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
@@ -911,52 +935,115 @@ export default function Library() {
       >
         {previewItem && (() => {
           const modalDisplayStatus = approvedIds.has(previewItem.id) ? '승인' : rejectedIds.has(previewItem.id) ? '반려' : previewItem.status
+          const saveRate   = previewItem.reach > 0 ? previewItem.saves    / previewItem.reach * 100 : 0
+          const commentRate = previewItem.reach > 0 ? previewItem.comments / previewItem.reach * 100 : 0
+          const likeRate   = previewItem.reach > 0 ? previewItem.likes    / previewItem.reach * 100 : 0
+          const campItems  = contents.filter(c => c.campaign === previewItem.campaign)
+          const campAvgEng = campItems.reduce((s, c) => s + c.engagementRate, 0) / campItems.length
+          const diffPct    = campAvgEng > 0 ? Math.round((previewItem.engagementRate - campAvgEng) / campAvgEng * 100) : 0
+          const hashtags   = (HASHTAG_POOL[previewItem.campaign] ?? []).slice(0, 5)
           return (
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* 썸네일 */}
               <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${thumbnailBg(previewItem.thumbnailClass)}`} aria-hidden="true">
                 <ImageOff size={56} className={thumbnailIconColor(previewItem.thumbnailClass)} />
-                <div className="absolute top-3 left-3">
+                <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
+                  {previewItem.type && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center justify-between">
+
+              {/* 크리에이터 */}
+              <div className="flex items-start justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
                     {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
                       <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
-                        <Crown size={11} aria-hidden="true" />
-                        높은 참여율
+                        <Crown size={11} aria-hidden="true" />상위 참여율
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500">{previewItem.campaign}</p>
+                  <p className="text-sm text-gray-400 mt-0.5">{previewItem.campaign} · {previewItem.date}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  {previewItem.type && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
-                  )}
-                  <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
-                </div>
+                <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
               </div>
-              <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
+
+              {/* KPI 6개 */}
+              <div className="grid grid-cols-3 gap-2">
                 {[
-                  { icon: <Eye size={14} />, label: '도달', value: fmtNumber(previewItem.reach) },
-                  { icon: <Heart size={14} />, label: '좋아요', value: fmtNumber(previewItem.likes) },
-                  { icon: <MessageCircle size={14} />, label: '댓글', value: fmtNumber(previewItem.comments) },
-                  { icon: <Bookmark size={14} />, label: '저장', value: fmtNumber(previewItem.saves) },
-                  { icon: <Share2 size={14} />, label: '공유율', value: previewItem.shareRate + '%' },
-                  { icon: <TrendingUp size={14} />, label: '참여율', value: previewItem.engagementRate + '%' },
+                  { icon: <Eye size={13} />,          label: '도달',   value: fmtNumber(previewItem.reach) },
+                  { icon: <Heart size={13} />,         label: '좋아요', value: fmtNumber(previewItem.likes) },
+                  { icon: <MessageCircle size={13} />, label: '댓글',   value: String(previewItem.comments) },
+                  { icon: <Bookmark size={13} />,      label: '저장',   value: String(previewItem.saves) },
+                  { icon: <Share2 size={13} />,        label: '공유율', value: previewItem.shareRate + '%' },
+                  { icon: <TrendingUp size={13} />,    label: '참여율', value: previewItem.engagementRate + '%' },
                 ].map(stat => (
                   <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
                     <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">{stat.icon}<span className="text-xs">{stat.label}</span></div>
-                    <div className="text-base font-bold text-gray-900">{stat.value}</div>
+                    <div className="text-sm font-bold text-gray-900">{stat.value}</div>
                   </div>
                 ))}
               </div>
-              <div className="text-xs text-gray-400 border-t border-gray-100 pt-3">{previewItem.platform} · {previewItem.date}</div>
-              {approvedIds.has(previewItem.id) && <p className="text-center text-sm text-brand-green font-medium">승인된 콘텐츠입니다</p>}
-              {rejectedIds.has(previewItem.id) && <p className="text-center text-sm text-red-400 font-medium">반려된 콘텐츠입니다</p>}
+
+              {/* 성과 비율 분석 */}
+              <div className="space-y-2.5">
+                <p className="text-xs font-semibold text-gray-500">성과 비율 분석</p>
+                {[
+                  { label: '저장률',   value: saveRate,    cap: 10,  desc: '구매 전환 의도',  color: 'bg-brand-green' },
+                  { label: '좋아요율', value: likeRate,    cap: 20,  desc: '콘텐츠 호감도',   color: 'bg-blue-400' },
+                  { label: '댓글률',   value: commentRate, cap: 5,   desc: '진성 참여',       color: 'bg-violet-400' },
+                ].map(item => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500 w-14 shrink-0">{item.label}</span>
+                    <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                      <div className={`h-full rounded-full ${item.color} transition-all`} style={{ width: `${Math.min(item.value / item.cap * 100, 100)}%` }} />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700 w-10 text-right">{item.value.toFixed(1)}%</span>
+                    <span className="text-[10px] text-gray-400 w-20 shrink-0">{item.desc}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* 캠페인 비교 + 해시태그 */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-[10px] text-gray-400 mb-1">캠페인 평균 대비 참여율</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-lg font-bold ${diffPct >= 0 ? 'text-brand-green' : 'text-red-500'}`}>
+                      {diffPct >= 0 ? '+' : ''}{diffPct}%
+                    </span>
+                    <span className="text-xs text-gray-400">(avg {campAvgEng.toFixed(1)}%)</span>
+                  </div>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-[10px] text-gray-400 mb-1.5 flex items-center gap-1"><Tag size={10} />예상 해시태그</p>
+                  <div className="flex flex-wrap gap-1">
+                    {hashtags.map(tag => (
+                      <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-white border border-gray-200 text-gray-500 rounded-full">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* AI 인사이트 */}
+              <div className="bg-brand-green/5 border border-brand-green/15 rounded-xl p-3">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
+                  <span className="text-xs font-semibold text-brand-green">AI 인사이트</span>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  {modalInsight(previewItem, saveRate, commentRate, diffPct)}
+                </p>
+              </div>
+
+              {(approvedIds.has(previewItem.id) || rejectedIds.has(previewItem.id)) && (
+                <p className={`text-center text-sm font-medium ${approvedIds.has(previewItem.id) ? 'text-brand-green' : 'text-red-400'}`}>
+                  {approvedIds.has(previewItem.id) ? '승인된 콘텐츠입니다' : '반려된 콘텐츠입니다'}
+                </p>
+              )}
             </div>
           )
         })()}

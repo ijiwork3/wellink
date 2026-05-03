@@ -44,9 +44,10 @@ interface ModalProps {
   closeOnBackdrop?: boolean
   showClose?: boolean
   fullscreen?: boolean
+  noDividers?: boolean
 }
 
-export default function Modal({ open, onClose, title, label, children, footer, size = 'sm', closeOnBackdrop = true, showClose = true, fullscreen = false }: ModalProps) {
+export default function Modal({ open, onClose, title, label, children, footer, size = 'sm', closeOnBackdrop = true, showClose = true, fullscreen = false, noDividers = false }: ModalProps) {
   const [visible, setVisible] = useState(false)
   const isTouch = useIsTouchDevice()
   // 모바일/태블릿에서 lg/xl은 자동 풀스크린 — 좁은 화면에서 가로 잘림·세로 스크롤 폭주 방지
@@ -143,7 +144,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
         onClick={e => e.stopPropagation()}
       >
         {(title || showClose) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+          <div className={`flex items-center justify-between px-6 py-4 shrink-0 ${noDividers ? '' : 'border-b border-gray-100'}`}>
             {title
               ? <h3 id={titleId} className="text-base font-semibold text-gray-900">{title}</h3>
               : <span />
@@ -161,7 +162,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
         )}
         <div className="@container p-6 overflow-y-auto">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 shrink-0">
+          <div className={`flex items-center justify-end gap-2 px-6 py-4 shrink-0 ${noDividers ? '' : 'border-t border-gray-100'}`}>
             {footer}
           </div>
         )}
