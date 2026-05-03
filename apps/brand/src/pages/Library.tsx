@@ -448,7 +448,7 @@ export default function Library() {
 
       {/* Campaign Tab Filter */}
       <div
-        className="flex gap-1 border-b border-gray-200"
+        className="flex gap-1 border-b border-gray-200 overflow-x-auto scrollbar-none"
         role="tablist"
         aria-label="캠페인 필터"
         onKeyDown={handleTabKeyDown}
