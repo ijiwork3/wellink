@@ -234,7 +234,7 @@ export default function Library() {
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
   // 다운로드 건당 결제 모달 (정책서 § 2-1)
-  const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' }>({ open: false, scope: 'selected' })
+  const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' | 'single'; singleId?: number }>({ open: false, scope: 'selected' })
   const [isPaying, setIsPaying] = useState(false)
   // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리)
   const [downloadedIds, setDownloadedIds] = useState<Set<number>>(new Set())
@@ -816,7 +816,7 @@ export default function Library() {
               return (
                 <div
                   key={c.id}
-                  className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer group relative ${
+                  className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all group relative ${
                     isSelected ? 'border-brand-green ring-1 ring-brand-green' : 'border-gray-100'
                   }`}
                 >
@@ -849,7 +849,7 @@ export default function Library() {
                       )}
                     </div>
                     {isDownloaded && (
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute bottom-2 left-2">
                         <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
                           <Check size={9} aria-hidden="true" />결제 완료
                         </span>
@@ -861,16 +861,21 @@ export default function Library() {
                     </div>
                   </button>
 
-                  <div className="p-3">
+                  <button
+                    type="button"
+                    aria-label={`${c.creator} 콘텐츠 상세 보기`}
+                    onClick={() => setPreviewItem(c)}
+                    className="w-full p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-b-xl"
+                  >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <span className="text-sm font-semibold text-gray-900 min-w-0 break-words">{c.creator}</span>
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
-                    <button
-                      type="button"
+                    <span
+                      role="link"
                       onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
-                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2"
-                    >{c.campaign}</button>
+                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer"
+                    >{c.campaign}</span>
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
                       <span className="flex items-center gap-0.5">
                         <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
@@ -883,7 +888,7 @@ export default function Library() {
                       </span>
                     </div>
                     <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
-                  </div>
+                  </button>
                 </div>
               )
             })}
@@ -985,7 +990,16 @@ export default function Library() {
                         <ImageOff size={16} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                       </button>
                     </td>
-                    <td className="py-3 px-3 text-sm font-medium text-gray-900 whitespace-nowrap">{c.creator}</td>
+                    <td className="py-3 px-3 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-medium text-gray-900">{c.creator}</span>
+                        {isDownloaded && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                            <Check size={8} aria-hidden="true" />결제 완료
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3 px-3 max-w-[140px]">
                       <button
                         type="button"
@@ -1032,7 +1046,7 @@ export default function Library() {
                           </button>
                         ) : (
                           <button
-                            onClick={() => { setSelectedIds(new Set([c.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
+                            onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: c.id })}
                             aria-label={`${c.creator} 다운로드`}
                             className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                           >
@@ -1062,29 +1076,29 @@ export default function Library() {
         size="lg"
         noDividers
         footer={previewItem ? (
-          <>
+          <div className="flex flex-col gap-2 w-full">
             {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
-              <>
-                <button onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }} className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"><Check size={14} /> 승인</button>
+              <div className="flex gap-2">
+                <button onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }} className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"><Check size={14} aria-hidden="true" /> 승인</button>
                 <button onClick={() => openRejectConfirm(previewItem)} className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">반려</button>
-              </>
+              </div>
             )}
             {downloadedIds.has(previewItem.id) ? (
               <button
                 onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
-                className="flex-1 flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green/5 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green/5 transition-colors"
               >
                 <Download size={14} aria-hidden="true" /> 다시 다운로드
               </button>
             ) : (
               <button
-                onClick={() => { setSelectedIds(new Set([previewItem.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
-                className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: previewItem.id })}
+                className="w-full flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
               >
                 <Download size={14} aria-hidden="true" /> 다운로드
               </button>
             )}
-          </>
+          </div>
         ) : undefined}
       >
         {previewItem && (() => {
@@ -1276,7 +1290,7 @@ export default function Library() {
 
       {/* 콘텐츠 다운로드 모달 — 건당 결제 (정책서 § 2-1) */}
       {(() => {
-        const count = downloadModal.scope === 'all' ? filtered.length : selectedIds.size
+        const count = downloadModal.scope === 'all' ? filtered.length : downloadModal.scope === 'single' ? 1 : selectedIds.size
         const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
         const totalAmount = PRICE_PER_DOWNLOAD * count
         const closeDownloadModal = () => {
@@ -1290,8 +1304,11 @@ export default function Library() {
           setTimeout(() => {
             const ids = downloadModal.scope === 'all'
               ? new Set(filtered.map(c => c.id))
-              : new Set([...selectedIds])
+              : downloadModal.scope === 'single' && downloadModal.singleId != null
+                ? new Set([downloadModal.singleId])
+                : new Set([...selectedIds])
             setDownloadedIds(prev => new Set([...prev, ...ids]))
+            if (downloadModal.scope !== 'single') setSelectedIds(new Set())
             closeDownloadModal()
             setIsPaying(false)
             showToast(`${count}건 결제 완료. 다운로드를 시작합니다.`, 'success')
