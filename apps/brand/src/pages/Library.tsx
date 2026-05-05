@@ -1141,27 +1141,32 @@ export default function Library() {
                   </div>
                   <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
                 </div>
-                {/* 인플루언서 액션 — 이름 명시로 찜/제안 대상 명확화 */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => toggleLibBookmark(previewItem.creator)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                      libBookmarked.has(previewItem.creator)
-                        ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Heart size={12} className={libBookmarked.has(previewItem.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
-                    {libBookmarked.has(previewItem.creator) ? `${previewItem.creator}님 찜 해제` : `${previewItem.creator}님 찜하기`}
-                  </button>
-                  <button
-                    onClick={() => openLibProposal(previewItem.creator)}
-                    disabled={libProposedCreators.has(previewItem.creator)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Send size={12} aria-hidden="true" />
-                    {libProposedCreators.has(previewItem.creator) ? '제안 완료' : `${previewItem.creator}님에게 제안하기`}
-                  </button>
+                {/* 인플루언서 액션 */}
+                <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
+                  <p className="text-[11px] text-gray-400 truncate">
+                    <span className="font-medium text-gray-600">@{previewItem.creator}</span> 님
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => toggleLibBookmark(previewItem.creator)}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                        libBookmarked.has(previewItem.creator)
+                          ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
+                          : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-100'
+                      }`}
+                    >
+                      <Heart size={12} className={libBookmarked.has(previewItem.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
+                      {libBookmarked.has(previewItem.creator) ? '찜 해제' : '찜하기'}
+                    </button>
+                    <button
+                      onClick={() => openLibProposal(previewItem.creator)}
+                      disabled={libProposedCreators.has(previewItem.creator)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send size={12} aria-hidden="true" />
+                      {libProposedCreators.has(previewItem.creator) ? '제안 완료' : '제안하기'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
