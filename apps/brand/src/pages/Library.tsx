@@ -182,7 +182,6 @@ const topPerformerPool = thisMonthContents.length > 0 ? thisMonthContents : cont
 
 const SUMMARY_STATS = {
   totalReach: contents.reduce((s, c) => s + c.reach, 0),
-  totalLikes: contents.reduce((s, c) => s + c.likes, 0),
   avgEngagement: contents.length > 0
     ? (contents.reduce((s, c) => s + c.engagementRate, 0) / contents.length).toFixed(1)
     : '0',
@@ -195,7 +194,6 @@ export default function Library() {
   const { showToast } = useToast()
   const qa = useQAMode()
   const navigate = useNavigate()
-  // 다운로드는 건당 결제 (정책서 § 2-1) — usePlanAccess 분기 제거
   const [searchParams, setSearchParams] = useSearchParams()
   const initialCampaign = searchParams.get('campaign') ?? ''
   // URL ?q= 딥링크 지원 (정책서 § 5, CampaignDetail에서 검색어 자동 채움)
@@ -233,7 +231,7 @@ export default function Library() {
   const [previewItem, setPreviewItem] = useState<Content | null>(null)
   const [rejectConfirm, setRejectConfirm] = useState<ConfirmState>(defaultConfirm)
   const [rejectReason, setRejectReason] = useState('')
-  // 다운로드 건당 결제 모달 (정책서 § 2-1)
+  // 다운로드 건당 결제 모달
   const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' | 'single'; singleId?: number }>({ open: false, scope: 'selected' })
   const [isPaying, setIsPaying] = useState(false)
   // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리)
@@ -871,11 +869,11 @@ export default function Library() {
                       <span className="text-sm font-semibold text-gray-900 min-w-0 break-words">{c.creator}</span>
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
-                    <span
-                      role="link"
+                    <button
+                      type="button"
                       onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
-                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer"
-                    >{c.campaign}</span>
+                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
+                    >{c.campaign}</button>
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
                       <span className="flex items-center gap-0.5">
                         <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
@@ -1005,7 +1003,6 @@ export default function Library() {
                         type="button"
                         onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
                         className="text-xs text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
-                        title={c.campaign}
                       >{c.campaign}</button>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
@@ -1288,10 +1285,10 @@ export default function Library() {
         </div>
       </Modal>
 
-      {/* 콘텐츠 다운로드 모달 — 건당 결제 (정책서 § 2-1) */}
+      {/* 콘텐츠 다운로드 모달 — 건당 결제 */}
       {(() => {
         const count = downloadModal.scope === 'all' ? filtered.length : downloadModal.scope === 'single' ? 1 : selectedIds.size
-        const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
+        const PRICE_PER_DOWNLOAD = 10000 // 단가 임시값 (정책 확정 후 교체)
         const totalAmount = PRICE_PER_DOWNLOAD * count
         const closeDownloadModal = () => {
           if (isPaying) return
@@ -1323,11 +1320,7 @@ export default function Library() {
             footer={
               <>
                 <button onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
-                <button
-                  onClick={handlePayAndDownload}
-                  disabled={isPaying || count === 0}
-                  className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50"
-                >
+                <button onClick={handlePayAndDownload} disabled={isPaying || count === 0} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50">
                   {isPaying ? '결제 중…' : '결제 후 다운로드'}
                 </button>
               </>
@@ -1338,19 +1331,15 @@ export default function Library() {
                 다운로드 1건당 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>이 부과됩니다.
               </p>
               <div className="space-y-2 text-sm bg-gray-50 rounded-xl p-4">
-                <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : '선택한 콘텐츠'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : downloadModal.scope === 'single' ? '단건 콘텐츠' : '선택한 콘텐츠'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">건수</span><span className="font-medium">{count}건</span></div>
                 <div className="flex justify-between border-t border-gray-200 pt-2 mt-1">
                   <span className="text-gray-500">결제 금액</span>
                   <span className="font-semibold text-gray-900">₩{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-[11px] text-gray-400">
-                등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.
-              </p>
-              <p className="text-[11px] text-gray-400">
-                다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.
-              </p>
+              <p className="text-[11px] text-gray-400">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
+              <p className="text-[11px] text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
             </div>
           </Modal>
         )
@@ -1376,7 +1365,14 @@ export default function Library() {
               제안 보내기
             </button>
           </>
-        ) : undefined}
+        ) : (
+          <button
+            onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
+            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+          >
+            확인
+          </button>
+        )}
       >
         {libProposalSent ? (
           <div className="text-center py-6">
