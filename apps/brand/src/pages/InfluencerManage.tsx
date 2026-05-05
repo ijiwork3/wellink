@@ -355,7 +355,7 @@ export default function InfluencerManage() {
           <p className="text-sm font-semibold text-gray-400 mb-1">찜한 인플루언서가 없습니다</p>
           <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
           <button
-            onClick={() => navigate('/company/dashboard/influencers')}
+            onClick={() => navigate('/influencers/manage')}
             className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             인플루언서 찾아보기
@@ -451,7 +451,7 @@ export default function InfluencerManage() {
             <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
             <p className="text-xs text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
             <button
-              onClick={() => navigate('/company/dashboard/influencers')}
+              onClick={() => navigate('/influencers/manage')}
               className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
             >
               인플루언서 찾아보기
@@ -1076,7 +1076,7 @@ export default function InfluencerManage() {
                       진행 중인 캠페인이 없습니다.{' '}
                       <button
                         type="button"
-                        onClick={() => navigate('/company/campaigns/new')}
+                        onClick={() => navigate('/campaigns/new')}
                         className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover"
                       >
                         캠페인 등록

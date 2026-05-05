@@ -258,11 +258,21 @@ export default function CampaignNew() {
         </div>
 
         <Field label="대표 이미지">
-          <div className="border border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center justify-center bg-gray-50/30 cursor-pointer hover:bg-gray-50 transition-colors">
+          <label
+            htmlFor="campaign-image-upload"
+            className="border border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center justify-center bg-gray-50/30 cursor-pointer hover:bg-gray-50 transition-colors"
+          >
             <ImageIcon size={28} className="text-gray-300 mb-2" aria-hidden="true" />
             <p className="text-sm text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
             <p className="text-xs text-gray-400 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
-          </div>
+            <input
+              id="campaign-image-upload"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={() => showToast('이미지가 선택되었습니다.', 'success')}
+            />
+          </label>
         </Field>
 
         <Field label="캠페인 설명">

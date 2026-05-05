@@ -1013,7 +1013,7 @@ export default function InfluencerList() {
                     </Tooltip>
                     <p className="text-xs text-gray-500 text-center">
                       진행 중인 캠페인이 없습니다.{' '}
-                      <Link to="/company/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">캠페인 등록</Link>
+                      <Link to="/campaigns/new" className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover">캠페인 등록</Link>
                     </p>
                   </div>
                 ) : (

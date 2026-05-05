@@ -643,18 +643,21 @@ export default function Dashboard() {
       {/* ── 이번 달 성과 하이라이트 ── */}
       <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
         {HIGHLIGHTS.map(h => (
-          <div key={h.label} className={`${h.bg} rounded-xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4`}>
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white shadow-sm ${h.color}`}>
+          <div key={h.label} className={`${h.bg} rounded-xl border border-gray-100 shadow-sm px-5 py-4 flex items-start gap-4`}>
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white shadow-sm ${h.color} mt-0.5`}>
               {h.icon}
             </div>
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 mb-0.5">{h.label}</p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-bold text-gray-900">@{h.username}</span>
-                <span className="text-xs text-gray-400">{h.name}</span>
-                <span className={`text-sm font-semibold ${h.color}`}>{h.value}</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-500 mb-1">{h.label}</p>
+              {/* @username + value: 좌우 분리로 행 붕괴 방지 */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate">@{h.username}</p>
+                  <p className="text-xs text-gray-400">{h.name}</p>
+                </div>
+                <span className={`text-sm font-semibold ${h.color} shrink-0`}>{h.value}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">{h.sub}</p>
+              <p className="text-xs text-gray-400 mt-1">{h.sub}</p>
             </div>
           </div>
         ))}
