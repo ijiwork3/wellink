@@ -24,8 +24,8 @@ const URGENT_ITEMS: UrgentItem[] = [
 
 /* ── 이번 달 성과 하이라이트 ── */
 const HIGHLIGHTS = [
-  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-50' },
-  { icon: <RefreshCw size={14} aria-hidden="true" />, label: '재협업 추천', name: '박리나', value: '전환율 4.2%', sub: '지난 캠페인 기준', color: 'text-brand-green', bg: 'bg-brand-green/5' },
+  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', username: 'changmin_fit', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-50' },
+  { icon: <RefreshCw size={14} aria-hidden="true" />, label: '재협업 추천', username: 'lina_wellness', name: '박리나', value: '전환율 4.2%', sub: '지난 캠페인 기준', color: 'text-brand-green', bg: 'bg-brand-green/5' },
 ]
 
 /* ── KPI 데이터 ── */
@@ -240,17 +240,18 @@ export default function Dashboard() {
           </div>
           <div className="divide-y divide-gray-50">
             {[
-              { name: '이영안', fit: 92, tags: '필라테스·비건', followers: '5.2만' },
-              { name: '박경만', fit: 88, tags: '필라테스·크로스핏', followers: '1.2만' },
-              { name: '유현',   fit: 84, tags: '홈트·비건',     followers: '3.8만' },
+              { username: 'yoga_lee', name: '이영안', fit: 92, tags: '필라테스·비건', followers: '5.2만' },
+              { username: 'kyungman_fit', name: '박경만', fit: 88, tags: '필라테스·크로스핏', followers: '1.2만' },
+              { username: 'hyun_homfit', name: '유현', fit: 84, tags: '홈트·비건', followers: '3.8만' },
             ].map(inf => (
-              <div key={inf.name} className="flex items-center gap-4 px-5 py-3.5">
+              <div key={inf.username} className="flex items-center gap-4 px-5 py-3.5">
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                   <Users size={14} className="text-gray-400" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">{inf.name}</span>
+                    <span className="text-sm font-semibold text-gray-900">@{inf.username}</span>
+                    <span className="text-xs text-gray-400">{inf.name}</span>
                     <span className="text-xs bg-brand-green/10 text-brand-green-text px-1.5 py-0.5 rounded-md font-medium">Fit {inf.fit}</span>
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
@@ -649,7 +650,8 @@ export default function Dashboard() {
             <div className="min-w-0">
               <p className="text-xs text-gray-500 mb-0.5">{h.label}</p>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-bold text-gray-900">{h.name}</span>
+                <span className="text-sm font-bold text-gray-900">@{h.username}</span>
+                <span className="text-xs text-gray-400">{h.name}</span>
                 <span className={`text-sm font-semibold ${h.color}`}>{h.value}</span>
               </div>
               <p className="text-xs text-gray-400 mt-0.5">{h.sub}</p>

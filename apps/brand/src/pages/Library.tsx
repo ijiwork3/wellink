@@ -31,6 +31,7 @@ import { fmtDate } from '../utils/fmtDate'
 interface Content {
   id: number
   creator: string
+  creatorUsername: string
   campaign: string
   type?: '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
   platform: '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
@@ -46,9 +47,27 @@ interface Content {
 }
 
 // 100개 더미 + 엣지케이스 (썸네일 누락, 0값 등) — 원본 ContentList rawFileUrl=#일 때 ImageIcon fallback 보강
-const CREATOR_POOL = [
-  '이창민', '김가애', '박리나', '민경완', '장영훈', '한서연', '오진석', '정예린', '최다은', '김태우',
-  '윤소영', '강도현', '신혜진', '백지호', '권나연', '문태진', '조성훈', '송예린', '홍은수', '배유나',
+const CREATOR_POOL: Array<{ name: string; username: string }> = [
+  { name: '이창민', username: 'changmin_fit' },
+  { name: '김가애', username: 'gae.yoga' },
+  { name: '박리나', username: 'lina_wellness' },
+  { name: '민경완', username: 'min_crossfit' },
+  { name: '장영훈', username: 'younghoon_run' },
+  { name: '한서연', username: 'seoyeon_health' },
+  { name: '오진석', username: 'jinseok_gym' },
+  { name: '정예린', username: 'yerin_pilates' },
+  { name: '최다은', username: 'daeun_vegan' },
+  { name: '김태우', username: 'taewoo_ft' },
+  { name: '윤소영', username: 'soyoung_life' },
+  { name: '강도현', username: 'dohyun_fit' },
+  { name: '신혜진', username: 'hyejin_yoga' },
+  { name: '백지호', username: 'jiho_sport' },
+  { name: '권나연', username: 'nayeon_wellness' },
+  { name: '문태진', username: 'taejin_outdoor' },
+  { name: '조성훈', username: 'seonghoon_wod' },
+  { name: '송예린', username: 'yerin_clean' },
+  { name: '홍은수', username: 'eunsoo_healthy' },
+  { name: '배유나', username: 'yuna_active' },
 ]
 const CAMPAIGN_POOL = ['봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
 type LibPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
@@ -73,7 +92,9 @@ const PLATFORM_TYPE_OPTIONS: Array<{ label: string; value: string; platform: Lib
 const THUMB_POOL = ['from-pink-100 to-pink-200', 'from-blue-100 to-blue-200', 'from-violet-100 to-violet-200', 'from-red-100 to-red-200', 'from-yellow-100 to-yellow-200', 'from-emerald-100 to-emerald-200', 'from-orange-100 to-orange-200', 'from-indigo-100 to-indigo-200', 'from-rose-100 to-rose-200', 'from-green-100 to-green-200', 'from-cyan-100 to-cyan-200', 'from-lime-100 to-lime-200', 'from-amber-100 to-amber-200', 'from-fuchsia-100 to-fuchsia-200', 'from-teal-100 to-teal-200']
 const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '대기중', '반려']
 const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
-  const creator = CREATOR_POOL[i % CREATOR_POOL.length]
+  const creatorEntry = CREATOR_POOL[i % CREATOR_POOL.length]
+  const creator = creatorEntry.name
+  const creatorUsername = creatorEntry.username
   const campaign = CAMPAIGN_POOL[i % CAMPAIGN_POOL.length]
   const ps = LIB_PS[i % LIB_PS.length]
   // 엣지: i % 17 == 0 썸네일 누락 (placeholder), i % 23 == 0 zero reach
@@ -91,6 +112,7 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   return {
     id: i + 1,
     creator,
+    creatorUsername,
     campaign,
     type: ps.t,
     platform: ps.p,
@@ -866,7 +888,10 @@ export default function Library() {
                     className="w-full p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-b-xl"
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <span className="text-sm font-semibold text-gray-900 min-w-0 break-words">{c.creator}</span>
+                      <div className="min-w-0">
+                        <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
+                        <span className="block text-xs text-gray-400">{c.creator}</span>
+                      </div>
                       <StatusBadge status={displayStatus} dot={false} size="sm" />
                     </div>
                     <button
@@ -990,7 +1015,10 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-medium text-gray-900">{c.creator}</span>
+                        <div className="min-w-0">
+                          <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
+                          <span className="block text-xs text-gray-400">{c.creator}</span>
+                        </div>
                         {isDownloaded && (
                           <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
                             <Check size={8} aria-hidden="true" />결제 완료
@@ -1125,7 +1153,8 @@ export default function Library() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
+                      <h4 className="text-base font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
+                      <span className="text-sm text-gray-400">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
                         <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
@@ -1155,7 +1184,7 @@ export default function Library() {
                 {/* 인플루언서 액션 */}
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
                   <p className="text-[11px] text-gray-400 truncate">
-                    <span className="font-medium text-gray-600">@{previewItem.creator}</span> 님
+                    <span className="font-medium text-gray-600">@{previewItem.creatorUsername}</span> 님
                   </p>
                   <div className="flex gap-2">
                     <button

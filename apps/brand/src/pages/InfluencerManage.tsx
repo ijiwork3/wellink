@@ -470,11 +470,12 @@ export default function InfluencerManage() {
                 {/* 프로필 행 */}
                 <div className="flex items-start gap-3 mb-3">
                   <div className={`flex w-11 h-11 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
-                    {inf.name[0]}
+                    {(inf.instagramId ?? inf.name)[0]}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate min-w-0">{inf.name}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate min-w-0">@{inf.instagramId ?? inf.name}</p>
+                      <span className="text-xs text-gray-400 truncate">{inf.name}</span>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
                         <span className="shrink-0 text-xs font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
                       )}
@@ -749,12 +750,13 @@ export default function InfluencerManage() {
               <div className="shrink-0 px-6 pt-5 pb-0">
                 <div className="flex items-start gap-3 mb-3">
                   <div className={`w-14 h-14 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
-                    {inf.name[0]}
+                    {(inf.instagramId ?? inf.name)[0]}
                   </div>
                   <div className="flex-1 min-w-0">
                     {/* 1행: 이름 + 상태 배지들 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
-                      <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
+                      <h2 className="text-base font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
+                      <span className="text-sm text-gray-400">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
                       )}

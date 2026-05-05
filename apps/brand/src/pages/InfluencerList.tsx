@@ -589,9 +589,12 @@ export default function InfluencerList() {
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
-                      {inf.name[0]}
+                      {(inf.instagramId ?? inf.name)[0]}
                     </div>
-                    <span className="text-sm font-medium text-gray-900 whitespace-nowrap">{inf.name}</span>
+                    <div className="min-w-0">
+                      <span className="block text-sm font-semibold text-gray-900 whitespace-nowrap">@{inf.instagramId ?? inf.name}</span>
+                      <span className="block text-xs text-gray-400">{inf.name}</span>
+                    </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
@@ -754,12 +757,13 @@ export default function InfluencerList() {
               <div className="shrink-0 px-6 pt-5 pb-0">
                 <div className="flex items-start gap-3 mb-3">
                   <div className={`w-14 h-14 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
-                    {inf.name[0]}
+                    {(inf.instagramId ?? inf.name)[0]}
                   </div>
                   <div className="flex-1 min-w-0">
                     {/* 1행: 이름 + 배지 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
-                      <h2 className="text-base font-bold text-gray-900 leading-tight">{inf.name}</h2>
+                      <h2 className="text-base font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
+                      <span className="text-sm text-gray-400">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
                       )}
