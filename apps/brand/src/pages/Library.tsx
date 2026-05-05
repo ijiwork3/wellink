@@ -1139,7 +1139,7 @@ export default function Library() {
                       </a>
                     </div>
                   </div>
-                  <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
+                  <StatusBadge status={modalDisplayStatus} dot={false} size="md" />
                 </div>
                 {/* 인플루언서 액션 */}
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
@@ -1238,11 +1238,6 @@ export default function Library() {
                 </p>
               </div>
 
-              {(approvedIds.has(previewItem.id) || rejectedIds.has(previewItem.id)) && (
-                <p className={`text-center text-sm font-medium ${approvedIds.has(previewItem.id) ? 'text-brand-green' : 'text-red-400'}`}>
-                  {approvedIds.has(previewItem.id) ? '승인된 콘텐츠입니다' : '반려된 콘텐츠입니다'}
-                </p>
-              )}
             </div>
           )
         })()}
