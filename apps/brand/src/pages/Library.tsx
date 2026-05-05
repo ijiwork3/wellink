@@ -19,6 +19,8 @@ import {
   ImageOff,
   Sparkles,
   Tag,
+  CheckCircle,
+  Send,
 } from 'lucide-react'
 import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -140,6 +142,14 @@ function modalInsight(c: Content, saveRate: number, commentRate: number, diffPct
   return lines.slice(0, 2).join(' ')
 }
 
+/* ───── 제안 가능 캠페인 (인플루언서 리스트와 동일 mock) ───── */
+interface ProposalCampaign { id: number; name: string; summary: string; period: string; reward: string }
+const PROPOSABLE_CAMPAIGNS: ProposalCampaign[] = [
+  { id: 1, name: '봄 요가 프로모션',  summary: '봄맞이 요가복 신상 라인 협찬 및 콘텐츠 1건. 봄 시즌 라이트 톤 스타일링과 일상 속 요가 루틴을 자연스럽게 녹여낸 피드/릴스를 함께 제작해 주세요.', period: '2026-04-15 ~ 2026-05-15', reward: '제품 협찬 + 콘텐츠비 30만원' },
+  { id: 2, name: '비건 신제품 론칭',  summary: '신규 비건 단백질 바 시식 후기 콘텐츠 1건. 운동 전후 간편 영양 보충 시나리오로 자연스럽게 노출 부탁드립니다.',                                  period: '2026-05-01 ~ 2026-05-31', reward: '제품 협찬 + 콘텐츠비 25만원' },
+  { id: 3, name: '여름 캠페인',       summary: '여름 시즌 신상 라인 콘텐츠 1건. 썸머 무드의 스타일링 콘텐츠를 제작해 주세요.',                                                               period: '2026-06-01 ~ 2026-07-31', reward: '제품 협찬 + 콘텐츠비 35만원' },
+]
+
 /* ───── Sort helpers ───── */
 type SortKey = '최신순' | '도달순' | '참여율 높은순'
 const SORT_KEYS: SortKey[] = ['최신순', '도달순', '참여율 높은순']
@@ -226,6 +236,21 @@ export default function Library() {
   // 다운로드 건당 결제 모달 (정책서 § 2-1)
   const [downloadModal, setDownloadModal] = useState<{ open: boolean; scope: 'selected' | 'all' }>({ open: false, scope: 'selected' })
   const [isPaying, setIsPaying] = useState(false)
+  // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리)
+  const [downloadedIds, setDownloadedIds] = useState<Set<number>>(new Set())
+  // 인플루언서 찜하기 — creator 이름 기반 (서버 연동 전 세션 메모리)
+  const [libBookmarked, setLibBookmarked] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(sessionStorage.getItem('wl_lib_bookmarks') ?? '[]')) } catch { return new Set() }
+  })
+  // 제안 모달
+  const [libProposalModal, setLibProposalModal] = useState(false)
+  const [libProposalCreator, setLibProposalCreator] = useState<string>('')
+  const [libSelectedCampaign, setLibSelectedCampaign] = useState<number | null>(null)
+  const [libProposalExpandedId, setLibProposalExpandedId] = useState<number | null>(null)
+  const [libProposalSent, setLibProposalSent] = useState(false)
+  const [libProposedCreators, setLibProposedCreators] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(sessionStorage.getItem('wl_lib_proposed') ?? '[]')) } catch { return new Set() }
+  })
 
   const sortListboxRef = useRef<HTMLDivElement>(null)
   const [focusSortKey, setFocusSortKey] = useState<SortKey | null>(null)
@@ -400,6 +425,36 @@ export default function Library() {
 
   const closePreview = useCallback(() => setPreviewItem(null), [])
 
+  const toggleLibBookmark = useCallback((creator: string) => {
+    setLibBookmarked(prev => {
+      const next = new Set(prev)
+      if (next.has(creator)) { next.delete(creator); showToast(`${creator}님 찜을 해제했습니다.`, 'info') }
+      else { next.add(creator); showToast(`${creator}님을 찜했습니다.`, 'success') }
+      try { sessionStorage.setItem('wl_lib_bookmarks', JSON.stringify(Array.from(next))) } catch { /* noop */ }
+      return next
+    })
+  }, [showToast])
+
+  const openLibProposal = useCallback((creator: string) => {
+    setLibProposalCreator(creator)
+    setLibSelectedCampaign(null)
+    setLibProposalExpandedId(null)
+    setLibProposalSent(false)
+    setLibProposalModal(true)
+  }, [])
+
+  const handleLibProposal = useCallback(() => {
+    if (!libSelectedCampaign) { showToast('캠페인을 선택해주세요.', 'error'); return }
+    setLibProposalSent(true)
+    setLibProposedCreators(prev => {
+      const next = new Set(prev)
+      next.add(libProposalCreator)
+      try { sessionStorage.setItem('wl_lib_proposed', JSON.stringify(Array.from(next))) } catch { /* noop */ }
+      return next
+    })
+    showToast(`${libProposalCreator}님에게 제안을 전송했습니다.`, 'success')
+  }, [libSelectedCampaign, libProposalCreator, showToast])
+
   const toggleSelect = useCallback((id: number) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
@@ -493,7 +548,12 @@ export default function Library() {
 
       {/* Top Performer */}
       {topPerformer && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setPreviewItem(topPerformer)}
+          aria-label="이번 달 최고 성과 콘텐츠 상세 보기"
+          className="w-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md p-4 flex items-center gap-3 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+        >
           <div className="w-8 h-8 rounded-full flex items-center justify-center bg-brand-green/10">
             <Crown size={16} className="text-brand-green" aria-hidden="true" />
           </div>
@@ -511,7 +571,7 @@ export default function Library() {
             <div className="text-xs text-gray-500">도달</div>
             <div className="text-sm font-bold text-gray-900">{fmtNumber(topPerformer.reach)}</div>
           </div>
-        </div>
+        </button>
       )}
 
       {/* Campaign Tab Filter */}
@@ -751,6 +811,7 @@ export default function Library() {
           <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
             {paginated.map(c => {
               const isSelected = selectedIds.has(c.id)
+              const isDownloaded = downloadedIds.has(c.id)
               const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
               return (
                 <div
@@ -787,6 +848,13 @@ export default function Library() {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       )}
                     </div>
+                    {isDownloaded && (
+                      <div className="absolute top-3 left-3">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                          <Check size={9} aria-hidden="true" />결제 완료
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2 gap-1" aria-hidden="true">
                       <Eye size={13} className="text-white" />
                       <span className="text-[11px] text-white font-medium">미리보기</span>
@@ -888,6 +956,7 @@ export default function Library() {
             <tbody>
               {paginated.map(c => {
                 const isSelected = selectedIds.has(c.id)
+                const isDownloaded = downloadedIds.has(c.id)
                 const displayStatus = approvedIds.has(c.id) ? '승인' : rejectedIds.has(c.id) ? '반려' : c.status
                 return (
                   <tr
@@ -953,13 +1022,23 @@ export default function Library() {
                         >
                           <Eye size={14} aria-hidden="true" />
                         </button>
-                        <button
-                          onClick={() => { setSelectedIds(new Set([c.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
-                          aria-label={`${c.creator} 다운로드`}
-                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                        >
-                          <Download size={14} aria-hidden="true" />
-                        </button>
+                        {isDownloaded ? (
+                          <button
+                            onClick={() => showToast(`${c.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+                            aria-label={`${c.creator} 다시 다운로드 (결제 완료)`}
+                            className="p-1.5 rounded-lg hover:bg-brand-green/10 text-brand-green transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                          >
+                            <Download size={14} aria-hidden="true" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => { setSelectedIds(new Set([c.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
+                            aria-label={`${c.creator} 다운로드`}
+                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                          >
+                            <Download size={14} aria-hidden="true" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -990,7 +1069,21 @@ export default function Library() {
                 <button onClick={() => openRejectConfirm(previewItem)} className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">반려</button>
               </>
             )}
-            <button onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')} className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"><Download size={14} /> 다운로드</button>
+            {downloadedIds.has(previewItem.id) ? (
+              <button
+                onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
+                className="flex-1 flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green/5 transition-colors"
+              >
+                <Download size={14} aria-hidden="true" /> 다시 다운로드
+              </button>
+            ) : (
+              <button
+                onClick={() => { setSelectedIds(new Set([previewItem.id])); setDownloadModal({ open: true, scope: 'selected' }) }}
+                className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                <Download size={14} aria-hidden="true" /> 다운로드
+              </button>
+            )}
           </>
         ) : undefined}
       >
@@ -1017,19 +1110,59 @@ export default function Library() {
               </div>
 
               {/* 크리에이터 */}
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
-                    {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
-                      <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
-                        <Crown size={11} aria-hidden="true" />상위 참여율
-                      </span>
-                    )}
+              <div className="space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-base font-semibold text-gray-900">{previewItem.creator}</h4>
+                      {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
+                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
+                          <Crown size={11} aria-hidden="true" />상위 참여율
+                        </span>
+                      )}
+                      {downloadedIds.has(previewItem.id) && (
+                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                          <Check size={9} aria-hidden="true" />결제 완료
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <p className="text-sm text-gray-400">{previewItem.campaign} · {previewItem.date}</p>
+                      <a
+                        href={`https://www.instagram.com/p/mock_${previewItem.id}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                        aria-label="게시물 원본 보기 (새 탭)"
+                      >
+                        게시물 보기 ↗
+                      </a>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-400 mt-0.5">{previewItem.campaign} · {previewItem.date}</p>
+                  <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
                 </div>
-                <StatusBadge status={modalDisplayStatus} dot={false} size="sm" />
+                {/* 인플루언서 액션 — 이름 명시로 찜/제안 대상 명확화 */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleLibBookmark(previewItem.creator)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                      libBookmarked.has(previewItem.creator)
+                        ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Heart size={12} className={libBookmarked.has(previewItem.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
+                    {libBookmarked.has(previewItem.creator) ? `${previewItem.creator}님 찜 해제` : `${previewItem.creator}님 찜하기`}
+                  </button>
+                  <button
+                    onClick={() => openLibProposal(previewItem.creator)}
+                    disabled={libProposedCreators.has(previewItem.creator)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send size={12} aria-hidden="true" />
+                    {libProposedCreators.has(previewItem.creator) ? '제안 완료' : `${previewItem.creator}님에게 제안하기`}
+                  </button>
+                </div>
               </div>
 
               {/* KPI 6개 */}
@@ -1155,6 +1288,10 @@ export default function Library() {
           setIsPaying(true)
           showToast('PG 결제 진행 중입니다... (mock)', 'info')
           setTimeout(() => {
+            const ids = downloadModal.scope === 'all'
+              ? new Set(filtered.map(c => c.id))
+              : new Set([...selectedIds])
+            setDownloadedIds(prev => new Set([...prev, ...ids]))
             closeDownloadModal()
             setIsPaying(false)
             showToast(`${count}건 결제 완료. 다운로드를 시작합니다.`, 'success')
@@ -1201,6 +1338,93 @@ export default function Library() {
           </Modal>
         )
       })()}
+      {/* 인플루언서 제안 모달 */}
+      <Modal
+        open={libProposalModal}
+        onClose={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
+        title="캠페인 제안보내기"
+        size="md"
+        footer={!libProposalSent ? (
+          <>
+            <button
+              onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleLibProposal}
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+            >
+              제안 보내기
+            </button>
+          </>
+        ) : undefined}
+      >
+        {libProposalSent ? (
+          <div className="text-center py-6">
+            <CheckCircle size={40} className="text-brand-green mx-auto mb-3" aria-hidden="true" />
+            <p className="text-sm font-semibold text-gray-900">제안이 전송되었습니다!</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              <strong>{libProposalCreator}</strong>님에게 제안을 보낼 캠페인을 선택하세요.
+            </p>
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+              {PROPOSABLE_CAMPAIGNS.map(c => {
+                const isSelected = libSelectedCampaign === c.id
+                const isExpanded = libProposalExpandedId === c.id
+                return (
+                  <div
+                    key={c.id}
+                    className={`border rounded-xl transition-all duration-150 ${
+                      isSelected ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setLibProposalExpandedId(isExpanded ? null : c.id)}
+                      className="w-full flex items-center gap-3 p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
+                      aria-expanded={isExpanded}
+                    >
+                      <input
+                        type="radio"
+                        name="lib-campaign"
+                        value={c.id}
+                        checked={isSelected}
+                        onChange={() => setLibSelectedCampaign(c.id)}
+                        onClick={e => e.stopPropagation()}
+                        className="accent-gray-900"
+                      />
+                      <span className="text-sm flex-1 truncate text-gray-700">{c.name}</span>
+                      <ChevronDown size={16} className={`text-gray-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    </button>
+                    {isExpanded && (
+                      <div className="border-t border-gray-100 px-3 py-3 text-xs">
+                        <dl className="flex flex-col gap-y-3">
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">개요</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed">{c.summary}</dd>
+                          </div>
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">기간</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
+                          </div>
+                          <div className="flex gap-3">
+                            <dt className="w-16 shrink-0 text-gray-400">리워드</dt>
+                            <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
