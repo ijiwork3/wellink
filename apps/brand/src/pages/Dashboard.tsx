@@ -4,7 +4,7 @@ import {
   Megaphone, Users, Activity, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Zap, Search,
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
 } from 'lucide-react'
 import { StatusBadge } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -14,6 +14,19 @@ import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
+
+/* ── 즉각 확인 배너 데이터 ── */
+type UrgentItem = { id: string; text: string; cta: string; route: string }
+const URGENT_ITEMS: UrgentItem[] = [
+  { id: 'review', text: '콘텐츠 검수 2건이 72시간 안에 마감됩니다.', cta: '지금 검수하기', route: '/campaigns/1' },
+  { id: 'deadline', text: '봄 요가 프로모션 마감이 3일 남았습니다. 추가 인플루언서 초대를 권장합니다.', cta: '캠페인 확인', route: '/campaigns/1' },
+]
+
+/* ── 이번 달 성과 하이라이트 ── */
+const HIGHLIGHTS = [
+  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-50' },
+  { icon: <RefreshCw size={14} aria-hidden="true" />, label: '재협업 추천', name: '박리나', value: '전환율 4.2%', sub: '지난 캠페인 기준', color: 'text-brand-green', bg: 'bg-brand-green/5' },
+]
 
 /* ── KPI 데이터 ── */
 const kpis = [
@@ -133,6 +146,9 @@ export default function Dashboard() {
     : `현재 ${planLabel} 플랜입니다. Scale 이상에서 전체 분석이 가능합니다.`
   const lockedBannerCta = !isSubscribed ? '플랜 가입' : '플랜 업그레이드'
 
+  const [dismissedUrgent, setDismissedUrgent] = useState<Set<string>>(new Set())
+  const visibleUrgent = URGENT_ITEMS.filter(u => !dismissedUrgent.has(u.id))
+
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
@@ -212,6 +228,46 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
+
+        {/* AI 추천 미리보기 */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
+              <h2 className="text-sm font-semibold text-gray-900">내 브랜드에 맞는 추천 인플루언서</h2>
+            </div>
+            <span className="text-xs text-gray-400">상위 3명</span>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {[
+              { name: '이영안', fit: 92, tags: '필라테스·비건', followers: '5.2만' },
+              { name: '박경만', fit: 88, tags: '필라테스·크로스핏', followers: '1.2만' },
+              { name: '유현',   fit: 84, tags: '홈트·비건',     followers: '3.8만' },
+            ].map(inf => (
+              <div key={inf.name} className="flex items-center gap-4 px-5 py-3.5">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                  <Users size={14} className="text-gray-400" aria-hidden="true" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-gray-900">{inf.name}</span>
+                    <span className="text-xs bg-brand-green/10 text-brand-green-text px-1.5 py-0.5 rounded-md font-medium">Fit {inf.fit}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="px-5 py-3 border-t border-gray-50">
+            <button
+              onClick={() => navigate('/influencers/list')}
+              className="w-full text-xs font-semibold text-brand-green hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
+            >
+              전체 보기 <ArrowRight size={12} />
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
           {[
             { step: '01', title: '캠페인 등록', desc: '제품과 캠페인 정보를 입력하세요' },
@@ -342,6 +398,34 @@ export default function Dashboard() {
           </button>
         </div>
       )}
+      {/* ── 즉각 확인 배너 ── */}
+      {visibleUrgent.map(u => (
+        <div
+          key={u.id}
+          className="flex items-start gap-3 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-sm"
+        >
+          <AlertTriangle size={15} className="text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
+          <span className="flex-1 text-rose-700">{u.text}</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => navigate(u.route)}
+              className="text-xs font-semibold text-rose-600 hover:text-rose-800 whitespace-nowrap transition-colors"
+            >
+              {u.cta} →
+            </button>
+            <button
+              type="button"
+              onClick={() => setDismissedUrgent(prev => new Set([...prev, u.id]))}
+              aria-label="닫기"
+              className="text-rose-300 hover:text-rose-500 transition-colors"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      ))}
+
       {/* ── 인사말 + 날짜 ── */}
       <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
         <div>
@@ -553,6 +637,25 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── 이번 달 성과 하이라이트 ── */}
+      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+        {HIGHLIGHTS.map(h => (
+          <div key={h.label} className={`${h.bg} rounded-xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4`}>
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white shadow-sm ${h.color}`}>
+              {h.icon}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500 mb-0.5">{h.label}</p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-bold text-gray-900">{h.name}</span>
+                <span className={`text-sm font-semibold ${h.color}`}>{h.value}</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">{h.sub}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* ── 콘텐츠 성과 ── */}
