@@ -17,9 +17,12 @@ const plans = [
     tag: null,
     desc: '인플루언서 매칭 기본 지원',
     features: [
-      '기본 인플루언서 DB 접근 (5,000명)',
-      '월별 프로모션 참여',
-      '기본 분석 리포트 제공',
+      '인플루언서 DB 5,000명',
+      '기본 오디언스 분석',
+      '실시간 전환 추천',
+      '월간 리포트',
+      '이메일 지원',
+      '팀 멤버 3명',
     ],
     cta: '이 플랜으로 변경',
     style: 'white' as const,
@@ -32,28 +35,32 @@ const plans = [
     tag: '추천',
     desc: 'AI 기반 성과 분석 + 우선 매칭',
     features: [
-      '50,000명+ 인플루언서 DB 접근',
-      'AI 기반 성과 예측·분석',
+      '인플루언서 DB 50,000명+',
+      'AI 기반 성과 시뮬레이션',
+      '실시간 ROAS 추적',
+      '간격 리포트 생성',
       '우선 인플루언서 매칭',
       '커스텀 대시보드',
       '우선 지원',
+      '팀 멤버 10명',
     ],
     cta: '이 플랜으로 변경',
     style: 'green' as const,
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '커스텀',
+    id: 'infinite',
+    name: 'Infinite',
+    price: '문의',
     unit: '',
     tag: null,
     desc: '글로벌 엔터프라이즈 맞춤형',
     features: [
       '무제한 인플루언서 DB',
       '전담 전문가 배정',
-      '실시간 전략 컨설팅',
+      '화이트글로브 지원',
+      '커스텀 대시보드',
       '글로벌 솔루션',
-      '우선 기술 지원',
+      '아시아 진출 지원',
     ],
     cta: '도입 문의하기',
     style: 'dark' as const,
@@ -68,11 +75,11 @@ const paymentHistory = [
 
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
-  if (qa === 'plan-focus')    return 'focus'
-  if (qa === 'plan-enterprise') return 'enterprise'
-  if (qa === 'plan-free')     return ''   // 미구독
-  if (qa === 'trial')         return 'scale'  // 무료 체험 중 → Scale 활성
-  return 'scale'                          // 기본 / plan-scale
+  if (qa === 'plan-focus')     return 'focus'
+  if (qa === 'plan-enterprise' || qa === 'plan-infinite') return 'infinite'
+  if (qa === 'plan-free')      return ''   // 미구독
+  if (qa === 'trial')          return 'scale'  // 무료 체험 중 → Scale 활성
+  return 'scale'                           // 기본 / plan-scale
 }
 
 export default function Subscription() {
@@ -340,7 +347,7 @@ export default function Subscription() {
           { name: '인플루언서 DB 접근', used: 12500, limit: 50000, unit: '명' },
           { name: 'AI 시뮬레이션', used: 45, limit: 100, unit: '회' },
           { name: '캠페인 관리', used: 8, limit: 20, unit: '개' },
-        ] : [
+        ] : /* infinite */ [
           { name: '인플루언서 DB 접근', used: 28000, limit: 999999, unit: '명' },
           { name: 'AI 시뮬레이션', used: 92, limit: 999, unit: '회' },
           { name: '캠페인 관리', used: 24, limit: 999, unit: '개' },
@@ -439,23 +446,68 @@ export default function Subscription() {
 
       {/* 플랜 카드 3개 */}
       <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
-        {/* Focus — 흰색 배경 */}
+        {/* Focus — 흰 배경 + 검정 테두리 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div
             key={plan.id}
             className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
               currentPlan === plan.id
-                ? 'border-2 border-brand-green shadow-md'
+                ? 'border-2 border-gray-900 shadow-md'
                 : 'border border-gray-200'
             }`}
           >
             {currentPlan === plan.id && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-brand-green text-white text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                <span className="bg-gray-900 text-white text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                   현재 플랜
                 </span>
               </div>
             )}
+            <div className="mb-5">
+              <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
+              <p className="text-xs text-gray-500 mt-1">{plan.desc}</p>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl font-extrabold text-gray-900">{plan.price}</span>
+                <span className="text-sm text-gray-500">{plan.unit}</span>
+              </div>
+            </div>
+            <ul className="space-y-2.5 mb-6 flex-1">
+              {plan.features.map(f => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
+                  <Check size={15} className="shrink-0 mt-0.5 text-gray-900" aria-hidden="true" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
+              disabled={plan.id === currentPlan}
+              className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors duration-150 ${
+                plan.id === currentPlan
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-900 text-white hover:bg-gray-800'
+              }`}
+            >
+              {plan.id === currentPlan ? '현재 플랜' : plan.cta}
+            </button>
+          </div>
+        ))}
+
+        {/* Scale — 흰 배경 + 그린 테두리 */}
+        {plans.filter(p => p.style === 'green').map(plan => (
+          <div
+            key={plan.id}
+            className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
+              currentPlan === plan.id
+                ? 'border-2 border-brand-green shadow-md'
+                : 'border-2 border-brand-green/60'
+            }`}
+          >
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span className="bg-brand-green text-white text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                {currentPlan === plan.id ? '현재 플랜' : plan.tag}
+              </span>
+            </div>
             <div className="mb-5">
               <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
               <p className="text-xs text-gray-500 mt-1">{plan.desc}</p>
@@ -486,50 +538,7 @@ export default function Subscription() {
           </div>
         ))}
 
-        {/* Scale — 브랜드 그린 배경 */}
-        {plans.filter(p => p.style === 'green').map(plan => (
-          <div
-            key={plan.id}
-            className={`bg-brand-green rounded-2xl p-6 flex flex-col relative ${
-              currentPlan === plan.id ? 'ring-2 ring-offset-2 ring-brand-green' : ''
-            }`}
-          >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-white text-brand-green text-xs px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
-                {currentPlan === plan.id ? '현재 플랜' : plan.tag}
-              </span>
-            </div>
-            <div className="mb-5">
-              <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-              <p className="text-xs text-white/80 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-extrabold text-white">{plan.price}</span>
-                <span className="text-sm text-white/80">{plan.unit}</span>
-              </div>
-            </div>
-            <ul className="space-y-2.5 mb-6 flex-1">
-              {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-white/90">
-                  <Check size={15} className="shrink-0 mt-0.5 text-white" aria-hidden="true" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
-              disabled={plan.id === currentPlan}
-              className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors duration-150 ${
-                plan.id === currentPlan
-                  ? 'bg-white/30 text-white/60 cursor-not-allowed'
-                  : 'bg-white text-brand-green hover:bg-white/90'
-              }`}
-            >
-              {plan.id === currentPlan ? '현재 플랜' : plan.cta}
-            </button>
-          </div>
-        ))}
-
-        {/* Enterprise — 검정 배경 */}
+        {/* Infinite — 검정 배경 */}
         {plans.filter(p => p.style === 'dark').map(plan => (
           <div
             key={plan.id}
@@ -553,7 +562,7 @@ export default function Subscription() {
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-500">
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
                   <Check size={15} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
@@ -576,6 +585,11 @@ export default function Subscription() {
           </div>
         ))}
       </div>
+
+      {/* 7일 무료 체험 안내 */}
+      <p className="text-center text-xs text-gray-400">
+        7일 무료 체험 후 자동 결제됩니다. 체험 기간 중 언제든 취소 가능합니다.
+      </p>
 
       {/* 결제 수단 */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
@@ -681,7 +695,7 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* Enterprise 도입 문의 모달 */}
+      {/* Infinite 도입 문의 모달 */}
       <AlertModal
         open={enterpriseModal}
         onClose={() => setEnterpriseModal(false)}
