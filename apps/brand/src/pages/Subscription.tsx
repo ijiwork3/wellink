@@ -48,8 +48,8 @@ const plans = [
     style: 'green' as const,
   },
   {
-    id: 'infinite',
-    name: 'Infinite',
+    id: 'enterprise',
+    name: 'Enterprise',
     price: '문의',
     unit: '',
     tag: null,
@@ -76,7 +76,7 @@ const paymentHistory = [
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
   if (qa === 'plan-focus')     return 'focus'
-  if (qa === 'plan-enterprise' || qa === 'plan-infinite') return 'infinite'
+  if (qa === 'plan-enterprise' || qa === 'plan-enterprise') return 'enterprise'
   if (qa === 'plan-free')      return ''   // 미구독
   if (qa === 'trial')          return 'scale'  // 무료 체험 중 → Scale 활성
   return 'scale'                           // 기본 / plan-scale
@@ -347,7 +347,7 @@ export default function Subscription() {
           { name: '인플루언서 DB 접근', used: 12500, limit: 50000, unit: '명' },
           { name: 'AI 시뮬레이션', used: 45, limit: 100, unit: '회' },
           { name: '캠페인 관리', used: 8, limit: 20, unit: '개' },
-        ] : /* infinite */ [
+        ] : /* enterprise */ [
           { name: '인플루언서 DB 접근', used: 28000, limit: 999999, unit: '명' },
           { name: 'AI 시뮬레이션', used: 92, limit: 999, unit: '회' },
           { name: '캠페인 관리', used: 24, limit: 999, unit: '개' },
@@ -538,7 +538,7 @@ export default function Subscription() {
           </div>
         ))}
 
-        {/* Infinite — 검정 배경 */}
+        {/* Enterprise — 검정 배경 */}
         {plans.filter(p => p.style === 'dark').map(plan => (
           <div
             key={plan.id}
@@ -695,7 +695,7 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* Infinite 도입 문의 모달 */}
+      {/* Enterprise 도입 문의 모달 */}
       <AlertModal
         open={enterpriseModal}
         onClose={() => setEnterpriseModal(false)}

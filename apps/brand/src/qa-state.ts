@@ -5,7 +5,7 @@
  * 페이지 종속 URL 파라미터(?qa=tab-X 등)와는 별개로 동작.
  *
  * 변수
- *   plan            구독 플랜 (free/focus/scale/infinite/trial/expired/payment-failed)
+ *   plan            구독 플랜 (free/focus/scale/enterprise/trial/expired/payment-failed)
  *   instaConnected  인스타그램 연결 여부
  *   loading         글로벌 로딩 토글
  *   error           글로벌 에러 토글
@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from 'react'
 
-export type QAPlan = 'free' | 'focus' | 'scale' | 'infinite' | 'trial' | 'expired' | 'payment-failed'
+export type QAPlan = 'free' | 'focus' | 'scale' | 'enterprise' | 'trial' | 'expired' | 'payment-failed'
 
 export interface QAState {
   plan: QAPlan
@@ -85,7 +85,7 @@ export const QA_PLAN_OPTIONS: { value: QAPlan; label: string }[] = [
   { value: 'trial', label: '무료 체험 중 (Scale 활성)' },
   { value: 'focus', label: 'Focus 플랜' },
   { value: 'scale', label: 'Scale 플랜' },
-  { value: 'infinite', label: 'Infinite 플랜' },
+  { value: 'enterprise', label: 'Enterprise 플랜' },
   { value: 'expired', label: '구독 만료' },
   { value: 'payment-failed', label: '결제 실패' },
 ]
