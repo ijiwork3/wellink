@@ -195,20 +195,9 @@ interface ConfirmState {
 }
 const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
 
-/* ───── Summary stats (module-level since contents is static) ───── */
-// Top Performer: 이번 달 게시 콘텐츠 중 참여율 1위
+/* ───── NOW (module-level) ───── */
 const NOW = new Date()
 const THIS_MONTH = `${NOW.getFullYear()}-${String(NOW.getMonth() + 1).padStart(2, '0')}`
-const thisMonthContents = contents.filter(c => c.date.startsWith(THIS_MONTH))
-const topPerformerPool = thisMonthContents.length > 0 ? thisMonthContents : contents
-
-const SUMMARY_STATS = {
-  totalReach: contents.reduce((s, c) => s + c.reach, 0),
-  avgEngagement: contents.length > 0
-    ? (contents.reduce((s, c) => s + c.engagementRate, 0) / contents.length).toFixed(1)
-    : '0',
-  topPerformer: [...topPerformerPool].sort((a, b) => b.engagementRate - a.engagementRate)[0],
-}
 
 /* ───── Component ───── */
 
@@ -415,6 +404,23 @@ export default function Library() {
   // 검색·필터·정렬 변경 시 페이지 1로 리셋
   useEffect(() => { setPage(1) }, [search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
 
+  // 캠페인 필터 기반 요약 지표 — 캠페인 탭 변경 시 갱신
+  const campaignStats = useMemo(() => {
+    const pool = campaignFilter === '전체' ? contents : contents.filter(c => c.campaign === campaignFilter)
+    const thisMonth = pool.filter(c => c.date.startsWith(THIS_MONTH))
+    const topPool = thisMonth.length > 0 ? thisMonth : pool
+    return {
+      total: pool.length,
+      totalReach: pool.reduce((s, c) => s + c.reach, 0),
+      avgEngagement: pool.length > 0
+        ? (pool.reduce((s, c) => s + c.engagementRate, 0) / pool.length).toFixed(1)
+        : '0',
+      topPerformer: pool.length > 0
+        ? [...topPool].sort((a, b) => b.engagementRate - a.engagementRate)[0]
+        : null,
+    }
+  }, [campaignFilter])
+
   // 페이지네이션 슬라이스 — 신규
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
@@ -535,7 +541,7 @@ export default function Library() {
   }
 
   const isAllSelected = filtered.length > 0 && selectedIds.size === filtered.length
-  const { totalReach, avgEngagement, topPerformer } = SUMMARY_STATS
+  const { total: campTotal, totalReach, avgEngagement, topPerformer } = campaignStats
 
   /* ─────────── Render ─────────── */
 
@@ -547,11 +553,11 @@ export default function Library() {
         <p className="text-sm text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
       </div>
 
-      {/* Summary Stats — 정책서 § 3: 총 콘텐츠·총 도달·평균 참여율 3개 */}
+      {/* Summary Stats — 캠페인 탭 연동 */}
       <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
-          <div className="text-xl font-bold text-gray-900">{contents.length}</div>
+          <div className="text-xl font-bold text-gray-900">{campTotal}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="text-xs text-gray-500 mb-1">총 도달</div>
@@ -848,7 +854,7 @@ export default function Library() {
                     className={`absolute top-3 left-3 z-10 w-5 h-5 rounded border-2 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isSelected
                         ? 'border-brand-green bg-brand-green'
-                        : 'border-white/80 bg-white/80 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+                        : 'border-white/80 bg-white/80'
                     }`}
                   >
                     {isSelected && <Check size={12} className="text-white" aria-hidden="true" />}
@@ -881,37 +887,52 @@ export default function Library() {
                     </div>
                   </button>
 
-                  <button
-                    type="button"
-                    aria-label={`${c.creator} 콘텐츠 상세 보기`}
-                    onClick={() => setPreviewItem(c)}
-                    className="w-full p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-b-xl"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="min-w-0">
-                        <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
-                        <span className="block text-xs text-gray-400">{c.creator}</span>
-                      </div>
-                      <StatusBadge status={displayStatus} dot={false} size="sm" />
-                    </div>
+                  <div className="p-3">
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
-                      className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
-                    >{c.campaign}</button>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
-                      <span className="flex items-center gap-0.5">
-                        <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
-                      </span>
-                      <span className="flex items-center gap-0.5">
-                        <Heart size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.likes)}
-                      </span>
-                      <span className="flex items-center gap-0.5">
-                        <MessageCircle size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
-                      </span>
+                      aria-label={`${c.creator} 콘텐츠 상세 보기`}
+                      onClick={() => setPreviewItem(c)}
+                      className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="min-w-0">
+                          <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
+                          <span className="block text-xs text-gray-400">{c.creator}</span>
+                        </div>
+                        <StatusBadge status={displayStatus} dot={false} size="sm" />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
+                        className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
+                      >{c.campaign}</button>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
+                        <span className="flex items-center gap-0.5">
+                          <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
+                        </span>
+                        <span className="flex items-center gap-0.5">
+                          <Heart size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.likes)}
+                        </span>
+                        <span className="flex items-center gap-0.5">
+                          <MessageCircle size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
+                        </span>
+                      </div>
+                    </button>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); toggleLibBookmark(c.creator) }}
+                        aria-label={libBookmarked.has(c.creator) ? `${c.creator} 찜 해제` : `${c.creator} 찜하기`}
+                        aria-pressed={libBookmarked.has(c.creator)}
+                        className={`p-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                          libBookmarked.has(c.creator) ? 'text-red-400' : 'text-gray-300 hover:text-red-400'
+                        }`}
+                      >
+                        <Heart size={13} className={libBookmarked.has(c.creator) ? 'fill-red-400' : ''} aria-hidden="true" />
+                      </button>
                     </div>
-                    <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
-                  </button>
+                  </div>
                 </div>
               )
             })}
@@ -1250,11 +1271,13 @@ export default function Library() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 rounded-xl p-3">
                   <p className="text-[10px] text-gray-400 mb-1">캠페인 평균 대비 참여율</p>
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1 flex-wrap">
                     <span className={`text-lg font-bold ${diffPct >= 0 ? 'text-brand-green' : 'text-red-500'}`}>
                       {diffPct >= 0 ? '+' : ''}{diffPct}%
                     </span>
-                    <span className="text-xs text-gray-400">(avg {campAvgEng.toFixed(1)}%)</span>
+                    <span className="text-[10px] text-gray-400">
+                      {diffPct >= 0 ? '높음' : '낮음'} (avg {campAvgEng.toFixed(1)}%)
+                    </span>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
