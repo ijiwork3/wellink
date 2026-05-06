@@ -39,7 +39,13 @@ const INF_BIOS = [
   '요가 지도자 | 내면의 평화를 찾는 여정',
 ]
 const INF_TYPES: InfluencerType[] = ['개인 인플루언서', '개인 인플루언서', '개인 인플루언서', '크루/그룹', '센터', '행사']
-const PLATFORM_POOL = ['인스타그램', '인스타그램', '인스타그램', '유튜브', '틱톡', '인스타그램', '유튜브']
+// 채널 = 플랫폼 + 콘텐츠 유형 (8개 유효 조합)
+type InfluencerChannel = '인스타그램_피드' | '인스타그램_릴스' | '인스타그램_스토리' | '유튜브_영상' | '유튜브_쇼츠' | '네이버블로그' | '틱톡'
+const CHANNEL_POOL: InfluencerChannel[] = ['인스타그램_피드', '인스타그램_릴스', '인스타그램_스토리', '유튜브_영상', '유튜브_쇼츠', '인스타그램_피드', '틱톡', '네이버블로그', '인스타그램_릴스', '유튜브_영상']
+const CHANNEL_TO_PLATFORM: Record<InfluencerChannel, string> = {
+  '인스타그램_피드': '인스타그램', '인스타그램_릴스': '인스타그램', '인스타그램_스토리': '인스타그램',
+  '유튜브_영상': '유튜브', '유튜브_쇼츠': '유튜브', '네이버블로그': '네이버 블로그', '틱톡': '틱톡',
+}
 const LAST_ACTIVE_POOL = ['오늘', '1일 전', '2일 전', '3일 전', '5일 전', '1주 전', '2주 전', '3주 전']
 const influencers = Array.from({ length: 100 }, (_, i) => {
   const baseFollowers = i % 7 === 0 ? 800 + (i * 31) % 800        // nano (~1만)
@@ -70,7 +76,8 @@ const influencers = Array.from({ length: 100 }, (_, i) => {
     category: INF_CAT_POOL[i % INF_CAT_POOL.length],
     lastActive,
     fitScore,
-    platform: PLATFORM_POOL[i % PLATFORM_POOL.length],
+    channel: CHANNEL_POOL[i % CHANNEL_POOL.length] as InfluencerChannel,
+    platform: CHANNEL_TO_PLATFORM[CHANNEL_POOL[i % CHANNEL_POOL.length] as InfluencerChannel],
     scrapingStatus: (i < 5 ? 'in_progress' : 'completed') as 'in_progress' | 'completed',
   }
 })
@@ -147,10 +154,15 @@ const joinTypeOptions = [
   { label: '행사', value: '행사' },
 ]
 
-const platformOptions = [
-  { label: '활동 유형', value: '' },
-  { label: '인스타그램', value: '인스타그램' },
-  { label: '유튜브', value: '유튜브' },
+// 채널 — 플랫폼 + 콘텐츠 유형 통합 (8개 유효 조합)
+const channelOptions = [
+  { label: '채널', value: '' },
+  { label: '인스타그램 · 피드', value: '인스타그램_피드' },
+  { label: '인스타그램 · 릴스', value: '인스타그램_릴스' },
+  { label: '인스타그램 · 스토리', value: '인스타그램_스토리' },
+  { label: '유튜브 · 영상', value: '유튜브_영상' },
+  { label: '유튜브 · 쇼츠', value: '유튜브_쇼츠' },
+  { label: '네이버 블로그', value: '네이버블로그' },
   { label: '틱톡', value: '틱톡' },
 ]
 
@@ -191,8 +203,8 @@ export default function InfluencerList() {
   const [joinType, setJoinType] = useState(() =>
     qa ? '' : (params.get('jtype') ?? '')
   )
-  const [platform, setPlatform] = useState(() =>
-    qa ? '' : (params.get('plt') ?? '')
+  const [channel, setChannel] = useState(() =>
+    qa ? '' : (params.get('ch') ?? '')
   )
   // QA: modal-detail → 첫 번째 인플루언서로 상세 모달 미리 열기
   const [selectedInfluencer, setSelectedInfluencer] = useState<typeof influencers[0] | null>(
@@ -289,12 +301,12 @@ export default function InfluencerList() {
     if (engagementFilter) next.set('eng', engagementFilter)
     if (followerTier) next.set('tier', followerTier)
     if (joinType) next.set('jtype', joinType)
-    if (platform) next.set('plt', platform)
+    if (channel) next.set('ch', channel)
     if (sortKey !== DEFAULT_INFLUENCER_SORT) next.set('sort', sortKey)
     setParams(next, { replace: true })
-  }, [search, category, engagementFilter, followerTier, joinType, platform, sortKey, qa, setParams])
+  }, [search, category, engagementFilter, followerTier, joinType, channel, sortKey, qa, setParams])
 
-  const hasActiveFilters = !!(category || engagementFilter || followerTier || joinType || platform)
+  const hasActiveFilters = !!(category || engagementFilter || followerTier || joinType || channel)
 
   // 모든 hook을 조기 return 이전에 선언 (Rules of Hooks)
   const toggleBookmark = useCallback((id: number) => {
@@ -323,9 +335,9 @@ export default function InfluencerList() {
     if (engagementFilter === 'low' && inf.engagement >= ENGAGEMENT_THRESHOLD.low) return false
     if (followerTier && getFollowerTier(inf.followers) !== followerTier) return false
     if (joinType && inf.type !== joinType) return false
-    if (platform && inf.platform !== platform) return false
+    if (channel && inf.channel !== channel) return false
     return true
-  }), [search, category, engagementFilter, followerTier, joinType, platform])
+  }), [search, category, engagementFilter, followerTier, joinType, channel])
 
   const summaryStats = useMemo(() => [
     { label: '전체 인플루언서', value: influencers.length + '명' },
@@ -498,7 +510,7 @@ export default function InfluencerList() {
           <CustomSelect value={engagementFilter} onChange={v => { setEngagementFilter(v); setPage(1) }} options={engagementOptions} />
           <CustomSelect value={followerTier} onChange={v => { setFollowerTier(v); setPage(1) }} options={followerTierOptions} />
           <CustomSelect value={joinType} onChange={v => { setJoinType(v); setPage(1) }} options={joinTypeOptions} />
-          <CustomSelect value={platform} onChange={v => { setPlatform(v); setPage(1) }} options={platformOptions} />
+          <CustomSelect value={channel} onChange={v => { setChannel(v); setPage(1) }} options={channelOptions} />
         </div>
       </div>
 
@@ -527,8 +539,90 @@ export default function InfluencerList() {
         </button>
       )}
 
-      {/* 테이블 */}
-      <div className="relative" ref={tableWrapperRef}>
+      {/* 모바일 카드 뷰 — @md 이하 1열, @md~@lg 2열 */}
+      <div className="@md:hidden @container">
+        {filtered.length === 0 ? (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
+            <Search size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
+            <p className="text-sm text-gray-500 font-medium">
+              {hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다.' : '검색 조건에 맞는 인플루언서가 없습니다.'}
+            </p>
+            <button
+              onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
+              className="mt-3 text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
+            >필터 초기화</button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+              {paginated.map(inf => (
+                <button
+                  key={inf.id}
+                  type="button"
+                  onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
+                  className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-left hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-base shrink-0`}>
+                      {(inf.instagramId ?? inf.name)[0]}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">@{inf.instagramId ?? inf.name}</p>
+                      <p className="text-xs text-gray-400 truncate">{inf.name}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
+                      aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
+                      aria-pressed={bookmarked.has(inf.id)}
+                      className="shrink-0 p-2 -m-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
+                    >
+                      <Heart size={15} className={bookmarked.has(inf.id) ? 'text-red-500 fill-red-500' : 'text-gray-300'} aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {inf.category.map(c => (
+                      <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div>
+                      <p className="text-xs text-gray-400">팔로워</p>
+                      <p className="text-sm font-semibold text-gray-900">{formatFollowers(inf.followers)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">참여율</p>
+                      <p className={`text-sm font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">진성비율</p>
+                      <p className={`text-sm font-semibold ${getAuthenticColor(inf.authentic)}`}>{inf.authentic}%</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">{inf.platform} · {inf.lastActive}</span>
+                    {proposedSet.has(inf.id) ? (
+                      <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg">제안 완료</span>
+                    ) : proposableCampaigns.length === 0 ? (
+                      <span className="text-xs text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed">제안하기</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
+                        className="text-xs border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:border-gray-400 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >제안하기</button>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <Pagination total={sorted.length} page={safePage} pageSize={perPage} onChange={setPage} />
+          </>
+        )}
+      </div>
+
+      {/* 테이블 — @md 이상 */}
+      <div className="hidden @md:block relative" ref={tableWrapperRef}>
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden @container relative">
           {/* 그라데이션 페이드 오버레이 */}
           {canScrollLeft && (
@@ -568,7 +662,7 @@ export default function InfluencerList() {
                   </p>
                   <p className="text-xs text-gray-400 mt-1">필터를 조정해보세요.</p>
                   <button
-                    onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setPlatform(''); setPage(1) }}
+                    onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                     className="mt-3 text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
                   >
                     필터 초기화
