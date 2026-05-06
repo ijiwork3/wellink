@@ -539,8 +539,8 @@ export default function InfluencerList() {
         </button>
       )}
 
-      {/* 모바일 카드 뷰 — @md 이하 1열, @md~@lg 2열 */}
-      <div className="@md:hidden @container">
+      {/* 모바일/태블릿 카드 뷰 — @xl(768px) 미만 */}
+      <div className="@xl:hidden @container">
         {filtered.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
             <Search size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
@@ -554,7 +554,7 @@ export default function InfluencerList() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 @md:grid-cols-2 gap-3">
               {paginated.map(inf => (
                 <button
                   key={inf.id}
@@ -621,8 +621,8 @@ export default function InfluencerList() {
         )}
       </div>
 
-      {/* 테이블 — @md 이상 */}
-      <div className="hidden @md:block relative" ref={tableWrapperRef}>
+      {/* 테이블 — @xl(768px) 이상 */}
+      <div className="hidden @xl:block relative" ref={tableWrapperRef}>
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden @container relative">
           {/* 그라데이션 페이드 오버레이 */}
           {canScrollLeft && (
