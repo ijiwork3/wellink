@@ -475,11 +475,11 @@ export default function InfluencerManage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate min-w-0">@{inf.instagramId ?? inf.name}</p>
-                      <span className="text-xs text-gray-400 truncate">{inf.name}</span>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
                         <span className="shrink-0 text-xs font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
                       )}
                     </div>
+                    <p className="text-xs text-gray-400 truncate">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>

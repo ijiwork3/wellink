@@ -64,7 +64,7 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm mx-4 relative z-10">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 relative z-10">
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-gray-900">환영합니다!</h1>
           <p className="text-sm text-gray-500 mt-1">

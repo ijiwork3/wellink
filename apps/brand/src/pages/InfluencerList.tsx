@@ -510,7 +510,7 @@ export default function InfluencerList() {
           onClick={() => scrollTable('left')}
           aria-label="왼쪽으로 스크롤"
           style={{ top: btnTop }}
-          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
         >
           <ChevronLeft size={15} />
         </button>
@@ -521,7 +521,7 @@ export default function InfluencerList() {
           onClick={() => scrollTable('right')}
           aria-label="오른쪽으로 스크롤"
           style={{ top: btnTop }}
-          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-xl transition-all duration-150"
+          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
         >
           <ChevronRight size={15} />
         </button>

@@ -818,7 +818,7 @@ export default function MyPage() {
               value={currentPw}
               onChange={e => { setCurrentPw(e.target.value); setPasswordError('') }}
               aria-label="현재 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="현재 비밀번호를 입력하세요"
             />
           </div>
@@ -830,7 +830,7 @@ export default function MyPage() {
               value={newPw}
               onChange={e => { setNewPw(e.target.value); setPasswordError('') }}
               aria-label="새 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="새 비밀번호 (8자 이상)"
             />
           </div>
@@ -842,7 +842,7 @@ export default function MyPage() {
               value={confirmPw}
               onChange={e => { setConfirmPw(e.target.value); setPasswordError('') }}
               aria-label="새 비밀번호 확인"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="새 비밀번호를 다시 입력하세요"
             />
           </div>
@@ -889,7 +889,7 @@ export default function MyPage() {
               value={snsHandle}
               onChange={e => setSnsHandle(e.target.value)}
               aria-label="Instagram 비즈니스 계정"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="Instagram 아이디를 입력하세요"
             />
             {snsHandle.trim() === '' && (
@@ -942,7 +942,7 @@ export default function MyPage() {
               type="email"
               value={inviteEmail}
               onChange={e => setInviteEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="초대할 이메일을 입력하세요"
             />
           </div>
@@ -1081,7 +1081,7 @@ export default function MyPage() {
               value={withdrawConfirmText}
               onChange={e => setWithdrawConfirmText(e.target.value)}
               placeholder="'탈퇴'를 입력해 주세요"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-red-400 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
             />
           </div>
         </div>

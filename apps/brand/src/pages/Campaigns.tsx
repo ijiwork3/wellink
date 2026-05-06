@@ -437,7 +437,8 @@ export default function Campaigns() {
               value={search}
               onChange={e => { setSearch(e.target.value); resetPage() }}
               placeholder="캠페인명 검색"
-              className="w-full pl-8 pr-8 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+              aria-label="캠페인명 검색"
+              className="w-full pl-8 pr-8 py-2 text-xs bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
             {search && (
               <button

@@ -243,7 +243,7 @@ export default function Homepage() {
                 { icon: MapPin, label: 'Offline Experience', title: '피트니스/웰니스 센터', desc: '공간 및 체험 제공을 통해 생생한 경험을 확산하는 피트니스 센터.' },
                 { icon: Trophy, label: 'Mass Exposure', title: '행사/이벤트', desc: '대회, 세미나 등 대형 오프라인 이벤트 스폰서십 연결.' },
               ].map((item) => (
-                <motion.div key={item.title} whileHover={hoverLiftCard} className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-shadow hover:shadow-xl">
+                <motion.div key={item.title} whileHover={hoverLiftCard} className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-shadow hover:shadow-md">
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-landing-dark)]"><item.icon size={28} aria-hidden="true" /></div>
                   <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</div>
                   <h3 className="mb-4 text-xl font-black text-slate-900">{item.title}</h3>
