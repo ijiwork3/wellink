@@ -558,15 +558,15 @@ export default function Library() {
       {/* Summary Stats — 캠페인 탭 연동 */}
       <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="text-xs text-gray-500 mb-1">총 콘텐츠</div>
+          <div className="text-sm text-gray-500 mb-1">총 콘텐츠</div>
           <div className="text-xl font-bold text-gray-900">{campTotal}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="text-xs text-gray-500 mb-1">총 도달</div>
+          <div className="text-sm text-gray-500 mb-1">총 도달</div>
           <div className="text-xl font-bold text-gray-900">{fmtNumber(totalReach)}</div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+          <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
             <TrendingUp size={12} aria-hidden="true" />
             평균 참여율
           </div>
@@ -586,17 +586,17 @@ export default function Library() {
             <Crown size={16} className="text-brand-green" aria-hidden="true" />
           </div>
           <div className="flex-1">
-            <span className="text-xs text-gray-500">이번 달 최고 성과 콘텐츠</span>
+            <span className="text-sm text-gray-500">이번 달 최고 성과 콘텐츠</span>
             <div className="text-sm font-semibold text-gray-900">
               {topPerformer.creator} — {topPerformer.campaign}
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-gray-500">참여율</div>
+            <div className="text-sm text-gray-500">참여율</div>
             <div className="text-sm font-bold text-brand-green">{topPerformer.engagementRate}%</div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-gray-500">도달</div>
+            <div className="text-sm text-gray-500">도달</div>
             <div className="text-sm font-bold text-gray-900">{fmtNumber(topPerformer.reach)}</div>
           </div>
         </button>
@@ -640,7 +640,7 @@ export default function Library() {
                 }`}
               >
                 {camp}
-                <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                <span className={`text-sm px-1.5 py-0.5 rounded-full font-medium ${
                   isActive ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
                 }`}>
                   {count}
@@ -747,7 +747,7 @@ export default function Library() {
         {/* Filter dropdowns */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs text-gray-600 font-medium shrink-0">상태</span>
+            <span className="text-sm text-gray-600 font-medium shrink-0">상태</span>
             <CustomSelect
               value={statusFilter}
               onChange={v => setStatusFilter(v)}
@@ -756,7 +756,7 @@ export default function Library() {
             />
           </div>
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs text-gray-600 font-medium shrink-0">채널</span>
+            <span className="text-sm text-gray-600 font-medium shrink-0">채널</span>
             <CustomSelect
               value={platformTypeFilter}
               onChange={v => setPlatformTypeFilter(v)}
@@ -783,7 +783,7 @@ export default function Library() {
               {hasFilters ? (
                 <>
                   <p className="text-sm font-medium text-gray-500 mb-1">조건에 맞는 콘텐츠가 없습니다</p>
-                  <p className="text-xs text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
+                  <p className="text-sm text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
                   <button
                     onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
                     className="mt-4 text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -794,7 +794,7 @@ export default function Library() {
               ) : (
                 <>
                   <p className="text-sm font-medium text-gray-500 mb-1">아직 등록된 콘텐츠가 없습니다</p>
-                  <p className="text-xs text-gray-400">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
+                  <p className="text-sm text-gray-400">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
                 </>
               )}
             </div>
@@ -815,12 +815,12 @@ export default function Library() {
             >
               {isAllSelected && <Check size={12} className="text-white" aria-hidden="true" />}
             </button>
-            <span className="text-xs text-gray-500">전체 선택 ({filtered.length})</span>
+            <span className="text-sm text-gray-500">전체 선택 ({filtered.length})</span>
             <div className="ml-auto flex items-center gap-1.5">
               {selectedIds.size > 0 && (
                 <button
                   onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
-                  className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-xs font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Download size={11} aria-hidden="true" />
                   선택 ({selectedIds.size})
@@ -828,7 +828,7 @@ export default function Library() {
               )}
               <button
                 onClick={() => setDownloadModal({ open: true, scope: 'all' })}
-                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-xs hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Download size={11} aria-hidden="true" />
                 전체
@@ -871,9 +871,9 @@ export default function Library() {
                   >
                     <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
+                      <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                       {c.type && (
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       )}
                     </div>
                     {isDownloaded && (
@@ -885,7 +885,7 @@ export default function Library() {
                     )}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2 gap-1" aria-hidden="true">
                       <Eye size={13} className="text-white" />
-                      <span className="text-[11px] text-white font-medium">미리보기</span>
+                      <span className="text-sm text-white font-medium">미리보기</span>
                     </div>
                   </button>
 
@@ -899,16 +899,16 @@ export default function Library() {
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <div className="min-w-0">
                           <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
-                          <span className="block text-xs text-gray-400">{c.creator}</span>
+                          <span className="block text-sm text-gray-400">{c.creator}</span>
                         </div>
                         <StatusBadge status={displayStatus} dot={false} size="sm" />
                       </div>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
-                        className="block w-full text-left text-xs text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
+                        className="block w-full text-left text-sm text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
                       >{c.campaign}</button>
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mb-2">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-gray-400 mb-2">
                         <span className="flex items-center gap-0.5">
                           <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
                         </span>
@@ -921,7 +921,7 @@ export default function Library() {
                       </div>
                     </button>
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-400">{fmtDate(c.date)}</span>
+                      <span className="text-sm text-gray-400">{fmtDate(c.date)}</span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleLibBookmark(c.creator) }}
@@ -950,7 +950,7 @@ export default function Library() {
             {selectedIds.size > 0 && (
               <button
                 onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
-                className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-xs font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Download size={11} aria-hidden="true" />
                 선택 ({selectedIds.size})
@@ -958,7 +958,7 @@ export default function Library() {
             )}
             <button
               onClick={() => setDownloadModal({ open: true, scope: 'all' })}
-              className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-xs hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Download size={11} aria-hidden="true" />
               전체
@@ -999,7 +999,7 @@ export default function Library() {
                   </button>
                 </th>
                 {['콘텐츠', '제작자', '캠페인', '유형', '플랫폼', '날짜', '도달', '좋아요', '댓글', '저장', '참여율', '상태'].map(h => (
-                  <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-3 whitespace-nowrap">{h}</th>
+                  <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-3 whitespace-nowrap">{h}</th>
                 ))}
                 <th scope="col" className="py-3 px-3"><span className="sr-only">작업</span></th>
               </tr>
@@ -1040,7 +1040,7 @@ export default function Library() {
                       <div className="flex items-center gap-1.5">
                         <div className="min-w-0">
                           <span className="block text-sm font-semibold text-gray-900">@{c.creatorUsername}</span>
-                          <span className="block text-xs text-gray-400">{c.creator}</span>
+                          <span className="block text-sm text-gray-400">{c.creator}</span>
                         </div>
                         {isDownloaded && (
                           <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
@@ -1053,18 +1053,18 @@ export default function Library() {
                       <button
                         type="button"
                         onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
-                        className="text-xs text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
+                        className="text-sm text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
                       >{c.campaign}</button>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       {c.type ? (
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       ) : (
-                        <span className="text-xs text-gray-400">—</span>
+                        <span className="text-sm text-gray-400">—</span>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-xs text-gray-500 whitespace-nowrap">{c.platform}</td>
-                    <td className="py-3 px-3 text-xs text-gray-500 whitespace-nowrap">{fmtDate(c.date)}</td>
+                    <td className="py-3 px-3 text-sm text-gray-500 whitespace-nowrap">{c.platform}</td>
+                    <td className="py-3 px-3 text-sm text-gray-500 whitespace-nowrap">{fmtDate(c.date)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700 whitespace-nowrap">{fmtNumber(c.likes)}</td>
                     <td className="py-3 px-3 text-sm text-gray-700 whitespace-nowrap">{c.comments}</td>
@@ -1164,9 +1164,9 @@ export default function Library() {
               <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${thumbnailBg(previewItem.thumbnailClass)}`} aria-hidden="true">
                 <ImageOff size={56} className={thumbnailIconColor(previewItem.thumbnailClass)} />
                 <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
+                  <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
                   {previewItem.type && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
+                    <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
                   )}
                 </div>
               </div>
@@ -1179,12 +1179,12 @@ export default function Library() {
                       <h4 className="text-base font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
                       <span className="text-sm text-gray-400">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
+                        <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
                         </span>
                       )}
                       {downloadedIds.has(previewItem.id) && (
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                        <span className="inline-flex items-center gap-1 text-sm px-2 py-0.5 rounded-full bg-brand-green text-white font-semibold">
                           <Check size={9} aria-hidden="true" />결제 완료
                         </span>
                       )}
@@ -1196,7 +1196,7 @@ export default function Library() {
                           href={previewItem.postUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                          className="inline-flex items-center gap-1 text-sm text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                           aria-label="게시물 원본 보기 (새 탭)"
                         >
                           게시물 보기 ↗
@@ -1208,13 +1208,13 @@ export default function Library() {
                 </div>
                 {/* 인플루언서 액션 */}
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
-                  <p className="text-[11px] text-gray-400 truncate">
+                  <p className="text-sm text-gray-400 truncate">
                     <span className="font-medium text-gray-600">@{previewItem.creatorUsername}</span> 님
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => toggleLibBookmark(previewItem.creator)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         libBookmarked.has(previewItem.creator)
                           ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
                           : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-100'
@@ -1226,7 +1226,7 @@ export default function Library() {
                     <button
                       onClick={() => openLibProposal(previewItem.creator)}
                       disabled={libProposedCreators.has(previewItem.creator)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium border border-brand-green/30 text-brand-green bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send size={12} aria-hidden="true" />
                       {libProposedCreators.has(previewItem.creator) ? '제안 완료' : '제안하기'}
@@ -1246,7 +1246,7 @@ export default function Library() {
                   { icon: <TrendingUp size={13} />,    label: '참여율', value: previewItem.engagementRate + '%' },
                 ].map(stat => (
                   <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">{stat.icon}<span className="text-xs">{stat.label}</span></div>
+                    <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">{stat.icon}<span className="text-sm">{stat.label}</span></div>
                     <div className="text-sm font-bold text-gray-900">{stat.value}</div>
                   </div>
                 ))}
@@ -1254,18 +1254,18 @@ export default function Library() {
 
               {/* 성과 비율 분석 */}
               <div className="space-y-2.5">
-                <p className="text-xs font-semibold text-gray-500">성과 비율 분석</p>
+                <p className="text-sm font-semibold text-gray-500">성과 비율 분석</p>
                 {[
                   { label: '저장률',   value: saveRate,    cap: 10,  desc: '구매 전환 의도',  color: 'bg-brand-green' },
                   { label: '좋아요율', value: likeRate,    cap: 20,  desc: '콘텐츠 호감도',   color: 'bg-blue-400' },
                   { label: '댓글률',   value: commentRate, cap: 5,   desc: '진성 참여',       color: 'bg-violet-400' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500 w-14 shrink-0">{item.label}</span>
+                    <span className="text-sm text-gray-500 w-14 shrink-0">{item.label}</span>
                     <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                       <div className={`h-full rounded-full ${item.color} transition-all`} style={{ width: `${Math.min(item.value / item.cap * 100, 100)}%` }} />
                     </div>
-                    <span className="text-xs font-semibold text-gray-700 w-10 text-right">{item.value.toFixed(1)}%</span>
+                    <span className="text-sm font-semibold text-gray-700 w-10 text-right">{item.value.toFixed(1)}%</span>
                     <span className="text-[10px] text-gray-400 w-20 shrink-0">{item.desc}</span>
                   </div>
                 ))}
@@ -1298,9 +1298,9 @@ export default function Library() {
               <div className="bg-brand-green/5 border border-brand-green/15 rounded-xl p-3">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-brand-green">AI 인사이트</span>
+                  <span className="text-sm font-semibold text-brand-green">AI 인사이트</span>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {modalInsight(previewItem, saveRate, commentRate, diffPct)}
                 </p>
               </div>
@@ -1326,7 +1326,7 @@ export default function Library() {
         <div className="space-y-3">
           <div>
             <p className="text-sm font-semibold text-gray-900">{rejectConfirm.title}</p>
-            <p className="text-xs text-gray-500 mt-1">{rejectConfirm.description}</p>
+            <p className="text-sm text-gray-500 mt-1">{rejectConfirm.description}</p>
           </div>
           <textarea
             aria-label="반려 사유 (선택)"
@@ -1337,7 +1337,7 @@ export default function Library() {
             rows={4}
             className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
-          <div className="text-right text-xs text-gray-400">{rejectReason.length}/300</div>
+          <div className="text-right text-sm text-gray-400">{rejectReason.length}/300</div>
         </div>
       </Modal>
 
@@ -1394,8 +1394,8 @@ export default function Library() {
                   <span className="font-semibold text-gray-900">₩{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-[11px] text-gray-400">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
-              <p className="text-[11px] text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+              <p className="text-sm text-gray-400">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
+              <p className="text-sm text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
             </div>
           </Modal>
         )
@@ -1470,7 +1470,7 @@ export default function Library() {
                       <ChevronDown size={16} className={`text-gray-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                     {isExpanded && (
-                      <div className="border-t border-gray-100 px-3 py-3 text-xs">
+                      <div className="border-t border-gray-100 px-3 py-3 text-sm">
                         <dl className="flex flex-col gap-y-3">
                           <div className="flex gap-3">
                             <dt className="w-16 shrink-0 text-gray-400">개요</dt>

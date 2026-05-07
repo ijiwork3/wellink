@@ -79,10 +79,10 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       {/* 구독 만료 배너 */}
       {isGated && (
         <div className="mx-3 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-[11px] text-amber-700 font-medium leading-snug">{planLabel}</p>
+          <p className="text-sm text-amber-700 font-medium leading-snug">{planLabel}</p>
           <button
             onClick={() => navigate('/subscription')}
-            className="text-[11px] text-amber-600 hover:text-amber-800 underline mt-0.5 focus-visible:outline-none"
+            className="text-sm text-amber-600 hover:text-amber-800 underline mt-0.5 focus-visible:outline-none"
           >
             구독 갱신하기 →
           </button>
@@ -98,7 +98,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             value={menuSearch}
             onChange={e => setMenuSearch(e.target.value)}
             placeholder="메뉴 검색"
-            className="w-full pl-7 pr-2.5 py-1.5 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+            className="w-full pl-7 pr-2.5 py-1.5 text-sm bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">
-            <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
+            <div className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
               {section.label}
             </div>
             {section.items.map(item => {
@@ -225,8 +225,8 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             </div>
             <div className="flex-1 min-w-0 text-left">
               {/* auth 연동 시 실제 사용자 정보로 교체 예정 */}
-              <p className="text-xs font-medium text-gray-900 truncate">웰링크 브랜드</p>
-              <p className="text-[11px] text-gray-400 truncate">brand@wellink.ai</p>
+              <p className="text-sm font-medium text-gray-900 truncate">웰링크 브랜드</p>
+              <p className="text-sm text-gray-400 truncate">brand@wellink.ai</p>
             </div>
           </button>
         </div>
