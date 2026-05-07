@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, DateRangePicker, Pagination } from '@wellink/ui'
+import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -423,11 +423,6 @@ export default function CampaignDetail() {
   const [selectedUploadFilter, setSelectedUploadFilter] = useState<UploadFilter>('all')
   const [uploadOverviewOpen, setUploadOverviewOpen] = useState(false)
   const [uploadOverviewDetailId, setUploadOverviewDetailId] = useState<number | null>(null)
-  // 성과 리포트 — 기간 필터 (원본 PeriodFilter)
-  type ReportPeriod = 'daily' | 'weekly' | 'monthly'
-  const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('daily')
-  // 신규 — 기간 슬라이드(캘린더). 0 = 현재, 음수 = 과거. 데이터는 mock이라 라벨/필터 동작만 자리 잡음
-  const [reportDateOffset, setReportDateOffset] = useState(0)
 
   const handleShareCampaign = () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -521,7 +516,7 @@ export default function CampaignDetail() {
   }
 
   // 콘텐츠 다운로드 (플랜 권한 기반)
-  const { planLabel, canDownloadContent } = usePlanAccess()
+  const { planLabel, canDownloadContent, isGated } = usePlanAccess()
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
@@ -877,28 +872,27 @@ export default function CampaignDetail() {
       .sort((a, b) => (b.likes + b.comments + b.shares + b.saves) - (a.likes + a.comments + a.shares + a.saves))
       .slice(0, 5)
   })()
-  // 기간별 시계열 — 원본 ReportView trendResults 동등
-  // submittedAt(YYYY-MM-DD) 기준으로 daily/weekly/monthly 버킷 집계
+  // 시계열 — uploadPeriod 종료일 + 2주 범위 고정, 일간 집계
   const trendData = (() => {
     if (approvedContents.length === 0) return []
-    const items = approvedContents.map(c => {
+    // uploadPeriod: 'YYYY-MM-DD ~ YYYY-MM-DD' 형식
+    const periodEnd = meta.uploadPeriod.split(' ~ ')[1]
+    const rangeEnd = periodEnd ? (() => {
+      const d = new Date(periodEnd)
+      d.setDate(d.getDate() + 14)
+      d.setHours(23, 59, 59, 999)
+      return d
+    })() : null
+    const fmtDay = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+    const buckets = new Map<string, { label: string; sortKey: number; likes: number; comments: number; shares: number; views: number }>()
+    for (const c of approvedContents) {
       const d = new Date(c.submittedAt)
       d.setHours(0, 0, 0, 0)
+      if (rangeEnd && d > rangeEnd) continue
+      const label = fmtDay(d)
       const isVideo = c.type === '릴스' || c.type === '영상' || c.type === '쇼츠' || c.type === '스토리'
-      return { date: d, likes: c.likes, comments: c.comments, shares: c.shares, views: isVideo ? c.reach : 0 }
-    }).sort((a, b) => a.date.getTime() - b.date.getTime())
-    if (items.length === 0) return []
-    const buckets = new Map<string, { label: string; sortKey: number; likes: number; comments: number; shares: number; views: number }>()
-    const fmtMonth = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
-    const fmtDay = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
-    const getWeekStart = (d: Date) => { const x = new Date(d); const day = x.getDay(); x.setDate(x.getDate() + (day === 0 ? -6 : 1 - day)); x.setHours(0, 0, 0, 0); return x }
-    for (const it of items) {
-      let bd = it.date, label: string
-      if (reportPeriod === 'monthly') { bd = new Date(it.date.getFullYear(), it.date.getMonth(), 1); label = fmtMonth(bd) }
-      else if (reportPeriod === 'weekly') { bd = getWeekStart(it.date); label = `${fmtDay(bd)}주` }
-      else { label = fmtDay(it.date) }
-      const ex = buckets.get(label) ?? { label, sortKey: bd.getTime(), likes: 0, comments: 0, shares: 0, views: 0 }
-      ex.likes += it.likes; ex.comments += it.comments; ex.shares += it.shares; ex.views += it.views
+      const ex = buckets.get(label) ?? { label, sortKey: d.getTime(), likes: 0, comments: 0, shares: 0, views: 0 }
+      ex.likes += c.likes; ex.comments += c.comments; ex.shares += c.shares; ex.views += isVideo ? c.reach : 0
       buckets.set(label, ex)
     }
     return Array.from(buckets.values()).sort((a, b) => a.sortKey - b.sortKey)
@@ -1027,7 +1021,8 @@ export default function CampaignDetail() {
       {/* 탭 */}
       <div className="overflow-x-auto flex border-b border-gray-200 sticky top-0 bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 scrollbar-hide">
         {tabs.map(tab => {
-          const isDisabled = isClosed && tab === '지원자 관리'
+          const isTabGated = isGated && (tab === '등록 콘텐츠' || tab === '성과 리포트')
+          const isDisabled = (isClosed && tab === '지원자 관리') || isTabGated
           const isActive = activeTab === tab
           return (
             <button
@@ -1039,7 +1034,8 @@ export default function CampaignDetail() {
               }}
               onClick={() => { if (!isDisabled) { setActiveTab(tab); setCheckedApplicants(new Set()) } }}
               disabled={isDisabled}
-              className={`whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-xs' : 'text-sm'} border-b-2 transition-all duration-150 ${
+              aria-label={isTabGated ? `${tab} (구독 만료)` : undefined}
+              className={`relative whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-xs' : 'text-sm'} border-b-2 transition-all duration-150 ${
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
                   : isActive
@@ -1048,6 +1044,9 @@ export default function CampaignDetail() {
               }`}
             >
               {tab}
+              {isTabGated && (
+                <span className="absolute inset-0 rounded backdrop-blur-[1px] bg-white/40" aria-hidden="true" />
+              )}
             </button>
           )
         })}
@@ -2017,20 +2016,6 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
         <div className="space-y-4">
-          {/* 기간 필터 — DateRangePicker 통일 (분석 페이지 정책 §6) */}
-          <div className="flex justify-end">
-            <DateRangePicker
-              period={reportPeriod === 'daily' ? '일간' : reportPeriod === 'weekly' ? '주간' : '월간'}
-              dateOffset={reportDateOffset}
-              periods={['일간', '주간', '월간']}
-              onPeriodChange={(p) => {
-                setReportPeriod(p === '일간' ? 'daily' : p === '주간' ? 'weekly' : 'monthly')
-                setReportDateOffset(0)
-              }}
-              onDateOffsetChange={setReportDateOffset}
-            />
-          </div>
-
           {/* KPI 6개 — 2×3 고정 (말줄임 방지). 평균 참여율은 6번째에 통합 */}
           <div className="grid grid-cols-2 gap-3 @sm:gap-4">
             {reportKPI.map(k => {
@@ -2241,7 +2226,7 @@ export default function CampaignDetail() {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50/50 border-b border-gray-100">
-                        {['순위', '콘텐츠', '인플루언서', '유형', '도달', '좋아요', '참여율'].map(h => (
+                        {['순위', '썸네일/콘텐츠', '인플루언서', '도달', '좋아요', '참여율'].map(h => (
                           <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
@@ -2259,22 +2244,17 @@ export default function CampaignDetail() {
                                 {rank}
                               </span>
                             </td>
-                            <td className="py-3 px-4 whitespace-nowrap">
-                              <p className="text-sm font-medium text-gray-900">{c.caption}</p>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2.5 min-w-[180px] max-w-[260px]">
+                                <div className={`w-10 h-10 rounded-lg shrink-0 ${c.thumbnail} flex items-center justify-center`}>
+                                  <Image size={14} className="text-white/60" aria-hidden="true" />
+                                </div>
+                                <p className="text-sm text-gray-700 line-clamp-2 leading-snug">{c.caption}</p>
+                              </div>
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap leading-tight">
                               <p className="text-sm font-bold text-gray-900">@{c.instagramId}</p>
                               <p className="text-[11px] text-gray-400 mt-0.5">본명 · {c.influencer}</p>
-                            </td>
-                            <td className="py-3 px-4 whitespace-nowrap">
-                              <div className="inline-flex items-center gap-1">
-                                <PlatformBadge platform={c.platform} />
-                                {c.type && (
-                                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
-                                    {c.type}
-                                  </span>
-                                )}
-                              </div>
                             </td>
                             <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>

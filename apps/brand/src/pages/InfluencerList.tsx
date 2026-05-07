@@ -843,7 +843,7 @@ export default function InfluencerList() {
             onClick={closeDetail}
           >
             <div
-              className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-2xl mx-4'}`}
+              className={`bg-white shadow-2xl w-full flex flex-col ${device === 'phone' ? 'h-full rounded-none' : 'rounded-2xl max-w-3xl mx-4'}`}
               style={{ height: device === 'phone' ? '100%' : '90%' }}
               onClick={e => e.stopPropagation()}
             >

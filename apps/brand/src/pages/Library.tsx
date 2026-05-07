@@ -44,6 +44,7 @@ interface Content {
   engagementRate: number
   status: '승인' | '검수중' | '대기중' | '반려'
   thumbnailClass: string
+  postUrl?: string
 }
 
 // 100개 더미 + 엣지케이스 (썸네일 누락, 0값 등) — 원본 ContentList rawFileUrl=#일 때 ImageIcon fallback 보강
@@ -120,6 +121,7 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
     reach, likes, comments, saves, shareRate, engagementRate,
     status: STATUS_CYCLE[i % STATUS_CYCLE.length],
     thumbnailClass: thumbnailMissing ? '' : THUMB_POOL[i % THUMB_POOL.length],
+    postUrl: (i % 5 !== 0 && i % 7 !== 3) ? `https://www.instagram.com/p/mock_${i + 1}/` : undefined,
   }
 })
 
@@ -144,12 +146,12 @@ const PLATFORM_BADGE_STYLE: Record<string, string> = {
 const campaigns = ['전체', '봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
 
 /* ───── Modal helpers ───── */
-const HASHTAG_POOL: Record<string, string[]> = {
-  '봄 요가 프로모션':  ['요가', '봄운동', '요가일상', '건강', '웰니스', '필라테스'],
-  '비건 신제품 론칭':  ['비건', '식물성', '클린뷰티', '비건라이프', '신제품', '지속가능'],
-  '여름 캠페인':       ['여름', '서머룩', '여름일상', '시즌', '썸머', '여름스타일'],
-  '주방 가전 런칭':    ['주방', '홈쿠킹', '쿠킹', '신가전', '주방인테리어', '요리'],
-  '겨울 운동 챌린지':  ['겨울운동', '운동챌린지', '홈트', '겨울건강', '다이어트', '챌린지'],
+const CAMPAIGN_KEYWORDS: Record<string, string[]> = {
+  '봄 요가 프로모션':  ['#봄요가', '#요가스튜디오', '#강남요가', '#필라테스', '#요가일상'],
+  '비건 신제품 론칭':  ['#비건뷰티', '#클린뷰티', '#비건라이프', '#신제품'],
+  '여름 캠페인':       ['#여름', '#썸머룩', '#시즌', '#여름일상'],
+  '주방 가전 런칭':    ['#홈쿠킹', '#신가전', '#주방인테리어', '#요리'],
+  '겨울 운동 챌린지':  ['#겨울운동', '#운동챌린지', '#홈트', '#다이어트'],
 }
 
 function modalInsight(c: Content, saveRate: number, commentRate: number, diffPct: number): string {
@@ -1155,7 +1157,7 @@ export default function Library() {
           const campItems  = contents.filter(c => c.campaign === previewItem.campaign)
           const campAvgEng = campItems.reduce((s, c) => s + c.engagementRate, 0) / campItems.length
           const diffPct    = campAvgEng > 0 ? Math.round((previewItem.engagementRate - campAvgEng) / campAvgEng * 100) : 0
-          const hashtags   = (HASHTAG_POOL[previewItem.campaign] ?? []).slice(0, 5)
+          const hashtags   = (CAMPAIGN_KEYWORDS[previewItem.campaign] ?? []).slice(0, 5)
           return (
             <div className="space-y-5">
               {/* 썸네일 */}
@@ -1189,15 +1191,17 @@ export default function Library() {
                     </div>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <p className="text-sm text-gray-400">{previewItem.campaign} · {previewItem.date}</p>
-                      <a
-                        href={`https://www.instagram.com/p/mock_${previewItem.id}/`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-                        aria-label="게시물 원본 보기 (새 탭)"
-                      >
-                        게시물 보기 ↗
-                      </a>
+                      {previewItem.postUrl && (
+                        <a
+                          href={previewItem.postUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                          aria-label="게시물 원본 보기 (새 탭)"
+                        >
+                          게시물 보기 ↗
+                        </a>
+                      )}
                     </div>
                   </div>
                   <StatusBadge status={modalDisplayStatus} dot={false} size="md" />
@@ -1281,10 +1285,10 @@ export default function Library() {
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-[10px] text-gray-400 mb-1.5 flex items-center gap-1"><Tag size={10} />예상 해시태그</p>
+                  <p className="text-[10px] text-gray-400 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (
-                      <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-white border border-gray-200 text-gray-500 rounded-full">#{tag}</span>
+                      <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-white border border-gray-200 text-gray-500 rounded-full">{tag}</span>
                     ))}
                   </div>
                 </div>

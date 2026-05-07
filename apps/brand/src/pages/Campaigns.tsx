@@ -8,6 +8,7 @@ import {
 import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '../utils/fmtDate'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
@@ -80,9 +81,19 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
 
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
-// 탭 라벨은 표시 친절화 라벨 기준 (정책서 § 4-0) — deriveDisplayStatus 결과와 매칭됨
-const tabs = ['전체', '지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중', '완료', '종료', '취소'] as const
+const tabs = ['전체', '진행중', '종료'] as const
 type Tab = typeof tabs[number]
+
+// 탭별 포함 status 집합
+const ACTIVE_DISPLAY_STATUSES = new Set(['지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중'])
+const CLOSED_DISPLAY_STATUSES = new Set(['완료', '종료', '취소'])
+
+function matchesTab(display: string, tab: Tab): boolean {
+  if (tab === '전체') return true
+  if (tab === '진행중') return ACTIVE_DISPLAY_STATUSES.has(display)
+  if (tab === '종료') return CLOSED_DISPLAY_STATUSES.has(display)
+  return false
+}
 
 /**
  * 마감임박 D-Day 임계값 (정책서 § 4 Q4) — 추후 변경 가능성 대비 상수로 관리
@@ -208,6 +219,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
 export default function Campaigns() {
   const navigate = useNavigate()
   const qa = useQAMode()
+  const { isGated } = usePlanAccess()
   const [searchParams, setSearchParams] = useSearchParams()
 
   // URL ←→ state 초기값 동기화 (한 번만)
@@ -353,8 +365,7 @@ export default function Campaigns() {
     const q = search.trim().toLowerCase()
     const list = campaigns.filter(c => {
       const display = deriveDisplayStatus(c)
-      // 다중 탭: "전체" 활성이면 모두 / 그 외엔 활성 탭 중 하나라도 매치되면 통과
-      const tabMatch = isAllTabActive || activeTab === (display as Tab)
+      const tabMatch = matchesTab(display, activeTab)
       return tabMatch &&
         (platformFilter === '전체' || c.platform === platformFilter) &&
         (categoryFilter === '전체' || c.category === categoryFilter) &&
@@ -394,15 +405,19 @@ export default function Campaigns() {
         <div className="flex items-center gap-2">
           {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
           <button
-            onClick={() => setAiModalStep('input')}
-            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:bg-brand-green/5 transition-colors"
+            onClick={() => !isGated && setAiModalStep('input')}
+            disabled={isGated}
+            aria-label={isGated ? 'AI로 만들기 (구독 만료)' : 'AI로 만들기'}
+            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Sparkles size={14} aria-hidden="true" />
             AI로 만들기
           </button>
           <button
-            onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:opacity-90 transition-opacity"
+            onClick={() => !isGated && navigate('/campaigns/new')}
+            disabled={isGated}
+            aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-xs @sm:text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus size={14} aria-hidden="true" />
             새 캠페인 등록

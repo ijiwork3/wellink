@@ -1,9 +1,9 @@
 import { useQAState, type QAPlan } from '../qa-state'
 
-export type PlanId = '' | 'focus' | 'scale' | 'enterprise'
+export type PlanId = '' | 'free' | 'focus' | 'scale' | 'enterprise'
 
 const PLAN_LABEL: Record<QAPlan, string> = {
-  free: '미구독',
+  free: '무료',
   trial: '무료 체험 (Scale)',
   focus: 'Focus',
   scale: 'Scale',
@@ -13,10 +13,11 @@ const PLAN_LABEL: Record<QAPlan, string> = {
 }
 
 // QAPlan → 효과적 PlanId 매핑
+//   free: 무료 구독 — 전 기능 오픈
 //   trial: Scale 활성으로 취급
-//   expired/payment-failed: 미구독으로 취급 (기능 잠김)
-//   free: 미구독
+//   expired/payment-failed: 기능 잠금 (isGated=true)
 function effectivePlan(qaPlan: QAPlan): PlanId {
+  if (qaPlan === 'free') return 'free'
   if (qaPlan === 'focus') return 'focus'
   if (qaPlan === 'scale') return 'scale'
   if (qaPlan === 'enterprise') return 'enterprise'
@@ -27,6 +28,9 @@ function effectivePlan(qaPlan: QAPlan): PlanId {
 export function usePlanAccess() {
   const { plan: qaPlan } = useQAState()
   const plan: PlanId = effectivePlan(qaPlan)
+
+  // expired/payment-failed만 잠금 — free 포함 나머지 전체 오픈
+  const isGated = qaPlan === 'expired' || qaPlan === 'payment-failed'
 
   // 다운로드 권한: 유료 플랜(focus/scale/enterprise)만
   const canDownloadContent = plan === 'focus' || plan === 'scale' || plan === 'enterprise'
@@ -42,6 +46,7 @@ export function usePlanAccess() {
     qaPlan,
     planLabel: PLAN_LABEL[qaPlan],
     isSubscribed: plan !== '',
+    isGated,
     isExpired: qaPlan === 'expired',
     isPaymentFailed: qaPlan === 'payment-failed',
     isTrial: qaPlan === 'trial',
