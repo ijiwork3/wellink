@@ -1684,14 +1684,14 @@ export default function CampaignDetail() {
       )}
 
       {/* ─── D) 등록 콘텐츠 탭 ─── */}
-      {activeTab === '등록 콘텐츠' && qa === 'tab-content-empty' && (
+      {activeTab === '등록 콘텐츠' && !isGated && qa === 'tab-content-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <Image size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
           <p className="text-xs text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
         </div>
       )}
-      {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (() => {
+      {activeTab === '등록 콘텐츠' && !isGated && qa !== 'tab-content-empty' && (() => {
         const filtered = registeredContents
           .filter(c =>
             (contentFilter === '전체' || contentStatuses[c.id] === contentFilter) &&
@@ -2005,7 +2005,7 @@ export default function CampaignDetail() {
       })()}
 
       {/* ─── E) 성과 리포트 탭 — 빈 상태 ─── */}
-      {activeTab === '성과 리포트' && qa === 'tab-report-empty' && (
+      {activeTab === '성과 리포트' && !isGated && qa === 'tab-report-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm font-medium text-gray-500">성과 데이터가 없습니다</p>
@@ -2014,7 +2014,7 @@ export default function CampaignDetail() {
       )}
 
       {/* ─── E) 성과 리포트 탭 ─── */}
-      {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
+      {activeTab === '성과 리포트' && !isGated && qa !== 'tab-report-empty' && (
         <div className="space-y-4">
           {/* KPI 6개 — 2×3 고정 (말줄임 방지). 평균 참여율은 6번째에 통합 */}
           <div className="grid grid-cols-2 gap-3 @sm:gap-4">
