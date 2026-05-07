@@ -161,10 +161,10 @@ export default function MyPage() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <XCircle size={48} className="text-red-300" aria-hidden="true" />
         <div className="text-center">
-          <p className="text-sm font-semibold text-gray-900">계정 정보를 불러올 수 없습니다</p>
-          <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
+          <p className="text-base font-semibold text-gray-900">계정 정보를 불러올 수 없습니다</p>
+          <p className="text-sm text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
         </div>
-        <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors">
+        <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors">
           <RefreshCw size={14} aria-hidden="true" />다시 시도
         </button>
       </div>
@@ -201,12 +201,12 @@ export default function MyPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">마이페이지</h1>
-          <p className="text-sm text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
+          <h1 className="text-2xl font-bold text-gray-900">마이페이지</h1>
+          <p className="text-base text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
         </div>
         <button
           onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
         >
           <LogOut size={15} aria-hidden="true" />
           로그아웃
@@ -219,7 +219,7 @@ export default function MyPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-medium transition-colors ${
               activeTab === tab
                 ? 'bg-brand-green text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -242,15 +242,15 @@ export default function MyPage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h2 className="text-base font-bold text-gray-900">팀 멤버 관리</h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <h2 className="text-lg font-bold text-gray-900">팀 멤버 관리</h2>
+                <p className="text-sm text-gray-500 mt-0.5">
                   {members.length} / {maxMembers === 999 ? '무제한' : `${maxMembers}명`} 사용 중
                   {isSubscribed ? ` · ${planLabel} 플랜` : ''}
                 </p>
               </div>
               <button
                 onClick={() => setInviteModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
               >
                 <Users size={14} aria-hidden="true" />
                 멤버 초대
@@ -262,31 +262,31 @@ export default function MyPage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             {members.map(member => (
               <div key={member.id} className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shrink-0 font-semibold text-sm">
+                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shrink-0 font-semibold text-base">
                   {member.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold text-gray-900 break-words">{member.name}</p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${ROLE_BADGE[member.role]}`}>
+                    <p className="text-base font-semibold text-gray-900 break-words">{member.name}</p>
+                    <span className={`text-sm font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${ROLE_BADGE[member.role]}`}>
                       {member.role}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 break-all">{member.email}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">합류일 {member.joinedAt}</p>
+                  <p className="text-sm text-gray-500 mt-0.5 break-all">{member.email}</p>
+                  <p className="text-sm text-gray-400 mt-0.5">합류일 {member.joinedAt}</p>
                 </div>
                 {member.role !== 'Owner' && (
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => { setChangeRoleModal(member); setChangeRoleValue(member.role) }}
-                      className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <Shield size={12} aria-hidden="true" />
                       권한 변경
                     </button>
                     <button
                       onClick={() => setDeleteModal(member)}
-                      className="flex items-center gap-1 text-xs text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                      className="flex items-center gap-1 text-sm text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
                     >
                       <Trash2 size={12} aria-hidden="true" />
                       삭제
@@ -294,7 +294,7 @@ export default function MyPage() {
                   </div>
                 )}
                 {member.role === 'Owner' && (
-                  <span className="text-xs text-gray-300 shrink-0">—</span>
+                  <span className="text-sm text-gray-300 shrink-0">—</span>
                 )}
               </div>
             ))}
@@ -302,12 +302,12 @@ export default function MyPage() {
 
           {/* 권한 안내 테이블 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
               <span className="w-1 h-4 bg-brand-green rounded-full" />
               권한 안내
             </h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left text-gray-400 font-medium pb-3 pr-4 min-w-[100px]">기능</th>
@@ -345,11 +345,11 @@ export default function MyPage() {
         <div className="space-y-4">
           {/* UTM 기본값 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <Link size={15} className="text-gray-500" aria-hidden="true" />
               UTM 기본값
             </h2>
-            <p className="text-xs text-gray-500 mb-5">캠페인 생성 시 인플루언서별 UTM이 자동 생성됩니다. 아래 기본값을 설정하면 자동 생성 UTM에 반영됩니다.</p>
+            <p className="text-sm text-gray-500 mb-5">캠페인 생성 시 인플루언서별 UTM이 자동 생성됩니다. 아래 기본값을 설정하면 자동 생성 UTM에 반영됩니다.</p>
             <div className="space-y-3">
               {[
                 { key: 'utm_source', value: 'wellink', editable: false, desc: '고정값, 변경 불가' },
@@ -358,25 +358,25 @@ export default function MyPage() {
                 { key: 'utm_content', value: '{인플루언서ID 자동}', editable: false, desc: '인플루언서별 자동 생성' },
               ].map(row => (
                 <div key={row.key} className="grid grid-cols-[140px_1fr_auto] items-center gap-3">
-                  <code className="text-xs font-mono text-brand-green bg-brand-green/5 px-2 py-1 rounded">{row.key}</code>
+                  <code className="text-sm font-mono text-brand-green bg-brand-green/5 px-2 py-1 rounded">{row.key}</code>
                   {row.editable ? (
                     <input
                       type="text"
                       value={utmMedium}
                       onChange={e => setUtmMedium(e.target.value)}
                       aria-label={row.key}
-                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
+                      className="text-base border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
                     />
                   ) : (
-                    <span className="text-sm text-gray-500">{row.value}</span>
+                    <span className="text-base text-gray-500">{row.value}</span>
                   )}
-                  <span className="text-xs text-gray-400 whitespace-nowrap">{row.desc}</span>
+                  <span className="text-sm text-gray-400 whitespace-nowrap">{row.desc}</span>
                 </div>
               ))}
             </div>
             <button
               onClick={() => showToast('UTM 기본값이 저장되었습니다.', 'success')}
-              className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
             >
               <Save size={14} aria-hidden="true" />
               저장
@@ -386,22 +386,22 @@ export default function MyPage() {
           {/* GA4 연동 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <BarChart2 size={15} className="text-gray-500" aria-hidden="true" />
                 GA4 연동
               </h2>
               {ga4Connected ? (
-                <span className="flex items-center gap-1 text-xs text-brand-green font-medium">
+                <span className="flex items-center gap-1 text-sm text-brand-green font-medium">
                   <CheckCircle2 size={13} aria-hidden="true" />
                   연결됨
                 </span>
               ) : (
-                <span className="text-xs text-gray-400">연결되지 않음</span>
+                <span className="text-sm text-gray-400">연결되지 않음</span>
               )}
             </div>
-            <p className="text-xs text-gray-500 mb-4">GA4 연동 시 UTM 기반 전환 수·ROAS가 성과 리포트에 자동으로 표시됩니다.</p>
+            <p className="text-sm text-gray-500 mb-4">GA4 연동 시 UTM 기반 전환 수·ROAS가 성과 리포트에 자동으로 표시됩니다.</p>
             <div>
-              <label htmlFor="ga4-id" className="text-xs text-gray-500 mb-1.5 block">GA4 측정 ID</label>
+              <label htmlFor="ga4-id" className="text-sm text-gray-500 mb-1.5 block">GA4 측정 ID</label>
               <div className="flex gap-2">
                 <input
                   id="ga4-id"
@@ -409,7 +409,7 @@ export default function MyPage() {
                   value={ga4Id}
                   onChange={e => setGa4Id(e.target.value)}
                   placeholder="G-XXXXXXXXXX"
-                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
                 />
                 <button
                   disabled={ga4Saving || ga4Id.trim() === ''}
@@ -424,39 +424,39 @@ export default function MyPage() {
                       showToast('GA4가 성공적으로 연동되었습니다.', 'success')
                     }, 1200)
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white rounded-xl text-base font-medium hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {ga4Saving ? <RefreshCw size={14} className="animate-spin" aria-hidden="true" /> : null}
                   {ga4Connected ? '재연동' : '연동하기'}
                 </button>
               </div>
               {ga4Id.trim() !== '' && !/^G-/.test(ga4Id) && (
-                <p className="text-xs text-red-500 mt-1.5">측정 ID는 G-로 시작해야 합니다.</p>
+                <p className="text-sm text-red-500 mt-1.5">측정 ID는 G-로 시작해야 합니다.</p>
               )}
             </div>
           </div>
 
           {/* 웰링크 픽셀 */}
           <div className={`bg-white rounded-2xl border shadow-sm p-6 ${plan === 'scale' || plan === 'enterprise' ? 'border-gray-100' : 'border-gray-100'}`}>
-            <h2 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <Code2 size={15} className="text-gray-500" aria-hidden="true" />
               웰링크 픽셀
-              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Scale 이상</span>
+              <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Scale 이상</span>
             </h2>
-            <p className="text-xs text-gray-500 mb-4">직접 전환 추적을 위해 브랜드 사이트에 픽셀 스크립트를 삽입합니다.</p>
+            <p className="text-sm text-gray-500 mb-4">직접 전환 추적을 위해 브랜드 사이트에 픽셀 스크립트를 삽입합니다.</p>
 
             {plan === 'scale' || plan === 'enterprise' ? (
               <div className="space-y-3">
-                <div className="bg-gray-900 rounded-xl p-4 font-mono text-xs text-green-400 overflow-x-auto">
+                <div className="bg-gray-900 rounded-xl p-4 font-mono text-sm text-green-400 overflow-x-auto">
                   {'<!-- 웰링크 픽셀 -->\n<script src="https://cdn.wellink.ai/pixel.js"\n  data-id="WL-XXXXXXXX" defer></script>'}
                 </div>
-                <p className="text-xs text-gray-400">{'<head>'} 또는 {'<body>'} 태그 안에 위 코드를 삽입하세요.</p>
+                <p className="text-sm text-gray-400">{'<head>'} 또는 {'<body>'} 태그 안에 위 코드를 삽입하세요.</p>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText('<!-- 웰링크 픽셀 -->\n<script src="https://cdn.wellink.ai/pixel.js" data-id="WL-XXXXXXXX" defer></script>')
                     showToast('픽셀 코드가 복사되었습니다.', 'success')
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-700 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-700 rounded-xl text-base hover:bg-gray-50 transition-colors"
                 >
                   코드 복사
                 </button>
@@ -467,12 +467,12 @@ export default function MyPage() {
                   <Code2 size={20} className="text-gray-400" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Scale 플랜 이상에서 사용 가능합니다</p>
-                  <p className="text-xs text-gray-500 mt-0.5">픽셀을 통해 캠페인별 직접 전환을 정확하게 추적할 수 있습니다.</p>
+                  <p className="text-base font-semibold text-gray-900">Scale 플랜 이상에서 사용 가능합니다</p>
+                  <p className="text-sm text-gray-500 mt-0.5">픽셀을 통해 캠페인별 직접 전환을 정확하게 추적할 수 있습니다.</p>
                 </div>
                 <button
                   onClick={() => navigate('/subscription')}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-base font-medium hover:bg-gray-700 transition-colors"
                 >
                   Scale로 업그레이드
                   <ExternalLink size={12} aria-hidden="true" />
@@ -488,22 +488,22 @@ export default function MyPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-gray-900">구독 관리</h2>
-              <p className="text-xs text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
+              <h2 className="text-lg font-bold text-gray-900">구독 관리</h2>
+              <p className="text-sm text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
             </div>
             {isSubscribed ? (
-              <span className="text-xs font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+              <span className="text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
                 현재: {planLabel} 플랜
               </span>
             ) : (
-              <span className="text-xs font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
+              <span className="text-sm font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
                 {planLabel}
               </span>
             )}
           </div>
           <button
             onClick={() => navigate('/subscription')}
-            className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
           >
             구독 관리 페이지로 이동
           </button>
@@ -515,12 +515,12 @@ export default function MyPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
             <div>
-              <h2 className="text-base font-bold text-gray-900">브랜드 프로필 설정</h2>
-              <p className="text-xs text-gray-500 mt-0.5">서비스 이용에 필요한 기본 정보를 관리합니다.</p>
+              <h2 className="text-lg font-bold text-gray-900">브랜드 프로필 설정</h2>
+              <p className="text-sm text-gray-500 mt-0.5">서비스 이용에 필요한 기본 정보를 관리합니다.</p>
             </div>
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors"
             >
               <Save size={14} aria-hidden="true" />
               변경사항 저장
@@ -530,13 +530,13 @@ export default function MyPage() {
           <div className="p-6 space-y-8">
             {/* 기본 정보 */}
             <section>
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="w-1 h-4 bg-brand-green rounded-full" />
                 기본 정보
               </h3>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="mypage-company" className="text-xs text-gray-500 mb-1.5 block">브랜드명 (회사명)</label>
+                  <label htmlFor="mypage-company" className="text-sm text-gray-500 mb-1.5 block">브랜드명 (회사명)</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <Building2 size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -545,13 +545,13 @@ export default function MyPage() {
                       value={companyName}
                       onChange={e => setCompanyName(e.target.value)}
                       aria-label="브랜드명"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="브랜드명을 입력하세요"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-category" className="text-xs text-gray-500 mb-1.5 block">업종 카테고리</label>
+                  <label htmlFor="mypage-category" className="text-sm text-gray-500 mb-1.5 block">업종 카테고리</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <Target size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -560,13 +560,13 @@ export default function MyPage() {
                       value={brandCategory}
                       onChange={e => setBrandCategory(e.target.value)}
                       aria-label="업종 카테고리"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="예: 웰니스/피트니스"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-website" className="text-xs text-gray-500 mb-1.5 block">웹사이트 URL</label>
+                  <label htmlFor="mypage-website" className="text-sm text-gray-500 mb-1.5 block">웹사이트 URL</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <Globe size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -575,13 +575,13 @@ export default function MyPage() {
                       value={brandWebsite}
                       onChange={e => setBrandWebsite(e.target.value)}
                       aria-label="웹사이트 URL"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="https://your-brand.com"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-biz-number" className="text-xs text-gray-500 mb-1.5 block">사업자 등록번호</label>
+                  <label htmlFor="mypage-biz-number" className="text-sm text-gray-500 mb-1.5 block">사업자 등록번호</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <Hash size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -591,7 +591,7 @@ export default function MyPage() {
                       onChange={e => setBizNumber(e.target.value)}
                       aria-label="사업자 등록번호"
                       pattern="[0-9]{3}-[0-9]{2}-[0-9]{5}"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="예: 123-45-67890"
                     />
                   </div>
@@ -601,11 +601,11 @@ export default function MyPage() {
 
             {/* AI 매칭 타겟 설정 */}
             <section>
-              <h3 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
                 <span className="w-1 h-4 bg-brand-green rounded-full" />
                 AI 매칭 타겟 설정
               </h3>
-              <p className="text-xs text-gray-500 mb-4">이 정보를 기반으로 AI가 인플루언서를 추천합니다.</p>
+              <p className="text-sm text-gray-500 mb-4">이 정보를 기반으로 AI가 인플루언서를 추천합니다.</p>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
                 {[
                   { id: 'target-gender', label: '주요 타겟 성별', value: targetGender, setter: setTargetGender, placeholder: '예: 여성 중심' },
@@ -615,7 +615,7 @@ export default function MyPage() {
                   { id: 'monthly-budget', label: '월 예산 범위', value: monthlyBudget, setter: setMonthlyBudget, placeholder: '예: 100~500만원' },
                 ].map(field => (
                   <div key={field.id}>
-                    <label htmlFor={field.id} className="text-xs text-gray-500 mb-1.5 block">{field.label}</label>
+                    <label htmlFor={field.id} className="text-sm text-gray-500 mb-1.5 block">{field.label}</label>
                     <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                       <input
                         id={field.id}
@@ -623,7 +623,7 @@ export default function MyPage() {
                         value={field.value}
                         onChange={e => field.setter(e.target.value)}
                         aria-label={field.label}
-                        className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                        className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                         placeholder={field.placeholder}
                       />
                     </div>
@@ -634,20 +634,20 @@ export default function MyPage() {
 
             {/* 계정 정보 */}
             <section>
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="w-1 h-4 bg-brand-green rounded-full" />
                 계정 정보
               </h3>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="mypage-email" className="text-xs text-gray-500 mb-1.5 block">이메일 주소</label>
+                  <label htmlFor="mypage-email" className="text-sm text-gray-500 mb-1.5 block">이메일 주소</label>
                   <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
                     <Mail size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
-                    <span id="mypage-email" className="text-sm text-gray-500">{email}</span>
+                    <span id="mypage-email" className="text-base text-gray-500">{email}</span>
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-name" className="text-xs text-gray-500 mb-1.5 block">담당자 이름</label>
+                  <label htmlFor="mypage-name" className="text-sm text-gray-500 mb-1.5 block">담당자 이름</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -656,13 +656,13 @@ export default function MyPage() {
                       value={name}
                       onChange={e => setName(e.target.value)}
                       aria-label="담당자 이름"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="이름을 입력하세요"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-manager" className="text-xs text-gray-500 mb-1.5 block">담당자명 (계약)</label>
+                  <label htmlFor="mypage-manager" className="text-sm text-gray-500 mb-1.5 block">담당자명 (계약)</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -671,13 +671,13 @@ export default function MyPage() {
                       value={managerName}
                       onChange={e => setManagerName(e.target.value)}
                       aria-label="담당자명"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="담당자명"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="mypage-phone" className="text-xs text-gray-500 mb-1.5 block">연락처</label>
+                  <label htmlFor="mypage-phone" className="text-sm text-gray-500 mb-1.5 block">연락처</label>
                   <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
                     <Phone size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
@@ -687,7 +687,7 @@ export default function MyPage() {
                       onChange={e => setPhone(e.target.value)}
                       aria-label="연락처"
                       inputMode="tel"
-                      className="flex-1 text-sm text-gray-900 outline-none bg-transparent"
+                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
                       placeholder="연락처"
                     />
                   </div>
@@ -696,13 +696,13 @@ export default function MyPage() {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => setPwModal(true)}
-                  className="text-sm text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   비밀번호 변경하기
                 </button>
                 <button
                   onClick={() => setWithdrawModal(true)}
-                  className="text-sm text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors"
+                  className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors"
                 >
                   회원 탈퇴
                 </button>
@@ -711,7 +711,7 @@ export default function MyPage() {
 
             {/* 알림 설정 */}
             <section>
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="w-1 h-4 bg-brand-green rounded-full" />
                 알림 설정
               </h3>
@@ -739,8 +739,8 @@ export default function MyPage() {
                       )}
                     </button>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                      <p className="text-base font-medium text-gray-900">{item.label}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -750,12 +750,12 @@ export default function MyPage() {
             {/* SNS 연동 설정 */}
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                   <span className="w-1 h-4 bg-brand-green rounded-full" />
                   SNS 연동 설정
                 </h3>
                 {snsConnected && (
-                  <span className="flex items-center gap-1 text-xs text-brand-green font-medium">
+                  <span className="flex items-center gap-1 text-sm text-brand-green font-medium">
                     <CheckCircle2 size={13} aria-hidden="true" />
                     연결됨
                   </span>
@@ -767,13 +767,13 @@ export default function MyPage() {
                     <InstagramIcon size={22} className="text-white" aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Instagram 비즈니스</p>
-                    <p className="text-xs text-gray-500 mt-0.5">인스타그램 통계 및 광고 데이터를 연동합니다.</p>
+                    <p className="text-base font-semibold text-gray-900">Instagram 비즈니스</p>
+                    <p className="text-sm text-gray-500 mt-0.5">인스타그램 통계 및 광고 데이터를 연동합니다.</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setSnsModal(true)}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`px-5 py-2.5 rounded-xl text-base font-medium transition-colors ${
                     snsConnected
                       ? 'border border-gray-200 text-gray-700 hover:bg-gray-50'
                       : 'bg-brand-green text-white hover:bg-brand-green-hover'
@@ -796,13 +796,13 @@ export default function MyPage() {
           <>
             <button
               onClick={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
               onClick={handlePasswordChange}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
             >
               변경하기
             </button>
@@ -811,43 +811,43 @@ export default function MyPage() {
       >
         <div className="space-y-4">
           <div>
-            <label htmlFor="pw-current" className="text-xs text-gray-500 mb-1.5 block">현재 비밀번호</label>
+            <label htmlFor="pw-current" className="text-sm text-gray-500 mb-1.5 block">현재 비밀번호</label>
             <input
               id="pw-current"
               type="password"
               value={currentPw}
               onChange={e => { setCurrentPw(e.target.value); setPasswordError('') }}
               aria-label="현재 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="현재 비밀번호를 입력하세요"
             />
           </div>
           <div>
-            <label htmlFor="pw-new" className="text-xs text-gray-500 mb-1.5 block">새 비밀번호</label>
+            <label htmlFor="pw-new" className="text-sm text-gray-500 mb-1.5 block">새 비밀번호</label>
             <input
               id="pw-new"
               type="password"
               value={newPw}
               onChange={e => { setNewPw(e.target.value); setPasswordError('') }}
               aria-label="새 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="새 비밀번호 (8자 이상)"
             />
           </div>
           <div>
-            <label htmlFor="pw-confirm" className="text-xs text-gray-500 mb-1.5 block">새 비밀번호 확인</label>
+            <label htmlFor="pw-confirm" className="text-sm text-gray-500 mb-1.5 block">새 비밀번호 확인</label>
             <input
               id="pw-confirm"
               type="password"
               value={confirmPw}
               onChange={e => { setConfirmPw(e.target.value); setPasswordError('') }}
               aria-label="새 비밀번호 확인"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="새 비밀번호를 다시 입력하세요"
             />
           </div>
           {passwordError && (
-            <p className="text-xs text-red-500 mt-1">{passwordError}</p>
+            <p className="text-sm text-red-500 mt-1">{passwordError}</p>
           )}
         </div>
       </Modal>
@@ -861,14 +861,14 @@ export default function MyPage() {
           <>
             <button
               onClick={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
               onClick={handleSnsConnect}
               disabled={snsHandle.trim() === ''}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               연결
             </button>
@@ -882,18 +882,18 @@ export default function MyPage() {
             </div>
           </div>
           <div>
-            <label htmlFor="sns-handle" className="text-xs text-gray-500 mb-1.5 block">Instagram 비즈니스 계정</label>
+            <label htmlFor="sns-handle" className="text-sm text-gray-500 mb-1.5 block">Instagram 비즈니스 계정</label>
             <input
               id="sns-handle"
               type="text"
               value={snsHandle}
               onChange={e => setSnsHandle(e.target.value)}
               aria-label="Instagram 비즈니스 계정"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="Instagram 아이디를 입력하세요"
             />
             {snsHandle.trim() === '' && (
-              <p className="text-xs text-red-500 mt-1">아이디를 입력해야 연결할 수 있습니다.</p>
+              <p className="text-sm text-red-500 mt-1">아이디를 입력해야 연결할 수 있습니다.</p>
             )}
           </div>
         </div>
@@ -908,7 +908,7 @@ export default function MyPage() {
           <>
             <button
               onClick={() => { setInviteModal(false); setInviteEmail('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
@@ -927,7 +927,7 @@ export default function MyPage() {
                 setInviteEmail('')
                 showToast(`${inviteEmail}에 초대 메일을 발송했습니다.`, 'success')
               }}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               초대하기
             </button>
@@ -936,24 +936,24 @@ export default function MyPage() {
       >
         <div className="space-y-4">
           <div>
-            <label htmlFor="invite-email" className="text-xs text-gray-500 mb-1.5 block">이메일 주소</label>
+            <label htmlFor="invite-email" className="text-sm text-gray-500 mb-1.5 block">이메일 주소</label>
             <input
               id="invite-email"
               type="email"
               value={inviteEmail}
               onChange={e => setInviteEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="초대할 이메일을 입력하세요"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1.5 block">권한</label>
+            <label className="text-sm text-gray-500 mb-1.5 block">권한</label>
             <div className="flex gap-2">
               {(['Manager', 'Viewer'] as MemberRole[]).map(role => (
                 <button
                   key={role}
                   onClick={() => setInviteRole(role)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                  className={`flex-1 py-2 rounded-xl text-base font-medium border transition-colors ${
                     inviteRole === role
                       ? 'bg-brand-green text-white border-brand-green'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -976,7 +976,7 @@ export default function MyPage() {
           <>
             <button
               onClick={() => setChangeRoleModal(null)}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
@@ -988,7 +988,7 @@ export default function MyPage() {
                 setChangeRoleModal(null)
                 showToast(`${changeRoleModal.name}의 권한이 ${changeRoleValue}로 변경되었습니다.`, 'success')
               }}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
             >
               변경하기
             </button>
@@ -997,7 +997,7 @@ export default function MyPage() {
       >
         {changeRoleModal && (
           <div className="space-y-4">
-            <p className="text-sm text-gray-700">
+            <p className="text-base text-gray-700">
               <strong>{changeRoleModal.name}</strong>의 권한을 변경합니다.
             </p>
             <div className="flex gap-2">
@@ -1005,7 +1005,7 @@ export default function MyPage() {
                 <button
                   key={role}
                   onClick={() => setChangeRoleValue(role)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                  className={`flex-1 py-2 rounded-xl text-base font-medium border transition-colors ${
                     changeRoleValue === role
                       ? 'bg-brand-green text-white border-brand-green'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -1046,7 +1046,7 @@ export default function MyPage() {
           <>
             <button
               onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
@@ -1058,7 +1058,7 @@ export default function MyPage() {
                 showToast('탈퇴 처리가 완료되었습니다.', 'info')
                 setTimeout(() => navigate('/'), TIMER_MS.NAV_DELAY)
               }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               탈퇴하기
             </button>
@@ -1067,21 +1067,21 @@ export default function MyPage() {
       >
         <div className="space-y-4">
           <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-            <p className="text-sm font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
-            <ul className="text-xs text-red-600 space-y-1 list-disc list-inside">
+            <p className="text-base font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
+            <ul className="text-sm text-red-600 space-y-1 list-disc list-inside">
               <li>모든 캠페인 데이터 및 인플루언서 이력이 삭제됩니다.</li>
               <li>구독 중인 플랜은 즉시 해지됩니다.</li>
               <li>삭제된 데이터는 복구가 불가능합니다.</li>
             </ul>
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1.5 block">아래 입력란에 <span className="font-semibold text-red-600">탈퇴</span>를 입력하면 버튼이 활성화됩니다.</label>
+            <label className="text-sm text-gray-500 mb-1.5 block">아래 입력란에 <span className="font-semibold text-red-600">탈퇴</span>를 입력하면 버튼이 활성화됩니다.</label>
             <input
               type="text"
               value={withdrawConfirmText}
               onChange={e => setWithdrawConfirmText(e.target.value)}
               placeholder="'탈퇴'를 입력해 주세요"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
             />
           </div>
         </div>

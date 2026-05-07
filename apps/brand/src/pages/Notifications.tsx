@@ -137,9 +137,9 @@ export default function Notifications() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Bell size={20} className="text-gray-700" aria-hidden="true" />
-          <h1 className="text-xl @md:text-2xl font-bold text-gray-900">알림 센터</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">알림 센터</h1>
           {unreadCount > 0 && (
-            <span className="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-blue-100 text-blue-600 text-sm font-bold px-2 py-0.5 rounded-full">
               {unreadCount}
             </span>
           )}
@@ -147,7 +147,7 @@ export default function Notifications() {
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="text-sm text-gray-500 hover:text-gray-900 underline"
+            className="text-base text-gray-500 hover:text-gray-900 underline"
           >모두 읽음으로 표시</button>
         )}
       </div>
@@ -165,7 +165,7 @@ export default function Notifications() {
               <button
                 key={tab.id}
                 onClick={() => { setFilter(tab.id); setPage(1) }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filter === tab.id
                     ? 'bg-gray-900 text-white'
                     : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
@@ -181,7 +181,7 @@ export default function Notifications() {
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
               <Bell className="text-gray-300" size={28} />
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-base text-gray-500">
               {notifications.length === 0 ? '새로운 알림이 없습니다.' : '해당 카테고리에 알림이 없습니다.'}
             </p>
           </div>
@@ -207,13 +207,13 @@ export default function Notifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3 mb-0.5">
-                    <h3 className={`text-sm ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                    <h3 className={`text-base ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                       {item.title}
                       {item.unread && <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full ml-2 align-middle"></span>}
                     </h3>
-                    <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
+                    <span className="text-sm text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
                   </div>
-                  <p className="text-xs text-gray-500 line-clamp-2">{item.desc}</p>
+                  <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
                 </div>
                 {item.link && (
                   <div className="text-gray-400 shrink-0 self-center">
@@ -237,7 +237,7 @@ export default function Notifications() {
       {/* 안내 카드 */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
         <AlertCircle size={14} className="text-amber-600 mt-0.5 shrink-0" aria-hidden="true" />
-        <p className="text-xs text-amber-700">
+        <p className="text-sm text-amber-700">
           알림은 푸시·앱 내에서 확인할 수 있으며, 읽음 처리 후에도 30일간 보관됩니다.
         </p>
       </div>

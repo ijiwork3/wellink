@@ -160,7 +160,7 @@ function RoasBar({ value, max }: { value: number; max: number }) {
       <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
-      <span className={`text-sm font-semibold ${getRoasColor(value)}`}>
+      <span className={`text-base font-semibold ${getRoasColor(value)}`}>
         {value > 0 ? `${value}x` : '—'}
       </span>
     </div>
@@ -210,8 +210,8 @@ export default function AdPerformance() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">광고 성과</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
+          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+          <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
         <InstagramConnectPrompt featureName="광고 성과" />
       </div>
@@ -224,11 +224,11 @@ export default function AdPerformance() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
           <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-sm font-semibold text-gray-400 mb-1">집행 중인 Meta 광고가 없습니다</p>
-          <p className="text-xs text-gray-300 mb-4">Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다.</p>
+          <p className="text-base font-semibold text-gray-400 mb-1">집행 중인 Meta 광고가 없습니다</p>
+          <p className="text-sm text-gray-300 mb-4">Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다.</p>
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1.5 mx-auto text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            className="flex items-center gap-1.5 mx-auto text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ExternalLink size={12} aria-hidden="true" />Meta 광고 관리자 열기
           </button>
@@ -243,7 +243,7 @@ export default function AdPerformance() {
   return (
     <div className="space-y-6">
       {isZero && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 text-xs px-4 py-2 rounded-xl">
+        <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm px-4 py-2 rounded-xl">
           광고가 방금 시작되었습니다. 데이터 집계까지 최대 24시간이 소요될 수 있습니다.
         </div>
       )}
@@ -251,8 +251,8 @@ export default function AdPerformance() {
       {/* 헤더 — 제목과 날짜 네비게이션 분리 */}
       <div className="space-y-3">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">광고 성과</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
+          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+          <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
         <div className="flex items-center flex-wrap gap-2">
           <DateRangePicker
@@ -263,7 +263,7 @@ export default function AdPerformance() {
           />
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white"
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white"
           >
             <ExternalLink size={12} aria-hidden="true" />
             Meta 광고 관리자
@@ -276,12 +276,12 @@ export default function AdPerformance() {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-purple-600" aria-hidden="true" />
-            <h3 className="text-sm font-bold text-gray-900">AI 광고 성과 분석</h3>
+            <h3 className="text-base font-bold text-gray-900">AI 광고 성과 분석</h3>
           </div>
           <button
             onClick={() => { setAiRefreshing(true); setTimeout(() => setAiRefreshing(false), 1800) }}
             disabled={aiRefreshing}
-            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {aiRefreshing ? (
               <>
@@ -304,7 +304,7 @@ export default function AdPerformance() {
             <div className="h-3 w-2/3 bg-purple-200/50 rounded" />
           </div>
         ) : (
-          <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{AD_AI_SUMMARY}</p>
+          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{AD_AI_SUMMARY}</p>
         )}
       </div>
 
@@ -398,10 +398,10 @@ export default function AdPerformance() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">캠페인별 성과</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
+                <h3 className="text-base font-semibold text-gray-900">캠페인별 성과</h3>
+                <p className="text-sm text-gray-400 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
               </div>
-              <div className="flex items-center gap-3 text-xs text-gray-400">
+              <div className="flex items-center gap-3 text-sm text-gray-400">
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
               </div>
@@ -410,19 +410,19 @@ export default function AdPerformance() {
             <div className="flex gap-2 px-5 py-3 border-b border-gray-50">
               <button
                 onClick={() => { setStatusTab('active'); setCampaignPage(1) }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   statusTab === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >진행중 {activeCampaigns.length}</button>
               <button
                 onClick={() => { setStatusTab('paused'); setCampaignPage(1) }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   statusTab === 'paused' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >종료 {closedCampaigns.length}</button>
             </div>
             {pagedCampaigns.length === 0 ? (
-              <div className="py-12 text-center text-sm text-gray-400">
+              <div className="py-12 text-center text-base text-gray-400">
                 {visibleList.length === 0 ? '해당 상태의 캠페인이 없습니다.' : '결과가 없습니다.'}
               </div>
             ) : (
@@ -441,11 +441,11 @@ export default function AdPerformance() {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-medium text-sm text-gray-900 break-words">{c.campaignName}</span>
-                              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
+                              <span className="font-medium text-base text-gray-900 break-words">{c.campaignName}</span>
+                              <span className={`text-sm font-semibold px-1.5 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                               <StatusBadge status={c.status} dot={false} />
                             </div>
-                            <p className="text-[11px] text-gray-500 mt-0.5">광고세트 {c.adSets.length}개</p>
+                            <p className="text-sm text-gray-500 mt-0.5">광고세트 {c.adSets.length}개</p>
                           </div>
                         </div>
                         {isCampaignOpen ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
@@ -465,8 +465,8 @@ export default function AdPerformance() {
                               { k: 'CPC', v: fmtPrice(c.cpc) },
                             ] as const).map(item => (
                               <div key={item.k}>
-                                <p className="text-[10px] text-gray-500">{item.k}</p>
-                                <p className="text-xs font-medium text-gray-900">{item.v}</p>
+                                <p className="text-sm text-gray-500">{item.k}</p>
+                                <p className="text-sm font-medium text-gray-900">{item.v}</p>
                               </div>
                             ))}
                           </div>
@@ -485,8 +485,8 @@ export default function AdPerformance() {
                                         <Megaphone size={12} aria-hidden="true" />
                                       </div>
                                       <div>
-                                        <span className="text-xs font-medium text-gray-900">{set.name}</span>
-                                        <span className="ml-2 text-[10px] text-gray-500">소재 {set.ads.length}개</span>
+                                        <span className="text-sm font-medium text-gray-900">{set.name}</span>
+                                        <span className="ml-2 text-sm text-gray-500">소재 {set.ads.length}개</span>
                                       </div>
                                     </div>
                                     {isSetOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
@@ -506,8 +506,8 @@ export default function AdPerformance() {
                                           { k: 'CPC', v: fmtPrice(set.cpc) },
                                         ] as const).map(item => (
                                           <div key={item.k}>
-                                            <p className="text-[10px] text-gray-500">{item.k}</p>
-                                            <p className="text-xs font-medium text-gray-900">{item.v}</p>
+                                            <p className="text-sm text-gray-500">{item.k}</p>
+                                            <p className="text-sm font-medium text-gray-900">{item.v}</p>
                                           </div>
                                         ))}
                                       </div>
@@ -520,11 +520,11 @@ export default function AdPerformance() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="text-[10px] font-bold text-white bg-emerald-600 px-1.5 py-0.5 rounded">소재</span>
-                                                <span className="text-xs font-medium text-gray-900">{ad.adName}</span>
+                                                <span className="text-sm font-bold text-white bg-emerald-600 px-1.5 py-0.5 rounded">소재</span>
+                                                <span className="text-sm font-medium text-gray-900">{ad.adName}</span>
                                               </div>
-                                              <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>
-                                              <div className="flex items-center gap-3 text-[10px] text-gray-500 mt-1 flex-wrap">
+                                              <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>
+                                              <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 flex-wrap">
                                                 <span>지출 <strong className="text-gray-900">{fmtPrice(ad.spend)}</strong></span>
                                                 <span>ROAS <strong className={getRoasColor(ad.roas)}>{ad.roas}x</strong></span>
                                                 <span>도달 <strong className="text-gray-900">{fmtNumber(ad.reach)}</strong></span>
@@ -544,7 +544,7 @@ export default function AdPerformance() {
                           </div>
                           {/* ROAS bar — 캠페인 단위 시각화 */}
                           <div className="mt-3 pt-3 border-t border-gray-100">
-                            <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
                               <span>ROAS 비교</span>
                               <RoasBar value={c.roas} max={maxRoas} />
                             </div>
@@ -571,10 +571,10 @@ export default function AdPerformance() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-1.5">
-            <h3 className="text-sm font-semibold text-gray-900">일별 광고 성과</h3>
+            <h3 className="text-base font-semibold text-gray-900">일별 광고 성과</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <div className="flex items-center gap-3 text-[11px]">
+          <div className="flex items-center gap-3 text-sm">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-violet-500 inline-block" />지출</span>
             <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block" />클릭</span>
           </div>
@@ -586,14 +586,14 @@ export default function AdPerformance() {
       <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">CTR 추이</h3>
+            <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">일별 클릭</h3>
+            <h3 className="text-base font-semibold text-gray-900">일별 클릭</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" />
@@ -604,7 +604,7 @@ export default function AdPerformance() {
       <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">도달 출처</h3>
+            <h3 className="text-base font-semibold text-gray-900">도달 출처</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
@@ -616,7 +616,7 @@ export default function AdPerformance() {
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">참여 출처</h3>
+            <h3 className="text-base font-semibold text-gray-900">참여 출처</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
@@ -631,20 +631,20 @@ export default function AdPerformance() {
       {/* 광고 소재 유형별 성과 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
-          <h3 className="text-sm font-semibold text-gray-900">소재 유형별 성과</h3>
-          <p className="text-xs text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
+          <h3 className="text-base font-semibold text-gray-900">소재 유형별 성과</h3>
+          <p className="text-sm text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
         </div>
         <div className="p-5 space-y-4">
           {adFormatPerf.map(f => (
             <div key={f.format} className="flex items-center gap-4">
               <div className="w-24 shrink-0">
-                <span className="text-xs font-medium text-gray-700">{f.format}</span>
-                <p className="text-xs text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
+                <span className="text-sm font-medium text-gray-700">{f.format}</span>
+                <p className="text-sm text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-400">노출 {fmtNumber(f.impressions)}</span>
-                  <span className={`text-xs font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
+                  <span className="text-sm text-gray-400">노출 {fmtNumber(f.impressions)}</span>
+                  <span className={`text-sm font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
@@ -654,8 +654,8 @@ export default function AdPerformance() {
                 </div>
               </div>
               <div className="w-20 text-right shrink-0">
-                <span className="text-xs text-gray-500">클릭 </span>
-                <span className="text-xs font-bold text-gray-800">{fmtNumber(f.clicks)}</span>
+                <span className="text-sm text-gray-500">클릭 </span>
+                <span className="text-sm font-bold text-gray-800">{fmtNumber(f.clicks)}</span>
               </div>
             </div>
           ))}
@@ -766,7 +766,7 @@ function SimpleLineChart({ data, stroke }: { data: { label: string; value: numbe
 /** 도넛 차트 — 원본 DonutChart 동등 (SVG 인라인) */
 function DonutChartSimple({ data }: { data: { label: string; value: number; color: string }[] }) {
   const total = data.reduce((s, d) => s + d.value, 0)
-  if (total === 0) return <p className="text-sm text-gray-400 text-center py-12">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-base text-gray-400 text-center py-12">데이터가 없습니다.</p>
   const cx = 90, cy = 90, r = 70, ir = 50
   let acc = 0
   const arcs = data.map(d => {
@@ -794,11 +794,11 @@ function DonutChartSimple({ data }: { data: { label: string; value: number; colo
           <div key={a.label} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full" style={{ background: a.color }} />
-              <span className="text-xs text-gray-700">{a.label}</span>
+              <span className="text-sm text-gray-700">{a.label}</span>
             </div>
             <div className="text-right">
-              <span className="text-xs font-semibold text-gray-900">{fmtNumber(a.value)}</span>
-              <span className="text-[10px] text-gray-500 ml-1">({a.pct}%)</span>
+              <span className="text-sm font-semibold text-gray-900">{fmtNumber(a.value)}</span>
+              <span className="text-sm text-gray-500 ml-1">({a.pct}%)</span>
             </div>
           </div>
         ))}

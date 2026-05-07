@@ -70,8 +70,8 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       {!hideLogo && (
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center gap-1.5">
-            <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
-            <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">광고주</span>
+            <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
+            <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">광고주</span>
           </div>
         </div>
       )}
@@ -79,10 +79,10 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       {/* 구독 만료 배너 */}
       {isGated && (
         <div className="mx-3 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-sm text-amber-700 font-medium leading-snug">{planLabel}</p>
+          <p className="text-base text-amber-700 font-medium leading-snug">{planLabel}</p>
           <button
             onClick={() => navigate('/subscription')}
-            className="text-sm text-amber-600 hover:text-amber-800 underline mt-0.5 focus-visible:outline-none"
+            className="text-base text-amber-600 hover:text-amber-800 underline mt-0.5 focus-visible:outline-none"
           >
             구독 갱신하기 →
           </button>
@@ -98,7 +98,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             value={menuSearch}
             onChange={e => setMenuSearch(e.target.value)}
             placeholder="메뉴 검색"
-            className="w-full pl-7 pr-2.5 py-1.5 text-sm bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
+            className="w-full pl-7 pr-2.5 py-1.5 text-base bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:bg-white focus:border-gray-300 placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           isGated ? (
             <button
               onClick={openGatedModal}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
             >
               <Home size={15} />
               <span className="flex-1 text-left">홈</span>
@@ -118,7 +118,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           ) : (
             <button
               onClick={() => { showToast('홈으로 이동'); onNavigate?.() }}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
             >
               <Home size={15} />
               홈
@@ -129,7 +129,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           isGated ? (
             <button
               onClick={openGatedModal}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 w-full transition-all duration-150 mb-2 cursor-not-allowed"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-2 cursor-not-allowed"
             >
               <LayoutDashboard size={15} />
               <span className="flex-1 text-left">대시보드</span>
@@ -141,7 +141,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
               end
               onClick={() => onNavigate?.()}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-2 ${
+                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-2 ${
                   isActive
                     ? 'bg-gray-100 text-gray-900 font-medium'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -155,7 +155,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">
-            <div className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
+            <div className="text-base font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
               {section.label}
             </div>
             {section.items.map(item => {
@@ -165,7 +165,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
                   <button
                     key={item.to}
                     onClick={openGatedModal}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
                   >
                     {item.icon}
                     <span className="flex-1 text-left">{item.label}</span>
@@ -180,7 +180,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
                   end={item.to === '/dashboard'}
                   onClick={() => onNavigate?.()}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 ${
+                    `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-0.5 ${
                       isActive
                         ? 'bg-gray-100 text-gray-900 font-medium'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -200,7 +200,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       <div className="px-3 pb-5 border-t border-gray-100 pt-3">
         <button
           onClick={() => window.open('https://wellink.co.kr', '_blank', 'noopener,noreferrer')}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-0.5"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-0.5"
         >
           <BookMarked size={15} />
           <span className="flex-1 text-left">서비스 가이드</span>
@@ -208,7 +208,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         </button>
         <button
           onClick={() => window.open('https://pnutbtr.inblog.io/', '_blank', 'noopener,noreferrer')}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-2"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-2"
         >
           <Lightbulb size={15} />
           <span className="flex-1 text-left">인사이트/블로그</span>
@@ -225,8 +225,8 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             </div>
             <div className="flex-1 min-w-0 text-left">
               {/* auth 연동 시 실제 사용자 정보로 교체 예정 */}
-              <p className="text-sm font-medium text-gray-900 truncate">웰링크 브랜드</p>
-              <p className="text-sm text-gray-400 truncate">brand@wellink.ai</p>
+              <p className="text-base font-medium text-gray-900 truncate">웰링크 브랜드</p>
+              <p className="text-base text-gray-400 truncate">brand@wellink.ai</p>
             </div>
           </button>
         </div>
@@ -242,20 +242,20 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           <div className="flex gap-2">
             <button
               onClick={() => setGatedModalOpen(false)}
-              className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 py-2.5 rounded-xl border border-gray-200 text-base text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
             <button
               onClick={() => { setGatedModalOpen(false); navigate('/subscription') }}
-              className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-sm font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-base font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               구독 관리로 이동
             </button>
           </div>
         }
       >
-        <p className="text-sm text-gray-600 leading-relaxed">
+        <p className="text-base text-gray-600 leading-relaxed">
           현재 구독이 만료되어 이 기능을 사용할 수 없습니다.<br />
           구독을 갱신하면 모든 기능을 다시 이용할 수 있습니다.
         </p>

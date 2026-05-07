@@ -607,7 +607,7 @@ export default function CampaignDetail() {
           <button onClick={() => navigate('/campaigns')} aria-label="이전" className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
             <ArrowLeft size={18} aria-hidden="true" />
           </button>
-          <h1 className="text-xl font-bold text-gray-900">캠페인 상세</h1>
+          <h1 className="text-2xl font-bold text-gray-900">캠페인 상세</h1>
         </div>
         <ErrorState message="캠페인 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
       </div>
@@ -940,7 +940,7 @@ export default function CampaignDetail() {
   return (
     <div className="space-y-5">
       {/* 페이지 타이틀 + 뒤로가기 */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-base text-gray-600">
         <button
           onClick={() => navigate('/campaigns')}
           aria-label="이전"
@@ -957,24 +957,24 @@ export default function CampaignDetail() {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-                <span className={`text-sm font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
-                <span className="text-sm font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
-                <span className="text-sm font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
+                <span className={`text-base font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
+                <span className="text-base font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
+                <span className="text-base font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
               </div>
-              <h1 className="text-lg @md:text-xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
+              <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
             </div>
             <Tooltip content="공유"><button onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0"><Share2 size={16} /></button></Tooltip>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm text-gray-700"><Edit2 size={13} />정보 변경</button>
+            <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700"><Edit2 size={13} />정보 변경</button>
             {canCancelCampaign && (
-              <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-sm text-orange-700"><X size={13} />캠페인 취소</button>
+              <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-base text-orange-700"><X size={13} />캠페인 취소</button>
             )}
             {canDeleteCampaign ? (
-              <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-sm text-red-600"><Trash2 size={13} />삭제</button>
+              <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600"><Trash2 size={13} />삭제</button>
             ) : (
               <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
-                <span aria-disabled="true" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
+                <span aria-disabled="true" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-base text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
               </Tooltip>
             )}
           </div>
@@ -982,15 +982,15 @@ export default function CampaignDetail() {
 
         {/* 일정 바 — 모집·발표 한 행, 업로드 단독 행 (말줄임 방지) */}
         <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3">
-          <div className="flex items-center gap-2 text-sm min-w-0">
+          <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
             <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm min-w-0">
+          <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
             <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
           </div>
-          <div className="col-span-2 flex items-center gap-2 text-sm min-w-0">
+          <div className="col-span-2 flex items-center gap-2 text-base min-w-0">
             <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
             <span className="text-gray-600 break-words">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
@@ -1013,7 +1013,7 @@ export default function CampaignDetail() {
 
       {/* QA: 캠페인 종료 배너 */}
       {isClosed && (
-        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-sm px-4 py-3 rounded-xl">
+        <div className="bg-slate-100 border border-slate-200 text-slate-600 text-base px-4 py-3 rounded-xl">
           이 캠페인은 종료되었습니다.
         </div>
       )}
@@ -1035,7 +1035,7 @@ export default function CampaignDetail() {
               onClick={() => { if (!isDisabled) { setActiveTab(tab); setCheckedApplicants(new Set()) } }}
               disabled={isDisabled}
               aria-label={isTabGated ? `${tab} (구독 만료)` : undefined}
-              className={`relative whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-sm' : 'text-sm'} border-b-2 transition-all duration-150 ${
+              className={`relative whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-base' : 'text-base'} border-b-2 transition-all duration-150 ${
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
                   : isActive
@@ -1067,7 +1067,7 @@ export default function CampaignDetail() {
                 <div className="aspect-[4/3] flex items-center justify-center">
                   <Image size={22} className="text-gray-300" aria-hidden="true" strokeWidth={1.5} />
                 </div>
-                <span className="absolute inset-x-0 bottom-0 px-2 py-1 text-[10px] font-medium text-white bg-gradient-to-t from-black/55 to-transparent flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
+                <span className="absolute inset-x-0 bottom-0 px-2 py-1 text-sm font-medium text-white bg-gradient-to-t from-black/55 to-transparent flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
                   크게 보기
                 </span>
               </button>
@@ -1079,9 +1079,9 @@ export default function CampaignDetail() {
 
           {/* 제공 내역 */}
           <Section title="제공 내역" icon={<Crown size={14} />}>
-            <p className="text-sm font-semibold text-gray-900 mb-1">{meta.productName}</p>
+            <p className="text-base font-semibold text-gray-900 mb-1">{meta.productName}</p>
             <MarkdownView text={meta.productDetail} className="mb-3" />
-            <ul className="text-sm text-gray-500 space-y-1 list-disc pl-4">
+            <ul className="text-base text-gray-500 space-y-1 list-disc pl-4">
               <li>제품을 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</li>
               <li>제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</li>
             </ul>
@@ -1105,7 +1105,7 @@ export default function CampaignDetail() {
           <Section title="필수 키워드" icon={<Search size={14} />}>
             <div className="flex flex-wrap gap-1.5 mb-3">
               {meta.requiredKeywords.map(k => (
-                <span key={k} className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">{k}</span>
+                <span key={k} className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-base font-medium">{k}</span>
               ))}
             </div>
             <button
@@ -1114,7 +1114,7 @@ export default function CampaignDetail() {
                 navigator.clipboard?.writeText(meta.requiredKeywords.join(' '))
                 showToast('키워드가 복사되었습니다', 'success')
               }}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-gray-300 text-base text-gray-600 hover:bg-gray-50 transition-colors"
             >
               <Copy size={13} />
               키워드 한 번에 복사하기
@@ -1177,15 +1177,15 @@ export default function CampaignDetail() {
         return (
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
               <Users size={15} className="text-gray-400" aria-hidden="true" />
               지원자 <span className="text-gray-900 font-bold">{totalCount}</span>명
-              {totalCount !== applicants.length && <span className="text-sm text-gray-400 font-normal">(전체 {applicants.length}명)</span>}
+              {totalCount !== applicants.length && <span className="text-base text-gray-400 font-normal">(전체 {applicants.length}명)</span>}
             </h2>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setPendingOnlyFilter(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm border transition-colors duration-150 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-base border transition-colors duration-150 ${
                   pendingOnlyFilter
                     ? 'bg-amber-50 border-amber-300 text-amber-700'
                     : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
@@ -1198,7 +1198,7 @@ export default function CampaignDetail() {
               <button
                 onClick={handleBulkPend}
                 disabled={applicants.length === 0}
-                className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <UserCheck size={13} aria-hidden="true" />
                 일괄 선정 예정
@@ -1206,7 +1206,7 @@ export default function CampaignDetail() {
               {pendingApplicants.size > 0 && (
                 <button
                   onClick={() => setConfirmSelectionModal({ ids: Array.from(pendingApplicants) })}
-                  className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150"
+                  className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150"
                 >
                   <Check size={13} aria-hidden="true" />
                   선정 예정 {pendingApplicants.size}명 일괄 확정
@@ -1214,7 +1214,7 @@ export default function CampaignDetail() {
               )}
               <button
                 onClick={handleExportApplicants}
-                className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+                className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150"
               >
                 <Download size={13} aria-hidden="true" />
                 리스트 Export
@@ -1238,7 +1238,7 @@ export default function CampaignDetail() {
                       placeholder="이름·활동분야로 검색"
                       value={applicantsSearch}
                       onChange={e => { setApplicantsSearch(e.target.value); setApplicantsPage(1) }}
-                      className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 placeholder:text-gray-400"
+                      className="w-full pl-9 pr-3 py-2 text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 placeholder:text-gray-400"
                     />
                   </div>
                   {hasOptions && (
@@ -1246,11 +1246,11 @@ export default function CampaignDetail() {
                       type="button"
                       onClick={() => setOptionFilterOpen(o => !o)}
                       aria-expanded={optionFilterOpen}
-                      className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-base font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
                       <span>옵션 필터</span>
                       {activeCount > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-[10px] font-semibold">{activeCount}</span>
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-sm font-semibold">{activeCount}</span>
                       )}
                       <ChevronDown size={12} className={`transition-transform ${optionFilterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
@@ -1261,7 +1261,7 @@ export default function CampaignDetail() {
                 {hasOptions && activeCount > 0 && (
                   <div className="px-3 pb-2.5 flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
                     {activeEntries.map(([q, v]) => (
-                      <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-sm text-gray-700">
+                      <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-base text-gray-700">
                         <span className="break-words">
                           <span className="text-gray-400">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
                         </span>
@@ -1277,7 +1277,7 @@ export default function CampaignDetail() {
                     ))}
                     <button
                       onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
-                      className="text-sm text-brand-green hover:underline ml-1 self-center"
+                      className="text-base text-brand-green hover:underline ml-1 self-center"
                     >전체 해제</button>
                   </div>
                 )}
@@ -1287,12 +1287,12 @@ export default function CampaignDetail() {
                   <div className="p-3 border-t border-gray-100 grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-3 gap-3">
                     {dynamicQuestions.map(q => (
                       <div key={q.question} className="space-y-1 min-w-0">
-                        <label className="block text-sm text-gray-600 leading-snug break-words" title={q.question}>{q.question}</label>
+                        <label className="block text-base text-gray-600 leading-snug break-words" title={q.question}>{q.question}</label>
                         <CustomSelect
                           value={answerFilters[q.question] ?? ''}
                           onChange={v => { setAnswerFilters(prev => ({ ...prev, [q.question]: v })); setApplicantsPage(1) }}
                           options={[{ label: '전체', value: '' }, ...q.answers.map(a => ({ label: a, value: a }))]}
-                          className="text-sm w-full"
+                          className="text-base w-full"
                         />
                       </div>
                     ))}
@@ -1307,7 +1307,7 @@ export default function CampaignDetail() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 w-10">
+                  <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 w-10">
                     <input
                       type="checkbox"
                       aria-label="전체 선택"
@@ -1320,8 +1320,8 @@ export default function CampaignDetail() {
                       className="rounded border-gray-300"
                     />
                   </th>
-                  <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
-                  <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
+                  <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
+                  <th scope="col" onClick={() => toggleSort('engagement')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
                     <span className="inline-flex items-center gap-1">
                       참여율
                       <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
@@ -1330,7 +1330,7 @@ export default function CampaignDetail() {
                       {sortIcon('engagement')}
                     </span>
                   </th>
-                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
+                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
                     <span className="inline-flex items-center gap-1">
                       <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
                       Fit Score
@@ -1340,15 +1340,15 @@ export default function CampaignDetail() {
                       {sortIcon('fitScore')}
                     </span>
                   </th>
-                  <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
-                  <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
-                  <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
-                  <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
-                  <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
-                  <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
-                  <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-sm font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
-                  <th scope="col" className="text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
-                  <th scope="col" className="text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
+                  <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
+                  <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
+                  <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('postsCount')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">게시물수 {sortIcon('postsCount')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgLikes')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균좋아요 {sortIcon('avgLikes')}</th>
+                  <th scope="col" onClick={() => toggleSort('avgComments')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">평균댓글 {sortIcon('avgComments')}</th>
+                  <th scope="col" onClick={() => toggleSort('recentActivity')} className="text-center text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">최근활동 {sortIcon('recentActivity')}</th>
+                  <th scope="col" className="text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">신청일</th>
+                  <th scope="col" className="text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
                   <th scope="col" aria-label="액션" className="py-3 px-2 sticky right-0 bg-gray-50/90 backdrop-blur-sm shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)] min-w-[60px]"></th>
                 </tr>
               </thead>
@@ -1366,25 +1366,25 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                        <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                           {a.name[0]}
                         </div>
                         <div className="leading-tight">
-                          <span className="block text-sm font-bold text-gray-900 whitespace-nowrap">@{a.instagramId}</span>
-                          <span className="block text-sm text-gray-400 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
+                          <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{a.instagramId}</span>
+                          <span className="block text-base text-gray-400 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-sm font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
+                    <td className="py-3 px-4 text-base font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-sm font-semibold bg-brand-green/10 text-brand-green">
+                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-base font-semibold bg-brand-green/10 text-brand-green">
                         {a.fitScore}
                       </span>
                     </td>
                     {/* 콘텐츠 미리보기 (피드 1 + 릴스 1) — 정책서 § 6-3-1 */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       {a.isPrivate ? (
-                        <span className="inline-flex items-center gap-1 text-sm text-gray-400">
+                        <span className="inline-flex items-center gap-1 text-base text-gray-400">
                           <Image size={12} aria-hidden="true" /> 비공개
                         </span>
                       ) : (
@@ -1420,26 +1420,26 @@ export default function CampaignDetail() {
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
                         {a.activityFields.map(f => (
-                          <span key={f} className="text-sm px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                          <span key={f} className="text-base px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
                         ))}
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{a.followers}</td>
-                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.postsCount)}</td>
-                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgLikes)}</td>
-                    <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgComments)}</td>
-                    <td className="py-3 px-4 text-sm text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
-                    <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
+                    <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{a.followers}</td>
+                    <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.postsCount)}</td>
+                    <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgLikes)}</td>
+                    <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{fmtNumber(a.avgComments)}</td>
+                    <td className="py-3 px-4 text-base text-gray-500 text-center whitespace-nowrap">{a.recentActivityDays === 0 ? '오늘' : `${a.recentActivityDays}일 전`}</td>
+                    <td className="py-3 px-4 text-base text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => setAnswersModalId(a.id)}
-                        className="text-sm text-blue-600 hover:underline whitespace-nowrap"
+                        className="text-base text-blue-600 hover:underline whitespace-nowrap"
                       >답변 보기</button>
                     </td>
                     <td className="py-2 px-2 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       {pendingApplicants.has(a.id) ? (
                         <div className="flex flex-col items-stretch gap-1 min-w-[64px]">
-                          <span className="inline-flex items-center justify-center text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1 py-0.5 rounded-md whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center text-sm bg-amber-50 text-amber-700 border border-amber-200 px-1 py-0.5 rounded-md whitespace-nowrap">
                             선정 예정
                           </span>
                           <Tooltip content="선정 확정">
@@ -1488,7 +1488,7 @@ export default function CampaignDetail() {
                 ))}
                 {paginated.length === 0 && (
                   <tr>
-                    <td colSpan={13} className="py-12 text-center text-sm text-gray-400">
+                    <td colSpan={13} className="py-12 text-center text-base text-gray-400">
                       {applicants.length === 0 ? '지원자가 없습니다.' : '조건에 맞는 지원자가 없습니다.'}
                     </td>
                   </tr>
@@ -1506,13 +1506,13 @@ export default function CampaignDetail() {
       {activeTab === '선정 인플루언서' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
               <UserCheck size={15} className="text-gray-400" aria-hidden="true" />
               선정된 인플루언서 {selectedInfluencers.length}명
             </h2>
             <button
               onClick={handleExportSelected}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150"
+              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150"
             >
               <Download size={13} aria-hidden="true" />
               리스트 Export
@@ -1528,12 +1528,12 @@ export default function CampaignDetail() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-5">
                 <div className="flex items-end justify-between gap-3 flex-wrap mb-3">
                   <div>
-                    <h3 className="text-base font-bold text-gray-900">등록 콘텐츠 현황</h3>
-                    <p className="text-sm text-gray-500 mt-0.5">완료율 <span className="font-semibold text-gray-900">{rate}%</span> · {uploaded}/{total}명</p>
+                    <h3 className="text-lg font-bold text-gray-900">등록 콘텐츠 현황</h3>
+                    <p className="text-base text-gray-500 mt-0.5">완료율 <span className="font-semibold text-gray-900">{rate}%</span> · {uploaded}/{total}명</p>
                   </div>
                   <button
                     onClick={() => { setUploadOverviewDetailId(null); setUploadOverviewOpen(true) }}
-                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="text-base font-medium px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
                   >자세히 보기 →</button>
                 </div>
                 <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
@@ -1553,7 +1553,7 @@ export default function CampaignDetail() {
               <button
                 key={opt.value}
                 onClick={() => { setSelectedUploadFilter(opt.value); setSelectedPage(1) }}
-                className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-base font-medium transition-colors ${
                   selectedUploadFilter === opt.value
                     ? 'bg-gray-900 text-white'
                     : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -1575,10 +1575,10 @@ export default function CampaignDetail() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gray-50/50 border-b border-gray-100">
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
-                      <th scope="col" className="text-right text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">팔로워</th>
-                      <th scope="col" className="text-right text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
+                      <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">팔로워</th>
+                      <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
                         <span className="inline-flex items-center gap-1">
                           참여율
                           <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
@@ -1586,7 +1586,7 @@ export default function CampaignDetail() {
                           </Tooltip>
                         </span>
                       </th>
-                      <th scope="col" className="text-right text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
+                      <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
                         <span className="inline-flex items-center gap-1">
                           <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
                           Fit Score
@@ -1595,14 +1595,14 @@ export default function CampaignDetail() {
                           </Tooltip>
                         </span>
                       </th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">연락처</th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">주소</th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">업로드 상태</th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">최초 등록일</th>
-                      <th scope="col" className="text-right text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">등록 게시글</th>
-                      <th scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
-                      <th scope="col" className="text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">선정일</th>
-                      <th scope="col" className="text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">액션</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">연락처</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">주소</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">업로드 상태</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">최초 등록일</th>
+                      <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">등록 게시글</th>
+                      <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">답변</th>
+                      <th scope="col" className="text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">선정일</th>
+                      <th scope="col" className="text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">액션</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -1610,52 +1610,52 @@ export default function CampaignDetail() {
                       <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                            <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                               {i.name[0]}
                             </div>
                             <div className="leading-tight">
-                              <span className="block text-sm font-bold text-gray-900 whitespace-nowrap">@{i.instagramId}</span>
-                              <span className="block text-sm text-gray-400 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
+                              <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{i.instagramId}</span>
+                              <span className="block text-base text-gray-400 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
                             </div>
                           </div>
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
                             {(i.activityFields ?? []).map(f => (
-                              <span key={f} className="text-sm px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                              <span key={f} className="text-base px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
                             ))}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
-                        <td className="py-3 px-4 text-sm text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
+                        <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
+                        <td className="py-3 px-4 text-base text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
                         <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-sm font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
+                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-base font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
                             {i.fitScore}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
-                        <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
+                        <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
+                        <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-sm font-bold text-emerald-700">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-base font-bold text-emerald-700">등록 완료</span>
                           ) : (
-                            <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-sm font-bold text-gray-600">미등록</span>
+                            <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-base font-bold text-gray-600">미등록</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">{i.firstUploadedAt ?? '-'}</td>
-                        <td className="py-3 px-4 text-sm text-gray-700 text-right whitespace-nowrap">{(i.uploadedPostCount ?? 0) > 0 ? `${i.uploadedPostCount}개` : '-'}</td>
+                        <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.firstUploadedAt ?? '-'}</td>
+                        <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{(i.uploadedPostCount ?? 0) > 0 ? `${i.uploadedPostCount}개` : '-'}</td>
                         <td className="py-3 px-4">
                           <button
                             onClick={() => setAnswersModalId(i.id)}
-                            className="text-sm text-blue-600 hover:underline whitespace-nowrap"
+                            className="text-base text-blue-600 hover:underline whitespace-nowrap"
                           >답변 보기</button>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{fmtDate(i.selectedAt)}</td>
+                        <td className="py-3 px-4 text-base text-gray-500 whitespace-nowrap">{fmtDate(i.selectedAt)}</td>
                         <td className="py-3 px-4">
                           <button
                             onClick={() => setDeselectModal(i.id)}
                             disabled={isClosed}
-                            className={`flex items-center gap-1 text-sm border px-3 py-1.5 rounded-xl transition-colors duration-150 whitespace-nowrap ${
+                            className={`flex items-center gap-1 text-base border px-3 py-1.5 rounded-xl transition-colors duration-150 whitespace-nowrap ${
                               isClosed
                                 ? 'text-gray-300 border-gray-100 cursor-not-allowed'
                                 : 'text-red-500 border-red-200 hover:bg-red-50'
@@ -1668,7 +1668,7 @@ export default function CampaignDetail() {
                     ))}
                     {pagedSelected.length === 0 && (
                       <tr>
-                        <td colSpan={13} className="py-12 text-center text-sm text-gray-400">
+                        <td colSpan={13} className="py-12 text-center text-base text-gray-400">
                           {selectedInfluencers.length === 0 ? '선정된 인플루언서가 없습니다.' : '조건에 맞는 인플루언서가 없습니다.'}
                         </td>
                       </tr>
@@ -1687,8 +1687,8 @@ export default function CampaignDetail() {
       {activeTab === '등록 콘텐츠' && !isGated && qa === 'tab-content-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <Image size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-sm font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
-          <p className="text-sm text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
+          <p className="text-base font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
+          <p className="text-base text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
         </div>
       )}
       {activeTab === '등록 콘텐츠' && !isGated && qa !== 'tab-content-empty' && (() => {
@@ -1722,22 +1722,22 @@ export default function CampaignDetail() {
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                  <p className="text-sm text-amber-700 font-medium">검수 대기 콘텐츠 {counts.검수중}건이 있습니다</p>
+                  <p className="text-base text-amber-700 font-medium">검수 대기 콘텐츠 {counts.검수중}건이 있습니다</p>
                 </div>
-                <span className="text-sm text-amber-500">검수하기 →</span>
+                <span className="text-base text-amber-500">검수하기 →</span>
               </button>
             )}
 
             {/* 헤더 — 건수 + 다운로드 */}
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-sm font-semibold text-gray-900">
+              <h2 className="text-base font-semibold text-gray-900">
                 등록 콘텐츠
-                <span className="ml-1.5 text-sm font-normal text-gray-400">{filtered.length}건</span>
+                <span className="ml-1.5 text-base font-normal text-gray-400">{filtered.length}건</span>
               </h2>
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => navigate(`/library?campaign=${encodeURIComponent(campaign.name)}`)}
-                  className="inline-flex items-center gap-1.5 text-sm text-gray-700 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 text-base text-gray-700 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
                 >
                   <FolderOpen size={13} aria-hidden="true" />
                   라이브러리에서 보기
@@ -1752,7 +1752,7 @@ export default function CampaignDetail() {
                       setSelectedContents(prev => new Set([...prev, ...visibleIds]))
                     }
                   }}
-                  className="text-sm text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                  className="text-base text-gray-600 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
                 >
                   {filtered.every(c => selectedContents.has(c.id)) && filtered.length > 0 ? '선택 해제' : '전체 선택'}
                 </button>
@@ -1763,7 +1763,7 @@ export default function CampaignDetail() {
                     if (selectedContents.size === 0) { showToast('다운로드할 콘텐츠를 선택해주세요.', 'error'); return }
                     setDownloadModal(true)
                   }}
-                  className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
                 >
                   <Download size={13} aria-hidden="true" />
                   다운로드{selectedContents.size > 0 && ` (${selectedContents.size})`}
@@ -1804,7 +1804,7 @@ export default function CampaignDetail() {
             {filtered.length === 0 ? (
               <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
                 <Image size={32} className="text-gray-200 mx-auto mb-2" aria-hidden="true" />
-                <p className="text-sm text-gray-400">
+                <p className="text-base text-gray-400">
                   {[
                     contentPlatform !== '전체' && contentPlatform,
                     contentFilter !== '전체' && contentFilter,
@@ -1813,7 +1813,7 @@ export default function CampaignDetail() {
                 {(contentFilter !== '전체' || contentPlatform !== '전체') && (
                   <button
                     onClick={() => { setContentFilter('전체'); setContentPlatform('전체'); setContentPage(1) }}
-                    className="mt-3 text-sm text-brand-green hover:underline"
+                    className="mt-3 text-base text-brand-green hover:underline"
                   >
                     필터 초기화
                   </button>
@@ -1851,14 +1851,14 @@ export default function CampaignDetail() {
                         </div>
                         {/* 플랫폼 + 유형 배지 */}
                         <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                        <span className={`text-sm px-1.5 py-0.5 rounded-full font-medium ${
+                        <span className={`text-base px-1.5 py-0.5 rounded-full font-medium ${
                           c.platform === '인스타그램' ? 'bg-pink-500/90 text-white' :
                           c.platform === '유튜브' ? 'bg-red-500/90 text-white' :
                           c.platform === '틱톡' ? 'bg-black/80 text-white' :
                           'bg-green-600/90 text-white'
                         }`}>{c.platform}</span>
                         {c.type && (
-                          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`text-base px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                             {c.type}
                           </span>
                         )}
@@ -1866,7 +1866,7 @@ export default function CampaignDetail() {
                         {/* 콘텐츠 점수 (정책서 § 8-2) */}
                         <div className="absolute bottom-3 right-3">
                           <Tooltip content="콘텐츠의 도달·참여·반응을 종합한 자체 산출 점수입니다. (검증 단계 — 자세한 산식은 후속 정의)" multiline>
-                            <div className={`text-sm font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
+                            <div className={`text-base font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
                               c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
                               c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
                               c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
@@ -1882,22 +1882,22 @@ export default function CampaignDetail() {
                         {/* 인플루언서 + 상태 */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-base shrink-0">
                               {c.influencer[0]}
                             </div>
                             <div className="min-w-0 leading-tight">
-                              <p className="text-sm font-bold text-gray-900 break-words">@{c.instagramId}</p>
-                              <p className="text-sm text-gray-400 break-words mt-0.5">본명 · {c.influencer}</p>
+                              <p className="text-base font-bold text-gray-900 break-words">@{c.instagramId}</p>
+                              <p className="text-base text-gray-400 break-words mt-0.5">본명 · {c.influencer}</p>
                             </div>
                           </div>
-                          <span className={`text-sm font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
+                          <span className={`text-base font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
                             {status}
                           </span>
                         </div>
 
                         {/* 제출일 + 찜하기 */}
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-gray-400">제출일 {c.submittedAt}</p>
+                          <p className="text-base text-gray-400">제출일 {c.submittedAt}</p>
                           <button
                             onClick={e => { e.stopPropagation(); toggleContentInfluencerBookmark(c.influencer) }}
                             aria-label={contentInfluencerBookmarks.has(c.influencer) ? `${c.influencer} 찜 해제` : `${c.influencer} 찜하기`}
@@ -1922,8 +1922,8 @@ export default function CampaignDetail() {
                             { label: '참여율', value: `${engRate}%`, highlight: true },
                           ].map(m => (
                             <div key={m.label}>
-                              <p className="text-sm text-gray-400 mb-0.5">{m.label}</p>
-                              <p className={`text-sm font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
+                              <p className="text-base text-gray-400 mb-0.5">{m.label}</p>
+                              <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
                             </div>
                           ))}
                         </div>
@@ -1937,13 +1937,13 @@ export default function CampaignDetail() {
                                 sendNotificationMock('content-approve', 1)
                                 showToast(`${c.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
                               }}
-                              className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-2 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+                              className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-2 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
                             >
                               <Check size={12} aria-hidden="true" /> 승인
                             </button>
                             <button
                               onClick={() => setContentRejectModal(c.id)}
-                              className="flex-1 flex items-center justify-center gap-1 border border-red-200 text-red-500 py-2 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
+                              className="flex-1 flex items-center justify-center gap-1 border border-red-200 text-red-500 py-2 rounded-xl text-base font-medium hover:bg-red-50 transition-colors"
                             >
                               <X size={12} aria-hidden="true" /> 반려
                             </button>
@@ -1953,7 +1953,7 @@ export default function CampaignDetail() {
                         {status === '반려' && (
                           <div className="flex items-center gap-1.5 bg-red-50 rounded-xl px-3 py-2">
                             <X size={12} className="text-red-400 shrink-0" aria-hidden="true" />
-                            <p className="text-sm text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
+                            <p className="text-base text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
                           </div>
                         )}
                       </div>
@@ -1969,7 +1969,7 @@ export default function CampaignDetail() {
                 <button
                   onClick={() => setContentPage(p => Math.max(1, p - 1))}
                   disabled={safePage === 1}
-                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-sm flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-base flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
                 >
                   ‹
                 </button>
@@ -1982,11 +1982,11 @@ export default function CampaignDetail() {
                   }, [])
                   .map((p, i) =>
                     p === '...'
-                      ? <span key={`e${i}`} className="w-8 text-center text-sm text-gray-400">…</span>
+                      ? <span key={`e${i}`} className="w-8 text-center text-base text-gray-400">…</span>
                       : <button
                           key={p}
                           onClick={() => setContentPage(p as number)}
-                          className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-8 h-8 rounded-lg text-base font-medium transition-colors ${
                             safePage === p ? 'bg-gray-900 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                           }`}
                         >{p}</button>
@@ -1994,7 +1994,7 @@ export default function CampaignDetail() {
                 <button
                   onClick={() => setContentPage(p => Math.min(totalPages, p + 1))}
                   disabled={safePage === totalPages}
-                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-sm flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 text-base flex items-center justify-center disabled:opacity-30 hover:bg-gray-50 transition-colors"
                 >
                   ›
                 </button>
@@ -2008,8 +2008,8 @@ export default function CampaignDetail() {
       {activeTab === '성과 리포트' && !isGated && qa === 'tab-report-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-sm font-medium text-gray-500">성과 데이터가 없습니다</p>
-          <p className="text-sm text-gray-400 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
+          <p className="text-base font-medium text-gray-500">성과 데이터가 없습니다</p>
+          <p className="text-base text-gray-400 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
         </div>
       )}
 
@@ -2024,14 +2024,14 @@ export default function CampaignDetail() {
                 <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5 min-w-0">
                   <div className="flex items-center gap-1.5 mb-3">
                     <Icon size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
-                    <span className="text-sm text-gray-500 break-words">{k.label}</span>
+                    <span className="text-base text-gray-500 break-words">{k.label}</span>
                     {k.tooltip && (
                       <Tooltip content={k.tooltip} multiline>
                         <Info size={11} className="text-gray-400 cursor-help shrink-0" />
                       </Tooltip>
                     )}
                   </div>
-                  <div className="text-xl @sm:text-2xl font-bold text-gray-900 tracking-tight break-words">{k.value}</div>
+                  <div className="text-2xl @sm:text-3xl font-bold text-gray-900 tracking-tight break-words">{k.value}</div>
                 </div>
               )
             })}
@@ -2042,22 +2042,22 @@ export default function CampaignDetail() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Users size={16} className="text-gray-400" aria-hidden="true" />
-                <h3 className="text-sm font-semibold text-gray-900">TOP 인플루언서</h3>
-                <span className="text-sm text-gray-400">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
+                <h3 className="text-base font-semibold text-gray-900">TOP 인플루언서</h3>
+                <span className="text-base text-gray-400">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
               </div>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
                 {topInfluencers.map((inf, idx) => (
                   <div key={inf.instagramId || inf.name} className="flex flex-col rounded-xl bg-gray-50 px-4 py-4 gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shrink-0 ${
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-base font-bold shrink-0 ${
                         idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-200 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500'
                       }`}>{idx + 1}</div>
                       <div className="min-w-0 leading-tight">
-                        <p className="text-sm font-bold text-gray-900 break-words">@{inf.instagramId}</p>
-                        <p className="text-sm text-gray-400 break-words mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
+                        <p className="text-base font-bold text-gray-900 break-words">@{inf.instagramId}</p>
+                        <p className="text-base text-gray-400 break-words mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-x-3 gap-y-1 text-sm flex-wrap pl-11">
+                    <div className="flex items-center gap-x-3 gap-y-1 text-base flex-wrap pl-11">
                       <span className="text-gray-500">좋아요 <strong className="text-gray-900">{fmtNumber(inf.likes)}</strong></span>
                       <span className="text-gray-500">댓글 <strong className="text-gray-900">{fmtNumber(inf.comments)}</strong></span>
                       <span className="text-gray-500">공유 <strong className="text-gray-900">{fmtNumber(inf.shares)}</strong></span>
@@ -2085,8 +2085,8 @@ export default function CampaignDetail() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div className="flex items-center gap-2 mb-4">
               <Crown size={16} className="text-amber-500" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-gray-900">중요 릴스 콘텐츠 TOP 3</h3>
-              <span className="text-sm text-gray-400">· 릴스 한정 · 콘텐츠 점수 기준</span>
+              <h3 className="text-base font-semibold text-gray-900">중요 릴스 콘텐츠 TOP 3</h3>
+              <span className="text-base text-gray-400">· 릴스 한정 · 콘텐츠 점수 기준</span>
               <Tooltip content="콘텐츠 점수는 도달·참여·반응을 종합한 자체 산출 점수입니다. 자세한 산식은 검증 단계입니다." multiline>
                 <Info size={11} className="text-gray-400 cursor-help" />
               </Tooltip>
@@ -2105,17 +2105,17 @@ export default function CampaignDetail() {
                     <div key={c.id} className={`rounded-xl border ${borderColor} p-4 flex flex-col gap-3 min-w-[260px] @md:min-w-0 shrink-0 @md:shrink`}>
                       {/* 상단: 순위 + 점수 */}
                       <div className="flex items-center justify-between">
-                        <span className="text-base" aria-hidden="true">{medals[idx]}</span>
-                        <span className={`text-sm font-bold ${scoreColor}`}>{c.viralScore}점</span>
+                        <span className="text-lg" aria-hidden="true">{medals[idx]}</span>
+                        <span className={`text-base font-bold ${scoreColor}`}>{c.viralScore}점</span>
                       </div>
                       {/* 콘텐츠 제목 */}
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
+                        <p className="text-base font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
                         <div className="flex items-center gap-1 mt-1 flex-wrap">
-                          <span className="text-sm text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
+                          <span className="text-base text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
                           <PlatformBadge platform={c.platform} />
                           {c.type && (
-                            <span className={`text-sm px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                            <span className={`text-base px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                               {c.type}
                             </span>
                           )}
@@ -2124,16 +2124,16 @@ export default function CampaignDetail() {
                       {/* 지표 — 카드 폭이 좁아 값 겹침 방지 위해 stacked (라벨·값 한 행씩) */}
                       <div className="flex flex-col gap-1 pt-2 border-t border-gray-50">
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-sm text-gray-400 shrink-0">도달</p>
-                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.reach)}</p>
+                          <p className="text-base text-gray-400 shrink-0">도달</p>
+                          <p className="text-base font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-sm text-gray-400 shrink-0">좋아요</p>
-                          <p className="text-sm font-bold text-gray-800">{fmtNumber(c.likes)}</p>
+                          <p className="text-base text-gray-400 shrink-0">좋아요</p>
+                          <p className="text-base font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-sm text-gray-400 shrink-0">참여율</p>
-                          <p className="text-sm font-bold text-brand-green">{engRate}%</p>
+                          <p className="text-base text-gray-400 shrink-0">참여율</p>
+                          <p className="text-base font-bold text-brand-green">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -2145,9 +2145,9 @@ export default function CampaignDetail() {
           {/* 콘텐츠별 좋아요 비교 그래프 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 좋아요 비교</h3>
+                  <h3 className="text-base font-semibold text-gray-900">콘텐츠별 좋아요 비교</h3>
                   {approvedContents.length > CHART_MAX_POINTS && (
-                    <span className="text-sm text-gray-400">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
+                    <span className="text-base text-gray-400">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
                   )}
                 </div>
                 <div className="relative overflow-x-auto overflow-y-hidden">
@@ -2220,14 +2220,14 @@ export default function CampaignDetail() {
             return (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">콘텐츠 순위</h3>
+                  <h3 className="text-base font-semibold text-gray-900">콘텐츠 순위</h3>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50/50 border-b border-gray-100">
                         {['순위', '인플루언서', '도달', '좋아요', '참여율'].map(h => (
-                          <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h}</th>
+                          <th key={h} scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -2238,20 +2238,20 @@ export default function CampaignDetail() {
                         return (
                           <tr key={c.id} className="hover:bg-gray-50 transition-colors duration-150">
                             <td className="py-3 px-4">
-                              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
+                              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-base font-bold ${
                                 rank === 1 ? 'bg-yellow-100 text-yellow-700' : rank === 2 ? 'bg-gray-100 text-gray-600' : rank === 3 ? 'bg-orange-100 text-orange-700' : 'text-gray-400'
                               }`}>
                                 {rank}
                               </span>
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap leading-tight">
-                              <p className="text-sm font-bold text-gray-900">@{c.instagramId}</p>
-                              <p className="text-sm text-gray-400 mt-0.5">본명 · {c.influencer}</p>
+                              <p className="text-base font-bold text-gray-900">@{c.instagramId}</p>
+                              <p className="text-base text-gray-400 mt-0.5">본명 · {c.influencer}</p>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
-                            <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
+                            <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
+                            <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className="text-sm font-semibold text-brand-green">{engRate}%</span>
+                              <span className="text-base font-semibold text-brand-green">{engRate}%</span>
                             </td>
                           </tr>
                         )
@@ -2286,17 +2286,17 @@ export default function CampaignDetail() {
                   <>
                     <button
                       onClick={() => { setContentStatuses(prev => ({ ...prev, [dc.id]: '승인' })); sendNotificationMock('content-approve', 1); showToast(`${dc.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success'); setContentDetailModal(null) }}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
                     ><Check size={13} /> 승인</button>
                     <button
                       onClick={() => { setContentDetailModal(null); setContentRejectModal(dc.id) }}
-                      className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-base font-medium hover:bg-red-50 transition-colors"
                     ><X size={13} /> 반려</button>
                   </>
                 )}
                 <button
                   onClick={() => { setContentDetailModal(null); toggleContentCheck(dc.id); setDownloadModal(true) }}
-                  className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
                 ><Download size={13} /> 다운로드</button>
               </>
             }
@@ -2309,26 +2309,26 @@ export default function CampaignDetail() {
               {/* 인플루언서 + 배지 */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-sm shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-base shrink-0">
                     {dc.influencer[0]}
                   </div>
                   <div className="leading-tight">
-                    <p className="text-sm font-bold text-gray-900">@{dc.instagramId}</p>
-                    <p className="text-sm text-gray-400 mt-0.5">본명 · {dc.influencer}</p>
+                    <p className="text-base font-bold text-gray-900">@{dc.instagramId}</p>
+                    <p className="text-base text-gray-400 mt-0.5">본명 · {dc.influencer}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                  <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${
+                  <span className={`text-base px-2 py-0.5 rounded-full font-medium ${
                     dc.platform === '인스타그램' ? 'bg-pink-100 text-pink-700' :
                     dc.platform === '유튜브' ? 'bg-red-100 text-red-700' :
                     dc.platform === '틱톡' ? 'bg-gray-200 text-gray-800' :
                     'bg-green-100 text-green-700'
                   }`}>{dc.type ? `${dc.platform} · ${dc.type}` : dc.platform}</span>
-                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
+                  <span className={`text-base font-semibold px-2 py-0.5 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
                 </div>
               </div>
               {/* 제출일 + 바이럴 */}
-              <div className="flex items-center justify-between text-sm text-gray-400">
+              <div className="flex items-center justify-between text-base text-gray-400">
                 <span>제출일 {dc.submittedAt}</span>
                 {dc.viralScore > 0 && (
                   <span className={`font-bold px-2 py-0.5 rounded-full ${
@@ -2348,8 +2348,8 @@ export default function CampaignDetail() {
                   { label: '참여율', value: `${dcEngRate}%`, highlight: true },
                 ].map(m => (
                   <div key={m.label}>
-                    <p className="text-[10px] text-gray-400 mb-0.5">{m.label}</p>
-                    <p className={`text-sm font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
+                    <p className="text-sm text-gray-400 mb-0.5">{m.label}</p>
+                    <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
                   </div>
                 ))}
               </div>
@@ -2368,24 +2368,24 @@ export default function CampaignDetail() {
           <button
             onClick={handleDownload}
             disabled={isPaying || selectedContents.size === 0}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             다운로드
           </button>
         ) : downloadStep === 'plan-select' ? (
           <>
-            <button onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
+            <button onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
             {pickedPlan === 'enterprise' ? (
               <button
                 onClick={() => { closeDownloadModal(); window.location.href = 'mailto:enterprise@wellink.ai?subject=Enterprise 플랜 문의' }}
-                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
               >
                 문의하기
               </button>
             ) : (
               <button
                 onClick={() => setDownloadStep('payment')}
-                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
               >
                 결제하기
               </button>
@@ -2393,8 +2393,8 @@ export default function CampaignDetail() {
           </>
         ) : (
           <>
-            <button onClick={() => setDownloadStep('plan-select')} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors disabled:opacity-60">이전</button>
-            <button onClick={handlePayAndDownload} disabled={isPaying} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            <button onClick={() => setDownloadStep('plan-select')} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-60">이전</button>
+            <button onClick={handlePayAndDownload} disabled={isPaying} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
               {isPaying ? '결제 중...' : '결제 완료'}
             </button>
           </>
@@ -2402,26 +2402,26 @@ export default function CampaignDetail() {
       >
         {canDownloadContent ? (
           <div className="space-y-3">
-            <p className="text-sm text-gray-600">선택한 콘텐츠를 다운로드합니다.</p>
+            <p className="text-base text-gray-600">선택한 콘텐츠를 다운로드합니다.</p>
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span className="text-gray-500">현재 플랜</span>
                 <span className="text-gray-900 font-medium">{planLabel}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span className="text-gray-500">선택 콘텐츠</span>
                 <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
               </div>
             </div>
-            <p className="text-sm text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+            <p className="text-base text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
           </div>
         ) : downloadStep === 'plan-select' ? (
           <div className="space-y-4">
             <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
               <Crown size={16} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="space-y-0.5">
-                <p className="text-sm font-semibold text-amber-900">콘텐츠 다운로드는 유료 플랜 전용 기능입니다</p>
-                <p className="text-sm text-amber-700">선택 콘텐츠 <span className="font-semibold">{selectedContents.size}건</span> · 현재 <span className="font-semibold">{planLabel}</span></p>
+                <p className="text-base font-semibold text-amber-900">콘텐츠 다운로드는 유료 플랜 전용 기능입니다</p>
+                <p className="text-base text-amber-700">선택 콘텐츠 <span className="font-semibold">{selectedContents.size}건</span> · 현재 <span className="font-semibold">{planLabel}</span></p>
               </div>
             </div>
             <div className="space-y-2">
@@ -2445,44 +2445,44 @@ export default function CampaignDetail() {
                         <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full border-2 shrink-0 ${active ? 'border-brand-green' : 'border-gray-300'}`}>
                           {active && <span className="w-2 h-2 rounded-full bg-brand-green" />}
                         </span>
-                        <span className="text-sm font-semibold text-gray-900">{p.name}</span>
-                        {p.recommend && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
+                        <span className="text-base font-semibold text-gray-900">{p.name}</span>
+                        {p.recommend && <span className="text-sm px-1.5 py-0.5 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
                       </div>
-                      <span className="text-sm font-semibold text-gray-900 shrink-0">{p.price}</span>
+                      <span className="text-base font-semibold text-gray-900 shrink-0">{p.price}</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1 ml-6">{p.desc}</p>
+                    <p className="text-base text-gray-500 mt-1 ml-6">{p.desc}</p>
                   </button>
                 )
               })}
             </div>
-            <p className="text-sm text-gray-400">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
+            <p className="text-base text-gray-400">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span className="text-gray-500">선택한 플랜</span>
                 <span className="text-gray-900 font-semibold">{pickedPlan === 'focus' ? 'Focus' : 'Scale'} 플랜</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span className="text-gray-500">결제 금액</span>
                 <span className="text-gray-900 font-semibold">{pickedPlan === 'focus' ? '₩99,000' : '₩299,000'} / 월</span>
               </div>
-              <div className="flex justify-between text-sm border-t border-gray-200 pt-2 mt-2">
+              <div className="flex justify-between text-base border-t border-gray-200 pt-2 mt-2">
                 <span className="text-gray-500">다운로드 콘텐츠</span>
                 <span className="text-gray-900 font-medium">{selectedContents.size}건 (즉시 다운로드)</span>
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">결제 수단을 입력해 주세요</p>
+              <p className="text-base text-gray-500">결제 수단을 입력해 주세요</p>
               <div className="space-y-2">
-                <input type="text" placeholder="카드 번호 (1234-5678-9012-3456)" disabled className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+                <input type="text" placeholder="카드 번호 (1234-5678-9012-3456)" disabled className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
                 <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="MM/YY" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
-                  <input type="text" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+                  <input type="text" placeholder="MM/YY" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
+                  <input type="text" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
                 </div>
               </div>
-              <p className="text-sm text-gray-400">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>
+              <p className="text-base text-gray-400">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>
             </div>
           </div>
         )}
@@ -2530,30 +2530,30 @@ export default function CampaignDetail() {
             footer={
               <button
                 onClick={() => setAnswersModalId(null)}
-                className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+                className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-base font-medium hover:bg-gray-800 transition-colors"
               >닫기</button>
             }
           >
             <div className="space-y-3">
               {target && (
                 <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-8 h-8 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                  <div className={`w-8 h-8 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                     {target.name[0]}
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">{target.name}</span>
+                  <span className="text-base font-semibold text-gray-900">{target.name}</span>
                 </div>
               )}
               {target?.allAnswers && target.allAnswers.length > 0 ? (
                 <div className="space-y-3">
                   {target.allAnswers.map(a => (
                     <div key={a.orderNumber} className="space-y-1">
-                      <p className="text-sm font-medium text-gray-500">{a.question}</p>
-                      <p className="text-sm text-gray-800 bg-gray-50 rounded-xl p-3 leading-relaxed">{a.answer || '-'}</p>
+                      <p className="text-base font-medium text-gray-500">{a.question}</p>
+                      <p className="text-base text-gray-800 bg-gray-50 rounded-xl p-3 leading-relaxed">{a.answer || '-'}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 text-center py-6">답변이 없습니다.</p>
+                <p className="text-base text-gray-400 text-center py-6">답변이 없습니다.</p>
               )}
             </div>
           </Modal>
@@ -2579,12 +2579,12 @@ export default function CampaignDetail() {
               detail ? (
                 <button
                   onClick={() => setUploadOverviewDetailId(null)}
-                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
                 >← 목록으로</button>
               ) : (
                 <button
                   onClick={() => { setUploadOverviewOpen(false); setUploadOverviewDetailId(null) }}
-                  className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+                  className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-base font-medium hover:bg-gray-800 transition-colors"
                 >닫기</button>
               )
             }
@@ -2593,10 +2593,10 @@ export default function CampaignDetail() {
               <div className="space-y-3">
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700">완료율</p>
-                    <p className="text-2xl font-bold text-emerald-900 mt-0.5">{rate}%</p>
+                    <p className="text-base font-semibold uppercase tracking-wider text-emerald-700">완료율</p>
+                    <p className="text-3xl font-bold text-emerald-900 mt-0.5">{rate}%</p>
                   </div>
-                  <p className="text-sm text-emerald-700">{uploaded}/{total}명 등록</p>
+                  <p className="text-base text-emerald-700">{uploaded}/{total}명 등록</p>
                 </div>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto">
                   {data.map(s => (
@@ -2605,28 +2605,28 @@ export default function CampaignDetail() {
                       onClick={() => setUploadOverviewDetailId(s.id)}
                       className="w-full flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-left hover:border-gray-300 hover:bg-gray-50 transition-colors"
                     >
-                      <div className={`w-10 h-10 rounded-full ${s.avatar} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+                      <div className={`w-10 h-10 rounded-full ${s.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                         {s.name[0]}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-gray-900">{s.name}</span>
+                          <span className="text-base font-semibold text-gray-900">{s.name}</span>
                           {(s.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="text-sm font-bold rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5">등록 완료</span>
+                            <span className="text-base font-bold rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5">등록 완료</span>
                           ) : (
-                            <span className="text-sm font-bold rounded-full bg-gray-100 text-gray-600 px-2 py-0.5">미등록</span>
+                            <span className="text-base font-bold rounded-full bg-gray-100 text-gray-600 px-2 py-0.5">미등록</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-0.5">팔로워 {s.followers} · 참여율 {s.engagement}%</p>
+                        <p className="text-base text-gray-500 mt-0.5">팔로워 {s.followers} · 참여율 {s.engagement}%</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-semibold text-gray-900">{s.uploadedPostCount ?? 0}개</p>
-                        <p className="text-[10px] text-gray-400">게시글</p>
+                        <p className="text-base font-semibold text-gray-900">{s.uploadedPostCount ?? 0}개</p>
+                        <p className="text-sm text-gray-400">게시글</p>
                       </div>
                     </button>
                   ))}
                   {data.length === 0 && (
-                    <p className="text-sm text-gray-400 text-center py-12">선정된 인플루언서가 없습니다.</p>
+                    <p className="text-base text-gray-400 text-center py-12">선정된 인플루언서가 없습니다.</p>
                   )}
                 </div>
               </div>
@@ -2638,32 +2638,32 @@ export default function CampaignDetail() {
                       {detail.name[0]}
                     </div>
                     <div>
-                      <p className="text-base font-bold text-gray-900">{detail.name}</p>
-                      <p className="text-sm text-gray-500">팔로워 {detail.followers} · Fit Score {detail.fitScore}점</p>
+                      <p className="text-lg font-bold text-gray-900">{detail.name}</p>
+                      <p className="text-base text-gray-500">팔로워 {detail.followers} · Fit Score {detail.fitScore}점</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2">
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">게시글 수</p>
-                      <p className="text-lg font-bold text-gray-900 mt-1">{detail.uploadedPostCount ?? 0}개</p>
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">게시글 수</p>
+                      <p className="text-xl font-bold text-gray-900 mt-1">{detail.uploadedPostCount ?? 0}개</p>
                     </div>
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">등록 시점</p>
-                      <p className="text-sm font-semibold text-gray-900 mt-1">
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">등록 시점</p>
+                      <p className="text-base font-semibold text-gray-900 mt-1">
                         {detail.firstUploadedAt ? fmtDate(detail.firstUploadedAt) : '미등록'}
                       </p>
                     </div>
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">게시글 이동</p>
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">게시글 이동</p>
                       {detail.latestPostUrl ? (
                         <a
                           href={detail.latestPostUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm font-semibold text-emerald-700 underline mt-1 inline-block"
+                          className="text-base font-semibold text-emerald-700 underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
-                        <p className="text-sm text-gray-400 mt-1">연결된 게시글 없음</p>
+                        <p className="text-base text-gray-400 mt-1">연결된 게시글 없음</p>
                       )}
                     </div>
                   </div>
@@ -2682,7 +2682,7 @@ export default function CampaignDetail() {
         title="콘텐츠 반려"
         footer={
           <>
-            <button onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
+            <button onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
             <button
               onClick={() => {
                 if (contentRejectModal === null) return
@@ -2694,22 +2694,22 @@ export default function CampaignDetail() {
                 setContentRejectModal(null)
                 setContentRejectFeedback('')
               }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm hover:bg-red-600 transition-colors"
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors"
             >반려 전송</button>
           </>
         }
       >
         <div className="space-y-3">
-          <p className="text-sm text-gray-600">반려 사유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
+          <p className="text-base text-gray-600">반려 사유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
           <textarea
             value={contentRejectFeedback}
             onChange={e => setContentRejectFeedback(e.target.value)}
             placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
             rows={4}
             maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
+            className="w-full text-base border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
-          <div className="text-right text-sm text-gray-400">{contentRejectFeedback.length}/500</div>
+          <div className="text-right text-base text-gray-400">{contentRejectFeedback.length}/500</div>
         </div>
       </Modal>
 
@@ -2724,7 +2724,7 @@ export default function CampaignDetail() {
         size="sm"
         onConfirm={() => confirmSelectionModal && handleConfirmSelection(confirmSelectionModal.ids)}
       >
-        <p className="text-sm text-gray-500">
+        <p className="text-base text-gray-500">
           {confirmSelectionModal?.name ? (
             <><strong className="text-gray-700">{confirmSelectionModal.name}</strong>님의 선정을 확정합니다.</>
           ) : confirmSelectionModal ? (
@@ -2745,7 +2745,7 @@ export default function CampaignDetail() {
         size="sm"
         onConfirm={() => deselectModal !== null && confirmDeselectInfluencer(deselectModal)}
       >
-        <p className="text-sm text-gray-500">
+        <p className="text-base text-gray-500">
           {(() => {
             const target = selectedInfluencers.find(i => i.id === deselectModal)
             return target ? <><strong className="text-gray-700">{target.name}</strong>님의 선정을 취소합니다.</> : '선정을 취소합니다.'
@@ -2765,7 +2765,7 @@ export default function CampaignDetail() {
         size="sm"
         onConfirm={confirmEditCampaign}
       >
-        <p className="text-sm text-gray-500 whitespace-pre-line">
+        <p className="text-base text-gray-500 whitespace-pre-line">
           {`이미 ${applicants.length}명의 지원자가 있습니다.\n내용을 수정하면 모든 지원자에게 [조건 변경 알림]이 발송됩니다.\n\n빈번한 수정은 브랜드 신뢰도를 떨어뜨릴 수 있습니다.`}
         </p>
       </AlertModal>
@@ -2781,7 +2781,7 @@ export default function CampaignDetail() {
         size="sm"
         onConfirm={handleDeleteCampaign}
       >
-        <p className="text-sm text-gray-500">
+        <p className="text-base text-gray-500">
           <strong className="text-gray-700">{campaign.name}</strong> 캠페인을 삭제합니다. 모집·콘텐츠·정산 데이터가 함께 사라지며 이 작업은 되돌릴 수 없습니다.
         </p>
       </AlertModal>
@@ -2810,8 +2810,8 @@ export default function CampaignDetail() {
                   {target.name[0]}
                 </div>
                 <div className="flex-1 min-w-0 leading-tight">
-                  <p className="text-sm font-bold text-gray-900">@{target.instagramId}</p>
-                  <p className="text-sm text-gray-400 mt-0.5">본명 · {target.name} · 팔로워 {target.followers}</p>
+                  <p className="text-base font-bold text-gray-900">@{target.instagramId}</p>
+                  <p className="text-base text-gray-400 mt-0.5">본명 · {target.name} · 팔로워 {target.followers}</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
@@ -2822,7 +2822,7 @@ export default function CampaignDetail() {
                   >
                     <ChevronLeft size={14} />
                   </button>
-                  <span className="text-sm text-gray-400 min-w-[40px] text-center">{curIdx + 1} / {previewable.length}</span>
+                  <span className="text-base text-gray-400 min-w-[40px] text-center">{curIdx + 1} / {previewable.length}</span>
                   <button
                     onClick={() => setPreviewModal({ applicantId: previewable[curIdx + 1].id, type: previewModal.type })}
                     disabled={!hasNext}
@@ -2837,27 +2837,27 @@ export default function CampaignDetail() {
                 <div className={`${aspect} bg-gradient-to-br ${bg} rounded-xl flex items-center justify-center relative`}>
                   <Image size={36} className="text-white/60" aria-hidden="true" />
                   {previewModal.type === 'reels' && (
-                    <span className="absolute top-3 right-3 text-sm bg-black/60 text-white px-2 py-0.5 rounded-full">릴스</span>
+                    <span className="absolute top-3 right-3 text-base bg-black/60 text-white px-2 py-0.5 rounded-full">릴스</span>
                   )}
                 </div>
               ) : (
-                <div className={`${aspect} bg-gray-50 rounded-xl flex items-center justify-center text-sm text-gray-400`}>콘텐츠 없음</div>
+                <div className={`${aspect} bg-gray-50 rounded-xl flex items-center justify-center text-base text-gray-400`}>콘텐츠 없음</div>
               )}
               <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-sm text-gray-400">평균 좋아요</p>
-                  <p className="text-sm font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
+                  <p className="text-base text-gray-400">평균 좋아요</p>
+                  <p className="text-base font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-sm text-gray-400">평균 댓글</p>
-                  <p className="text-sm font-semibold text-gray-900">{fmtNumber(target.avgComments)}</p>
+                  <p className="text-base text-gray-400">평균 댓글</p>
+                  <p className="text-base font-semibold text-gray-900">{fmtNumber(target.avgComments)}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-sm text-gray-400">참여율</p>
-                  <p className="text-sm font-semibold text-gray-900">{target.engagement}%</p>
+                  <p className="text-base text-gray-400">참여율</p>
+                  <p className="text-base font-semibold text-gray-900">{target.engagement}%</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 Instagram 스크래핑 후 표시됩니다.</p>
+              <p className="text-base text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 Instagram 스크래핑 후 표시됩니다.</p>
             </div>
           )
         })()}
@@ -2878,7 +2878,7 @@ export default function CampaignDetail() {
           showToast(`'${campaign.name}' 캠페인이 취소되었습니다. 지원자에게 알림이 발송됩니다.`, 'success')
         }}
       >
-        <p className="text-sm text-gray-500 whitespace-pre-line">
+        <p className="text-base text-gray-500 whitespace-pre-line">
           {`현재 ${applicants.length}명의 지원자가 있습니다.\n캠페인을 취소하면 모든 지원자에게 자동 알림이 발송되며, 위약금이 발생할 수 있습니다.\n\n계약 조건에 따라 환불·정산 정책이 적용됩니다.`}
         </p>
       </AlertModal>
@@ -2891,22 +2891,22 @@ export default function CampaignDetail() {
         size="sm"
         footer={
           <>
-            <button onClick={() => { setRejectModal(null); setFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleReject} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm hover:bg-red-600 transition-colors">반려 전송</button>
+            <button onClick={() => { setRejectModal(null); setFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
+            <button onClick={handleReject} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors">반려 전송</button>
           </>
         }
       >
         <div className="space-y-3">
-          <p className="text-sm text-gray-600">반려 이유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
+          <p className="text-base text-gray-600">반려 이유를 입력해주세요. 인플루언서에게 전달됩니다.</p>
           <textarea
             value={feedback}
             onChange={e => setFeedback(e.target.value)}
             placeholder="예) 브랜드 로고가 누락되었습니다. 수정 후 재제출해 주세요."
             rows={4}
             maxLength={500}
-            className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
+            className="w-full text-base border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
           />
-          <div className="text-right text-sm text-gray-400">{feedback.length}/500</div>
+          <div className="text-right text-base text-gray-400">{feedback.length}/500</div>
         </div>
       </Modal>
     </div>
@@ -2916,8 +2916,8 @@ export default function CampaignDetail() {
 function KpiCell({ label, value, small }: { label: string; value: string; small?: boolean }) {
   return (
     <div className="bg-gray-50 rounded-xl px-3 py-2.5 min-w-0">
-      <p className="text-sm text-gray-500 mb-0.5">{label}</p>
-      <p className={`font-bold text-gray-900 break-words ${small ? 'text-sm leading-snug' : 'text-base @md:text-lg leading-tight'}`}>{value}</p>
+      <p className="text-base text-gray-500 mb-0.5">{label}</p>
+      <p className={`font-bold text-gray-900 break-words ${small ? 'text-base leading-snug' : 'text-lg @md:text-xl leading-tight'}`}>{value}</p>
     </div>
   )
 }
@@ -2925,7 +2925,7 @@ function KpiCell({ label, value, small }: { label: string; value: string; small?
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @md:p-5">
-      <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+      <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
         <span className="text-gray-500">{icon}</span>
         {title}
       </h2>
@@ -2938,8 +2938,8 @@ function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: str
   return (
     <div className="border border-gray-100 rounded-xl px-3 py-3 text-center">
       <div className="text-gray-400 mb-1.5 flex justify-center">{icon}</div>
-      <p className="text-sm text-gray-500 mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-gray-900">{value}</p>
+      <p className="text-base text-gray-500 mb-0.5">{label}</p>
+      <p className="text-base font-semibold text-gray-900">{value}</p>
     </div>
   )
 }
@@ -2947,7 +2947,7 @@ function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: str
 /** 마크다운 경량 뷰어 — 원본 ToastEditorViewer 일부 호환 (제목·굵게·리스트·줄바꿈) */
 function MarkdownView({ text, className = '' }: { text: string; className?: string }) {
   if (!text || !text.trim()) {
-    return <p className={`text-sm text-gray-400 ${className}`}>내용이 없습니다.</p>
+    return <p className={`text-base text-gray-400 ${className}`}>내용이 없습니다.</p>
   }
   // 라인 단위 파싱
   const lines = text.split(/\r?\n/)
@@ -2956,7 +2956,7 @@ function MarkdownView({ text, className = '' }: { text: string; className?: stri
   const flushList = (key: string) => {
     if (listBuf.length === 0) return
     blocks.push(
-      <ul key={`ul-${key}`} className="text-sm text-gray-700 list-disc pl-5 space-y-1 my-1">
+      <ul key={`ul-${key}`} className="text-base text-gray-700 list-disc pl-5 space-y-1 my-1">
         {listBuf.map((item, i) => (
           <li key={i} dangerouslySetInnerHTML={{ __html: inlineFormat(item) }} />
         ))}
@@ -2987,18 +2987,18 @@ function MarkdownView({ text, className = '' }: { text: string; className?: stri
     const li = /^[-*]\s+(.+)$/.exec(line)
     if (h1) {
       flushList(String(idx))
-      blocks.push(<h3 key={idx} className="text-base font-bold text-gray-900 mt-3 mb-2" dangerouslySetInnerHTML={{ __html: inlineFormat(h1[1]) }} />)
+      blocks.push(<h3 key={idx} className="text-lg font-bold text-gray-900 mt-3 mb-2" dangerouslySetInnerHTML={{ __html: inlineFormat(h1[1]) }} />)
     } else if (h2) {
       flushList(String(idx))
-      blocks.push(<h4 key={idx} className="text-sm font-bold text-gray-900 mt-3 mb-1.5" dangerouslySetInnerHTML={{ __html: inlineFormat(h2[1]) }} />)
+      blocks.push(<h4 key={idx} className="text-base font-bold text-gray-900 mt-3 mb-1.5" dangerouslySetInnerHTML={{ __html: inlineFormat(h2[1]) }} />)
     } else if (h3) {
       flushList(String(idx))
-      blocks.push(<h5 key={idx} className="text-sm font-semibold text-gray-800 mt-2 mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(h3[1]) }} />)
+      blocks.push(<h5 key={idx} className="text-base font-semibold text-gray-800 mt-2 mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(h3[1]) }} />)
     } else if (li) {
       listBuf.push(li[1])
     } else {
       flushList(String(idx))
-      blocks.push(<p key={idx} className="text-sm text-gray-700 leading-relaxed mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(line) }} />)
+      blocks.push(<p key={idx} className="text-base text-gray-700 leading-relaxed mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(line) }} />)
     }
   })
   flushList('end')
@@ -3059,11 +3059,11 @@ function TrendChart({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-semibold text-gray-700">{title}</h4>
+        <h4 className="text-base font-semibold text-gray-700">{title}</h4>
         {multi && (
           <div className="flex items-center gap-3">
             {multi.map(s => (
-              <span key={s.dataKey} className="flex items-center gap-1 text-sm text-gray-500">
+              <span key={s.dataKey} className="flex items-center gap-1 text-base text-gray-500">
                 <span className="w-2 h-2 rounded-full" style={{ background: s.stroke }} />
                 {s.label}
               </span>

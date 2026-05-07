@@ -83,7 +83,7 @@ export default function Signup() {
         <button
           type="button"
           onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green"
+          className="px-4 py-2 rounded-xl text-base font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green"
         >
           도입문의
         </button>
@@ -93,16 +93,16 @@ export default function Signup() {
         {/* 로고 */}
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
-            <h1 className="text-2xl font-black text-brand-green">WELLINK</h1>
-            <span className="text-xs font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
+            <h1 className="text-3xl font-black text-brand-green">WELLINK</h1>
+            <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">AI</span>
           </div>
-          <p className="text-sm text-gray-500">광고주 포털 회원가입</p>
+          <p className="text-base text-gray-500">광고주 포털 회원가입</p>
         </div>
 
         <div className="space-y-3.5">
           {/* 담당자 이름 */}
           <div>
-            <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1.5">담당자 이름 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-name" className="block text-base font-medium text-gray-700 mb-1.5">담당자 이름 <span className="text-red-400">*</span></label>
             <input
               id="signup-name" type="text" autoComplete="name" placeholder="실명을 입력해 주세요"
               value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -110,12 +110,12 @@ export default function Signup() {
               aria-invalid={!!errors.name}
               className={`${inputBase} ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.name && <p id="signup-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
+            {errors.name && <p id="signup-name-error" className="text-sm text-red-500 mt-1" role="alert">{errors.name}</p>}
           </div>
 
           {/* 이메일 */}
           <div>
-            <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1.5">이메일 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-email" className="block text-base font-medium text-gray-700 mb-1.5">이메일 <span className="text-red-400">*</span></label>
             <input
               id="signup-email" type="email" autoComplete="email" placeholder="example@company.com"
               value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -123,12 +123,12 @@ export default function Signup() {
               aria-invalid={!!errors.email}
               className={`${inputBase} ${errors.email ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.email && <p id="signup-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
+            {errors.email && <p id="signup-email-error" className="text-sm text-red-500 mt-1" role="alert">{errors.email}</p>}
           </div>
 
           {/* 비밀번호 */}
           <div>
-            <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-password" className="block text-base font-medium text-gray-700 mb-1.5">비밀번호 <span className="text-red-400">*</span></label>
             <input
               id="signup-password" type="password" autoComplete="new-password" placeholder="8자 이상 입력해 주세요"
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -136,12 +136,12 @@ export default function Signup() {
               aria-invalid={!!errors.password}
               className={`${inputBase} ${errors.password ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.password && <p id="signup-password-error" className="text-xs text-red-500 mt-1" role="alert">{errors.password}</p>}
+            {errors.password && <p id="signup-password-error" className="text-sm text-red-500 mt-1" role="alert">{errors.password}</p>}
           </div>
 
           {/* 비밀번호 확인 */}
           <div>
-            <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 확인 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-password-confirm" className="block text-base font-medium text-gray-700 mb-1.5">비밀번호 확인 <span className="text-red-400">*</span></label>
             <input
               id="signup-password-confirm" type="password" autoComplete="new-password" placeholder="비밀번호를 다시 입력해 주세요"
               value={form.passwordConfirm}
@@ -158,12 +158,12 @@ export default function Signup() {
               aria-invalid={!!errors.passwordConfirm}
               className={`${inputBase} ${errors.passwordConfirm ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.passwordConfirm && <p id="signup-password-confirm-error" className="text-xs text-red-500 mt-1" role="alert">{errors.passwordConfirm}</p>}
+            {errors.passwordConfirm && <p id="signup-password-confirm-error" className="text-sm text-red-500 mt-1" role="alert">{errors.passwordConfirm}</p>}
           </div>
 
           {/* 회사명 */}
           <div>
-            <label htmlFor="signup-company" className="block text-sm font-medium text-gray-700 mb-1.5">회사명 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-company" className="block text-base font-medium text-gray-700 mb-1.5">회사명 <span className="text-red-400">*</span></label>
             <input
               id="signup-company" type="text" placeholder="회사명을 입력해 주세요"
               value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })}
@@ -171,12 +171,12 @@ export default function Signup() {
               aria-invalid={!!errors.companyName}
               className={`${inputBase} ${errors.companyName ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.companyName && <p id="signup-company-error" className="text-xs text-red-500 mt-1" role="alert">{errors.companyName}</p>}
+            {errors.companyName && <p id="signup-company-error" className="text-sm text-red-500 mt-1" role="alert">{errors.companyName}</p>}
           </div>
 
           {/* 사업자 등록번호 */}
           <div>
-            <label htmlFor="signup-biz" className="block text-sm font-medium text-gray-700 mb-1.5">사업자 등록번호</label>
+            <label htmlFor="signup-biz" className="block text-base font-medium text-gray-700 mb-1.5">사업자 등록번호</label>
             <input
               id="signup-biz" type="text" placeholder="000-00-00000"
               value={form.businessNumber} onChange={(e) => setForm({ ...form, businessNumber: e.target.value })}
@@ -188,7 +188,7 @@ export default function Signup() {
 
           {/* 전화번호 */}
           <div>
-            <label htmlFor="signup-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
+            <label htmlFor="signup-phone" className="block text-base font-medium text-gray-700 mb-1.5">전화번호</label>
             <input
               id="signup-phone" type="tel" autoComplete="tel" placeholder="010-0000-0000"
               value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -205,10 +205,10 @@ export default function Signup() {
                 onChange={e => setAgreedTerms(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 accent-brand-green cursor-pointer"
               />
-              <span className="text-sm text-gray-600">
+              <span className="text-base text-gray-600">
                 <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-brand-green transition-colors">서비스 이용약관</button>
                 {' '}동의{' '}
-                <span className="text-red-400 text-xs">(필수)</span>
+                <span className="text-red-400 text-sm">(필수)</span>
               </span>
             </label>
             <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -218,10 +218,10 @@ export default function Signup() {
                 onChange={e => setAgreedPrivacy(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 accent-brand-green cursor-pointer"
               />
-              <span className="text-sm text-gray-600">
+              <span className="text-base text-gray-600">
                 <button type="button" onClick={() => showToast('서비스 준비 중입니다.', 'info')} className="underline text-gray-700 hover:text-brand-green transition-colors">개인정보처리방침</button>
                 {' '}동의{' '}
-                <span className="text-red-400 text-xs">(필수)</span>
+                <span className="text-red-400 text-sm">(필수)</span>
               </span>
             </label>
           </div>
@@ -230,13 +230,13 @@ export default function Signup() {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !agreedTerms || !agreedPrivacy}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
+            className="w-full py-3 rounded-xl text-base font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
           >
             {isSubmitting ? '처리 중...' : '회원가입'}
           </button>
 
           {/* 로그인 링크 */}
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-base text-gray-500">
             이미 계정이 있으신가요?{' '}
             <button
               onClick={() => navigate('/login')}

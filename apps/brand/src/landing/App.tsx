@@ -76,7 +76,7 @@ export default function App() {
 
       <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#top" className="text-2xl font-black tracking-tighter text-[var(--color-landing-dark)]">
+          <a href="#top" className="text-3xl font-black tracking-tighter text-[var(--color-landing-dark)]">
             WELLINK
           </a>
 
@@ -85,7 +85,7 @@ export default function App() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+                className="text-base font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
               >
                 {item.label}
               </a>
@@ -95,7 +95,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_desktop"
               ctaId="header_desktop_consult"
-              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-sm font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-base font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
             >
               상담 신청
             </CtaLink>
@@ -132,7 +132,7 @@ export default function App() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-lg font-medium"
+                className="text-xl font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
@@ -143,7 +143,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_mobile"
               ctaId="header_mobile_consult"
-              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-lg font-bold text-[var(--color-landing-dark)]"
+              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-[var(--color-landing-dark)]"
               onClick={() => setIsMenuOpen(false)}
             >
               상담 신청
@@ -219,17 +219,17 @@ export default function App() {
               </div>
 
               <div>
-                <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+                <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
                   01. Various Categories
                 </span>
-                <h2 className="mb-6 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+                <h2 className="mb-6 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
                   헬스, 크로스핏은 물론
                   <br />
                   요가, 필라테스, 바레까지.
                   <br />
                   <span className="text-[var(--color-landing-dark)]">다양한 종목을 직접 골라보세요.</span>
                 </h2>
-                <p className="mb-10 text-lg text-slate-600">
+                <p className="mb-10 text-xl text-slate-600">
                   어떤 종목의 타겟을 원하든 준비되어 있습니다. 브랜드의 성격에 딱 맞는 세부 카테고리별
                   전문가 매칭을 지원합니다.
                 </p>
@@ -237,7 +237,7 @@ export default function App() {
                   {['#헬스', '#크로스핏', '#요가', '#필라테스', '#바레', '#러닝'].map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600"
+                      className="rounded-full bg-slate-100 px-4 py-2 text-base font-medium text-slate-600"
                     >
                       {tag}
                     </span>
@@ -256,10 +256,10 @@ export default function App() {
 
         <section className="py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               05. Multi-Layer Pool
             </span>
-            <h2 className="mb-16 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+            <h2 className="mb-16 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
               개인을 넘어 오프라인 공간과
               <br />
               커뮤니티까지 연결하는 웰링크만의 차별점
@@ -300,11 +300,11 @@ export default function App() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-landing-dark)]">
                     <item.icon size={28} />
                   </div>
-                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <div className="mb-2 text-sm font-bold uppercase tracking-widest text-slate-400">
                     {item.label}
                   </div>
-                  <h3 className="mb-4 text-xl font-black text-slate-900">{item.title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-500">{item.desc}</p>
+                  <h3 className="mb-4 text-2xl font-black text-slate-900">{item.title}</h3>
+                  <p className="text-base leading-relaxed text-slate-500">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -320,10 +320,10 @@ export default function App() {
           />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
+            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
               Standard Operating Procedure
             </span>
-            <h2 className="mb-16 text-3xl font-black leading-tight md:text-5xl">
+            <h2 className="mb-16 text-4xl font-black leading-tight md:text-6xl">
               피트니스 마케팅의
               <br />
               <span className="text-[var(--color-landing-lime)]">체계적인 성과 창출 프로세스</span>
@@ -342,12 +342,12 @@ export default function App() {
               ].map((item, i) => (
                 <div key={item.step} className="group relative">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-3xl font-black text-[var(--color-landing-dark)] transition-transform group-hover:scale-110">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-4xl font-black text-[var(--color-landing-dark)] transition-transform group-hover:scale-110">
                       {item.step}
                     </div>
                   </div>
-                  <h3 className="mb-4 text-2xl font-black">{item.title}</h3>
-                  <p className="text-sm leading-relaxed text-white/50">{item.desc}</p>
+                  <h3 className="mb-4 text-3xl font-black">{item.title}</h3>
+                  <p className="text-base leading-relaxed text-white/50">{item.desc}</p>
                   {i < 3 && <div className="absolute right-0 top-12 hidden h-px w-1/2 bg-white/10 lg:block" />}
                 </div>
               ))}

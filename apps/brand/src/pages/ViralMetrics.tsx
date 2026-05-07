@@ -238,8 +238,8 @@ export default function ViralMetrics() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
         <InstagramConnectPrompt featureName="바이럴 지표" />
       </div>
@@ -251,16 +251,16 @@ export default function ViralMetrics() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
           <Zap size={40} className="text-gray-200 mb-3" />
-          <p className="text-sm font-semibold text-gray-400 mb-1">바이럴 콘텐츠 데이터가 없습니다</p>
-          <p className="text-xs text-gray-400 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
+          <p className="text-base font-semibold text-gray-400 mb-1">바이럴 콘텐츠 데이터가 없습니다</p>
+          <p className="text-sm text-gray-400 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
           <button
             onClick={() => navigate('/campaigns')}
-            className="text-sm font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors"
+            className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors"
           >
             캠페인 만들기
           </button>
@@ -296,8 +296,8 @@ export default function ViralMetrics() {
       {/* 헤더 — 제목과 날짜 네비게이션을 분리 (제목 한 행, 날짜 picker 아래 행) */}
       <div className="space-y-3">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
-          <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none whitespace-nowrap">Beta</span>
+          <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none whitespace-nowrap">Beta</span>
         </div>
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
@@ -311,7 +311,7 @@ export default function ViralMetrics() {
       {(viewMode === 'monthly' || viewMode === 'yearly') && (
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <Info size={14} className="text-amber-500 mt-0.5 shrink-0" />
-          <p className="text-xs text-amber-700 leading-relaxed">
+          <p className="text-sm text-amber-700 leading-relaxed">
             데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
           </p>
         </div>
@@ -321,43 +321,43 @@ export default function ViralMetrics() {
       <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-500">총 바이럴 도달</span>
+            <span className="text-sm text-gray-500">총 바이럴 도달</span>
             <Eye size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{kpi.reach}</p>
+          <p className="text-3xl font-bold text-gray-900">{kpi.reach}</p>
           <TrendMiniBar values={trend.reach} color={CHART_COLORS.reach} />
-          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
+          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-500">공유 수</span>
+            <span className="text-sm text-gray-500">공유 수</span>
             <Share2 size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{kpi.shares}</p>
+          <p className="text-3xl font-bold text-gray-900">{kpi.shares}</p>
           <TrendMiniBar values={trend.shares} color="var(--color-brand-green)" />
-          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
+          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-500">저장 수</span>
+            <span className="text-sm text-gray-500">저장 수</span>
             <Bookmark size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{kpi.saves}</p>
+          <p className="text-3xl font-bold text-gray-900">{kpi.saves}</p>
           <TrendMiniBar values={trend.saves} color={CHART_COLORS.saves} />
-          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
+          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-500">바이럴 계수</span>
+            <span className="text-sm text-gray-500">바이럴 계수</span>
             <Zap size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-brand-green">{kpi.viral}</p>
+          <p className="text-3xl font-bold text-brand-green">{kpi.viral}</p>
           <div className="mt-3 h-8 flex items-center">
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
               <div className="h-full bg-brand-green rounded-full" style={{ width: `${isZero ? 0 : Math.max(0, Math.min(100, (rawKpi.viral / 4) * 100))}%` }} />
             </div>
           </div>
-          <p className="text-xs text-brand-green font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
+          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
         </div>
       </div>
 
@@ -366,22 +366,22 @@ export default function ViralMetrics() {
         {/* 릴스 평균 조회수 카드 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-gray-500">릴스 평균 조회수</span>
+            <span className="text-sm text-gray-500">릴스 평균 조회수</span>
             <Eye size={14} className="text-gray-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-3xl font-bold text-gray-900">
             {(() => {
               const reels = viralContentData.filter(c => c.type === '릴스' && c.reach > 0)
               return reels.length > 0 ? fmtNumber(Math.floor(reels.reduce((s, c) => s + c.reach, 0) / reels.length)) : '—'
             })()}
           </p>
-          <p className="text-[11px] text-gray-400 mt-1">릴스 콘텐츠 {viralContentData.filter(c => c.type === '릴스').length}건 평균</p>
+          <p className="text-sm text-gray-400 mt-1">릴스 콘텐츠 {viralContentData.filter(c => c.type === '릴스').length}건 평균</p>
         </div>
         {/* 등급 분포 도넛 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
-            <h3 className="text-sm font-semibold text-gray-900">콘텐츠 등급 분포</h3>
+            <h3 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h3>
             <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={11} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <GradeDonut data={viralContentData} />
@@ -427,12 +427,12 @@ export default function ViralMetrics() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
-                <p className="text-xs text-gray-500 mt-0.5">총 {sorted.length}건 · {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}</p>
+                <h3 className="text-base font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
+                <p className="text-sm text-gray-500 mt-0.5">총 {sorted.length}건 · {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}</p>
               </div>
               <button
                 onClick={() => showToast('CSV 파일 다운로드를 시작합니다.', 'success')}
-                className="text-xs text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+                className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
               >
                 CSV 내보내기
               </button>
@@ -440,16 +440,16 @@ export default function ViralMetrics() {
             {/* 필터·정렬 컨트롤 — 신규 (원본 SortKey/ContentFilter/GradeFilter 보강) */}
             <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-2 @sm:gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] text-gray-500">유형</span>
+                <span className="text-sm text-gray-500">유형</span>
                 <CustomSelect
                   value={contentFilter}
                   onChange={v => { setContentFilter(v as ContentFilter); setContentPage(1) }}
                   options={(['전체', '릴스', '피드', '스토리', '영상', '쇼츠'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
-                  className="text-xs"
+                  className="text-sm"
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] text-gray-500">등급</span>
+                <span className="text-sm text-gray-500">등급</span>
                 <CustomSelect
                   value={gradeFilter}
                   onChange={v => { setGradeFilter(v as GradeFilterT); setContentPage(1) }}
@@ -462,11 +462,11 @@ export default function ViralMetrics() {
                     { label: 'E', value: 'E' },
                     { label: '점수 산정중', value: 'processing' },
                   ]}
-                  className="text-xs"
+                  className="text-sm"
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] text-gray-500">정렬</span>
+                <span className="text-sm text-gray-500">정렬</span>
                 <CustomSelect
                   value={contentSort}
                   onChange={v => { setContentSort(v as ContentSort); setContentPage(1) }}
@@ -477,7 +477,7 @@ export default function ViralMetrics() {
                     { label: '댓글 많은순', value: 'comments' },
                     { label: '참여 많은순', value: 'engagement' },
                   ]}
-                  className="text-xs"
+                  className="text-sm"
                 />
               </label>
             </div>
@@ -489,7 +489,7 @@ export default function ViralMetrics() {
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-50">
                     {['콘텐츠', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
-                      <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                      <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -501,27 +501,27 @@ export default function ViralMetrics() {
                           <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                             <Image size={14} className="text-gray-400" />
                           </div>
-                          <span className="text-sm text-gray-900 whitespace-nowrap">{item.title}</span>
+                          <span className="text-base text-gray-900 whitespace-nowrap">{item.title}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{item.influencer}</td>
+                      <td className="py-3 px-4 text-base text-gray-500 whitespace-nowrap">{item.influencer}</td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <PlatformBadge platform={item.platform} />
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                        <span className={`inline-flex items-center text-sm font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <GradePill grade={item.grade} />
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-700 font-medium whitespace-nowrap">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
+                      <td className="py-3 px-4 text-base text-gray-700 font-medium whitespace-nowrap">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
+                      <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
+                      <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
+                      <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
+                      <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         {item.grade === 'processing' ? (
-                          <span className="text-xs text-gray-400">산정 중</span>
+                          <span className="text-sm text-gray-400">산정 중</span>
                         ) : (
                           <div className="flex items-center gap-2 min-w-[110px]">
                             <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -533,7 +533,7 @@ export default function ViralMetrics() {
                                 }}
                               />
                             </div>
-                            <span className={`text-sm font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                            <span className={`text-base font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
                               {item.viralScore}
                             </span>
                           </div>
@@ -543,7 +543,7 @@ export default function ViralMetrics() {
                   ))}
                   {paginated.length === 0 && (
                     <tr>
-                      <td colSpan={11} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
+                      <td colSpan={11} className="py-12 text-center text-base text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
                     </tr>
                   )}
                 </tbody>
@@ -571,7 +571,7 @@ function GradePill({ grade }: { grade: ContentGrade }) {
     : grade === 'processing' ? 'bg-blue-50 text-blue-600'
     : 'bg-gray-100 text-gray-600'
   const label = grade === 'processing' ? '산정 중' : grade
-  return <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
+  return <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
 }
 
 /** 등급 분포 도넛 — 원본 DonutChart 동등 (SVG 인라인) */
@@ -587,7 +587,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
     { label: '산정중', value: counts.processing, color: '#3b82f6' },
   ].filter(a => a.value > 0)
   const total = arr.reduce((s, a) => s + a.value, 0)
-  if (total === 0) return <p className="text-sm text-gray-400 text-center py-8">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-base text-gray-400 text-center py-8">데이터가 없습니다.</p>
   const cx = 60, cy = 60, r = 50, ir = 32
   let acc = 0
   return (
@@ -609,11 +609,11 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
       <div className="flex-1 grid grid-cols-1 @md:grid-cols-2 gap-x-3 gap-y-1 min-w-[120px]">
         {arr.map(a => (
           <div key={a.label} className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1 text-[11px] text-gray-700">
+            <span className="flex items-center gap-1 text-sm text-gray-700">
               <span className="w-2 h-2 rounded-full" style={{ background: a.color }} />
               {a.label}
             </span>
-            <span className="text-[11px] font-semibold text-gray-900">{a.value}</span>
+            <span className="text-sm font-semibold text-gray-900">{a.value}</span>
           </div>
         ))}
       </div>

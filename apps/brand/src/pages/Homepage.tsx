@@ -66,7 +66,7 @@ export default function Homepage() {
 
       <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#top" className="text-2xl font-black tracking-tighter text-[var(--color-landing-dark)]">
+          <a href="#top" className="text-3xl font-black tracking-tighter text-[var(--color-landing-dark)]">
             WELLINK
           </a>
           <div className="hidden items-center gap-8 md:flex">
@@ -74,7 +74,7 @@ export default function Homepage() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+                className="text-base font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
               >
                 {item.label}
               </a>
@@ -84,7 +84,7 @@ export default function Homepage() {
               ctaLabel="상담 신청"
               ctaLocation="header_desktop"
               ctaId="header_desktop_consult"
-              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-sm font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-base font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
             >
               상담 신청
             </CtaLink>
@@ -118,7 +118,7 @@ export default function Homepage() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-lg font-medium"
+                className="text-xl font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
@@ -129,7 +129,7 @@ export default function Homepage() {
               ctaLabel="상담 신청"
               ctaLocation="header_mobile"
               ctaId="header_mobile_consult"
-              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-lg font-bold text-[var(--color-landing-dark)]"
+              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-[var(--color-landing-dark)]"
               onClick={() => setIsMenuOpen(false)}
             >
               상담 신청
@@ -157,15 +157,15 @@ export default function Homepage() {
                 ))}
               </div>
               <div>
-                <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">01. Various Categories</span>
-                <h2 className="mb-6 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+                <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">01. Various Categories</span>
+                <h2 className="mb-6 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
                   헬스, 크로스핏은 물론<br />요가, 필라테스, 바레까지.<br />
                   <span className="text-[var(--color-landing-dark)]">다양한 종목을 직접 골라보세요.</span>
                 </h2>
-                <p className="mb-10 text-lg text-slate-600">어떤 종목의 타겟을 원하든 준비되어 있습니다. 브랜드의 성격에 딱 맞는 세부 카테고리별 전문가 매칭을 지원합니다.</p>
+                <p className="mb-10 text-xl text-slate-600">어떤 종목의 타겟을 원하든 준비되어 있습니다. 브랜드의 성격에 딱 맞는 세부 카테고리별 전문가 매칭을 지원합니다.</p>
                 <div className="flex flex-wrap gap-2">
                   {['#헬스', '#크로스핏', '#요가', '#필라테스', '#바레', '#러닝'].map((tag) => (
-                    <span key={tag} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">{tag}</span>
+                    <span key={tag} className="rounded-full bg-slate-100 px-4 py-2 text-base font-medium text-slate-600">{tag}</span>
                   ))}
                 </div>
               </div>
@@ -180,11 +180,11 @@ export default function Homepage() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid items-center gap-16 @lg:grid-cols-2">
               <div>
-                <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-xs font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">04. Operation Automation</span>
-                <h2 className="mb-6 text-3xl font-black leading-tight md:text-5xl">
+                <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-sm font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">04. Operation Automation</span>
+                <h2 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
                   모집부터 보고서까지<br /><span className="text-[var(--color-landing-lime)]">단 10분.</span><br />수동 업무에서 해방되세요.
                 </h2>
-                <p className="mb-10 text-lg text-white/60">수동 리스트업과 엑셀 작업은 이제 과거의 일입니다. 캠페인 운영 전 과정을 자동화하여 마케팅 리소스를 <span className="font-bold text-white">90% 이상</span> 절감해 드립니다.</p>
+                <p className="mb-10 text-xl text-white/60">수동 리스트업과 엑셀 작업은 이제 과거의 일입니다. 캠페인 운영 전 과정을 자동화하여 마케팅 리소스를 <span className="font-bold text-white">90% 이상</span> 절감해 드립니다.</p>
                 <ul className="space-y-4">
                   {['원클릭 인플루언서 모집', '실시간 콘텐츠 검수 시스템', '자동 성과 대시보드 생성'].map((item) => (
                     <li key={item} className="flex items-center gap-3 font-bold">
@@ -202,16 +202,16 @@ export default function Homepage() {
                       <div className="h-3 w-3 rounded-full bg-yellow-400" />
                       <div className="h-3 w-3 rounded-full bg-green-400" />
                     </div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Dashboard Pro</div>
+                    <div className="text-sm font-bold uppercase tracking-widest opacity-40">Dashboard Pro</div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-2xl bg-white/5 p-6">
-                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Total Reach</div>
-                      <div className="text-2xl font-black text-[var(--color-landing-lime)]">1.4M+</div>
+                      <div className="text-sm font-bold uppercase tracking-widest opacity-40">Total Reach</div>
+                      <div className="text-3xl font-black text-[var(--color-landing-lime)]">1.4M+</div>
                     </div>
                     <div className="rounded-2xl bg-white/5 p-6">
-                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">Campaign ROI</div>
-                      <div className="text-2xl font-black text-[var(--color-landing-lime)]">348%</div>
+                      <div className="text-sm font-bold uppercase tracking-widest opacity-40">Campaign ROI</div>
+                      <div className="text-3xl font-black text-[var(--color-landing-lime)]">348%</div>
                     </div>
                   </div>
                   <div className="mt-8 space-y-4">
@@ -232,8 +232,8 @@ export default function Homepage() {
 
         <section className="py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">05. Multi-Layer Pool</span>
-            <h2 className="mb-16 text-3xl font-black leading-tight text-slate-900 md:text-5xl">
+            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">05. Multi-Layer Pool</span>
+            <h2 className="mb-16 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
               개인을 넘어 오프라인 공간과<br />커뮤니티까지 연결하는 웰링크만의 차별점
             </h2>
             <div className="grid gap-6 @sm:grid-cols-2 @lg:grid-cols-4">
@@ -245,9 +245,9 @@ export default function Homepage() {
               ].map((item) => (
                 <motion.div key={item.title} whileHover={hoverLiftCard} className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-shadow hover:shadow-md">
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-landing-dark)]"><item.icon size={28} aria-hidden="true" /></div>
-                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</div>
-                  <h3 className="mb-4 text-xl font-black text-slate-900">{item.title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-500">{item.desc}</p>
+                  <div className="mb-2 text-sm font-bold uppercase tracking-widest text-slate-400">{item.label}</div>
+                  <h3 className="mb-4 text-2xl font-black text-slate-900">{item.title}</h3>
+                  <p className="text-base leading-relaxed text-slate-500">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -256,8 +256,8 @@ export default function Homepage() {
 
         <section className="bg-slate-50 py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <h2 className="mb-4 text-3xl font-black text-slate-900 md:text-5xl">마케터의 고민,</h2>
-            <h2 className="mb-8 text-3xl font-black text-[var(--color-landing-dark)] md:text-5xl">웰링크가 해결해 드립니다.</h2>
+            <h2 className="mb-4 text-4xl font-black text-slate-900 md:text-6xl">마케터의 고민,</h2>
+            <h2 className="mb-8 text-4xl font-black text-[var(--color-landing-dark)] md:text-6xl">웰링크가 해결해 드립니다.</h2>
             <p className="mb-16 text-slate-500">실제 필드에서 활동하는 마케터들의 가장 큰 고충을 정확히 타겟팅합니다.</p>
             <div className="grid gap-8 @lg:grid-cols-2">
               {[
@@ -273,18 +273,18 @@ export default function Homepage() {
                   </div>
                   <div className="flex flex-1 flex-col justify-center p-8 text-left">
                     <div className="mb-6">
-                      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-400">
+                      <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-red-400">
                         <div className="flex h-4 w-4 items-center justify-center rounded-full border border-red-400 text-[8px]">!</div>
                         Problem
                       </div>
-                      <div className="text-lg font-black leading-tight text-slate-900">{item.problem}</div>
+                      <div className="text-xl font-black leading-tight text-slate-900">{item.problem}</div>
                     </div>
                     <div className="mb-6 h-px w-full bg-slate-100" />
                     <div>
-                      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                      <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-500">
                         <CheckCircle2 size={12} aria-hidden="true" />Value
                       </div>
-                      <div className="text-sm font-medium text-slate-600">{item.value}</div>
+                      <div className="text-base font-medium text-slate-600">{item.value}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -296,8 +296,8 @@ export default function Homepage() {
         <section className="relative overflow-hidden bg-[var(--color-landing-dark)] py-24 text-white md:py-32">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-sm font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">Standard Operating Procedure</span>
-            <h2 className="mb-16 text-3xl font-black leading-tight md:text-5xl">
+            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">Standard Operating Procedure</span>
+            <h2 className="mb-16 text-4xl font-black leading-tight md:text-6xl">
               피트니스 마케팅의<br /><span className="text-[var(--color-landing-lime)]">체계적인 성과 창출 프로세스</span>
             </h2>
             <p className="mx-auto mb-20 max-w-2xl text-white/60">우리는 운에 맡기지 않습니다. 데이터와 표준화된 프로세스로 성공할 수밖에 없는 캠페인을 설계합니다.</p>
@@ -310,10 +310,10 @@ export default function Homepage() {
               ].map((item, i) => (
                 <div key={item.step} className="group relative">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-3xl font-black text-[var(--color-landing-dark)] transition-transform group-hover:scale-110">{item.step}</div>
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-4xl font-black text-[var(--color-landing-dark)] transition-transform group-hover:scale-110">{item.step}</div>
                   </div>
-                  <h3 className="mb-4 text-2xl font-black">{item.title}</h3>
-                  <p className="text-sm leading-relaxed text-white/50">{item.desc}</p>
+                  <h3 className="mb-4 text-3xl font-black">{item.title}</h3>
+                  <p className="text-base leading-relaxed text-white/50">{item.desc}</p>
                   {i < 3 && <div className="absolute right-0 top-12 hidden h-px w-1/2 bg-white/10 @lg:block" />}
                 </div>
               ))}

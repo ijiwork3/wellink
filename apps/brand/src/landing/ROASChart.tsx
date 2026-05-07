@@ -39,7 +39,7 @@ export default function ROASChart({ data }: ROASChartProps) {
           content={({ active, payload }) => {
             if (active && payload && payload.length) {
               return (
-                <div className="rounded-lg bg-slate-900 p-2 text-xs font-bold text-white shadow-xl">
+                <div className="rounded-lg bg-slate-900 p-2 text-sm font-bold text-white shadow-xl">
                   {`${payload[0].value}%`}
                 </div>
               );

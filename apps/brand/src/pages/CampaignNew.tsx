@@ -169,7 +169,7 @@ export default function CampaignNew() {
       {/* 뒤로가기 */}
       <button
         onClick={() => navigate('/campaigns')}
-        className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+        className="flex items-center gap-1 text-base text-gray-600 hover:text-gray-900 transition-colors"
       >
         <ArrowLeft size={14} aria-hidden="true" />
         뒤로 가기
@@ -177,8 +177,8 @@ export default function CampaignNew() {
 
       {/* 페이지 타이틀 */}
       <div>
-        <h1 className="text-xl @md:text-2xl font-bold text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
+        <p className="text-base text-gray-500 mt-1">
           {isEdit
             ? `내용을 수정하면 ${currentApplicantCount > 0 ? `현재 ${currentApplicantCount}명의 지원자에게 [조건 변경 알림]이 발송됩니다.` : '모든 지원자에게 [조건 변경 알림]이 발송됩니다.'}`
             : '인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.'}
@@ -190,8 +190,8 @@ export default function CampaignNew() {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
           <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
-            <p className="text-sm font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
-            <p className="text-xs text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
+            <p className="text-base font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
+            <p className="text-sm text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
           </div>
         </div>
       )}
@@ -206,7 +206,7 @@ export default function CampaignNew() {
                 key={t}
                 type="button"
                 onClick={() => set('type', t)}
-                className={`py-3 rounded-xl text-sm font-medium border transition-colors ${
+                className={`py-3 rounded-xl text-base font-medium border transition-colors ${
                   form.type === t
                     ? 'bg-gray-900 text-white border-gray-900'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
@@ -244,7 +244,7 @@ export default function CampaignNew() {
             value={autoTitle}
             disabled
             placeholder="위 정보를 입력하면 제목이 자동 생성됩니다"
-            className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700"
+            className="w-full text-base bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700"
           />
         </Field>
 
@@ -263,8 +263,8 @@ export default function CampaignNew() {
             className="border border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center justify-center bg-gray-50/30 cursor-pointer hover:bg-gray-50 transition-colors"
           >
             <ImageIcon size={28} className="text-gray-300 mb-2" aria-hidden="true" />
-            <p className="text-sm text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
-            <p className="text-xs text-gray-400 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
+            <p className="text-base text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
+            <p className="text-sm text-gray-400 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
             <input
               id="campaign-image-upload"
               type="file"
@@ -281,7 +281,7 @@ export default function CampaignNew() {
             onChange={e => set('description', e.target.value)}
             rows={6}
             placeholder="캠페인 소개 / 제공 내역 / 참여 방법을 작성해주세요."
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
+            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
           />
         </Field>
       </Section>
@@ -298,7 +298,7 @@ export default function CampaignNew() {
             onChange={e => set('productDetail', e.target.value)}
             rows={3}
             placeholder="제공되는 상품의 구성이나 특징을 자세히 적어주세요."
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
+            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
           />
         </Field>
 
@@ -311,7 +311,7 @@ export default function CampaignNew() {
                 placeholder="0"
                 className="text-right pr-9"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">원</span>
             </div>
           </Field>
           <Field label="추가 리워드 (포인트)">
@@ -322,12 +322,12 @@ export default function CampaignNew() {
                 placeholder="0"
                 className="text-right pr-9"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">P</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">P</span>
             </div>
           </Field>
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2.5 text-xs text-blue-700">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2.5 text-sm text-blue-700">
           <p className="font-semibold mb-0.5">배송형 캠페인 안내</p>
           <p className="text-blue-600">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
         </div>
@@ -342,17 +342,17 @@ export default function CampaignNew() {
               onChange={e => setKeywordInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
               placeholder="예) 킹콩정육점, 수원한우선물세트 (엔터로 추가)"
-              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
             <button
               onClick={addKeyword}
-              className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm hover:bg-gray-800 transition-colors"
+              className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-base hover:bg-gray-800 transition-colors"
             >추가</button>
           </div>
           {form.keywords.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {form.keywords.map(k => (
-                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs">
+                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm">
                   {k}
                   <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={11} /></button>
                 </span>
@@ -383,7 +383,7 @@ export default function CampaignNew() {
             onChange={e => set('guideText', e.target.value)}
             rows={5}
             placeholder={'구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.\n\n예시) 1. 고기 굽는 소리가 들리게 영상 촬영\n      2. 보지기 포장 상태 언박싱 컷 필수'}
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           />
         </Field>
 
@@ -393,18 +393,18 @@ export default function CampaignNew() {
 
         <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
           <div className="flex gap-2 mb-2 flex-wrap">
-            <button onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+            <button onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />단답형 추가
             </button>
-            <button onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+            <button onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />서술형 추가
             </button>
-            <button onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs">
+            <button onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />객관식 추가
             </button>
           </div>
           {questions.length === 0 ? (
-            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-xs text-gray-400">
+            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-sm text-gray-400">
               추가된 질문이 없습니다.
             </div>
           ) : (
@@ -413,10 +413,10 @@ export default function CampaignNew() {
                 <div key={q.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <GripVertical size={14} className="text-gray-300" />
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
+                    <span className="text-sm px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
                       질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
                     </span>
-                    <label className="ml-auto flex items-center gap-1 text-xs text-gray-600">
+                    <label className="ml-auto flex items-center gap-1 text-sm text-gray-600">
                       <input type="checkbox" checked={q.required} onChange={e => updateQ(q.id, { required: e.target.checked })} />
                       필수 답변
                     </label>
@@ -443,7 +443,7 @@ export default function CampaignNew() {
                       ))}
                       <button
                         onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
-                        className="text-xs text-blue-600 hover:text-blue-700"
+                        className="text-sm text-blue-600 hover:text-blue-700"
                       >+ 옵션 추가하기</button>
                     </div>
                   )}
@@ -461,7 +461,7 @@ export default function CampaignNew() {
             <SubField label="모집 기간">
               <div className="flex items-center gap-1.5">
                 <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
-                <span className="text-gray-400 text-xs">~</span>
+                <span className="text-gray-400 text-sm">~</span>
                 <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
               </div>
             </SubField>
@@ -475,7 +475,7 @@ export default function CampaignNew() {
           <SubField label="등록 기간">
             <div className="flex items-center gap-1.5 max-w-md">
               <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
-              <span className="text-gray-400 text-xs">~</span>
+              <span className="text-gray-400 text-sm">~</span>
               <DateInput value={form.uploadEnd} min={form.uploadStart || TODAY} onChange={v => set('uploadEnd', v)} />
             </div>
           </SubField>
@@ -484,8 +484,8 @@ export default function CampaignNew() {
         <Field label={<span className="flex items-center gap-1"><Users size={13} /> 모집 인원</span>}>
           <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-gray-900">총 모집 인원</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-base font-medium text-gray-900">총 모집 인원</p>
+              <p className="text-sm text-gray-500">
                 {isEdit
                   ? `현재 ${currentApplicantCount.toLocaleString()}명의 지원자가 있습니다.`
                   : '최소 5명 이상부터 진행 가능합니다.'}
@@ -498,9 +498,9 @@ export default function CampaignNew() {
                 placeholder="20"
                 value={form.headcount}
                 onChange={e => set('headcount', e.target.value)}
-                className="w-24 text-sm text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-24 text-base text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">명</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">명</span>
             </div>
           </div>
         </Field>
@@ -508,10 +508,10 @@ export default function CampaignNew() {
 
       {/* 총 결제 예정 금액 */}
       <div className="bg-blue-50/50 border border-blue-100 rounded-2xl px-4 py-3.5 flex items-center justify-between gap-3">
-        <span className="text-sm font-semibold text-gray-800">총 결제 예정 금액</span>
+        <span className="text-base font-semibold text-gray-800">총 결제 예정 금액</span>
         <div className="text-right">
-          <p className="text-lg @md:text-xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
-          <p className="text-[10px] text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
+          <p className="text-xl @md:text-2xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
+          <p className="text-sm text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
         </div>
       </div>
 
@@ -519,12 +519,12 @@ export default function CampaignNew() {
       <div className="flex items-center justify-end gap-2">
         <button
           onClick={() => navigate('/campaigns')}
-          className="px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          className="px-4 py-2.5 text-base text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
         >취소하기</button>
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-2.5 text-base bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
         >
           {isEdit ? '변경사항 저장' : '캠페인 등록하기'}
           <CheckCircle size={14} />
@@ -546,7 +546,7 @@ export default function CampaignNew() {
           <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
             <CheckCircle size={24} className="text-emerald-600" />
           </div>
-          <p className="text-sm text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
+          <p className="text-base text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
         </div>
       </AlertModal>
     </div>
@@ -558,7 +558,7 @@ export default function CampaignNew() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
-      <h2 className="text-base font-bold text-gray-900 pb-3 border-b border-gray-100">{title}</h2>
+      <h2 className="text-lg font-bold text-gray-900 pb-3 border-b border-gray-100">{title}</h2>
       {children}
     </section>
   )
@@ -567,8 +567,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, hint, children }: { label: React.ReactNode; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-sm font-semibold text-gray-800 block mb-2">{label}</label>
-      {hint && <p className="text-xs text-gray-500 -mt-1 mb-2">{hint}</p>}
+      <label className="text-base font-semibold text-gray-800 block mb-2">{label}</label>
+      {hint && <p className="text-sm text-gray-500 -mt-1 mb-2">{hint}</p>}
       {children}
     </div>
   )
@@ -577,7 +577,7 @@ function Field({ label, hint, children }: { label: React.ReactNode; hint?: strin
 function SubField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-xs font-medium text-gray-600 block mb-1.5">{label}</label>
+      <label className="text-sm font-medium text-gray-600 block mb-1.5">{label}</label>
       {children}
     </div>
   )
@@ -589,7 +589,7 @@ function Input({ value, onChange, placeholder, className = '' }: { value: string
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-colors ${className}`}
+      className={`w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-colors ${className}`}
     />
   )
 }
@@ -611,7 +611,7 @@ function DateInput({ value, min, onChange }: { value: string; min?: string; onCh
       value={value}
       min={min}
       onChange={e => onChange(e.target.value)}
-      className="flex-1 text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
+      className="flex-1 text-base border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
     />
   )
 }

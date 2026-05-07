@@ -48,8 +48,8 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
   return (
     <section className="bg-slate-50 py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6 text-center">
-        <h2 className="mb-4 text-3xl font-black text-slate-900 md:text-5xl">마케터의 고민,</h2>
-        <h2 className="mb-8 text-3xl font-black text-[var(--color-landing-dark)] md:text-5xl">
+        <h2 className="mb-4 text-4xl font-black text-slate-900 md:text-6xl">마케터의 고민,</h2>
+        <h2 className="mb-8 text-4xl font-black text-[var(--color-landing-dark)] md:text-6xl">
           웰링크가 해결해 드립니다.
         </h2>
         <p className="mb-16 text-slate-500">
@@ -71,21 +71,21 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
               </div>
               <div className="flex flex-1 flex-col justify-center p-8 text-left">
                 <div className="mb-6">
-                  <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-400">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-red-400">
                     <div className="flex h-4 w-4 items-center justify-center rounded-full border border-red-400 text-[8px]">
                       !
                     </div>
                     Problem
                   </div>
-                  <div className="text-lg font-black leading-tight text-slate-900">{item.problem}</div>
+                  <div className="text-xl font-black leading-tight text-slate-900">{item.problem}</div>
                 </div>
                 <div className="mb-6 h-px w-full bg-slate-100" />
                 <div>
-                  <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-500">
                     <CheckCircle2 size={12} />
                     Value
                   </div>
-                  <div className="text-sm font-medium text-slate-600">{item.value}</div>
+                  <div className="text-base font-medium text-slate-600">{item.value}</div>
                 </div>
               </div>
             </motion.div>

@@ -209,7 +209,7 @@ export function DeviceToggle({
         ['phone',   <Smartphone size={13} />, '스마트폰'],
       ] as [DeviceMode, React.ReactNode, string][]).map(([mode, icon, label]) => (
         <button key={mode} onClick={() => setDeviceMode(mode)} title={label} aria-label={label}
-          className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
+          className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             deviceMode === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-600'
           }`}>
           {icon}<span>{label}</span>
@@ -279,7 +279,7 @@ export function StateDropdown({
       <button
         onClick={() => setOpen(v => !v)}
         aria-label="QA 상태 선택"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
         style={selected ? { borderColor: accentColor, color: accentColor } : undefined}
       >
         <span>{selected ? `상태: ${selected}` : '상태'}</span>
@@ -294,7 +294,7 @@ export function StateDropdown({
                 <>
                   <button
                     onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
                   >
                     <span>{item.label}</span>
                     <ChevronRight size={11} className={`transition-transform ${expanded === item.label ? 'rotate-90' : ''}`} />
@@ -303,7 +303,7 @@ export function StateDropdown({
                     <button
                       key={j}
                       onClick={() => handleSelect(child)}
-                      className={`w-full text-left px-5 py-1.5 text-[11px] transition-colors ${
+                      className={`w-full text-left px-5 py-1.5 text-sm transition-colors ${
                         selected === child.label ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-600 hover:bg-slate-50'
                       }`}
                     >
@@ -315,14 +315,14 @@ export function StateDropdown({
                 item.onSelect || item.path ? (
                   <button
                     onClick={() => handleSelect(item)}
-                    className={`w-full text-left px-3 py-2 text-[11px] transition-colors ${
+                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                       selected === item.label ? 'font-semibold text-slate-900 bg-slate-50' : 'text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     {item.label}
                   </button>
                 ) : (
-                  <div className="px-3 pt-2 pb-0.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="px-3 pt-2 pb-0.5 text-sm font-bold text-slate-400 uppercase tracking-wider">
                     {item.label}
                   </div>
                 )
@@ -371,7 +371,7 @@ export function PathDropdown<S extends string, T extends string>({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium bg-white/80 backdrop-blur-sm shadow-sm text-slate-600 hover:text-slate-900 hover:bg-white transition-colors border border-slate-200"
       >
         <span>경로</span>
         <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -385,7 +385,7 @@ export function PathDropdown<S extends string, T extends string>({
                 <>
                   <button
                     onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors"
                   >
                     <span>{item.label}</span>
                     <ChevronRight size={11} className={`transition-transform ${expanded === item.label ? 'rotate-90' : ''}`} />
@@ -394,7 +394,7 @@ export function PathDropdown<S extends string, T extends string>({
                     <button
                       key={j}
                       onClick={() => handleSelect(child)}
-                      className="w-full text-left px-5 py-1.5 text-[11px] text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="w-full text-left px-5 py-1.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
                     >
                       {child.label}
                     </button>
@@ -404,12 +404,12 @@ export function PathDropdown<S extends string, T extends string>({
                 item.path || item.onSelect ? (
                   <button
                     onClick={() => handleSelect(item)}
-                    className="w-full text-left px-3 py-2 text-[11px] text-slate-700 hover:bg-slate-50 transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                   >
                     {item.label}
                   </button>
                 ) : (
-                  <div className="px-3 pt-2 pb-0.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="px-3 pt-2 pb-0.5 text-sm font-bold text-slate-400 uppercase tracking-wider">
                     {item.label}
                   </div>
                 )
@@ -456,7 +456,7 @@ export function QANavigator<S extends string, T extends string>({
         onChange={e => setInput(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && handleGo()}
         placeholder={placeholder ?? `경로 붙여넣기 후 Enter  예) ${appLabel} /dashboard # 모달명`}
-        className={`w-[380px] text-[11px] font-mono bg-slate-50 border rounded-lg px-3 py-1.5 outline-none transition-colors placeholder:text-slate-300 ${
+        className={`w-[380px] text-sm font-mono bg-slate-50 border rounded-lg px-3 py-1.5 outline-none transition-colors placeholder:text-slate-300 ${
           error ? 'border-red-400 bg-red-50' : 'border-slate-200'
         }`}
         onFocus={e => { if (!error) e.target.style.borderColor = accentColor; }}
@@ -570,7 +570,7 @@ function QATopBar<S extends string, T extends string>({
       <div className="flex items-center gap-2">
         <DeviceToggle deviceMode={deviceMode} setDeviceMode={setDeviceMode} />
         <span
-          className="font-mono text-[10px] font-semibold tracking-wider px-2 py-1 rounded-md bg-slate-900 text-white shadow-sm"
+          className="font-mono text-sm font-semibold tracking-wider px-2 py-1 rounded-md bg-slate-900 text-white shadow-sm"
           title={`QA 빌드 v${QA_VERSION}`}
           aria-label={`QA 빌드 버전 ${QA_VERSION}`}
         >
@@ -747,10 +747,10 @@ export function GlobalQAHeader<S extends string, T extends string>({
       style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
     >
       <div className="flex items-center gap-2 shrink-0">
-        <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
-        <span className="text-xs font-semibold tracking-tight">{title}</span>
+        <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
+        <span className="text-sm font-semibold tracking-tight">{title}</span>
         <span
-          className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
+          className="font-mono text-sm font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
           title={`QA 빌드 v${QA_VERSION}`}
           aria-label={`QA 빌드 버전 ${QA_VERSION}`}
         >
@@ -791,7 +791,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
         />
         <button
           onClick={() => resetQAState()}
-          className="text-[10px] text-slate-400 hover:text-white px-2 py-1 transition-colors"
+          className="text-sm text-slate-400 hover:text-white px-2 py-1 transition-colors"
           title="QA 상태 초기화"
         >
           초기화
@@ -813,7 +813,7 @@ function ToggleChip({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors border"
+      className="flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-md transition-colors border"
       style={
         active
           ? { background: accentColor, borderColor: accentColor, color: '#fff' }
@@ -828,12 +828,12 @@ function ToggleChip({
 
 function PlanSelect({ plan, accentColor }: { plan: QAPlan; accentColor: string }) {
   return (
-    <div className="flex items-center gap-1 text-[11px]">
+    <div className="flex items-center gap-1 text-sm">
       <span className="text-slate-400">플랜:</span>
       <select
         value={plan}
         onChange={e => setQAState({ plan: e.target.value as QAPlan })}
-        className="bg-slate-800 text-white border border-slate-600 rounded-md px-1.5 py-1 text-[11px] hover:border-slate-400 focus:outline-none focus:border-white transition-colors"
+        className="bg-slate-800 text-white border border-slate-600 rounded-md px-1.5 py-1 text-sm hover:border-slate-400 focus:outline-none focus:border-white transition-colors"
         style={{ borderColor: plan !== 'scale' ? accentColor : undefined }}
       >
         {QA_PLAN_OPTIONS.map(opt => (
@@ -873,7 +873,7 @@ function GlobalPathDropdown<S extends string, T extends string>({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-colors"
+        className="flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-colors"
       >
         <span>경로</span>
         <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -887,7 +887,7 @@ function GlobalPathDropdown<S extends string, T extends string>({
                 <>
                   <button
                     onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-slate-300 hover:bg-slate-700 transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 transition-colors"
                   >
                     <span>{item.label}</span>
                     <ChevronRight size={11} className={`transition-transform ${expanded === item.label ? 'rotate-90' : ''}`} />
@@ -896,7 +896,7 @@ function GlobalPathDropdown<S extends string, T extends string>({
                     <button
                       key={j}
                       onClick={() => handleSelect(child)}
-                      className="w-full text-left px-5 py-1.5 text-[11px] text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+                      className="w-full text-left px-5 py-1.5 text-sm text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
                     >
                       {child.label}
                     </button>
@@ -906,12 +906,12 @@ function GlobalPathDropdown<S extends string, T extends string>({
                 item.onSelect || item.path ? (
                   <button
                     onClick={() => handleSelect(item)}
-                    className="w-full text-left px-3 py-2 text-[11px] text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
                   >
                     {item.label}
                   </button>
                 ) : (
-                  <div className="px-3 pt-2 pb-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="px-3 pt-2 pb-0.5 text-sm font-bold text-slate-500 uppercase tracking-wider">
                     {item.label}
                   </div>
                 )

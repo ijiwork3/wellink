@@ -22,7 +22,7 @@ export default function CampaignRow({ campaign }: CampaignRowProps) {
   return (
     <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
       <td className="py-3 px-4">
-        <span className="font-medium text-sm text-gray-900">{campaign.name}</span>
+        <span className="font-medium text-base text-gray-900">{campaign.name}</span>
       </td>
       <td className="py-3 px-4">
         <StatusBadge status={campaign.status} />
@@ -35,19 +35,19 @@ export default function CampaignRow({ campaign }: CampaignRowProps) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-gray-500 w-12 text-right">{campaign.current}/{campaign.total}명</span>
+          <span className="text-sm text-gray-500 w-12 text-right">{campaign.current}/{campaign.total}명</span>
         </div>
       </td>
       <td className="py-3 px-4">
-        <span className={`text-xs font-medium ${dday.color}${dday.pulse ? ' animate-pulse' : ''}`}>
+        <span className={`text-sm font-medium ${dday.color}${dday.pulse ? ' animate-pulse' : ''}`}>
           {dday.label}
         </span>
-        <div className="text-xs text-gray-400">{campaign.deadline}</div>
+        <div className="text-sm text-gray-400">{campaign.deadline}</div>
       </td>
       <td className="py-3 px-4">
         <button
           onClick={() => navigate(`/campaigns/${campaign.id}`)}
-          className="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-xl hover:bg-gray-700 transition-colors"
+          className="text-sm bg-gray-900 text-white px-3 py-1.5 rounded-xl hover:bg-gray-700 transition-colors"
         >
           상세보기
         </button>

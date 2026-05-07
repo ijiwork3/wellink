@@ -202,7 +202,7 @@ const fmtBudget = (n: number) => n === 0 ? '-' : `₩${(n / 10000).toFixed(0)}�
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-700">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-sm text-gray-700">
       {label}
       <button
         type="button"
@@ -401,14 +401,14 @@ export default function Campaigns() {
     <div className="space-y-5">
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h1 className="text-xl @md:text-2xl font-bold text-gray-900">캠페인 목록</h1>
+        <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">캠페인 목록</h1>
         <div className="flex items-center gap-2">
           {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
           <button
             onClick={() => !isGated && setAiModalStep('input')}
             disabled={isGated}
             aria-label={isGated ? 'AI로 만들기 (구독 만료)' : 'AI로 만들기'}
-            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-sm @sm:text-sm font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base @sm:text-base font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Sparkles size={14} aria-hidden="true" />
             AI로 만들기
@@ -417,7 +417,7 @@ export default function Campaigns() {
             onClick={() => !isGated && navigate('/campaigns/new')}
             disabled={isGated}
             aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
-            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-sm @sm:text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base @sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus size={14} aria-hidden="true" />
             새 캠페인 등록
@@ -432,7 +432,7 @@ export default function Campaigns() {
             <button
               key={tab}
               onClick={() => handleTabClick(tab)}
-              className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-3 py-3 text-base whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab
                   ? 'border-gray-900 font-semibold text-gray-900'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -453,7 +453,7 @@ export default function Campaigns() {
               onChange={e => { setSearch(e.target.value); resetPage() }}
               placeholder="캠페인명 검색"
               aria-label="캠페인명 검색"
-              className="w-full pl-8 pr-8 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
+              className="w-full pl-8 pr-8 py-2 text-base bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
             {search && (
               <button
@@ -493,7 +493,7 @@ export default function Campaigns() {
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
           <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs text-gray-400 shrink-0">적용된 필터:</span>
+            <span className="text-sm text-gray-400 shrink-0">적용된 필터:</span>
             {!isAllTabActive && (
               <FilterChip
                 label={`상태: ${activeTab}`}
@@ -512,7 +512,7 @@ export default function Campaigns() {
             <button
               type="button"
               onClick={resetAllFilters}
-              className="ml-auto inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="ml-auto inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <RotateCcw size={11} aria-hidden="true" />
               초기화
@@ -524,7 +524,7 @@ export default function Campaigns() {
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
             <Megaphone size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-sm text-gray-400 mb-3">
+            <p className="text-base text-gray-400 mb-3">
               {qaEmpty
                 ? '등록된 캠페인이 없습니다.'
                 : hasActiveFilters
@@ -535,7 +535,7 @@ export default function Campaigns() {
               <button
                 type="button"
                 onClick={resetAllFilters}
-                className="inline-flex items-center gap-1 text-sm text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="inline-flex items-center gap-1 text-base text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 필터 초기화
@@ -589,8 +589,8 @@ export default function Campaigns() {
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
                       )}
                     </div>
-                    <p className="text-sm @sm:text-[15px] font-semibold text-gray-900 break-words mb-1">{c.name}</p>
-                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-sm flex-wrap">
+                    <p className="text-base @sm:text-base font-semibold text-gray-900 break-words mb-1">{c.name}</p>
+                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-base flex-wrap">
                       {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
                       {(() => {
                         const meta = getCampaignDeadlineMeta(c)
@@ -613,7 +613,7 @@ export default function Campaigns() {
                     {(() => {
                       const meta = getCampaignDeadlineMeta(c)
                       return meta.graceText ? (
-                        <p className="text-xs text-gray-400 mt-0.5">{meta.graceText}</p>
+                        <p className="text-sm text-gray-400 mt-0.5">{meta.graceText}</p>
                       ) : null
                     })()}
                     <div className="mt-2 flex items-center gap-2">
@@ -623,7 +623,7 @@ export default function Campaigns() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-[10px] text-gray-400 tabular-nums shrink-0">{pct}%</span>
+                      <span className="text-sm text-gray-400 tabular-nums shrink-0">{pct}%</span>
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-gray-300 shrink-0 group-hover:text-gray-500 transition-colors" aria-hidden="true" />
@@ -640,10 +640,10 @@ export default function Campaigns() {
                     }
                   >
                     <div className="py-1 min-w-[140px]">
-                      <button type="button" onClick={() => handleDuplicate(c)} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left">
+                      <button type="button" onClick={() => handleDuplicate(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
                         <Copy size={12} aria-hidden="true" /> 복제
                       </button>
-                      <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left">
+                      <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
                         <Share2 size={12} aria-hidden="true" /> 링크 복사
                       </button>
                       {/* 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 삭제를 번거롭게) */}
@@ -687,18 +687,18 @@ export default function Campaigns() {
         {aiModalStep === 'input' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">브랜드/제품 한 줄 소개</label>
+              <label className="block text-base font-medium text-gray-700 mb-1">브랜드/제품 한 줄 소개</label>
               <textarea
                 value={aiInput.brand}
                 onChange={e => setAiInput(v => ({ ...v, brand: e.target.value }))}
                 rows={3}
                 placeholder="예: 자연 유래 성분으로 만든 비건 단백질 바, 운동 후 간편 영양 보충"
-                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
+                <label className="block text-base font-medium text-gray-700 mb-1">카테고리</label>
                 <CustomSelect
                   value={aiInput.category}
                   onChange={v => setAiInput(av => ({ ...av, category: v }))}
@@ -706,32 +706,32 @@ export default function Campaigns() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">모집 인원</label>
+                <label className="block text-base font-medium text-gray-700 mb-1">모집 인원</label>
                 <input
                   type="number"
                   min={1}
                   value={aiInput.headcount}
                   onChange={e => setAiInput(v => ({ ...v, headcount: Number(e.target.value) || 0 }))}
-                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">추가 요청사항 (선택)</label>
+              <label className="block text-base font-medium text-gray-700 mb-1">추가 요청사항 (선택)</label>
               <textarea
                 value={aiInput.requirement}
                 onChange={e => setAiInput(v => ({ ...v, requirement: e.target.value }))}
                 rows={2}
                 placeholder="예: 봄 시즌 톤, 운동 전후 시나리오 자연스럽게 노출"
-                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setAiModalStep(null)} className="text-sm text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">취소</button>
+              <button onClick={() => setAiModalStep(null)} className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">취소</button>
               <button
                 onClick={() => setAiModalStep('loading')}
                 disabled={!aiInput.brand.trim()}
-                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 <Sparkles size={14} aria-hidden="true" />
                 AI로 캠페인 생성하기
@@ -753,16 +753,16 @@ export default function Campaigns() {
               </div>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-base font-semibold text-gray-900">
                 {aiPhase === 1 ? '캠페인 컨셉 분석 중...' : aiPhase === 2 ? '추천 인플루언서 매칭 검토 중...' : aiPhase === 3 ? '캠페인 가이드 작성 중...' : '마무리 중...'}
               </p>
-              <p className="text-sm text-gray-500 mt-1">최대 1분 30초 정도 소요됩니다.</p>
+              <p className="text-base text-gray-500 mt-1">최대 1분 30초 정도 소요됩니다.</p>
             </div>
             <div className="max-w-xs mx-auto">
               <div className="h-1.5 bg-white rounded-full overflow-hidden">
                 <div className="h-full bg-brand-green transition-all duration-300" style={{ width: `${aiProgress}%` }} />
               </div>
-              <p className="text-xs text-gray-400 mt-1.5">{aiProgress}%</p>
+              <p className="text-sm text-gray-400 mt-1.5">{aiProgress}%</p>
             </div>
           </div>
         )}
@@ -771,27 +771,27 @@ export default function Campaigns() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 bg-brand-green/5 border border-brand-green/20 rounded-xl px-3 py-2">
               <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
-              <span className="text-sm text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
+              <span className="text-base text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
             </div>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-base">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">캠페인명</p>
+                <p className="text-base font-medium text-gray-500 mb-1">캠페인명</p>
                 <p className="font-semibold text-gray-900">{aiInput.brand.split(',')[0].slice(0, 30) || '신규 캠페인'} 체험단 모집</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">기간 (추천)</p>
+                <p className="text-base font-medium text-gray-500 mb-1">기간 (추천)</p>
                 <p className="text-gray-700">모집 2주 · 콘텐츠 등록 3주</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">캠페인 설명</p>
-                <p className="text-gray-700 whitespace-pre-line bg-gray-50 rounded-lg p-3 text-sm leading-relaxed">{aiInput.brand}{aiInput.requirement ? `\n\n요청: ${aiInput.requirement}` : ''}</p>
+                <p className="text-base font-medium text-gray-500 mb-1">캠페인 설명</p>
+                <p className="text-gray-700 whitespace-pre-line bg-gray-50 rounded-lg p-3 text-base leading-relaxed">{aiInput.brand}{aiInput.requirement ? `\n\n요청: ${aiInput.requirement}` : ''}</p>
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setAiModalStep('loading')} className="text-sm text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">다시 생성</button>
+              <button onClick={() => setAiModalStep('loading')} className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">다시 생성</button>
               <button
                 onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
-                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90"
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90"
               >
                 이대로 등록 화면으로
               </button>

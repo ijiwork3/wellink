@@ -22,7 +22,7 @@ export default function Layout() {
     <div className="relative flex h-full bg-gray-50 overflow-hidden">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-base focus:font-medium"
       >
         메인 콘텐츠로 이동
       </a>
@@ -48,8 +48,8 @@ export default function Layout() {
             }`}
           >
             <div className="flex items-center justify-between px-4 py-3 shrink-0">
-              <span className="text-sm font-bold text-gray-900">
-                WELLINK <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span>
+              <span className="text-base font-bold text-gray-900">
+                WELLINK <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span>
               </span>
               <button onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="p-1 rounded-lg hover:bg-gray-100">
                 <X size={18} className="text-gray-500" />
@@ -73,7 +73,7 @@ export default function Layout() {
             <button onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100">
               <Menu size={20} className="text-gray-700" />
             </button>
-            <span className="ml-2 text-sm font-bold text-gray-900">WELLINK <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span></span>
+            <span className="ml-2 text-base font-bold text-gray-900">WELLINK <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span></span>
           </div>
         )}
         <InstagramGlobalBanner />

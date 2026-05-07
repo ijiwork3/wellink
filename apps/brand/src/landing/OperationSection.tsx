@@ -16,17 +16,17 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div>
-            <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-xs font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
+            <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-sm font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
               04. Operation Automation
             </span>
-            <h2 className="mb-6 text-3xl font-black leading-tight md:text-5xl">
+            <h2 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
               모집부터 보고서까지
               <br />
               <span className="text-[var(--color-landing-lime)]">단 10분.</span>
               <br />
               수동 업무에서 해방되세요.
             </h2>
-            <p className="mb-10 text-lg text-white/60">
+            <p className="mb-10 text-xl text-white/60">
               수동 리스트업과 엑셀 작업은 이제 과거의 일입니다. 캠페인 운영 전 과정을 자동화하여
               마케팅 리소스를 <span className="font-bold text-white">90% 이상</span> 절감해 드립니다.
             </p>
@@ -55,23 +55,23 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                   <div className="h-3 w-3 rounded-full bg-yellow-400" />
                   <div className="h-3 w-3 rounded-full bg-green-400" />
                 </div>
-                <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                <div className="text-sm font-bold uppercase tracking-widest opacity-40">
                   Dashboard Pro
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl bg-white/5 p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                  <div className="text-sm font-bold uppercase tracking-widest opacity-40">
                     Total Reach
                   </div>
-                  <div className="text-2xl font-black text-[var(--color-landing-lime)]">1.4M+</div>
+                  <div className="text-3xl font-black text-[var(--color-landing-lime)]">1.4M+</div>
                 </div>
                 <div className="rounded-2xl bg-white/5 p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                  <div className="text-sm font-bold uppercase tracking-widest opacity-40">
                     Campaign ROI
                   </div>
-                  <div className="text-2xl font-black text-[var(--color-landing-lime)]">348%</div>
+                  <div className="text-3xl font-black text-[var(--color-landing-lime)]">348%</div>
                 </div>
               </div>
 
@@ -108,10 +108,10 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                   <X size={20} />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <div className="text-sm font-bold uppercase tracking-widest text-slate-400">
                     Old Process
                   </div>
-                  <div className="text-sm font-black text-slate-900">엑셀 수동 리스트업</div>
+                  <div className="text-base font-black text-slate-900">엑셀 수동 리스트업</div>
                 </div>
               </div>
               <div className="mt-4 h-1.5 w-full rounded-full bg-slate-100">

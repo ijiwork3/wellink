@@ -52,12 +52,12 @@ export default function Login() {
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 px-8 py-5 flex items-center justify-between">
         <button onClick={() => navigate('/')} className="flex items-center gap-1.5">
-          <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-xs font-bold bg-brand-green text-white px-1.5 py-0.5 rounded-full">AI</span>
+          <span className="text-xl font-bold tracking-tight text-gray-900">WELLINK</span>
+          <span className="text-sm font-bold bg-brand-green text-white px-1.5 py-0.5 rounded-full">AI</span>
         </button>
         <button
           onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}
-          className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors"
+          className="text-base bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors"
         >
           도입문의
         </button>
@@ -66,8 +66,8 @@ export default function Login() {
       {/* Login Card */}
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 relative z-10">
         <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-gray-900">환영합니다!</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">환영합니다!</h1>
+          <p className="text-base text-gray-500 mt-1">
             서비스 이용을 위해 <span className="text-brand-green font-medium">로그인해 주세요</span>
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function Login() {
             <button
               key={type}
               onClick={() => { setUserType(type); setLoginError('') }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium transition-all duration-150 ${
                 userType === type
                   ? 'bg-brand-green text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
@@ -93,7 +93,7 @@ export default function Login() {
         {/* Form */}
         <div className="space-y-3">
           <div>
-            <label htmlFor="login-id" className="text-xs text-gray-500 mb-1.5 block">{userType} 아이디</label>
+            <label htmlFor="login-id" className="text-sm text-gray-500 mb-1.5 block">{userType} 아이디</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
               <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
@@ -106,12 +106,12 @@ export default function Login() {
                 placeholder="아이디를 입력해주세요"
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
             </div>
           </div>
           <div>
-            <label htmlFor="login-password" className="text-xs text-gray-500 mb-1.5 block">비밀번호</label>
+            <label htmlFor="login-password" className="text-sm text-gray-500 mb-1.5 block">비밀번호</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
               <Lock size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
@@ -125,7 +125,7 @@ export default function Login() {
                 maxLength={100}
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
               <button
                 onClick={() => setShowPassword(!showPassword)}
@@ -136,7 +136,7 @@ export default function Login() {
               </button>
             </div>
             {loginError && (
-              <p id="login-error" className="mt-1.5 text-xs text-red-500" role="alert" aria-live="assertive">{loginError}</p>
+              <p id="login-error" className="mt-1.5 text-sm text-red-500" role="alert" aria-live="assertive">{loginError}</p>
             )}
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function Login() {
           onClick={handleLogin}
           disabled={loading}
           aria-busy={loading}
-          className="mt-5 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 bg-brand-green text-white hover:bg-brand-green-hover disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-5 w-full py-3 rounded-xl text-base font-semibold flex items-center justify-center gap-2 transition-all duration-150 bg-brand-green text-white hover:bg-brand-green-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
@@ -154,7 +154,7 @@ export default function Login() {
           )}
         </button>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
+        <p className="text-center text-sm text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button
             onClick={() => navigate('/signup')}
@@ -168,7 +168,7 @@ export default function Login() {
       {/* Help button */}
       <button
         onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
-        className="absolute bottom-6 right-20 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors text-sm font-bold border border-gray-200"
+        className="absolute bottom-6 right-20 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors text-base font-bold border border-gray-200"
         aria-label="도움말 문의"
       >
         ?
@@ -178,7 +178,7 @@ export default function Login() {
       <button
         onClick={handleLogin}
         disabled={loading}
-        className="absolute bottom-6 right-6 px-4 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-sm font-semibold disabled:opacity-60"
+        className="absolute bottom-6 right-6 px-4 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-base font-semibold disabled:opacity-60"
       >
         {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '로그인 →'}
       </button>

@@ -201,28 +201,28 @@ export default function Dashboard() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
-          <p className="text-sm text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
+          <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
+          <p className="text-base text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
         </div>
         <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green/20 rounded-2xl p-8 text-center">
           <div className="w-14 h-14 rounded-2xl bg-brand-green/15 flex items-center justify-center mx-auto mb-4">
             <Sparkles size={24} className="text-brand-green" aria-hidden="true" />
           </div>
-          <h2 className="text-base font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
-          <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+          <h2 className="text-lg font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
+          <p className="text-base text-gray-500 mb-6 max-w-md mx-auto">
             캠페인을 등록하면 AI가 브랜드에 맞는 인플루언서를 추천해 드립니다.
           </p>
           <div className="flex justify-center gap-3">
             <button
               onClick={() => navigate('/campaigns/new')}
-              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green-hover transition-colors"
+              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
             >
               <Megaphone size={14} className="inline mr-2" aria-hidden="true" />
               첫 캠페인 만들기
             </button>
             <button
               onClick={() => navigate('/influencers/list')}
-              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
             >
               인플루언서 탐색
             </button>
@@ -234,9 +234,9 @@ export default function Dashboard() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
-              <h2 className="text-sm font-semibold text-gray-900">내 브랜드에 맞는 추천 인플루언서</h2>
+              <h2 className="text-base font-semibold text-gray-900">내 브랜드에 맞는 추천 인플루언서</h2>
             </div>
-            <span className="text-xs text-gray-400">상위 3명</span>
+            <span className="text-sm text-gray-400">상위 3명</span>
           </div>
           <div className="divide-y divide-gray-50">
             {[
@@ -250,11 +250,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">@{inf.username}</span>
-                    <span className="text-xs text-gray-400">{inf.name}</span>
-                    <span className="text-xs bg-brand-green/10 text-brand-green-text px-1.5 py-0.5 rounded-md font-medium">Fit {inf.fit}</span>
+                    <span className="text-base font-semibold text-gray-900">@{inf.username}</span>
+                    <span className="text-sm text-gray-400">{inf.name}</span>
+                    <span className="text-sm bg-brand-green/10 text-brand-green-text px-1.5 py-0.5 rounded-md font-medium">Fit {inf.fit}</span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
+                  <p className="text-sm text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
                 </div>
               </div>
             ))}
@@ -262,7 +262,7 @@ export default function Dashboard() {
           <div className="px-5 py-3 border-t border-gray-50">
             <button
               onClick={() => navigate('/influencers/list')}
-              className="w-full text-xs font-semibold text-brand-green hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
+              className="w-full text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
             >
               전체 보기 <ArrowRight size={12} />
             </button>
@@ -276,9 +276,9 @@ export default function Dashboard() {
             { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
           ].map(s => (
             <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
-              <span className="text-xs font-bold text-brand-green">Step {s.step}</span>
-              <p className="text-sm font-semibold text-gray-900 mt-1">{s.title}</p>
-              <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
+              <span className="text-sm font-bold text-brand-green">Step {s.step}</span>
+              <p className="text-base font-semibold text-gray-900 mt-1">{s.title}</p>
+              <p className="text-sm text-gray-500 mt-1">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -327,12 +327,12 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div>
-            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
-            <p className="text-sm text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
+            <h1 className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+            <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
           >
             <Megaphone size={14} aria-hidden="true" />새 캠페인
           </button>
@@ -347,22 +347,22 @@ export default function Dashboard() {
           ].map(k => (
             <div key={k.title} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-gray-500 font-medium">{k.title}</span>
+                <span className="text-sm text-gray-500 font-medium">{k.title}</span>
                 <span className="text-gray-300">{k.icon}</span>
               </div>
               <div className="text-[28px] font-bold text-gray-300">{k.value}</div>
-              <div className="text-xs text-gray-400 mt-1">{k.sub}</div>
+              <div className="text-sm text-gray-400 mt-1">{k.sub}</div>
             </div>
           ))}
         </div>
         {/* 빈 캠페인 영역 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <Megaphone size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-sm font-semibold text-gray-400 mb-1">진행 중인 캠페인이 없습니다</p>
-          <p className="text-xs text-gray-400 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
+          <p className="text-base font-semibold text-gray-400 mb-1">진행 중인 캠페인이 없습니다</p>
+          <p className="text-sm text-gray-400 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
+            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             새 캠페인 만들기
           </button>
@@ -388,12 +388,12 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* ── QA: plan-locked 배너 ── */}
       {isPlanLocked && (
-        <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-sm">
+        <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-base">
           <Lock size={14} className="shrink-0" aria-hidden="true" />
           <span>{lockedBannerMessage}</span>
           <button
             onClick={() => navigate('/subscription')}
-            className="ml-auto text-xs font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0"
+            className="ml-auto text-sm font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0"
           >
             {lockedBannerCta}
           </button>
@@ -403,7 +403,7 @@ export default function Dashboard() {
       {visibleUrgent.map(u => (
         <div
           key={u.id}
-          className="flex items-start gap-3 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-sm"
+          className="flex items-start gap-3 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-base"
         >
           <AlertTriangle size={15} className="text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
           <span className="flex-1 text-rose-700">{u.text}</span>
@@ -411,7 +411,7 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate(u.route)}
-              className="text-xs font-semibold text-rose-600 hover:text-rose-800 whitespace-nowrap transition-colors"
+              className="text-sm font-semibold text-rose-600 hover:text-rose-800 whitespace-nowrap transition-colors"
             >
               {u.cta} →
             </button>
@@ -430,12 +430,12 @@ export default function Dashboard() {
       {/* ── 인사말 + 날짜 ── */}
       <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
         <div>
-          <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{dateStr}</p>
+          <h1 className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+          <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
         </div>
         <button
           onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors"
+          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
         >
           <Megaphone size={14} aria-hidden="true" />
           새 캠페인
@@ -446,8 +446,8 @@ export default function Dashboard() {
       <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
         <div className="w-1 self-stretch rounded-full bg-brand-green shrink-0" />
         <div>
-          <p className="text-xs font-medium text-gray-400 mb-1">이번 주 현황</p>
-          <p className="text-sm leading-relaxed text-gray-700">
+          <p className="text-sm font-medium text-gray-400 mb-1">이번 주 현황</p>
+          <p className="text-base leading-relaxed text-gray-700">
             봄 요가 프로모션 모집률이 <span className="font-semibold text-gray-900">53%</span>에 도달했습니다.
             마감까지 <span className="font-semibold text-rose-500">{getDDay('2026-04-28').label}</span>이므로 추가 인플루언서 초대를 권장합니다.
             이번 주 콘텐츠 조회수는 전주 대비 12% 증가 중입니다.
@@ -465,14 +465,14 @@ export default function Dashboard() {
               className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 transition-all duration-200 hover:shadow-md cursor-default"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500 font-medium">{kpi.title}</span>
+                <span className="text-sm text-gray-500 font-medium">{kpi.title}</span>
                 <span className="text-gray-400">{kpi.icon}</span>
               </div>
               <div>
-                <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{kpi.sub}</div>
+                <div className={`${isPhone ? 'text-2xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
+                <div className="text-sm text-gray-500 mt-1">{kpi.sub}</div>
               </div>
-              <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
+              <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
                 {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
                 <span className="text-gray-400 font-normal">전월 대비</span>
@@ -487,10 +487,10 @@ export default function Dashboard() {
         {/* 활성 캠페인 현황 */}
         <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-            <h2 className="text-sm font-semibold text-gray-900">활성 캠페인 현황</h2>
+            <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
             <button
               onClick={() => navigate('/campaigns')}
-              className="text-xs text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1"
             >
               전체보기 <ArrowRight size={12} />
             </button>
@@ -533,7 +533,7 @@ export default function Dashboard() {
                 <thead>
                   <tr className="border-b border-gray-50 bg-gray-50/50">
                     {['캠페인명', '상태', '진행률', '마감일', ''].map(h => (
-                      <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                      <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -548,7 +548,7 @@ export default function Dashboard() {
                         className="border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
                         onClick={() => navigate(`/campaigns/${c.id}`)}
                       >
-                        <td className="py-3.5 px-4 text-sm font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
+                        <td className="py-3.5 px-4 text-base font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           <StatusBadge status={c.status} />
                         </td>
@@ -560,13 +560,13 @@ export default function Dashboard() {
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
-                            <span className="text-xs text-gray-500 whitespace-nowrap">{pct}%</span>
+                            <span className="text-sm text-gray-500 whitespace-nowrap">{pct}%</span>
                           </div>
                         </td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs text-gray-600">{fmtDate(c.deadline)}</span>
-                            <span className={`text-xs ${ddayBadgeStyle}`}>
+                            <span className="text-sm text-gray-600">{fmtDate(c.deadline)}</span>
+                            <span className={`text-sm ${ddayBadgeStyle}`}>
                               {ddayLabel}
                             </span>
                           </div>
@@ -574,7 +574,7 @@ export default function Dashboard() {
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           <button
                             onClick={() => navigate(`/campaigns/${c.id}`)}
-                            className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
+                            className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
                           >
                             상세보기 <ArrowRight size={11} />
                           </button>
@@ -593,10 +593,10 @@ export default function Dashboard() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <div className="flex items-center gap-2">
               <Bell size={14} className="text-gray-500" aria-hidden="true" />
-              <h2 className="text-sm font-semibold text-gray-900">최근 알림</h2>
+              <h2 className="text-base font-semibold text-gray-900">최근 알림</h2>
               {unreadCount > 0 && (
                 <span
-                  className="text-xs font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
+                  className="text-sm font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
                 >
                   {unreadCount}
                 </span>
@@ -604,7 +604,7 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => navigate('/notifications')}
-              className="text-xs text-gray-500 hover:text-gray-900 transition-colors duration-150"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150"
             >전체 보기 →</button>
           </div>
           <div className="divide-y divide-gray-50 flex-1">
@@ -618,10 +618,10 @@ export default function Dashboard() {
                 <div className="flex gap-2.5 items-start">
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.dot}`} />
                   <div className="flex-1 min-w-0">
-                    <p className={`text-xs leading-relaxed ${n.unread ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
+                    <p className={`text-sm leading-relaxed ${n.unread ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
                       {n.text}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
+                    <p className="text-sm text-gray-400 mt-0.5">{n.time}</p>
                   </div>
                 </div>
               </button>
@@ -631,7 +631,7 @@ export default function Dashboard() {
             <div className="px-5 py-3 border-t border-gray-50">
               <button
                 onClick={() => setShowAllNotifications(prev => !prev)}
-                className="text-xs text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center"
               >
                 {showAllNotifications ? '접기' : '더보기'} <ArrowRight size={11} className={showAllNotifications ? 'rotate-90' : ''} />
               </button>
@@ -648,16 +648,16 @@ export default function Dashboard() {
               {h.icon}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-500 mb-1">{h.label}</p>
+              <p className="text-sm text-gray-500 mb-1">{h.label}</p>
               {/* @username + value: 좌우 분리로 행 붕괴 방지 */}
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">@{h.username}</p>
-                  <p className="text-xs text-gray-400">{h.name}</p>
+                  <p className="text-base font-bold text-gray-900 truncate">@{h.username}</p>
+                  <p className="text-sm text-gray-400">{h.name}</p>
                 </div>
-                <span className={`text-sm font-semibold ${h.color} shrink-0`}>{h.value}</span>
+                <span className={`text-base font-semibold ${h.color} shrink-0`}>{h.value}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-1">{h.sub}</p>
+              <p className="text-sm text-gray-400 mt-1">{h.sub}</p>
             </div>
           </div>
         ))}
@@ -668,17 +668,17 @@ export default function Dashboard() {
         {isPlanLocked && (
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
-            <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+            <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
           </div>
         )}
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-900">콘텐츠 성과</h2>
+          <h2 className="text-base font-semibold text-gray-900">콘텐츠 성과</h2>
           <div className="flex bg-gray-100 rounded-lg p-0.5">
             {(['일간', '주간', '월간'] as ContentPeriod[]).map(p => (
               <button
                 key={p}
                 onClick={() => setContentPeriod(p)}
-                className={`text-xs px-2.5 py-1 rounded-md transition-all ${
+                className={`text-sm px-2.5 py-1 rounded-md transition-all ${
                   contentPeriod === p ? 'bg-white shadow-sm font-semibold text-gray-900' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -701,16 +701,16 @@ export default function Dashboard() {
                     <span className="text-gray-400">
                       {item.label === '조회수' ? <Eye size={14} /> : item.label === '좋아요' ? <Heart size={14} /> : item.label === '댓글' ? <MessageCircle size={14} /> : <BarChart3 size={14} />}
                     </span>
-                    <span className="text-xs text-gray-500 font-medium">{item.label}</span>
+                    <span className="text-sm text-gray-500 font-medium">{item.label}</span>
                   </div>
                   <span
-                    className={`text-xs font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
+                    className={`text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
                   >
                     {fmtRate(item.change)}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className={`${isPhone ? 'text-sm' : 'text-lg'} font-bold text-gray-900`}>{fmtNumber(item.value)}</span>
+                  <span className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>{fmtNumber(item.value)}</span>
                   <Sparkline data={item.sparkline} color={lineColor} />
                 </div>
               </div>
@@ -724,10 +724,10 @@ export default function Dashboard() {
         {isPlanLocked && (
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
-            <p className="text-sm font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+            <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
           </div>
         )}
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">빠른 실행</h2>
+        <h2 className="text-base font-semibold text-gray-900 mb-3">빠른 실행</h2>
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
           {[
             { icon: <Megaphone size={18} aria-hidden="true" />, label: '새 캠페인',      sub: '캠페인 만들기',    route: '/campaigns/new',     primary: true },
@@ -743,8 +743,8 @@ export default function Dashboard() {
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-brand-green/10' : 'bg-gray-100'}`}>
                 <span className={item.primary ? 'text-brand-green' : 'text-gray-500'}>{item.icon}</span>
               </div>
-              <p className="text-sm font-semibold text-gray-900">{item.label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>
+              <p className="text-base font-semibold text-gray-900">{item.label}</p>
+              <p className="text-sm text-gray-400 mt-0.5">{item.sub}</p>
             </button>
           ))}
         </div>

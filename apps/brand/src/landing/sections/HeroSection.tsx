@@ -36,15 +36,15 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? undefined : { duration: 0.6 }}
         >
-          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-xs font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
+          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-sm font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
             Fitness & Wellness Specialized
           </span>
-          <h1 className="mb-8 text-4xl font-black leading-tight text-white md:text-7xl">
+          <h1 className="mb-8 text-5xl font-black leading-tight text-white md:text-7xl">
             피트니스·웰니스 브랜드를 위한
             <br />
             <span className="text-[var(--color-landing-lime)]">단 하나의 마케팅 솔루션, 웰링크</span>
           </h1>
-          <p className="mx-auto mb-12 max-w-2xl text-lg text-white/70 md:text-xl">
+          <p className="mx-auto mb-12 max-w-2xl text-xl text-white/70 md:text-2xl">
             파편화된 인플루언서 마케팅은 이제 그만,
             <br />
             웰링크와 함께 피트니스/웰니스 브랜드에 꼭 맞는 마케팅을 시작하세요.
@@ -56,7 +56,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
               ctaLabel="캠페인 상담 받기"
               ctaLocation="hero_primary"
               ctaId="hero_primary_consult"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-lime)] px-8 py-4 text-lg font-bold text-[var(--color-landing-dark)] transition-all hover:scale-105 active:scale-95 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-lime)] px-8 py-4 text-xl font-bold text-[var(--color-landing-dark)] transition-all hover:scale-105 active:scale-95 sm:w-auto"
             >
               캠페인 상담 받기
             </CtaLink>
@@ -65,7 +65,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
               ctaLabel="서비스 소개서 요청"
               ctaLocation="hero_secondary"
               ctaId="hero_secondary_brochure"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/20 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-8 py-4 text-xl font-bold text-white transition-all hover:bg-white/20 sm:w-auto"
             >
               서비스 소개서 요청 <Download size={20} />
             </CtaLink>

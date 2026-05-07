@@ -17,13 +17,13 @@ export default function InstagramGlobalBanner() {
             <circle cx="17.5" cy="6.5" r="0.8" fill="white" stroke="none" />
           </svg>
         </div>
-        <p className="text-sm text-gray-800 flex-1 min-w-0">
+        <p className="text-base text-gray-800 flex-1 min-w-0">
           <span className="font-semibold">Instagram 비즈니스 계정이 연결되지 않았습니다.</span>
           <span className="text-gray-600 ml-1.5 hidden sm:inline">분석·성과 기능을 사용하려면 연결이 필요해요.</span>
         </p>
         <button
           onClick={() => navigate('/analytics/profile')}
-          className="text-xs sm:text-sm font-semibold text-white px-3 sm:px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90 flex-shrink-0"
+          className="text-sm sm:text-base font-semibold text-white px-3 sm:px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90 flex-shrink-0"
           style={{ background: 'var(--gradient-instagram)' }}
         >
           연결하기
