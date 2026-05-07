@@ -2226,7 +2226,7 @@ export default function CampaignDetail() {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50/50 border-b border-gray-100">
-                        {['순위', '썸네일/콘텐츠', '인플루언서', '도달', '좋아요', '참여율'].map(h => (
+                        {['순위', '인플루언서', '도달', '좋아요', '참여율'].map(h => (
                           <th key={h} scope="col" className="text-left text-xs font-medium text-gray-500 py-3 px-4 whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
@@ -2243,14 +2243,6 @@ export default function CampaignDetail() {
                               }`}>
                                 {rank}
                               </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-2.5 min-w-[180px] max-w-[260px]">
-                                <div className={`w-10 h-10 rounded-lg shrink-0 ${c.thumbnail} flex items-center justify-center`}>
-                                  <Image size={14} className="text-white/60" aria-hidden="true" />
-                                </div>
-                                <p className="text-sm text-gray-700 line-clamp-2 leading-snug">{c.caption}</p>
-                              </div>
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap leading-tight">
                               <p className="text-sm font-bold text-gray-900">@{c.instagramId}</p>
