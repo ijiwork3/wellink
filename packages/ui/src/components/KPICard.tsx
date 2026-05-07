@@ -32,7 +32,7 @@ const KPICard = memo(function KPICard({ title, value, sub, trend, trendLabel, ic
           {icon && (
             <span className="text-gray-400 mr-0.5">{icon}</span>
           )}
-          <span className="text-xs text-gray-500">{title}</span>
+          <span className="text-sm text-gray-500">{title}</span>
           {tooltip && (
             <Tooltip content={tooltip} side="top" multiline className="ml-0.5">
               <span aria-label="상세 정보" className="text-gray-300 hover:text-gray-400 transition-colors inline-flex">
@@ -46,12 +46,12 @@ const KPICard = memo(function KPICard({ title, value, sub, trend, trendLabel, ic
       {/* 값 */}
       <div>
         <div className={`text-2xl font-bold tracking-tight ${valueColor || 'text-gray-900'}`}>{value}</div>
-        {sub && <div className="text-xs text-gray-400 mt-0.5">{sub}</div>}
+        {sub && <div className="text-sm text-gray-400 mt-0.5">{sub}</div>}
       </div>
 
       {/* 트렌드 */}
       {trend !== undefined && (
-        <div className={`flex items-center gap-1 text-xs font-medium ${isGood ? 'text-brand-green-text' : 'text-red-500'}`}>
+        <div className={`flex items-center gap-1 text-sm font-medium ${isGood ? 'text-brand-green-text' : 'text-red-500'}`}>
           {isPositive ? <TrendingUp size={12} aria-hidden="true" /> : <TrendingDown size={12} aria-hidden="true" />}
           <span>{isPositive ? '+' : ''}{trend}%</span>
           {trendLabel && <span className="text-gray-400 font-normal ml-0.5">{trendLabel}</span>}

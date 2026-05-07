@@ -70,7 +70,7 @@ const statusConfig: Record<string, Cfg> = {
 
 const StatusBadge = memo(function StatusBadge({ status, size = 'sm', dot = true, className = '' }: StatusBadgeProps) {
   const cfg = statusConfig[status] ?? { bg: 'bg-slate-100', text: 'text-slate-500', dot: 'bg-slate-400' }
-  const sizeClass = size === 'sm' ? 'text-xs px-2 py-0.5 gap-1' : 'text-sm px-2.5 py-1 gap-1.5'
+  const sizeClass = size === 'sm' ? 'text-sm px-2 py-0.5 gap-1' : 'text-base px-2.5 py-1 gap-1.5'
   const dotSize   = size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2'
 
   return (

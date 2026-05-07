@@ -51,7 +51,7 @@ export default function DateRangePicker({
           <button
             key={p}
             onClick={() => { onPeriodChange(p); onDateOffsetChange(0) }}
-            className={`text-sm px-3 py-1.5 rounded-md transition-all ${
+            className={`text-base px-3 py-1.5 rounded-md transition-all ${
               period === p ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -71,7 +71,7 @@ export default function DateRangePicker({
           onClick={() => setOpen(o => !o)}
           aria-label="기간 선택"
           aria-expanded={open}
-          className={`inline-flex items-center gap-1 px-2 py-1 min-w-[110px] text-center justify-center text-xs font-medium rounded transition-colors ${
+          className={`inline-flex items-center gap-1 px-2 py-1 min-w-[110px] text-center justify-center text-sm font-medium rounded transition-colors ${
             open
               ? 'bg-gray-100 text-gray-900'
               : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -199,7 +199,7 @@ function DailyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelect:
       />
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {['일', '월', '화', '수', '목', '금', '토'].map(d => (
-          <div key={d} className="text-[10px] text-gray-400 text-center py-1">{d}</div>
+          <div key={d} className="text-sm text-gray-400 text-center py-1">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-0.5">
@@ -214,7 +214,7 @@ function DailyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelect:
               key={i}
               disabled={isFuture}
               onClick={() => onSelect(offset)}
-              className={`text-xs h-8 rounded-md transition-colors ${
+              className={`text-sm h-8 rounded-md transition-colors ${
                 isSelected
                   ? 'bg-brand-green text-white font-semibold'
                   : isFuture
@@ -293,7 +293,7 @@ function WeeklyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelect
               key={offset}
               disabled={isFuture}
               onClick={() => onSelect(offset)}
-              className={`w-full text-xs px-3 py-2 rounded-lg transition-colors text-left ${
+              className={`w-full text-sm px-3 py-2 rounded-lg transition-colors text-left ${
                 isSelected
                   ? 'bg-brand-green text-white font-semibold'
                   : isFuture
@@ -336,7 +336,7 @@ function MonthlyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelec
               key={i}
               disabled={isFuture}
               onClick={() => onSelect(offset)}
-              className={`text-xs px-2 py-2 rounded-lg transition-colors ${
+              className={`text-sm px-2 py-2 rounded-lg transition-colors ${
                 isSelected
                   ? 'bg-brand-green text-white font-semibold'
                   : isFuture
@@ -383,7 +383,7 @@ function YearlyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelect
               key={year}
               disabled={isFuture}
               onClick={() => onSelect(offset)}
-              className={`text-xs px-2 py-2 rounded-lg transition-colors ${
+              className={`text-sm px-2 py-2 rounded-lg transition-colors ${
                 isSelected
                   ? 'bg-brand-green text-white font-semibold'
                   : isFuture
@@ -421,7 +421,7 @@ function CalendarNav({
       >
         <ChevronLeft size={14} className="text-gray-600" aria-hidden="true" />
       </button>
-      <span className="text-xs font-semibold text-gray-700">{label}</span>
+      <span className="text-sm font-semibold text-gray-700">{label}</span>
       <button
         onClick={onNext}
         disabled={nextDisabled}
