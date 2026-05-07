@@ -599,17 +599,17 @@ export default function InfluencerList() {
                       <p className={`text-base font-semibold ${getAuthenticColor(inf.authentic)}`}>{inf.authentic}%</p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-y-1.5">
                     <span className="text-base text-gray-400">{inf.platform} · {inf.lastActive}</span>
                     {proposedSet.has(inf.id) ? (
-                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg">제안 완료</span>
+                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg whitespace-nowrap">제안 완료</span>
                     ) : proposableCampaigns.length === 0 ? (
-                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed">제안하기</span>
+                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed whitespace-nowrap">제안하기</span>
                     ) : (
                       <button
                         type="button"
                         onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
-                        className="text-base border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:border-gray-400 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        className="text-base border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:border-gray-400 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                       >제안하기</button>
                     )}
                   </div>
