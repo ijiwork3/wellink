@@ -530,6 +530,16 @@ export default function CampaignDetail() {
   const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')
   const [pickedPlan, setPickedPlan] = useState<'focus' | 'scale' | 'enterprise'>('scale')
 
+  // 등록 콘텐츠 탭 — 인플루언서 찜하기
+  const [contentInfluencerBookmarks, setContentInfluencerBookmarks] = useState<Set<string>>(new Set())
+  const toggleContentInfluencerBookmark = (name: string) => {
+    setContentInfluencerBookmarks(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) { next.delete(name) } else { next.add(name) }
+      return next
+    })
+  }
+
   // 콘텐츠 검수 상태 (등록 콘텐츠 탭)
   const [contentStatuses, setContentStatuses] = useState<Record<number, ContentStatus>>(
     Object.fromEntries(registeredContents.map(c => [c.id, c.status]))
@@ -1886,8 +1896,21 @@ export default function CampaignDetail() {
                           </span>
                         </div>
 
-                        {/* 제출일 */}
-                        <p className="text-xs text-gray-400">제출일 {c.submittedAt}</p>
+                        {/* 제출일 + 찜하기 */}
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-gray-400">제출일 {c.submittedAt}</p>
+                          <button
+                            onClick={e => { e.stopPropagation(); toggleContentInfluencerBookmark(c.influencer) }}
+                            aria-label={contentInfluencerBookmarks.has(c.influencer) ? `${c.influencer} 찜 해제` : `${c.influencer} 찜하기`}
+                            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <Heart
+                              size={14}
+                              className={contentInfluencerBookmarks.has(c.influencer) ? 'fill-red-400 text-red-400' : 'text-gray-300'}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        </div>
 
                         {/* 지표 — 항상 2×3 (3열은 좁은 카드에서 값 겹침) */}
                         <div className="grid grid-cols-2 gap-x-2 gap-y-2 text-center border-t border-gray-50 pt-3">
