@@ -202,7 +202,7 @@ const fmtBudget = (n: number) => n === 0 ? '-' : `₩${(n / 10000).toFixed(0)}�
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-sm text-gray-700">
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700">
       {label}
       <button
         type="button"
@@ -446,7 +446,7 @@ export default function Campaigns() {
         {/* 검색 + 필터 + 정렬 */}
         <div className="px-3 @sm:px-5 py-3 border-b border-gray-100 space-y-2 @sm:space-y-0 @sm:flex @sm:items-center @sm:gap-2 @sm:flex-wrap">
           <div className="relative w-full @sm:flex-1 @sm:min-w-[200px]">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={search}

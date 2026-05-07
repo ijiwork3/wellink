@@ -750,7 +750,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
         <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
         <span className="text-sm font-semibold tracking-tight">{title}</span>
         <span
-          className="font-mono text-sm font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
+          className="font-mono text-sm font-semibold tracking-wider px-2 py-1 rounded bg-white/10 text-white/90 border border-white/15"
           title={`QA 빌드 v${QA_VERSION}`}
           aria-label={`QA 빌드 버전 ${QA_VERSION}`}
         >

@@ -49,7 +49,7 @@ export default function Layout() {
           >
             <div className="flex items-center justify-between px-4 py-3 shrink-0">
               <span className="text-base font-bold text-gray-900">
-                WELLINK <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span>
+                WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
               </span>
               <button onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="p-1 rounded-lg hover:bg-gray-100">
                 <X size={18} className="text-gray-500" />
@@ -73,7 +73,7 @@ export default function Layout() {
             <button onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100">
               <Menu size={20} className="text-gray-700" />
             </button>
-            <span className="ml-2 text-base font-bold text-gray-900">WELLINK <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full ml-1">광고주</span></span>
+            <span className="ml-2 text-base font-bold text-gray-900">WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span></span>
           </div>
         )}
         <InstagramGlobalBanner />

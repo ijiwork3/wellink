@@ -239,7 +239,7 @@ export default function ViralMetrics() {
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
           <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
         <InstagramConnectPrompt featureName="바이럴 지표" />
       </div>
@@ -252,7 +252,7 @@ export default function ViralMetrics() {
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
           <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
-          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none">Beta</span>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
           <Zap size={40} className="text-gray-200 mb-3" />
@@ -297,7 +297,7 @@ export default function ViralMetrics() {
       <div className="space-y-3">
         <div className="flex items-center gap-2.5">
           <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
-          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full leading-none whitespace-nowrap">Beta</span>
+          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
         </div>
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
@@ -509,7 +509,7 @@ export default function ViralMetrics() {
                         <PlatformBadge platform={item.platform} />
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center text-sm font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                        <span className={`inline-flex items-center text-sm font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <GradePill grade={item.grade} />
@@ -571,7 +571,7 @@ function GradePill({ grade }: { grade: ContentGrade }) {
     : grade === 'processing' ? 'bg-blue-50 text-blue-600'
     : 'bg-gray-100 text-gray-600'
   const label = grade === 'processing' ? '산정 중' : grade
-  return <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
+  return <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${cls}`}>{label}</span>
 }
 
 /** 등급 분포 도넛 — 원본 DonutChart 동등 (SVG 인라인) */

@@ -476,13 +476,13 @@ export default function InfluencerManage() {
                     <div className="flex items-center gap-1.5 min-w-0">
                       <p className="text-base font-semibold text-gray-900 truncate min-w-0">@{inf.instagramId ?? inf.name}</p>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
-                        <span className="shrink-0 text-sm font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">NEW</span>
+                        <span className="shrink-0 text-sm font-semibold bg-brand-green text-white px-2 py-1 rounded-full">NEW</span>
                       )}
                     </div>
                     <p className="text-sm text-gray-400 truncate">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
-                        <span key={c} className="text-sm bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{c}</span>
+                        <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-1 rounded-full">{c}</span>
                       ))}
                     </div>
                   </div>
@@ -758,9 +758,9 @@ export default function InfluencerManage() {
                       <h2 className="text-lg font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
                       <span className="text-base text-gray-400">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
-                        <span className="text-sm bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">데이터 수집 중</span>
+                        <span className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
-                      <span className="text-sm bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{inf.type}</span>
+                      <span className="text-sm bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                         aria-label="닫기"
@@ -815,7 +815,7 @@ export default function InfluencerManage() {
                   {/* 카테고리 태그 */}
                   <div className="flex gap-1.5 flex-wrap mb-3">
                     {inf.category.map(c => (
-                      <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{c}</span>
+                      <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">#{c}</span>
                     ))}
                   </div>
                   <div className="grid grid-cols-3 gap-2.5">
@@ -940,7 +940,7 @@ export default function InfluencerManage() {
                   <div className="flex items-center gap-1.5 mb-3">
                     <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
                     <p className="text-base font-semibold text-gray-900">AI 인사이트 가이드</p>
-                    <span className="text-sm font-medium bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-1">Beta</span>
+                    <span className="text-sm font-medium bg-gray-100 text-gray-500 px-2 py-1 rounded-full ml-1">Beta</span>
                   </div>
                   <div className={`grid gap-2.5 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
@@ -1031,7 +1031,7 @@ export default function InfluencerManage() {
                           })}>
                           <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
                             <Image size={18} className="text-white/50" aria-hidden="true" />
-                            {!isFeed && <span className="absolute top-1.5 right-1.5 text-sm bg-black/50 text-white px-1.5 py-0.5 rounded-full">릴스</span>}
+                            {!isFeed && <span className="absolute top-1.5 right-1.5 text-sm bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                           </div>
                           <div className="px-2 py-1.5 bg-white flex gap-2">
                             <span className="flex items-center gap-0.5 text-sm text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
@@ -1104,7 +1104,7 @@ export default function InfluencerManage() {
             <div className={`bg-gradient-to-br ${contentDetail.bg} rounded-xl flex items-center justify-center relative ${contentDetail.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[280px] mx-auto'}`}>
               <Image size={32} className="text-white/60" aria-hidden="true" />
               {contentDetail.type === 'reels' && (
-                <span className="absolute top-2 right-2 text-sm bg-black/60 text-white px-2 py-0.5 rounded-full">릴스</span>
+                <span className="absolute top-2 right-2 text-sm bg-black/60 text-white px-2.5 py-1 rounded-full">릴스</span>
               )}
             </div>
 
@@ -1200,7 +1200,7 @@ export default function InfluencerManage() {
                       />
                       <span className={`text-base flex-1 truncate ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
                       {hasApplied && (
-                        <span className="shrink-0 text-sm px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
+                        <span className="shrink-0 text-sm px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
                       )}
                       {isExpanded ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
                     </button>

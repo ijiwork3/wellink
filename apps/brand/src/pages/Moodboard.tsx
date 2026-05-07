@@ -133,7 +133,7 @@ type G = typeof GRAY[0]
 // ─── 배지 공통 ────────────────────────────────────────────────────
 function Badge({ bg, text, children }: { bg: string; text: string; children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-0.5 rounded-full"
+    <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full"
       style={{ backgroundColor: bg, color: text }}>
       {children}
     </span>
@@ -155,7 +155,7 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
     <div className="w-[220px] shrink-0 flex flex-col h-full border-r" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
       <div className="px-5 pt-5 pb-4 flex items-center gap-1.5">
         <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
-        <span className="text-sm font-medium px-1.5 py-0.5 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>광고주</span>
+        <span className="text-sm font-medium px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>광고주</span>
       </div>
       <nav className="flex-1 px-3 overflow-y-auto">
         {navItems.map(item => {
@@ -282,7 +282,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
               <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: g.border }}>
                 <Bell size={14} style={{ color: g.muted }}/>
                 <h2 className="text-base font-semibold text-gray-900">최근 알림</h2>
-                <span className="text-sm font-bold px-1.5 py-0.5 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
+                <span className="text-sm font-bold px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
               </div>
               {notifications.map((n, i) => (
                 <div key={i} className="px-5 py-3 border-b last:border-0" style={{ borderColor: g.border }}>
@@ -399,7 +399,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     <td className="py-3 px-4">
                       <div className="flex gap-1 flex-wrap">
                         {r.cats.map(c => (
-                          <span key={c} className="text-sm px-2 py-0.5 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>{c}</span>
+                          <span key={c} className="text-sm px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>{c}</span>
                         ))}
                       </div>
                     </td>
@@ -534,7 +534,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     <td className="px-5 py-4 font-semibold" style={{ color: g.muted }}>{c.roas}</td>
                     <td className="px-5 py-4">
                       {c.active === null
-                        ? <span className="inline-flex items-center text-sm font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>완료</span>
+                        ? <span className="inline-flex items-center text-sm font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>완료</span>
                         : <Badge bg={c.active ? a.badgeActiveBg : a.badgePendingBg} text={c.active ? a.badgeActiveText : a.badgePendingText}>
                             {c.active ? '진행중' : '대기중'}
                           </Badge>

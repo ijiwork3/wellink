@@ -268,7 +268,7 @@ export default function MyPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-base font-semibold text-gray-900 break-words">{member.name}</p>
-                    <span className={`text-sm font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${ROLE_BADGE[member.role]}`}>
+                    <span className={`text-sm font-medium px-2.5 py-1 rounded-full whitespace-nowrap shrink-0 ${ROLE_BADGE[member.role]}`}>
                       {member.role}
                     </span>
                   </div>
@@ -441,7 +441,7 @@ export default function MyPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <Code2 size={15} className="text-gray-500" aria-hidden="true" />
               웰링크 픽셀
-              <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Scale 이상</span>
+              <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">Scale 이상</span>
             </h2>
             <p className="text-sm text-gray-500 mb-4">직접 전환 추적을 위해 브랜드 사이트에 픽셀 스크립트를 삽입합니다.</p>
 

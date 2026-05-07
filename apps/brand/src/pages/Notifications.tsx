@@ -139,7 +139,7 @@ export default function Notifications() {
           <Bell size={20} className="text-gray-700" aria-hidden="true" />
           <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">알림 센터</h1>
           {unreadCount > 0 && (
-            <span className="bg-blue-100 text-blue-600 text-sm font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-blue-100 text-blue-600 text-sm font-bold px-2.5 py-1 rounded-full">
               {unreadCount}
             </span>
           )}

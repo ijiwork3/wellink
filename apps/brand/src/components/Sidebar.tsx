@@ -71,7 +71,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center gap-1.5">
             <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
-            <span className="text-sm font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">광고주</span>
+            <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full leading-none">광고주</span>
           </div>
         </div>
       )}
@@ -155,7 +155,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">
-            <div className="text-base font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1 px-3">
               {section.label}
             </div>
             {section.items.map(item => {

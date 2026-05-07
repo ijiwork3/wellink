@@ -301,7 +301,7 @@ export default function Subscription() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 14일 무료 체험 중입니다.</p>
-              <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full animate-pulse">D-7</span>
+              <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-7</span>
             </div>
             <span className="text-sm font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
               체험 중
@@ -675,7 +675,7 @@ export default function Subscription() {
                       <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
                       <td className="py-3 px-5 text-base text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
                       <td className="py-3 px-5 whitespace-nowrap">
-                        <span className="text-sm bg-brand-green/10 text-brand-green-text px-2 py-0.5 rounded-full font-medium">{p.status}</span>
+                        <span className="text-sm bg-brand-green/10 text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
                       </td>
                     </tr>
                   ))}

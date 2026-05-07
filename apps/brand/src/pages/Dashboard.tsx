@@ -252,7 +252,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="text-base font-semibold text-gray-900">@{inf.username}</span>
                     <span className="text-sm text-gray-400">{inf.name}</span>
-                    <span className="text-sm bg-brand-green/10 text-brand-green-text px-1.5 py-0.5 rounded-md font-medium">Fit {inf.fit}</span>
+                    <span className="text-sm bg-brand-green/10 text-brand-green-text px-2 py-1 rounded-md font-medium">Fit {inf.fit}</span>
                   </div>
                   <p className="text-sm text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
                 </div>
@@ -596,7 +596,7 @@ export default function Dashboard() {
               <h2 className="text-base font-semibold text-gray-900">최근 알림</h2>
               {unreadCount > 0 && (
                 <span
-                  className="text-sm font-bold text-white px-1.5 py-0.5 rounded-full leading-none bg-brand-green"
+                  className="text-sm font-bold text-white px-2 py-1 rounded-full leading-none bg-brand-green"
                 >
                   {unreadCount}
                 </span>

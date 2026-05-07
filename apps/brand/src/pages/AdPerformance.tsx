@@ -442,7 +442,7 @@ export default function AdPerformance() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium text-base text-gray-900 break-words">{c.campaignName}</span>
-                              <span className={`text-sm font-semibold px-1.5 py-0.5 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
+                              <span className={`text-sm font-semibold px-2 py-1 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                               <StatusBadge status={c.status} dot={false} />
                             </div>
                             <p className="text-sm text-gray-500 mt-0.5">광고세트 {c.adSets.length}개</p>
@@ -520,7 +520,7 @@ export default function AdPerformance() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="text-sm font-bold text-white bg-emerald-600 px-1.5 py-0.5 rounded">소재</span>
+                                                <span className="text-sm font-bold text-white bg-emerald-600 px-2 py-1 rounded">소재</span>
                                                 <span className="text-sm font-medium text-gray-900">{ad.adName}</span>
                                               </div>
                                               <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>

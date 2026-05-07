@@ -640,7 +640,7 @@ export default function Library() {
                 }`}
               >
                 {camp}
-                <span className={`text-base px-1.5 py-0.5 rounded-full font-medium ${
+                <span className={`text-base px-2 py-1 rounded-full font-medium ${
                   isActive ? 'bg-brand-green text-white' : 'bg-gray-100 text-gray-500'
                 }`}>
                   {count}
@@ -871,14 +871,14 @@ export default function Library() {
                   >
                     <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                      <span className={`text-base px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
+                      <span className={`text-base px-2.5 py-1 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                       {c.type && (
-                        <span className={`text-base px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       )}
                     </div>
                     {isDownloaded && (
                       <div className="absolute bottom-2 left-2">
-                        <span className="inline-flex items-center gap-1 text-sm px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                        <span className="inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full bg-brand-green text-white font-semibold">
                           <Check size={9} aria-hidden="true" />결제 완료
                         </span>
                       </div>
@@ -1043,7 +1043,7 @@ export default function Library() {
                           <span className="block text-base text-gray-400">{c.creator}</span>
                         </div>
                         {isDownloaded && (
-                          <span className="inline-flex items-center gap-0.5 text-sm px-1.5 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                          <span className="inline-flex items-center gap-0.5 text-sm px-2 py-1 rounded-full bg-brand-green text-white font-semibold">
                             <Check size={8} aria-hidden="true" />결제 완료
                           </span>
                         )}
@@ -1058,7 +1058,7 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       {c.type ? (
-                        <span className={`text-base px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       ) : (
                         <span className="text-base text-gray-400">—</span>
                       )}
@@ -1164,9 +1164,9 @@ export default function Library() {
               <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${thumbnailBg(previewItem.thumbnailClass)}`} aria-hidden="true">
                 <ImageOff size={56} className={thumbnailIconColor(previewItem.thumbnailClass)} />
                 <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                  <span className={`text-base px-2 py-0.5 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
+                  <span className={`text-base px-2.5 py-1 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
                   {previewItem.type && (
-                    <span className={`text-base px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
+                    <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[previewItem.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{previewItem.type}</span>
                   )}
                 </div>
               </div>
@@ -1179,12 +1179,12 @@ export default function Library() {
                       <h4 className="text-lg font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
                       <span className="text-base text-gray-400">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
-                        <span className="inline-flex items-center gap-1 text-base px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green font-semibold">
+                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green/10 text-brand-green font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
                         </span>
                       )}
                       {downloadedIds.has(previewItem.id) && (
-                        <span className="inline-flex items-center gap-1 text-base px-2 py-0.5 rounded-full bg-brand-green text-white font-semibold">
+                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green text-white font-semibold">
                           <Check size={9} aria-hidden="true" />결제 완료
                         </span>
                       )}
@@ -1288,7 +1288,7 @@ export default function Library() {
                   <p className="text-sm text-gray-400 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (
-                      <span key={tag} className="text-sm px-1.5 py-0.5 bg-white border border-gray-200 text-gray-500 rounded-full">{tag}</span>
+                      <span key={tag} className="text-sm px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded-full">{tag}</span>
                     ))}
                   </div>
                 </div>

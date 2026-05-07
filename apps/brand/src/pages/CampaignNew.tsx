@@ -413,7 +413,7 @@ export default function CampaignNew() {
                 <div key={q.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <GripVertical size={14} className="text-gray-300" />
-                    <span className="text-sm px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
+                    <span className="text-sm px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
                       질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
                     </span>
                     <label className="ml-auto flex items-center gap-1 text-sm text-gray-600">

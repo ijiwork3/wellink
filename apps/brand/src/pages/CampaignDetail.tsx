@@ -957,9 +957,9 @@ export default function CampaignDetail() {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-                <span className={`text-base font-medium rounded-full px-2.5 py-0.5 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
-                <span className="text-base font-medium rounded-full px-2.5 py-0.5 bg-gray-100 text-gray-600">{meta.campaignType}</span>
-                <span className="text-base font-medium rounded-full px-2.5 py-0.5 bg-blue-50 text-blue-600">{campaign.category}</span>
+                <span className={`text-base font-medium rounded-full px-3 py-1 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
+                <span className="text-base font-medium rounded-full px-3 py-1 bg-gray-100 text-gray-600">{meta.campaignType}</span>
+                <span className="text-base font-medium rounded-full px-3 py-1 bg-blue-50 text-blue-600">{campaign.category}</span>
               </div>
               <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
             </div>
@@ -983,15 +983,15 @@ export default function CampaignDetail() {
         {/* 일정 바 — 모집·발표 한 행, 업로드 단독 행 (말줄임 방지) */}
         <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3">
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
+            <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
             <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
+            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
             <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
           </div>
           <div className="col-span-2 flex items-center gap-2 text-base min-w-0">
-            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
+            <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
             <span className="text-gray-600 break-words">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
         </div>
@@ -1250,7 +1250,7 @@ export default function CampaignDetail() {
                     >
                       <span>옵션 필터</span>
                       {activeCount > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand-green text-white text-sm font-semibold">{activeCount}</span>
+                        <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-brand-green text-white text-sm font-semibold">{activeCount}</span>
                       )}
                       <ChevronDown size={12} className={`transition-transform ${optionFilterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
@@ -1261,7 +1261,7 @@ export default function CampaignDetail() {
                 {hasOptions && activeCount > 0 && (
                   <div className="px-3 pb-2.5 flex flex-wrap gap-1.5 border-t border-gray-100 pt-2">
                     {activeEntries.map(([q, v]) => (
-                      <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-0.5 rounded-full bg-white border border-gray-200 text-base text-gray-700">
+                      <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-1 rounded-full bg-white border border-gray-200 text-base text-gray-700">
                         <span className="break-words">
                           <span className="text-gray-400">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
                         </span>
@@ -1377,7 +1377,7 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-3 px-4 text-base font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-base font-semibold bg-brand-green/10 text-brand-green">
+                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green/10 text-brand-green">
                         {a.fitScore}
                       </span>
                     </td>
@@ -1420,7 +1420,7 @@ export default function CampaignDetail() {
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
                         {a.activityFields.map(f => (
-                          <span key={f} className="text-base px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                          <span key={f} className="text-base px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
                         ))}
                       </div>
                     </td>
@@ -1439,7 +1439,7 @@ export default function CampaignDetail() {
                     <td className="py-2 px-2 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       {pendingApplicants.has(a.id) ? (
                         <div className="flex flex-col items-stretch gap-1 min-w-[64px]">
-                          <span className="inline-flex items-center justify-center text-sm bg-amber-50 text-amber-700 border border-amber-200 px-1 py-0.5 rounded-md whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center text-sm bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-1 rounded-md whitespace-nowrap">
                             선정 예정
                           </span>
                           <Tooltip content="선정 확정">
@@ -1622,14 +1622,14 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
                             {(i.activityFields ?? []).map(f => (
-                              <span key={f} className="text-base px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
+                              <span key={f} className="text-base px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">{f}</span>
                             ))}
                           </div>
                         </td>
                         <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
                         <td className="py-3 px-4 text-base text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
                         <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-base font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
+                          <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
                             {i.fitScore}
                           </span>
                         </td>
@@ -1637,9 +1637,9 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-base font-bold text-emerald-700">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-base font-bold text-emerald-700">등록 완료</span>
                           ) : (
-                            <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-base font-bold text-gray-600">미등록</span>
+                            <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-base font-bold text-gray-600">미등록</span>
                           )}
                         </td>
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.firstUploadedAt ?? '-'}</td>
@@ -1851,14 +1851,14 @@ export default function CampaignDetail() {
                         </div>
                         {/* 플랫폼 + 유형 배지 */}
                         <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                        <span className={`text-base px-1.5 py-0.5 rounded-full font-medium ${
+                        <span className={`text-base px-2 py-1 rounded-full font-medium ${
                           c.platform === '인스타그램' ? 'bg-pink-500/90 text-white' :
                           c.platform === '유튜브' ? 'bg-red-500/90 text-white' :
                           c.platform === '틱톡' ? 'bg-black/80 text-white' :
                           'bg-green-600/90 text-white'
                         }`}>{c.platform}</span>
                         {c.type && (
-                          <span className={`text-base px-2 py-0.5 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                             {c.type}
                           </span>
                         )}
@@ -1866,7 +1866,7 @@ export default function CampaignDetail() {
                         {/* 콘텐츠 점수 (정책서 § 8-2) */}
                         <div className="absolute bottom-3 right-3">
                           <Tooltip content="콘텐츠의 도달·참여·반응을 종합한 자체 산출 점수입니다. (검증 단계 — 자세한 산식은 후속 정의)" multiline>
-                            <div className={`text-base font-bold px-2 py-0.5 rounded-full backdrop-blur-sm cursor-help ${
+                            <div className={`text-base font-bold px-2.5 py-1 rounded-full backdrop-blur-sm cursor-help ${
                               c.viralScore === 0 ? 'bg-white/80 text-gray-400' :
                               c.viralScore >= 80 ? 'bg-green-500/90 text-white' :
                               c.viralScore >= 50 ? 'bg-amber-400/90 text-white' : 'bg-white/80 text-gray-500'
@@ -1890,7 +1890,7 @@ export default function CampaignDetail() {
                               <p className="text-base text-gray-400 break-words mt-0.5">본명 · {c.influencer}</p>
                             </div>
                           </div>
-                          <span className={`text-base font-semibold px-2 py-0.5 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
+                          <span className={`text-base font-semibold px-2.5 py-1 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
                             {status}
                           </span>
                         </div>
@@ -2115,7 +2115,7 @@ export default function CampaignDetail() {
                           <span className="text-base text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
                           <PlatformBadge platform={c.platform} />
                           {c.type && (
-                            <span className={`text-base px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
+                            <span className={`text-base px-2 py-1 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
                               {c.type}
                             </span>
                           )}
@@ -2318,20 +2318,20 @@ export default function CampaignDetail() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                  <span className={`text-base px-2 py-0.5 rounded-full font-medium ${
+                  <span className={`text-base px-2.5 py-1 rounded-full font-medium ${
                     dc.platform === '인스타그램' ? 'bg-pink-100 text-pink-700' :
                     dc.platform === '유튜브' ? 'bg-red-100 text-red-700' :
                     dc.platform === '틱톡' ? 'bg-gray-200 text-gray-800' :
                     'bg-green-100 text-green-700'
                   }`}>{dc.type ? `${dc.platform} · ${dc.type}` : dc.platform}</span>
-                  <span className={`text-base font-semibold px-2 py-0.5 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
+                  <span className={`text-base font-semibold px-2.5 py-1 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
                 </div>
               </div>
               {/* 제출일 + 바이럴 */}
               <div className="flex items-center justify-between text-base text-gray-400">
                 <span>제출일 {dc.submittedAt}</span>
                 {dc.viralScore > 0 && (
-                  <span className={`font-bold px-2 py-0.5 rounded-full ${
+                  <span className={`font-bold px-2.5 py-1 rounded-full ${
                     dc.viralScore >= 80 ? 'bg-green-100 text-green-700' :
                     dc.viralScore >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
                   }`}>바이럴 {dc.viralScore}점</span>
@@ -2446,7 +2446,7 @@ export default function CampaignDetail() {
                           {active && <span className="w-2 h-2 rounded-full bg-brand-green" />}
                         </span>
                         <span className="text-base font-semibold text-gray-900">{p.name}</span>
-                        {p.recommend && <span className="text-sm px-1.5 py-0.5 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
+                        {p.recommend && <span className="text-sm px-2 py-1 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
                       </div>
                       <span className="text-base font-semibold text-gray-900 shrink-0">{p.price}</span>
                     </div>
@@ -2612,9 +2612,9 @@ export default function CampaignDetail() {
                         <div className="flex items-center gap-2">
                           <span className="text-base font-semibold text-gray-900">{s.name}</span>
                           {(s.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="text-base font-bold rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5">등록 완료</span>
+                            <span className="text-base font-bold rounded-full bg-emerald-100 text-emerald-700 px-2.5 py-1">등록 완료</span>
                           ) : (
-                            <span className="text-base font-bold rounded-full bg-gray-100 text-gray-600 px-2 py-0.5">미등록</span>
+                            <span className="text-base font-bold rounded-full bg-gray-100 text-gray-600 px-2.5 py-1">미등록</span>
                           )}
                         </div>
                         <p className="text-base text-gray-500 mt-0.5">팔로워 {s.followers} · 참여율 {s.engagement}%</p>
@@ -2837,7 +2837,7 @@ export default function CampaignDetail() {
                 <div className={`${aspect} bg-gradient-to-br ${bg} rounded-xl flex items-center justify-center relative`}>
                   <Image size={36} className="text-white/60" aria-hidden="true" />
                   {previewModal.type === 'reels' && (
-                    <span className="absolute top-3 right-3 text-base bg-black/60 text-white px-2 py-0.5 rounded-full">릴스</span>
+                    <span className="absolute top-3 right-3 text-base bg-black/60 text-white px-2.5 py-1 rounded-full">릴스</span>
                   )}
                 </div>
               ) : (
