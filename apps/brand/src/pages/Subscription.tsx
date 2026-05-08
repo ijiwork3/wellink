@@ -248,19 +248,19 @@ export default function Subscription() {
   return (
     <div className="space-y-8">
       {/* 타이틀 */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-gray-900">구독 관리</h1>
           <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         {/* 현재 플랜 뱃지 */}
         {displayPlan ? (
-          <span className="text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+          <span className="shrink-0 text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
             현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
             {(showExpired || showPaymentFailed) && ' (만료)'}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 text-sm font-bold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-300">
+          <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-300">
             <AlertTriangle size={12} aria-hidden="true" />
             미구독 · 무료 플랜
           </span>

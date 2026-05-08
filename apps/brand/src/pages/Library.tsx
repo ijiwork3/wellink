@@ -896,12 +896,12 @@ export default function Library() {
                       onClick={() => setPreviewItem(c)}
                       className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                     >
-                      <div className="flex items-start justify-between gap-2 mb-1">
+                      <div className="flex items-start justify-between gap-3 mb-1">
                         <div className="min-w-0">
                           <span className="block text-base font-semibold text-gray-900">@{c.creatorUsername}</span>
                           <span className="block text-base text-gray-400">{c.creator}</span>
                         </div>
-                        <StatusBadge status={displayStatus} dot={false} size="sm" />
+                        <StatusBadge status={displayStatus} dot={false} size="sm" className="shrink-0" />
                       </div>
                       <button
                         type="button"
@@ -1175,7 +1175,7 @@ export default function Library() {
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <h4 className="text-lg font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
                       <span className="text-base text-gray-400">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (

@@ -464,9 +464,9 @@ export default function Dashboard() {
               key={kpi.title}
               className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 transition-all duration-200 hover:shadow-md cursor-default"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 font-medium">{kpi.title}</span>
-                <span className="text-gray-400">{kpi.icon}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm text-gray-500 font-medium min-w-0 truncate">{kpi.title}</span>
+                <span className="text-gray-400 shrink-0">{kpi.icon}</span>
               </div>
               <div>
                 <div className={`${isPhone ? 'text-2xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
