@@ -113,25 +113,40 @@ const buildCampaignHierarchy = (count: number): CampaignHierarchy[] =>
   })
 const ALL_CAMPAIGNS: CampaignHierarchy[] = buildCampaignHierarchy(100)
 
-/** 일별 시계열 더미 데이터 (지출/클릭/CTR) — 30일 */
-const buildDailyData = (): { date: string; spend: number; clicks: number; ctr: number }[] => {
+/** 기간별 시계열 더미 데이터 (지출/클릭/CTR) */
+const buildChartDataByPeriod = (): Record<Period, { date: string; spend: number; clicks: number; ctr: number }[]> => {
   const today = new Date()
-  return Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(today)
-    d.setDate(today.getDate() - (29 - i))
+  const daily = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(today); d.setDate(today.getDate() - (29 - i))
     const spend = 50000 + (i * 1200) + ((i * 31) % 25000)
     const clicks = Math.floor(spend / (200 + (i % 5) * 10))
     const reach = Math.floor(spend / 8 + (i * 850) % 8000)
-    const ctr = +((clicks / Math.max(reach, 1)) * 100).toFixed(2)
-    return {
-      date: `${d.getMonth() + 1}/${d.getDate()}`,
-      spend,
-      clicks,
-      ctr,
-    }
+    return { date: `${d.getMonth() + 1}/${d.getDate()}`, spend, clicks, ctr: +((clicks / Math.max(reach, 1)) * 100).toFixed(2) }
   })
+  const weekly = Array.from({ length: 12 }, (_, i) => {
+    const spend = 350000 + (i * 15000) + ((i * 43) % 90000)
+    const clicks = Math.floor(spend / (205 + (i % 5) * 8))
+    const reach = Math.floor(spend / 8 + (i * 5500) % 40000)
+    return { date: `${Math.floor(i / 4) + 1}월${(i % 4) + 1}주`, spend, clicks, ctr: +((clicks / Math.max(reach, 1)) * 100).toFixed(2) }
+  })
+  const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+  const monthly = Array.from({ length: 12 }, (_, i) => {
+    const spend = 1200000 + (i * 80000) + ((i * 170) % 600000)
+    const clicks = Math.floor(spend / (195 + (i % 5) * 6))
+    const reach = Math.floor(spend / 8 + (i * 25000) % 200000)
+    return { date: MONTHS[i], spend, clicks, ctr: +((clicks / Math.max(reach, 1)) * 100).toFixed(2) }
+  })
+  const yearly = Array.from({ length: 5 }, (_, i) => {
+    const spend = 12000000 + i * 3000000
+    const clicks = Math.floor(spend / 200)
+    const reach = Math.floor(spend / 8)
+    return { date: `${2021 + i}년`, spend, clicks, ctr: +((clicks / Math.max(reach, 1)) * 100).toFixed(2) }
+  })
+  return { 일간: daily, 주간: weekly, 월간: monthly, 연간: yearly }
 }
-const DAILY_DATA = buildDailyData()
+const CHART_DATA_BY_PERIOD = buildChartDataByPeriod()
+
+const CHART_PERIOD_LABEL: Record<Period, string> = { 일간: '일별', 주간: '주별', 월간: '월별', 연간: '연도별' }
 
 /** 광고 소재 유형별 성과 — CPM은 업계 평균 기준 (₩5K~₩18K) */
 const adFormatPerf = [
@@ -240,6 +255,8 @@ export default function AdPerformance() {
 
   const isZero = qa === 'zero'
   const kpi = kpiByPeriod[period]
+  const chartData = CHART_DATA_BY_PERIOD[period]
+  const chartPeriodLabel = CHART_PERIOD_LABEL[period]
 
   return (
     <div className="space-y-6">
@@ -372,6 +389,7 @@ export default function AdPerformance() {
           sub="클릭률"
           trend={isZero ? 0 : kpi.trends.ctr}
           trendLabel="전기간 대비"
+          valueColor={getCtrColor(isZero ? 0 : kpi.ctr)}
           icon={<MousePointer size={16} aria-hidden="true" />}
           tooltip="클릭 ÷ 노출 × 100 — 광고 소재·타게팅 효과 지표"
         />
@@ -568,11 +586,11 @@ export default function AdPerformance() {
         )
       })()}
 
-      {/* 일별 광고 성과 차트 (지출 bar + 클릭 line) — 원본 MixedBarLineChart 보강 */}
+      {/* 기간별 광고 성과 차트 (지출 bar + 클릭 line) — 원본 MixedBarLineChart 보강 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
-            <h3 className="text-base font-semibold text-gray-900">일별 광고 성과</h3>
+            <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="flex items-center gap-3 text-sm">
@@ -580,24 +598,24 @@ export default function AdPerformance() {
             <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block" />클릭</span>
           </div>
         </div>
-        <MixedChart data={DAILY_DATA} />
+        <MixedChart data={chartData} />
       </div>
 
-      {/* CTR 추이 + 일별 클릭 — 2열 배치, 원본 LineChart 보강 */}
+      {/* CTR 추이 + 기간별 클릭 — 2열 배치, 원본 LineChart 보강 */}
       <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" />
+          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900">일별 클릭</h3>
+            <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <SimpleLineChart data={DAILY_DATA.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" />
+          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" />
         </div>
       </div>
 

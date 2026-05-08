@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
-import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS } from '@wellink/ui'
+import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -16,11 +16,11 @@ const kpiByPeriod: Record<Period, { followers: number; reach: number; engagement
 }
 
 /** 전환 KPI 데이터 — 원본 buildProfileConversionMetrics 동등 (프로필 방문/웹사이트 클릭/클릭률) */
-const conversionByPeriod: Record<Period, { profileViews: number; websiteClicks: number; profileViewsGrowth: number; websiteClicksGrowth: number }> = {
-  일간: { profileViews: 480,    websiteClicks: 92,    profileViewsGrowth: 4.1, websiteClicksGrowth: 6.2 },
-  주간: { profileViews: 3200,   websiteClicks: 612,   profileViewsGrowth: 8.5, websiteClicksGrowth: 9.8 },
-  월간: { profileViews: 12400,  websiteClicks: 2380,  profileViewsGrowth: 14.6, websiteClicksGrowth: 18.2 },
-  연간: { profileViews: 142000, websiteClicks: 26800, profileViewsGrowth: 32.4, websiteClicksGrowth: 41.5 },
+const conversionByPeriod: Record<Period, { profileViews: number; websiteClicks: number; profileViewsGrowth: number; websiteClicksGrowth: number; ctrGrowth: number }> = {
+  일간: { profileViews: 480,    websiteClicks: 92,    profileViewsGrowth: 4.1, websiteClicksGrowth: 6.2,  ctrGrowth: 2.0 },
+  주간: { profileViews: 3200,   websiteClicks: 612,   profileViewsGrowth: 8.5, websiteClicksGrowth: 9.8,  ctrGrowth: 1.2 },
+  월간: { profileViews: 12400,  websiteClicks: 2380,  profileViewsGrowth: 14.6, websiteClicksGrowth: 18.2, ctrGrowth: 3.1 },
+  연간: { profileViews: 142000, websiteClicks: 26800, profileViewsGrowth: 32.4, websiteClicksGrowth: 41.5, ctrGrowth: 6.9 },
 }
 
 /** 팔로워 인구통계 더미 — 원본 followersAudience 동등 */
@@ -597,6 +597,7 @@ export default function ProfileInsight() {
           sub="좋아요+댓글 기준"
           trend={kpi.trends[2]}
           trendLabel="전기간 대비"
+          valueColor={getEngagementColor(kpi.engagement)}
           icon={<TrendingUp size={16} />}
           tooltip="(좋아요+댓글) / 도달 수 x 100으로 산출"
         />
@@ -639,6 +640,8 @@ export default function ProfileInsight() {
               title="클릭률"
               value={`${ctr}%`}
               sub="전환율"
+              trend={conv.ctrGrowth}
+              trendLabel="전기간 대비"
               icon={<BarChart2 size={16} />}
               tooltip="웹사이트 클릭 ÷ 프로필 방문 × 100 — 전환 유도 효율"
             />
