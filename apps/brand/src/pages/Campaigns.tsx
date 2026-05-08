@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
-  Plus, Megaphone, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
+  Plus, Megaphone, ChevronLeft, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
   MoreVertical, Copy, Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
@@ -274,6 +274,27 @@ export default function Campaigns() {
   >(null)
   const { showToast } = useToast()
 
+  // 탭 바 가로 스크롤 — 쉐브론 버튼
+  const tabScrollRef = useRef<HTMLDivElement>(null)
+  const [canTabScrollLeft, setCanTabScrollLeft] = useState(false)
+  const [canTabScrollRight, setCanTabScrollRight] = useState(false)
+  useEffect(() => {
+    const el = tabScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTabScrollLeft(el.scrollLeft > 0)
+      setCanTabScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+  const scrollTabs = (dir: 'left' | 'right') => {
+    tabScrollRef.current?.scrollBy({ left: dir === 'left' ? -160 : 160, behavior: 'smooth' })
+  }
+
   // state → URL 동기화 (기본값은 URL에서 제거해 깔끔하게)
   useEffect(() => {
     const next = new URLSearchParams()
@@ -420,20 +441,42 @@ export default function Campaigns() {
 
       {/* 본문 카드 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="flex items-center gap-1 px-2 @sm:px-4 border-b border-gray-100 overflow-x-auto">
-          {tabs.map(tab => (
+        <div className="flex items-center border-b border-gray-100">
+          {canTabScrollLeft && (
             <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              className={`px-3 py-3 text-base whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === tab
-                  ? 'border-gray-900 font-semibold text-gray-900'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+              type="button"
+              onClick={() => scrollTabs('left')}
+              aria-label="탭 왼쪽으로 스크롤"
+              className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
             >
-              {tab}
+              <ChevronLeft size={16} aria-hidden="true" />
             </button>
-          ))}
+          )}
+          <div ref={tabScrollRef} className="flex-1 flex items-center gap-1 overflow-x-auto scrollbar-none px-2 @sm:px-4">
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => handleTabClick(tab)}
+                className={`px-3 py-3 text-base whitespace-nowrap border-b-2 transition-colors ${
+                  activeTab === tab
+                    ? 'border-gray-900 font-semibold text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          {canTabScrollRight && (
+            <button
+              type="button"
+              onClick={() => scrollTabs('right')}
+              aria-label="탭 오른쪽으로 스크롤"
+              className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              <ChevronRight size={16} aria-hidden="true" />
+            </button>
+          )}
         </div>
 
         {/* 검색 + 필터 + 정렬 */}
@@ -583,7 +626,7 @@ export default function Campaigns() {
                       )}
                     </div>
                     <p className="text-base @sm:text-base font-semibold text-gray-900 break-words mb-1">{c.name}</p>
-                    <div className="flex items-center gap-x-3 @sm:gap-x-4 gap-y-1 text-base flex-wrap">
+                    <div className="flex items-center gap-x-2 @sm:gap-x-3 gap-y-0.5 text-sm flex-wrap">
                       {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
                       {(() => {
                         const meta = getCampaignDeadlineMeta(c)
