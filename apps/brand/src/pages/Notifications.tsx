@@ -193,7 +193,7 @@ export default function Notifications() {
                 type="button"
                 onClick={() => handleNotificationClick(item)}
                 className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left ${
-                  item.unread ? 'bg-blue-50/30 hover:bg-blue-50/50' : 'hover:bg-gray-50/50'
+                  item.unread ? 'bg-brand-green/5 hover:bg-brand-green/10' : 'hover:bg-gray-50/50'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -209,7 +209,7 @@ export default function Notifications() {
                   <div className="flex items-start justify-between gap-3 mb-0.5">
                     <h3 className={`text-base ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                       {item.title}
-                      {item.unread && <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full ml-2 align-middle"></span>}
+                      {item.unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle"></span>}
                     </h3>
                     <span className="text-sm text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
                   </div>

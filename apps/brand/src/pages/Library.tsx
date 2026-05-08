@@ -155,15 +155,17 @@ const CAMPAIGN_KEYWORDS: Record<string, string[]> = {
 }
 
 function modalInsight(c: Content, saveRate: number, commentRate: number, diffPct: number): string {
-  const lines: string[] = []
   if (c.reach === 0) return '집계 데이터가 없어 분석을 생성할 수 없습니다.'
-  if (saveRate >= 3) lines.push(`저장률 ${saveRate.toFixed(1)}%로 구매 전환 의도가 높습니다.`)
-  else if (saveRate < 1) lines.push(`저장률이 낮아 브랜드 인지 목적에 적합한 콘텐츠입니다.`)
-  if (diffPct >= 20) lines.push(`캠페인 평균 대비 참여율이 ${diffPct}% 높아 확산 잠재력이 있습니다.`)
-  else if (diffPct <= -20) lines.push(`캠페인 평균 대비 참여율이 ${Math.abs(diffPct)}% 낮아 보완이 필요합니다.`)
-  else lines.push(`캠페인 평균 수준의 참여율을 유지하고 있습니다.`)
-  if (commentRate > 1) lines.push(`댓글 반응이 활발해 진성 팬 기반이 강한 크리에이터입니다.`)
-  return lines.slice(0, 2).join(' ')
+  // 정책서 § 9 AI 인사이트 생성 로직 — 조합 우선순위 순서
+  if (saveRate >= 3 && commentRate > 1)
+    return '저장률과 댓글률이 모두 높아 구매 전환·진성 참여가 우수한 콘텐츠입니다. 리타겟팅 광고 소재로 활용을 권장합니다.'
+  if (saveRate >= 3 && diffPct >= 10)
+    return `저장률 기반 구매 의도가 강합니다. 캠페인 평균 대비 참여율이 ${diffPct}% 높아 제품 상세 연동 콘텐츠 제작을 추천합니다.`
+  if (commentRate <= 1 && diffPct < 0)
+    return '커뮤니티 반응이 약한 콘텐츠입니다. Q&A 형식의 콘텐츠 기획 검토를 권장합니다.'
+  if (saveRate < 1)
+    return '인지도 중심 콘텐츠입니다. 전환보다 노출 확대에 집중하는 방향을 권장합니다.'
+  return `캠페인 평균 대비 ${diffPct >= 0 ? '+' : ''}${diffPct}% 수준으로 전반적으로 안정적인 성과를 보이고 있습니다.`
 }
 
 /* ───── 제안 가능 캠페인 (인플루언서 리스트와 동일 mock) ───── */
