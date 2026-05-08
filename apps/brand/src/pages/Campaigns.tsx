@@ -81,18 +81,12 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
 
 const campaigns: Campaign[] = [...SEED_CAMPAIGNS, ...generated]
 
-const tabs = ['전체', '진행중', '종료'] as const
+const tabs = ['전체', '지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중', '완료', '종료'] as const
 type Tab = typeof tabs[number]
-
-// 탭별 포함 status 집합
-const ACTIVE_DISPLAY_STATUSES = new Set(['지원자 대기', '모집중', '마감임박', '선정 필요', '콘텐츠 등록 중'])
-const CLOSED_DISPLAY_STATUSES = new Set(['완료', '종료', '취소'])
 
 function matchesTab(display: string, tab: Tab): boolean {
   if (tab === '전체') return true
-  if (tab === '진행중') return ACTIVE_DISPLAY_STATUSES.has(display)
-  if (tab === '종료') return CLOSED_DISPLAY_STATUSES.has(display)
-  return false
+  return display === tab
 }
 
 /**
