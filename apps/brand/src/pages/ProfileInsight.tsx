@@ -209,8 +209,6 @@ type MetricKey = keyof typeof metricColors
 function FollowerBarChart({ data }: { data: BarDataItem[] }) {
   const nonNullVals = data.filter(m => m.value !== null).map(m => m.value as number)
   const maxVal = Math.max(...nonNullVals, 1)
-  const minVal = Math.min(...nonNullVals)
-  const range = maxVal - minVal || 1
   const isDense = data.length > 14
   const BAR_AREA_PX = 112 // 바 영역 고정 높이(px) — % 높이는 auto 부모에서 작동 안 함
 
@@ -221,10 +219,10 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
         {data.map(({ label, value }) => {
           const isNull = value === null
           const displayVal = isNull ? '--' : fmtNumber(value)
-          // min-max 정규화: 최솟값 → 12px, 최댓값 → BAR_AREA_PX
+          // 0 기준 비율: 최댓값 = 꽉 참, 나머지는 실제 비율 그대로
           const barH = isNull
-            ? Math.round(BAR_AREA_PX * 0.13)
-            : Math.max(12, Math.round(((value - minVal) / range) * (BAR_AREA_PX - 12) + 12))
+            ? 8
+            : Math.max(4, Math.round((value / maxVal) * BAR_AREA_PX))
           return (
             <div key={label} className="flex-1 flex flex-col items-center min-w-0 justify-end" style={{ height: BAR_AREA_PX }}>
               {!isDense && (
