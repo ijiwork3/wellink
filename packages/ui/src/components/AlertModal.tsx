@@ -95,14 +95,10 @@ export default function AlertModal({
       }
     >
       <div className="space-y-3">
-        {styles.icon && (
-          <div className="flex items-center gap-2">
-            {styles.icon}
-          </div>
-        )}
-        {description && (
-          <p className="text-sm text-gray-600">{description}</p>
-        )}
+        <div className="flex items-start gap-2">
+          {styles.icon && <span className="shrink-0 mt-0.5">{styles.icon}</span>}
+          {description && <p className="text-sm text-gray-600">{description}</p>}
+        </div>
         {children}
       </div>
     </Modal>

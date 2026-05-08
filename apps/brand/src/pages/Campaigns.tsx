@@ -617,7 +617,7 @@ export default function Campaigns() {
                       ) : null
                     })()}
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden max-w-[200px]">
+                      <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-gray-400' : 'bg-brand-green'}`}
                           style={{ width: `${pct}%` }}

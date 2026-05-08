@@ -864,7 +864,7 @@ export default function InfluencerManage() {
                     </div>
                     <div className="flex items-center gap-4">
                       {/* 도넛 차트 SVG */}
-                      <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0">
+                      <svg width="96" height="96" viewBox="0 0 64 64" className="shrink-0">
                         {(() => {
                           const items = [
                             { pct: feedCount / totalContent, color: '#f97316' },

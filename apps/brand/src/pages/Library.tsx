@@ -853,13 +853,13 @@ export default function Library() {
                     onClick={e => { e.stopPropagation(); toggleSelect(c.id) }}
                     aria-pressed={isSelected}
                     aria-label={`${c.creator} 콘텐츠 선택`}
-                    className={`absolute top-3 left-3 z-10 w-5 h-5 rounded border-2 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                    className={`absolute top-3 left-3 z-10 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isSelected
                         ? 'border-brand-green bg-brand-green'
                         : 'border-white/80 bg-white/80'
                     }`}
                   >
-                    {isSelected && <Check size={12} className="text-white" aria-hidden="true" />}
+                    {isSelected && <Check size={11} strokeWidth={3} className="text-white" aria-hidden="true" />}
                   </button>
 
                   {/* Thumbnail — button으로 교체하여 iOS VoiceOver 호환성 확보 */}

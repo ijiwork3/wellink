@@ -1477,7 +1477,7 @@ export default function CampaignDetail() {
                           </Tooltip>
                         </div>
                       ) : (
-                        <div className="flex flex-col items-stretch gap-1 min-w-[40px]">
+                        <div className="flex flex-col items-stretch gap-1 min-w-[64px]">
                           <Tooltip content="선정 예정">
                             <button
                               onClick={() => handlePendApplicant(a.id)}
@@ -1952,13 +1952,13 @@ export default function CampaignDetail() {
                                 sendNotificationMock('content-approve', 1)
                                 showToast(`${c.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
                               }}
-                              className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-2 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
+                              className="flex-1 flex items-center justify-center gap-1 bg-brand-green text-white py-3 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
                             >
                               <Check size={12} aria-hidden="true" /> 승인
                             </button>
                             <button
                               onClick={() => setContentRejectModal(c.id)}
-                              className="flex-1 flex items-center justify-center gap-1 border border-red-200 text-red-500 py-2 rounded-xl text-base font-medium hover:bg-red-50 transition-colors"
+                              className="flex-1 flex items-center justify-center gap-1 border border-red-200 text-red-500 py-3 rounded-xl text-base font-medium hover:bg-red-50 transition-colors"
                             >
                               <X size={12} aria-hidden="true" /> 반려
                             </button>
