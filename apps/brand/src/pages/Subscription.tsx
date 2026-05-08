@@ -408,16 +408,16 @@ export default function Subscription() {
                 이번 달 사용량 현황
                 <span className="text-sm font-normal text-gray-400">(매월 결제일 초기화)</span>
               </h3>
-              <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 @xl:grid-cols-3 gap-3">
                 {usage.map(f => {
                   const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
                   const isOver = f.used >= f.limit
                   const isWarning = pct > 90 && !isOver
                   return (
                     <div key={f.name} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex flex-col gap-0.5 mb-2">
                         <span className="text-sm font-medium text-gray-700">{f.name}</span>
-                        <span className="text-sm font-bold text-gray-900">
+                        <span className="text-sm font-bold text-gray-900 text-right">
                           {f.used.toLocaleString()} / {f.limit >= 999999 ? '∞' : f.limit.toLocaleString()}{f.unit}
                         </span>
                       </div>
@@ -445,7 +445,7 @@ export default function Subscription() {
       })()}
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @2xl:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰 배경 + 검정 테두리 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div
@@ -466,7 +466,7 @@ export default function Subscription() {
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex items-baseline gap-1">
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
                 <span className="text-base text-gray-500">{plan.unit}</span>
               </div>
@@ -511,7 +511,7 @@ export default function Subscription() {
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex items-baseline gap-1">
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
                 <span className="text-base text-gray-500">{plan.unit}</span>
               </div>
@@ -556,7 +556,7 @@ export default function Subscription() {
             <div className="mb-5">
               <h3 className="text-xl font-bold text-white">{plan.name}</h3>
               <p className="text-sm text-gray-400 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex items-baseline gap-1">
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-white">{plan.price}</span>
               </div>
             </div>

@@ -269,7 +269,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4">
           {[
             { step: '01', title: '캠페인 등록', desc: '제품과 캠페인 정보를 입력하세요' },
             { step: '02', title: '인플루언서 매칭', desc: 'AI가 적합한 인플루언서를 추천합니다' },
