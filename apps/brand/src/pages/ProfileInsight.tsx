@@ -209,43 +209,54 @@ type MetricKey = keyof typeof metricColors
 function FollowerBarChart({ data }: { data: BarDataItem[] }) {
   const nonNullVals = data.filter(m => m.value !== null).map(m => m.value as number)
   const maxVal = Math.max(...nonNullVals, 1)
+  const minNonNull = Math.min(...nonNullVals)
   const isDense = data.length > 14
-  const BAR_AREA_PX = 112 // 바 영역 고정 높이(px) — % 높이는 auto 부모에서 작동 안 함
+  const BAR_AREA_PX = 112
+
+  const maxIdx = data.findIndex(d => d.value === maxVal)
+  const minIdx = data.findIndex(d => d.value === minNonNull)
 
   return (
     <div className="space-y-1">
-      {/* 바 영역 — px 높이 직접 계산, items-end로 바닥 정렬 */}
       <div className="flex items-end" style={{ height: BAR_AREA_PX, gap: isDense ? '2px' : '8px' }}>
-        {data.map(({ label, value }) => {
+        {data.map(({ label, value }, i) => {
           const isNull = value === null
-          const displayVal = isNull ? '--' : fmtNumber(value)
-          // 0 기준 비율: 최댓값 = 꽉 참, 나머지는 실제 비율 그대로
-          const barH = isNull
-            ? 8
-            : Math.max(4, Math.round((value / maxVal) * BAR_AREA_PX))
+          const isMax  = !isNull && i === maxIdx
+          const isMin  = !isNull && i === minIdx
+          const barH = isNull ? 8 : Math.max(4, Math.round((value / maxVal) * BAR_AREA_PX))
+          const barClass = isNull
+            ? 'bg-gray-100 border border-dashed border-gray-300'
+            : isMax ? 'bg-emerald-500'
+            : isMin ? 'bg-gray-300'
+            : 'bg-emerald-200'
+          const showVal = isMax || isMin || (!isDense && !isNull)
+          const valClass = isMax ? 'text-emerald-600 font-semibold'
+            : isMin ? 'text-gray-400 font-medium'
+            : isNull ? 'text-gray-300'
+            : 'text-gray-500 font-medium'
           return (
             <div key={label} className="flex-1 flex flex-col items-center min-w-0 justify-end" style={{ height: BAR_AREA_PX }}>
-              {!isDense && (
-                <span className={`text-sm mb-1 leading-none ${isNull ? 'text-gray-300' : 'text-gray-600 font-medium'}`}>
-                  {displayVal}
+              {showVal && (
+                <span className={`text-sm mb-1 leading-none ${valClass}`}>
+                  {isNull ? '--' : fmtNumber(value)}
                 </span>
               )}
-              <div
-                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-gray-800'}`}
-                style={{ height: barH }}
-              />
+              <div className={`w-full rounded-t-sm transition-[height] duration-300 ${barClass}`} style={{ height: barH }} />
             </div>
           )
         })}
       </div>
-      {/* x축 라벨 — 바 영역과 분리된 별도 행 */}
       <div className="flex" style={{ gap: isDense ? '2px' : '8px' }}>
-        {data.map(({ label, value, showLabel }) => {
+        {data.map(({ label, value, showLabel }, i) => {
           const isNull = value === null
+          const isMax  = !isNull && i === maxIdx
+          const isMin  = !isNull && i === minIdx
           const doShow = isDense ? (showLabel ?? false) : true
           return (
             <div key={label} className="flex-1 min-w-0 text-center" style={{ visibility: doShow ? 'visible' : 'hidden' }}>
-              <span className={`text-sm truncate block ${isNull ? 'text-gray-300' : 'text-gray-400'}`}>{label}</span>
+              <span className={`text-xs truncate block ${isMax ? 'text-emerald-600 font-medium' : isMin ? 'text-gray-500 font-medium' : isNull ? 'text-gray-300' : 'text-gray-400'}`}>
+                {label}
+              </span>
             </div>
           )
         })}
