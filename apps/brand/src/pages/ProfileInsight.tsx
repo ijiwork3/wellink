@@ -517,12 +517,14 @@ export default function ProfileInsight() {
 
   return (
     <div className="space-y-6">
-      {/* 헤더 — 제목과 날짜 네비게이션 분리 */}
-      <div className="space-y-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">프로필 인사이트</h1>
-          <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
-        </div>
+      {/* 헤더 */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">프로필 인사이트</h1>
+        <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
+      </div>
+
+      {/* 기간 선택기 — sticky: 스크롤해도 항상 현재 기간 확인·변경 가능 */}
+      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <DateRangePicker
           period={period}
           dateOffset={dateOffset}
