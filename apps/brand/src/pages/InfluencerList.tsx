@@ -1066,7 +1066,7 @@ export default function InfluencerList() {
                         <><span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span><span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(Math.round(reelsItems.reduce((s,c)=>s+c.likes,0)/reelsItems.length))}</span></span><span>평균 댓글 <span className="font-semibold text-gray-600">{Math.round(reelsItems.reduce((s,c)=>s+c.comments,0)/reelsItems.length)}</span></span></>
                       )}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className={`grid gap-2 ${device === 'phone' ? 'grid-cols-2' : 'grid-cols-3'}`}>
                       {pagedItems.map((c, i) => {
                         const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
                         const saves = Math.round(c.likes * 0.18)

@@ -1008,7 +1008,7 @@ export default function InfluencerManage() {
                   </div>
 
                   {/* 그리드 */}
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className={`grid gap-2 ${device === 'phone' ? 'grid-cols-2' : 'grid-cols-3'}`}>
                     {pagedItems.map((c, i) => {
                       const globalIdx = (contentModalPage - 1) * CONTENT_PER_PAGE + i
                       const saves = Math.round(c.likes * 0.18)
