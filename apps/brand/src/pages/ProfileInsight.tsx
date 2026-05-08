@@ -207,15 +207,19 @@ type MetricKey = keyof typeof metricColors
 
 /** 팔로워 추이 바 차트 — null = 회색 점선 바, 30개 이상은 라벨 간소화 */
 function FollowerBarChart({ data }: { data: BarDataItem[] }) {
-  const maxVal = Math.max(...data.filter(m => m.value !== null).map(m => m.value as number), 1)
+  const nonNullVals = data.filter(m => m.value !== null).map(m => m.value as number)
+  const maxVal = Math.max(...nonNullVals, 1)
+  const minVal = Math.min(...nonNullVals, 0)
+  const range = maxVal - minVal || 1
   const isDense = data.length > 14 // 30일 모드
 
   return (
-    <div className="flex items-end h-28" style={{ gap: isDense ? '1px' : '8px' }}>
+    <div className="flex items-end h-36" style={{ gap: isDense ? '2px' : '8px' }}>
       {data.map(({ label, value, showLabel }) => {
         const isNull = value === null
         const displayVal = isNull ? '--' : fmtNumber(value)
-        const heightPct = isNull ? 20 : Math.max(6, (value / maxVal) * 100)
+        // min-max 정규화: 최솟값=10%, 최댓값=100% — 막대 간 높이 차이가 뚜렷하게 보임
+        const heightPct = isNull ? 15 : Math.max(10, ((value - minVal) / range) * 90 + 10)
         const doShowLabel = isDense ? (showLabel ?? false) : true
         return (
           <div key={label} className="flex-1 flex flex-col items-center min-w-0" style={{ gap: isDense ? '1px' : '4px' }}>
@@ -391,7 +395,7 @@ export default function ProfileInsight() {
   const isInstagramConnected = useInstagramConnected()
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
-  const [activeMetrics, setActiveMetrics] = useState<MetricKey[]>(['likes', 'reach'])
+  const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
   const [aiRefreshing, setAiRefreshing] = useState(false)
 
   const tableScrollRef = useRef<HTMLDivElement>(null)
@@ -432,13 +436,6 @@ export default function ProfileInsight() {
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
   }, [])
 
-  const toggleMetric = (metric: MetricKey) => {
-    setActiveMetrics(prev =>
-      prev.includes(metric)
-        ? prev.length > 1 ? prev.filter(m => m !== metric) : prev
-        : [...prev, metric]
-    )
-  }
 
   const metricLabels: Record<MetricKey, string> = {
     likes: '좋아요',
@@ -507,7 +504,7 @@ export default function ProfileInsight() {
   const impressReachData = impressReachByPeriod[period]
 
   const nullCount = followerData.filter(d => d.value === null).length
-  const ytdLabel = period === '연간' ? '+22.8% 전체' : period === '월간' ? '+22.8% YTD' : period === '주간' ? '+1.2% WoW' : '+0.3% DoD'
+  const growthLabel = { 일간: '+0.3% 전일 대비', 주간: '+1.2% 전주 대비', 월간: '+22.8% 연초 대비', 연간: '+22.8% 전년 대비' }[period]
 
   const periodLabel = (() => {
     const today = new Date()
@@ -655,27 +652,22 @@ export default function ProfileInsight() {
           <div>
             <h3 className="text-base font-semibold text-gray-900">피드별 성과 추세</h3>
             <p className="text-sm text-gray-400 mt-0.5">
-              {period === '일간' ? '최근 7일 게시물의 지표별 추이' :
-               period === '주간' ? '최근 7주 게시물의 지표별 추이' :
-               period === '월간' ? '최근 7개월 게시물의 지표별 추이' :
-               '연도별 지표 추이'}
-              {nullCount > 0 && (
-                <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>
-              )}
+              {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
+              {nullCount > 0 && <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>}
             </p>
           </div>
-          {/* 지표 토글 */}
+          {/* 지표 라디오 — 한 번에 하나씩 */}
           <div className="flex gap-1.5 flex-wrap">
             {(Object.keys(metricColors) as MetricKey[]).map(metric => (
               <button
                 key={metric}
-                onClick={() => toggleMetric(metric)}
+                onClick={() => setActiveMetric(metric)}
                 className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all ${
-                  activeMetrics.includes(metric)
+                  activeMetric === metric
                     ? 'border-transparent text-white'
-                    : 'border-gray-200 text-gray-400 bg-white'
+                    : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
                 }`}
-                style={activeMetrics.includes(metric) ? { backgroundColor: metricColors[metric] } : {}}
+                style={activeMetric === metric ? { backgroundColor: metricColors[metric] } : {}}
               >
                 {metric === 'likes'    && <Heart size={10} />}
                 {metric === 'reach'    && <Eye size={10} />}
@@ -686,7 +678,7 @@ export default function ProfileInsight() {
             ))}
           </div>
         </div>
-        <MultiLineTrendChart data={trendData} activeMetrics={activeMetrics} />
+        <MultiLineTrendChart data={trendData} activeMetrics={[activeMetric]} />
       </div>
 
       {/* 노출 & 도달 라인 차트 */}
@@ -695,7 +687,7 @@ export default function ProfileInsight() {
           <div>
             <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
             <p className="text-sm text-gray-400 mt-0.5">
-              노출(총 화면 표시 횟수) vs 도달(고유 사용자 수)
+              노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
               {impressReachData.some(d => d.impressions === null) && (
                 <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>
               )}
@@ -713,23 +705,28 @@ export default function ProfileInsight() {
       <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 (3/5) */}
         <div className="col-span-2 @sm:col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-base font-semibold text-gray-900 mb-4">콘텐츠 유형별 성과</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h3>
+          {/* 헤더 행 */}
+          <div className="flex items-center gap-4 mb-2">
+            <span className="text-xs text-gray-400 w-16 shrink-0">유형</span>
+            <div className="flex-1" />
+            <span className="text-xs text-gray-400 w-14 text-right">평균 도달</span>
+            <span className="text-xs text-gray-400 w-10 text-right">참여율</span>
+          </div>
           <div className="space-y-3">
             {contentTypeData.map(ct => (
               <div key={ct.type} className="flex items-center gap-4">
-                <span className="text-sm text-gray-500 w-16 shrink-0">{ct.type}</span>
+                <span className="text-sm text-gray-700 font-medium w-16 shrink-0">{ct.type}</span>
                 <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-brand-green"
                     style={{ width: `${(ct.avgReach / 5200) * 100}%` }}
                   />
                 </div>
-                <div className="flex gap-3 text-sm text-right">
-                  <span className="text-gray-700 w-14">도달 <strong>{fmtNumber(ct.avgReach)}</strong></span>
-                  <span className={`font-semibold w-10 ${ct.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
-                    {ct.engagementRate}%
-                  </span>
-                </div>
+                <span className="text-sm font-semibold text-gray-900 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
+                <span className={`text-sm font-semibold w-10 text-right ${ct.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
+                  {ct.engagementRate}%
+                </span>
               </div>
             ))}
           </div>
@@ -741,9 +738,9 @@ export default function ProfileInsight() {
 
         {/* 팔로워 추이 (2/5) */}
         <div className="col-span-2 @sm:col-span-3 @lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4">
             <h3 className="text-base font-semibold text-gray-900">팔로워 추이</h3>
-            <span className="text-sm text-brand-green font-medium">{ytdLabel}</span>
+            <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <FollowerBarChart data={followerData} />
           {nullCount > 0 && (
@@ -794,7 +791,7 @@ export default function ProfileInsight() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {trendData.map((d, i) => {
+                {[...trendData].reverse().map((d, i) => {
                   const isNull = d.reach === null
                   return (
                     <tr key={i} className={`transition-colors ${isNull ? '' : 'hover:bg-gray-50'}`}>
