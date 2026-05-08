@@ -662,7 +662,7 @@ export default function Campaigns() {
                       <span className="text-sm text-gray-400 tabular-nums shrink-0">{pct}%</span>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-gray-300 shrink-0 group-hover:text-gray-500 transition-colors" aria-hidden="true" />
+                  <ChevronRight size={16} className="hidden @sm:block text-gray-300 shrink-0 group-hover:text-gray-500 transition-colors" aria-hidden="true" />
                 </div>
                 <div className="shrink-0" onClick={e => e.stopPropagation()}>
                   <Dropdown
