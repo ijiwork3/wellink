@@ -49,14 +49,14 @@ const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onTo
               <StatusBadge key={p} status={p.trim()} />
             ))}
           </div>
-          <div className="flex gap-3 mt-1 text-xs text-gray-500">
+          <div className="flex gap-3 mt-1 text-sm text-gray-500">
             <span>팔로워 {fmtFollowers(influencer.followers)}</span>
             <span className={getEngagementColor(influencer.engagement)}>참여율 {influencer.engagement}%</span>
             <span>진성 {influencer.authentic}%</span>
           </div>
           <div className="flex gap-1 mt-2 flex-wrap">
             {influencer.category.map(c => (
-              <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
+              <span key={c} className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
             ))}
           </div>
         </div>

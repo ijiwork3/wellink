@@ -53,20 +53,20 @@ export default function SNSPanel({
                 {p.icon}
               </div>
               <div>
-                <span className="text-xs text-gray-700 font-medium">{p.name}</span>
+                <span className="text-sm text-gray-700 font-medium">{p.name}</span>
                 {p.connected && p.handle && (
-                  <p className="text-[11px] text-gray-400">@{p.handle}</p>
+                  <p className="text-sm text-gray-400">@{p.handle}</p>
                 )}
               </div>
             </div>
             {p.connected ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-green inline-block" />
-                <span className="text-xs text-green-600 font-medium">연결됨</span>
+                <span className="text-sm text-green-600 font-medium">연결됨</span>
               </div>
             ) : (
               <button
-                className="text-xs text-brand-green flex items-center gap-0.5 hover:opacity-70 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
+                className="text-sm text-brand-green flex items-center gap-0.5 hover:opacity-70 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
                 onClick={() => onConnectClick?.(p.id)}
                 aria-label={`${p.name} 연결하기`}
               >
