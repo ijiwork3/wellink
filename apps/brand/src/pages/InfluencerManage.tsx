@@ -557,19 +557,21 @@ export default function InfluencerManage() {
                   </div>
                 )}
 
-                {/* 그룹 태그 + 그룹에 추가 */}
-                <div className="flex items-center gap-1.5 flex-wrap" onClick={e => e.stopPropagation()}>
-                  {inf.groups.map(g => (
-                    <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green/10 text-brand-green">
-                      {g}
-                      <button onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
-                        <X size={11} aria-hidden="true" />
-                      </button>
-                    </span>
-                  ))}
+                {/* 그룹 태그 (좌) + 그룹에 추가 버튼 (우) — § 5-1 정렬 정책 */}
+                <div className="flex items-center justify-between gap-2" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                    {inf.groups.map(g => (
+                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green/10 text-brand-green">
+                        {g}
+                        <button onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
+                          <X size={11} aria-hidden="true" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
 
                   {/* 데스크톱: 드롭다운 / 모바일·태블릿: 바텀시트 */}
-                  <div className="relative" ref={!isMobile && addToGroupTarget === inf.id ? dropdownRef : null}>
+                  <div className="relative shrink-0" ref={!isMobile && addToGroupTarget === inf.id ? dropdownRef : null}>
                     <button
                       onClick={() => setAddToGroupTarget(addToGroupTarget === inf.id ? null : inf.id)}
                       className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-gray-400 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
