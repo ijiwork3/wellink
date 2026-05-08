@@ -209,7 +209,7 @@ type MetricKey = keyof typeof metricColors
 function FollowerBarChart({ data }: { data: BarDataItem[] }) {
   const nonNullVals = data.filter(m => m.value !== null).map(m => m.value as number)
   const maxVal = Math.max(...nonNullVals, 1)
-  const minVal = Math.min(...nonNullVals, 0)
+  const minVal = Math.min(...nonNullVals)
   const range = maxVal - minVal || 1
   const isDense = data.length > 14 // 30일 모드
 

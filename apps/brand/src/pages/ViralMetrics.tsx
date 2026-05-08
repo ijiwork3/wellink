@@ -316,12 +316,14 @@ export default function ViralMetrics() {
       document.body
     )}
     <div className="space-y-6">
-      {/* 헤더 — 제목과 날짜 네비게이션을 분리 (제목 한 행, 날짜 picker 아래 행) */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
-          <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
-        </div>
+      {/* 헤더 */}
+      <div className="flex items-center gap-2.5">
+        <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
+        <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
+      </div>
+
+      {/* 기간 선택기 — sticky */}
+      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
           dateOffset={dateOffset}

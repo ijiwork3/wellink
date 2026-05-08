@@ -266,12 +266,14 @@ export default function AdPerformance() {
         </div>
       )}
 
-      {/* 헤더 — 제목과 날짜 네비게이션 분리 */}
-      <div className="space-y-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
-          <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
-        </div>
+      {/* 헤더 */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+        <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
+      </div>
+
+      {/* 기간 선택기 — sticky */}
+      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <div className="flex items-center flex-wrap gap-2">
           <DateRangePicker
             period={period}
