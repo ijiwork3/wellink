@@ -532,7 +532,7 @@ export default function Dashboard() {
               <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="border-b border-gray-50 bg-gray-50/50">
-                    {['캠페인명', '상태', '진행률', '마감일', ''].map(h => (
+                    {['캠페인명', '상태', '진행률', '마감일'].map(h => (
                       <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -570,14 +570,6 @@ export default function Dashboard() {
                               {ddayLabel}
                             </span>
                           </div>
-                        </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <button
-                            onClick={() => navigate(`/campaigns/${c.id}`)}
-                            className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
-                          >
-                            상세보기 <ArrowRight size={11} />
-                          </button>
                         </td>
                       </tr>
                     )
