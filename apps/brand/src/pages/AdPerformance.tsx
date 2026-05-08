@@ -606,7 +606,7 @@ export default function AdPerformance() {
       </div>
 
       {/* CTR 추이 + 기간별 클릭 — 2열 배치, 원본 LineChart 보강 */}
-      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
@@ -624,7 +624,7 @@ export default function AdPerformance() {
       </div>
 
       {/* 도달·참여 출처 도넛 — 원본 DonutChart 보강 (광고 vs 유기적) */}
-      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">도달 출처</h3>

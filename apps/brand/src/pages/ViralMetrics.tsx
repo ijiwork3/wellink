@@ -389,7 +389,7 @@ export default function ViralMetrics() {
       </div>
 
       {/* 릴스 평균 조회수 + 등급 분포 — 원본 ViralMetricsSection 보강 */}
-      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         {/* 릴스 평균 조회수 카드 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-2">
