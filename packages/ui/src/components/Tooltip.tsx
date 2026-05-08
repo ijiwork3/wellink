@@ -73,7 +73,7 @@ export default function Tooltip({ content, children, side = 'top', multiline = f
         <span
           role="tooltip"
           className={`absolute ${positionCls} px-2.5 py-1.5 bg-gray-800 text-white text-sm rounded-lg z-20 shadow-lg ${
-            multiline ? 'max-w-[240px] whitespace-normal leading-relaxed' : 'whitespace-nowrap'
+            multiline ? 'max-w-60 whitespace-normal leading-relaxed' : 'whitespace-nowrap'
           }`}
         >
           {content}
