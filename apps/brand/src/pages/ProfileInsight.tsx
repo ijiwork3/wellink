@@ -507,9 +507,17 @@ export default function ProfileInsight() {
   }
 
   const kpi = kpiByPeriod[period]
-  const followerData = followerDataByPeriod[period]
-  const trendData = trendDataByPeriod[period]
-  const impressReachData = impressReachByPeriod[period]
+
+  // 앞뒤 null 항목 제거 — 데이터 없는 구간이 차트 너비를 잠식하지 않도록
+  const trimEdgeNulls = <T,>(arr: T[], isNull: (item: T) => boolean): T[] => {
+    const first = arr.findIndex(item => !isNull(item))
+    if (first === -1) return arr
+    const last = arr.length - 1 - [...arr].reverse().findIndex(item => !isNull(item))
+    return arr.slice(first, last + 1)
+  }
+  const followerData  = trimEdgeNulls(followerDataByPeriod[period],  d => d.value === null)
+  const trendData     = trimEdgeNulls(trendDataByPeriod[period],     d => d.likes === null)
+  const impressReachData = trimEdgeNulls(impressReachByPeriod[period], d => d.impressions === null)
 
   const nullCount = followerData.filter(d => d.value === null).length
   const growthLabel = { 일간: '+0.3% 전일 대비', 주간: '+1.2% 전주 대비', 월간: '+22.8% 연초 대비', 연간: '+22.8% 전년 대비' }[period]
@@ -698,8 +706,8 @@ export default function ProfileInsight() {
             <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
             <p className="text-sm text-gray-400 mt-0.5">
               노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
-              {impressReachData.some(d => d.impressions === null) && (
-                <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>
+              {impressReachByPeriod[period].some(d => d.impressions === null) && (
+                <span className="ml-1.5 text-gray-300">· 일부 구간 데이터 없음</span>
               )}
             </p>
           </div>
