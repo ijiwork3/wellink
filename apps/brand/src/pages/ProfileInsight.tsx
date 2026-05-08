@@ -211,37 +211,47 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
   const maxVal = Math.max(...nonNullVals, 1)
   const minVal = Math.min(...nonNullVals)
   const range = maxVal - minVal || 1
-  const isDense = data.length > 14 // 30일 모드
+  const isDense = data.length > 14
+  const BAR_AREA_PX = 112 // 바 영역 고정 높이(px) — % 높이는 auto 부모에서 작동 안 함
 
   return (
-    <div className="flex items-end h-36" style={{ gap: isDense ? '2px' : '8px' }}>
-      {data.map(({ label, value, showLabel }) => {
-        const isNull = value === null
-        const displayVal = isNull ? '--' : fmtNumber(value)
-        // min-max 정규화: 최솟값=10%, 최댓값=100% — 막대 간 높이 차이가 뚜렷하게 보임
-        const heightPct = isNull ? 15 : Math.max(10, ((value - minVal) / range) * 90 + 10)
-        const doShowLabel = isDense ? (showLabel ?? false) : true
-        return (
-          <div key={label} className="flex-1 flex flex-col items-center min-w-0" style={{ gap: isDense ? '1px' : '4px' }}>
-            {/* 값 레이블 — 밀집 모드에서는 숨김 */}
-            {!isDense && (
-              <span className={`text-sm ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{displayVal}</span>
-            )}
-            <div
-              title={`${label}: ${displayVal}`}
-              className={`w-full rounded-t-sm ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-gray-800'} cursor-default`}
-              style={{ height: `${heightPct}%`, minHeight: '3px', transition: 'height 0.3s' }}
-            />
-            {/* x축 라벨 — 밀집 모드는 showLabel인 것만 */}
-            <span
-              className={`text-sm ${isNull ? 'text-gray-300' : 'text-gray-400'} truncate w-full text-center`}
-              style={{ visibility: doShowLabel ? 'visible' : 'hidden' }}
-            >
-              {label}
-            </span>
-          </div>
-        )
-      })}
+    <div className="space-y-1">
+      {/* 바 영역 — px 높이 직접 계산, items-end로 바닥 정렬 */}
+      <div className="flex items-end" style={{ height: BAR_AREA_PX, gap: isDense ? '2px' : '8px' }}>
+        {data.map(({ label, value }) => {
+          const isNull = value === null
+          const displayVal = isNull ? '--' : fmtNumber(value)
+          // min-max 정규화: 최솟값 → 12px, 최댓값 → BAR_AREA_PX
+          const barH = isNull
+            ? Math.round(BAR_AREA_PX * 0.13)
+            : Math.max(12, Math.round(((value - minVal) / range) * (BAR_AREA_PX - 12) + 12))
+          return (
+            <div key={label} className="flex-1 flex flex-col items-center min-w-0 justify-end" style={{ height: BAR_AREA_PX }}>
+              {!isDense && (
+                <span className={`text-sm mb-1 leading-none ${isNull ? 'text-gray-300' : 'text-gray-600 font-medium'}`}>
+                  {displayVal}
+                </span>
+              )}
+              <div
+                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-gray-800'}`}
+                style={{ height: barH }}
+              />
+            </div>
+          )
+        })}
+      </div>
+      {/* x축 라벨 — 바 영역과 분리된 별도 행 */}
+      <div className="flex" style={{ gap: isDense ? '2px' : '8px' }}>
+        {data.map(({ label, value, showLabel }) => {
+          const isNull = value === null
+          const doShow = isDense ? (showLabel ?? false) : true
+          return (
+            <div key={label} className="flex-1 min-w-0 text-center" style={{ visibility: doShow ? 'visible' : 'hidden' }}>
+              <span className={`text-sm truncate block ${isNull ? 'text-gray-300' : 'text-gray-400'}`}>{label}</span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
