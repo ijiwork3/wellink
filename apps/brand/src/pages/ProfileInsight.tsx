@@ -712,9 +712,9 @@ export default function ProfileInsight() {
       </div>
 
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
-      <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
+      <div className="grid grid-cols-1 @2xl:grid-cols-5 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 (3/5) */}
-        <div className="col-span-2 @sm:col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="@2xl:col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <h3 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h3>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
@@ -747,7 +747,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 팔로워 추이 (2/5) */}
-        <div className="col-span-2 @sm:col-span-3 @lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="@2xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="mb-4">
             <h3 className="text-base font-semibold text-gray-900">팔로워 추이</h3>
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
