@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Megaphone, Users, Activity, Clock, Bell,
-  TrendingUp, TrendingDown, ArrowRight, Zap, Search,
+  TrendingUp, TrendingDown, ArrowRight, Search,
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
   ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
 } from 'lucide-react'
@@ -327,7 +327,7 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div>
-            <h1 className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
           <button
@@ -430,7 +430,7 @@ export default function Dashboard() {
       {/* ── 인사말 + 날짜 ── */}
       <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
         <div>
-          <h1 className={`${isPhone ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+          <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
           <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
         </div>
         <button
@@ -469,7 +469,7 @@ export default function Dashboard() {
                 <span className="text-gray-400 shrink-0">{kpi.icon}</span>
               </div>
               <div>
-                <div className={`${isPhone ? 'text-2xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
+                <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
                 <div className="text-sm text-gray-500 mt-1">{kpi.sub}</div>
               </div>
               <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
@@ -733,7 +733,7 @@ export default function Dashboard() {
             { icon: <Megaphone size={18} aria-hidden="true" />, label: '새 캠페인',      sub: '캠페인 만들기',    route: '/campaigns/new',     primary: true },
             { icon: <Users size={18} aria-hidden="true" />,     label: '인플루언서 탐색', sub: '전체 리스트 보기', route: '/influencers/list',  primary: false },
             { icon: <Search size={18} aria-hidden="true" />,    label: '인플루언서 관리', sub: '그룹·북마크 관리', route: '/influencers/manage', primary: false },
-            { icon: <Zap size={18} aria-hidden="true" />,       label: '콘텐츠 검수',    sub: qa === 'empty' ? '--건' : '대기 중 2건', route: '/campaigns', primary: false },
+            { icon: <BarChart3 size={18} aria-hidden="true" />,  label: '성과 분석',      sub: '리포트 확인',     route: '/analytics/profile', primary: false },
           ].map(item => (
             <button
               key={item.label}
