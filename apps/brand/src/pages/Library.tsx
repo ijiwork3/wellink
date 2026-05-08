@@ -22,7 +22,7 @@ import {
   CheckCircle,
   Send,
 } from 'lucide-react'
-import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination } from '@wellink/ui'
+import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
@@ -1050,11 +1050,13 @@ export default function Library() {
                       </div>
                     </td>
                     <td className="py-3 px-3 max-w-[140px]">
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
-                        className="text-base text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
-                      >{c.campaign}</button>
+                      <Tooltip content={c.campaign}>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
+                          className="text-base text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
+                        >{c.campaign}</button>
+                      </Tooltip>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       {c.type ? (
