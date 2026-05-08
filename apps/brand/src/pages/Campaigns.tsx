@@ -341,7 +341,7 @@ export default function Campaigns() {
           <div className="divide-y divide-gray-50">
             {[0, 1, 2].map(i => (
               <div key={i} className="flex items-center gap-4 px-5 py-4">
-                <div className="w-12 h-12 rounded-lg bg-gray-200 shrink-0" />
+                <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-40 bg-gray-200 rounded" />
                   <div className="h-3 w-56 bg-gray-200 rounded" />
@@ -564,7 +564,7 @@ export default function Campaigns() {
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goDetail() } }}
                   className="flex-1 flex items-center gap-3 @sm:gap-4 min-w-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                 >
-                  <div className={`relative w-12 h-12 @sm:w-14 @sm:h-14 rounded-lg overflow-hidden ${cat.bg} flex items-center justify-center shrink-0`}>
+                  <div className={`relative w-14 h-14 @sm:w-16 @sm:h-16 rounded-lg overflow-hidden ${cat.bg} flex items-center justify-center shrink-0`}>
                     {c.imageUrl ? (
                       <img
                         src={c.imageUrl}
@@ -574,7 +574,7 @@ export default function Campaigns() {
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                       />
                     ) : null}
-                    {!c.imageUrl && <CatIcon size={20} className={cat.fg} aria-hidden="true" />}
+                    {!c.imageUrl && <CatIcon size={22} className={cat.fg} aria-hidden="true" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">

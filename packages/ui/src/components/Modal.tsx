@@ -14,6 +14,7 @@
 
 import { X } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { useIsTouchDevice } from '../utils/useIsTouchDevice'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -120,9 +121,9 @@ export default function Modal({ open, onClose, title, label, children, footer, s
   }
   const sizeCls = sizeClass[size] ?? sizeClass.sm
 
-  return (
+  return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm ${effectiveFullscreen ? 'items-stretch' : 'items-center justify-center overflow-y-auto p-4'}`}
+      className={`fixed inset-0 z-[200] flex bg-black/40 backdrop-blur-sm ${effectiveFullscreen ? 'items-stretch' : 'items-center justify-center overflow-y-auto p-4'}`}
       onClick={closeOnBackdrop ? (e) => { if (e.target === e.currentTarget) onCloseRef.current() } : undefined}
     >
       <div
@@ -167,6 +168,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

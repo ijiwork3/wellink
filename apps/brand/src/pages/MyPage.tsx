@@ -199,14 +199,14 @@ export default function MyPage() {
   return (
     <div className="space-y-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-gray-900">마이페이지</h1>
           <p className="text-base text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
         </div>
         <button
           onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
-          className="flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
+          className="shrink-0 flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
         >
           <LogOut size={15} aria-hidden="true" />
           로그아웃
@@ -486,17 +486,17 @@ export default function MyPage() {
       {/* ── 구독 관리 탭 ── */}
       {activeTab === '구독 관리' && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <h2 className="text-lg font-bold text-gray-900">구독 관리</h2>
               <p className="text-sm text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
             </div>
             {isSubscribed ? (
-              <span className="text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+              <span className="shrink-0 text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
                 현재: {planLabel} 플랜
               </span>
             ) : (
-              <span className="text-sm font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
+              <span className="shrink-0 text-sm font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
                 {planLabel}
               </span>
             )}

@@ -144,6 +144,21 @@ const ADDRESS_POOL = [
   '서울특별시 송파구 올림픽로 300',
   '서울특별시 용산구 한강대로 50',
 ]
+const FEED_GRADIENTS = [
+  'from-pink-200 to-rose-300',
+  'from-blue-200 to-indigo-300',
+  'from-green-200 to-emerald-300',
+  'from-amber-200 to-orange-300',
+  'from-violet-200 to-purple-300',
+  'from-emerald-200 to-teal-300',
+]
+const REELS_GRADIENTS = [
+  'from-rose-200 to-pink-300',
+  'from-sky-200 to-blue-300',
+  'from-lime-200 to-green-300',
+  'from-orange-200 to-amber-300',
+  'from-fuchsia-200 to-violet-300',
+]
 const applicantsData = Array.from({ length: 100 }, (_, i) => {
   const name = APPLICANT_NAME_POOL[i % APPLICANT_NAME_POOL.length]
   const followersN = 5000 + (i * 317 % 40000)
@@ -193,8 +208,8 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
     address,
     addressDetail,
     // 인라인 미리보기 — 최근 피드 1장 + 릴스 1개 (정책서 § 6-3-1)
-    previewFeed: i % 7 === 0 ? null : `from-${['pink', 'blue', 'green', 'amber', 'violet', 'emerald'][i % 6]}-200 to-${['pink', 'blue', 'green', 'amber', 'violet', 'emerald'][i % 6]}-300`,
-    previewReels: i % 5 === 0 ? null : `from-${['rose', 'sky', 'lime', 'orange', 'fuchsia'][i % 5]}-200 to-${['rose', 'sky', 'lime', 'orange', 'fuchsia'][i % 5]}-300`,
+    previewFeed: i % 7 === 0 ? null : FEED_GRADIENTS[i % FEED_GRADIENTS.length],
+    previewReels: i % 5 === 0 ? null : REELS_GRADIENTS[i % REELS_GRADIENTS.length],
     isPrivate: i % 13 === 0,
   }
 })
@@ -954,7 +969,7 @@ export default function CampaignDetail() {
       {/* 헤더 카드 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @md:p-6 space-y-4">
         <div className="space-y-3">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                 <span className={`text-base font-medium rounded-full px-3 py-1 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
@@ -1366,7 +1381,7 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
+                        <div className={`w-10 h-10 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                           {a.name[0]}
                         </div>
                         <div className="leading-tight">
@@ -1610,7 +1625,7 @@ export default function CampaignDetail() {
                       <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
+                            <div className={`w-10 h-10 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                               {i.name[0]}
                             </div>
                             <div className="leading-tight">
@@ -2537,7 +2552,7 @@ export default function CampaignDetail() {
             <div className="space-y-3">
               {target && (
                 <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-8 h-8 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
+                  <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                     {target.name[0]}
                   </div>
                   <span className="text-base font-semibold text-gray-900">{target.name}</span>
@@ -2799,14 +2814,15 @@ export default function CampaignDetail() {
           const curIdx = previewable.findIndex(a => a.id === previewModal.applicantId)
           const target = previewable[curIdx]
           if (!target) return null
-          const bg = previewModal.type === 'feed' ? target.previewFeed : target.previewReels
-          const aspect = previewModal.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[400px] mx-auto'
           const hasPrev = curIdx > 0
           const hasNext = curIdx < previewable.length - 1
+          const isFeed = previewModal.type === 'feed'
+          const baseGrad = isFeed ? target.previewFeed : target.previewReels
           return (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              {/* 헤더 — 인플루언서 정보 + 이전/다음 */}
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold`}>
+                <div className={`w-10 h-10 rounded-full ${target.avatar} flex items-center justify-center text-gray-700 font-semibold shrink-0`}>
                   {target.name[0]}
                 </div>
                 <div className="flex-1 min-w-0 leading-tight">
@@ -2833,17 +2849,30 @@ export default function CampaignDetail() {
                   </button>
                 </div>
               </div>
-              {bg ? (
-                <div className={`${aspect} bg-gradient-to-br ${bg} rounded-xl flex items-center justify-center relative`}>
-                  <Image size={36} className="text-white/60" aria-hidden="true" />
-                  {previewModal.type === 'reels' && (
-                    <span className="absolute top-3 right-3 text-base bg-black/60 text-white px-2.5 py-1 rounded-full">릴스</span>
-                  )}
+              {/* 콘텐츠 그리드 — 피드: 3×2 / 릴스: 3×2 (세로 비율) */}
+              {baseGrad ? (
+                <div className={`grid ${isFeed ? 'grid-cols-3' : 'grid-cols-3'} gap-1.5`}>
+                  {Array.from({ length: 6 }, (_, i) => {
+                    const g = isFeed
+                      ? FEED_GRADIENTS[(target.id + i) % FEED_GRADIENTS.length]
+                      : REELS_GRADIENTS[(target.id + i) % REELS_GRADIENTS.length]
+                    const likes = Math.round(target.avgLikes * (0.7 + (i * 0.13) % 0.6))
+                    return (
+                      <div key={i} className={`${isFeed ? 'aspect-square' : 'aspect-[9/16]'} bg-gradient-to-br ${g} rounded-lg flex flex-col items-center justify-center relative overflow-hidden`}>
+                        <Image size={22} className="text-white/50" aria-hidden="true" />
+                        {!isFeed && i === 0 && (
+                          <span className="absolute top-1.5 right-1.5 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded-full leading-none">릴스</span>
+                        )}
+                        <span className="absolute bottom-1.5 left-1.5 text-[11px] text-white/80 font-medium">♥ {fmtNumber(likes)}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               ) : (
-                <div className={`${aspect} bg-gray-50 rounded-xl flex items-center justify-center text-base text-gray-400`}>콘텐츠 없음</div>
+                <div className="h-48 bg-gray-50 rounded-xl flex items-center justify-center text-base text-gray-400">콘텐츠 없음</div>
               )}
-              <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2 text-center">
+              {/* 통계 */}
+              <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 rounded-lg p-2">
                   <p className="text-base text-gray-400">평균 좋아요</p>
                   <p className="text-base font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
@@ -2857,7 +2886,6 @@ export default function CampaignDetail() {
                   <p className="text-base font-semibold text-gray-900">{target.engagement}%</p>
                 </div>
               </div>
-              <p className="text-base text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 Instagram 스크래핑 후 표시됩니다.</p>
             </div>
           )
         })()}

@@ -396,7 +396,7 @@ export default function AdPerformance() {
         const maxRoas = Math.max(1, ...visibleList.map(x => x.roas))
         return (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
+            <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h3 className="text-base font-semibold text-gray-900">캠페인별 성과</h3>
                 <p className="text-sm text-gray-400 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
@@ -569,7 +569,7 @@ export default function AdPerformance() {
 
       {/* 일별 광고 성과 차트 (지출 bar + 클릭 line) — 원본 MixedBarLineChart 보강 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
             <h3 className="text-base font-semibold text-gray-900">일별 광고 성과</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
