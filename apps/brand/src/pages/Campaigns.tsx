@@ -5,7 +5,7 @@ import {
   MoreVertical, Copy, Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Tooltip, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
@@ -166,19 +166,6 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
 /**
  * 칩 보조 설명 (Tooltip 컨텐츠) — 정책서 § 4-0
  */
-function getStatusTooltip(status: string): string | null {
-  switch (status) {
-    case '지원자 대기':    return '캠페인이 게시된 후 첫 지원자를 기다리는 단계입니다.'
-    case '모집중':         return '지원자가 모집되고 있습니다. 마감일까지 자유롭게 지원받습니다.'
-    case '마감임박':       return '모집 마감이 3일 이내입니다. 곧 선정 단계로 넘어갑니다.'
-    case '선정 필요':      return '모집이 끝났습니다. 지원자 선정을 진행해주세요.'
-    case '콘텐츠 등록 중': return '선정된 인플루언서가 콘텐츠를 제작·업로드 중입니다.'
-    case '완료':           return '콘텐츠 검수가 완료되어 캠페인이 마무리되었습니다.'
-    case '종료':           return '캠페인이 종료되었습니다.'
-    case '취소':           return '광고주에 의해 취소된 캠페인입니다.'
-    default:               return null
-  }
-}
 
 const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
 const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
@@ -614,12 +601,7 @@ export default function Campaigns() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      {/* 칩 친절화 — 액션 필요 단계는 Tooltip 보조 설명 (정책서 § 4-0) */}
-                      {(() => {
-                        const tooltip = getStatusTooltip(display)
-                        const badge = <StatusBadge status={display} dot={false} />
-                        return tooltip ? <Tooltip content={tooltip} multiline>{badge}</Tooltip> : badge
-                      })()}
+                      <StatusBadge status={display} dot={false} />
                       <PlatformBadge platform={c.platform} />
                       {showDDay && (
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
