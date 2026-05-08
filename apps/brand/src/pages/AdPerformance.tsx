@@ -4,6 +4,7 @@ import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, Pagination,
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 type Period = '일간' | '주간' | '월간' | '연간'
 
@@ -184,6 +185,7 @@ function RoasBar({ value, max }: { value: number; max: number }) {
 export default function AdPerformance() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
+  const isDesktop = useDeviceMode() === 'desktop'
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   // 신규 — 진행중/종료 상태 탭 + 페이지네이션 + 확장된 캠페인 hover state (원본 보강)
@@ -272,8 +274,8 @@ export default function AdPerformance() {
         <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
       </div>
 
-      {/* 기간 선택기 — sticky */}
-      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      {/* 기간 선택기 — sticky: 데스크톱 top-0, 모바일/태블릿 top-12 */}
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
         <div className="flex items-center flex-wrap gap-2">
           <DateRangePicker
             period={period}

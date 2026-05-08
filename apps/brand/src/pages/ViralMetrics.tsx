@@ -6,6 +6,7 @@ import { ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, 
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 type ViewMode = 'daily' | 'weekly' | 'monthly' | 'yearly'
 
@@ -173,6 +174,7 @@ export default function ViralMetrics() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
+  const isDesktop = useDeviceMode() === 'desktop'
   const [viewMode, setViewMode] = useState<ViewMode>('monthly')
   const [dateOffset, setDateOffset] = useState(0)
   // 신규 — 콘텐츠 필터·정렬·페이지네이션·등급 필터 (원본 보강)
@@ -322,8 +324,8 @@ export default function ViralMetrics() {
         <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
       </div>
 
-      {/* 기간 선택기 — sticky */}
-      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      {/* 기간 선택기 — sticky: 데스크톱 top-0, 모바일/태블릿 top-12 */}
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
           dateOffset={dateOffset}

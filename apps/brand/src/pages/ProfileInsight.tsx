@@ -4,6 +4,7 @@ import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, 
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
+import { useDeviceMode } from '../qa-mockup-kit'
 
 type Period = '일간' | '주간' | '월간' | '연간'
 
@@ -395,6 +396,7 @@ function MultiLineTrendChart({
 export default function ProfileInsight() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
+  const isDesktop = useDeviceMode() === 'desktop'
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
@@ -533,8 +535,8 @@ export default function ProfileInsight() {
         <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
       </div>
 
-      {/* 기간 선택기 — sticky: 스크롤해도 항상 현재 기간 확인·변경 가능 */}
-      <div className="sticky top-12 z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      {/* 기간 선택기 — sticky: 데스크톱은 상단 GNB 없으므로 top-0, 모바일/태블릿은 h-12 GNB 아래 top-12 */}
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
         <DateRangePicker
           period={period}
           dateOffset={dateOffset}
@@ -658,59 +660,61 @@ export default function ProfileInsight() {
         )
       })()}
 
-      {/* 피드별 추세선 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">피드별 성과 추세</h3>
-            <p className="text-sm text-gray-400 mt-0.5">
-              {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
-              {nullCount > 0 && <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>}
-            </p>
+      {/* 피드별 성과 추세 + 노출&도달 — 960px+ 부터 1:1 2열 */}
+      <div className="grid grid-cols-1 @[960px]:grid-cols-2 gap-4">
+        {/* 피드별 추세선 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">피드별 성과 추세</h3>
+              <p className="text-sm text-gray-400 mt-0.5">
+                {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
+                {nullCount > 0 && <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>}
+              </p>
+            </div>
+            <div className="flex gap-1.5 flex-wrap">
+              {(Object.keys(metricColors) as MetricKey[]).map(metric => (
+                <button
+                  key={metric}
+                  onClick={() => setActiveMetric(metric)}
+                  className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all ${
+                    activeMetric === metric
+                      ? 'border-transparent text-white'
+                      : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
+                  }`}
+                  style={activeMetric === metric ? { backgroundColor: metricColors[metric] } : {}}
+                >
+                  {metric === 'likes'    && <Heart size={10} />}
+                  {metric === 'reach'    && <Eye size={10} />}
+                  {metric === 'comments' && <MessageCircle size={10} />}
+                  {metric === 'saves'    && <Bookmark size={10} />}
+                  {metricLabels[metric]}
+                </button>
+              ))}
+            </div>
           </div>
-          {/* 지표 라디오 — 한 번에 하나씩 */}
-          <div className="flex gap-1.5 flex-wrap">
-            {(Object.keys(metricColors) as MetricKey[]).map(metric => (
-              <button
-                key={metric}
-                onClick={() => setActiveMetric(metric)}
-                className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all ${
-                  activeMetric === metric
-                    ? 'border-transparent text-white'
-                    : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
-                }`}
-                style={activeMetric === metric ? { backgroundColor: metricColors[metric] } : {}}
-              >
-                {metric === 'likes'    && <Heart size={10} />}
-                {metric === 'reach'    && <Eye size={10} />}
-                {metric === 'comments' && <MessageCircle size={10} />}
-                {metric === 'saves'    && <Bookmark size={10} />}
-                {metricLabels[metric]}
-              </button>
-            ))}
-          </div>
+          <MultiLineTrendChart data={trendData} activeMetrics={[activeMetric]} />
         </div>
-        <MultiLineTrendChart data={trendData} activeMetrics={[activeMetric]} />
-      </div>
 
-      {/* 노출 & 도달 라인 차트 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
-            <p className="text-sm text-gray-400 mt-0.5">
-              노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
-              {impressReachByPeriod[period].some(d => d.impressions === null) && (
-                <span className="ml-1.5 text-gray-300">· 일부 구간 데이터 없음</span>
-              )}
-            </p>
+        {/* 노출 & 도달 라인 차트 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
+              <p className="text-sm text-gray-400 mt-0.5">
+                노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
+                {impressReachByPeriod[period].some(d => d.impressions === null) && (
+                  <span className="ml-1.5 text-gray-300">· 일부 구간 데이터 없음</span>
+                )}
+              </p>
+            </div>
+            <div className="flex gap-3 text-sm text-gray-500">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" />도달</span>
+            </div>
           </div>
-          <div className="flex gap-3 text-sm text-gray-500">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" />도달</span>
-          </div>
+          <ImpressReachChart data={impressReachData} />
         </div>
-        <ImpressReachChart data={impressReachData} />
       </div>
 
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
