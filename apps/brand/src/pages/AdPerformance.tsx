@@ -5,8 +5,7 @@ import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 
-const periods = ['일간', '주간', '월간', '연간'] as const
-type Period = (typeof periods)[number]
+type Period = '일간' | '주간' | '월간' | '연간'
 
 /** 기간별 KPI 데이터 — Meta 유료 광고 기준 (원본 KPI 8개로 확장) */
 type KpiBundle = {

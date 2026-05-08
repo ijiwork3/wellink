@@ -325,6 +325,38 @@ export default function Campaigns() {
     setConfirm(null)
   }
 
+  const qaEmpty = qa === 'empty'
+  const filtered = useMemo(() => {
+    if (qaEmpty) return []
+    const q = search.trim().toLowerCase()
+    const list = campaigns.filter(c => {
+      const display = deriveDisplayStatus(c)
+      const tabMatch = matchesTab(display, activeTab)
+      return tabMatch &&
+        (platformFilter === '전체' || c.platform === platformFilter) &&
+        (categoryFilter === '전체' || c.category === categoryFilter) &&
+        (!q || c.name.toLowerCase().includes(q))
+    })
+    const sorted = [...list]
+    const tieBreak = (a: Campaign, b: Campaign) => b.id - a.id
+    sorted.sort((a, b) => {
+      if (isAllTabActive) {
+        const aNeeds = needsSelection(a) ? 1 : 0
+        const bNeeds = needsSelection(b) ? 1 : 0
+        if (aNeeds !== bNeeds) return bNeeds - aNeeds
+      }
+      let primary = 0
+      if (sort === 'deadline')          primary = a.deadline.localeCompare(b.deadline)
+      else if (sort === 'recent')       primary = b.createdAt.localeCompare(a.createdAt) || (b.id - a.id)
+      else if (sort === 'budget-desc')  primary = b.budget - a.budget
+      else if (sort === 'budget-asc')   primary = a.budget - b.budget
+      else if (sort === 'applicants-desc') primary = b.current - a.current
+      else if (sort === 'progress-desc')   primary = (b.current / Math.max(b.total, 1)) - (a.current / Math.max(a.total, 1))
+      return primary !== 0 ? primary : tieBreak(a, b)
+    })
+    return sorted
+  }, [qaEmpty, search, activeTab, isAllTabActive, platformFilter, categoryFilter, sort])
+
   if (qa === 'loading') {
     return (
       <div className="space-y-5 animate-pulse">
@@ -358,39 +390,6 @@ export default function Campaigns() {
   if (qa === 'error') {
     return <ErrorState message="캠페인 목록을 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
-
-  const qaEmpty = qa === 'empty'
-  const filtered = useMemo(() => {
-    if (qaEmpty) return []
-    const q = search.trim().toLowerCase()
-    const list = campaigns.filter(c => {
-      const display = deriveDisplayStatus(c)
-      const tabMatch = matchesTab(display, activeTab)
-      return tabMatch &&
-        (platformFilter === '전체' || c.platform === platformFilter) &&
-        (categoryFilter === '전체' || c.category === categoryFilter) &&
-        (!q || c.name.toLowerCase().includes(q))
-    })
-    const sorted = [...list]
-    const tieBreak = (a: Campaign, b: Campaign) => b.id - a.id // 동률 → 최신순
-    // 1차: 전체 탭에서는 "선정 필요" 캠페인을 상단 고정 (정책서 § 4-2)
-    sorted.sort((a, b) => {
-      if (isAllTabActive) {
-        const aNeeds = needsSelection(a) ? 1 : 0
-        const bNeeds = needsSelection(b) ? 1 : 0
-        if (aNeeds !== bNeeds) return bNeeds - aNeeds
-      }
-      let primary = 0
-      if (sort === 'deadline')          primary = a.deadline.localeCompare(b.deadline)
-      else if (sort === 'recent')       primary = b.createdAt.localeCompare(a.createdAt) || (b.id - a.id)
-      else if (sort === 'budget-desc')  primary = b.budget - a.budget
-      else if (sort === 'budget-asc')   primary = a.budget - b.budget
-      else if (sort === 'applicants-desc') primary = b.current - a.current
-      else if (sort === 'progress-desc')   primary = (b.current / Math.max(b.total, 1)) - (a.current / Math.max(a.total, 1))
-      return primary !== 0 ? primary : tieBreak(a, b)
-    })
-    return sorted
-  }, [qaEmpty, search, activeTab, isAllTabActive, platformFilter, categoryFilter, sort])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)

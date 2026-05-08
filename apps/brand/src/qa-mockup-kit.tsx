@@ -164,7 +164,7 @@ export function parseQAPath<S extends string, T extends string>(
   const modal = modalPart || undefined;
 
   const parts = mainPart
-    .split(/\s*[·:\|→]\s*|\s{2,}/)
+    .split(/\s*[·:|→]\s*|\s{2,}/)
     .map(p => p.trim())
     .filter(Boolean);
 
@@ -589,7 +589,7 @@ function QATopBar<S extends string, T extends string>({
 }
 
 function QABottomBar<S extends string, T extends string>({
-  appLabel, validStates, tabMap, onNavigate, onReset, accentColor, mockupId: _mockupId,
+  appLabel, validStates, tabMap, onNavigate, onReset, accentColor,
 }: {
   appLabel: string;
   validStates: S[];

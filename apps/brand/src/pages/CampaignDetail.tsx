@@ -572,6 +572,8 @@ export default function CampaignDetail() {
     qa === 'modal-reject' ? campaign.influencers[0]?.id ?? null : null
   )
   const [feedback, setFeedback] = useState('')
+  const device = useDeviceMode()
+  const isPhone = device === 'phone'
 
   // QA: 로딩 상태 — 스켈레톤 전체 레이아웃
   if (qa === 'loading') {
@@ -942,8 +944,6 @@ export default function CampaignDetail() {
   // 콘텐츠 순위 (승인된 것만, 좋아요 순)
   const rankedContents = [...approvedContents].sort((a, b) => b.likes - a.likes)
 
-  const device = useDeviceMode()
-  const isPhone = device === 'phone'
   const isClosed = qa === 'campaign-closed' || isCancelled
 
   // 취소·삭제 가능 여부 (목록 정책과 동일)
