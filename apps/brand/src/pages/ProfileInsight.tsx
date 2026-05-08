@@ -228,7 +228,7 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
             ? 'bg-gray-100 border border-dashed border-gray-300'
             : isMax ? 'bg-emerald-500'
             : isMin ? 'bg-gray-300'
-            : 'bg-emerald-200'
+            : 'bg-emerald-300'
           const showVal = isMax || isMin || (!isDense && !isNull)
           const valClass = isMax ? 'text-emerald-600 font-semibold'
             : isMin ? 'text-gray-400 font-medium'
