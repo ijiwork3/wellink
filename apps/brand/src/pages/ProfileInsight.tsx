@@ -617,7 +617,7 @@ export default function ProfileInsight() {
         const conv = conversionByPeriod[period]
         const ctr = conv.profileViews > 0 ? +((conv.websiteClicks / conv.profileViews) * 100).toFixed(1) : 0
         return (
-          <div className="grid grid-cols-1 @md:grid-cols-3 gap-3 @sm:gap-4">
+          <div className="grid grid-cols-1 @lg:grid-cols-3 gap-3 @sm:gap-4">
             <KPICard
               title="프로필 방문"
               value={fmtNumber(conv.profileViews)}

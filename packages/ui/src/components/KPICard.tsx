@@ -28,11 +28,11 @@ const KPICard = memo(function KPICard({ title, value, sub, trend, trendLabel, ic
     <div className="bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-2.5 hover:border-gray-200 transition-colors duration-150">
       {/* 제목 + 아이콘 */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 min-w-0">
           {icon && (
-            <span className="text-gray-400 mr-0.5">{icon}</span>
+            <span className="text-gray-400 mr-0.5 shrink-0">{icon}</span>
           )}
-          <span className="text-sm text-gray-500">{title}</span>
+          <span className="text-sm text-gray-500 whitespace-nowrap">{title}</span>
           {tooltip && (
             <Tooltip content={tooltip} side="top" multiline className="ml-0.5">
               <span aria-label="상세 정보" className="text-gray-300 hover:text-gray-400 transition-colors inline-flex">
