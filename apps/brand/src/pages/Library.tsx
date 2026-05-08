@@ -663,10 +663,10 @@ export default function Library() {
       </div>
 
       {/* Search + Filters Row */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col @md:flex-row @md:items-center gap-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
               type="text"
@@ -747,7 +747,7 @@ export default function Library() {
         </div>
 
         {/* Filter dropdowns */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex gap-3">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="text-base text-gray-600 font-medium shrink-0">상태</span>
             <CustomSelect

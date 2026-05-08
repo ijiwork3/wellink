@@ -974,7 +974,7 @@ export default function CampaignDetail() {
               <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                 <span className={`text-base font-medium rounded-full px-3 py-1 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
                 <span className="text-base font-medium rounded-full px-3 py-1 bg-gray-100 text-gray-600">{meta.campaignType}</span>
-                <span className="text-base font-medium rounded-full px-3 py-1 bg-blue-50 text-blue-600">{campaign.category}</span>
+                <span className="text-base font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text">{campaign.category}</span>
               </div>
               <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
             </div>
@@ -1002,7 +1002,7 @@ export default function CampaignDetail() {
             <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">발표</span>
+            <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">발표</span>
             <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
           </div>
           <div className="col-span-2 flex items-center gap-2 text-base min-w-0">
@@ -1034,7 +1034,7 @@ export default function CampaignDetail() {
       )}
 
       {/* 탭 */}
-      <div className="overflow-x-auto flex border-b border-gray-200 sticky top-0 bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 scrollbar-hide">
+      <div className={`overflow-x-auto flex border-b border-gray-200 sticky bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 scrollbar-hide ${device !== 'desktop' ? 'top-12' : 'top-0'}`}>
         {tabs.map(tab => {
           const isTabGated = isGated && (tab === '등록 콘텐츠' || tab === '성과 리포트')
           const isDisabled = (isClosed && tab === '지원자 관리') || isTabGated
@@ -1120,7 +1120,7 @@ export default function CampaignDetail() {
           <Section title="필수 키워드" icon={<Search size={14} />}>
             <div className="flex flex-wrap gap-1.5 mb-3">
               {meta.requiredKeywords.map(k => (
-                <span key={k} className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-base font-medium">{k}</span>
+                <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text text-base font-medium">{k}</span>
               ))}
             </div>
             <button
@@ -1644,7 +1644,7 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
                         <td className="py-3 px-4 text-base text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
                         <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-gradient-to-r from-brand-green/10 to-blue-50 text-gray-900">
+                          <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-gray-900">
                             {i.fitScore}
                           </span>
                         </td>
@@ -1652,7 +1652,7 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-base font-bold text-emerald-700">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text">등록 완료</span>
                           ) : (
                             <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-base font-bold text-gray-600">미등록</span>
                           )}
@@ -2514,7 +2514,7 @@ export default function CampaignDetail() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="relative max-w-3xl w-full max-h-[85vh] rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100 cursor-default"
+            className="relative max-w-3xl w-full max-h-[85vh] rounded-2xl overflow-hidden bg-brand-green-bg cursor-default"
           >
             <button
               type="button"
@@ -2606,12 +2606,12 @@ export default function CampaignDetail() {
           >
             {!detail ? (
               <div className="space-y-3">
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 flex items-center justify-between">
+                <div className="rounded-2xl border border-brand-green-border bg-brand-green-bg px-4 py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-base font-semibold uppercase tracking-wider text-emerald-700">완료율</p>
-                    <p className="text-3xl font-bold text-emerald-900 mt-0.5">{rate}%</p>
+                    <p className="text-base font-semibold uppercase tracking-wider text-brand-green-text">완료율</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-0.5">{rate}%</p>
                   </div>
-                  <p className="text-base text-emerald-700">{uploaded}/{total}명 등록</p>
+                  <p className="text-base text-brand-green-text">{uploaded}/{total}명 등록</p>
                 </div>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto">
                   {data.map(s => (
@@ -2627,7 +2627,7 @@ export default function CampaignDetail() {
                         <div className="flex items-center gap-2">
                           <span className="text-base font-semibold text-gray-900">{s.name}</span>
                           {(s.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="text-base font-bold rounded-full bg-emerald-100 text-emerald-700 px-2.5 py-1">등록 완료</span>
+                            <span className="text-base font-bold rounded-full bg-brand-green-bg text-brand-green-text px-2.5 py-1">등록 완료</span>
                           ) : (
                             <span className="text-base font-bold rounded-full bg-gray-100 text-gray-600 px-2.5 py-1">미등록</span>
                           )}
@@ -2675,7 +2675,7 @@ export default function CampaignDetail() {
                           href={detail.latestPostUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-base font-semibold text-emerald-700 underline mt-1 inline-block"
+                          className="text-base font-semibold text-brand-green-text underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
                         <p className="text-base text-gray-400 mt-1">연결된 게시글 없음</p>

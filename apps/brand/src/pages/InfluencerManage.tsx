@@ -762,7 +762,7 @@ export default function InfluencerManage() {
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
-                      <span className="text-sm bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">{inf.type}</span>
+                      <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                         aria-label="닫기"
