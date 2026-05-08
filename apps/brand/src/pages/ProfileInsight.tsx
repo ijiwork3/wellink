@@ -661,7 +661,7 @@ export default function ProfileInsight() {
       })()}
 
       {/* 피드별 성과 추세 + 노출&도달 — 960px+ 부터 1:1 2열 */}
-      <div className="grid grid-cols-1 @[960px]:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 @[1000px]:grid-cols-2 gap-4">
         {/* 피드별 추세선 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
@@ -718,7 +718,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
-      <div className="grid grid-cols-1 @[960px]:grid-cols-2 gap-3 @sm:gap-5">
+      <div className="grid grid-cols-1 @[1000px]:grid-cols-2 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <h3 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h3>
