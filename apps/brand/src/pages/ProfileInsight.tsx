@@ -139,6 +139,54 @@ const trendDataByPeriod: Record<Period, TrendItem[]> = {
   ],
 }
 
+/** 기간별 노출·도달 시계열 더미 데이터 */
+type ImpressReachItem = { label: string; impressions: number | null; reach: number | null; showLabel?: boolean }
+
+const impressReachByPeriod: Record<Period, ImpressReachItem[]> = {
+  일간: Array.from({ length: 30 }, (_, i) => {
+    const day = i + 1
+    const hasData = i >= 5
+    return {
+      label: `${day}일`,
+      impressions: hasData ? Math.round(800 + i * 45 + Math.sin(i * 0.8) * 200) : null,
+      reach:       hasData ? Math.round(620 + i * 32 + Math.sin(i * 0.9) * 140) : null,
+      showLabel: day === 1 || day % 5 === 0,
+    }
+  }),
+  주간: [
+    { label: '1/2주', impressions: null,   reach: null   },
+    { label: '1/3주', impressions: null,   reach: null   },
+    { label: '1/4주', impressions: 38200,  reach: 28400, showLabel: true },
+    { label: '2/1주', impressions: 42800,  reach: 31200, showLabel: true },
+    { label: '2/2주', impressions: 51600,  reach: 38800, showLabel: true },
+    { label: '2/3주', impressions: 48200,  reach: 36200, showLabel: true },
+    { label: '2/4주', impressions: 58400,  reach: 44200, showLabel: true },
+    { label: '3/1주', impressions: 64200,  reach: 48800, showLabel: true },
+    { label: '3/2주', impressions: 60400,  reach: 46200, showLabel: true },
+    { label: '3/3주', impressions: 68800,  reach: 52400, showLabel: true },
+    { label: '3/4주', impressions: 64200,  reach: 48800, showLabel: true },
+    { label: '이번주', impressions: 72400, reach: 55600, showLabel: true },
+  ],
+  월간: [
+    { label: '5월',  impressions: null,    reach: null   },
+    { label: '6월',  impressions: null,    reach: null   },
+    { label: '7월',  impressions: null,    reach: null   },
+    { label: '8월',  impressions: null,    reach: null   },
+    { label: '9월',  impressions: null,    reach: null   },
+    { label: '10월', impressions: null,    reach: null   },
+    { label: '11월', impressions: null,    reach: null   },
+    { label: '12월', impressions: null,    reach: null   },
+    { label: '1월',  impressions: 162000,  reach: 124000 },
+    { label: '2월',  impressions: 198000,  reach: 152000 },
+    { label: '3월',  impressions: 224000,  reach: 172000 },
+    { label: '4월',  impressions: 256000,  reach: 198000 },
+  ],
+  연간: [
+    { label: '2025', impressions: 1840000, reach: 1420000, showLabel: true },
+    { label: "'26*", impressions: 820000,  reach: 634000,  showLabel: true },
+  ],
+}
+
 /** 콘텐츠 유형별 성과 */
 const contentTypeData = [
   { type: '릴스',     avgReach: 5200, avgLikes: 620, engagementRate: 4.8 },
@@ -456,9 +504,19 @@ export default function ProfileInsight() {
   const kpi = kpiByPeriod[period]
   const followerData = followerDataByPeriod[period]
   const trendData = trendDataByPeriod[period]
+  const impressReachData = impressReachByPeriod[period]
 
   const nullCount = followerData.filter(d => d.value === null).length
   const ytdLabel = period === '연간' ? '+22.8% 전체' : period === '월간' ? '+22.8% YTD' : period === '주간' ? '+1.2% WoW' : '+0.3% DoD'
+
+  const periodLabel = (() => {
+    const today = new Date()
+    const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`
+    if (period === '일간') return fmt(today)
+    if (period === '주간') { const s = new Date(today); s.setDate(today.getDate() - 6); return `${fmt(s)}~${fmt(today)}` }
+    if (period === '월간') { const s = new Date(today); s.setDate(today.getDate() - 29); return `${fmt(s)}~${fmt(today)}` }
+    return `${today.getFullYear() - 1}~${today.getFullYear()}`
+  })()
 
   return (
     <div className="space-y-6">
@@ -628,6 +686,26 @@ export default function ProfileInsight() {
         <MultiLineTrendChart data={trendData} activeMetrics={activeMetrics} />
       </div>
 
+      {/* 노출 & 도달 라인 차트 */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div>
+            <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
+            <p className="text-sm text-gray-400 mt-0.5">
+              노출(총 화면 표시 횟수) vs 도달(고유 사용자 수)
+              {impressReachData.some(d => d.impressions === null) && (
+                <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>
+              )}
+            </p>
+          </div>
+          <div className="flex gap-3 text-sm text-gray-500">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" />도달</span>
+          </div>
+        </div>
+        <ImpressReachChart data={impressReachData} />
+      </div>
+
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
       <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 (3/5) */}
@@ -753,7 +831,10 @@ export default function ProfileInsight() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h3 className="text-base font-semibold text-gray-900">팔로워 분석</h3>
-          <span className="text-sm text-gray-400">28일 누적 · 비공개 계정 제외</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{periodLabel}</span>
+            <span className="text-sm text-gray-400">비공개 계정 제외</span>
+          </div>
         </div>
         <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
           {/* 성별 */}
@@ -805,5 +886,111 @@ export default function ProfileInsight() {
         </div>
       </div>
     </div>
+  )
+}
+
+/** 노출 & 도달 듀얼 라인 차트 — null 구간 점선 배경 처리 */
+function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
+  const W = 580, H = 200, padL = 52, padR = 12, padT = 12, padB = 28
+  const plotW = W - padL - padR
+  const plotH = H - padT - padB
+
+  const allImpress = data.map(d => d.impressions).filter((v): v is number => v !== null)
+  const allReach   = data.map(d => d.reach).filter((v): v is number => v !== null)
+  const maxVal = Math.max(1, ...allImpress, ...allReach)
+
+  const stepX = plotW / Math.max(data.length - 1, 1)
+  const isDense = data.length > 14
+
+  const toY = (v: number) => padT + plotH - (v / maxVal) * plotH
+
+  const buildSegments = (key: 'impressions' | 'reach') => {
+    const segs: { x: number; y: number }[][] = []
+    let cur: { x: number; y: number }[] = []
+    data.forEach((d, i) => {
+      const v = d[key]
+      if (v !== null) {
+        cur.push({ x: padL + i * stepX, y: toY(v) })
+      } else {
+        if (cur.length) { segs.push(cur); cur = [] }
+      }
+    })
+    if (cur.length) segs.push(cur)
+    return segs
+  }
+
+  const impressSegs = buildSegments('impressions')
+  const reachSegs   = buildSegments('reach')
+
+  const nullGroups: number[][] = []
+  data.forEach((d, i) => {
+    if (d.impressions === null) {
+      if (!nullGroups.length || i !== nullGroups[nullGroups.length - 1][nullGroups[nullGroups.length - 1].length - 1] + 1) {
+        nullGroups.push([i])
+      } else {
+        nullGroups[nullGroups.length - 1].push(i)
+      }
+    }
+  })
+
+  const fmtAxis = (v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 200 }} role="img" aria-label="노출 및 도달 추이 차트">
+      {[0, 0.25, 0.5, 0.75, 1].map(r => {
+        const y = padT + plotH - r * plotH
+        return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+      })}
+      {[0, 0.5, 1].map(r => (
+        <text key={r} x={padL - 6} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={9} fill="#9ca3af">
+          {fmtAxis(Math.round(r * maxVal))}
+        </text>
+      ))}
+      {nullGroups.map((group, gi) => {
+        const xS = padL + group[0] * stepX - (group[0] === 0 ? 0 : stepX / 2)
+        const xE = padL + group[group.length - 1] * stepX + (group[group.length - 1] === data.length - 1 ? 0 : stepX / 2)
+        return <rect key={gi} x={xS} y={padT} width={Math.max(0, xE - xS)} height={plotH} fill="#f9fafb" rx={3} />
+      })}
+      {nullGroups.length > 0 && (() => {
+        const firstEnd = data.findIndex(d => d.impressions !== null) - 1
+        if (firstEnd < 0) return null
+        const cx = padL + (firstEnd / 2) * stepX
+        return <text x={cx} y={padT + plotH / 2 + 4} textAnchor="middle" fill="#d1d5db" fontSize={10}>데이터 없음</text>
+      })()}
+      {impressSegs.map((seg, si) => (
+        <g key={`i-${si}`}>
+          <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
+            fill="none" stroke="#8b5cf6" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+          {seg.map((p, i) => (
+            <g key={i}>
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#8b5cf6" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
+            </g>
+          ))}
+        </g>
+      ))}
+      {reachSegs.map((seg, si) => (
+        <g key={`r-${si}`}>
+          <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
+            fill="none" stroke="#10b981" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+          {seg.map((p, i) => (
+            <g key={i}>
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#10b981" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
+            </g>
+          ))}
+        </g>
+      ))}
+      {data.map((d, i) => {
+        const x = padL + i * stepX
+        const show = isDense ? (d.showLabel ?? false) : true
+        if (!show) return null
+        return (
+          <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? '#d1d5db' : '#6b7280'} fontSize={9}>
+            {d.label}
+          </text>
+        )
+      })}
+    </svg>
   )
 }

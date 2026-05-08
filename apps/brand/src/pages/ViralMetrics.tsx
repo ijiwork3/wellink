@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, X, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
 import { ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -107,6 +108,22 @@ const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, i) => {
   }
 })
 
+// 캠페인 매칭 더미 데이터 — 콘텐츠 index % 3 === 0 항목에 배지 노출
+const CAMPAIGN_MATCH_MAP: Record<string, { campaignId: string; campaignName: string; uploadPeriodLabel: string }> = {}
+viralContentData.forEach((item, i) => {
+  if (i % 3 === 0) {
+    const names = [
+      '봄 시즌 릴스 캠페인', '비건 프로틴 체험단', '홈케어 루틴 챌린지',
+      '여름 한정 시딩', '신제품 언박싱 캠페인', '웰니스 라이프 콜라보',
+    ]
+    CAMPAIGN_MATCH_MAP[item.id] = {
+      campaignId: `camp-${(i % 6) + 1}`,
+      campaignName: names[i % names.length],
+      uploadPeriodLabel: `${item.createdAt} 등록`,
+    }
+  }
+})
+
 // 추세 미니 차트 (바 형태)
 function TrendMiniBar({ values, color }: { values: number[]; color: string }) {
   const max = Math.max(...values)
@@ -166,6 +183,7 @@ export default function ViralMetrics() {
   const [contentFilter, setContentFilter] = useState<ContentFilter>('전체')
   const [gradeFilter, setGradeFilter] = useState<GradeFilterT>('전체')
   const [contentPage, setContentPage] = useState(1)
+  const [selectedContent, setSelectedContent] = useState<ViralContent | null>(null)
   const VC_PAGE_SIZE = 10
 
   // 테이블 가로 스크롤 화살표
@@ -292,6 +310,11 @@ export default function ViralMetrics() {
   }
 
   return (
+    <>
+    {selectedContent && createPortal(
+      <ContentDetailModal content={selectedContent} onClose={() => setSelectedContent(null)} />,
+      document.body
+    )}
     <div className="space-y-6">
       {/* 헤더 — 제목과 날짜 네비게이션을 분리 (제목 한 행, 날짜 picker 아래 행) */}
       <div className="space-y-3">
@@ -488,23 +511,39 @@ export default function ViralMetrics() {
               <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-50">
-                    {['콘텐츠', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
+                    {['콘텐츠', '캠페인', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
                       <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {paginated.map(item => (
-                    <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedContent(item)}
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                             <Image size={14} className="text-gray-400" />
                           </div>
-                          <span className="text-base text-gray-900 whitespace-nowrap">{item.title}</span>
+                          <span className="text-sm text-gray-900 whitespace-nowrap">{item.title}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-base text-gray-500 whitespace-nowrap">{item.influencer}</td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        {CAMPAIGN_MATCH_MAP[item.id] ? (
+                          <Tooltip content={`${CAMPAIGN_MATCH_MAP[item.id].uploadPeriodLabel}`}>
+                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 whitespace-nowrap">
+                              <Megaphone size={10} aria-hidden="true" />
+                              {CAMPAIGN_MATCH_MAP[item.id].campaignName}
+                            </span>
+                          </Tooltip>
+                        ) : (
+                          <span className="text-sm text-gray-300">—</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{item.influencer}</td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <PlatformBadge platform={item.platform} />
                       </td>
@@ -543,7 +582,7 @@ export default function ViralMetrics() {
                   ))}
                   {paginated.length === 0 && (
                     <tr>
-                      <td colSpan={11} className="py-12 text-center text-base text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
+                      <td colSpan={12} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
                     </tr>
                   )}
                 </tbody>
@@ -561,6 +600,7 @@ export default function ViralMetrics() {
         )
       })()}
     </div>
+    </>
   )
 }
 
@@ -618,5 +658,161 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
         ))}
       </div>
     </div>
+  )
+}
+
+/** 콘텐츠 상세 모달 — performance/momentum 점수 + 주요 지표 */
+function ContentDetailModal({ content, onClose }: { content: ViralContent; onClose: () => void }) {
+  // ESC 닫기
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  const campaignMatch = CAMPAIGN_MATCH_MAP[content.id] ?? null
+
+  // 점수 시계열 더미 (7포인트)
+  const scoreHistory = content.grade === 'processing' ? [] : Array.from({ length: 7 }, (_, i) => {
+    const base = Math.max(0, content.performanceScore - (6 - i) * 4 + (i % 3) * 2)
+    const mom  = Math.max(0, content.momentumScore  - (6 - i) * 3 + (i % 4) * 3)
+    return { label: `D-${6 - i}`, performance: Math.min(100, base), momentum: Math.min(100, mom) }
+  })
+
+  const metrics = [
+    { label: '도달',   value: content.reach,    icon: <Eye size={13} />,          color: 'text-blue-600' },
+    { label: '좋아요', value: content.likes,    icon: <Heart size={13} />,         color: 'text-rose-500' },
+    { label: '댓글',   value: content.comments, icon: <MessageCircle size={13} />, color: 'text-amber-600' },
+    { label: '저장',   value: content.saves,    icon: <Bookmark size={13} />,      color: 'text-violet-600' },
+    { label: '공유',   value: content.shares,   icon: <Share2 size={13} />,        color: 'text-emerald-600' },
+    { label: '바이럴 점수', value: content.viralScore, icon: <TrendingUp size={13} />, color: 'text-brand-green' },
+  ]
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-end @sm:items-center justify-center p-0 @sm:p-4"
+      role="dialog" aria-modal="true" aria-label="콘텐츠 상세"
+    >
+      {/* 딤 */}
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+
+      {/* 패널 — 모바일 바텀시트 / 태블릿+ 센터 */}
+      <div className="relative z-10 w-full @sm:max-w-lg bg-white rounded-t-2xl @sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        {/* 헤더 */}
+        <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <GradePill grade={content.grade} />
+              <PlatformBadge platform={content.platform} />
+              <span className="text-sm font-medium text-gray-500">{content.type}</span>
+            </div>
+            <p className="text-base font-semibold text-gray-900 mt-1 leading-snug">{content.title}</p>
+            <p className="text-sm text-gray-400 mt-0.5">{content.influencer} · {content.createdAt}</p>
+          </div>
+          <button onClick={onClose} className="shrink-0 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors" aria-label="닫기">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* 캠페인 매칭 */}
+          {campaignMatch && (
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
+              <Megaphone size={14} className="text-emerald-600 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-emerald-700">{campaignMatch.campaignName}</p>
+                <p className="text-sm text-emerald-500">{campaignMatch.uploadPeriodLabel}</p>
+              </div>
+            </div>
+          )}
+
+          {/* 주요 지표 그리드 */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">주요 지표</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {metrics.map(m => (
+                <div key={m.label} className="bg-gray-50 rounded-xl p-3">
+                  <div className={`flex items-center gap-1 mb-1 ${m.color}`}>{m.icon}<span className="text-sm text-gray-500">{m.label}</span></div>
+                  <p className="text-base font-bold text-gray-900">
+                    {m.value > 0 ? fmtNumber(m.value) : '—'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 점수 섹션 */}
+          {content.grade !== 'processing' ? (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">성과 점수</h4>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm text-gray-500">퍼포먼스 점수</span>
+                    <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 누적 조회수 수준" multiline>
+                      <Info size={11} className="text-gray-400" />
+                    </Tooltip>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{content.performanceScore}</p>
+                  <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full bg-violet-500" style={{ width: `${content.performanceScore}%` }} />
+                  </div>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm text-gray-500">모멘텀 점수</span>
+                    <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 최근 조회수 증가 속도" multiline>
+                      <Info size={11} className="text-gray-400" />
+                    </Tooltip>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{content.momentumScore}</p>
+                  <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full bg-amber-400" style={{ width: `${content.momentumScore}%` }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 점수 추이 차트 */}
+              {scoreHistory.length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3 text-sm">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-violet-500 inline-block rounded" />퍼포먼스</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-amber-400 inline-block rounded" />모멘텀</span>
+                  </div>
+                  <ScoreHistoryChart data={scoreHistory} />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-blue-50 rounded-xl px-4 py-3 text-sm text-blue-600">
+              점수 산정 중입니다. 게시 후 일정 시간이 지나면 자동으로 산출됩니다.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** 점수 추이 미니 라인 차트 */
+function ScoreHistoryChart({ data }: { data: { label: string; performance: number; momentum: number }[] }) {
+  const W = 400, H = 120, padL = 8, padR = 8, padT = 8, padB = 24
+  const plotW = W - padL - padR, plotH = H - padT - padB
+  const stepX = plotW / Math.max(data.length - 1, 1)
+  const toY = (v: number) => padT + plotH - (v / 100) * plotH
+  const line = (key: 'performance' | 'momentum') =>
+    data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${padL + i * stepX} ${toY(d[key])}`).join(' ')
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 120 }}>
+      {[0, 0.5, 1].map(r => (
+        <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke="#e5e7eb" strokeWidth={1} />
+      ))}
+      <path d={line('performance')} fill="none" stroke="#8b5cf6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={line('momentum')} fill="none" stroke="#f59e0b" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      {data.map((d, i) => {
+        const x = padL + i * stepX
+        return <text key={i} x={x} y={H - 4} textAnchor="middle" fontSize={8} fill="#9ca3af">{d.label}</text>
+      })}
+    </svg>
   )
 }

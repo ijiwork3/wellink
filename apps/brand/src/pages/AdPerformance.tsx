@@ -175,7 +175,9 @@ export default function AdPerformance() {
   const [statusTab, setStatusTab] = useState<'active' | 'paused'>('active')
   const [campaignPage, setCampaignPage] = useState(1)
   const CAMPAIGN_PAGE_SIZE = 10
-  const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null)
+  const [expandedCampaign, setExpandedCampaign] = useState<string | null>(
+    ALL_CAMPAIGNS.find(c => c.status !== '종료')?.campaignId ?? null
+  )
   const [expandedAdSet, setExpandedAdSet] = useState<string | null>(null)
   const [aiRefreshing, setAiRefreshing] = useState(false)
 
