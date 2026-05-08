@@ -226,7 +226,7 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
                 </span>
               )}
               <div
-                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-brand-green/60'}`}
+                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-brand-green-border'}`}
                 style={{ height: barH }}
               />
             </div>
