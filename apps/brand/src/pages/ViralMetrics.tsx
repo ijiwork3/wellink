@@ -127,34 +127,6 @@ viralContentData.forEach((item, i) => {
 // TrendMiniBar — 추후 KPI 카드 내 미니 추세 시각화 용도로 예약
 // function TrendMiniBar({ values, color }: { values: number[]; color: string }) { ... }
 
-// 뷰 모드별 추세 데이터 — 일간 30일, 주간 12주, 월간 12개월, 연간 2025년~
-const trendData: Record<ViewMode, { reach: number[]; saves: number[]; shares: number[] }> = {
-  // 일간: 30일치 (TrendMiniBar가 비율로 자동 렌더)
-  daily: {
-    reach:  [0,0,0,0,0,0,0,0, 2100,2800,2400,3200,2900,3600,3100,3900,3500,4200,3800,4600,4100,4800,4400,4200,4600,4100,4300,4500,4200,4200],
-    saves:  [0,0,0,0,0,0,0,0, 160,195,175,220,200,245,215,265,240,290,260,330,295,340,315,308,325,295,310,320,305,312],
-    shares: [0,0,0,0,0,0,0,0, 42,52,47,61,54,70,62,76,68,82,74,88,80,90,84,80,86,78,82,84,80,82],
-  },
-  // 주간: 12주
-  weekly: {
-    reach:  [0, 0, 12800, 14200, 16800, 15200, 18700, 17100, 18200, 19400, 18700, 18700],
-    saves:  [0, 0, 1100,  1400,  1650,  1520,  1820,  1680,  1750,  1860,  1800,  1820],
-    shares: [0, 0, 275,   310,   380,   350,   410,   390,   400,   428,   415,   410],
-  },
-  // 월간: 12개월 (앞 8개월 데이터 없음 → 0)
-  monthly: {
-    reach:  [0,0,0,0,0,0,0,0, 34000,38200,44000,48200],
-    saves:  [0,0,0,0,0,0,0,0, 2800, 3100, 3600, 3890],
-    shares: [0,0,0,0,0,0,0,0, 920,  1020, 1160, 1240],
-  },
-  // 연간: 월별 12포인트
-  yearly: {
-    reach:  [28000, 54000, 89000, 124000, 168000, 215000, 264000, 318000, 365000, 410000, 462000, 578000],
-    saves:  [2100,  4200,  7000,  10200,  13800,  17600,  21800,  26200,  30100,  34500,  39200,  46680],
-    shares: [620,   1240,  2100,  3050,   4120,   5280,   6510,   7840,   9080,   10420,  11840,  14880],
-  },
-}
-
 export default function ViralMetrics() {
   const { showToast } = useToast()
   const navigate = useNavigate()
@@ -314,13 +286,12 @@ export default function ViralMetrics() {
 
   /* ── QA: 전부 0 (엣지케이스) — 데이터 있으나 지표가 모두 0 ── */
   const isZero = qa === 'zero'
-  const trendZero = { reach: [0,0,0,0,0,0,0], saves: [0,0,0,0,0,0,0], shares: [0,0,0,0,0,0,0] }
 
   const rawKpi = kpiByMode[viewMode]
   const kpi = isZero
     ? { reach: '--', shares: '--', saves: '--', viral: '--' }
     : { reach: fmtNumber(rawKpi.reach), shares: fmtNumber(rawKpi.shares), saves: fmtNumber(rawKpi.saves), viral: `${rawKpi.viral}x` }
-  const _trend = isZero ? trendZero : trendData[viewMode]
+
 
   const trendPct: Record<ViewMode, { reach: string; shares: string; saves: string; viral: string }> = {
     daily:   { reach: '+3.2%',  shares: '+5.1%',  saves: '+4.8%',  viral: '+1.2%' },
