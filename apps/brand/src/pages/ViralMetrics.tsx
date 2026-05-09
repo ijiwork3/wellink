@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, X, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
-import { ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
+import { KPICard, Modal, ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -211,6 +210,7 @@ export default function ViralMetrics() {
   }, [])
 
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
     const update = () => {
       const el = tableRef.current ?? tableWrapperRef.current
       if (!el) return
@@ -219,12 +219,21 @@ export default function ViralMetrics() {
       const visBottom = Math.min(rect.bottom, window.innerHeight)
       setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
+    const debouncedUpdate = () => {
+      if (debounceTimer !== null) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(update, 150)
+    }
     update()
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    const ro = new ResizeObserver(update)
+    window.addEventListener('resize', debouncedUpdate)
+    const ro = new ResizeObserver(debouncedUpdate)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', debouncedUpdate)
+      ro.disconnect()
+      if (debounceTimer !== null) clearTimeout(debounceTimer)
+    }
   }, [])
 
   /* ── QA: 로딩 스켈레톤 ── */
@@ -313,10 +322,7 @@ export default function ViralMetrics() {
 
   return (
     <>
-    {selectedContent && createPortal(
-      <ContentDetailModal content={selectedContent} onClose={() => setSelectedContent(null)} />,
-      document.body
-    )}
+    <ContentDetailModal content={selectedContent} onClose={() => setSelectedContent(null)} />
     <div className="space-y-6">
       {/* 헤더 */}
       <div className="flex items-center gap-2.5">
@@ -344,48 +350,45 @@ export default function ViralMetrics() {
         </div>
       )}
 
-      {/* KPI 카드 4개 — 지표 중심 */}
+      {/* KPI 카드 4개 — @wellink/ui KPICard 사용 */}
       <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500">총 바이럴 도달</span>
-            <Eye size={14} className="text-gray-400" />
-          </div>
-          <p className="text-3xl font-bold text-gray-900">{kpi.reach}</p>
-          <TrendMiniBar values={trend.reach} color={CHART_COLORS.reach} />
-          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].reach} 전기간 대비</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500">공유 수</span>
-            <Share2 size={14} className="text-gray-400" />
-          </div>
-          <p className="text-3xl font-bold text-gray-900">{kpi.shares}</p>
-          <TrendMiniBar values={trend.shares} color="var(--color-brand-green)" />
-          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].shares} 전기간 대비</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500">저장 수</span>
-            <Bookmark size={14} className="text-gray-400" />
-          </div>
-          <p className="text-3xl font-bold text-gray-900">{kpi.saves}</p>
-          <TrendMiniBar values={trend.saves} color={CHART_COLORS.saves} />
-          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].saves} 전기간 대비</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500">바이럴 계수</span>
-            <Zap size={14} className="text-gray-400" />
-          </div>
-          <p className="text-3xl font-bold text-brand-green">{kpi.viral}</p>
-          <div className="mt-3 h-8 flex items-center">
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-brand-green rounded-full" style={{ width: `${isZero ? 0 : Math.max(0, Math.min(100, (rawKpi.viral / 4) * 100))}%` }} />
-            </div>
-          </div>
-          <p className="text-sm text-brand-green font-medium mt-1">{trendPct[viewMode].viral} 전기간 대비</p>
-        </div>
+        <KPICard
+          title="총 바이럴 도달"
+          value={kpi.reach}
+          sub="고유 사용자"
+          trend={isZero ? 0 : parseFloat(trendPct[viewMode].reach)}
+          trendLabel="전기간 대비"
+          icon={<Eye size={16} aria-hidden="true" />}
+          tooltip="바이럴 콘텐츠가 도달한 고유 사용자 수 합산"
+        />
+        <KPICard
+          title="공유 수"
+          value={kpi.shares}
+          sub="콘텐츠 공유"
+          trend={isZero ? 0 : parseFloat(trendPct[viewMode].shares)}
+          trendLabel="전기간 대비"
+          icon={<Share2 size={16} aria-hidden="true" />}
+          tooltip="콘텐츠가 다른 사용자에게 공유된 횟수"
+        />
+        <KPICard
+          title="저장 수"
+          value={kpi.saves}
+          sub="지속 관심도"
+          trend={isZero ? 0 : parseFloat(trendPct[viewMode].saves)}
+          trendLabel="전기간 대비"
+          icon={<Bookmark size={16} aria-hidden="true" />}
+          tooltip="사용자가 콘텐츠를 저장한 횟수 — 지속 관심도 지표"
+        />
+        <KPICard
+          title="바이럴 계수"
+          value={kpi.viral}
+          sub="확산 지수"
+          trend={isZero ? 0 : parseFloat(trendPct[viewMode].viral)}
+          trendLabel="전기간 대비"
+          icon={<Zap size={16} aria-hidden="true" />}
+          valueColor="text-brand-green"
+          tooltip="공유·저장 기반으로 산출한 바이럴 확산 지수 (x배) — 높을수록 자생적 확산"
+        />
       </div>
 
       {/* 릴스 평균 조회수 + 등급 분포 — 원본 ViralMetricsSection 보강 */}
@@ -524,8 +527,11 @@ export default function ViralMetrics() {
                   {paginated.map(item => (
                     <tr
                       key={item.id}
-                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedContent(item)}
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedContent(item) } }}
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
@@ -564,7 +570,7 @@ export default function ViralMetrics() {
                       <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         {item.grade === 'processing' ? (
-                          <span className="text-sm text-gray-400">산정 중</span>
+                          <span className="text-sm text-gray-500">산정 중</span>
                         ) : (
                           <div className="flex items-center gap-2 min-w-[110px]">
                             <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -636,7 +642,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
   let acc = 0
   return (
     <div className="flex items-center gap-4 flex-wrap">
-      <svg width="120" height="120" viewBox="0 0 120 120">
+      <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
         {arr.map(a => {
           const start = (acc / total) * Math.PI * 2 - Math.PI / 2
           acc += a.value
@@ -665,45 +671,36 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
   )
 }
 
-/** 콘텐츠 상세 모달 — performance/momentum 점수 + 주요 지표 */
-function ContentDetailModal({ content, onClose }: { content: ViralContent; onClose: () => void }) {
-  // ESC 닫기
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [onClose])
-
-  const campaignMatch = CAMPAIGN_MATCH_MAP[content.id] ?? null
+/** 콘텐츠 상세 모달 — @wellink/ui Modal 사용 */
+function ContentDetailModal({ content, onClose }: { content: ViralContent | null; onClose: () => void }) {
+  const campaignMatch = content ? (CAMPAIGN_MATCH_MAP[content.id] ?? null) : null
 
   // 점수 시계열 더미 (7포인트)
-  const scoreHistory = content.grade === 'processing' ? [] : Array.from({ length: 7 }, (_, i) => {
+  const scoreHistory = content && content.grade !== 'processing' ? Array.from({ length: 7 }, (_, i) => {
     const base = Math.max(0, content.performanceScore - (6 - i) * 4 + (i % 3) * 2)
     const mom  = Math.max(0, content.momentumScore  - (6 - i) * 3 + (i % 4) * 3)
     return { label: `D-${6 - i}`, performance: Math.min(100, base), momentum: Math.min(100, mom) }
-  })
+  }) : []
 
-  const metrics = [
+  const metrics = content ? [
     { label: '도달',   value: content.reach,    icon: <Eye size={13} />,          color: 'text-blue-600' },
     { label: '좋아요', value: content.likes,    icon: <Heart size={13} />,         color: 'text-rose-500' },
     { label: '댓글',   value: content.comments, icon: <MessageCircle size={13} />, color: 'text-amber-600' },
     { label: '저장',   value: content.saves,    icon: <Bookmark size={13} />,      color: 'text-violet-600' },
     { label: '공유',   value: content.shares,   icon: <Share2 size={13} />,        color: 'text-emerald-600' },
     { label: '바이럴 점수', value: content.viralScore, icon: <TrendingUp size={13} />, color: 'text-brand-green' },
-  ]
+  ] : []
 
   return (
-    <div
-      className="fixed inset-0 z-[200] flex items-end @sm:items-center justify-center p-0 @sm:p-4"
-      role="dialog" aria-modal="true" aria-label="콘텐츠 상세"
+    <Modal
+      open={content !== null}
+      onClose={onClose}
+      size="md"
+      label="콘텐츠 상세"
     >
-      {/* 딤 */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-
-      {/* 패널 — 모바일 바텀시트 / 태블릿+ 센터 */}
-      <div className="relative z-10 w-full @sm:max-w-lg bg-white rounded-t-2xl @sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        {/* 헤더 */}
-        <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+      {content && (
+        <div className="space-y-5">
+          {/* 헤더 정보 */}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <GradePill grade={content.grade} />
@@ -711,14 +708,9 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent; onClo
               <span className="text-sm font-medium text-gray-500">{content.type}</span>
             </div>
             <p className="text-base font-semibold text-gray-900 mt-1 leading-snug">{content.title}</p>
-            <p className="text-sm text-gray-400 mt-0.5">{content.influencer} · {content.createdAt}</p>
+            <p className="text-sm text-gray-500 mt-0.5">{content.influencer} · {content.createdAt}</p>
           </div>
-          <button onClick={onClose} className="shrink-0 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors" aria-label="닫기">
-            <X size={18} />
-          </button>
-        </div>
 
-        <div className="p-5 space-y-5">
           {/* 캠페인 매칭 */}
           {campaignMatch && (
             <div className="flex items-center gap-2 px-3 py-2.5 bg-brand-green-bg border border-brand-green-border rounded-xl">
@@ -793,8 +785,8 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent; onClo
             </div>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    </Modal>
   )
 }
 
@@ -807,7 +799,7 @@ function ScoreHistoryChart({ data }: { data: { label: string; performance: numbe
   const line = (key: 'performance' | 'momentum') =>
     data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${padL + i * stepX} ${toY(d[key])}`).join(' ')
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 120 }}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 120 }} role="img" aria-label="퍼포먼스·모멘텀 점수 추이 차트">
       {[0, 0.5, 1].map(r => (
         <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke="#e5e7eb" strokeWidth={1} />
       ))}

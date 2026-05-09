@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
 import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -203,6 +203,20 @@ export default function AdPerformance() {
   )
   const [expandedAdSet, setExpandedAdSet] = useState<string | null>(null)
   const [aiRefreshing, setAiRefreshing] = useState(false)
+  const aiRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // AI 분석 새로고침 — setTimeout cleanup
+  const handleAiRefresh = useCallback(() => {
+    if (aiRefreshing) return
+    setAiRefreshing(true)
+    aiRefreshTimerRef.current = setTimeout(() => setAiRefreshing(false), 1800)
+  }, [aiRefreshing])
+
+  useEffect(() => {
+    return () => {
+      if (aiRefreshTimerRef.current !== null) clearTimeout(aiRefreshTimerRef.current)
+    }
+  }, [])
 
   /* ── QA: 로딩 ── */
   if (qa === 'loading') {
@@ -307,7 +321,7 @@ export default function AdPerformance() {
             <h3 className="text-base font-bold text-gray-900">AI 광고 성과 분석</h3>
           </div>
           <button
-            onClick={() => { setAiRefreshing(true); setTimeout(() => setAiRefreshing(false), 1800) }}
+            onClick={handleAiRefresh}
             disabled={aiRefreshing}
             className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
@@ -462,7 +476,9 @@ export default function AdPerformance() {
                     <div key={c.campaignId} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
                       <button
                         onClick={() => setExpandedCampaign(isCampaignOpen ? null : c.campaignId)}
-                        className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50"
+                        aria-expanded={isCampaignOpen}
+                        aria-controls={`campaign-detail-${c.campaignId}`}
+                        className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
@@ -480,7 +496,7 @@ export default function AdPerformance() {
                         {isCampaignOpen ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
                       </button>
                       {isCampaignOpen && (
-                        <div className="border-t border-gray-100 p-4">
+                        <div className="border-t border-gray-100 p-4" id={`campaign-detail-${c.campaignId}`}>
                           {/* 캠페인 KPI 8개 — 원본 동등 */}
                           <div className="grid grid-cols-2 @lg:grid-cols-4 gap-x-4 gap-y-3 mb-4">
                             {([
@@ -507,7 +523,9 @@ export default function AdPerformance() {
                                 <div key={set.id} className="rounded-lg border border-gray-100 bg-gray-50/50">
                                   <button
                                     onClick={() => setExpandedAdSet(isSetOpen ? null : set.id)}
-                                    className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100/50"
+                                    aria-expanded={isSetOpen}
+                                    aria-controls={`adset-detail-${set.id}`}
+                                    className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                                   >
                                     <div className="flex items-center gap-2.5 min-w-0">
                                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-100 text-teal-600 shrink-0">
@@ -521,7 +539,7 @@ export default function AdPerformance() {
                                     {isSetOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
                                   </button>
                                   {isSetOpen && (
-                                    <div className="border-t border-gray-100 p-3">
+                                    <div className="border-t border-gray-100 p-3" id={`adset-detail-${set.id}`}>
                                       {/* 광고세트 KPI */}
                                       <div className="grid grid-cols-2 @lg:grid-cols-4 gap-x-3 gap-y-2 mb-3">
                                         {([
@@ -621,14 +639,14 @@ export default function AdPerformance() {
             <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" />
+          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" ariaLabel="CTR 추이 차트" />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" />
+          <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.clicks }))} stroke="#3b82f6" ariaLabel="기간별 클릭 수 추이 차트" />
         </div>
       </div>
 
@@ -640,6 +658,7 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
+            ariaLabel="광고 도달과 유기적 도달 비율 도넛 차트"
             data={[
               { label: '광고 도달', value: kpi.reach, color: '#f97316' },
               { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: '#8b5cf6' },
@@ -652,6 +671,7 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
+            ariaLabel="광고 참여와 유기적 참여 비율 도넛 차트"
             data={[
               { label: '광고 참여', value: kpi.clicks, color: '#f97316' },
               { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: '#8b5cf6' },
@@ -706,7 +726,7 @@ function MixedChart({ data }: { data: { date: string; spend: number; clicks: num
   const barW = plotW / data.length * 0.6
   const stepX = plotW / Math.max(data.length - 1, 1)
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible" role="img" aria-label="기간별 광고 지출(막대)과 클릭 수(선) 추이 차트">
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
         return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
@@ -756,7 +776,7 @@ function MixedChart({ data }: { data: { date: string; spend: number; clicks: num
 }
 
 /** 단일 LineChart (gradient fill) — 원본 LineChart 동등 */
-function SimpleLineChart({ data, stroke }: { data: { label: string; value: number }[]; stroke: string }) {
+function SimpleLineChart({ data, stroke, ariaLabel }: { data: { label: string; value: number }[]; stroke: string; ariaLabel?: string }) {
   const W = 400, H = 180, padL = 36, padR = 12, padT = 12, padB = 28
   const plotW = W - padL - padR, plotH = H - padT - padB
   const max = Math.max(1, ...data.map(d => d.value))
@@ -771,7 +791,7 @@ function SimpleLineChart({ data, stroke }: { data: { label: string; value: numbe
     ? `${path} L ${points[points.length - 1].x} ${padT + plotH} L ${points[0].x} ${padT + plotH} Z`
     : ''
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} className="overflow-visible" role="img" aria-label={ariaLabel ?? '추이 차트'}>
       <defs>
         <linearGradient id={`grad-${stroke.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={stroke} stopOpacity="0.25" />
@@ -796,7 +816,7 @@ function SimpleLineChart({ data, stroke }: { data: { label: string; value: numbe
 }
 
 /** 도넛 차트 — 원본 DonutChart 동등 (SVG 인라인) */
-function DonutChartSimple({ data }: { data: { label: string; value: number; color: string }[] }) {
+function DonutChartSimple({ data, ariaLabel }: { data: { label: string; value: number; color: string }[]; ariaLabel?: string }) {
   const total = data.reduce((s, d) => s + d.value, 0)
   if (total === 0) return <p className="text-base text-gray-400 text-center py-12">데이터가 없습니다.</p>
   const cx = 90, cy = 90, r = 70, ir = 50
@@ -818,7 +838,7 @@ function DonutChartSimple({ data }: { data: { label: string; value: number; colo
   })
   return (
     <div className="flex items-center gap-6 flex-wrap">
-      <svg width="180" height="180" viewBox="0 0 180 180">
+      <svg width="180" height="180" viewBox="0 0 180 180" role="img" aria-label={ariaLabel ?? '도넛 차트'}>
         {arcs.map((a, i) => <path key={i} d={a.d} fill={a.color} />)}
       </svg>
       <div className="flex-1 min-w-[120px] space-y-2">

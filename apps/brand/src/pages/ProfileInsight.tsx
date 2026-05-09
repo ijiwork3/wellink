@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
-import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, X, Layers, Play, Image as ImageIcon } from 'lucide-react'
-import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination } from '@wellink/ui'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'lucide-react'
+import { KPICard, ErrorState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -457,6 +456,20 @@ export default function ProfileInsight() {
   const [dateOffset, setDateOffset] = useState(0)
   const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
   const [aiRefreshing, setAiRefreshing] = useState(false)
+  const aiRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // AI 분석 새로고침 — setTimeout cleanup
+  const handleAiRefresh = useCallback(() => {
+    if (aiRefreshing) return
+    setAiRefreshing(true)
+    aiRefreshTimerRef.current = setTimeout(() => setAiRefreshing(false), 1800)
+  }, [aiRefreshing])
+
+  useEffect(() => {
+    return () => {
+      if (aiRefreshTimerRef.current !== null) clearTimeout(aiRefreshTimerRef.current)
+    }
+  }, [])
 
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
@@ -480,6 +493,7 @@ export default function ProfileInsight() {
   }, [])
 
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
     const update = () => {
       const el = tableRef.current ?? tableWrapperRef.current
       if (!el) return
@@ -488,12 +502,21 @@ export default function ProfileInsight() {
       const visBottom = Math.min(rect.bottom, window.innerHeight)
       setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
+    const debouncedUpdate = () => {
+      if (debounceTimer !== null) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(update, 150)
+    }
     update()
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    const ro = new ResizeObserver(update)
+    window.addEventListener('resize', debouncedUpdate)
+    const ro = new ResizeObserver(debouncedUpdate)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', debouncedUpdate)
+      ro.disconnect()
+      if (debounceTimer !== null) clearTimeout(debounceTimer)
+    }
   }, [])
 
 
@@ -609,7 +632,7 @@ export default function ProfileInsight() {
             <h3 className="text-base font-bold text-gray-900">AI 프로필 분석</h3>
           </div>
           <button
-            onClick={() => { setAiRefreshing(true); setTimeout(() => setAiRefreshing(false), 1800) }}
+            onClick={handleAiRefresh}
             disabled={aiRefreshing}
             className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
@@ -1071,16 +1094,10 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 게시물 상세 모달 — 기존 서비스 ContentDetailModal 동등
+// 게시물 상세 모달 — @wellink/ui Modal 사용
 // 유형별(릴스/피드·카루셀/스토리)로 다른 인사이트 섹션 제공
 // ─────────────────────────────────────────────────────────────────────────────
-function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => void }) {
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [onClose])
-
+function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: () => void }) {
   const TYPE_LABEL: Record<PostType, string> = { reels: 'Reels', feed: 'Feed', carousel: 'Carousel', story: 'Story' }
   const TYPE_COLOR: Record<PostType, string> = {
     reels:    'bg-rose-50 text-rose-600',
@@ -1103,24 +1120,20 @@ function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => voi
   )
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end @sm:items-center justify-center p-0 @sm:p-4"
-      role="dialog" aria-modal="true" aria-label="게시물 상세 성과">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-      <div className="relative z-10 w-full @sm:max-w-lg bg-white rounded-t-2xl @sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between gap-3 p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[post.type]}`}>
-              {TYPE_LABEL[post.type]}
-            </span>
-            <span className="text-sm text-gray-500">{post.uploadDate}</span>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors" aria-label="닫기">
-            <X size={18} />
-          </button>
-        </div>
-        <div className="p-5 space-y-5">
-          {/* 참여율 하이라이트 — 광고주가 가장 먼저 보고 싶은 지표 */}
+    <Modal
+      open={post !== null}
+      onClose={onClose}
+      size="md"
+      label="게시물 상세 성과"
+      title={post ? `${TYPE_LABEL[post.type]} · ${post.uploadDate}` : undefined}
+    >
+      {post && (
+        <div className="space-y-5">
+          {/* 타입 배지 */}
+          <span className={`inline-flex text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[post.type]}`}>
+            {TYPE_LABEL[post.type]}
+          </span>
+          {/* 참여율 하이라이트 */}
           <div className="bg-brand-green-bg rounded-xl p-4 flex items-center gap-4">
             <div>
               <p className="text-sm text-gray-500 mb-0.5">참여율</p>
@@ -1131,7 +1144,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => voi
                 style={{ width: `${Math.min(100, post.engagementRate * 10)}%` }} />
             </div>
           </div>
-          {/* 핵심 지표 — 모든 유형 공통 */}
+          {/* 핵심 지표 */}
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-3">핵심 지표</h4>
             <div className="grid grid-cols-3 gap-2">
@@ -1143,7 +1156,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => voi
               <MetricCell label="총 참여" value={fmtNumber(post.likes + post.comments + post.saves)} />
             </div>
           </div>
-          {/* 릴스 전용 — 조회수·시청 시간이 릴스의 핵심 지표 */}
+          {/* 릴스 전용 */}
           {post.type === 'reels' && (
             <div>
               <h4 className="text-sm font-semibold text-gray-700 mb-3">릴스 인사이트</h4>
@@ -1155,7 +1168,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => voi
               </div>
             </div>
           )}
-          {/* 피드·카루셀 전용 — 프로필 유입이 핵심 전환 지표 */}
+          {/* 피드·카루셀 전용 */}
           {(post.type === 'feed' || post.type === 'carousel') && (
             <div>
               <h4 className="text-sm font-semibold text-gray-700 mb-3">피드 인사이트</h4>
@@ -1177,8 +1190,8 @@ function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => voi
             </div>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    </Modal>
   )
 }
 
@@ -1256,10 +1269,7 @@ function PostContentTable() {
 
   return (
     <>
-      {selected && createPortal(
-        <PostDetailModal post={selected} onClose={() => setSelected(null)} />,
-        document.body
-      )}
+      <PostDetailModal post={selected} onClose={() => setSelected(null)} />
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         {/* 헤더 */}
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
@@ -1308,8 +1318,11 @@ function PostContentTable() {
             <tbody>
               {paged.map(p => (
                 <tr key={p.id}
-                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setSelected(p)}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(p) } }}
                 >
                   <td className="py-3 px-4 whitespace-nowrap">
                     <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[p.type]}`}>
