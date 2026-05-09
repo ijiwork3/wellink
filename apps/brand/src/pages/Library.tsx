@@ -345,12 +345,21 @@ export default function Library() {
       if (resizeTimer !== null) clearTimeout(resizeTimer)
       resizeTimer = setTimeout(update, 150)
     }
-    window.addEventListener('scroll', update, { passive: true })
+    const scrollTarget: EventTarget = ((): EventTarget => {
+      let p = tableRef.current?.parentElement
+      while (p) {
+        const ov = getComputedStyle(p).overflowY
+        if (ov === 'auto' || ov === 'scroll') return p
+        p = p.parentElement
+      }
+      return window
+    })()
+    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
     window.addEventListener('resize', onResize)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
     return () => {
-      window.removeEventListener('scroll', update)
+      scrollTarget.removeEventListener('scroll', update)
       window.removeEventListener('resize', onResize)
       if (resizeTimer !== null) clearTimeout(resizeTimer)
       ro.disconnect()
@@ -893,9 +902,9 @@ export default function Library() {
                   >
                     <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                      <span className={`text-base px-2.5 py-1 rounded-full font-medium ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
+                      <span className={`text-base px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                       {c.type && (
-                        <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-base px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       )}
                     </div>
                     {isDownloaded && (
@@ -1082,7 +1091,7 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       {c.type ? (
-                        <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
+                        <span className={`text-base px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       ) : (
                         <span className="text-base text-gray-500">—</span>
                       )}
@@ -1312,7 +1321,7 @@ export default function Library() {
                   <p className="text-sm text-gray-500 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (
-                      <span key={tag} className="text-sm px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded-full">{tag}</span>
+                      <span key={tag} className="text-sm px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded-full whitespace-nowrap">{tag}</span>
                     ))}
                   </div>
                 </div>

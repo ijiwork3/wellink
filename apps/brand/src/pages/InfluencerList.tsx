@@ -277,11 +277,20 @@ export default function InfluencerList() {
       setBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
     update()
-    window.addEventListener('scroll', update, { passive: true })
+    const scrollTarget: EventTarget = ((): EventTarget => {
+      let p = tableRef.current?.parentElement
+      while (p) {
+        const ov = getComputedStyle(p).overflowY
+        if (ov === 'auto' || ov === 'scroll') return p
+        p = p.parentElement
+      }
+      return window
+    })()
+    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
     window.addEventListener('resize', update)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
   }, [])
 
   useEffect(() => {

@@ -183,7 +183,7 @@ const fmtBudget = (n: number) => n === 0 ? '-' : `â‚©${(n / 10000).toFixed(0)}ë§
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700">
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700 whitespace-nowrap">
       {label}
       <button
         type="button"

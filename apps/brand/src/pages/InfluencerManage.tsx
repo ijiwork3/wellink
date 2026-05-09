@@ -504,7 +504,7 @@ export default function InfluencerManage() {
                     <p className="text-sm text-gray-500 truncate">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
-                        <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-1 rounded-full">{c}</span>
+                        <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-1 rounded-full whitespace-nowrap">{c}</span>
                       ))}
                     </div>
                   </div>
@@ -583,7 +583,7 @@ export default function InfluencerManage() {
                 <div className="flex items-center justify-between gap-2" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                     {inf.groups.map(g => (
-                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green/10 text-brand-green">
+                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green/10 text-brand-green whitespace-nowrap">
                         {g}
                         <button onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
                           <X size={11} aria-hidden="true" />
@@ -787,7 +787,7 @@ export default function InfluencerManage() {
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
-                      <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full">{inf.type}</span>
+                      <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full whitespace-nowrap">{inf.type}</span>
                       <button
                         onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                         aria-label="닫기"
@@ -842,7 +842,7 @@ export default function InfluencerManage() {
                   {/* 카테고리 태그 */}
                   <div className="flex gap-1.5 flex-wrap mb-3">
                     {inf.category.map(c => (
-                      <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">#{c}</span>
+                      <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full whitespace-nowrap">#{c}</span>
                     ))}
                   </div>
                   <div className="grid grid-cols-3 gap-2.5">

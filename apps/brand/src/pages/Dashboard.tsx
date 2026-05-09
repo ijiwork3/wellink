@@ -193,11 +193,20 @@ export default function Dashboard() {
     let resizeTimer: ReturnType<typeof setTimeout>
     const handleResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(update, 150) }
     update()
-    window.addEventListener('scroll', update, { passive: true })
+    const scrollTarget: EventTarget = ((): EventTarget => {
+      let p = tableRef.current?.parentElement
+      while (p) {
+        const ov = getComputedStyle(p).overflowY
+        if (ov === 'auto' || ov === 'scroll') return p
+        p = p.parentElement
+      }
+      return window
+    })()
+    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
     window.addEventListener('resize', handleResize)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', handleResize); clearTimeout(resizeTimer); ro.disconnect() }
+    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', handleResize); clearTimeout(resizeTimer); ro.disconnect() }
   }, [])
 
   const scrollTable = (dir: 'left' | 'right') => {

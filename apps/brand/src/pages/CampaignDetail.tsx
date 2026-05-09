@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination } from '@wellink/ui'
@@ -578,6 +578,124 @@ export default function CampaignDetail() {
   const device = useDeviceMode()
   const isPhone = device === 'phone'
 
+  // 탭 바 스크롤
+  const tabScrollRef = useRef<HTMLDivElement>(null)
+  const [canTabScrollLeft, setCanTabScrollLeft] = useState(false)
+  const [canTabScrollRight, setCanTabScrollRight] = useState(false)
+
+  // 지원자 관리 테이블 스크롤
+  const applicantTableScrollRef = useRef<HTMLDivElement>(null)
+  const applicantTableWrapperRef = useRef<HTMLDivElement>(null)
+  const applicantTableRef = useRef<HTMLTableElement>(null)
+  const [canApplicantScrollLeft, setCanApplicantScrollLeft] = useState(false)
+  const [canApplicantScrollRight, setCanApplicantScrollRight] = useState(false)
+  const [applicantBtnTop, setApplicantBtnTop] = useState<number | null>(null)
+
+  // 선정 인플루언서 테이블 스크롤
+  const selectedTableScrollRef = useRef<HTMLDivElement>(null)
+  const selectedTableWrapperRef = useRef<HTMLDivElement>(null)
+  const selectedTableRef = useRef<HTMLTableElement>(null)
+  const [canSelectedScrollLeft, setCanSelectedScrollLeft] = useState(false)
+  const [canSelectedScrollRight, setCanSelectedScrollRight] = useState(false)
+  const [selectedBtnTop, setSelectedBtnTop] = useState<number | null>(null)
+
+  // 탭 바 스크롤 상태
+  useEffect(() => {
+    const el = tabScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanTabScrollLeft(el.scrollLeft > 0)
+      setCanTabScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  // 지원자 관리 테이블 스크롤 상태
+  useEffect(() => {
+    const el = applicantTableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanApplicantScrollLeft(el.scrollLeft > 0)
+      setCanApplicantScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = applicantTableRef.current ?? applicantTableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setApplicantBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    const scrollTarget: EventTarget = ((): EventTarget => {
+      let p = applicantTableRef.current?.parentElement
+      while (p) {
+        const ov = getComputedStyle(p).overflowY
+        if (ov === 'auto' || ov === 'scroll') return p
+        p = p.parentElement
+      }
+      return window
+    })()
+    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (applicantTableRef.current) ro.observe(applicantTableRef.current)
+    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
+
+  // 선정 인플루언서 테이블 스크롤 상태
+  useEffect(() => {
+    const el = selectedTableScrollRef.current
+    if (!el) return
+    const update = () => {
+      setCanSelectedScrollLeft(el.scrollLeft > 0)
+      setCanSelectedScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const el = selectedTableRef.current ?? selectedTableWrapperRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const visTop = Math.max(rect.top, 0)
+      const visBottom = Math.min(rect.bottom, window.innerHeight)
+      setSelectedBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
+    }
+    update()
+    const scrollTarget: EventTarget = ((): EventTarget => {
+      let p = selectedTableRef.current?.parentElement
+      while (p) {
+        const ov = getComputedStyle(p).overflowY
+        if (ov === 'auto' || ov === 'scroll') return p
+        p = p.parentElement
+      }
+      return window
+    })()
+    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
+    window.addEventListener('resize', update)
+    const ro = new ResizeObserver(update)
+    if (selectedTableRef.current) ro.observe(selectedTableRef.current)
+    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+  }, [])
+
   // QA: 로딩 상태 — 스켈레톤 전체 레이아웃
   if (qa === 'loading') {
     return (
@@ -1058,7 +1176,14 @@ export default function CampaignDetail() {
       )}
 
       {/* 탭 */}
-      <div className={`overflow-x-auto flex border-b border-gray-200 sticky bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 scrollbar-hide ${device !== 'desktop' ? 'top-12' : 'top-0'}`}>
+      <div className={`relative flex items-center border-b border-gray-200 sticky bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 ${device !== 'desktop' ? 'top-12' : 'top-0'}`}>
+        {canTabScrollLeft && (
+          <button type="button" onClick={() => tabScrollRef.current?.scrollBy({ left: -120, behavior: 'smooth' })}
+            className="shrink-0 p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <ChevronLeft size={14} aria-hidden="true" />
+          </button>
+        )}
+        <div ref={tabScrollRef} className="flex-1 flex items-center overflow-x-auto scrollbar-hide">
         {tabs.map(tab => {
           const isTabGated = isGated && (tab === '등록 콘텐츠' || tab === '성과 리포트')
           const isDisabled = (isClosed && tab === '지원자 관리') || isTabGated
@@ -1100,6 +1225,13 @@ export default function CampaignDetail() {
             </button>
           )
         })}
+        </div>
+        {canTabScrollRight && (
+          <button type="button" onClick={() => tabScrollRef.current?.scrollBy({ left: 120, behavior: 'smooth' })}
+            className="shrink-0 p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <ChevronRight size={14} aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {/* ─── A) 캠페인 정보 탭 ─── */}
@@ -1352,9 +1484,26 @@ export default function CampaignDetail() {
             )
           })()}
 
+          {applicantBtnTop !== null && canApplicantScrollLeft && (
+            <button type="button" onClick={() => applicantTableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
+              aria-label="왼쪽으로 스크롤" style={{ top: applicantBtnTop }}
+              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <ChevronLeft size={15} aria-hidden="true" />
+            </button>
+          )}
+          {applicantBtnTop !== null && canApplicantScrollRight && (
+            <button type="button" onClick={() => applicantTableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
+              aria-label="오른쪽으로 스크롤" style={{ top: applicantBtnTop }}
+              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <ChevronRight size={15} aria-hidden="true" />
+            </button>
+          )}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full">
+            <div className="relative" ref={applicantTableWrapperRef}>
+              {canApplicantScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+              {canApplicantScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+            <div className="overflow-x-auto scrollbar-none" ref={applicantTableScrollRef}>
+            <table className="w-full" ref={applicantTableRef}>
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 w-10">
@@ -1545,7 +1694,8 @@ export default function CampaignDetail() {
                 )}
               </tbody>
             </table>
-            </div>
+            </div>{/* /overflow-x-auto */}
+            </div>{/* /relative wrapper */}
             <Pagination total={totalCount} page={applicantsPage} pageSize={PAGE_SIZE} onChange={setApplicantsPage} />
           </div>
         </div>
@@ -1620,9 +1770,27 @@ export default function CampaignDetail() {
             const totalSel = filteredSelected.length
             const pagedSelected = filteredSelected.slice((selectedPage - 1) * PAGE_SIZE, selectedPage * PAGE_SIZE)
             return (
+              <>
+              {selectedBtnTop !== null && canSelectedScrollLeft && (
+                <button type="button" onClick={() => selectedTableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
+                  aria-label="왼쪽으로 스크롤" style={{ top: selectedBtnTop }}
+                  className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <ChevronLeft size={15} aria-hidden="true" />
+                </button>
+              )}
+              {selectedBtnTop !== null && canSelectedScrollRight && (
+                <button type="button" onClick={() => selectedTableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
+                  aria-label="오른쪽으로 스크롤" style={{ top: selectedBtnTop }}
+                  className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <ChevronRight size={15} aria-hidden="true" />
+                </button>
+              )}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                <table className="w-full">
+                <div className="relative" ref={selectedTableWrapperRef}>
+                  {canSelectedScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+                  {canSelectedScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+                <div className="overflow-x-auto scrollbar-none" ref={selectedTableScrollRef}>
+                <table className="w-full" ref={selectedTableRef}>
                   <thead>
                     <tr className="bg-gray-50/50 border-b border-gray-100">
                       <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">이름</th>
@@ -1725,9 +1893,11 @@ export default function CampaignDetail() {
                     )}
                   </tbody>
                 </table>
-                </div>
+                </div>{/* /overflow-x-auto */}
+                </div>{/* /relative wrapper */}
                 <Pagination total={totalSel} page={selectedPage} pageSize={PAGE_SIZE} onChange={setSelectedPage} />
               </div>
+              </>
             )
           })()}
         </div>
