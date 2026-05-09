@@ -1007,6 +1007,7 @@ function MixedChart({
       {/* active indicator + tooltip */}
       {activeIndex !== null && (() => {
         const d = data[activeIndex]
+        if (!d) return null
         const x = padL + activeIndex * stepX
         const spendY = padT + plotH - (d.spend / maxSpend) * plotH
         const clicksY = padT + plotH - (d.clicks / maxClicks) * plotH

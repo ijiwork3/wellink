@@ -1687,6 +1687,20 @@ function PostContentTable() {
         <div className="relative">
           {postCanScrollLeft  && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
           {postCanScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+          {postCanScrollLeft && (
+            <button type="button" onClick={() => postScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
+              aria-label="왼쪽으로 스크롤"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <ChevronLeft size={13} aria-hidden="true" />
+            </button>
+          )}
+          {postCanScrollRight && (
+            <button type="button" onClick={() => postScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
+              aria-label="오른쪽으로 스크롤"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <ChevronRight size={13} aria-hidden="true" />
+            </button>
+          )}
           <div className="overflow-x-auto scrollbar-none" ref={postScrollRef}>
           <table className="w-full">
             <thead>
