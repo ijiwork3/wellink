@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle, Lock } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
 import { KPICard, Modal, ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { useDeviceMode } from '../qa-mockup-kit'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 
 type ViewMode = 'daily' | 'weekly' | 'monthly' | 'yearly'
 
@@ -175,7 +174,6 @@ export default function ViralMetrics() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
   const isDesktop = useDeviceMode() === 'desktop'
-  const { canViewAdvancedAnalytics } = usePlanAccess()
   const [viewMode, setViewMode] = useState<ViewMode>('monthly')
   const [dateOffset, setDateOffset] = useState(0)
   // 신규 — 콘텐츠 필터·정렬·페이지네이션·등급 필터 (원본 보강)
@@ -397,7 +395,6 @@ export default function ViralMetrics() {
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         {/* 릴스 평균 조회수 카드 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-500">릴스 평균 조회수</span>
             <Eye size={14} className="text-gray-400" />
@@ -412,7 +409,6 @@ export default function ViralMetrics() {
         </div>
         {/* 등급 분포 도넛 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
             <h3 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h3>
@@ -619,22 +615,6 @@ export default function ViralMetrics() {
 }
 
 /** 등급 배지 — 원본 ScorePill 동등 */
-/** 심화 분석 잠금 overlay — Scale 미만 플랜에서 카드 위에 표시 */
-function AdvancedAnalyticsOverlay() {
-  return (
-    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-xl bg-white/80 backdrop-blur-[2px]">
-      <Lock size={20} className="text-gray-400" aria-hidden="true" />
-      <p className="text-sm font-medium text-gray-600">Scale 이상 플랜에서 이용 가능합니다</p>
-      <Link
-        to="/subscription"
-        className="mt-1 text-sm font-semibold text-brand-green hover:underline"
-      >
-        업그레이드 →
-      </Link>
-    </div>
-  )
-}
-
 function GradePill({ grade }: { grade: ContentGrade }) {
   const cls = grade === 'A' ? 'bg-brand-green-bg text-brand-green-text'
     : grade === 'B' ? 'bg-amber-100 text-amber-700'

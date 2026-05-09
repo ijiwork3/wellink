@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -85,7 +84,6 @@ function planFromQA(qa: string): string {
 
 export default function Subscription() {
   const qa = useQAMode()
-  const navigate = useNavigate()
   const { plan: globalPlan, qaPlan } = usePlanAccess()
   // 전역 plan 우선, ?qa=plan-X 도 호환 (페이지 단축경로)
   const [currentPlan, setCurrentPlan] = useState<string>(() =>
@@ -181,15 +179,6 @@ export default function Subscription() {
     //   failUrl: `${window.location.origin}/payment/fail`,
     // })
 
-    // 현재: 개발 중 플레이스홀더 — 성공 페이지로 바로 이동
-    const priceRaw = selectedPlan.price.replace(/,/g, '')
-    const isNumeric = /^\d+$/.test(priceRaw)
-    if (isNumeric) {
-      navigate(`/payment/success?orderId=dev-order-${Date.now()}&amount=${priceRaw}&plan=${selectedPlan.id}`)
-      return
-    }
-
-    // Enterprise(가격 미확정)는 기존 mock 흐름 유지
     setConfirmed(true)
     confirmTimerRef.current = setTimeout(() => {
       if (confirmModal) {

@@ -1,12 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2, Lock } from 'lucide-react'
+import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
 import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { useDeviceMode } from '../qa-mockup-kit'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 
 type Period = '일간' | '주간' | '월간' | '연간'
 
@@ -194,7 +192,6 @@ export default function AdPerformance() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
   const isDesktop = useDeviceMode() === 'desktop'
-  const { canViewAdvancedAnalytics } = usePlanAccess()
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   // 신규 — 진행중/종료 상태 탭 + 페이지네이션 + 확장된 캠페인 hover state (원본 보강)
@@ -622,7 +619,6 @@ export default function AdPerformance() {
 
       {/* 기간별 광고 성과 차트 (지출 bar + 클릭 line) — 원본 MixedBarLineChart 보강 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-        {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
             <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h3>
@@ -639,7 +635,6 @@ export default function AdPerformance() {
       {/* CTR 추이 + 기간별 클릭 — 2열 배치, 원본 LineChart 보강 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -647,7 +642,6 @@ export default function AdPerformance() {
           <SimpleLineChart data={chartData.map(d => ({ label: d.date, value: d.ctr }))} stroke="#f97316" ariaLabel="CTR 추이 차트" />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -659,7 +653,6 @@ export default function AdPerformance() {
       {/* 도달·참여 출처 도넛 — 원본 DonutChart 보강 (광고 vs 유기적) */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">도달 출처</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -673,7 +666,6 @@ export default function AdPerformance() {
           />
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
-          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center gap-1.5 mb-4">
             <h3 className="text-base font-semibold text-gray-900">참여 출처</h3>
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -721,22 +713,6 @@ export default function AdPerformance() {
           ))}
         </div>
       </div>
-    </div>
-  )
-}
-
-/** 심화 분석 잠금 overlay — Scale 미만 플랜에서 차트 영역 위에 표시 */
-function AdvancedAnalyticsOverlay() {
-  return (
-    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-xl bg-white/80 backdrop-blur-[2px]">
-      <Lock size={20} className="text-gray-400" aria-hidden="true" />
-      <p className="text-sm font-medium text-gray-600">Scale 이상 플랜에서 이용 가능합니다</p>
-      <Link
-        to="/subscription"
-        className="mt-1 text-sm font-semibold text-brand-green hover:underline"
-      >
-        업그레이드 →
-      </Link>
     </div>
   )
 }
