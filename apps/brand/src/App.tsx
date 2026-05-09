@@ -15,6 +15,8 @@ import CampaignNew from './pages/CampaignNew'
 import CampaignDetail from './pages/CampaignDetail'
 import Library from './pages/Library'
 import Subscription from './pages/Subscription'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentFail from './pages/PaymentFail'
 import MyPage from './pages/MyPage'
 import Notifications from './pages/Notifications'
 import Moodboard from './pages/Moodboard'
@@ -205,6 +207,17 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
+  /* ────────────────── 결제 결과 ────────────────── */
+  {
+    label: '결제 결과',
+    children: [
+      { label: '결제 성공 (Scale)', path: '/payment/success?orderId=dev-order&amount=299000&plan=scale' },
+      { label: '결제 성공 (Focus)', path: '/payment/success?orderId=dev-order&amount=99000&plan=focus' },
+      { label: '결제 실패 — 카드 거절', path: '/payment/fail?code=REJECT_CARD_PAYMENT&message=카드 결제가 거절되었습니다.' },
+      { label: '결제 실패 — 잔액 부족', path: '/payment/fail?code=NOT_ENOUGH_BALANCE&message=잔액이 부족합니다.' },
+    ],
+  },
+
   /* ────────────────── 마이페이지 ────────────────── */
   {
     label: '마이페이지',
@@ -257,6 +270,8 @@ function AppRoutes() {
       '/subscription':       '구독 관리 — WELLINK AI',
       '/notifications':      '알림 센터 — WELLINK AI',
       '/mypage':             '마이페이지 — WELLINK AI',
+      '/payment/success':    '결제 완료 — WELLINK AI',
+      '/payment/fail':       '결제 실패 — WELLINK AI',
       '/login':              '로그인 — WELLINK AI',
       '/signup':             '회원가입 — WELLINK AI',
     }
@@ -271,6 +286,8 @@ function AppRoutes() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/fail" element={<PaymentFail />} />
         <Route path="/moodboard" element={<Moodboard />} />
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />

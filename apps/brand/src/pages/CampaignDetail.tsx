@@ -535,6 +535,8 @@ export default function CampaignDetail() {
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
+  // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리)
+  const [downloadedIds, setDownloadedIds] = useState<Set<number>>(new Set())
   // 미구독자 다운로드 흐름 — 플랜 선택 → 결제 단계 (모달 내 다단계)
   type DownloadStep = 'plan-select' | 'payment'
   const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')
@@ -809,18 +811,27 @@ export default function CampaignDetail() {
     })
   }
 
+  const closeDownloadModal = () => {
+    if (isPaying) return
+    setDownloadModal(false)
+    setDownloadStep('plan-select')
+  }
+
+  // 구독자 건당 결제 — Library 패턴과 동일
+  // TODO: 다운로드 단가 미확정 — 현재 임의값(3,000원), 클라이언트 확정 후 반영 필요
+  const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
+
   const handleDownload = () => {
     if (isPaying) return
     setIsPaying(true)
-    setDownloadModal(false)
-    setSelectedContents(new Set())
-    showToast('다운로드 준비 중입니다.', 'success')
-    setTimeout(() => setIsPaying(false), TIMER_MS.STATE_FEEDBACK)
-  }
-
-  const closeDownloadModal = () => {
-    setDownloadModal(false)
-    setDownloadStep('plan-select')
+    showToast('PG 결제 진행 중입니다... (mock)', 'info')
+    setTimeout(() => {
+      setDownloadedIds(prev => new Set([...prev, ...selectedContents]))
+      setDownloadModal(false)
+      setSelectedContents(new Set())
+      setIsPaying(false)
+      showToast(`${selectedContents.size}건 결제 완료. 다운로드를 시작합니다.`, 'success')
+    }, 1200)
   }
 
   const handlePayAndDownload = () => {
@@ -2397,20 +2408,23 @@ export default function CampaignDetail() {
         )
       })()}
 
-      {/* 콘텐츠 다운로드 모달 — 구독자: 즉시 다운로드 / 미구독자: 플랜 선택 → 결제 → 다운로드 */}
+      {/* 콘텐츠 다운로드 모달 — 구독자: 건당 결제(Library 패턴) / 미구독자: 플랜 선택 → 결제 → 다운로드 */}
       <Modal
         open={downloadModal}
         onClose={closeDownloadModal}
-        title={canDownloadContent ? '콘텐츠 다운로드' : (downloadStep === 'plan-select' ? '구독 후 다운로드 가능' : '결제 진행')}
+        title={canDownloadContent ? '콘텐츠를 다운로드하시겠습니까?' : (downloadStep === 'plan-select' ? '구독 후 다운로드 가능' : '결제 진행')}
         size={canDownloadContent ? 'sm' : 'md'}
         footer={canDownloadContent ? (
-          <button
-            onClick={handleDownload}
-            disabled={isPaying || selectedContents.size === 0}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            다운로드
-          </button>
+          <>
+            <button onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
+            <button
+              onClick={handleDownload}
+              disabled={isPaying || selectedContents.size === 0}
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50"
+            >
+              {isPaying ? '결제 중…' : '결제 후 다운로드'}
+            </button>
+          </>
         ) : downloadStep === 'plan-select' ? (
           <>
             <button onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
@@ -2440,18 +2454,20 @@ export default function CampaignDetail() {
         )}
       >
         {canDownloadContent ? (
+          // 구독자 — Library 건당 결제 패턴과 동일
           <div className="space-y-3">
-            <p className="text-base text-gray-600">선택한 콘텐츠를 다운로드합니다.</p>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between text-base">
-                <span className="text-gray-500">현재 플랜</span>
-                <span className="text-gray-900 font-medium">{planLabel}</span>
-              </div>
-              <div className="flex justify-between text-base">
-                <span className="text-gray-500">선택 콘텐츠</span>
-                <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
+            <p className="text-base text-gray-600">
+              다운로드 1건당 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>이 부과됩니다.
+            </p>
+            <div className="space-y-2 text-base bg-gray-50 rounded-xl p-4">
+              <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">선택한 콘텐츠</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">건수</span><span className="font-medium">{selectedContents.size}건</span></div>
+              <div className="flex justify-between border-t border-gray-200 pt-2 mt-1">
+                <span className="text-gray-500">결제 금액</span>
+                <span className="font-semibold text-gray-900">₩{(PRICE_PER_DOWNLOAD * selectedContents.size).toLocaleString()}</span>
               </div>
             </div>
+            <p className="text-base text-gray-500">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
             <p className="text-base text-gray-500">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
           </div>
         ) : downloadStep === 'plan-select' ? (
