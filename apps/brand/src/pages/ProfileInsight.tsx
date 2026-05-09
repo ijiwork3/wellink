@@ -8,6 +8,14 @@ import { useDeviceMode } from '../qa-mockup-kit'
 
 type Period = '일간' | '주간' | '월간' | '연간'
 
+/** 배열 앞뒤 null 항목 제거 — 컴포넌트 외부 모듈 수준 유틸 */
+function trimEdgeNulls<T>(arr: T[], isNull: (item: T) => boolean): T[] {
+  const first = arr.findIndex(item => !isNull(item))
+  if (first === -1) return arr
+  const last = arr.length - 1 - [...arr].reverse().findIndex(item => !isNull(item))
+  return arr.slice(first, last + 1)
+}
+
 /** 기간별 KPI 데이터 */
 const kpiByPeriod: Record<Period, { followers: number; reach: number; engagement: number; impressions: number; trends: [number, number, number, number] }> = {
   일간: { followers: 24800, reach: 9.8,  engagement: 4.2, impressions: 31200,   trends: [0.1, 0.8, 0.5, 2.1] },
@@ -278,8 +286,11 @@ function FollowerBarChart({
   const isDense = data.length > 14
   const BAR_AREA_PX = 112
 
+  // 가로 스크롤 발생 최소 너비: 바당 최소 20px (일간 30개 = 600px → 모바일에서 스크롤)
+  const barMinW = Math.max(240, data.length * 20)
+
   return (
-    <div className="space-y-1" role="img" aria-label="팔로워 추이 차트">
+    <div className="space-y-1" style={{ minWidth: barMinW }} role="img" aria-label="팔로워 추이 차트">
       {/* 선택된 막대 값 표시 */}
       <div className="h-5 mb-1">
         {activeIndex != null && data[activeIndex]?.value != null && (
@@ -395,9 +406,12 @@ function MultiLineTrendChart({
 
   return (
     <svg
+      width="100%"
+      height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className="w-full"
-      style={{ maxHeight: '200px', touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44) }}
+      preserveAspectRatio="none"
+      className="overflow-visible"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44) }}
       role="img"
       aria-label="기간별 지표 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
@@ -587,20 +601,33 @@ export default function ProfileInsight() {
     }
   }, [])
 
-  // period/isTouch 변경 시 차트 인덱스 초기화 (실제 데이터 길이는 렌더 시점에 계산됨)
+  // period/isTouch 변경 시 차트 인덱스 초기화 + 스크롤 위치 초기화
+  // ⚠️ trimEdgeNulls 적용 후의 실제 데이터 길이로 인덱스 설정 (untrimmed 길이 사용 시 OOB 버그)
   useEffect(() => {
     if (isTouch) {
-      // 모바일: 마지막 인덱스 선택 (기간별 실제 데이터 길이 기반)
-      const fData = followerDataByPeriod[period]
-      const tData = trendDataByPeriod[period]
-      const irData = impressReachByPeriod[period]
+      // 모바일: 마지막 인덱스 선택 (trimEdgeNulls 적용 후 실제 데이터 길이 기반)
+      const fData = trimEdgeNulls(followerDataByPeriod[period],  d => d.value === null)
+      const tData = trimEdgeNulls(trendDataByPeriod[period],     d => d.likes === null)
+      const irData = trimEdgeNulls(impressReachByPeriod[period], d => d.impressions === null)
       setFollowerChartIdx(fData.length - 1)
       setTrendChartIdx(tData.length - 1)
       setImpReachChartIdx(irData.length - 1)
+      // 모바일: 마지막 포인트(활성 툴팁)가 보이도록 오른쪽 끝으로 스크롤
+      requestAnimationFrame(() => {
+        followerChartScrollRef.current?.scrollTo({ left: followerChartScrollRef.current.scrollWidth })
+        trendChartScrollRef.current?.scrollTo({ left: trendChartScrollRef.current.scrollWidth })
+        impReachChartScrollRef.current?.scrollTo({ left: impReachChartScrollRef.current.scrollWidth })
+      })
     } else {
       setFollowerChartIdx(null)
       setTrendChartIdx(null)
       setImpReachChartIdx(null)
+      // PC: 처음으로 스크롤 초기화
+      requestAnimationFrame(() => {
+        followerChartScrollRef.current?.scrollTo({ left: 0 })
+        trendChartScrollRef.current?.scrollTo({ left: 0 })
+        impReachChartScrollRef.current?.scrollTo({ left: 0 })
+      })
     }
   }, [period, isTouch])
 
@@ -779,12 +806,6 @@ export default function ProfileInsight() {
   const kpi = kpiByPeriod[period]
 
   // 앞뒤 null 항목 제거 — 데이터 없는 구간이 차트 너비를 잠식하지 않도록
-  const trimEdgeNulls = <T,>(arr: T[], isNull: (item: T) => boolean): T[] => {
-    const first = arr.findIndex(item => !isNull(item))
-    if (first === -1) return arr
-    const last = arr.length - 1 - [...arr].reverse().findIndex(item => !isNull(item))
-    return arr.slice(first, last + 1)
-  }
   const followerData  = trimEdgeNulls(followerDataByPeriod[period],  d => d.value === null)
   const trendData     = trimEdgeNulls(trendDataByPeriod[period],     d => d.likes === null)
   const impressReachData = trimEdgeNulls(impressReachByPeriod[period], d => d.impressions === null)
@@ -1318,9 +1339,12 @@ function ImpressReachChart({
 
   return (
     <svg
+      width="100%"
+      height={H}
       viewBox={`0 0 ${W} ${H}`}
-      className="w-full"
-      style={{ maxHeight: 200, touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      preserveAspectRatio="none"
+      className="overflow-visible"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
       role="img"
       aria-label="노출 및 도달 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}

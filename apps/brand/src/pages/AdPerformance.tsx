@@ -248,7 +248,7 @@ export default function AdPerformance() {
     setCampaignPage(1)
   }, [period, dateOffset])
 
-  // period/isTouch 변경 시 touch 기본값 설정 (마지막 포인트)
+  // period/isTouch 변경 시 touch 기본값 설정 (마지막 포인트) + 스크롤 위치 초기화
   useEffect(() => {
     const chartData = CHART_DATA_BY_PERIOD[period]
     if (isTouch) {
@@ -256,10 +256,22 @@ export default function AdPerformance() {
       setMixedChartIdx(n - 1)
       setCtrChartIdx(n - 1)
       setClicksChartIdx(n - 1)
+      // 모바일: 마지막 포인트(활성 툴팁)가 보이도록 오른쪽 끝으로 스크롤
+      requestAnimationFrame(() => {
+        mixedChartScrollRef.current?.scrollTo({ left: mixedChartScrollRef.current.scrollWidth })
+        ctrChartScrollRef.current?.scrollTo({ left: ctrChartScrollRef.current.scrollWidth })
+        clicksChartScrollRef.current?.scrollTo({ left: clicksChartScrollRef.current.scrollWidth })
+      })
     } else {
       setMixedChartIdx(null)
       setCtrChartIdx(null)
       setClicksChartIdx(null)
+      // PC: 처음으로 스크롤 초기화
+      requestAnimationFrame(() => {
+        mixedChartScrollRef.current?.scrollTo({ left: 0 })
+        ctrChartScrollRef.current?.scrollTo({ left: 0 })
+        clicksChartScrollRef.current?.scrollTo({ left: 0 })
+      })
     }
   }, [period, isTouch])
 
@@ -918,7 +930,9 @@ function MixedChart({
   return (
     <svg
       width="100%"
+      height={H}
       viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
       className="overflow-visible"
       role="img"
       aria-label="기간별 광고 지출(막대)과 클릭 수(선) 추이 차트"
@@ -1053,7 +1067,9 @@ function SimpleLineChart({
   return (
     <svg
       width="100%"
+      height={H}
       viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
       className="overflow-visible"
       role="img"
       aria-label={ariaLabel ?? '추이 차트'}

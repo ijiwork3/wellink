@@ -700,8 +700,16 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
   const [scoreScrollRight, setScoreScrollRight] = useState(false)
 
   useEffect(() => {
-    if (isTouch) setScoreIdx(scoreHistory.length > 0 ? scoreHistory.length - 1 : null)
-    else setScoreIdx(null)
+    if (isTouch) {
+      setScoreIdx(scoreHistory.length > 0 ? scoreHistory.length - 1 : null)
+      // 모바일: 마지막 포인트가 보이도록 오른쪽 끝으로 스크롤
+      requestAnimationFrame(() => {
+        scoreScrollRef.current?.scrollTo({ left: scoreScrollRef.current.scrollWidth })
+      })
+    } else {
+      setScoreIdx(null)
+      requestAnimationFrame(() => { scoreScrollRef.current?.scrollTo({ left: 0 }) })
+    }
   }, [isTouch, content])
 
   useEffect(() => {
@@ -877,9 +885,12 @@ function ScoreHistoryChart({
 
   return (
     <svg
+      width="100%"
+      height={H}
       viewBox={`0 0 ${W} ${H}`}
-      className="w-full"
-      style={{ maxHeight: 120, touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      preserveAspectRatio="none"
+      className="overflow-visible"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
       role="img"
       aria-label="퍼포먼스·모멘텀 점수 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
