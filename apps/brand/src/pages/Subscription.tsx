@@ -76,7 +76,7 @@ const paymentHistory = [
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
   if (qa === 'plan-focus')     return 'focus'
-  if (qa === 'plan-enterprise' || qa === 'plan-enterprise') return 'enterprise'
+  if (qa === 'plan-enterprise') return 'enterprise'
   if (qa === 'plan-free')      return ''   // 미구독
   if (qa === 'trial')          return 'scale'  // 무료 체험 중 → Scale 활성
   return 'scale'                           // 기본 / plan-scale
@@ -438,9 +438,9 @@ export default function Subscription() {
                   const isWarning = pct > 90 && !isOver
                   return (
                     <div key={f.name} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
-                      <div className="flex flex-col gap-0.5 mb-2">
+                      <div className="flex items-center justify-between gap-2 mb-2">
                         <span className="text-sm font-medium text-gray-700">{f.name}</span>
-                        <span className="text-sm font-bold text-gray-900 text-right">
+                        <span className="text-sm font-bold text-gray-900 tabular-nums shrink-0">
                           {f.used.toLocaleString()} / {f.limit >= 999999 ? '∞' : f.limit.toLocaleString()}{f.unit}
                         </span>
                       </div>
@@ -468,7 +468,7 @@ export default function Subscription() {
       })()}
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 @2xl:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰 배경 + 검정 테두리 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div

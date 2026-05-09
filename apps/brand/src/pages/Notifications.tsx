@@ -92,18 +92,18 @@ export default function Notifications() {
   if (qa === 'loading') {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-32 bg-gray-200 rounded" />
+        <div className="h-8 w-32 bg-gray-200 rounded-xl" />
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
           <div className="flex gap-2 mb-4">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-20 bg-gray-200 rounded-lg" />)}
+            {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-20 bg-gray-200 rounded-xl" />)}
           </div>
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-start gap-4 p-6 border-t border-gray-50">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
+              <div key={i} className="flex items-start gap-4 p-5 border-t border-gray-50">
+                <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-3/4 bg-gray-200 rounded" />
-                  <div className="h-3 w-1/2 bg-gray-100 rounded" />
+                  <div className="h-4 w-3/4 bg-gray-200 rounded-xl" />
+                  <div className="h-3 w-1/2 bg-gray-100 rounded-xl" />
                 </div>
               </div>
             ))}
@@ -139,7 +139,7 @@ export default function Notifications() {
           <Bell size={20} className="text-gray-700" aria-hidden="true" />
           <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">알림 센터</h1>
           {unreadCount > 0 && (
-            <span className="bg-blue-100 text-blue-600 text-sm font-bold px-2.5 py-1 rounded-full">
+            <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full">
               {unreadCount}
             </span>
           )}
@@ -147,7 +147,7 @@ export default function Notifications() {
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="text-base text-gray-500 hover:text-gray-900 underline"
+            className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >모두 읽음으로 표시</button>
         )}
       </div>
@@ -167,7 +167,7 @@ export default function Notifications() {
                 onClick={() => { setFilter(tab.id); setPage(1) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filter === tab.id
-                    ? 'bg-gray-900 text-white'
+                    ? 'bg-brand-green-bg text-brand-green-text'
                     : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                 }`}
               >{tab.label}</button>

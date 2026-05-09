@@ -620,7 +620,7 @@ export default function Dashboard() {
               <button
                 key={n.id}
                 type="button"
-                className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green/5' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/40`}
+                className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green/5' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50`}
                 onClick={() => handleNotificationClick(n.id, n.route)}
               >
                 <div className="flex gap-2.5 items-start">
@@ -746,7 +746,7 @@ export default function Dashboard() {
             <button
               key={item.label}
               onClick={() => navigate(item.route)}
-              className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200"
+              className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-brand-green/10' : 'bg-gray-100'}`}>
                 <span className={item.primary ? 'text-brand-green' : 'text-gray-500'}>{item.icon}</span>

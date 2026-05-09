@@ -452,13 +452,13 @@ export default function AdPerformance() {
             {/* 상태 탭 — 진행중 / 종료 */}
             <div className="flex gap-2 px-5 py-3 border-b border-gray-50">
               <button
-                onClick={() => { setStatusTab('active'); setCampaignPage(1) }}
+                onClick={() => { setStatusTab('active'); setCampaignPage(1); setExpandedCampaign(null) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   statusTab === 'active' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >진행중 {activeCampaigns.length}</button>
               <button
-                onClick={() => { setStatusTab('paused'); setCampaignPage(1) }}
+                onClick={() => { setStatusTab('paused'); setCampaignPage(1); setExpandedCampaign(null) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   statusTab === 'paused' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
@@ -611,7 +611,7 @@ export default function AdPerformance() {
               total={visibleList.length}
               page={safePage}
               pageSize={CAMPAIGN_PAGE_SIZE}
-              onChange={setCampaignPage}
+              onChange={p => { setCampaignPage(p); setExpandedCampaign(null) }}
             />
           </div>
         )
