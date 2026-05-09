@@ -1552,7 +1552,7 @@ export default function CampaignDetail() {
                   >자세히 보기 →</button>
                 </div>
                 <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-brand-green transition-all" style={{ width: `${rate}%` }} />
+                  <div className="h-full rounded-full bg-brand-green transition-all" style={{ width: `${rate}%` }} />
                 </div>
               </div>
             )
@@ -2525,7 +2525,7 @@ export default function CampaignDetail() {
               <X size={18} />
             </button>
             <div className="aspect-[4/3] flex items-center justify-center">
-              <Image size={80} className="text-emerald-300" aria-hidden="true" />
+              <Image size={80} className="text-gray-200" aria-hidden="true" />
             </div>
           </div>
         </div>

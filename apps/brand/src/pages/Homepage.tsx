@@ -261,7 +261,7 @@ export default function Homepage() {
             <p className="mb-16 text-slate-500">실제 필드에서 활동하는 마케터들의 가장 큰 고충을 정확히 타겟팅합니다.</p>
             <div className="grid gap-8 @lg:grid-cols-2">
               {[
-                { id: 'P1', role: '브랜드 매니저', problem: '"우리 브랜드의 전문성을 이해하는 진짜 파트너를 찾기 힘들어요."', value: '검증된 인플루언서 DB: 정성·정량 스코어링을 통해 브랜드 핏이 완벽한 전문가 매칭', color: 'bg-emerald-50' },
+                { id: 'P1', role: '브랜드 매니저', problem: '"우리 브랜드의 전문성을 이해하는 진짜 파트너를 찾기 힘들어요."', value: '검증된 인플루언서 DB: 정성·정량 스코어링을 통해 브랜드 핏이 완벽한 전문가 매칭', color: 'bg-brand-green-bg' },
                 { id: 'P2', role: '인플루언서 마케팅 담당자', problem: '"매번 파편화된 커뮤니케이션과 운영에 리소스가 너무 많이 들어요."', value: '운영의 표준(SOP): 모집부터 콘텐츠 검수까지 표준화된 프로세스로 운영 업무 자동화', color: 'bg-blue-50' },
                 { id: 'P3', role: '웰니스 스타트업', problem: '"유저 획득 단가(CAC)를 낮추고 지속 가능한 자산을 만들고 싶어요."', value: '콘텐츠 자산화: 광고 소재로 즉시 활용 가능한 고품질 UGC 및 재사용권 확보 프로세스', color: 'bg-purple-50' },
                 { id: 'P4', role: '퍼포먼스 마케터', problem: '"단순 도달은 높은데, 실제 매출(ROAS)로 증명되나요?"', value: '데이터 어트리뷰션: UTM 및 전용 쿠폰 코드를 통한 실시간 전환 추적 및 성과 리포트', color: 'bg-orange-50' },
@@ -281,7 +281,7 @@ export default function Homepage() {
                     </div>
                     <div className="mb-6 h-px w-full bg-slate-100" />
                     <div>
-                      <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-500">
+                      <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-brand-green">
                         <CheckCircle2 size={12} aria-hidden="true" />Value
                       </div>
                       <div className="text-base font-medium text-slate-600">{item.value}</div>

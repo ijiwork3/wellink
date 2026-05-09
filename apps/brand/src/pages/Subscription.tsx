@@ -385,7 +385,7 @@ export default function Subscription() {
                 {cancelStatus === 'cancel_scheduled' ? (
                   <button
                     onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
-                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition-colors"
+                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors"
                   >해지 예약 취소</button>
                 ) : (
                   <>

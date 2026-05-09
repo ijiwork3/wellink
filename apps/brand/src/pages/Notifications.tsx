@@ -197,7 +197,7 @@ export default function Notifications() {
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  item.type === 'campaign' ? 'bg-emerald-100 text-emerald-600'
+                  item.type === 'campaign' ? 'bg-brand-green-bg text-brand-green-text'
                   : item.type === 'system' ? 'bg-amber-100 text-amber-600'
                   : 'bg-purple-100 text-purple-600'
                 }`}>

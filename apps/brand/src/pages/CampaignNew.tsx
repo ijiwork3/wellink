@@ -543,8 +543,8 @@ export default function CampaignNew() {
         variant="confirm"
       >
         <div className="text-center py-1">
-          <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-            <CheckCircle size={24} className="text-emerald-600" />
+          <div className="w-12 h-12 rounded-full bg-brand-green-bg flex items-center justify-center mx-auto mb-3">
+            <CheckCircle size={24} className="text-brand-green" />
           </div>
           <p className="text-base text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
         </div>

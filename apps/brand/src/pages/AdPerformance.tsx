@@ -157,6 +157,12 @@ const adFormatPerf = [
 ]
 
 
+function getAdStatusBadge(status: string): { label: string; cls: string } {
+  if (status === 'active')    return { label: '게재중',   cls: 'bg-emerald-50 text-emerald-600' }
+  if (status === 'paused')    return { label: '일시중지', cls: 'bg-amber-50 text-amber-600' }
+  return                             { label: '종료',     cls: 'bg-red-50 text-red-500' }
+}
+
 function getObjectiveBadge(obj: string) {
   switch (obj) {
     case '인지도': return 'bg-blue-50 text-blue-600'
@@ -434,13 +440,13 @@ export default function AdPerformance() {
               <button
                 onClick={() => { setStatusTab('active'); setCampaignPage(1) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  statusTab === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  statusTab === 'active' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >진행중 {activeCampaigns.length}</button>
               <button
                 onClick={() => { setStatusTab('paused'); setCampaignPage(1) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  statusTab === 'paused' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  statusTab === 'paused' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >종료 {closedCampaigns.length}</button>
             </div>
@@ -543,8 +549,11 @@ export default function AdPerformance() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="text-sm font-bold text-white bg-emerald-600 px-2 py-1 rounded">소재</span>
+                                                <span className="text-sm font-bold bg-brand-green-bg text-brand-green-text px-2 py-1 rounded">소재</span>
                                                 <span className="text-sm font-medium text-gray-900">{ad.adName}</span>
+                                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getAdStatusBadge(ad.status).cls}`}>
+                                                  {getAdStatusBadge(ad.status).label}
+                                                </span>
                                               </div>
                                               <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>
                                               <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 flex-wrap">

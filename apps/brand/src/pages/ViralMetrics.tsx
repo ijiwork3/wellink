@@ -538,7 +538,7 @@ export default function ViralMetrics() {
                       <td className="py-3 px-4 whitespace-nowrap">
                         {CAMPAIGN_MATCH_MAP[item.id] ? (
                           <Tooltip content={`${CAMPAIGN_MATCH_MAP[item.id].uploadPeriodLabel}`}>
-                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
                               <Megaphone size={10} aria-hidden="true" />
                               {CAMPAIGN_MATCH_MAP[item.id].campaignName}
                             </span>
@@ -610,7 +610,7 @@ export default function ViralMetrics() {
 
 /** 등급 배지 — 원본 ScorePill 동등 */
 function GradePill({ grade }: { grade: ContentGrade }) {
-  const cls = grade === 'A' ? 'bg-emerald-100 text-emerald-700'
+  const cls = grade === 'A' ? 'bg-brand-green-bg text-brand-green-text'
     : grade === 'B' ? 'bg-amber-100 text-amber-700'
     : grade === 'processing' ? 'bg-blue-50 text-blue-600'
     : 'bg-gray-100 text-gray-600'
@@ -623,7 +623,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
   const counts = { A: 0, B: 0, C: 0, D: 0, E: 0, processing: 0 } as Record<ContentGrade, number>
   for (const c of data) counts[c.grade] = (counts[c.grade] ?? 0) + 1
   const arr = [
-    { label: 'A 우수', value: counts.A, color: '#10b981' },
+    { label: 'A 우수', value: counts.A, color: '#8CC63F' },
     { label: 'B', value: counts.B, color: '#f59e0b' },
     { label: 'C', value: counts.C, color: '#9ca3af' },
     { label: 'D', value: counts.D, color: '#d1d5db' },
@@ -721,11 +721,11 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent; onClo
         <div className="p-5 space-y-5">
           {/* 캠페인 매칭 */}
           {campaignMatch && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
-              <Megaphone size={14} className="text-emerald-600 shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-brand-green-bg border border-brand-green-border rounded-xl">
+              <Megaphone size={14} className="text-brand-green-text shrink-0" />
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-emerald-700">{campaignMatch.campaignName}</p>
-                <p className="text-sm text-emerald-500">{campaignMatch.uploadPeriodLabel}</p>
+                <p className="text-sm font-semibold text-brand-green-text">{campaignMatch.campaignName}</p>
+                <p className="text-sm text-brand-green-text/70">{campaignMatch.uploadPeriodLabel}</p>
               </div>
             </div>
           )}

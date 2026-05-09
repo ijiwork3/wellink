@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
-import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor } from '@wellink/ui'
+import { createPortal } from 'react-dom'
+import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, X, Layers, Play, Image as ImageIcon } from 'lucide-react'
+import { KPICard, ErrorState, DateRangePicker, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -195,6 +196,61 @@ const contentTypeData = [
   { type: '일반 사진', avgReach: 2400, avgLikes: 290, engagementRate: 2.7 },
   { type: '스토리',   avgReach: 1800, avgLikes: 210, engagementRate: 3.2 },
 ]
+
+// ── 개별 게시물 더미 데이터 ────────────────────────────────────────────────
+type PostType = 'reels' | 'feed' | 'carousel' | 'story'
+type PostSortKey = 'date' | 'views' | 'reach' | 'likes' | 'comments' | 'saves' | 'engagement'
+type PostItem = {
+  id: string; type: PostType; uploadDate: string
+  views: number; reach: number; impressions: number
+  likes: number; comments: number; saves: number
+  engagementRate: number
+  // reels 전용
+  avgWatchTimeSec?: number; replays?: number
+  // feed/carousel 전용
+  profileVisits?: number; follows?: number
+}
+const POST_TYPES: PostType[] = [
+  'reels','reels','reels','reels','reels','reels','reels','reels',
+  'feed','feed','feed','feed','feed','feed','feed',
+  'carousel','carousel','carousel','carousel','carousel',
+  'story','story','story','story',
+  'reels','feed','carousel','reels','story','feed',
+]
+const POST_DATA: PostItem[] = (() => {
+  const today = new Date()
+  return POST_TYPES.map((type, i) => {
+    const d = new Date(today); d.setDate(today.getDate() - i * 3)
+    const base = type === 'reels' ? 5200 + (i * 170) % 3000
+      : type === 'carousel'       ? 3100 + (i * 120) % 1600
+      : type === 'feed'           ? 2200 + (i * 90)  % 1200
+      :                             900  + (i * 55)  % 500
+    const reach      = Math.max(400, Math.floor(base + Math.sin(i * 0.9) * 350))
+    const impressions = Math.floor(reach * (1.35 + (i % 5) * 0.07))
+    const views      = type === 'reels' ? Math.floor(reach * (1.2 + (i % 4) * 0.12)) : 0
+    const likes      = Math.floor(reach * (0.07 + (i % 6) * 0.004))
+    const comments   = Math.floor(likes * (0.09 + (i % 5) * 0.011))
+    const saves      = type === 'carousel'
+      ? Math.floor(likes * 0.48)
+      : Math.floor(likes * (0.22 + (i % 4) * 0.04))
+    const engagementRate = +((likes + comments + saves) / Math.max(reach, 1) * 100).toFixed(1)
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return {
+      id: `post-${i + 1}`, type,
+      uploadDate: `2026-${mm}-${dd}`,
+      views, reach, impressions, likes, comments, saves, engagementRate,
+      ...(type === 'reels' && {
+        avgWatchTimeSec: 8 + (i % 6) * 3,
+        replays: Math.floor(likes * 0.09),
+      }),
+      ...((type === 'feed' || type === 'carousel') && {
+        profileVisits: Math.floor(reach * 0.042),
+        follows: Math.floor(reach * 0.007),
+      }),
+    }
+  })
+})()
 
 const metricColors = {
   likes:    'var(--color-brand-green)',
@@ -710,7 +766,7 @@ export default function ProfileInsight() {
             </div>
             <div className="flex gap-3 text-sm text-gray-500">
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" />도달</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-green inline-block rounded" />도달</span>
             </div>
           </div>
           <ImpressReachChart data={impressReachData} />
@@ -901,6 +957,9 @@ export default function ProfileInsight() {
           </div>
         </div>
       </div>
+
+      {/* 게시물별 상세 성과 — 기존 서비스 ContentPerformance 동등 */}
+      <PostContentTable />
     </div>
   )
 }
@@ -1008,5 +1067,285 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
         )
       })}
     </svg>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 게시물 상세 모달 — 기존 서비스 ContentDetailModal 동등
+// 유형별(릴스/피드·카루셀/스토리)로 다른 인사이트 섹션 제공
+// ─────────────────────────────────────────────────────────────────────────────
+function PostDetailModal({ post, onClose }: { post: PostItem; onClose: () => void }) {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [onClose])
+
+  const TYPE_LABEL: Record<PostType, string> = { reels: 'Reels', feed: 'Feed', carousel: 'Carousel', story: 'Story' }
+  const TYPE_COLOR: Record<PostType, string> = {
+    reels:    'bg-rose-50 text-rose-600',
+    carousel: 'bg-blue-50 text-blue-600',
+    story:    'bg-amber-50 text-amber-600',
+    feed:     'bg-gray-100 text-gray-600',
+  }
+  const fmtSec = (s: number) => s >= 60 ? `${Math.floor(s / 60)}분 ${s % 60}초` : `${s}초`
+  const fmtTotalWatch = (avgSec: number, plays: number) => {
+    const totalMin = Math.floor(avgSec * plays / 60)
+    if (totalMin >= 60) return `${Math.floor(totalMin / 60)}시간 ${totalMin % 60}분`
+    return `${totalMin}분`
+  }
+
+  const MetricCell = ({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) => (
+    <div className={`${color} rounded-xl p-3`}>
+      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-base font-bold text-gray-900">{value}</p>
+    </div>
+  )
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-end @sm:items-center justify-center p-0 @sm:p-4"
+      role="dialog" aria-modal="true" aria-label="게시물 상세 성과">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div className="relative z-10 w-full @sm:max-w-lg bg-white rounded-t-2xl @sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        {/* 헤더 */}
+        <div className="flex items-center justify-between gap-3 p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[post.type]}`}>
+              {TYPE_LABEL[post.type]}
+            </span>
+            <span className="text-sm text-gray-500">{post.uploadDate}</span>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors" aria-label="닫기">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="p-5 space-y-5">
+          {/* 참여율 하이라이트 — 광고주가 가장 먼저 보고 싶은 지표 */}
+          <div className="bg-brand-green-bg rounded-xl p-4 flex items-center gap-4">
+            <div>
+              <p className="text-sm text-gray-500 mb-0.5">참여율</p>
+              <p className="text-3xl font-bold text-brand-green-text">{post.engagementRate}%</p>
+            </div>
+            <div className="flex-1 h-2 bg-white/60 rounded-full overflow-hidden">
+              <div className="h-full bg-brand-green rounded-full"
+                style={{ width: `${Math.min(100, post.engagementRate * 10)}%` }} />
+            </div>
+          </div>
+          {/* 핵심 지표 — 모든 유형 공통 */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">핵심 지표</h4>
+            <div className="grid grid-cols-3 gap-2">
+              <MetricCell label="좋아요"  value={fmtNumber(post.likes)} />
+              <MetricCell label="댓글"    value={fmtNumber(post.comments)} />
+              <MetricCell label="저장"    value={fmtNumber(post.saves)} />
+              <MetricCell label="도달"    value={fmtNumber(post.reach)} />
+              <MetricCell label="노출"    value={fmtNumber(post.impressions)} />
+              <MetricCell label="총 참여" value={fmtNumber(post.likes + post.comments + post.saves)} />
+            </div>
+          </div>
+          {/* 릴스 전용 — 조회수·시청 시간이 릴스의 핵심 지표 */}
+          {post.type === 'reels' && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">릴스 인사이트</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <MetricCell label="조회수"       value={fmtNumber(post.views)}                                                                          color="bg-rose-50" />
+                <MetricCell label="다시 보기"    value={fmtNumber(post.replays ?? 0)}                                                                   color="bg-rose-50" />
+                <MetricCell label="평균 시청"    value={post.avgWatchTimeSec ? fmtSec(post.avgWatchTimeSec) : '—'}                                      color="bg-rose-50" />
+                <MetricCell label="총 시청 시간" value={post.avgWatchTimeSec && post.views > 0 ? fmtTotalWatch(post.avgWatchTimeSec, post.views) : '—'} color="bg-rose-50" />
+              </div>
+            </div>
+          )}
+          {/* 피드·카루셀 전용 — 프로필 유입이 핵심 전환 지표 */}
+          {(post.type === 'feed' || post.type === 'carousel') && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">피드 인사이트</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <MetricCell label="프로필 방문" value={fmtNumber(post.profileVisits ?? 0)} color="bg-blue-50" />
+                <MetricCell label="팔로우"       value={fmtNumber(post.follows ?? 0)}       color="bg-blue-50" />
+              </div>
+            </div>
+          )}
+          {/* 스토리 전용 */}
+          {post.type === 'story' && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">스토리 인사이트</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <MetricCell label="도달" value={fmtNumber(post.reach)}       color="bg-amber-50" />
+                <MetricCell label="노출" value={fmtNumber(post.impressions)} color="bg-amber-50" />
+              </div>
+              <p className="text-xs text-gray-400 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 게시물별 성과 테이블 — 기존 서비스 ContentPerformance 동등
+// 유형 탭 필터 + 컬럼 정렬 + 페이지네이션 + 클릭→상세 모달
+// ─────────────────────────────────────────────────────────────────────────────
+function PostContentTable() {
+  const [activeType, setActiveType] = useState<'all' | PostType>('all')
+  const [sortKey, setSortKey]       = useState<PostSortKey>('date')
+  const [sortDir, setSortDir]       = useState<'asc' | 'desc'>('desc')
+  const [page, setPage]             = useState(1)
+  const [selected, setSelected]     = useState<PostItem | null>(null)
+  const PAGE_SIZE = 10
+
+  const filtered = activeType === 'all' ? POST_DATA : POST_DATA.filter(p => p.type === activeType)
+  const sorted = [...filtered].sort((a, b) => {
+    const val = (item: PostItem): number => {
+      switch (sortKey) {
+        case 'date':       return new Date(item.uploadDate).getTime()
+        case 'views':      return item.views
+        case 'reach':      return item.reach
+        case 'likes':      return item.likes
+        case 'comments':   return item.comments
+        case 'saves':      return item.saves
+        case 'engagement': return item.engagementRate
+        default:           return 0
+      }
+    }
+    return sortDir === 'desc' ? val(b) - val(a) : val(a) - val(b)
+  })
+
+  const safePage = Math.min(page, Math.max(1, Math.ceil(sorted.length / PAGE_SIZE)))
+  const paged    = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  const handleSort = (key: PostSortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'desc' ? 'asc' : 'desc')
+    else { setSortKey(key); setSortDir('desc') }
+    setPage(1)
+  }
+
+  const TYPE_TABS: { value: 'all' | PostType; label: string }[] = [
+    { value: 'all',      label: '전체' },
+    { value: 'reels',    label: 'Reels' },
+    { value: 'feed',     label: 'Feed' },
+    { value: 'carousel', label: 'Carousel' },
+    { value: 'story',    label: 'Story' },
+  ]
+  const TYPE_COLOR: Record<PostType, string> = {
+    reels:    'bg-rose-50 text-rose-600',
+    carousel: 'bg-blue-50 text-blue-600',
+    story:    'bg-amber-50 text-amber-600',
+    feed:     'bg-gray-100 text-gray-600',
+  }
+  const TYPE_ICON: Record<PostType, React.ReactNode> = {
+    reels:    <Play      size={10} className="inline mr-0.5" />,
+    carousel: <Layers    size={10} className="inline mr-0.5" />,
+    story:    <ImageIcon size={10} className="inline mr-0.5" />,
+    feed:     <ImageIcon size={10} className="inline mr-0.5" />,
+  }
+
+  const SortBtn = ({ k, label }: { k: PostSortKey; label: string }) => (
+    <th scope="col"
+      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none"
+      onClick={() => handleSort(k)}
+    >
+      <span className="flex items-center gap-1">
+        {label}
+        <span className={sortKey === k ? 'text-gray-700' : 'text-gray-300'}>
+          {sortKey === k ? (sortDir === 'desc' ? '↓' : '↑') : '↕'}
+        </span>
+      </span>
+    </th>
+  )
+
+  return (
+    <>
+      {selected && createPortal(
+        <PostDetailModal post={selected} onClose={() => setSelected(null)} />,
+        document.body
+      )}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        {/* 헤더 */}
+        <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h3 className="text-base font-semibold text-gray-900">게시물별 상세 성과</h3>
+            <p className="text-sm text-gray-400 mt-0.5">
+              최근 {POST_DATA.length}개 게시물 · 행을 클릭하면 유형별 상세 분석 확인
+            </p>
+          </div>
+        </div>
+        {/* 유형 탭 필터 */}
+        <div className="flex gap-1.5 px-5 py-3 border-b border-gray-50 flex-wrap">
+          {TYPE_TABS.map(tab => (
+            <button key={tab.value}
+              onClick={() => { setActiveType(tab.value); setPage(1) }}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                activeType === tab.value
+                  ? 'bg-brand-green-bg text-brand-green-text'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {tab.label}
+              {tab.value !== 'all' && (
+                <span className="ml-1 text-xs opacity-60">
+                  {POST_DATA.filter(p => p.type === tab.value).length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+        {/* 테이블 */}
+        <div className="overflow-x-auto scrollbar-none">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-50">
+                <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">유형</th>
+                <SortBtn k="date"       label="날짜" />
+                <SortBtn k="views"      label="조회수" />
+                <SortBtn k="reach"      label="도달" />
+                <SortBtn k="likes"      label="좋아요" />
+                <SortBtn k="comments"   label="댓글" />
+                <SortBtn k="saves"      label="저장" />
+                <SortBtn k="engagement" label="참여율" />
+              </tr>
+            </thead>
+            <tbody>
+              {paged.map(p => (
+                <tr key={p.id}
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => setSelected(p)}
+                >
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[p.type]}`}>
+                      {TYPE_ICON[p.type]}
+                      {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap tabular-nums">{p.uploadDate}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">
+                    {p.views > 0 ? fmtNumber(p.views) : <span className="text-gray-300">—</span>}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.reach)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.likes)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.comments)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.saves)}</td>
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <span className={`text-sm font-bold tabular-nums ${
+                      p.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green'
+                      : p.engagementRate < 2.5 ? 'text-red-500'
+                      : 'text-gray-700'
+                    }`}>
+                      {p.engagementRate}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {paged.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-sm text-gray-400">게시물이 없습니다.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <Pagination total={sorted.length} page={safePage} pageSize={PAGE_SIZE} onChange={p => setPage(p)} />
+      </div>
+    </>
   )
 }
