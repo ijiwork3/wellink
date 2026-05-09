@@ -223,6 +223,8 @@ export default function ViralMetrics() {
     }
   }, [])
 
+  useEffect(() => { setContentPage(1) }, [viewMode, dateOffset])
+
   /* ── QA: 로딩 스켈레톤 ── */
   if (qa === 'loading') {
     return (
@@ -330,7 +332,7 @@ export default function ViralMetrics() {
       {/* 월간·연간 데이터 부정확 안내 배너 */}
       {(viewMode === 'monthly' || viewMode === 'yearly') && (
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <Info size={14} className="text-amber-500 mt-0.5 shrink-0" />
+          <Info size={14} className="text-amber-500 mt-0.5 shrink-0" aria-hidden="true" />
           <p className="text-sm text-amber-700 leading-relaxed">
             데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
           </p>

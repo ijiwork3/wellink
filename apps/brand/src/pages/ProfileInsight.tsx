@@ -1297,7 +1297,7 @@ function PostContentTable() {
           {TYPE_TABS.map(tab => (
             <button key={tab.value}
               onClick={() => { setActiveType(tab.value); setPage(1) }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 activeType === tab.value
                   ? 'bg-brand-green-bg text-brand-green-text'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

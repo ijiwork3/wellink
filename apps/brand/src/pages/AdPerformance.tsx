@@ -218,6 +218,13 @@ export default function AdPerformance() {
     }
   }, [])
 
+  // 기간·날짜 변경 시 캠페인 상세 패널 리셋 — 다른 기간 데이터가 열린 채로 보이는 혼란 방지
+  useEffect(() => {
+    setExpandedCampaign(null)
+    setExpandedAdSet(null)
+    setCampaignPage(1)
+  }, [period, dateOffset])
+
   /* ── QA: 로딩 ── */
   if (qa === 'loading') {
     return (
@@ -453,13 +460,13 @@ export default function AdPerformance() {
             <div className="flex gap-2 px-5 py-3 border-b border-gray-50">
               <button
                 onClick={() => { setStatusTab('active'); setCampaignPage(1); setExpandedCampaign(null) }}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   statusTab === 'active' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >진행중 {activeCampaigns.length}</button>
               <button
                 onClick={() => { setStatusTab('paused'); setCampaignPage(1); setExpandedCampaign(null) }}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   statusTab === 'paused' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >종료 {closedCampaigns.length}</button>

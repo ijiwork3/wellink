@@ -677,6 +677,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <div className="flex items-center justify-between mb-3">
@@ -686,6 +687,7 @@ export default function Dashboard() {
               <button
                 key={p}
                 onClick={() => setContentPeriod(p)}
+                tabIndex={isPlanLocked ? -1 : 0}
                 className={`text-sm px-2.5 py-1 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   contentPeriod === p ? 'bg-white shadow-sm font-semibold text-gray-900' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -707,7 +709,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5">
                     <span className="text-gray-400">
-                      {item.label === '조회수' ? <Eye size={14} /> : item.label === '좋아요' ? <Heart size={14} /> : item.label === '댓글' ? <MessageCircle size={14} /> : <BarChart3 size={14} />}
+                      {item.label === '조회수' ? <Eye size={14} aria-hidden="true" /> : item.label === '좋아요' ? <Heart size={14} aria-hidden="true" /> : item.label === '댓글' ? <MessageCircle size={14} aria-hidden="true" /> : <BarChart3 size={14} aria-hidden="true" />}
                     </span>
                     <span className="text-sm text-gray-500 font-medium">{item.label}</span>
                   </div>
@@ -733,6 +735,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <h2 className="text-base font-semibold text-gray-900 mb-3">빠른 실행</h2>
