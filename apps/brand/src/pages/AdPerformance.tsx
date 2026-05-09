@@ -695,12 +695,12 @@ export default function AdPerformance() {
         </div>
         <div className="p-5 space-y-4">
           {adFormatPerf.map(f => (
-            <div key={f.format} className="flex items-center gap-4">
-              <div className="w-24 shrink-0">
+            <div key={f.format} className="flex items-center gap-2 @sm:gap-4">
+              <div className="w-20 @sm:w-24 shrink-0">
                 <span className="text-sm font-medium text-gray-700">{f.format}</span>
                 <p className="text-sm text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm text-gray-400">노출 {fmtNumber(f.impressions)}</span>
                   <span className={`text-sm font-semibold ${getCtrColor(f.ctr)}`}>CTR {f.ctr}%</span>
@@ -712,7 +712,7 @@ export default function AdPerformance() {
                   />
                 </div>
               </div>
-              <div className="w-20 text-right shrink-0">
+              <div className="w-14 @sm:w-20 text-right shrink-0">
                 <span className="text-sm text-gray-500">클릭 </span>
                 <span className="text-sm font-bold text-gray-800">{fmtNumber(f.clicks)}</span>
               </div>
@@ -845,7 +845,7 @@ function DonutChartSimple({ data, ariaLabel }: { data: { label: string; value: n
   })
   return (
     <div className="flex items-center gap-6 flex-wrap">
-      <svg width="180" height="180" viewBox="0 0 180 180" role="img" aria-label={ariaLabel ?? '도넛 차트'}>
+      <svg className="w-36 h-36 @sm:w-44 @sm:h-44 shrink-0" viewBox="0 0 180 180" role="img" aria-label={ariaLabel ?? '도넛 차트'}>
         {arcs.map((a, i) => <path key={i} d={a.d} fill={a.color} />)}
       </svg>
       <div className="flex-1 min-w-[120px] space-y-2">

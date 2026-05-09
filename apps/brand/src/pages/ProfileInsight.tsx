@@ -714,7 +714,7 @@ export default function ProfileInsight() {
               sub="계정 관심도"
               trend={conv.profileViewsGrowth}
               trendLabel="전기간 대비"
-              icon={<Users size={16} />}
+              icon={<Users size={16} aria-hidden="true" />}
               tooltip="콘텐츠/계정을 본 사용자가 프로필 페이지로 이동한 횟수"
             />
             <KPICard
@@ -723,7 +723,7 @@ export default function ProfileInsight() {
               sub="외부 유입"
               trend={conv.websiteClicksGrowth}
               trendLabel="전기간 대비"
-              icon={<TrendingUp size={16} />}
+              icon={<TrendingUp size={16} aria-hidden="true" />}
               tooltip="프로필에 연결된 웹사이트 링크를 누른 횟수"
             />
             <KPICard
@@ -732,7 +732,7 @@ export default function ProfileInsight() {
               sub="전환율"
               trend={conv.ctrGrowth}
               trendLabel="전기간 대비"
-              icon={<BarChart2 size={16} />}
+              icon={<BarChart2 size={16} aria-hidden="true" />}
               tooltip="웹사이트 클릭 ÷ 프로필 방문 × 100 — 전환 유도 효율"
             />
           </div>
@@ -763,10 +763,10 @@ export default function ProfileInsight() {
                   }`}
                   style={activeMetric === metric ? { backgroundColor: metricColors[metric] } : {}}
                 >
-                  {metric === 'likes'    && <Heart size={10} />}
-                  {metric === 'reach'    && <Eye size={10} />}
-                  {metric === 'comments' && <MessageCircle size={10} />}
-                  {metric === 'saves'    && <Bookmark size={10} />}
+                  {metric === 'likes'    && <Heart size={10} aria-hidden="true" />}
+                  {metric === 'reach'    && <Eye size={10} aria-hidden="true" />}
+                  {metric === 'comments' && <MessageCircle size={10} aria-hidden="true" />}
+                  {metric === 'saves'    && <Bookmark size={10} aria-hidden="true" />}
                   {metricLabels[metric]}
                 </button>
               ))}
@@ -1233,6 +1233,23 @@ function PostContentTable() {
   const [selected, setSelected]     = useState<PostItem | null>(null)
   const PAGE_SIZE = 10
 
+  const postScrollRef = useRef<HTMLDivElement>(null)
+  const [postCanScrollLeft,  setPostCanScrollLeft]  = useState(false)
+  const [postCanScrollRight, setPostCanScrollRight] = useState(false)
+  useEffect(() => {
+    const el = postScrollRef.current
+    if (!el) return
+    const update = () => {
+      setPostCanScrollLeft(el.scrollLeft > 0)
+      setPostCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
   const filtered = activeType === 'all' ? POST_DATA : POST_DATA.filter(p => p.type === activeType)
   const sorted = [...filtered].sort((a, b) => {
     const val = (item: PostItem): number => {
@@ -1313,7 +1330,10 @@ function PostContentTable() {
           ))}
         </div>
         {/* 테이블 */}
-        <div className="overflow-x-auto scrollbar-none">
+        <div className="relative">
+          {postCanScrollLeft  && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+          {postCanScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+          <div className="overflow-x-auto scrollbar-none" ref={postScrollRef}>
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
@@ -1368,6 +1388,7 @@ function PostContentTable() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
         <Pagination total={sorted.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
       </div>

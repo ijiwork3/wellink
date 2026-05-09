@@ -457,7 +457,7 @@ export default function ViralMetrics() {
               </button>
             </div>
             {/* 필터·정렬 컨트롤 — 신규 (원본 SortKey/ContentFilter/GradeFilter 보강) */}
-            <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-2 @sm:gap-3">
+            <div className="px-5 py-3 border-b border-gray-50 grid grid-cols-2 @md:grid-cols-3 gap-2 @sm:gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-500">유형</span>
                 <CustomSelect
