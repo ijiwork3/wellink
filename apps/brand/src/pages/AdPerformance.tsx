@@ -305,7 +305,7 @@ export default function AdPerformance() {
           />
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white"
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <ExternalLink size={12} aria-hidden="true" />
             Meta 광고 관리자
@@ -340,10 +340,10 @@ export default function AdPerformance() {
         </div>
         {aiRefreshing ? (
           <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="AI 분석 진행 중">
-            <div className="h-3 w-3/4 bg-purple-200/50 rounded" />
-            <div className="h-3 w-full bg-purple-200/50 rounded" />
-            <div className="h-3 w-5/6 bg-purple-200/50 rounded" />
-            <div className="h-3 w-2/3 bg-purple-200/50 rounded" />
+            <div className="h-3 w-3/4 bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-full bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-5/6 bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-2/3 bg-purple-200/50 rounded-xl" />
           </div>
         ) : (
           <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{AD_AI_SUMMARY}</p>

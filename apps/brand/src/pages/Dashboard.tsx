@@ -125,7 +125,7 @@ function Sparkline({ data, color, width = 80, height = 24 }: { data: number[]; c
     .join(' ')
 
   return (
-    <svg width={width} height={height} className="shrink-0">
+    <svg width={width} height={height} className="shrink-0" aria-hidden="true">
       <polyline
         points={points}
         fill="none"
@@ -175,7 +175,7 @@ export default function Dashboard() {
       setCanTableScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
     }
     update()
-    el.addEventListener('scroll', update)
+    el.addEventListener('scroll', update, { passive: true })
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
@@ -486,7 +486,7 @@ export default function Dashboard() {
                 <div className="text-sm text-gray-500 mt-1">{kpi.sub}</div>
               </div>
               <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
-                {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                {isPositive ? <TrendingUp size={12} aria-hidden="true" /> : <TrendingDown size={12} aria-hidden="true" />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
                 <span className="text-gray-500 font-normal">전월 대비</span>
               </div>
@@ -503,7 +503,7 @@ export default function Dashboard() {
             <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
             <button
               onClick={() => navigate('/campaigns')}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
               전체보기 <ArrowRight size={12} />
             </button>
@@ -541,7 +541,7 @@ export default function Dashboard() {
             {canTableScrollRight && (
               <div className="absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />
             )}
-            <div className="overflow-x-auto" ref={tableScrollRef}>
+            <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
               <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="border-b border-gray-50 bg-gray-50/50">
@@ -612,7 +612,7 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => navigate('/notifications')}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >전체 보기 →</button>
           </div>
           <div className="divide-y divide-gray-50 flex-1">
@@ -639,7 +639,7 @@ export default function Dashboard() {
             <div className="px-5 py-3 border-t border-gray-50">
               <button
                 onClick={() => setShowAllNotifications(prev => !prev)}
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 {showAllNotifications ? '접기' : '더보기'} <ArrowRight size={11} className={showAllNotifications ? 'rotate-90' : ''} />
               </button>

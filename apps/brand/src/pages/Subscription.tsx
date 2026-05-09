@@ -213,7 +213,7 @@ export default function Subscription() {
           <div className="h-7 w-24 bg-gray-100 rounded-full" />
         </div>
         {/* 플랜 카드 3개 스켈레톤 */}
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
+        <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
               <div className="space-y-2">
@@ -359,7 +359,7 @@ export default function Subscription() {
         const cur = plans.find(p => p.id === displayPlan)
         // 다음 결제일 — 오늘 + 30일
         const next = new Date()
-        next.setDate(next.getDate() + 14)
+        next.setDate(next.getDate() + 30)
         const nextBillingDate = next.toISOString().slice(0, 10)
         // 사용량 데이터 — 플랜별 (원본 getDefaultFeatures 동등)
         const usage = displayPlan === 'focus' ? [

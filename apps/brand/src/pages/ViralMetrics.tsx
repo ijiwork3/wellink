@@ -271,12 +271,12 @@ export default function ViralMetrics() {
           <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
-          <Zap size={40} className="text-gray-200 mb-3" />
+          <Zap size={40} className="text-gray-200 mb-3" aria-hidden="true" />
           <p className="text-base font-semibold text-gray-400 mb-1">바이럴 콘텐츠 데이터가 없습니다</p>
           <p className="text-sm text-gray-400 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
           <button
             onClick={() => navigate('/campaigns')}
-            className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors"
+            className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             캠페인 만들기
           </button>
@@ -384,7 +384,7 @@ export default function ViralMetrics() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-500">릴스 평균 조회수</span>
-            <Eye size={14} className="text-gray-400" />
+            <Eye size={14} className="text-gray-400" aria-hidden="true" />
           </div>
           <p className="text-3xl font-bold text-gray-900">
             {(() => {
@@ -449,7 +449,7 @@ export default function ViralMetrics() {
               </div>
               <button
                 onClick={() => showToast('CSV 파일 다운로드를 시작합니다.', 'success')}
-                className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors"
+                className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 CSV 내보내기
               </button>
@@ -523,7 +523,7 @@ export default function ViralMetrics() {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                            <Image size={14} className="text-gray-400" />
+                            <Image size={14} className="text-gray-400" aria-hidden="true" />
                           </div>
                           <span className="text-sm text-gray-900 whitespace-nowrap">{item.title}</span>
                         </div>

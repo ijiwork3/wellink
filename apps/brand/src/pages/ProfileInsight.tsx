@@ -573,7 +573,7 @@ export default function ProfileInsight() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" />
+          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-base font-semibold text-gray-400 mb-1">분석 데이터가 없습니다</p>
           <p className="text-sm text-gray-300 mb-4">인스타그램 계정을 연결하면 자동으로 수집됩니다</p>
         </div>
@@ -651,10 +651,10 @@ export default function ProfileInsight() {
         </div>
         {aiRefreshing ? (
           <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="AI 분석 진행 중">
-            <div className="h-3 w-3/4 bg-purple-200/50 rounded" />
-            <div className="h-3 w-full bg-purple-200/50 rounded" />
-            <div className="h-3 w-5/6 bg-purple-200/50 rounded" />
-            <div className="h-3 w-2/3 bg-purple-200/50 rounded" />
+            <div className="h-3 w-3/4 bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-full bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-5/6 bg-purple-200/50 rounded-xl" />
+            <div className="h-3 w-2/3 bg-purple-200/50 rounded-xl" />
           </div>
         ) : (
           <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{PROFILE_AI_SUMMARY}</p>
@@ -1365,7 +1365,7 @@ function PostContentTable() {
             </tbody>
           </table>
         </div>
-        <Pagination total={sorted.length} page={safePage} pageSize={PAGE_SIZE} onChange={p => setPage(p)} />
+        <Pagination total={sorted.length} page={safePage} pageSize={PAGE_SIZE} onChange={setPage} />
       </div>
     </>
   )
