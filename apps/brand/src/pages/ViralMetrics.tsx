@@ -735,7 +735,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm text-gray-500">퍼포먼스 점수</span>
                     <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 누적 조회수 수준" multiline>
-                      <Info size={11} className="text-gray-400" />
+                      <Info size={11} className="text-gray-400" aria-hidden="true" />
                     </Tooltip>
                   </div>
                   <p className="text-2xl font-bold text-gray-900">{content.performanceScore}</p>
@@ -747,7 +747,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm text-gray-500">모멘텀 점수</span>
                     <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 최근 조회수 증가 속도" multiline>
-                      <Info size={11} className="text-gray-400" />
+                      <Info size={11} className="text-gray-400" aria-hidden="true" />
                     </Tooltip>
                   </div>
                   <p className="text-2xl font-bold text-gray-900">{content.momentumScore}</p>

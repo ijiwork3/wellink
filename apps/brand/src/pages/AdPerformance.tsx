@@ -500,7 +500,7 @@ export default function AdPerformance() {
                             <p className="text-sm text-gray-500 mt-0.5">광고세트 {c.adSets.length}개</p>
                           </div>
                         </div>
-                        {isCampaignOpen ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
+                        {isCampaignOpen ? <ChevronUp size={16} className="text-gray-400 shrink-0" aria-hidden="true" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" aria-hidden="true" />}
                       </button>
                       {isCampaignOpen && (
                         <div className="border-t border-gray-100 p-4" id={`campaign-detail-${c.campaignId}`}>
@@ -543,7 +543,7 @@ export default function AdPerformance() {
                                         <span className="ml-2 text-sm text-gray-500">소재 {set.ads.length}개</span>
                                       </div>
                                     </div>
-                                    {isSetOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
+                                    {isSetOpen ? <ChevronUp size={14} className="text-gray-400" aria-hidden="true" /> : <ChevronDown size={14} className="text-gray-400" aria-hidden="true" />}
                                   </button>
                                   {isSetOpen && (
                                     <div className="border-t border-gray-100 p-3" id={`adset-detail-${set.id}`}>

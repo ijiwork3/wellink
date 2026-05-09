@@ -269,7 +269,7 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
   const BAR_AREA_PX = 112
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" role="img" aria-label="팔로워 추이 차트">
       <div className="flex items-end" style={{ height: BAR_AREA_PX, gap: isDense ? '2px' : '8px' }}>
         {data.map(({ label, value }) => {
           const isNull = value === null
@@ -1213,7 +1213,7 @@ function SortBtn({ k, label, sortKey, sortDir, onSort }: {
     >
       <span className="flex items-center gap-1">
         {label}
-        <span className={sortKey === k ? 'text-gray-700' : 'text-gray-300'}>
+        <span className={sortKey === k ? 'text-gray-700' : 'text-gray-300'} aria-hidden="true">
           {sortKey === k ? (sortDir === 'desc' ? '↓' : '↑') : '↕'}
         </span>
       </span>
