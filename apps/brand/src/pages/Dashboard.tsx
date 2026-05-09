@@ -228,14 +228,14 @@ export default function Dashboard() {
           <div className="flex justify-center gap-3">
             <button
               onClick={() => navigate('/campaigns/new')}
-              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
+              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Megaphone size={14} className="inline mr-2" aria-hidden="true" />
               첫 캠페인 만들기
             </button>
             <button
               onClick={() => navigate('/influencers/list')}
-              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
+              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               인플루언서 탐색
             </button>
@@ -345,7 +345,7 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
+            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Megaphone size={14} aria-hidden="true" />새 캠페인
           </button>
@@ -375,7 +375,7 @@ export default function Dashboard() {
           <p className="text-sm text-gray-400 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
           <button
             onClick={() => navigate('/campaigns/new')}
-            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
+            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             새 캠페인 만들기
           </button>
@@ -406,7 +406,7 @@ export default function Dashboard() {
           <span>{lockedBannerMessage}</span>
           <button
             onClick={() => navigate('/subscription')}
-            className="ml-auto text-sm font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0"
+            className="ml-auto text-sm font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             {lockedBannerCta}
           </button>

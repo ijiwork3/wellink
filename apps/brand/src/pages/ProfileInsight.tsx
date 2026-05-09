@@ -669,7 +669,7 @@ export default function ProfileInsight() {
           sub="@wellink_brand"
           trend={kpi.trends[0]}
           trendLabel="전기간 대비"
-          icon={<Users size={16} />}
+          icon={<Users size={16} aria-hidden="true" />}
           tooltip="현재 브랜드 계정을 팔로우하는 총 사용자 수"
         />
         <KPICard
@@ -678,7 +678,7 @@ export default function ProfileInsight() {
           sub="게시물 기준"
           trend={kpi.trends[1]}
           trendLabel="전기간 대비"
-          icon={<Eye size={16} />}
+          icon={<Eye size={16} aria-hidden="true" />}
           tooltip="게시물 1개당 팔로워 대비 도달한 비율 평균"
         />
         <KPICard
@@ -688,7 +688,7 @@ export default function ProfileInsight() {
           trend={kpi.trends[2]}
           trendLabel="전기간 대비"
           valueColor={getEngagementColor(kpi.engagement)}
-          icon={<TrendingUp size={16} />}
+          icon={<TrendingUp size={16} aria-hidden="true" />}
           tooltip="(좋아요+댓글) / 도달 수 x 100으로 산출"
         />
         <KPICard
@@ -697,7 +697,7 @@ export default function ProfileInsight() {
           sub={period === '일간' ? '당일 누적' : period === '주간' ? '주간 누적' : period === '월간' ? '월간 누적' : '연간 누적'}
           trend={kpi.trends[3]}
           trendLabel="전기간 대비"
-          icon={<BarChart2 size={16} />}
+          icon={<BarChart2 size={16} aria-hidden="true" />}
           tooltip="콘텐츠가 화면에 노출된 총 횟수 (중복 포함)"
         />
       </div>
@@ -756,7 +756,7 @@ export default function ProfileInsight() {
                 <button
                   key={metric}
                   onClick={() => setActiveMetric(metric)}
-                  className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all ${
+                  className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                     activeMetric === metric
                       ? 'border-transparent text-white'
                       : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'

@@ -408,17 +408,17 @@ export default function Subscription() {
                 {cancelStatus === 'cancel_scheduled' ? (
                   <button
                     onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
-                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors"
+                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >해지 예약 취소</button>
                 ) : (
                   <>
                     <button
                       onClick={() => setCancelModal(true)}
-                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >해지</button>
                     <button
                       onClick={() => setRefundModal(true)}
-                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >환불 요청</button>
                   </>
                 )}
@@ -505,7 +505,7 @@ export default function Subscription() {
             <button
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 ${
+              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 plan.id === currentPlan
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -550,7 +550,7 @@ export default function Subscription() {
             <button
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 ${
+              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 plan.id === currentPlan
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-brand-green text-white hover:bg-brand-green-hover'
@@ -597,7 +597,7 @@ export default function Subscription() {
                   setEnterpriseModal(true)
                 }
               }}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 ${
+              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
                 currentPlan === plan.id
                   ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   : 'border-2 border-white text-white hover:bg-white/10'
@@ -640,7 +640,7 @@ export default function Subscription() {
             </div>
             <button
               onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
-              className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors"
+              className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               등록하기
             </button>
