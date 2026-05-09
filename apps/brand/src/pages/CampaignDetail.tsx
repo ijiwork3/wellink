@@ -26,7 +26,7 @@ const campaignsData: Record<string, {
     status: '모집중',
     category: '피트니스',
     budget: '2,000,000원',
-    period: '2026-03-25 ~ 2026-04-25',
+    period: '2026-03-25 ~ 2026-04-28',
     headcount: 15,
     description: '봄 시즌을 맞아 요가·필라테스 인플루언서와 함께하는 브랜드 캠페인입니다. 제품 체험 후 솔직한 후기 콘텐츠를 제작합니다.',
     influencers: [
@@ -73,9 +73,9 @@ const campaignMeta: Record<string, {
     recruitPeriod: '2026-04-25 ~ 2026-05-25',
     announceDate: '2026-05-30',
     uploadPeriod: '2026-04-25 ~ 2026-05-25',
-    productName: '4구 한우 프리미엄 선물세트 1.2kg',
-    productDetail: '등심 300g + 안심 300g + 채끝 300g + 특수부위 300g',
-    productPrice: 168000,
+    productName: '요가매트 세트 (프리미엄 6mm + 스트랩)',
+    productDetail: '요가매트 6mm + 논슬립 스트랩 2개 + 세척 스프레이',
+    productPrice: 58000,
     rewardPoint: 0,
     campaignType: '방문형',
     postType: '피드, 릴스',
@@ -572,6 +572,7 @@ export default function CampaignDetail() {
     qa === 'modal-reject' ? campaign.influencers[0]?.id ?? null : null
   )
   const [feedback, setFeedback] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const device = useDeviceMode()
   const isPhone = device === 'phone'
 
@@ -708,23 +709,29 @@ export default function CampaignDetail() {
   }
 
   // 선정 확정 — AlertModal 확인 후 실행 (단방향)
-  const handleConfirmSelection = (applicantIds: number[]) => {
+  const handleConfirmSelection = async (applicantIds: number[]) => {
+    if (isLoading) return
     const toSelect = applicants.filter(a => applicantIds.includes(a.id))
     if (toSelect.length === 0) return
-    setSelectedInfluencers(prev => [
-      ...prev,
-      ...toSelect.map(applicantToSelected),
-    ])
-    setApplicants(prev => prev.filter(a => !applicantIds.includes(a.id)))
-    setPendingApplicants(prev => {
-      const next = new Set(prev)
-      applicantIds.forEach(id => next.delete(id))
-      return next
-    })
-    setCheckedApplicants(new Set())
-    setConfirmSelectionModal(null)
-    sendNotificationMock('select', toSelect.length)
-    showToast(`${toSelect.length}명 선정이 확정되었습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
+    setIsLoading(true)
+    try {
+      setSelectedInfluencers(prev => [
+        ...prev,
+        ...toSelect.map(applicantToSelected),
+      ])
+      setApplicants(prev => prev.filter(a => !applicantIds.includes(a.id)))
+      setPendingApplicants(prev => {
+        const next = new Set(prev)
+        applicantIds.forEach(id => next.delete(id))
+        return next
+      })
+      setCheckedApplicants(new Set())
+      setConfirmSelectionModal(null)
+      sendNotificationMock('select', toSelect.length)
+      showToast(`${toSelect.length}명 선정이 확정되었습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // 일괄 선정 예정 (구. 일괄 선정)
@@ -831,17 +838,23 @@ export default function CampaignDetail() {
   }
 
   // 반려
-  const handleReject = () => {
+  const handleReject = async () => {
+    if (isLoading) return
     if (!feedback.trim()) { showToast('피드백 내용을 입력해주세요.', 'error'); return }
-    if (rejectModal !== null) {
-      setApplicantStatuses(prev => ({ ...prev, [rejectModal]: '반려' }))
-      // 지원자 목록에서도 제거
-      setApplicants(prev => prev.filter(a => a.id !== rejectModal))
+    setIsLoading(true)
+    try {
+      if (rejectModal !== null) {
+        setApplicantStatuses(prev => ({ ...prev, [rejectModal]: '반려' }))
+        // 지원자 목록에서도 제거
+        setApplicants(prev => prev.filter(a => a.id !== rejectModal))
+      }
+      setRejectModal(null)
+      setFeedback('')
+      sendNotificationMock('reject', 1)
+      showToast('반려 피드백이 전달되었습니다. 인플루언서에게 알림이 발송되었습니다.', 'info')
+    } finally {
+      setIsLoading(false)
     }
-    setRejectModal(null)
-    setFeedback('')
-    sendNotificationMock('reject', 1)
-    showToast('반려 피드백이 전달되었습니다. 인플루언서에게 알림이 발송되었습니다.', 'info')
   }
 
   // 성과 리포트는 승인된 콘텐츠만
@@ -995,19 +1008,19 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* 일정 바 — 모집·발표 한 행, 업로드 단독 행 (말줄임 방지) */}
-        <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3">
+        {/* 일정 바 — 모집/콘텐츠등록/완료 3단계 (정책서 기준) */}
+        <div className="grid grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
             <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">발표</span>
-            <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
-          </div>
-          <div className="col-span-2 flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
             <span className="text-gray-600 break-words">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+          </div>
+          <div className="flex items-center gap-2 text-base min-w-0">
+            <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">완료</span>
+            <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
           </div>
         </div>
 
@@ -1047,7 +1060,18 @@ export default function CampaignDetail() {
                   el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
                 }
               }}
-              onClick={() => { if (!isDisabled) { setActiveTab(tab); setCheckedApplicants(new Set()) } }}
+              onClick={() => {
+                if (!isDisabled) {
+                  setActiveTab(tab)
+                  setCheckedApplicants(new Set())
+                  // 탭 전환 시 필터·검색어 초기화
+                  setApplicantsSearch('')
+                  setAnswerFilters({})
+                  setPendingOnlyFilter(false)
+                  setContentFilter('전체')
+                  setContentPlatform('전체')
+                }
+              }}
               disabled={isDisabled}
               aria-label={isTabGated ? `${tab} (구독 만료)` : undefined}
               className={`relative whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-base' : 'text-base'} border-b-2 transition-all duration-150 ${
@@ -1195,7 +1219,7 @@ export default function CampaignDetail() {
             <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
               <Users size={15} className="text-gray-400" aria-hidden="true" />
               지원자 <span className="text-gray-900 font-bold">{totalCount}</span>명
-              {totalCount !== applicants.length && <span className="text-base text-gray-400 font-normal">(전체 {applicants.length}명)</span>}
+              {totalCount !== applicants.length && <span className="text-base text-gray-500 font-normal">(전체 {applicants.length}명)</span>}
             </h2>
             <div className="flex gap-2 flex-wrap">
               <button
@@ -1278,7 +1302,7 @@ export default function CampaignDetail() {
                     {activeEntries.map(([q, v]) => (
                       <span key={q} className="inline-flex items-center gap-1 max-w-full pl-2 pr-1 py-1 rounded-full bg-white border border-gray-200 text-base text-gray-700">
                         <span className="break-words">
-                          <span className="text-gray-400">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
+                          <span className="text-gray-500">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
                         </span>
                         <button
                           type="button"
@@ -1386,7 +1410,7 @@ export default function CampaignDetail() {
                         </div>
                         <div className="leading-tight">
                           <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{a.instagramId}</span>
-                          <span className="block text-base text-gray-400 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
+                          <span className="block text-base text-gray-500 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
                         </div>
                       </div>
                     </td>
@@ -1399,7 +1423,7 @@ export default function CampaignDetail() {
                     {/* 콘텐츠 미리보기 (피드 1 + 릴스 1) — 정책서 § 6-3-1 */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       {a.isPrivate ? (
-                        <span className="inline-flex items-center gap-1 text-base text-gray-400">
+                        <span className="inline-flex items-center gap-1 text-base text-gray-500">
                           <Image size={12} aria-hidden="true" /> 비공개
                         </span>
                       ) : (
@@ -1503,7 +1527,7 @@ export default function CampaignDetail() {
                 ))}
                 {paginated.length === 0 && (
                   <tr>
-                    <td colSpan={13} className="py-12 text-center text-base text-gray-400">
+                    <td colSpan={13} className="py-12 text-center text-base text-gray-500">
                       {applicants.length === 0 ? '지원자가 없습니다.' : '조건에 맞는 지원자가 없습니다.'}
                     </td>
                   </tr>
@@ -1630,7 +1654,7 @@ export default function CampaignDetail() {
                             </div>
                             <div className="leading-tight">
                               <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{i.instagramId}</span>
-                              <span className="block text-base text-gray-400 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
+                              <span className="block text-base text-gray-500 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
                             </div>
                           </div>
                         </td>
@@ -1683,7 +1707,7 @@ export default function CampaignDetail() {
                     ))}
                     {pagedSelected.length === 0 && (
                       <tr>
-                        <td colSpan={13} className="py-12 text-center text-base text-gray-400">
+                        <td colSpan={13} className="py-12 text-center text-base text-gray-500">
                           {selectedInfluencers.length === 0 ? '선정된 인플루언서가 없습니다.' : '조건에 맞는 인플루언서가 없습니다.'}
                         </td>
                       </tr>
@@ -1703,7 +1727,7 @@ export default function CampaignDetail() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <Image size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-base font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
-          <p className="text-base text-gray-400 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
+          <p className="text-base text-gray-500 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
         </div>
       )}
       {activeTab === '등록 콘텐츠' && !isGated && qa !== 'tab-content-empty' && (() => {
@@ -1747,7 +1771,7 @@ export default function CampaignDetail() {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-base font-semibold text-gray-900">
                 등록 콘텐츠
-                <span className="ml-1.5 text-base font-normal text-gray-400">{filtered.length}건</span>
+                <span className="ml-1.5 text-base font-normal text-gray-500">{filtered.length}건</span>
               </h2>
               <div className="flex items-center gap-2 flex-wrap">
                 <button
@@ -1819,7 +1843,7 @@ export default function CampaignDetail() {
             {filtered.length === 0 ? (
               <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
                 <Image size={32} className="text-gray-200 mx-auto mb-2" aria-hidden="true" />
-                <p className="text-base text-gray-400">
+                <p className="text-base text-gray-500">
                   {[
                     contentPlatform !== '전체' && contentPlatform,
                     contentFilter !== '전체' && contentFilter,
@@ -1902,7 +1926,7 @@ export default function CampaignDetail() {
                             </div>
                             <div className="min-w-0 leading-tight">
                               <p className="text-base font-bold text-gray-900 break-words">@{c.instagramId}</p>
-                              <p className="text-base text-gray-400 break-words mt-0.5">본명 · {c.influencer}</p>
+                              <p className="text-base text-gray-500 break-words mt-0.5">본명 · {c.influencer}</p>
                             </div>
                           </div>
                           <span className={`text-base font-semibold px-2.5 py-1 rounded-full shrink-0 ${CONTENT_STATUS_STYLE[status]}`}>
@@ -1912,7 +1936,7 @@ export default function CampaignDetail() {
 
                         {/* 제출일 + 찜하기 */}
                         <div className="flex items-center justify-between">
-                          <p className="text-base text-gray-400">제출일 {c.submittedAt}</p>
+                          <p className="text-base text-gray-500">제출일 {c.submittedAt}</p>
                           <button
                             onClick={e => { e.stopPropagation(); toggleContentInfluencerBookmark(c.influencer) }}
                             aria-label={contentInfluencerBookmarks.has(c.influencer) ? `${c.influencer} 찜 해제` : `${c.influencer} 찜하기`}
@@ -1937,7 +1961,7 @@ export default function CampaignDetail() {
                             { label: '참여율', value: `${engRate}%`, highlight: true },
                           ].map(m => (
                             <div key={m.label}>
-                              <p className="text-base text-gray-400 mb-0.5">{m.label}</p>
+                              <p className="text-base text-gray-500 mb-0.5">{m.label}</p>
                               <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
                             </div>
                           ))}
@@ -1997,7 +2021,7 @@ export default function CampaignDetail() {
                   }, [])
                   .map((p, i) =>
                     p === '...'
-                      ? <span key={`e${i}`} className="w-8 text-center text-base text-gray-400">…</span>
+                      ? <span key={`e${i}`} className="w-8 text-center text-base text-gray-500">…</span>
                       : <button
                           key={p}
                           onClick={() => setContentPage(p as number)}
@@ -2024,7 +2048,7 @@ export default function CampaignDetail() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
           <p className="text-base font-medium text-gray-500">성과 데이터가 없습니다</p>
-          <p className="text-base text-gray-400 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
+          <p className="text-base text-gray-500 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
         </div>
       )}
 
@@ -2058,7 +2082,7 @@ export default function CampaignDetail() {
               <div className="flex items-center gap-2 mb-4">
                 <Users size={16} className="text-gray-400" aria-hidden="true" />
                 <h3 className="text-base font-semibold text-gray-900">TOP 인플루언서</h3>
-                <span className="text-base text-gray-400">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
+                <span className="text-base text-gray-500">· 좋아요 + 댓글 + 공유 + 저장 합산 (정책서 § 9-4)</span>
               </div>
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
                 {topInfluencers.map((inf, idx) => (
@@ -2069,7 +2093,7 @@ export default function CampaignDetail() {
                       }`}>{idx + 1}</div>
                       <div className="min-w-0 leading-tight">
                         <p className="text-base font-bold text-gray-900 break-words">@{inf.instagramId}</p>
-                        <p className="text-base text-gray-400 break-words mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
+                        <p className="text-base text-gray-500 break-words mt-0.5">본명 · {inf.name} · 콘텐츠 {inf.contents}개</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-x-3 gap-y-1 text-base flex-wrap pl-11">
@@ -2101,7 +2125,7 @@ export default function CampaignDetail() {
             <div className="flex items-center gap-2 mb-4">
               <Crown size={16} className="text-amber-500" aria-hidden="true" />
               <h3 className="text-base font-semibold text-gray-900">중요 릴스 콘텐츠 TOP 3</h3>
-              <span className="text-base text-gray-400">· 릴스 한정 · 콘텐츠 점수 기준</span>
+              <span className="text-base text-gray-500">· 릴스 한정 · 콘텐츠 점수 기준</span>
               <Tooltip content="콘텐츠 점수는 도달·참여·반응을 종합한 자체 산출 점수입니다. 자세한 산식은 검증 단계입니다." multiline>
                 <Info size={11} className="text-gray-400 cursor-help" />
               </Tooltip>
@@ -2113,7 +2137,7 @@ export default function CampaignDetail() {
                 .slice(0, 3)
                 .map((c, idx) => {
                   const medals = ['🥇', '🥈', '🥉']
-                  const scoreColor = c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-500' : 'text-gray-400'
+                  const scoreColor = c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-500' : 'text-gray-500'
                   const borderColor = idx === 0 ? 'border-amber-200' : 'border-gray-100'
                   const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
                   return (
@@ -2127,7 +2151,7 @@ export default function CampaignDetail() {
                       <div>
                         <p className="text-base font-semibold text-gray-900 leading-snug line-clamp-2">{c.caption}</p>
                         <div className="flex items-center gap-1 mt-1 flex-wrap">
-                          <span className="text-base text-gray-400 whitespace-nowrap">@{c.instagramId}</span>
+                          <span className="text-base text-gray-500 whitespace-nowrap">@{c.instagramId}</span>
                           <PlatformBadge platform={c.platform} />
                           {c.type && (
                             <span className={`text-base px-2 py-1 rounded-full font-medium whitespace-nowrap shrink-0 ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-600'}`}>
@@ -2139,15 +2163,15 @@ export default function CampaignDetail() {
                       {/* 지표 — 카드 폭이 좁아 값 겹침 방지 위해 stacked (라벨·값 한 행씩) */}
                       <div className="flex flex-col gap-1 pt-2 border-t border-gray-50">
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-base text-gray-400 shrink-0">도달</p>
+                          <p className="text-base text-gray-500 shrink-0">도달</p>
                           <p className="text-base font-bold text-gray-800">{fmtNumber(c.reach)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-base text-gray-400 shrink-0">좋아요</p>
+                          <p className="text-base text-gray-500 shrink-0">좋아요</p>
                           <p className="text-base font-bold text-gray-800">{fmtNumber(c.likes)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-base text-gray-400 shrink-0">참여율</p>
+                          <p className="text-base text-gray-500 shrink-0">참여율</p>
                           <p className="text-base font-bold text-brand-green">{engRate}%</p>
                         </div>
                       </div>
@@ -2162,7 +2186,7 @@ export default function CampaignDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-semibold text-gray-900">콘텐츠별 좋아요 비교</h3>
                   {approvedContents.length > CHART_MAX_POINTS && (
-                    <span className="text-base text-gray-400">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
+                    <span className="text-base text-gray-500">좋아요 Top {CHART_MAX_POINTS} (전체 {approvedContents.length}건 중)</span>
                   )}
                 </div>
                 <div className="relative overflow-x-auto overflow-y-hidden">
@@ -2261,7 +2285,7 @@ export default function CampaignDetail() {
                             </td>
                             <td className="py-3 px-4 whitespace-nowrap leading-tight">
                               <p className="text-base font-bold text-gray-900">@{c.instagramId}</p>
-                              <p className="text-base text-gray-400 mt-0.5">본명 · {c.influencer}</p>
+                              <p className="text-base text-gray-500 mt-0.5">본명 · {c.influencer}</p>
                             </td>
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
@@ -2329,7 +2353,7 @@ export default function CampaignDetail() {
                   </div>
                   <div className="leading-tight">
                     <p className="text-base font-bold text-gray-900">@{dc.instagramId}</p>
-                    <p className="text-base text-gray-400 mt-0.5">본명 · {dc.influencer}</p>
+                    <p className="text-base text-gray-500 mt-0.5">본명 · {dc.influencer}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -2343,7 +2367,7 @@ export default function CampaignDetail() {
                 </div>
               </div>
               {/* 제출일 + 바이럴 */}
-              <div className="flex items-center justify-between text-base text-gray-400">
+              <div className="flex items-center justify-between text-base text-gray-500">
                 <span>제출일 {dc.submittedAt}</span>
                 {dc.viralScore > 0 && (
                   <span className={`font-bold px-2.5 py-1 rounded-full ${
@@ -2363,7 +2387,7 @@ export default function CampaignDetail() {
                   { label: '참여율', value: `${dcEngRate}%`, highlight: true },
                 ].map(m => (
                   <div key={m.label}>
-                    <p className="text-sm text-gray-400 mb-0.5">{m.label}</p>
+                    <p className="text-sm text-gray-500 mb-0.5">{m.label}</p>
                     <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
                   </div>
                 ))}
@@ -2428,7 +2452,7 @@ export default function CampaignDetail() {
                 <span className="text-gray-900 font-medium">{selectedContents.size}건</span>
               </div>
             </div>
-            <p className="text-base text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+            <p className="text-base text-gray-500">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
           </div>
         ) : downloadStep === 'plan-select' ? (
           <div className="space-y-4">
@@ -2470,7 +2494,7 @@ export default function CampaignDetail() {
                 )
               })}
             </div>
-            <p className="text-base text-gray-400">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
+            <p className="text-base text-gray-500">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -2497,7 +2521,7 @@ export default function CampaignDetail() {
                   <input type="text" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
                 </div>
               </div>
-              <p className="text-base text-gray-400">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>
+              <p className="text-base text-gray-500">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>
             </div>
           </div>
         )}
@@ -2568,7 +2592,7 @@ export default function CampaignDetail() {
                   ))}
                 </div>
               ) : (
-                <p className="text-base text-gray-400 text-center py-6">답변이 없습니다.</p>
+                <p className="text-base text-gray-500 text-center py-6">답변이 없습니다.</p>
               )}
             </div>
           </Modal>
@@ -2636,12 +2660,12 @@ export default function CampaignDetail() {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-base font-semibold text-gray-900">{s.uploadedPostCount ?? 0}개</p>
-                        <p className="text-sm text-gray-400">게시글</p>
+                        <p className="text-sm text-gray-500">게시글</p>
                       </div>
                     </button>
                   ))}
                   {data.length === 0 && (
-                    <p className="text-base text-gray-400 text-center py-12">선정된 인플루언서가 없습니다.</p>
+                    <p className="text-base text-gray-500 text-center py-12">선정된 인플루언서가 없습니다.</p>
                   )}
                 </div>
               </div>
@@ -2659,17 +2683,17 @@ export default function CampaignDetail() {
                   </div>
                   <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2">
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">게시글 수</p>
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-500">게시글 수</p>
                       <p className="text-xl font-bold text-gray-900 mt-1">{detail.uploadedPostCount ?? 0}개</p>
                     </div>
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">등록 시점</p>
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-500">등록 시점</p>
                       <p className="text-base font-semibold text-gray-900 mt-1">
                         {detail.firstUploadedAt ? fmtDate(detail.firstUploadedAt) : '미등록'}
                       </p>
                     </div>
                     <div className="bg-white rounded-xl p-3 border border-gray-100">
-                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">게시글 이동</p>
+                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-500">게시글 이동</p>
                       {detail.latestPostUrl ? (
                         <a
                           href={detail.latestPostUrl}
@@ -2678,7 +2702,7 @@ export default function CampaignDetail() {
                           className="text-base font-semibold text-brand-green-text underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
-                        <p className="text-base text-gray-400 mt-1">연결된 게시글 없음</p>
+                        <p className="text-base text-gray-500 mt-1">연결된 게시글 없음</p>
                       )}
                     </div>
                   </div>
@@ -2724,7 +2748,7 @@ export default function CampaignDetail() {
             maxLength={500}
             className="w-full text-base border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
-          <div className="text-right text-base text-gray-400">{contentRejectFeedback.length}/500</div>
+          <div className="text-right text-base text-gray-500">{contentRejectFeedback.length}/500</div>
         </div>
       </Modal>
 
@@ -2827,7 +2851,7 @@ export default function CampaignDetail() {
                 </div>
                 <div className="flex-1 min-w-0 leading-tight">
                   <p className="text-base font-bold text-gray-900">@{target.instagramId}</p>
-                  <p className="text-base text-gray-400 mt-0.5">본명 · {target.name} · 팔로워 {target.followers}</p>
+                  <p className="text-base text-gray-500 mt-0.5">본명 · {target.name} · 팔로워 {target.followers}</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
@@ -2838,7 +2862,7 @@ export default function CampaignDetail() {
                   >
                     <ChevronLeft size={14} />
                   </button>
-                  <span className="text-base text-gray-400 min-w-[40px] text-center">{curIdx + 1} / {previewable.length}</span>
+                  <span className="text-base text-gray-500 min-w-[40px] text-center">{curIdx + 1} / {previewable.length}</span>
                   <button
                     onClick={() => setPreviewModal({ applicantId: previewable[curIdx + 1].id, type: previewModal.type })}
                     disabled={!hasNext}
@@ -2869,20 +2893,20 @@ export default function CampaignDetail() {
                   })}
                 </div>
               ) : (
-                <div className="h-48 bg-gray-50 rounded-xl flex items-center justify-center text-base text-gray-400">콘텐츠 없음</div>
+                <div className="h-48 bg-gray-50 rounded-xl flex items-center justify-center text-base text-gray-500">콘텐츠 없음</div>
               )}
               {/* 통계 */}
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-base text-gray-400">평균 좋아요</p>
+                  <p className="text-base text-gray-500">평균 좋아요</p>
                   <p className="text-base font-semibold text-gray-900">{fmtNumber(target.avgLikes)}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-base text-gray-400">평균 댓글</p>
+                  <p className="text-base text-gray-500">평균 댓글</p>
                   <p className="text-base font-semibold text-gray-900">{fmtNumber(target.avgComments)}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-base text-gray-400">참여율</p>
+                  <p className="text-base text-gray-500">참여율</p>
                   <p className="text-base font-semibold text-gray-900">{target.engagement}%</p>
                 </div>
               </div>
@@ -2934,7 +2958,7 @@ export default function CampaignDetail() {
             maxLength={500}
             className="w-full text-base border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
           />
-          <div className="text-right text-base text-gray-400">{feedback.length}/500</div>
+          <div className="text-right text-base text-gray-500">{feedback.length}/500</div>
         </div>
       </Modal>
     </div>
@@ -2975,7 +2999,7 @@ function MissionCard({ icon, label, value }: { icon: React.ReactNode; label: str
 /** 마크다운 경량 뷰어 — 원본 ToastEditorViewer 일부 호환 (제목·굵게·리스트·줄바꿈) */
 function MarkdownView({ text, className = '' }: { text: string; className?: string }) {
   if (!text || !text.trim()) {
-    return <p className={`text-base text-gray-400 ${className}`}>내용이 없습니다.</p>
+    return <p className={`text-base text-gray-500 ${className}`}>내용이 없습니다.</p>
   }
   // 라인 단위 파싱
   const lines = text.split(/\r?\n/)
