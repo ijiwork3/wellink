@@ -820,6 +820,8 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-amber-400 inline-block rounded" />모멘텀</span>
                   </div>
                   <div className="relative">
+                    {scoreScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+                    {scoreScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
                     {scoreScrollLeft && (
                       <button type="button" onClick={() => scoreScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                         aria-label="왼쪽으로 스크롤"

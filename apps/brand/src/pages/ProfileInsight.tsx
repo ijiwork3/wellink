@@ -990,6 +990,8 @@ export default function ProfileInsight() {
             </div>
           </div>
           <div className="relative">
+            {trendCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+            {trendCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
             {trendCanScrollLeft && (
               <button type="button" onClick={() => trendChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                 aria-label="왼쪽으로 스크롤"
@@ -1034,6 +1036,8 @@ export default function ProfileInsight() {
             </div>
           </div>
           <div className="relative">
+            {impReachCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+            {impReachCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
             {impReachCanScrollLeft && (
               <button type="button" onClick={() => impReachChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                 aria-label="왼쪽으로 스크롤"
@@ -1102,6 +1106,8 @@ export default function ProfileInsight() {
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <div className="relative">
+            {followerCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+            {followerCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
             {followerCanScrollLeft && (
               <button type="button" onClick={() => followerChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                 aria-label="왼쪽으로 스크롤"

@@ -744,6 +744,8 @@ export default function AdPerformance() {
         </div>
         {/* 가로 스크롤 wrapper */}
         <div className="relative">
+          {mixedCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+          {mixedCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
           {mixedCanScrollLeft && (
             <button type="button" onClick={() => mixedChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
               aria-label="왼쪽으로 스크롤"
@@ -777,6 +779,8 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="relative">
+            {ctrCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+            {ctrCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
             {ctrCanScrollLeft && (
               <button type="button" onClick={() => ctrChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                 aria-label="왼쪽으로 스크롤"
@@ -809,6 +813,8 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="relative">
+            {clicksCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
+            {clicksCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
             {clicksCanScrollLeft && (
               <button type="button" onClick={() => clicksChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                 aria-label="왼쪽으로 스크롤"
