@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
-import { KPICard, Modal, ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, type DatePeriod } from '@wellink/ui'
+import { KPICard, Modal, ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -683,6 +683,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
 
 /** 콘텐츠 상세 모달 — @wellink/ui Modal 사용 */
 function ContentDetailModal({ content, onClose }: { content: ViralContent | null; onClose: () => void }) {
+  const isTouch = useIsTouchDevice()
   const campaignMatch = content ? (CAMPAIGN_MATCH_MAP[content.id] ?? null) : null
 
   // 점수 시계열 더미 (7포인트)
@@ -691,6 +692,31 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
     const mom  = Math.max(0, content.momentumScore  - (6 - i) * 3 + (i % 4) * 3)
     return { label: `D-${6 - i}`, performance: Math.min(100, base), momentum: Math.min(100, mom) }
   }) : []
+
+  // 차트 인터랙티브 인덱스 (모달 열릴 때 마지막 인덱스)
+  const [scoreIdx, setScoreIdx] = useState<number | null>(isTouch ? scoreHistory.length - 1 : null)
+  const scoreScrollRef = useRef<HTMLDivElement>(null)
+  const [scoreScrollLeft, setScoreScrollLeft] = useState(false)
+  const [scoreScrollRight, setScoreScrollRight] = useState(false)
+
+  useEffect(() => {
+    if (isTouch) setScoreIdx(scoreHistory.length > 0 ? scoreHistory.length - 1 : null)
+    else setScoreIdx(null)
+  }, [isTouch, content])
+
+  useEffect(() => {
+    const el = scoreScrollRef.current
+    if (!el) return
+    const update = () => {
+      setScoreScrollLeft(el.scrollLeft > 2)
+      setScoreScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
 
   const metrics = content ? [
     { label: '도달',   value: content.reach,    icon: <Eye size={13} aria-hidden="true" />,          color: 'text-blue-600' },
@@ -785,7 +811,30 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-violet-500 inline-block rounded" />퍼포먼스</span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-amber-400 inline-block rounded" />모멘텀</span>
                   </div>
-                  <ScoreHistoryChart data={scoreHistory} />
+                  <div className="relative">
+                    {scoreScrollLeft && (
+                      <button type="button" onClick={() => scoreScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                        aria-label="왼쪽으로 스크롤"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                        <ChevronLeft size={13} aria-hidden="true" />
+                      </button>
+                    )}
+                    {scoreScrollRight && (
+                      <button type="button" onClick={() => scoreScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                        aria-label="오른쪽으로 스크롤"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                        <ChevronRight size={13} aria-hidden="true" />
+                      </button>
+                    )}
+                    <div ref={scoreScrollRef} className="overflow-x-auto scrollbar-none">
+                      <ScoreHistoryChart
+                        data={scoreHistory}
+                        activeIndex={scoreIdx}
+                        onActiveIndex={setScoreIdx}
+                        isTouch={isTouch}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -801,15 +850,42 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
 }
 
 /** 점수 추이 미니 라인 차트 */
-function ScoreHistoryChart({ data }: { data: { label: string; performance: number; momentum: number }[] }) {
+function ScoreHistoryChart({
+  data,
+  activeIndex,
+  onActiveIndex,
+  isTouch,
+}: {
+  data: { label: string; performance: number; momentum: number }[]
+  activeIndex?: number | null
+  onActiveIndex?: (i: number | null) => void
+  isTouch?: boolean
+}) {
   const W = 400, H = 120, padL = 8, padR = 8, padT = 8, padB = 24
   const plotW = W - padL - padR, plotH = H - padT - padB
   const stepX = plotW / Math.max(data.length - 1, 1)
   const toY = (v: number) => padT + plotH - (v / 100) * plotH
   const line = (key: 'performance' | 'momentum') =>
     data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${padL + i * stepX} ${toY(d[key])}`).join(' ')
+
+  const handlePointerAt = (clientX: number, rect: DOMRect) => {
+    const ratio = (clientX - rect.left) / rect.width
+    const svgX = ratio * W - padL
+    const idx = Math.round(svgX / stepX)
+    onActiveIndex?.(Math.max(0, Math.min(data.length - 1, idx)))
+  }
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 120 }} role="img" aria-label="퍼포먼스·모멘텀 점수 추이 차트">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full"
+      style={{ maxHeight: 120, touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      role="img"
+      aria-label="퍼포먼스·모멘텀 점수 추이 차트"
+      onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
+      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
+    >
       {[0, 0.5, 1].map(r => (
         <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke="#e5e7eb" strokeWidth={1} />
       ))}
@@ -819,6 +895,29 @@ function ScoreHistoryChart({ data }: { data: { label: string; performance: numbe
         const x = padL + i * stepX
         return <text key={i} x={x} y={H - 4} textAnchor="middle" fontSize={8} fill="#9ca3af">{d.label}</text>
       })}
+
+      {/* 인터랙티브 active indicator */}
+      {activeIndex != null && (() => {
+        const d = data[activeIndex]
+        if (!d) return null
+        const x = padL + activeIndex * stepX
+        const perfY = toY(d.performance)
+        const momoY = toY(d.momentum)
+        const tipW = 110, tipH = 48, tipX = x + (x > W * 0.65 ? -(tipW + 8) : 8)
+        return (
+          <g key="active">
+            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <circle cx={x} cy={perfY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
+            <circle cx={x} cy={momoY} r={3.5} fill="#f59e0b" stroke="white" strokeWidth={1.5} />
+            <rect x={tipX} y={padT} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} />
+            <text x={tipX + 8} y={padT + 13} fontSize={8} fill="#6b7280">{d.label}</text>
+            <circle cx={tipX + 11} cy={padT + 24} r={3} fill="#8b5cf6" />
+            <text x={tipX + 18} y={padT + 27} fontSize={8} fill="#374151">퍼포먼스 {d.performance}</text>
+            <circle cx={tipX + 11} cy={padT + 38} r={3} fill="#f59e0b" />
+            <text x={tipX + 18} y={padT + 41} fontSize={8} fill="#374151">모멘텀 {d.momentum}</text>
+          </g>
+        )
+      })()}
     </svg>
   )
 }

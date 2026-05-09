@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'lucide-react'
-import { KPICard, ErrorState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination } from '@wellink/ui'
+import { KPICard, ErrorState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination, useIsTouchDevice } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -262,7 +262,17 @@ type MetricKey = keyof typeof metricColors
 
 
 /** 팔로워 추이 바 차트 — null = 회색 점선 바, 30개 이상은 라벨 간소화 */
-function FollowerBarChart({ data }: { data: BarDataItem[] }) {
+function FollowerBarChart({
+  data,
+  activeIndex,
+  onActiveIndex,
+  isTouch,
+}: {
+  data: BarDataItem[]
+  activeIndex?: number | null
+  onActiveIndex?: (i: number | null) => void
+  isTouch?: boolean
+}) {
   const nonNullVals = data.filter(m => m.value !== null).map(m => m.value as number)
   const maxVal = Math.max(...nonNullVals, 1)
   const isDense = data.length > 14
@@ -270,19 +280,35 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
 
   return (
     <div className="space-y-1" role="img" aria-label="팔로워 추이 차트">
+      {/* 선택된 막대 값 표시 */}
+      <div className="h-5 mb-1">
+        {activeIndex != null && data[activeIndex]?.value != null && (
+          <span className="text-sm font-semibold text-brand-green-text">
+            {fmtNumber(data[activeIndex].value as number)}
+          </span>
+        )}
+      </div>
       <div className="flex items-end" style={{ height: BAR_AREA_PX, gap: isDense ? '2px' : '8px' }}>
-        {data.map(({ label, value }) => {
+        {data.map(({ label, value }, idx) => {
           const isNull = value === null
           const barH = isNull ? 8 : Math.max(4, Math.round((value / maxVal) * BAR_AREA_PX))
+          const isActive = activeIndex === idx
           return (
-            <div key={label} className="flex-1 flex flex-col items-center min-w-0 justify-end" style={{ height: BAR_AREA_PX }}>
-              {!isDense && !isNull && (
+            <div
+              key={label}
+              className="flex-1 flex flex-col items-center min-w-0 justify-end cursor-pointer"
+              style={{ height: BAR_AREA_PX }}
+              onMouseEnter={!isTouch && !isNull ? () => onActiveIndex?.(idx) : undefined}
+              onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+              onClick={isTouch && !isNull ? () => onActiveIndex?.(idx) : undefined}
+            >
+              {!isDense && !isNull && !isActive && (
                 <span className="text-sm mb-1 leading-none text-gray-500 font-medium">
                   {fmtNumber(value)}
                 </span>
               )}
               <div
-                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : 'bg-brand-green-border'}`}
+                className={`w-full rounded-t-sm transition-[height] duration-300 ${isNull ? 'bg-gray-100 border border-dashed border-gray-300' : isActive ? 'bg-brand-green' : 'bg-brand-green-border'}`}
                 style={{ height: barH }}
               />
             </div>
@@ -290,12 +316,13 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
         })}
       </div>
       <div className="flex" style={{ gap: isDense ? '2px' : '8px' }}>
-        {data.map(({ label, value, showLabel }) => {
+        {data.map(({ label, value, showLabel }, idx) => {
           const isNull = value === null
           const doShow = isDense ? (showLabel ?? false) : true
+          const isActive = activeIndex === idx
           return (
             <div key={label} className="flex-1 min-w-0 text-center" style={{ visibility: doShow ? 'visible' : 'hidden' }}>
-              <span className={`text-xs truncate block ${isNull ? 'text-gray-300' : 'text-gray-400'}`}>{label}</span>
+              <span className={`text-xs truncate block ${isNull ? 'text-gray-300' : isActive ? 'text-brand-green-text font-medium' : 'text-gray-400'}`}>{label}</span>
             </div>
           )
         })}
@@ -308,9 +335,15 @@ function FollowerBarChart({ data }: { data: BarDataItem[] }) {
 function MultiLineTrendChart({
   data,
   activeMetrics,
+  activeIndex,
+  onActiveIndex,
+  isTouch,
 }: {
   data: TrendItem[]
   activeMetrics: MetricKey[]
+  activeIndex?: number | null
+  onActiveIndex?: (i: number | null) => void
+  isTouch?: boolean
 }) {
   const width = 580
   const height = 200
@@ -338,8 +371,39 @@ function MultiLineTrendChart({
     }))
   }
 
+  const handlePointerAt = (clientX: number, rect: DOMRect) => {
+    const ratio = (clientX - rect.left) / rect.width
+    const svgX = ratio * width
+    const relX = svgX - padX
+    const stepX = chartW / Math.max(1, data.length - 1)
+    const idx = Math.round(relX / stepX)
+    onActiveIndex?.(Math.max(0, Math.min(data.length - 1, idx)))
+  }
+
+  const metricLabelMap: Record<MetricKey, string> = {
+    likes: '좋아요',
+    reach: '도달',
+    comments: '댓글',
+    saves: '저장',
+  }
+
+  const fmtVal = (v: number | null) => {
+    if (v === null) return '—'
+    if (v >= 1000) return `${(v / 1000).toFixed(1)}k`
+    return String(v)
+  }
+
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ maxHeight: '200px' }} role="img" aria-label="기간별 지표 추이 차트">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="w-full"
+      style={{ maxHeight: '200px', touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44) }}
+      role="img"
+      aria-label="기간별 지표 추이 차트"
+      onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
+      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
+    >
       {/* 그리드 라인 */}
       {[0, 0.25, 0.5, 0.75, 1].map(ratio => {
         const y = padY + chartH - ratio * chartH
@@ -436,7 +500,11 @@ function MultiLineTrendChart({
         const x = padX + (chartW / Math.max(1, data.length - 1)) * i
         const isNull = d.likes === null
         const isDense = data.length > 14
-        const doShow = isDense ? (d.showLabel ?? false) : true
+        const doShow = data.length > 20
+          ? i % 7 === 0
+          : isDense
+            ? (d.showLabel ?? false)
+            : true
         if (!doShow) return null
         return (
           <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize="10">
@@ -444,6 +512,35 @@ function MultiLineTrendChart({
           </text>
         )
       })}
+
+      {/* 인터랙티브 active indicator */}
+      {activeIndex != null && (() => {
+        const d = data[activeIndex]
+        if (!d) return null
+        const stepX = chartW / Math.max(1, data.length - 1)
+        const x = padX + activeIndex * stepX
+        const tipLines = activeMetrics.map(m => ({
+          label: metricLabelMap[m],
+          value: d[m],
+          color: metricColors[m],
+        }))
+        const tipH = 18 + tipLines.length * 16
+        const tipW = 120
+        const tipX = x + (x > width * 0.65 ? -(tipW + 8) : 8)
+        return (
+          <g key="active">
+            <line x1={x} y1={padY} x2={x} y2={padY + chartH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <rect x={tipX} y={padY} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
+            <text x={tipX + 8} y={padY + 13} fontSize={8} fill="#6b7280">{d.label}</text>
+            {tipLines.map((tl, li) => (
+              <g key={li}>
+                <rect x={tipX + 8} y={padY + 18 + li * 16} width={6} height={6} rx={1} fill={tl.color} />
+                <text x={tipX + 18} y={padY + 25 + li * 16} fontSize={8} fill="#374151">{tl.label}: {fmtVal(tl.value)}</text>
+              </g>
+            ))}
+          </g>
+        )
+      })()}
     </svg>
   )
 }
@@ -452,11 +549,30 @@ export default function ProfileInsight() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
   const isDesktop = useDeviceMode() === 'desktop'
+  const isTouch = useIsTouchDevice()
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
   const [aiRefreshing, setAiRefreshing] = useState(false)
   const aiRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 차트 인터랙티브 인덱스
+  const [followerChartIdx, setFollowerChartIdx] = useState<number | null>(null)
+  const [trendChartIdx, setTrendChartIdx] = useState<number | null>(null)
+  const [impReachChartIdx, setImpReachChartIdx] = useState<number | null>(null)
+
+  // 차트 가로 스크롤 refs/state
+  const followerChartScrollRef = useRef<HTMLDivElement>(null)
+  const [followerCanScrollLeft, setFollowerCanScrollLeft] = useState(false)
+  const [followerCanScrollRight, setFollowerCanScrollRight] = useState(false)
+
+  const trendChartScrollRef = useRef<HTMLDivElement>(null)
+  const [trendCanScrollLeft, setTrendCanScrollLeft] = useState(false)
+  const [trendCanScrollRight, setTrendCanScrollRight] = useState(false)
+
+  const impReachChartScrollRef = useRef<HTMLDivElement>(null)
+  const [impReachCanScrollLeft, setImpReachCanScrollLeft] = useState(false)
+  const [impReachCanScrollRight, setImpReachCanScrollRight] = useState(false)
 
   // AI 분석 새로고침 — setTimeout cleanup
   const handleAiRefresh = useCallback(() => {
@@ -469,6 +585,66 @@ export default function ProfileInsight() {
     return () => {
       if (aiRefreshTimerRef.current !== null) clearTimeout(aiRefreshTimerRef.current)
     }
+  }, [])
+
+  // period/isTouch 변경 시 차트 인덱스 초기화 (실제 데이터 길이는 렌더 시점에 계산됨)
+  useEffect(() => {
+    if (isTouch) {
+      // 모바일: 마지막 인덱스 선택 (기간별 실제 데이터 길이 기반)
+      const fData = followerDataByPeriod[period]
+      const tData = trendDataByPeriod[period]
+      const irData = impressReachByPeriod[period]
+      setFollowerChartIdx(fData.length - 1)
+      setTrendChartIdx(tData.length - 1)
+      setImpReachChartIdx(irData.length - 1)
+    } else {
+      setFollowerChartIdx(null)
+      setTrendChartIdx(null)
+      setImpReachChartIdx(null)
+    }
+  }, [period, isTouch])
+
+  // 차트 스크롤 상태 추적
+  useEffect(() => {
+    const el = followerChartScrollRef.current
+    if (!el) return
+    const update = () => {
+      setFollowerCanScrollLeft(el.scrollLeft > 2)
+      setFollowerCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const el = trendChartScrollRef.current
+    if (!el) return
+    const update = () => {
+      setTrendCanScrollLeft(el.scrollLeft > 2)
+      setTrendCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
+  }, [])
+
+  useEffect(() => {
+    const el = impReachChartScrollRef.current
+    if (!el) return
+    const update = () => {
+      setImpReachCanScrollLeft(el.scrollLeft > 2)
+      setImpReachCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
 
   const tableScrollRef = useRef<HTMLDivElement>(null)
@@ -792,7 +968,31 @@ export default function ProfileInsight() {
               ))}
             </div>
           </div>
-          <MultiLineTrendChart data={trendData} activeMetrics={[activeMetric]} />
+          <div className="relative">
+            {trendCanScrollLeft && (
+              <button type="button" onClick={() => trendChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                aria-label="왼쪽으로 스크롤"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronLeft size={13} aria-hidden="true" />
+              </button>
+            )}
+            {trendCanScrollRight && (
+              <button type="button" onClick={() => trendChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                aria-label="오른쪽으로 스크롤"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronRight size={13} aria-hidden="true" />
+              </button>
+            )}
+            <div ref={trendChartScrollRef} className="overflow-x-auto scrollbar-none">
+              <MultiLineTrendChart
+                data={trendData}
+                activeMetrics={[activeMetric]}
+                activeIndex={trendChartIdx}
+                onActiveIndex={setTrendChartIdx}
+                isTouch={isTouch}
+              />
+            </div>
+          </div>
         </div>
 
         {/* 노출 & 도달 라인 차트 */}
@@ -812,7 +1012,30 @@ export default function ProfileInsight() {
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-green inline-block rounded" />도달</span>
             </div>
           </div>
-          <ImpressReachChart data={impressReachData} />
+          <div className="relative">
+            {impReachCanScrollLeft && (
+              <button type="button" onClick={() => impReachChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                aria-label="왼쪽으로 스크롤"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronLeft size={13} aria-hidden="true" />
+              </button>
+            )}
+            {impReachCanScrollRight && (
+              <button type="button" onClick={() => impReachChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                aria-label="오른쪽으로 스크롤"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronRight size={13} aria-hidden="true" />
+              </button>
+            )}
+            <div ref={impReachChartScrollRef} className="overflow-x-auto scrollbar-none">
+              <ImpressReachChart
+                data={impressReachData}
+                activeIndex={impReachChartIdx}
+                onActiveIndex={setImpReachChartIdx}
+                isTouch={isTouch}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -857,7 +1080,30 @@ export default function ProfileInsight() {
             <h3 className="text-base font-semibold text-gray-900">팔로워 추이</h3>
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
-          <FollowerBarChart data={followerData} />
+          <div className="relative">
+            {followerCanScrollLeft && (
+              <button type="button" onClick={() => followerChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                aria-label="왼쪽으로 스크롤"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronLeft size={13} aria-hidden="true" />
+              </button>
+            )}
+            {followerCanScrollRight && (
+              <button type="button" onClick={() => followerChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                aria-label="오른쪽으로 스크롤"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <ChevronRight size={13} aria-hidden="true" />
+              </button>
+            )}
+            <div ref={followerChartScrollRef} className="overflow-x-auto scrollbar-none">
+              <FollowerBarChart
+                data={followerData}
+                activeIndex={followerChartIdx}
+                onActiveIndex={setFollowerChartIdx}
+                isTouch={isTouch}
+              />
+            </div>
+          </div>
           {nullCount > 0 && (
             <p className="text-sm text-gray-300 mt-2">
               회색 점선 바: 해당 기간 데이터 없음
@@ -1008,7 +1254,17 @@ export default function ProfileInsight() {
 }
 
 /** 노출 & 도달 듀얼 라인 차트 — null 구간 점선 배경 처리 */
-function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
+function ImpressReachChart({
+  data,
+  activeIndex,
+  onActiveIndex,
+  isTouch,
+}: {
+  data: ImpressReachItem[]
+  activeIndex?: number | null
+  onActiveIndex?: (i: number | null) => void
+  isTouch?: boolean
+}) {
   const W = 580, H = 200, padL = 52, padR = 12, padT = 12, padB = 28
   const plotW = W - padL - padR
   const plotH = H - padT - padB
@@ -1021,6 +1277,15 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
   const isDense = data.length > 14
 
   const toY = (v: number) => padT + plotH - (v / maxVal) * plotH
+
+  const handlePointerAt = (clientX: number, rect: DOMRect) => {
+    const ratio = (clientX - rect.left) / rect.width
+    const svgX = ratio * W - padL
+    const idx = Math.round(svgX / stepX)
+    onActiveIndex?.(Math.max(0, Math.min(data.length - 1, idx)))
+  }
+
+  const fmtAxis = (v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)
 
   const buildSegments = (key: 'impressions' | 'reach') => {
     const segs: { x: number; y: number }[][] = []
@@ -1051,10 +1316,17 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
     }
   })
 
-  const fmtAxis = (v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)
-
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 200 }} role="img" aria-label="노출 및 도달 추이 차트">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full"
+      style={{ maxHeight: 200, touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      role="img"
+      aria-label="노출 및 도달 추이 차트"
+      onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
+      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
+    >
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
         return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
@@ -1109,6 +1381,38 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
           </text>
         )
       })}
+
+      {/* 인터랙티브 active indicator */}
+      {activeIndex != null && (() => {
+        const d = data[activeIndex]
+        if (!d) return null
+        const x = padL + activeIndex * stepX
+        const impY = d.impressions !== null ? toY(d.impressions) : null
+        const reachY = d.reach !== null ? toY(d.reach) : null
+        const tipW = 130, tipH = 50
+        const tipX = x + (x > W * 0.65 ? -(tipW + 8) : 8)
+        return (
+          <g key="active">
+            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            {impY !== null && (
+              <>
+                <circle cx={x} cy={impY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
+              </>
+            )}
+            {reachY !== null && (
+              <>
+                <circle cx={x} cy={reachY} r={3.5} fill="#10b981" stroke="white" strokeWidth={1.5} />
+              </>
+            )}
+            <rect x={tipX} y={padT} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
+            <text x={tipX + 8} y={padT + 13} fontSize={8} fill="#6b7280">{d.label}</text>
+            <circle cx={tipX + 11} cy={padT + 25} r={3} fill="#8b5cf6" />
+            <text x={tipX + 18} y={padT + 28} fontSize={8} fill="#374151">노출: {d.impressions !== null ? fmtAxis(d.impressions) : '—'}</text>
+            <circle cx={tipX + 11} cy={padT + 40} r={3} fill="#10b981" />
+            <text x={tipX + 18} y={padT + 43} fontSize={8} fill="#374151">도달: {d.reach !== null ? fmtAxis(d.reach) : '—'}</text>
+          </g>
+        )
+      })()}
     </svg>
   )
 }
