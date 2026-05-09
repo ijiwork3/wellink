@@ -25,14 +25,14 @@ const FILLED = {
   location: '강남/서초',
   storeName: '봄 요가 스튜디오',
   // 택배형 전용 — 원본 mentionName(브랜드명) + product(상품이름) 분리 보강
-  brandName: '킹콩푸드',
-  shippedProductName: '한우 프리미엄 선물세트',
+  brandName: '웰링크 웰니스',
+  shippedProductName: '요가매트 세트',
   platform: '인스타그램' as Platform,
-  category: '맛집/푸드',
+  category: '피트니스',
   description: '브랜드 소개와 캠페인 핵심 메시지를 담아주세요.',
-  productName: '4구 한우 프리미엄 선물세트 1.2kg',
-  productDetail: '등심 300g + 안심 300g + 채끝 300g + 특수부위 300g',
-  productPrice: '168000',
+  productName: '요가매트 세트 (프리미엄 6mm + 스트랩)',
+  productDetail: '요가매트 6mm + 논슬립 스트랩 2개 + 세척 스프레이',
+  productPrice: '58000',
   rewardPoint: '0',
   keywords: ['#봄요가', '#강남요가'],
   postType: '피드',
@@ -231,10 +231,10 @@ export default function CampaignNew() {
         ) : (
           <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
             <Field label="브랜드명">
-              <Input value={form.brandName} onChange={v => set('brandName', v)} placeholder="예) 킹콩푸드" />
+              <Input value={form.brandName} onChange={v => set('brandName', v)} placeholder="예) 웰링크 웰니스" />
             </Field>
             <Field label="상품 이름">
-              <Input value={form.shippedProductName} onChange={v => set('shippedProductName', v)} placeholder="예) 한우 프리미엄 선물세트" />
+              <Input value={form.shippedProductName} onChange={v => set('shippedProductName', v)} placeholder="예) 요가매트 세트" />
             </Field>
           </div>
         )}
@@ -289,7 +289,7 @@ export default function CampaignNew() {
       {/* ── 섹션 2: 제공 내역 및 리워드 ── */}
       <Section title="제공 내역 및 리워드">
         <Field label="제공 상품명">
-          <Input value={form.productName} onChange={v => set('productName', v)} placeholder="예) 4구 한우 프리미엄 선물세트 1.2kg" />
+          <Input value={form.productName} onChange={v => set('productName', v)} placeholder="예) 요가매트 세트 (프리미엄 6mm + 스트랩)" />
         </Field>
 
         <Field label="제공 내역 상세">
@@ -341,7 +341,7 @@ export default function CampaignNew() {
               value={keywordInput}
               onChange={e => setKeywordInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
-              placeholder="예) 킹콩정육점, 수원한우선물세트 (엔터로 추가)"
+              placeholder="예) #봄요가, #웰니스챌린지 (엔터로 추가)"
               className="flex-1 text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
             <button

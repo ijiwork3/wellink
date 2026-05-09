@@ -13,6 +13,17 @@ import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } fr
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
+import type { CampaignStatus } from '@wellink/ui'
+
+/* ── 표시용 status 친절화 (Dashboard 전용) ── */
+function deriveDisplayStatus(status: string): CampaignStatus {
+  switch (status) {
+    case '대기중': return '지원자 대기'
+    case '진행중': return '콘텐츠 등록 중'
+    case '선정중': return '선정 필요'
+    default: return status as CampaignStatus
+  }
+}
 
 
 /* ── 즉각 확인 배너 데이터 ── */
@@ -179,12 +190,14 @@ export default function Dashboard() {
       const visBottom = Math.min(rect.bottom, window.innerHeight)
       setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
+    let resizeTimer: ReturnType<typeof setTimeout>
+    const handleResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(update, 150) }
     update()
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
+    window.addEventListener('resize', handleResize)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', handleResize); clearTimeout(resizeTimer); ro.disconnect() }
   }, [])
 
   const scrollTable = (dir: 'left' | 'right') => {
@@ -236,7 +249,7 @@ export default function Dashboard() {
               <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
               <h2 className="text-base font-semibold text-gray-900">내 브랜드에 맞는 추천 인플루언서</h2>
             </div>
-            <span className="text-sm text-gray-400">상위 3명</span>
+            <span className="text-sm text-gray-500">상위 3명</span>
           </div>
           <div className="divide-y divide-gray-50">
             {[
@@ -251,10 +264,10 @@ export default function Dashboard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-base font-semibold text-gray-900">@{inf.username}</span>
-                    <span className="text-sm text-gray-400">{inf.name}</span>
+                    <span className="text-sm text-gray-500">{inf.name}</span>
                     <span className="text-sm bg-brand-green/10 text-brand-green-text px-2 py-1 rounded-md font-medium">Fit {inf.fit}</span>
                   </div>
-                  <p className="text-sm text-gray-400 mt-0.5">{inf.tags} · {inf.followers}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{inf.tags} · {inf.followers}</p>
                 </div>
               </div>
             ))}
@@ -446,7 +459,7 @@ export default function Dashboard() {
       <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
         <div className="w-1 self-stretch rounded-full bg-brand-green shrink-0" />
         <div>
-          <p className="text-sm font-medium text-gray-400 mb-1">이번 주 현황</p>
+          <p className="text-sm font-medium text-gray-500 mb-1">이번 주 현황</p>
           <p className="text-base leading-relaxed text-gray-700">
             봄 요가 프로모션 모집률이 <span className="font-semibold text-gray-900">53%</span>에 도달했습니다.
             마감까지 <span className="font-semibold text-rose-500">{getDDay('2026-04-28').label}</span>이므로 추가 인플루언서 초대를 권장합니다.
@@ -475,7 +488,7 @@ export default function Dashboard() {
               <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
                 {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
-                <span className="text-gray-400 font-normal">전월 대비</span>
+                <span className="text-gray-500 font-normal">전월 대비</span>
               </div>
             </div>
           )
@@ -545,12 +558,15 @@ export default function Dashboard() {
                     return (
                       <tr
                         key={c.id}
-                        className="border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                        role="button"
+                        tabIndex={0}
+                        className="border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50"
                         onClick={() => navigate(`/campaigns/${c.id}`)}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/campaigns/${c.id}`) } }}
                       >
                         <td className="py-3.5 px-4 text-base font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
-                          <StatusBadge status={c.status} />
+                          <StatusBadge status={deriveDisplayStatus(c.status)} />
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
@@ -613,7 +629,7 @@ export default function Dashboard() {
                     <p className={`text-sm leading-relaxed ${n.unread ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
                       {n.text}
                     </p>
-                    <p className="text-sm text-gray-400 mt-0.5">{n.time}</p>
+                    <p className="text-sm text-gray-500 mt-0.5">{n.time}</p>
                   </div>
                 </div>
               </button>
@@ -645,11 +661,11 @@ export default function Dashboard() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-base font-bold text-gray-900 truncate">@{h.username}</p>
-                  <p className="text-sm text-gray-400">{h.name}</p>
+                  <p className="text-sm text-gray-500">{h.name}</p>
                 </div>
                 <span className={`text-base font-semibold ${h.color} shrink-0`}>{h.value}</span>
               </div>
-              <p className="text-sm text-gray-400 mt-1">{h.sub}</p>
+              <p className="text-sm text-gray-500 mt-1">{h.sub}</p>
             </div>
           </div>
         ))}
@@ -736,7 +752,7 @@ export default function Dashboard() {
                 <span className={item.primary ? 'text-brand-green' : 'text-gray-500'}>{item.icon}</span>
               </div>
               <p className="text-base font-semibold text-gray-900">{item.label}</p>
-              <p className="text-sm text-gray-400 mt-0.5">{item.sub}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{item.sub}</p>
             </button>
           ))}
         </div>

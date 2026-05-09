@@ -5,7 +5,7 @@ import {
   Megaphone, BookOpen, CreditCard,
   BookMarked, Lightbulb, User, Share2, ExternalLink, Home, Search, Bell, Lock,
 } from 'lucide-react'
-import { useToast, Modal } from '@wellink/ui'
+import { Modal } from '@wellink/ui'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
 const sections = [
@@ -46,7 +46,6 @@ const ALWAYS_ACCESSIBLE = new Set(['/campaigns', '/subscription'])
 export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = false }: { onNavigate?: () => void; hideLogo?: boolean; fullWidth?: boolean } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { showToast } = useToast()
   const { isGated, planLabel } = usePlanAccess()
   const isMyPageActive = location.pathname === '/mypage'
   const [menuSearch, setMenuSearch] = useState('')
@@ -117,7 +116,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             </button>
           ) : (
             <button
-              onClick={() => { showToast('홈으로 이동'); onNavigate?.() }}
+              onClick={() => { navigate('/dashboard'); onNavigate?.() }}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
             >
               <Home size={15} />

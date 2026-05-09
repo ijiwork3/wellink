@@ -217,6 +217,16 @@ export default function Campaigns() {
     setPage(1)
   }
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '')
+  const [inputValue, setInputValue] = useState(() => searchParams.get('q') ?? '')
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    searchDebounceRef.current = setTimeout(() => {
+      setSearch(inputValue)
+      setPage(1)
+    }, 300)
+    return () => { if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current) }
+  }, [inputValue])
   const [platformFilter, setPlatformFilter] = useState<string>(() => searchParams.get('platform') ?? '전체')
   const [categoryFilter, setCategoryFilter] = useState<string>(() => searchParams.get('category') ?? '전체')
   const [sort, setSort] = useState<SortKey>(() => {
@@ -304,6 +314,7 @@ export default function Campaigns() {
   const resetAllFilters = () => {
     setActiveTab('전체')
     setSearch('')
+    setInputValue('')
     setPlatformFilter('전체')
     setCategoryFilter('전체')
     setPage(1)
@@ -472,16 +483,16 @@ export default function Campaigns() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              value={search}
-              onChange={e => { setSearch(e.target.value); resetPage() }}
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
               placeholder="캠페인명 검색"
               aria-label="캠페인명 검색"
               className="w-full pl-8 pr-8 py-2 text-base bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
-            {search && (
+            {inputValue && (
               <button
                 type="button"
-                onClick={() => { setSearch(''); resetPage() }}
+                onClick={() => { setInputValue(''); setSearch(''); resetPage() }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 aria-label="검색어 지우기"
               >
@@ -516,7 +527,7 @@ export default function Campaigns() {
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
           <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
-            <span className="text-sm text-gray-400 shrink-0">적용된 필터:</span>
+            <span className="text-sm text-gray-500 shrink-0">적용된 필터:</span>
             {!isAllTabActive && (
               <FilterChip
                 label={`상태: ${activeTab}`}
@@ -547,7 +558,7 @@ export default function Campaigns() {
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
             <Megaphone size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-base text-gray-400 mb-3">
+            <p className="text-base text-gray-500 mb-3">
               {qaEmpty
                 ? '등록된 캠페인이 없습니다.'
                 : hasActiveFilters
@@ -631,7 +642,7 @@ export default function Campaigns() {
                     {(() => {
                       const meta = getCampaignDeadlineMeta(c)
                       return meta.graceText ? (
-                        <p className="text-sm text-gray-400 mt-0.5">{meta.graceText}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{meta.graceText}</p>
                       ) : null
                     })()}
                     <div className="mt-2 flex items-center gap-2">
@@ -641,7 +652,7 @@ export default function Campaigns() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-400 tabular-nums shrink-0">{pct}%</span>
+                      <span className="text-sm text-gray-500 tabular-nums shrink-0">{pct}%</span>
                     </div>
                   </div>
                 </div>
@@ -779,7 +790,7 @@ export default function Campaigns() {
               <div className="h-1.5 bg-white rounded-full overflow-hidden">
                 <div className="h-full bg-brand-green transition-all duration-300" style={{ width: `${aiProgress}%` }} />
               </div>
-              <p className="text-sm text-gray-400 mt-1.5">{aiProgress}%</p>
+              <p className="text-sm text-gray-500 mt-1.5">{aiProgress}%</p>
             </div>
           </div>
         )}
