@@ -855,15 +855,15 @@ export default function ProfileInsight() {
       {tableBtnTop !== null && canTableScrollLeft && (
         <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
           style={{ top: tableBtnTop }}
-          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-          <ChevronLeft size={15} />
+          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+          <ChevronLeft size={15} aria-hidden="true" />
         </button>
       )}
       {tableBtnTop !== null && canTableScrollRight && (
         <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
           style={{ top: tableBtnTop }}
-          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-          <ChevronRight size={15} />
+          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+          <ChevronRight size={15} aria-hidden="true" />
         </button>
       )}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
@@ -1350,7 +1350,7 @@ function PostContentTable() {
             <tbody>
               {paged.map(p => (
                 <tr key={p.id}
-                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50"
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelected(p)}
