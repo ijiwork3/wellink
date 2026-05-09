@@ -864,7 +864,7 @@ function DonutChartSimple({ data, ariaLabel }: { data: { label: string; value: n
           <div key={a.label} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full" style={{ background: a.color }} />
-              <span className="text-sm text-gray-700">{a.label}</span>
+              <span className="text-sm text-gray-700 whitespace-nowrap">{a.label}</span>
             </div>
             <div className="text-right">
               <span className="text-sm font-semibold text-gray-900">{fmtNumber(a.value)}</span>
