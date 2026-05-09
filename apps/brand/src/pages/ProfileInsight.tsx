@@ -640,6 +640,7 @@ export default function ProfileInsight() {
           dateOffset={dateOffset}
           onPeriodChange={setPeriod}
           onDateOffsetChange={setDateOffset}
+          compact={!isDesktop}
         />
       </div>
 

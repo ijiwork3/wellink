@@ -306,28 +306,29 @@ export default function AdPerformance() {
       )}
 
       {/* 헤더 */}
-      <div ref={headerRef}>
-        <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
-        <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
+      <div ref={headerRef} className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+          <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
+        </div>
+        <button
+          onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
+          className="shrink-0 flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+        >
+          <ExternalLink size={12} aria-hidden="true" />
+          Meta 광고 관리자
+        </button>
       </div>
 
       {/* 기간 선택기 — sticky: 데스크톱 top-0, 모바일/태블릿 top-12 */}
       <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 transition-colors ${isStuck ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100' : 'border-b border-transparent'} ${isDesktop ? 'top-0' : 'top-12'}`}>
-        <div className="flex items-center flex-wrap gap-2">
-          <DateRangePicker
-            period={period}
-            dateOffset={dateOffset}
-            onPeriodChange={setPeriod}
-            onDateOffsetChange={setDateOffset}
-          />
-          <button
-            onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            <ExternalLink size={12} aria-hidden="true" />
-            Meta 광고 관리자
-          </button>
-        </div>
+        <DateRangePicker
+          period={period}
+          dateOffset={dateOffset}
+          onPeriodChange={setPeriod}
+          onDateOffsetChange={setDateOffset}
+          compact={!isDesktop}
+        />
       </div>
 
       {/* AI 광고 성과 분석 카드 — 원본 AIAnalysisCard 보강 */}

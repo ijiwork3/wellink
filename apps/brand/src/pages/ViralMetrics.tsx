@@ -346,6 +346,7 @@ export default function ViralMetrics() {
           dateOffset={dateOffset}
           onPeriodChange={(p) => setViewMode(PERIOD_TO_VIEW_MODE[p])}
           onDateOffsetChange={setDateOffset}
+          compact={!isDesktop}
         />
       </div>
 
