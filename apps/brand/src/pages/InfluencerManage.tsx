@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
@@ -202,6 +202,24 @@ export default function InfluencerManage() {
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [addToGroupTarget, isMobile])
 
+  // ── 상세 overlay ESC 닫기 + 배경 스크롤 잠금 ──────────────
+  const isDetailOpen = !!detailInfluencer && !proposalModal
+  useEffect(() => {
+    if (!isDetailOpen) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) } }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isDetailOpen])
+
+  useEffect(() => {
+    if (isDetailOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [isDetailOpen])
+
   // ── 액션 ─────────────────────────────────────────────────
   const openConfirm = (title: string, description: string, onConfirm: () => void) =>
     setConfirm({ open: true, title, description, onConfirm })
@@ -352,14 +370,14 @@ export default function InfluencerManage() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
           <Heart size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">찜한 인플루언서가 없습니다</p>
-          <p className="text-sm text-gray-400 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
-          <button
-            onClick={() => navigate('/influencers/manage')}
-            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
+          <p className="text-base font-semibold text-gray-500 mb-1">찜한 인플루언서가 없습니다</p>
+          <p className="text-sm text-gray-500 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
+          <Link
+            to="/influencers/list"
+            className="inline-block text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
           >
             인플루언서 찾아보기
-          </button>
+          </Link>
         </div>
       </div>
     )
@@ -437,7 +455,7 @@ export default function InfluencerManage() {
           <div className="py-16 text-center">
             <Users size={40} className="mx-auto text-gray-300 mb-4" aria-hidden="true" />
             <p className="text-base font-medium text-gray-500 mb-1">'{activeTab}' 그룹에 인플루언서가 없습니다.</p>
-            <p className="text-sm text-gray-400 mb-4">전체 탭에서 인플루언서를 그룹에 추가해 보세요.</p>
+            <p className="text-sm text-gray-500 mb-4">전체 탭에서 인플루언서를 그룹에 추가해 보세요.</p>
             <button
               onClick={() => setActiveTab('전체')}
               className="inline-flex items-center gap-1.5 bg-brand-green text-white text-base px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
@@ -449,13 +467,13 @@ export default function InfluencerManage() {
           <div className="py-16 text-center">
             <Heart size={40} className="mx-auto text-gray-400 mb-4" aria-hidden="true" />
             <p className="text-base font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
-            <p className="text-sm text-gray-400 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
-            <button
-              onClick={() => navigate('/influencers/manage')}
+            <p className="text-sm text-gray-500 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
+            <Link
+              to="/influencers/list"
               className="inline-flex items-center gap-1.5 bg-brand-green text-white text-base px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
             >
               인플루언서 찾아보기
-            </button>
+            </Link>
           </div>
         )
       ) : (
@@ -464,8 +482,12 @@ export default function InfluencerManage() {
             {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow duration-150"
+                role="button"
+                tabIndex={0}
+                aria-label={`${inf.name} 상세 보기`}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 onClick={() => { setDetailInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDetailInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) } }}
               >
                 {/* 프로필 행 */}
                 <div className="flex items-start gap-3 mb-3">
@@ -479,7 +501,7 @@ export default function InfluencerManage() {
                         <span className="shrink-0 text-sm font-semibold bg-brand-green text-white px-2 py-1 rounded-full">NEW</span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400 truncate">{inf.name}</p>
+                    <p className="text-sm text-gray-500 truncate">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-1 rounded-full">{c}</span>
@@ -498,11 +520,11 @@ export default function InfluencerManage() {
                 {/* 지표 — 배지 형태, 가로 나열 + 줄바꿈 */}
                 <div className="flex flex-wrap gap-2 mb-3">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-sm text-gray-400">팔로워</span>
+                    <span className="text-sm text-gray-500">팔로워</span>
                     <span className="text-base font-semibold text-gray-900">{formatFollowers(inf.followers)}</span>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-sm text-gray-400">참여율</span>
+                    <span className="text-sm text-gray-500">참여율</span>
                     <span className={`text-base font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</span>
                   </div>
                 </div>
@@ -740,6 +762,9 @@ export default function InfluencerManage() {
         }))
         return (
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="인플루언서 상세"
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
             onClick={() => { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
           >
@@ -758,7 +783,7 @@ export default function InfluencerManage() {
                     {/* 1행: 이름 + 상태 배지들 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
                       <h2 className="text-lg font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
-                      <span className="text-base text-gray-400">{inf.name}</span>
+                      <span className="text-base text-gray-500">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
@@ -801,7 +826,7 @@ export default function InfluencerManage() {
                       )}
                     </div>
                     {/* 3행: 바이오(인스타 소개글) */}
-                    <p className="text-sm text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
+                    <p className="text-sm text-gray-500 mt-1.5 leading-snug">{inf.bio}</p>
                   </div>
                 </div>
                 <div className="border-b border-gray-100 -mx-6" />
@@ -829,7 +854,7 @@ export default function InfluencerManage() {
                       ['진성 비율', `${inf.authentic}%`, getAuthenticColor(inf.authentic)],
                     ].map(([label, value, cls]) => (
                       <div key={label} className="bg-gray-50 rounded-lg p-2.5">
-                        <div className="text-sm text-gray-400 mb-1">{label}</div>
+                        <div className="text-sm text-gray-500 mb-1">{label}</div>
                         <div className={`text-base font-semibold ${cls}`}>{value}</div>
                       </div>
                     ))}
@@ -852,7 +877,7 @@ export default function InfluencerManage() {
                         ['릴스 평균 참여율', `${avgReelsEng}%`],
                       ].map(([label, value]) => (
                         <div key={label}>
-                          <p className="text-sm text-gray-400">{label}</p>
+                          <p className="text-sm text-gray-500">{label}</p>
                           <p className="text-base font-semibold text-gray-900">{value}</p>
                         </div>
                       ))}
@@ -925,9 +950,9 @@ export default function InfluencerManage() {
                             <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-sm flex items-center justify-center cursor-default">i</span>
                           </Tooltip>
                         </div>
-                        <span className="text-sm text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
+                        <span className="text-sm text-gray-500">캡션 {feedCount + reelsCount}개 기준</span>
                       </div>
-                      <p className="text-sm text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
+                      <p className="text-sm text-gray-500 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1.5 leading-snug">
                         {wordPool.map(({ word, weight }, i) => (
                           <span key={word} className={`${sizes[Math.min(5 - weight, 4)]} ${colors[i % colors.length]}`}>{word}</span>
@@ -953,7 +978,7 @@ export default function InfluencerManage() {
                     <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                       <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-sm font-semibold text-gray-600">협업 팁</span></div>
                       <p className="text-sm text-gray-600 leading-snug">{inf.authentic >= 60 ? '월·목 오전 포스팅이 최고 도달률' : '스토리 연동 세트 콘텐츠 효과적'}</p>
-                      <p className="text-sm text-gray-400 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
+                      <p className="text-sm text-gray-500 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
                     </div>
                   </div>
                 </div>
@@ -995,7 +1020,7 @@ export default function InfluencerManage() {
                   </div>
 
                   {/* 통계 */}
-                  <div className="flex gap-3 text-sm text-gray-400 mb-3">
+                  <div className="flex gap-3 text-sm text-gray-500 mb-3">
                     {isFeed ? (
                       <>
                         <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span>
@@ -1036,8 +1061,8 @@ export default function InfluencerManage() {
                             {!isFeed && <span className="absolute top-1.5 right-1.5 text-sm bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                           </div>
                           <div className="px-2 py-1.5 bg-white flex gap-2">
-                            <span className="flex items-center gap-0.5 text-sm text-gray-400"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
-                            <span className="flex items-center gap-0.5 text-sm text-gray-400"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
+                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><Heart size={9} className="text-red-400" />{c.likes.toLocaleString()}</span>
+                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
                           </div>
                         </div>
                       )
@@ -1112,25 +1137,25 @@ export default function InfluencerManage() {
 
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-sm text-gray-400">좋아요</p>
+                <p className="text-sm text-gray-500">좋아요</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.likes.toLocaleString()}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-sm text-gray-400">댓글</p>
+                <p className="text-sm text-gray-500">댓글</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.comments.toLocaleString()}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-sm text-gray-400">저장</p>
+                <p className="text-sm text-gray-500">저장</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.saves.toLocaleString()}</p>
               </div>
               {contentDetail.views !== undefined ? (
                 <div className="bg-gray-50 rounded-lg p-2.5">
-                  <p className="text-sm text-gray-400">조회수</p>
+                  <p className="text-sm text-gray-500">조회수</p>
                   <p className="text-base font-semibold text-gray-900">{contentDetail.views.toLocaleString()}</p>
                 </div>
               ) : (
                 <div className="bg-gray-50 rounded-lg p-2.5">
-                  <p className="text-sm text-gray-400">게시 시점</p>
+                  <p className="text-sm text-gray-500">게시 시점</p>
                   <p className="text-base font-semibold text-gray-900">{contentDetail.postedAt}</p>
                 </div>
               )}
@@ -1141,7 +1166,7 @@ export default function InfluencerManage() {
               <p className="text-base text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">{contentDetail.caption}</p>
             </div>
 
-            <p className="text-sm text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 인스타그램 API 연동 후 표시됩니다.</p>
+            <p className="text-sm text-gray-500 text-center">※ POC 목업 데이터입니다. 실데이터는 인스타그램 API 연동 후 표시됩니다.</p>
           </div>
         )}
       </Modal>

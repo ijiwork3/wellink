@@ -288,6 +288,24 @@ export default function InfluencerList() {
     modalScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [contentModalPage])
 
+  // ── 상세 overlay ESC 닫기 + 배경 스크롤 잠금 ──────────────
+  const isDetailOpen = !!selectedInfluencer && !proposalModal
+  useEffect(() => {
+    if (!isDetailOpen) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') { setSelectedInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) } }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isDetailOpen])
+
+  useEffect(() => {
+    if (isDetailOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [isDetailOpen])
+
   const scrollTable = (dir: 'left' | 'right') => {
     tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
   }
@@ -414,8 +432,8 @@ export default function InfluencerList() {
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
           <Users size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">인플루언서 데이터가 없습니다</p>
-          <p className="text-base text-gray-400">구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다.</p>
+          <p className="text-base font-semibold text-gray-500 mb-1">인플루언서 데이터가 없습니다</p>
+          <p className="text-base text-gray-500">구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다.</p>
         </div>
       </div>
     )
@@ -463,7 +481,7 @@ export default function InfluencerList() {
       <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
         {summaryStats.map(stat => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
-            <p className="text-base text-gray-400">{stat.label}</p>
+            <p className="text-base text-gray-500">{stat.label}</p>
             <p className="text-xl font-bold text-gray-900 mt-0.5">{stat.value}</p>
           </div>
         ))}
@@ -568,7 +586,7 @@ export default function InfluencerList() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-base font-semibold text-gray-900 truncate">@{inf.instagramId ?? inf.name}</p>
-                      <p className="text-base text-gray-400 truncate">{inf.name}</p>
+                      <p className="text-base text-gray-500 truncate">{inf.name}</p>
                     </div>
                     <button
                       type="button"
@@ -587,20 +605,20 @@ export default function InfluencerList() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center mb-3">
                     <div>
-                      <p className="text-base text-gray-400">팔로워</p>
+                      <p className="text-base text-gray-500">팔로워</p>
                       <p className="text-base font-semibold text-gray-900">{formatFollowers(inf.followers)}</p>
                     </div>
                     <div>
-                      <p className="text-base text-gray-400">참여율</p>
+                      <p className="text-base text-gray-500">참여율</p>
                       <p className={`text-base font-semibold ${getEngagementColor(inf.engagement)}`}>{inf.engagement}%</p>
                     </div>
                     <div>
-                      <p className="text-base text-gray-400">진성비율</p>
+                      <p className="text-base text-gray-500">진성비율</p>
                       <p className={`text-base font-semibold ${getAuthenticColor(inf.authentic)}`}>{inf.authentic}%</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between flex-wrap gap-y-1.5">
-                    <span className="text-base text-gray-400">{inf.platform} · {inf.lastActive}</span>
+                    <span className="text-base text-gray-500">{inf.platform} · {inf.lastActive}</span>
                     {proposedSet.has(inf.id) ? (
                       <span className="text-base text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg whitespace-nowrap">제안 완료</span>
                     ) : proposableCampaigns.length === 0 ? (
@@ -660,7 +678,7 @@ export default function InfluencerList() {
                   <p className="text-base text-gray-500 font-medium">
                     {hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다.' : '검색 조건에 맞는 인플루언서가 없습니다.'}
                   </p>
-                  <p className="text-base text-gray-400 mt-1">필터를 조정해보세요.</p>
+                  <p className="text-base text-gray-500 mt-1">필터를 조정해보세요.</p>
                   <button
                     onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                     className="mt-3 text-base text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
@@ -687,7 +705,7 @@ export default function InfluencerList() {
                     </div>
                     <div className="min-w-0">
                       <span className="block text-base font-semibold text-gray-900 whitespace-nowrap">@{inf.instagramId ?? inf.name}</span>
-                      <span className="block text-base text-gray-400">{inf.name}</span>
+                      <span className="block text-base text-gray-500">{inf.name}</span>
                     </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
@@ -839,6 +857,9 @@ export default function InfluencerList() {
         const isFeed = contentSubTab === 'feed'
         return (
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="인플루언서 상세"
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm"
             onClick={closeDetail}
           >
@@ -857,7 +878,7 @@ export default function InfluencerList() {
                     {/* 1행: 이름 + 배지 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
                       <h2 className="text-lg font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
-                      <span className="text-base text-gray-400">{inf.name}</span>
+                      <span className="text-base text-gray-500">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-base bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
@@ -885,7 +906,7 @@ export default function InfluencerList() {
                       )}
                     </div>
                     {/* 3행: bio */}
-                    <p className="text-base text-gray-400 mt-1.5 leading-snug">{inf.bio}</p>
+                    <p className="text-base text-gray-500 mt-1.5 leading-snug">{inf.bio}</p>
                   </div>
                 </div>
                 <div className="border-b border-gray-100 -mx-6" />
@@ -911,7 +932,7 @@ export default function InfluencerList() {
                         ['진성 비율', `${inf.authentic}%`, getAuthenticColor(inf.authentic)],
                       ].map(([label, value, cls]) => (
                         <div key={label} className="bg-gray-50 rounded-lg p-2.5">
-                          <div className="text-base text-gray-400 mb-1">{label}</div>
+                          <div className="text-base text-gray-500 mb-1">{label}</div>
                           <div className={`text-base font-semibold ${cls}`}>{value}</div>
                         </div>
                       ))}
@@ -934,7 +955,7 @@ export default function InfluencerList() {
                           ['릴스 평균 참여율', `${avgReelsEng}%`],
                         ].map(([label, value]) => (
                           <div key={label}>
-                            <p className="text-base text-gray-400">{label}</p>
+                            <p className="text-base text-gray-500">{label}</p>
                             <p className="text-base font-semibold text-gray-900">{value}</p>
                           </div>
                         ))}
@@ -1005,9 +1026,9 @@ export default function InfluencerList() {
                               <span className="w-4 h-4 rounded-full bg-gray-100 text-gray-400 text-base flex items-center justify-center cursor-default">i</span>
                             </Tooltip>
                           </div>
-                          <span className="text-base text-gray-400">캡션 {feedCount + reelsCount}개 기준</span>
+                          <span className="text-base text-gray-500">캡션 {feedCount + reelsCount}개 기준</span>
                         </div>
-                        <p className="text-base text-gray-400 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
+                        <p className="text-base text-gray-500 mb-3">많이 등장한 단어를 크기별로 정리해 한눈에 읽기 쉽게 보여줍니다.</p>
                         <div className="flex flex-wrap gap-x-3 gap-y-1.5 leading-snug">
                           {wordPool.map(({ word, weight }, i) => (
                             <span key={word} className={`${sizes[Math.min(5 - weight, 4)]} ${colors[i % colors.length]}`}>{word}</span>
@@ -1033,7 +1054,7 @@ export default function InfluencerList() {
                       <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5">
                         <div className="flex items-center gap-1.5 mb-2"><Lightbulb size={12} className="text-gray-400" /><span className="text-base font-semibold text-gray-600">협업 팁</span></div>
                         <p className="text-base text-gray-600 leading-snug">{inf.authentic >= 60 ? '월·목 오전 포스팅이 최고 도달률' : '스토리 연동 세트 콘텐츠 효과적'}</p>
-                        <p className="text-base text-gray-400 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
+                        <p className="text-base text-gray-500 mt-1.5">주 {inf.authentic >= 60 ? '3' : '2'}회 업로드 패턴</p>
                       </div>
                     </div>
                   </div>
@@ -1059,7 +1080,7 @@ export default function InfluencerList() {
                         ))}
                       </div>
                     </div>
-                    <div className="flex gap-3 text-base text-gray-400 mb-3">
+                    <div className="flex gap-3 text-base text-gray-500 mb-3">
                       {isFeed ? (
                         <><span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(avgLikes)}</span></span><span>평균 댓글 <span className="font-semibold text-gray-600">{avgComments}</span></span></>
                       ) : (
@@ -1079,8 +1100,8 @@ export default function InfluencerList() {
                               {!isFeed && <span className="absolute top-1.5 right-1.5 text-base bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                             </div>
                             <div className="px-2 py-1.5 bg-white flex gap-2">
-                              <span className="flex items-center gap-0.5 text-base text-gray-400"><Heart size={9} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}</span>
-                              <span className="flex items-center gap-0.5 text-base text-gray-400"><MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={9} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}</span>
                             </div>
                           </div>
                         )
@@ -1138,25 +1159,25 @@ export default function InfluencerList() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-base text-gray-400">좋아요</p>
+                <p className="text-base text-gray-500">좋아요</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.likes.toLocaleString()}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-base text-gray-400">댓글</p>
+                <p className="text-base text-gray-500">댓글</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.comments.toLocaleString()}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-2.5">
-                <p className="text-base text-gray-400">저장</p>
+                <p className="text-base text-gray-500">저장</p>
                 <p className="text-base font-semibold text-gray-900">{contentDetail.saves.toLocaleString()}</p>
               </div>
               {contentDetail.views !== undefined ? (
                 <div className="bg-gray-50 rounded-lg p-2.5">
-                  <p className="text-base text-gray-400">조회수</p>
+                  <p className="text-base text-gray-500">조회수</p>
                   <p className="text-base font-semibold text-gray-900">{contentDetail.views.toLocaleString()}</p>
                 </div>
               ) : (
                 <div className="bg-gray-50 rounded-lg p-2.5">
-                  <p className="text-base text-gray-400">게시 시점</p>
+                  <p className="text-base text-gray-500">게시 시점</p>
                   <p className="text-base font-semibold text-gray-900">{contentDetail.postedAt}</p>
                 </div>
               )}
@@ -1165,7 +1186,7 @@ export default function InfluencerList() {
               <p className="text-base font-semibold text-gray-500 mb-1.5">캡션</p>
               <p className="text-base text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">{contentDetail.caption}</p>
             </div>
-            <p className="text-base text-gray-400 text-center">※ POC 목업 데이터입니다. 실데이터는 인스타그램 API 연동 후 표시됩니다.</p>
+            <p className="text-base text-gray-500 text-center">※ POC 목업 데이터입니다. 실데이터는 인스타그램 API 연동 후 표시됩니다.</p>
           </div>
         )}
       </Modal>
