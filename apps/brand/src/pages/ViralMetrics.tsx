@@ -225,6 +225,16 @@ export default function ViralMetrics() {
 
   useEffect(() => { setContentPage(1) }, [viewMode, dateOffset])
 
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [isStuck, setIsStuck] = useState(false)
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setIsStuck(!entry.isIntersecting), { threshold: 0 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   /* ── QA: 로딩 스켈레톤 ── */
   if (qa === 'loading') {
     return (
@@ -314,13 +324,13 @@ export default function ViralMetrics() {
     <ContentDetailModal content={selectedContent} onClose={() => setSelectedContent(null)} />
     <div className="space-y-6">
       {/* 헤더 */}
-      <div className="flex items-center gap-2.5">
+      <div ref={headerRef} className="flex items-center gap-2.5">
         <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
         <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
       </div>
 
       {/* 기간 선택기 — sticky: 데스크톱 top-0, 모바일/태블릿 top-12 */}
-      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 transition-colors ${isStuck ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100' : 'border-b border-transparent'} ${isDesktop ? 'top-0' : 'top-12'}`}>
         <DateRangePicker
           period={VIEW_MODE_TO_PERIOD[viewMode]}
           dateOffset={dateOffset}

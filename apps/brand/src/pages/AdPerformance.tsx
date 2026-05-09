@@ -225,6 +225,16 @@ export default function AdPerformance() {
     setCampaignPage(1)
   }, [period, dateOffset])
 
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [isStuck, setIsStuck] = useState(false)
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setIsStuck(!entry.isIntersecting), { threshold: 0 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   /* ── QA: 로딩 ── */
   if (qa === 'loading') {
     return (
@@ -296,13 +306,13 @@ export default function AdPerformance() {
       )}
 
       {/* 헤더 */}
-      <div>
+      <div ref={headerRef}>
         <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
         <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
       </div>
 
       {/* 기간 선택기 — sticky: 데스크톱 top-0, 모바일/태블릿 top-12 */}
-      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 transition-colors ${isStuck ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100' : 'border-b border-transparent'} ${isDesktop ? 'top-0' : 'top-12'}`}>
         <div className="flex items-center flex-wrap gap-2">
           <DateRangePicker
             period={period}

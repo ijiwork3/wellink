@@ -519,6 +519,15 @@ export default function ProfileInsight() {
     }
   }, [])
 
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [isStuck, setIsStuck] = useState(false)
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setIsStuck(!entry.isIntersecting), { threshold: 0 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const metricLabels: Record<MetricKey, string> = {
     likes: '좋아요',
@@ -609,13 +618,13 @@ export default function ProfileInsight() {
   return (
     <div className="space-y-6">
       {/* 헤더 */}
-      <div>
+      <div ref={headerRef}>
         <h1 className="text-2xl font-bold text-gray-900">프로필 인사이트</h1>
         <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
       </div>
 
       {/* 기간 선택기 — sticky: 데스크톱은 상단 GNB 없으므로 top-0, 모바일/태블릿은 h-12 GNB 아래 top-12 */}
-      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 ${isDesktop ? 'top-0' : 'top-12'}`}>
+      <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 transition-colors ${isStuck ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100' : 'border-b border-transparent'} ${isDesktop ? 'top-0' : 'top-12'}`}>
         <DateRangePicker
           period={period}
           dateOffset={dateOffset}
