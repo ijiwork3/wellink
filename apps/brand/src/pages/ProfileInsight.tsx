@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon, Lock } from 'lucide-react'
 import { KPICard, ErrorState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
 import { useDeviceMode } from '../qa-mockup-kit'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 
 type Period = '일간' | '주간' | '월간' | '연간'
 
@@ -452,6 +454,7 @@ export default function ProfileInsight() {
   const qa = useQAMode()
   const isInstagramConnected = useInstagramConnected()
   const isDesktop = useDeviceMode() === 'desktop'
+  const { canViewAdvancedAnalytics } = usePlanAccess()
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
   const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
@@ -742,7 +745,8 @@ export default function ProfileInsight() {
       {/* 피드별 성과 추세 + 노출&도달 — 960px+ 부터 1:1 2열 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         {/* 피드별 추세선 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
               <h3 className="text-base font-semibold text-gray-900">피드별 성과 추세</h3>
@@ -776,7 +780,8 @@ export default function ProfileInsight() {
         </div>
 
         {/* 노출 & 도달 라인 차트 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+          {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
@@ -923,7 +928,8 @@ export default function ProfileInsight() {
       </div>
 
       {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        {!canViewAdvancedAnalytics && <AdvancedAnalyticsOverlay />}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h3 className="text-base font-semibold text-gray-900">팔로워 분석</h3>
           <div className="flex items-center gap-2">
@@ -983,6 +989,22 @@ export default function ProfileInsight() {
 
       {/* 게시물별 상세 성과 — 기존 서비스 ContentPerformance 동등 */}
       <PostContentTable />
+    </div>
+  )
+}
+
+/** 심화 분석 잠금 overlay — Scale 미만 플랜에서 차트 영역 위에 표시 */
+function AdvancedAnalyticsOverlay() {
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-xl bg-white/80 backdrop-blur-[2px]">
+      <Lock size={20} className="text-gray-400" aria-hidden="true" />
+      <p className="text-sm font-medium text-gray-600">Scale 이상 플랜에서 이용 가능합니다</p>
+      <Link
+        to="/subscription"
+        className="mt-1 text-sm font-semibold text-brand-green hover:underline"
+      >
+        업그레이드 →
+      </Link>
     </div>
   )
 }

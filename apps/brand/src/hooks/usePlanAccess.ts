@@ -32,13 +32,28 @@ export function usePlanAccess() {
   // expired/payment-failed만 잠금 — free 포함 나머지 전체 오픈
   const isGated = qaPlan === 'expired' || qaPlan === 'payment-failed'
 
-  // 다운로드 권한: 유료 플랜(focus/scale/enterprise)만
-  const canDownloadContent = plan === 'focus' || plan === 'scale' || plan === 'enterprise'
+  // 플랜별 티어 (Focus < Scale < Enterprise)
+  const planTier = plan === 'enterprise' ? 3 : plan === 'scale' ? 2 : plan === 'focus' ? 1 : 0
 
-  // 고급 분석: Enterprise 전용
+  // 유효 플랜 여부 (tier > 0 이고 잠금 아님)
+  const hasActivePlan = planTier > 0 && !isGated
+
+  // 다운로드 권한: 유료 플랜(focus/scale/enterprise)만
+  const canDownloadContent = hasActivePlan
+
+  // Scale 이상 — 고급 분석
+  const canViewAdvancedAnalytics = planTier >= 2
+
+  // Scale 이상 — 다중 캠페인 (Focus는 1개)
+  const canCreateMultipleCampaigns = planTier >= 2
+
+  // 유효 플랜 — 그룹 관리
+  const canManageGroups = hasActivePlan
+
+  // 고급 분석: Enterprise 전용 (기존 호환)
   const canUseAdvancedAnalytics = plan === 'enterprise'
 
-  // 다중 캠페인: Scale 이상
+  // 다중 캠페인: Scale 이상 (기존 호환)
   const canUseMultiCampaign = plan === 'scale' || plan === 'enterprise'
 
   return {
@@ -50,7 +65,12 @@ export function usePlanAccess() {
     isExpired: qaPlan === 'expired',
     isPaymentFailed: qaPlan === 'payment-failed',
     isTrial: qaPlan === 'trial',
+    hasActivePlan,
+    planTier,
     canDownloadContent,
+    canViewAdvancedAnalytics,
+    canCreateMultipleCampaigns,
+    canManageGroups,
     canUseAdvancedAnalytics,
     canUseMultiCampaign,
   }

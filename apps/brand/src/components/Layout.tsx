@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
 import InstagramGlobalBanner from './InstagramGlobalBanner'
 import { useDeviceMode } from '../qa-mockup-kit'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 
 export default function Layout() {
   const [mobileNav, setMobileNav] = useState(false)
   const device = useDeviceMode()
   const isDesktop = device === 'desktop'
+  const { isGated, hasActivePlan } = usePlanAccess()
 
   // ESC 닫기
   useEffect(() => {
@@ -77,6 +79,19 @@ export default function Layout() {
           </div>
         )}
         <InstagramGlobalBanner />
+        {/* 구독 상태 배너 */}
+        {isGated && (
+          <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-800 flex items-center justify-between">
+            <span>구독이 만료되었습니다. 서비스 이용을 위해 플랜을 갱신해 주세요.</span>
+            <Link to="/subscription" className="font-medium underline shrink-0 ml-3">구독 관리 →</Link>
+          </div>
+        )}
+        {!hasActivePlan && !isGated && (
+          <div className="bg-blue-50 border-b border-blue-200 px-4 py-2 text-sm text-blue-800 flex items-center justify-between">
+            <span>웰링크 플랜을 시작하면 모든 기능을 이용할 수 있습니다.</span>
+            <Link to="/subscription" className="font-medium underline shrink-0 ml-3">플랜 보기 →</Link>
+          </div>
+        )}
         <main id="main-content" className={`@container w-full ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
