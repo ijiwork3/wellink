@@ -94,6 +94,8 @@ export default function Subscription() {
   const [enterpriseModal, setEnterpriseModal] = useState(false)
   const { showToast } = useToast()
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // confirmTimer cleanup — 언마운트 시 타이머 누수 방지
+  useEffect(() => () => { if (confirmTimerRef.current !== null) clearTimeout(confirmTimerRef.current) }, [])
   // 신규 — 해지·환불·해지 예약 (원본 보강)
   const [cancelStatus, setCancelStatus] = useState<'active' | 'cancel_scheduled'>('active')
   const [cancelModal, setCancelModal] = useState(false)
@@ -131,11 +133,21 @@ export default function Subscription() {
       setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
     update()
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null
+    const onResize = () => {
+      if (resizeTimer !== null) clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(update, 150)
+    }
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
+    window.addEventListener('resize', onResize)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', onResize)
+      if (resizeTimer !== null) clearTimeout(resizeTimer)
+      ro.disconnect()
+    }
   }, [])
 
   // QA 파라미터 변경 시 상태 동기화
@@ -300,7 +312,7 @@ export default function Subscription() {
         <div className="bg-brand-green/10 border border-brand-green/30 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 14일 무료 체험 중입니다.</p>
+              <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
               <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-7</span>
             </div>
             <span className="text-sm font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
@@ -311,7 +323,7 @@ export default function Subscription() {
           <div>
             <div className="flex justify-between text-sm text-brand-green-text/70 mb-1.5">
               <span>시작일</span>
-              <span>7일 경과 / 14일</span>
+              <span>D-7 / 7일</span>
             </div>
             <div className="h-2 bg-brand-green/20 rounded-full overflow-hidden">
               <div className="h-full bg-brand-green rounded-full" style={{ width: '50%' }} />
@@ -406,7 +418,7 @@ export default function Subscription() {
             <div className="border-t border-gray-100 pt-4">
               <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-1.5">
                 이번 달 사용량 현황
-                <span className="text-sm font-normal text-gray-400">(매월 결제일 초기화)</span>
+                <span className="text-sm font-normal text-gray-500">(매월 결제일 초기화)</span>
               </h3>
               <div className="grid grid-cols-1 @xl:grid-cols-3 gap-3">
                 {usage.map(f => {
@@ -555,7 +567,7 @@ export default function Subscription() {
             )}
             <div className="mb-5">
               <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-              <p className="text-sm text-gray-400 mt-1">{plan.desc}</p>
+              <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-white">{plan.price}</span>
               </div>
@@ -587,7 +599,7 @@ export default function Subscription() {
       </div>
 
       {/* 7일 무료 체험 안내 */}
-      <p className="text-center text-sm text-gray-400">
+      <p className="text-center text-sm text-gray-500">
         7일 무료 체험 후 자동 결제됩니다. 체험 기간 중 언제든 취소 가능합니다.
       </p>
 
@@ -613,7 +625,7 @@ export default function Subscription() {
               <div className="w-10 h-7 bg-gray-200 rounded-md flex items-center justify-center shrink-0">
                 <CreditCard size={14} className="text-gray-400" aria-hidden="true" />
               </div>
-              <p className="text-base text-gray-400">등록된 결제 수단이 없습니다</p>
+              <p className="text-base text-gray-500">등록된 결제 수단이 없습니다</p>
             </div>
             <button
               onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
@@ -690,8 +702,8 @@ export default function Subscription() {
       {(!currentPlan || qa === 'plan-free') && (
         <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
           <CreditCard size={32} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base text-gray-400">결제 내역이 없습니다</p>
-          <p className="text-sm text-gray-400 mt-1">플랜 구독 후 결제 내역이 표시됩니다</p>
+          <p className="text-base text-gray-500">결제 내역이 없습니다</p>
+          <p className="text-sm text-gray-500 mt-1">플랜 구독 후 결제 내역이 표시됩니다</p>
         </div>
       )}
 

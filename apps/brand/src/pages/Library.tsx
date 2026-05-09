@@ -340,11 +340,21 @@ export default function Library() {
       setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
     }
     update()
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null
+    const onResize = () => {
+      if (resizeTimer !== null) clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(update, 150)
+    }
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
+    window.addEventListener('resize', onResize)
     const ro = new ResizeObserver(update)
     if (tableRef.current) ro.observe(tableRef.current)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', onResize)
+      if (resizeTimer !== null) clearTimeout(resizeTimer)
+      ro.disconnect()
+    }
   }, [viewMode])
 
   const handleSortKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -495,9 +505,18 @@ export default function Library() {
   }, [])
 
   const toggleSelectAll = useCallback(() => {
-    if (selectedIds.size === filtered.length) setSelectedIds(new Set())
-    else setSelectedIds(new Set(filtered.map(c => c.id)))
-  }, [selectedIds.size, filtered])
+    const currentPageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+    const isAllCurrentPageSelected = currentPageItems.length > 0 && currentPageItems.every(c => selectedIds.has(c.id))
+    if (isAllCurrentPageSelected) {
+      setSelectedIds(prev => {
+        const next = new Set(prev)
+        currentPageItems.forEach(c => next.delete(c.id))
+        return next
+      })
+    } else {
+      setSelectedIds(prev => new Set([...prev, ...currentPageItems.map(c => c.id)]))
+    }
+  }, [selectedIds, filtered, safePage])
 
   if (qa === 'loading') {
     return (
@@ -544,7 +563,8 @@ export default function Library() {
     return <ErrorState message="라이브러리를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
 
-  const isAllSelected = filtered.length > 0 && selectedIds.size === filtered.length
+  const currentPageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+  const isAllSelected = currentPageItems.length > 0 && currentPageItems.every(c => selectedIds.has(c.id))
   const { total: campTotal, totalReach, avgEngagement, topPerformer } = campaignStats
 
   /* ─────────── Render ─────────── */
@@ -785,7 +805,7 @@ export default function Library() {
               {hasFilters ? (
                 <>
                   <p className="text-base font-medium text-gray-500 mb-1">조건에 맞는 콘텐츠가 없습니다</p>
-                  <p className="text-base text-gray-400">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
+                  <p className="text-base text-gray-500">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
                   <button
                     onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
                     className="mt-4 text-base px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -796,7 +816,7 @@ export default function Library() {
               ) : (
                 <>
                   <p className="text-base font-medium text-gray-500 mb-1">아직 등록된 콘텐츠가 없습니다</p>
-                  <p className="text-base text-gray-400">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
+                  <p className="text-base text-gray-500">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
                 </>
               )}
             </div>
@@ -901,7 +921,7 @@ export default function Library() {
                       <div className="flex items-start justify-between gap-3 mb-1">
                         <div className="min-w-0">
                           <span className="block text-base font-semibold text-gray-900">@{c.creatorUsername}</span>
-                          <span className="block text-base text-gray-400">{c.creator}</span>
+                          <span className="block text-base text-gray-500">{c.creator}</span>
                         </div>
                         <StatusBadge status={displayStatus} dot={false} size="sm" className="shrink-0" />
                       </div>
@@ -910,7 +930,7 @@ export default function Library() {
                         onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
                         className="block w-full text-left text-base text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
                       >{c.campaign}</button>
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base text-gray-400 mb-2">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base text-gray-500 mb-2">
                         <span className="flex items-center gap-0.5">
                           <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
                         </span>
@@ -923,7 +943,7 @@ export default function Library() {
                       </div>
                     </button>
                     <div className="flex items-center justify-between">
-                      <span className="text-base text-gray-400">{fmtDate(c.date)}</span>
+                      <span className="text-base text-gray-500">{fmtDate(c.date)}</span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleLibBookmark(c.creator) }}
@@ -1042,7 +1062,7 @@ export default function Library() {
                       <div className="flex items-center gap-1.5">
                         <div className="min-w-0">
                           <span className="block text-base font-semibold text-gray-900">@{c.creatorUsername}</span>
-                          <span className="block text-base text-gray-400">{c.creator}</span>
+                          <span className="block text-base text-gray-500">{c.creator}</span>
                         </div>
                         {isDownloaded && (
                           <span className="inline-flex items-center gap-0.5 text-sm px-2 py-1 rounded-full bg-brand-green text-white font-semibold">
@@ -1064,7 +1084,7 @@ export default function Library() {
                       {c.type ? (
                         <span className={`text-base px-2.5 py-1 rounded-full font-medium ${CONTENT_TYPE_STYLE[c.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{c.type}</span>
                       ) : (
-                        <span className="text-base text-gray-400">—</span>
+                        <span className="text-base text-gray-500">—</span>
                       )}
                     </td>
                     <td className="py-3 px-3 text-base text-gray-500 whitespace-nowrap">{c.platform}</td>
@@ -1181,7 +1201,7 @@ export default function Library() {
                   <div>
                     <div className="flex items-center gap-3 flex-wrap">
                       <h4 className="text-lg font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
-                      <span className="text-base text-gray-400">{previewItem.creator}</span>
+                      <span className="text-base text-gray-500">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
                         <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green/10 text-brand-green font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
@@ -1194,7 +1214,7 @@ export default function Library() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <p className="text-base text-gray-400">{previewItem.campaign} · {previewItem.date}</p>
+                      <p className="text-base text-gray-500">{previewItem.campaign} · {previewItem.date}</p>
                       {previewItem.postUrl && (
                         <a
                           href={previewItem.postUrl}
@@ -1212,7 +1232,7 @@ export default function Library() {
                 </div>
                 {/* 인플루언서 액션 */}
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
-                  <p className="text-base text-gray-400 truncate">
+                  <p className="text-base text-gray-500 truncate">
                     <span className="font-medium text-gray-600">@{previewItem.creatorUsername}</span> 님
                   </p>
                   <div className="flex gap-2">
@@ -1250,7 +1270,7 @@ export default function Library() {
                   { icon: <TrendingUp size={13} />,    label: '참여율', value: previewItem.engagementRate + '%' },
                 ].map(stat => (
                   <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                    <div className="flex items-center justify-center gap-1 text-gray-400 mb-1">{stat.icon}<span className="text-base">{stat.label}</span></div>
+                    <div className="flex items-center justify-center gap-1 text-gray-500 mb-1">{stat.icon}<span className="text-base">{stat.label}</span></div>
                     <div className="text-base font-bold text-gray-900">{stat.value}</div>
                   </div>
                 ))}
@@ -1270,7 +1290,7 @@ export default function Library() {
                       <div className={`h-full rounded-full ${item.color} transition-all`} style={{ width: `${Math.min(item.value / item.cap * 100, 100)}%` }} />
                     </div>
                     <span className="text-base font-semibold text-gray-700 w-10 text-right">{item.value.toFixed(1)}%</span>
-                    <span className="text-sm text-gray-400 w-20 shrink-0">{item.desc}</span>
+                    <span className="text-sm text-gray-500 w-20 shrink-0">{item.desc}</span>
                   </div>
                 ))}
               </div>
@@ -1278,18 +1298,18 @@ export default function Library() {
               {/* 캠페인 비교 + 해시태그 */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-sm text-gray-400 mb-1">캠페인 평균 대비 참여율</p>
+                  <p className="text-sm text-gray-500 mb-1">캠페인 평균 대비 참여율</p>
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className={`text-xl font-bold ${diffPct >= 0 ? 'text-brand-green' : 'text-red-500'}`}>
                       {diffPct >= 0 ? '+' : ''}{diffPct}%
                     </span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-500">
                       {diffPct >= 0 ? '높음' : '낮음'} (avg {campAvgEng.toFixed(1)}%)
                     </span>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-sm text-gray-400 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
+                  <p className="text-sm text-gray-500 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (
                       <span key={tag} className="text-sm px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded-full">{tag}</span>
@@ -1341,7 +1361,7 @@ export default function Library() {
             rows={4}
             className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
-          <div className="text-right text-base text-gray-400">{rejectReason.length}/300</div>
+          <div className="text-right text-base text-gray-500">{rejectReason.length}/300</div>
         </div>
       </Modal>
 
@@ -1398,8 +1418,8 @@ export default function Library() {
                   <span className="font-semibold text-gray-900">₩{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-base text-gray-400">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
-              <p className="text-base text-gray-400">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+              <p className="text-base text-gray-500">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
+              <p className="text-base text-gray-500">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
             </div>
           </Modal>
         )
@@ -1477,15 +1497,15 @@ export default function Library() {
                       <div className="border-t border-gray-100 px-3 py-3 text-base">
                         <dl className="flex flex-col gap-y-3">
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">개요</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">개요</dt>
                             <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed">{c.summary}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">기간</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">기간</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">리워드</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">리워드</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
                           </div>
                         </dl>

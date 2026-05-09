@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users, AlertCircle } from 'lucide-react'
 import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
@@ -90,6 +90,9 @@ export default function CampaignNew() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [completedModal, setCompletedModal] = useState(qa === 'modal-complete')
   const [submitting, setSubmitting] = useState(false)
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // submitTimer cleanup — 언마운트 시 타이머 누수 방지
+  useEffect(() => () => { if (submitTimerRef.current !== null) clearTimeout(submitTimerRef.current) }, [])
 
   const set = <K extends keyof typeof form>(k: K, v: typeof form[K]) => setForm(p => ({ ...p, [k]: v }))
 
@@ -158,9 +161,10 @@ export default function CampaignNew() {
     if (!isEdit && hc < 5) { showToast('모집 인원은 최소 5명부터 가능합니다.', 'error'); return }
     if (hc < 1) { showToast('모집 인원을 입력해주세요.', 'error'); return }
     setSubmitting(true)
-    setTimeout(() => {
+    submitTimerRef.current = setTimeout(() => {
       setSubmitting(false)
       setCompletedModal(true)
+      submitTimerRef.current = null
     }, TIMER_MS.FORM_SUBMIT)
   }
 
@@ -206,6 +210,7 @@ export default function CampaignNew() {
                 key={t}
                 type="button"
                 onClick={() => set('type', t)}
+                aria-pressed={form.type === t}
                 className={`py-3 rounded-xl text-base font-medium border transition-colors ${
                   form.type === t
                     ? 'bg-gray-900 text-white border-gray-900'
@@ -264,7 +269,7 @@ export default function CampaignNew() {
           >
             <ImageIcon size={28} className="text-gray-300 mb-2" aria-hidden="true" />
             <p className="text-base text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
-            <p className="text-sm text-gray-400 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
+            <p className="text-sm text-gray-500 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
             <input
               id="campaign-image-upload"
               type="file"
@@ -404,7 +409,7 @@ export default function CampaignNew() {
             </button>
           </div>
           {questions.length === 0 ? (
-            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-sm text-gray-400">
+            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-sm text-gray-500">
               추가된 질문이 없습니다.
             </div>
           ) : (

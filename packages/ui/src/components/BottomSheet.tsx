@@ -4,10 +4,13 @@
  * - 배경 클릭·Escape 키로 닫힘
  * - 드래그 핸들 표시
  * - body scroll lock
+ * - ARIA: role="dialog" aria-modal aria-label, 포커스 트랩·복구
  */
 
 import { X } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, useId, type ReactNode } from 'react'
+
+const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
 let scrollLockCount = 0
 function lockScroll() {
@@ -23,24 +26,55 @@ interface BottomSheetProps {
   open: boolean
   onClose: () => void
   title?: string
+  /** dialog aria-label. title이 없을 때 사용. 기본값 "선택" */
+  label?: string
   children: ReactNode
 }
 
-export default function BottomSheet({ open, onClose, title, children }: BottomSheetProps) {
+export default function BottomSheet({ open, onClose, title, label = '선택', children }: BottomSheetProps) {
   const [visible, setVisible] = useState(false)
   const onCloseRef = useRef(onClose)
   useEffect(() => { onCloseRef.current = onClose }, [onClose])
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const prevFocusRef = useRef<HTMLElement | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const titleId = useId()
+
   useEffect(() => {
-    if (!open) { setVisible(false); return }
+    if (!open) {
+      setVisible(false)
+      // 닫힐 때 이전 포커스 복구
+      prevFocusRef.current?.focus()
+      prevFocusRef.current = null
+      return
+    }
+
+    // 열리기 전 포커스 저장
+    const active = document.activeElement
+    prevFocusRef.current = (active && active !== document.body) ? active as HTMLElement : null
+
     lockScroll()
-    const raf = requestAnimationFrame(() => setVisible(true))
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onCloseRef.current() }
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onCloseRef.current() }
+    }
     document.addEventListener('keydown', onKey)
+
+    // visible 전환 후 첫 focusable 요소로 포커스 이동
+    rafRef.current = requestAnimationFrame(() => {
+      setVisible(true)
+      rafRef.current = requestAnimationFrame(() => {
+        const firstFocusable = containerRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)
+        if (firstFocusable) firstFocusable.focus()
+        else containerRef.current?.focus()
+      })
+    })
+
     return () => {
       document.removeEventListener('keydown', onKey)
       unlockScroll()
-      cancelAnimationFrame(raf)
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
   }, [open])
 
@@ -53,7 +87,13 @@ export default function BottomSheet({ open, onClose, title, children }: BottomSh
       onClick={e => { if (e.target === e.currentTarget) onCloseRef.current() }}
     >
       <div
-        className="bg-white rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col"
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        aria-label={!title ? label : undefined}
+        tabIndex={-1}
+        className="bg-white rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col focus-visible:outline-none"
         style={{
           transform: visible ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
@@ -68,7 +108,7 @@ export default function BottomSheet({ open, onClose, title, children }: BottomSh
         {/* 헤더 */}
         {title && (
           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 flex-shrink-0">
-            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+            <h3 id={titleId} className="text-sm font-semibold text-gray-900">{title}</h3>
             <button
               onClick={() => onCloseRef.current()}
               aria-label="닫기"
