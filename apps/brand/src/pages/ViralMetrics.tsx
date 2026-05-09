@@ -124,21 +124,8 @@ viralContentData.forEach((item, i) => {
   }
 })
 
-// 추세 미니 차트 (바 형태)
-function TrendMiniBar({ values, color }: { values: number[]; color: string }) {
-  const max = Math.max(...values)
-  return (
-    <div className="flex items-end gap-0.5 h-8">
-      {values.map((v, i) => (
-        <div
-          key={i}
-          className="flex-1 rounded-sm"
-          style={{ height: max > 0 ? `${(v / max) * 100}%` : '4px', backgroundColor: color, opacity: i === values.length - 1 ? 1 : 0.35 }}
-        />
-      ))}
-    </div>
-  )
-}
+// TrendMiniBar — 추후 KPI 카드 내 미니 추세 시각화 용도로 예약
+// function TrendMiniBar({ values, color }: { values: number[]; color: string }) { ... }
 
 // 뷰 모드별 추세 데이터 — 일간 30일, 주간 12주, 월간 12개월, 연간 2025년~
 const trendData: Record<ViewMode, { reach: number[]; saves: number[]; shares: number[] }> = {
@@ -311,7 +298,7 @@ export default function ViralMetrics() {
   const kpi = isZero
     ? { reach: '--', shares: '--', saves: '--', viral: '--' }
     : { reach: fmtNumber(rawKpi.reach), shares: fmtNumber(rawKpi.shares), saves: fmtNumber(rawKpi.saves), viral: `${rawKpi.viral}x` }
-  const trend = isZero ? trendZero : trendData[viewMode]
+  const _trend = isZero ? trendZero : trendData[viewMode]
 
   const trendPct: Record<ViewMode, { reach: string; shares: string; saves: string; viral: string }> = {
     daily:   { reach: '+3.2%',  shares: '+5.1%',  saves: '+4.8%',  viral: '+1.2%' },

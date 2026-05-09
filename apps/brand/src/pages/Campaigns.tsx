@@ -212,6 +212,7 @@ export default function Campaigns() {
     return isTab(raw) ? raw : '전체'
   })
   const isAllTabActive = activeTab === '전체'
+  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get('page')) || 1))
   const handleTabClick = (tab: Tab) => {
     setActiveTab(tab)
     setPage(1)
@@ -232,7 +233,6 @@ export default function Campaigns() {
   const [sort, setSort] = useState<SortKey>(() => {
     const v = searchParams.get('sort'); return isSort(v) ? v : 'deadline'
   })
-  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get('page')) || 1))
 
   // AI 캠페인 생성 (정책서 § 16) — input → loading → result
   const [aiModalStep, setAiModalStep] = useState<null | 'input' | 'loading' | 'result'>(null)

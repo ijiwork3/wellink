@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, TIMER_MS, CustomSelect, PlatformBadge, Tooltip, Pagination } from '@wellink/ui'
+import { Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { ErrorState } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -535,8 +535,8 @@ export default function CampaignDetail() {
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
-  // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리)
-  const [downloadedIds, setDownloadedIds] = useState<Set<number>>(new Set())
+  // 결제 완료된 콘텐츠 id 목록 (서버 연동 전 세션 메모리로 관리) — 서버 연동 시 읽기 값 활용 예정
+  const [_downloadedIds, setDownloadedIds] = useState<Set<number>>(new Set())
   // 미구독자 다운로드 흐름 — 플랜 선택 → 결제 단계 (모달 내 다단계)
   type DownloadStep = 'plan-select' | 'payment'
   const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')

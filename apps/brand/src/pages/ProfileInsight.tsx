@@ -1097,6 +1097,15 @@ function ImpressReachChart({ data }: { data: ImpressReachItem[] }) {
 // 게시물 상세 모달 — @wellink/ui Modal 사용
 // 유형별(릴스/피드·카루셀/스토리)로 다른 인사이트 섹션 제공
 // ─────────────────────────────────────────────────────────────────────────────
+function MetricCell({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) {
+  return (
+    <div className={`${color} rounded-xl p-3`}>
+      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-base font-bold text-gray-900">{value}</p>
+    </div>
+  )
+}
+
 function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: () => void }) {
   const TYPE_LABEL: Record<PostType, string> = { reels: 'Reels', feed: 'Feed', carousel: 'Carousel', story: 'Story' }
   const TYPE_COLOR: Record<PostType, string> = {
@@ -1111,13 +1120,6 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
     if (totalMin >= 60) return `${Math.floor(totalMin / 60)}시간 ${totalMin % 60}분`
     return `${totalMin}분`
   }
-
-  const MetricCell = ({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) => (
-    <div className={`${color} rounded-xl p-3`}>
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-base font-bold text-gray-900">{value}</p>
-    </div>
-  )
 
   return (
     <Modal
@@ -1195,6 +1197,26 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
   )
 }
 
+function SortBtn({ k, label, sortKey, sortDir, onSort }: {
+  k: PostSortKey; label: string
+  sortKey: PostSortKey; sortDir: 'asc' | 'desc'
+  onSort: (k: PostSortKey) => void
+}) {
+  return (
+    <th scope="col"
+      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none"
+      onClick={() => onSort(k)}
+    >
+      <span className="flex items-center gap-1">
+        {label}
+        <span className={sortKey === k ? 'text-gray-700' : 'text-gray-300'}>
+          {sortKey === k ? (sortDir === 'desc' ? '↓' : '↑') : '↕'}
+        </span>
+      </span>
+    </th>
+  )
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 게시물별 성과 테이블 — 기존 서비스 ContentPerformance 동등
 // 유형 탭 필터 + 컬럼 정렬 + 페이지네이션 + 클릭→상세 모달
@@ -1253,20 +1275,6 @@ function PostContentTable() {
     feed:     <ImageIcon size={10} className="inline mr-0.5" />,
   }
 
-  const SortBtn = ({ k, label }: { k: PostSortKey; label: string }) => (
-    <th scope="col"
-      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none"
-      onClick={() => handleSort(k)}
-    >
-      <span className="flex items-center gap-1">
-        {label}
-        <span className={sortKey === k ? 'text-gray-700' : 'text-gray-300'}>
-          {sortKey === k ? (sortDir === 'desc' ? '↓' : '↑') : '↕'}
-        </span>
-      </span>
-    </th>
-  )
-
   return (
     <>
       <PostDetailModal post={selected} onClose={() => setSelected(null)} />
@@ -1306,13 +1314,13 @@ function PostContentTable() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
                 <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">유형</th>
-                <SortBtn k="date"       label="날짜" />
-                <SortBtn k="views"      label="조회수" />
-                <SortBtn k="reach"      label="도달" />
-                <SortBtn k="likes"      label="좋아요" />
-                <SortBtn k="comments"   label="댓글" />
-                <SortBtn k="saves"      label="저장" />
-                <SortBtn k="engagement" label="참여율" />
+                <SortBtn k="date"       label="날짜"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="views"      label="조회수"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="reach"      label="도달"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="likes"      label="좋아요"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="comments"   label="댓글"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="saves"      label="저장"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="engagement" label="참여율"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               </tr>
             </thead>
             <tbody>

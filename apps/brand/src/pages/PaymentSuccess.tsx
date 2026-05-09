@@ -15,7 +15,7 @@ export default function PaymentSuccess() {
   const navigate = useNavigate()
 
   const orderId    = params.get('orderId')    ?? ''
-  const paymentKey = params.get('paymentKey') ?? ''
+  const _paymentKey = params.get('paymentKey') ?? ''  // Toss 연동 시 결제 검증 API에 사용 예정
   const amount     = params.get('amount')     ?? ''
   const planId     = params.get('plan')       ?? ''
 
