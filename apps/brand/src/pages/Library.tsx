@@ -1368,6 +1368,7 @@ export default function Library() {
       {/* 콘텐츠 다운로드 모달 — 건당 결제 */}
       {(() => {
         const count = downloadModal.scope === 'all' ? filtered.length : downloadModal.scope === 'single' ? 1 : selectedIds.size
+        // TODO: 다운로드 단가 미확정 — 현재 임의값(3,000원), 클라이언트 확정 후 반영 필요
         const PRICE_PER_DOWNLOAD = 10000 // 단가 임시값 (정책 확정 후 교체)
         const totalAmount = PRICE_PER_DOWNLOAD * count
         const closeDownloadModal = () => {

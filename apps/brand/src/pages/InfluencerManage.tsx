@@ -1029,7 +1029,8 @@ export default function InfluencerManage() {
                     ) : (
                       <>
                         <span>평균 조회수 <span className="font-semibold text-gray-600">{formatFollowers(avgReelsViews)}</span></span>
-                        <span>평균 참여율 <span className="font-semibold text-gray-600">{avgReelsEng}%</span></span>
+                        <span>평균 좋아요 <span className="font-semibold text-gray-600">{formatFollowers(Math.round(reelsContents.reduce((s, c) => s + c.likes, 0) / reelsContents.length))}</span></span>
+                        <span>평균 댓글 <span className="font-semibold text-gray-600">{Math.round(reelsContents.reduce((s, c) => s + c.comments, 0) / reelsContents.length)}</span></span>
                       </>
                     )}
                   </div>
