@@ -230,7 +230,7 @@ export default function AdPerformance() {
           <div className="h-9 w-48 bg-gray-100 rounded-xl" />
         </div>
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
+          {[1,2,3,4,5,6,7,8].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
         </div>
         <div className="bg-gray-100 rounded-xl h-64" />
         <div className="bg-gray-100 rounded-xl h-40" />
@@ -266,7 +266,7 @@ export default function AdPerformance() {
           <p className="text-sm text-gray-300 mb-4">Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다.</p>
           <button
             onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1.5 mx-auto text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="flex items-center gap-1.5 mx-auto text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg px-2 py-1"
           >
             <ExternalLink size={12} aria-hidden="true" />Meta 광고 관리자 열기
           </button>
@@ -475,7 +475,7 @@ export default function AdPerformance() {
                   return (
                     <div key={c.campaignId} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
                       <button
-                        onClick={() => setExpandedCampaign(isCampaignOpen ? null : c.campaignId)}
+                        onClick={() => { setExpandedCampaign(isCampaignOpen ? null : c.campaignId); setExpandedAdSet(null) }}
                         aria-expanded={isCampaignOpen}
                         aria-controls={`campaign-detail-${c.campaignId}`}
                         className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"

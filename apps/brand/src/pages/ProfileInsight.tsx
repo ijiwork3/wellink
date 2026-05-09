@@ -542,9 +542,9 @@ export default function ProfileInsight() {
           {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
         </div>
         <div className="bg-gray-100 rounded-xl h-64" />
-        <div className="grid grid-cols-2 @md:grid-cols-3 @lg:grid-cols-5 gap-3 @sm:gap-5">
-          <div className="col-span-3 bg-gray-100 rounded-xl h-48" />
-          <div className="col-span-2 bg-gray-100 rounded-xl h-48" />
+        <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
+          <div className="bg-gray-100 rounded-xl h-48" />
+          <div className="bg-gray-100 rounded-xl h-48" />
         </div>
       </div>
     )
@@ -1202,10 +1202,14 @@ function SortBtn({ k, label, sortKey, sortDir, onSort }: {
   sortKey: PostSortKey; sortDir: 'asc' | 'desc'
   onSort: (k: PostSortKey) => void
 }) {
+  const ariaSortValue = sortKey === k ? (sortDir === 'desc' ? 'descending' : 'ascending') : 'none'
   return (
     <th scope="col"
-      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none"
+      tabIndex={0}
+      aria-sort={ariaSortValue}
+      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50"
       onClick={() => onSort(k)}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(k) } }}
     >
       <span className="flex items-center gap-1">
         {label}

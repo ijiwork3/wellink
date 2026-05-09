@@ -686,7 +686,7 @@ export default function Dashboard() {
               <button
                 key={p}
                 onClick={() => setContentPeriod(p)}
-                className={`text-sm px-2.5 py-1 rounded-md transition-all ${
+                className={`text-sm px-2.5 py-1 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   contentPeriod === p ? 'bg-white shadow-sm font-semibold text-gray-900' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >

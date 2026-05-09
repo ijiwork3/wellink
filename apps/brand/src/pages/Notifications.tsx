@@ -192,7 +192,7 @@ export default function Notifications() {
                 key={item.id}
                 type="button"
                 onClick={() => handleNotificationClick(item)}
-                className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left ${
+                className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
                   item.unread ? 'bg-brand-green/5 hover:bg-brand-green/10' : 'hover:bg-gray-50/50'
                 }`}
               >

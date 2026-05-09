@@ -207,23 +207,23 @@ export default function Subscription() {
       <div className="space-y-8 animate-pulse">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <div className="h-6 w-28 bg-gray-200 rounded-full" />
-            <div className="h-3 w-48 bg-gray-100 rounded-full" />
+            <div className="h-6 w-28 bg-gray-200 rounded-xl" />
+            <div className="h-3 w-48 bg-gray-100 rounded-xl" />
           </div>
-          <div className="h-7 w-24 bg-gray-100 rounded-full" />
+          <div className="h-7 w-24 bg-gray-100 rounded-xl" />
         </div>
         {/* 플랜 카드 3개 스켈레톤 */}
         <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
               <div className="space-y-2">
-                <div className="h-5 w-16 bg-gray-200 rounded-full" />
-                <div className="h-3 w-32 bg-gray-100 rounded-full" />
-                <div className="h-8 w-24 bg-gray-200 rounded-full mt-3" />
+                <div className="h-5 w-16 bg-gray-200 rounded-xl" />
+                <div className="h-3 w-32 bg-gray-100 rounded-xl" />
+                <div className="h-8 w-24 bg-gray-200 rounded-xl mt-3" />
               </div>
               <div className="space-y-2.5">
                 {[1, 2, 3].map(j => (
-                  <div key={j} className="h-3 w-full bg-gray-100 rounded-full" />
+                  <div key={j} className="h-3 w-full bg-gray-100 rounded-xl" />
                 ))}
               </div>
               <div className="h-10 w-full bg-gray-200 rounded-xl" />
@@ -232,12 +232,12 @@ export default function Subscription() {
         </div>
         {/* 결제 정보 섹션 스켈레톤 */}
         <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-4">
-          <div className="h-4 w-20 bg-gray-200 rounded-full" />
+          <div className="h-4 w-20 bg-gray-200 rounded-xl" />
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
             <div className="w-10 h-7 bg-gray-200 rounded-md" />
             <div className="space-y-1.5">
-              <div className="h-3 w-36 bg-gray-200 rounded-full" />
-              <div className="h-3 w-24 bg-gray-100 rounded-full" />
+              <div className="h-3 w-36 bg-gray-200 rounded-xl" />
+              <div className="h-3 w-24 bg-gray-100 rounded-xl" />
             </div>
           </div>
         </div>
@@ -324,7 +324,7 @@ export default function Subscription() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
-              <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-7</span>
+              <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
             </div>
             <span className="text-sm font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
               체험 중
@@ -334,10 +334,10 @@ export default function Subscription() {
           <div>
             <div className="flex justify-between text-sm text-brand-green-text/70 mb-1.5">
               <span>시작일</span>
-              <span>D-7 / 7일</span>
+              <span>D-3 / 7일</span>
             </div>
             <div className="h-2 bg-brand-green/20 rounded-full overflow-hidden">
-              <div className="h-full bg-brand-green rounded-full" style={{ width: '50%' }} />
+              <div className="h-full bg-brand-green rounded-full" style={{ width: '57%' }} />
             </div>
           </div>
         </div>
@@ -623,7 +623,7 @@ export default function Subscription() {
           </h3>
           <button
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
-            className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
+            className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             변경
           </button>
