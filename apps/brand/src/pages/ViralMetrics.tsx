@@ -816,6 +816,35 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                         isTouch={isTouch}
                       />
                     </div>
+                    {/* 점수 추이 차트 HTML 툴팁 오버레이 */}
+                    {scoreIdx != null && (() => {
+                      const d = scoreHistory[scoreIdx]
+                      if (!d) return null
+                      const scrollLeft = scoreScrollRef.current?.scrollLeft ?? 0
+                      const containerW = scoreScrollRef.current?.clientWidth ?? 400
+                      const stepX = 384 / Math.max(1, scoreHistory.length - 1)
+                      const svgX = 8 + scoreIdx * stepX
+                      const visX = svgX - scrollLeft
+                      const isRight = visX > containerW * 0.65
+                      return (
+                        <div
+                          className="absolute top-2 z-20 pointer-events-none"
+                          style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+                        >
+                          <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                            <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
+                              <span className="text-xs text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full shrink-0 bg-amber-400" />
+                              <span className="text-xs text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })()}
                   </div>
                 </div>
               )}
@@ -881,25 +910,18 @@ function ScoreHistoryChart({
         return <text key={i} x={x} y={H - 4} textAnchor="middle" fontSize={8} fill="#9ca3af">{d.label}</text>
       })}
 
-      {/* 인터랙티브 active indicator */}
+      {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex != null && (() => {
         const d = data[activeIndex]
         if (!d) return null
         const x = padL + activeIndex * stepX
         const perfY = toY(d.performance)
         const momoY = toY(d.momentum)
-        const tipW = 110, tipH = 48, tipX = x + (x > W * 0.65 ? -(tipW + 8) : 8)
         return (
           <g key="active">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
             <circle cx={x} cy={perfY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
             <circle cx={x} cy={momoY} r={3.5} fill="#f59e0b" stroke="white" strokeWidth={1.5} />
-            <rect x={tipX} y={padT} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} />
-            <text x={tipX + 8} y={padT + 13} fontSize={8} fill="#6b7280">{d.label}</text>
-            <circle cx={tipX + 11} cy={padT + 24} r={3} fill="#8b5cf6" />
-            <text x={tipX + 18} y={padT + 27} fontSize={8} fill="#374151">퍼포먼스 {d.performance}</text>
-            <circle cx={tipX + 11} cy={padT + 38} r={3} fill="#f59e0b" />
-            <text x={tipX + 18} y={padT + 41} fontSize={8} fill="#374151">모멘텀 {d.momentum}</text>
           </g>
         )
       })()}

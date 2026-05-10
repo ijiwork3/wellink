@@ -775,6 +775,36 @@ export default function AdPerformance() {
               isTouch={isTouch}
             />
           </div>
+          {/* MixedChart HTML 툴팁 오버레이 */}
+          {mixedChartIdx != null && (() => {
+            const d = chartData[mixedChartIdx]
+            if (!d) return null
+            const scrollLeft = mixedChartScrollRef.current?.scrollLeft ?? 0
+            const containerW = mixedChartScrollRef.current?.clientWidth ?? 700
+            const stepX = 600 / Math.max(1, chartData.length - 1)
+            const svgX = 50 + mixedChartIdx * stepX
+            const visX = svgX - scrollLeft
+            const isRight = visX > containerW * 0.65
+            return (
+              <div
+                className="absolute top-2 z-20 pointer-events-none"
+                style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+              >
+                <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="w-2 h-2 rounded-sm shrink-0 bg-violet-500" />
+                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="w-3 h-0.5 shrink-0 bg-blue-500" />
+                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
 
@@ -812,6 +842,31 @@ export default function AdPerformance() {
                 isTouch={isTouch}
               />
             </div>
+            {/* CTR 차트 HTML 툴팁 오버레이 */}
+            {ctrChartIdx != null && (() => {
+              const d = chartData[ctrChartIdx]
+              if (!d) return null
+              const scrollLeft = ctrChartScrollRef.current?.scrollLeft ?? 0
+              const containerW = ctrChartScrollRef.current?.clientWidth ?? 400
+              const stepX = 352 / Math.max(1, chartData.length - 1)
+              const svgX = 36 + ctrChartIdx * stepX
+              const visX = svgX - scrollLeft
+              const isRight = visX > containerW * 0.65
+              return (
+                <div
+                  className="absolute top-2 z-20 pointer-events-none"
+                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+                >
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#f97316' }} />
+                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
@@ -846,6 +901,31 @@ export default function AdPerformance() {
                 isTouch={isTouch}
               />
             </div>
+            {/* 클릭 차트 HTML 툴팁 오버레이 */}
+            {clicksChartIdx != null && (() => {
+              const d = chartData[clicksChartIdx]
+              if (!d) return null
+              const scrollLeft = clicksChartScrollRef.current?.scrollLeft ?? 0
+              const containerW = clicksChartScrollRef.current?.clientWidth ?? 400
+              const stepX = 352 / Math.max(1, chartData.length - 1)
+              const svgX = 36 + clicksChartIdx * stepX
+              const visX = svgX - scrollLeft
+              const isRight = visX > containerW * 0.65
+              return (
+                <div
+                  className="absolute top-2 z-20 pointer-events-none"
+                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+                >
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
+                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>
@@ -1011,32 +1091,18 @@ function MixedChart({
         const x = padL + i * stepX
         return <text key={i} x={x} y={padT + plotH + 14} textAnchor="middle" fontSize={9} fill="#6b7280">{d.date}</text>
       })}
-      {/* active indicator + tooltip */}
+      {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex !== null && (() => {
         const d = data[activeIndex]
         if (!d) return null
         const x = padL + activeIndex * stepX
         const spendY = padT + plotH - (d.spend / maxSpend) * plotH
         const clicksY = padT + plotH - (d.clicks / maxClicks) * plotH
-        const tipW = 140, tipH = 62, tipX = x + (x > W * 0.65 ? -(tipW + 8) : 8)
         return (
           <g key="active-indicator">
-            {/* 세로 가이드라인 */}
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            {/* active dot (지출 막대 상단) */}
             <circle cx={x} cy={spendY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
-            {/* active dot (클릭 라인) */}
             <circle cx={x} cy={clicksY} r={3.5} fill="#3b82f6" stroke="white" strokeWidth={1.5} />
-            {/* 툴팁 배경 */}
-            <rect x={tipX} y={padT + 2} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
-            {/* 툴팁 텍스트 */}
-            <text x={tipX + 8} y={padT + 16} fontSize={9} fill="#6b7280">{d.date}</text>
-            <rect x={tipX + 8} y={padT + 23} width={6} height={6} rx={1} fill="#8b5cf6" />
-            <text x={tipX + 18} y={padT + 30} fontSize={9} fill="#374151" fontWeight="600">지출 {fmtPrice(d.spend)}</text>
-            <rect x={tipX + 8} y={padT + 38} width={6} height={2} rx={1} fill="#3b82f6" />
-            <text x={tipX + 18} y={padT + 44} fontSize={9} fill="#374151" fontWeight="600">클릭 {fmtNumber(d.clicks)}</text>
-            {/* CTR */}
-            <text x={tipX + 8} y={padT + 57} fontSize={9} fill="#9ca3af">CTR {d.ctr != null ? d.ctr.toFixed(2) : '—'}%</text>
           </g>
         )
       })()}
@@ -1125,19 +1191,14 @@ function SimpleLineChart({
         if (i % labelInterval !== 0 && i !== points.length - 1) return null
         return <text key={i} x={p.x} y={padT + plotH + 14} textAnchor="middle" fontSize={9} fill="#6b7280">{p.label}</text>
       })}
-      {/* active indicator + tooltip */}
+      {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex != null && (() => {
-        const d = data[activeIndex]
         const p = points[activeIndex]
-        if (!d || !p) return null
-        const tipW = 120, tipH = 44, tipX = p.x + (p.x > W * 0.65 ? -(tipW + 8) : 8)
+        if (!p) return null
         return (
           <g key="active">
             <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
             <circle cx={p.x} cy={p.y} r={4} fill={stroke} stroke="white" strokeWidth={2} />
-            <rect x={tipX} y={padT} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
-            <text x={tipX + 8} y={padT + 14} fontSize={9} fill="#6b7280">{d.label}</text>
-            <text x={tipX + 8} y={padT + 30} fontSize={10} fill="#374151" fontWeight="600">{typeof d.value === 'number' && d.value > 100 ? fmtNumber(d.value) : d.value.toFixed(2)}</text>
           </g>
         )
       })()}
