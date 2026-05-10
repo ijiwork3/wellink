@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
-import { KPICard, Modal, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, SkeletonCard, type DatePeriod } from '@wellink/ui'
+import { KPICard, Modal, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, SkeletonCard, ChartScrollContainer, type ChartScrollContainerHandle, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -667,36 +667,21 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
   const [scoreIdx, setScoreIdx] = useState<number | null>(
     isTouch && scoreHistory.length > 0 ? scoreHistory.length - 1 : null
   )
-  const scoreScrollRef = useRef<HTMLDivElement>(null)
-  const [scoreScrollLeft, setScoreScrollLeft] = useState(false)
-  const [scoreScrollRight, setScoreScrollRight] = useState(false)
+  const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
 
   useEffect(() => {
     if (isTouch) {
       setScoreIdx(scoreHistory.length > 0 ? scoreHistory.length - 1 : null)
       // 모바일: 마지막 포인트가 보이도록 오른쪽 끝으로 스크롤
       requestAnimationFrame(() => {
-        scoreScrollRef.current?.scrollTo({ left: scoreScrollRef.current.scrollWidth })
+        scoreScrollRef.current?.scrollToEnd()
       })
     } else {
       setScoreIdx(null)
-      requestAnimationFrame(() => { scoreScrollRef.current?.scrollTo({ left: 0 }) })
+      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
     }
   }, [isTouch, content])
 
-  useEffect(() => {
-    const el = scoreScrollRef.current
-    if (!el) return
-    const update = () => {
-      setScoreScrollLeft(el.scrollLeft > 2)
-      setScoreScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
-    }
-    update()
-    el.addEventListener('scroll', update, { passive: true })
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
 
   const metrics = content ? [
     { label: '도달',   value: content.reach,    icon: <Eye size={13} aria-hidden="true" />,          color: 'text-blue-600' },
@@ -791,61 +776,36 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-violet-500 inline-block rounded" />퍼포먼스</span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-amber-400 inline-block rounded" />모멘텀</span>
                   </div>
-                  <div className="relative">
-                    {scoreScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
-                    {scoreScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
-                    {scoreScrollLeft && (
-                      <button type="button" onClick={() => scoreScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-                        aria-label="왼쪽으로 스크롤"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                        <ChevronLeft size={13} aria-hidden="true" />
-                      </button>
-                    )}
-                    {scoreScrollRight && (
-                      <button type="button" onClick={() => scoreScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-                        aria-label="오른쪽으로 스크롤"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                        <ChevronRight size={13} aria-hidden="true" />
-                      </button>
-                    )}
-                    <div ref={scoreScrollRef} className="overflow-x-auto scrollbar-none">
-                      <ScoreHistoryChart
-                        data={scoreHistory}
-                        activeIndex={scoreIdx}
-                        onActiveIndex={setScoreIdx}
-                        isTouch={isTouch}
-                      />
-                    </div>
-                    {/* 점수 추이 차트 HTML 툴팁 오버레이 */}
-                    {scoreIdx != null && (() => {
-                      const d = scoreHistory[scoreIdx]
+                  <ChartScrollContainer
+                    ref={scoreScrollRef}
+                    chartW={400} padL={8} padR={8}
+                    dataLength={scoreHistory.length}
+                    activeIndex={scoreIdx}
+                    tooltipContent={(i) => {
+                      const d = scoreHistory[i]
                       if (!d) return null
-                      const scrollLeft = scoreScrollRef.current?.scrollLeft ?? 0
-                      const containerW = scoreScrollRef.current?.clientWidth ?? 400
-                      const stepX = 384 / Math.max(1, scoreHistory.length - 1)
-                      const svgX = 8 + scoreIdx * stepX
-                      const visX = svgX - scrollLeft
-                      const isRight = visX > containerW * 0.65
                       return (
-                        <div
-                          className="absolute top-2 z-20 pointer-events-none"
-                          style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
-                        >
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
-                            <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
-                              <span className="text-xs text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full shrink-0 bg-amber-400" />
-                              <span className="text-xs text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
-                            </div>
+                        <>
+                          <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
+                            <span className="text-xs text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
                           </div>
-                        </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full shrink-0 bg-amber-400" />
+                            <span className="text-xs text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
+                          </div>
+                        </>
                       )
-                    })()}
-                  </div>
+                    }}
+                  >
+                    <ScoreHistoryChart
+                      data={scoreHistory}
+                      activeIndex={scoreIdx}
+                      onActiveIndex={setScoreIdx}
+                      isTouch={isTouch}
+                    />
+                  </ChartScrollContainer>
                 </div>
               )}
             </div>
@@ -898,6 +858,8 @@ function ScoreHistoryChart({
       aria-label="퍼포먼스·모멘텀 점수 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      onClick={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
+      onTouchStart={isTouch ? (e) => handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
     >
       {[0, 0.5, 1].map(r => (

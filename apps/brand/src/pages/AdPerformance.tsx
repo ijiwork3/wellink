@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
-import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard } from '@wellink/ui'
+import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
+import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -215,20 +215,10 @@ export default function AdPerformance() {
   const [ctrChartIdx, setCtrChartIdx] = useState<number | null>(null)
   const [clicksChartIdx, setClicksChartIdx] = useState<number | null>(null)
 
-  // 차트 스크롤 ref/state (MixedChart용)
-  const mixedChartScrollRef = useRef<HTMLDivElement>(null)
-  const [mixedCanScrollLeft, setMixedCanScrollLeft] = useState(false)
-  const [mixedCanScrollRight, setMixedCanScrollRight] = useState(false)
-
-  // CTR 차트 스크롤
-  const ctrChartScrollRef = useRef<HTMLDivElement>(null)
-  const [ctrCanScrollLeft, setCtrCanScrollLeft] = useState(false)
-  const [ctrCanScrollRight, setCtrCanScrollRight] = useState(false)
-
-  // 클릭 차트 스크롤
-  const clicksChartScrollRef = useRef<HTMLDivElement>(null)
-  const [clicksCanScrollLeft, setClicksCanScrollLeft] = useState(false)
-  const [clicksCanScrollRight, setClicksCanScrollRight] = useState(false)
+  // ChartScrollContainer refs — imperativeHandle (scrollToStart / scrollToEnd)
+  const mixedChartScrollRef = useRef<ChartScrollContainerHandle>(null)
+  const ctrChartScrollRef    = useRef<ChartScrollContainerHandle>(null)
+  const clicksChartScrollRef = useRef<ChartScrollContainerHandle>(null)
 
   // AI 분석 새로고침 — setTimeout cleanup
   const handleAiRefresh = useCallback(() => {
@@ -260,9 +250,9 @@ export default function AdPerformance() {
       setClicksChartIdx(n - 1)
       // 모바일: 마지막 포인트(활성 툴팁)가 보이도록 오른쪽 끝으로 스크롤
       requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollTo({ left: mixedChartScrollRef.current.scrollWidth })
-        ctrChartScrollRef.current?.scrollTo({ left: ctrChartScrollRef.current.scrollWidth })
-        clicksChartScrollRef.current?.scrollTo({ left: clicksChartScrollRef.current.scrollWidth })
+        mixedChartScrollRef.current?.scrollToEnd()
+        ctrChartScrollRef.current?.scrollToEnd()
+        clicksChartScrollRef.current?.scrollToEnd()
       })
     } else {
       setMixedChartIdx(null)
@@ -270,57 +260,12 @@ export default function AdPerformance() {
       setClicksChartIdx(null)
       // PC: 처음으로 스크롤 초기화
       requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollTo({ left: 0 })
-        ctrChartScrollRef.current?.scrollTo({ left: 0 })
-        clicksChartScrollRef.current?.scrollTo({ left: 0 })
+        mixedChartScrollRef.current?.scrollToStart()
+        ctrChartScrollRef.current?.scrollToStart()
+        clicksChartScrollRef.current?.scrollToStart()
       })
     }
   }, [period, isTouch])
-
-  // MixedChart 스크롤 상태 추적
-  useEffect(() => {
-    const el = mixedChartScrollRef.current
-    if (!el) return
-    const update = () => {
-      setMixedCanScrollLeft(el.scrollLeft > 2)
-      setMixedCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
-    }
-    update()
-    el.addEventListener('scroll', update, { passive: true })
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  // CTR 차트 스크롤 상태 추적
-  useEffect(() => {
-    const el = ctrChartScrollRef.current
-    if (!el) return
-    const update = () => {
-      setCtrCanScrollLeft(el.scrollLeft > 2)
-      setCtrCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
-    }
-    update()
-    el.addEventListener('scroll', update, { passive: true })
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  // 클릭 차트 스크롤 상태 추적
-  useEffect(() => {
-    const el = clicksChartScrollRef.current
-    if (!el) return
-    const update = () => {
-      setClicksCanScrollLeft(el.scrollLeft > 2)
-      setClicksCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
-    }
-    update()
-    el.addEventListener('scroll', update, { passive: true })
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
 
   const headerRef = useRef<HTMLDivElement>(null)
   const [isStuck, setIsStuck] = useState(false)
@@ -750,62 +695,37 @@ export default function AdPerformance() {
           </div>
         </div>
         {/* 가로 스크롤 wrapper */}
-        <div className="relative">
-          {mixedCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
-          {mixedCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
-          {mixedCanScrollLeft && (
-            <button type="button" onClick={() => mixedChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-              aria-label="왼쪽으로 스크롤"
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronLeft size={13} aria-hidden="true" />
-            </button>
-          )}
-          {mixedCanScrollRight && (
-            <button type="button" onClick={() => mixedChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-              aria-label="오른쪽으로 스크롤"
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronRight size={13} aria-hidden="true" />
-            </button>
-          )}
-          <div ref={mixedChartScrollRef} className="overflow-x-auto scrollbar-none">
-            <MixedChart
-              data={chartData}
-              activeIndex={mixedChartIdx}
-              onActiveIndex={setMixedChartIdx}
-              isTouch={isTouch}
-            />
-          </div>
-          {/* MixedChart HTML 툴팁 오버레이 */}
-          {mixedChartIdx != null && (() => {
-            const d = chartData[mixedChartIdx]
+        <ChartScrollContainer
+          ref={mixedChartScrollRef}
+          chartW={700} padL={50} padR={50}
+          dataLength={chartData.length}
+          activeIndex={mixedChartIdx}
+          tooltipContent={(i) => {
+            const d = chartData[i]
             if (!d) return null
-            const scrollLeft = mixedChartScrollRef.current?.scrollLeft ?? 0
-            const containerW = mixedChartScrollRef.current?.clientWidth ?? 700
-            const stepX = 600 / Math.max(1, chartData.length - 1)
-            const svgX = 50 + mixedChartIdx * stepX
-            const visX = svgX - scrollLeft
-            const isRight = visX > containerW * 0.65
             return (
-              <div
-                className="absolute top-2 z-20 pointer-events-none"
-                style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
-              >
-                <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="w-2 h-2 rounded-sm shrink-0 bg-violet-500" />
-                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="w-3 h-0.5 shrink-0 bg-blue-500" />
-                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
-                  </div>
-                  <p className="text-xs text-gray-400 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
+              <>
+                <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="w-2 h-2 rounded-sm shrink-0 bg-violet-500" />
+                  <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
                 </div>
-              </div>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="w-3 h-0.5 shrink-0 bg-blue-500" />
+                  <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
+                </div>
+                <p className="text-xs text-gray-400 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
+              </>
             )
-          })()}
-        </div>
+          }}
+        >
+          <MixedChart
+            data={chartData}
+            activeIndex={mixedChartIdx}
+            onActiveIndex={setMixedChartIdx}
+            isTouch={isTouch}
+          />
+        </ChartScrollContainer>
       </div>
 
       {/* CTR 추이 + 기간별 클릭 — 2열 배치, 원본 LineChart 보강 */}
@@ -815,121 +735,70 @@ export default function AdPerformance() {
             <h2 className="text-base font-semibold text-gray-900">CTR 추이</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <div className="relative">
-            {ctrCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
-            {ctrCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
-            {ctrCanScrollLeft && (
-              <button type="button" onClick={() => ctrChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-                aria-label="왼쪽으로 스크롤"
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                <ChevronLeft size={13} aria-hidden="true" />
-              </button>
-            )}
-            {ctrCanScrollRight && (
-              <button type="button" onClick={() => ctrChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-                aria-label="오른쪽으로 스크롤"
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                <ChevronRight size={13} aria-hidden="true" />
-              </button>
-            )}
-            <div ref={ctrChartScrollRef} className="overflow-x-auto scrollbar-none">
-              <SimpleLineChart
-                data={chartData.map(d => ({ label: d.date, value: d.ctr }))}
-                stroke="#f97316"
-                ariaLabel="CTR 추이 차트"
-                activeIndex={ctrChartIdx}
-                onActiveIndex={setCtrChartIdx}
-                isTouch={isTouch}
-              />
-            </div>
-            {/* CTR 차트 HTML 툴팁 오버레이 */}
-            {ctrChartIdx != null && (() => {
-              const d = chartData[ctrChartIdx]
+          <ChartScrollContainer
+            ref={ctrChartScrollRef}
+            chartW={400} padL={36} padR={12}
+            dataLength={chartData.length}
+            activeIndex={ctrChartIdx}
+            tooltipContent={(i) => {
+              const d = chartData[i]
               if (!d) return null
-              const scrollLeft = ctrChartScrollRef.current?.scrollLeft ?? 0
-              const containerW = ctrChartScrollRef.current?.clientWidth ?? 400
-              const stepX = 352 / Math.max(1, chartData.length - 1)
-              const svgX = 36 + ctrChartIdx * stepX
-              const visX = svgX - scrollLeft
-              const isRight = visX > containerW * 0.65
               return (
-                <div
-                  className="absolute top-2 z-20 pointer-events-none"
-                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
-                >
-                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
-                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#f97316' }} />
-                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
-                    </div>
+                <>
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#f97316' }} />
+                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
                   </div>
-                </div>
+                </>
               )
-            })()}
-          </div>
+            }}
+          >
+            <SimpleLineChart
+              data={chartData.map(d => ({ label: d.date, value: d.ctr }))}
+              stroke="#f97316"
+              ariaLabel="CTR 추이 차트"
+              activeIndex={ctrChartIdx}
+              onActiveIndex={setCtrChartIdx}
+              isTouch={isTouch}
+            />
+          </ChartScrollContainer>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
-          <div className="relative">
-            {clicksCanScrollLeft && <div className="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-white/90 to-transparent pointer-events-none z-[9]" />}
-            {clicksCanScrollRight && <div className="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-white/90 to-transparent pointer-events-none z-[9]" />}
-            {clicksCanScrollLeft && (
-              <button type="button" onClick={() => clicksChartScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-                aria-label="왼쪽으로 스크롤"
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                <ChevronLeft size={13} aria-hidden="true" />
-              </button>
-            )}
-            {clicksCanScrollRight && (
-              <button type="button" onClick={() => clicksChartScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-                aria-label="오른쪽으로 스크롤"
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                <ChevronRight size={13} aria-hidden="true" />
-              </button>
-            )}
-            <div ref={clicksChartScrollRef} className="overflow-x-auto scrollbar-none">
-              <SimpleLineChart
-                data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
-                stroke="#3b82f6"
-                ariaLabel="기간별 클릭 수 추이 차트"
-                activeIndex={clicksChartIdx}
-                onActiveIndex={setClicksChartIdx}
-                isTouch={isTouch}
-              />
-            </div>
-            {/* 클릭 차트 HTML 툴팁 오버레이 */}
-            {clicksChartIdx != null && (() => {
-              const d = chartData[clicksChartIdx]
+          <ChartScrollContainer
+            ref={clicksChartScrollRef}
+            chartW={400} padL={36} padR={12}
+            dataLength={chartData.length}
+            activeIndex={clicksChartIdx}
+            tooltipContent={(i) => {
+              const d = chartData[i]
               if (!d) return null
-              const scrollLeft = clicksChartScrollRef.current?.scrollLeft ?? 0
-              const containerW = clicksChartScrollRef.current?.clientWidth ?? 400
-              const stepX = 352 / Math.max(1, chartData.length - 1)
-              const svgX = 36 + clicksChartIdx * stepX
-              const visX = svgX - scrollLeft
-              const isRight = visX > containerW * 0.65
               return (
-                <div
-                  className="absolute top-2 z-20 pointer-events-none"
-                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
-                >
-                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
-                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
-                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
-                    </div>
+                <>
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
+                    <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
                   </div>
-                </div>
+                </>
               )
-            })()}
-          </div>
+            }}
+          >
+            <SimpleLineChart
+              data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
+              stroke="#3b82f6"
+              ariaLabel="기간별 클릭 수 추이 차트"
+              activeIndex={clicksChartIdx}
+              onActiveIndex={setClicksChartIdx}
+              isTouch={isTouch}
+            />
+          </ChartScrollContainer>
         </div>
       </div>
-
       {/* 도달·참여 출처 도넛 — 원본 DonutChart 보강 (광고 vs 유기적) */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
@@ -1020,6 +889,9 @@ function MixedChart({
   // X축 라벨 간격: data.length 기반
   const labelInterval = data.length > 20 ? 7 : data.length > 8 ? 3 : 1
 
+  const idxAt = (clientX: number, rect: DOMRect) =>
+    Math.max(0, Math.min(data.length - 1, Math.round(((clientX - rect.left) / rect.width * W - padL) / stepX)))
+
   return (
     <svg
       width="100%"
@@ -1030,22 +902,11 @@ function MixedChart({
       role="img"
       aria-label="기간별 광고 지출(막대)과 클릭 수(선) 추이 차트"
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW }}
-      onMouseMove={!isTouch ? (e) => {
-        const rect = e.currentTarget.getBoundingClientRect()
-        const ratio = (e.clientX - rect.left) / rect.width
-        const svgRelX = ratio * W - padL
-        const idx = Math.round(svgRelX / stepX)
-        onActiveIndex(Math.max(0, Math.min(data.length - 1, idx)))
-      } : undefined}
+      onMouseMove={!isTouch ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
       onMouseLeave={!isTouch ? () => onActiveIndex(null) : undefined}
-      onTouchMove={isTouch ? (e) => {
-        e.preventDefault()
-        const rect = e.currentTarget.getBoundingClientRect()
-        const ratio = (e.touches[0].clientX - rect.left) / rect.width
-        const svgRelX = ratio * W - padL
-        const idx = Math.round(svgRelX / stepX)
-        onActiveIndex(Math.max(0, Math.min(data.length - 1, idx)))
-      } : undefined}
+      onClick={!isTouch ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
+      onTouchStart={isTouch ? (e) => onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) : undefined}
+      onTouchMove={isTouch ? (e) => { e.preventDefault(); onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) } : undefined}
     >
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
@@ -1144,6 +1005,9 @@ function SimpleLineChart({
   // X축 라벨 간격: data.length 기반
   const labelInterval = data.length > 20 ? 7 : data.length > 8 ? 3 : 1
 
+  const idxAt = (clientX: number, rect: DOMRect) =>
+    Math.max(0, Math.min(data.length - 1, Math.round(((clientX - rect.left) / rect.width * W - padL) / stepX)))
+
   return (
     <svg
       width="100%"
@@ -1154,22 +1018,11 @@ function SimpleLineChart({
       role="img"
       aria-label={ariaLabel ?? '추이 차트'}
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW }}
-      onMouseMove={!isTouch && onActiveIndex ? (e) => {
-        const rect = e.currentTarget.getBoundingClientRect()
-        const ratio = (e.clientX - rect.left) / rect.width
-        const svgRelX = ratio * W - padL
-        const idx = Math.round(svgRelX / stepX)
-        onActiveIndex(Math.max(0, Math.min(data.length - 1, idx)))
-      } : undefined}
+      onMouseMove={!isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
       onMouseLeave={!isTouch && onActiveIndex ? () => onActiveIndex(null) : undefined}
-      onTouchMove={isTouch && onActiveIndex ? (e) => {
-        e.preventDefault()
-        const rect = e.currentTarget.getBoundingClientRect()
-        const ratio = (e.touches[0].clientX - rect.left) / rect.width
-        const svgRelX = ratio * W - padL
-        const idx = Math.round(svgRelX / stepX)
-        onActiveIndex(Math.max(0, Math.min(data.length - 1, idx)))
-      } : undefined}
+      onClick={!isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
+      onTouchStart={isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) : undefined}
+      onTouchMove={isTouch && onActiveIndex ? (e) => { e.preventDefault(); onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) } : undefined}
     >
       <defs>
         <linearGradient id={`grad-${stroke.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
