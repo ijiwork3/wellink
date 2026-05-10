@@ -1370,7 +1370,8 @@ export default function Library() {
       {(() => {
         const count = downloadModal.scope === 'all' ? filtered.length : downloadModal.scope === 'single' ? 1 : selectedIds.size
         // TODO: 다운로드 단가 미확정 — 현재 임의값(3,000원), 클라이언트 확정 후 반영 필요
-        const PRICE_PER_DOWNLOAD = 10000 // 단가 임시값 (정책 확정 후 교체)
+        // CampaignDetail.tsx와 동일 단가 유지 (정합성)
+        const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
         const totalAmount = PRICE_PER_DOWNLOAD * count
         const closeDownloadModal = () => {
           if (isPaying) return
