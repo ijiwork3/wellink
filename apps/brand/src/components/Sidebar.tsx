@@ -108,6 +108,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         {showHome && (
           isGated ? (
             <button
+              type="button"
               onClick={openGatedModal}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
             >
@@ -117,6 +118,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             </button>
           ) : (
             <button
+              type="button"
               onClick={() => { navigate('/dashboard'); onNavigate?.() }}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
             >
@@ -128,6 +130,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         {showDashboard && (
           isGated ? (
             <button
+              type="button"
               onClick={openGatedModal}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-2 cursor-not-allowed"
             >
@@ -199,6 +202,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       {/* 하단 링크 + 계정 */}
       <div className="px-3 pb-5 border-t border-gray-100 pt-3">
         <button
+          type="button"
           onClick={() => window.open('https://wellink.co.kr', '_blank', 'noopener,noreferrer')}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-0.5"
         >
@@ -207,6 +211,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           <ExternalLink size={12} className="shrink-0 opacity-60" />
         </button>
         <button
+          type="button"
           onClick={() => window.open('https://pnutbtr.inblog.io/', '_blank', 'noopener,noreferrer')}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full transition-colors duration-150 mb-2"
         >
@@ -217,6 +222,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
 
         <div className="border-t border-gray-100 pt-3">
           <button
+            type="button"
             onClick={() => navigate('/mypage')}
             className={`flex items-center gap-2.5 px-3 py-2 w-full rounded-lg hover:bg-gray-100 transition-colors duration-150 ${isMyPageActive ? 'bg-gray-100' : ''}`}
           >
@@ -241,14 +247,16 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         footer={
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={() => setGatedModalOpen(false)}
               className="flex-1 py-2.5 rounded-xl border border-gray-200 text-base text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
             <button
+              type="button"
               onClick={() => { setGatedModalOpen(false); navigate('/subscription') }}
-              className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-base font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               구독 관리로 이동
             </button>

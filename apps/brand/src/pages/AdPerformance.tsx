@@ -683,7 +683,7 @@ export default function AdPerformance() {
                                       <div className="space-y-2">
                                         {set.ads.map(ad => (
                                           <div key={ad.id} className="flex gap-3 border-t border-gray-100 pt-3 first:border-0 first:pt-0">
-                                            <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
+                                            <div className="h-12 w-12 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
                                               <ImageIcon size={16} aria-hidden="true" />
                                             </div>
                                             <div className="flex-1 min-w-0">
