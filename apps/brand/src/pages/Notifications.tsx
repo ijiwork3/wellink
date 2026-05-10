@@ -7,6 +7,7 @@ import {
   type TabItem,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 
 /** 알림 센터 — 원본 NotificationView.tsx 동등 (광고주) */
 
@@ -105,11 +106,18 @@ export default function Notifications() {
     qa === 'tab-message'  ? 'message'  :
     qa === 'tab-system'   ? 'system'   : 'all'
 
+  const { isSubscribed } = usePlanAccess()
+
+  // 미구독자는 결제·플랜 관련 시스템 알림 제외 (정합성)
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    if (qa === 'empty') return []
+    return isSubscribed
+      ? INITIAL_NOTIFICATIONS
+      : INITIAL_NOTIFICATIONS.filter(n => n.type !== 'system')
+  })
+
   const [filter, setFilter] = useState<FilterValue>(initialFilter)
   const [page, setPage] = useState(1)
-  const [notifications, setNotifications] = useState<Notification[]>(
-    qa === 'empty' ? [] : INITIAL_NOTIFICATIONS
-  )
 
   const filtered = useMemo(
     () => filter === 'all' ? notifications : notifications.filter(n => n.type === filter),
