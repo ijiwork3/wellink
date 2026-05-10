@@ -19,8 +19,8 @@ import {
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
-const tabs = ['브랜드 프로필', '팀 관리', '트래킹 설정', '구독 관리'] as const
-type TabName = typeof tabs[number]
+// 탭 라벨 = TabItem.value (한국어 식별자, 단일 출처)
+type TabName = '브랜드 프로필' | '팀 관리' | '트래킹 설정' | '구독 관리'
 const TAB_ITEMS: readonly TabItem<TabName>[] = [
   { value: '브랜드 프로필', label: '브랜드 프로필', icon: <User size={14} aria-hidden="true" /> },
   { value: '팀 관리',       label: '팀 관리',       icon: <Users size={14} aria-hidden="true" /> },
