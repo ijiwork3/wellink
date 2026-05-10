@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, XCircle, RefreshCw, ExternalLink, Users, Trash2, Shield, Globe, Code2, BarChart2, Settings, Target } from 'lucide-react'
+import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, RefreshCw, ExternalLink, Users, Trash2, Shield, Globe, Code2, BarChart2, Settings, Target } from 'lucide-react'
 
 function InstagramIcon({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
@@ -11,12 +11,22 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
     </svg>
   )
 }
-import { Modal, AlertModal, TIMER_MS } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
+import {
+  Modal, AlertModal, TIMER_MS, useToast,
+  Tabs, ErrorState, SkeletonCard, SkeletonRow,
+  type TabItem,
+} from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
 const tabs = ['브랜드 프로필', '팀 관리', '트래킹 설정', '구독 관리'] as const
+type TabName = typeof tabs[number]
+const TAB_ITEMS: readonly TabItem<TabName>[] = [
+  { value: '브랜드 프로필', label: '브랜드 프로필', icon: <User size={14} aria-hidden="true" /> },
+  { value: '팀 관리',       label: '팀 관리',       icon: <Users size={14} aria-hidden="true" /> },
+  { value: '트래킹 설정',    label: '트래킹 설정',    icon: <Settings size={14} aria-hidden="true" /> },
+  { value: '구독 관리',      label: '구독 관리',      icon: <Hash size={14} aria-hidden="true" />, trailing: <ExternalLink size={12} className="ml-0.5 opacity-70" aria-hidden="true" /> },
+]
 
 type MemberRole = 'Owner' | 'Manager' | 'Viewer'
 
@@ -50,7 +60,7 @@ export default function MyPage() {
   const qa = useQAMode()
   const { planLabel, isSubscribed, plan } = usePlanAccess()
 
-  const [activeTab, setActiveTab] = useState<typeof tabs[number]>(
+  const [activeTab, setActiveTab] = useState<TabName>(
     qa === 'tab-settings'  ? '구독 관리' :
     qa === 'tab-team'      ? '팀 관리' :
     qa === 'tab-tracking'  ? '트래킹 설정' :
@@ -112,63 +122,32 @@ export default function MyPage() {
   const [confirmPw, setConfirmPw] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
-  useEffect(() => {
-    if (qa === 'modal-password') { setPwModal(true); return }
-    if (qa === 'modal-withdraw') { setWithdrawModal(true); return }
-    if (qa === 'tab-settings')   { setActiveTab('구독 관리'); return }
-    if (qa === 'tab-team')       { setActiveTab('팀 관리'); return }
-    if (qa === 'tab-tracking')   { setActiveTab('트래킹 설정'); return }
-  }, [qa])
+  // qa 모드 (modal-password / modal-withdraw / tab-*)는 useState 초기값에서 이미 처리됨 — useEffect 동기화 중복 제거
 
-  // QA: 로딩 상태
+  // QA: 로딩 상태 — 공통 SkeletonCard / SkeletonRow 사용
   if (qa === 'loading') {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between gap-3">
           <div className="space-y-2">
-            <div className="h-6 w-24 bg-gray-200 rounded-full" />
-            <div className="h-3 w-48 bg-gray-100 rounded-full" />
+            <div className="h-6 w-24 bg-gray-100 animate-pulse rounded-full" />
+            <div className="h-3 w-48 bg-gray-100 animate-pulse rounded-full" />
           </div>
-          <div className="h-4 w-16 bg-gray-100 rounded-full" />
+          <div className="h-4 w-16 bg-gray-100 animate-pulse rounded-full" />
         </div>
-        <div className="flex gap-1">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-28 bg-gray-200 rounded-xl" />)}
+        <div className="flex gap-1 flex-wrap">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-28 bg-gray-100 animate-pulse rounded-xl" />)}
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-            <div className="space-y-1.5">
-              <div className="h-4 w-28 bg-gray-200 rounded-full" />
-              <div className="h-3 w-44 bg-gray-100 rounded-full" />
-            </div>
-            <div className="h-8 w-24 bg-gray-200 rounded-xl" />
-          </div>
-          <div className="p-6 space-y-8">
-            <div className="space-y-3">
-              <div className="h-4 w-20 bg-gray-200 rounded-full" />
-              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
-                <div className="h-12 bg-gray-100 rounded-xl" />
-                <div className="h-12 bg-gray-100 rounded-xl" />
-              </div>
-            </div>
-          </div>
+        <SkeletonCard height={180} />
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          {[1, 2, 3].map(i => <div key={i} className="px-6"><SkeletonRow cols={4} /></div>)}
         </div>
       </div>
     )
   }
 
   if (qa === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <XCircle size={48} className="text-red-300" aria-hidden="true" />
-        <div className="text-center">
-          <p className="text-base font-semibold text-gray-900">계정 정보를 불러올 수 없습니다</p>
-          <p className="text-sm text-gray-500 mt-1">잠시 후 다시 시도해 주세요.</p>
-        </div>
-        <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors">
-          <RefreshCw size={14} aria-hidden="true" />다시 시도
-        </button>
-      </div>
-    )
+    return <ErrorState message="계정 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
 
   const handleSave = () => {
@@ -213,27 +192,16 @@ export default function MyPage() {
         </button>
       </div>
 
-      {/* 탭 */}
-      <div className="flex gap-1 flex-wrap">
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-medium transition-colors ${
-              activeTab === tab
-                ? 'bg-brand-green text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {tab === '브랜드 프로필' && <User size={14} aria-hidden="true" />}
-            {tab === '팀 관리' && <Users size={14} aria-hidden="true" />}
-            {tab === '트래킹 설정' && <Settings size={14} aria-hidden="true" />}
-            {tab === '구독 관리' && <Hash size={14} aria-hidden="true" />}
-            {tab}
-            {tab === '구독 관리' && <ExternalLink size={12} className="ml-0.5 opacity-70" aria-hidden="true" />}
-          </button>
-        ))}
-      </div>
+      {/* 탭 — 공통 Tabs (variant='pill', scrollable=false → wrap) */}
+      <Tabs<TabName>
+        variant="pill"
+        scrollable={false}
+        gap={1}
+        items={TAB_ITEMS}
+        value={activeTab}
+        onChange={setActiveTab}
+        ariaLabel="마이페이지 섹션"
+      />
 
       {/* ── 팀 관리 탭 ── */}
       {activeTab === '팀 관리' && (
