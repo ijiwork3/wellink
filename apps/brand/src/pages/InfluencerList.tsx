@@ -355,7 +355,11 @@ export default function InfluencerList() {
   }, [showToast])
 
   const filtered = useMemo(() => influencers.filter(inf => {
-    if (search && !inf.name.includes(search)) return false
+    if (search) {
+      const q = search.toLowerCase()
+      const hit = inf.name.toLowerCase().includes(q) || inf.category.some(c => c.toLowerCase().includes(q))
+      if (!hit) return false
+    }
     if (category && !inf.category.includes(category as InfluencerCat)) return false
     if (engagementFilter === 'high' && inf.engagement < ENGAGEMENT_THRESHOLD.high) return false
     if (engagementFilter === 'mid' && (inf.engagement < ENGAGEMENT_THRESHOLD.low || inf.engagement >= ENGAGEMENT_THRESHOLD.high)) return false
@@ -507,7 +511,7 @@ export default function InfluencerList() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
               type="text"
-              placeholder="이름으로 검색..."
+              placeholder="이름·카테고리로 검색..."
               aria-label="인플루언서 검색"
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
