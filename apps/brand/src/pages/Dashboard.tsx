@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Megaphone, Users, Activity, Clock, Bell,
+  Megaphone, Users, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Search,
-  Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
-  ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw,
+  BarChart3, Sparkles, Lock,
+  ChevronLeft, ChevronRight, AlertTriangle, X,
   User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent
 } from 'lucide-react'
 import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
@@ -43,12 +43,6 @@ const URGENT_ITEMS: UrgentItem[] = [
   { id: 'deadline', text: '봄 요가 프로모션 마감이 3일 남았습니다. 추가 인플루언서 초대를 권장합니다.', cta: '캠페인 확인', route: '/campaigns/1' },
 ]
 
-/* ── 이번 달 성과 하이라이트 ── */
-const HIGHLIGHTS = [
-  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', username: 'changmin_fit', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-100' },
-  { icon: <RefreshCw size={14} aria-hidden="true" />, label: '재협업 추천', username: 'lina_wellness', name: '박리나', value: '전환율 4.2%', sub: '지난 캠페인 기준', color: 'text-brand-green-text', bg: 'bg-brand-green/5' },
-]
-
 /* ── KPI 데이터 ── */
 const kpis = [
   {
@@ -64,13 +58,6 @@ const kpis = [
     sub: '총 참여 인원',
     trend: 20,
     icon: <Users size={16} aria-hidden="true" />,
-  },
-  {
-    title: '이번달 도달',
-    value: fmtNumber(482000),
-    sub: '누적 임프레션',
-    trend: 8.3,
-    icon: <Activity size={16} aria-hidden="true" />,
   },
   {
     title: '검수대기',
@@ -116,63 +103,10 @@ const AD_METRICS = [
   { label: '평균 CPC',     value: '866원',               change: -0.7,  icon: <Calculator size={14} aria-hidden="true" />, hint: '클릭 1회당 평균 광고 비용. 낮을수록 효율 우수.' },
 ]
 
-/* ── 콘텐츠 성과 — 기간별 ── */
-type ContentPeriod = '일간' | '주간' | '월간'
-
-const contentByPeriod: Record<ContentPeriod, { label: string; value: number; change: number; sparkline: number[] }[]> = {
-  일간: [
-    { label: '조회수', value: 3400,   change: 5.2,  sparkline: [28,30,27,32,29,31,35,30,33,32,36,31,34,38,33,36,34,38,35,40,36,38,37,40,38,35,37,39,36,34] },
-    { label: '좋아요', value: 263,    change: 3.1,  sparkline: [22,24,21,26,23,25,28,24,27,25,29,24,27,30,26,28,27,30,28,32,29,30,29,31,30,28,29,31,28,26] },
-    { label: '댓글',   value: 47,     change: -8.3, sparkline: [52,50,53,48,51,49,46,50,47,49,45,48,46,43,47,44,46,43,41,44,42,44,43,45,43,41,42,44,41,47] },
-    { label: '공유',   value: 27,     change: 12.5, sparkline: [18,19,17,20,19,21,22,20,22,21,23,21,23,24,22,24,23,25,23,26,24,25,25,26,25,24,25,26,24,27] },
-  ],
-  주간: [
-    { label: '조회수', value: 24300,  change: 12,   sparkline: [0,0,18,22,28,24,34,30,36,38,34,42] },
-    { label: '좋아요', value: 1842,   change: 8.5,  sparkline: [0,0,14,18,22,19,26,24,28,30,27,32] },
-    { label: '댓글',   value: 326,    change: -5.2, sparkline: [0,0,30,28,34,26,22,20,18,16,14,18] },
-    { label: '공유',   value: 189,    change: 22,   sparkline: [0,0,8,10,14,11,17,16,19,21,18,24] },
-  ],
-  월간: [
-    { label: '조회수', value: 104800, change: 18.4, sparkline: [0,0,0,0,0,0,0,0,62,74,90,112] },
-    { label: '좋아요', value: 7940,   change: 11.2, sparkline: [0,0,0,0,0,0,0,0,55,62,74,90]  },
-    { label: '댓글',   value: 1408,   change: -2.1, sparkline: [0,0,0,0,0,0,0,0,48,44,40,42]  },
-    { label: '공유',   value: 814,    change: 31.6, sparkline: [0,0,0,0,0,0,0,0,32,46,58,72]  },
-  ],
-}
-
-
-/* ── Sparkline SVG ── */
-function Sparkline({ data, color, width = 80, height = 24 }: { data: number[]; color: string; width?: number; height?: number }) {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
-  const range = max - min || 1
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width
-      const y = height - ((v - min) / range) * (height - 4) - 2
-      return `${x},${y}`
-    })
-    .join(' ')
-
-  return (
-    <svg width={width} height={height} className="shrink-0" aria-hidden="true">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 export default function Dashboard() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const [showAllNotifications, setShowAllNotifications] = useState(false)
-  const [contentPeriod, setContentPeriod] = useState<ContentPeriod>('주간')
   const device = useDeviceMode()
   const isPhone = device === 'phone'
   const { plan, planLabel, isSubscribed } = usePlanAccess()
@@ -350,20 +284,17 @@ export default function Dashboard() {
           </div>
           <Skeleton shape="rect" width={112} height={36} />
         </div>
-        {/* 요약 배너 */}
-        <Skeleton shape="card" height={64} />
-        {/* KPI 4개 */}
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1, 2, 3, 4].map(i => <SkeletonCard key={i} height={128} />)}
+        {/* KPI 3개 */}
+        <div className="grid grid-cols-2 @lg:grid-cols-3 gap-3 @sm:gap-4">
+          {[1, 2, 3].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
-        {/* 섹션 2개 */}
+        {/* 프로필 인사이트 + 광고 성과 */}
+        <SkeletonCard height={160} />
+        <SkeletonCard height={200} />
+        {/* 캠페인 + 알림 */}
         <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
           <SkeletonCard className="@md:col-span-2" height={192} />
           <SkeletonCard height={192} />
-        </div>
-        {/* 콘텐츠 성과 */}
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1, 2, 3, 4].map(i => <SkeletonCard key={i} height={96} />)}
         </div>
       </div>
     )
@@ -386,11 +317,10 @@ export default function Dashboard() {
           </button>
         </div>
         {/* 0값 KPI — Card 컴포넌트로 통일 (정상 KPI와 동일 마크업) */}
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
           {[
             { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} aria-hidden="true" /> },
             { title: '진행중 인플루언서', value: '0', sub: '참여 인원 없음', icon: <Users size={16} aria-hidden="true" /> },
-            { title: '이번달 도달', value: '0', sub: '임프레션 없음', icon: <Activity size={16} aria-hidden="true" /> },
             { title: '검수대기', value: '0', sub: '콘텐츠 대기 없음', icon: <Clock size={16} aria-hidden="true" /> },
           ].map(k => (
             <Card key={k.title} padding="md" className="shadow-sm">
@@ -493,21 +423,8 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* ── 요약 배너 ── */}
-      <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 flex items-start gap-4 shadow-sm">
-        <div className="w-1 self-stretch rounded-full bg-brand-green shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-gray-500 mb-1">이번 주 현황</p>
-          <p className="text-base leading-relaxed text-gray-700">
-            봄 요가 프로모션 모집률이 <span className="font-semibold text-gray-900">53%</span>에 도달했습니다.
-            마감까지 <span className="font-semibold text-rose-500">{getDDay('2026-04-28').label}</span>이므로 추가 인플루언서 초대를 권장합니다.
-            이번 주 콘텐츠 조회수는 전주 대비 12% 증가 중입니다.
-          </p>
-        </div>
-      </div>
-
-      {/* ── KPI 카드 ── */}
-      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+      {/* ── KPI 카드 (3개) ── */}
+      <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
         {kpis.map(kpi => {
           const isPositive = kpi.trend >= 0
           return (
@@ -747,85 +664,6 @@ export default function Dashboard() {
               </button>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* ── 이번 달 성과 하이라이트 ── */}
-      <div className="grid grid-cols-1 @md:grid-cols-2 gap-3">
-        {HIGHLIGHTS.map(h => (
-          <div key={h.label} className={`${h.bg} rounded-xl border border-gray-100 shadow-sm px-5 py-4 flex items-start gap-4`}>
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white shadow-sm ${h.color} mt-0.5`}>
-              {h.icon}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm text-gray-500 mb-1">{h.label}</p>
-              {/* @username + value: 상하 분리 — truncate 금지 정책 */}
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-base font-bold text-gray-900 break-all leading-snug">@{h.username}</p>
-                <span className={`text-base font-semibold ${h.color} shrink-0 ml-1`}>{h.value}</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-0.5">{h.name}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{h.sub}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── 콘텐츠 성과 ── */}
-      <div className={isPlanLocked ? 'relative' : ''}>
-        {isPlanLocked && (
-          <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
-            <Lock size={24} className="text-amber-400" aria-hidden="true" />
-            <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
-            <button type="button" onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
-          </div>
-        )}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-gray-900">콘텐츠 성과</h2>
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
-            {(['일간', '주간', '월간'] as ContentPeriod[]).map(p => (
-              <button type="button"
-                key={p}
-                onClick={() => setContentPeriod(p)}
-                tabIndex={isPlanLocked ? -1 : 0}
-                className={`text-sm px-2.5 py-1 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                  contentPeriod === p ? 'bg-white shadow-sm font-semibold text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {contentByPeriod[contentPeriod].map(item => {
-            const isPositive = item.change >= 0
-            const lineColor = isPositive ? 'var(--color-sparkline-success)' : 'var(--color-sparkline-alert)'
-            return (
-              <div
-                key={item.label}
-                className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 transition-all duration-200 hover:shadow-md"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gray-400">
-                      {item.label === '조회수' ? <Eye size={14} aria-hidden="true" /> : item.label === '좋아요' ? <Heart size={14} aria-hidden="true" /> : item.label === '댓글' ? <MessageCircle size={14} aria-hidden="true" /> : <BarChart3 size={14} aria-hidden="true" />}
-                    </span>
-                    <span className="text-sm text-gray-500 font-medium">{item.label}</span>
-                  </div>
-                  <span
-                    className={`text-sm font-medium ${isPositive ? 'text-brand-green-text' : 'text-red-500'}`}
-                  >
-                    {fmtRate(item.change)}
-                  </span>
-                </div>
-                <div className="flex items-end justify-between">
-                  <span className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>{fmtNumber(item.value)}</span>
-                  <Sparkline data={item.sparkline} color={lineColor} />
-                </div>
-              </div>
-            )
-          })}
         </div>
       </div>
 
