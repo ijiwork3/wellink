@@ -572,7 +572,7 @@ export default function InfluencerManage() {
                 <div className="flex items-center justify-between gap-2" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                     {inf.groups.map(g => (
-                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green whitespace-nowrap">
+                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green-text whitespace-nowrap">
                         {g}
                         <button onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
                           <X size={11} aria-hidden="true" />
@@ -599,7 +599,7 @@ export default function InfluencerManage() {
                             ? (
                               <div className="px-3 py-2 text-sm text-gray-400">
                                 생성된 그룹이 없습니다.
-                                <button onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }} className="block text-brand-green mt-1 hover:underline">새 그룹 만들기</button>
+                                <button onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }} className="block text-brand-green-text mt-1 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">새 그룹 만들기</button>
                               </div>
                             ) : (
                               <div className="px-3 py-2 text-sm text-gray-400">모든 그룹에 소속됨</div>
@@ -644,7 +644,7 @@ export default function InfluencerManage() {
                     <p className="text-base text-gray-500 mb-3">생성된 그룹이 없습니다.</p>
                     <button
                       onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }}
-                      className="text-base text-brand-green font-medium hover:underline"
+                      className="text-base text-brand-green-text font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                     >
                       새 그룹 만들기
                     </button>
@@ -796,7 +796,7 @@ export default function InfluencerManage() {
                           href={`https://instagram.com/${inf.instagramId}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-0.5 text-sm text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                          className="flex items-center gap-0.5 text-sm text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                         >
                           <ExternalLink size={11} aria-hidden="true" />
                           인스타 바로가기

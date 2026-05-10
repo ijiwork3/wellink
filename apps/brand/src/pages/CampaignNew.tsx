@@ -338,9 +338,9 @@ export default function CampaignNew() {
           </Field>
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2.5 text-sm text-blue-700">
+        <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-sm text-blue-800">
           <p className="font-semibold mb-0.5">배송형 캠페인 안내</p>
-          <p className="text-blue-600">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
+          <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
         </div>
       </Section>
 
@@ -363,7 +363,7 @@ export default function CampaignNew() {
           {form.keywords.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {form.keywords.map(k => (
-                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm">
+                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
                   {k}
                   <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={11} /></button>
                 </span>

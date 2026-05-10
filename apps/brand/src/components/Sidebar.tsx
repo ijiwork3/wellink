@@ -77,11 +77,12 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
 
       {/* 구독 만료 배너 */}
       {isGated && (
-        <div className="mx-3 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-base text-amber-700 font-medium leading-snug">{planLabel}</p>
+        <div className="mx-3 mb-2 px-3 py-2 bg-amber-100 border border-amber-200 rounded-lg">
+          <p className="text-base text-amber-800 font-medium leading-snug">{planLabel}</p>
           <button
+            type="button"
             onClick={() => navigate('/subscription')}
-            className="text-base text-amber-600 hover:text-amber-800 underline mt-0.5 focus-visible:outline-none"
+            className="text-base text-amber-700 hover:text-amber-900 underline mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >
             구독 갱신하기 →
           </button>

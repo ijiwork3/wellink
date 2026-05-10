@@ -1111,7 +1111,7 @@ export default function CampaignDetail() {
           <div className="flex items-center gap-1.5 flex-wrap">
             <button onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700"><Edit2 size={13} />정보 변경</button>
             {canCancelCampaign && (
-              <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 text-base text-orange-700"><X size={13} />캠페인 취소</button>
+              <button onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-100 hover:bg-orange-200 text-base text-orange-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><X size={13} />캠페인 취소</button>
             )}
             {canDeleteCampaign ? (
               <button onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600"><Trash2 size={13} />삭제</button>

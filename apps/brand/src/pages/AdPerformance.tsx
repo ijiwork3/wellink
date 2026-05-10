@@ -403,7 +403,7 @@ export default function AdPerformance() {
   return (
     <div className="space-y-6">
       {isZero && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm px-4 py-2 rounded-xl">
+        <div className="bg-blue-100 border border-blue-200 text-blue-800 text-sm px-4 py-2 rounded-xl">
           광고가 방금 시작되었습니다. 데이터 집계까지 최대 24시간이 소요될 수 있습니다.
         </div>
       )}

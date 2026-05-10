@@ -8,9 +8,9 @@ export default function InstagramGlobalBanner() {
   if (connected) return null
 
   return (
-    <div className="bg-gradient-to-r from-amber-50 to-pink-50 border-b border-amber-200">
+    <div className="bg-gradient-to-r from-amber-100 to-pink-100 border-b border-amber-200">
       <div className="max-w-[1080px] mx-auto px-4 sm:px-8 py-2.5 flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center flex-shrink-0">
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shrink-0" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <circle cx="12" cy="12" r="4" />
@@ -22,8 +22,9 @@ export default function InstagramGlobalBanner() {
           <span className="text-gray-600 ml-1.5 hidden sm:inline">분석·성과 기능을 사용하려면 연결이 필요해요.</span>
         </p>
         <button
+          type="button"
           onClick={() => navigate('/analytics/profile')}
-          className="text-sm sm:text-base font-semibold text-white px-3 sm:px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90 flex-shrink-0"
+          className="text-sm sm:text-base font-semibold text-white px-3 sm:px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
           style={{ background: 'var(--gradient-instagram)' }}
         >
           연결하기

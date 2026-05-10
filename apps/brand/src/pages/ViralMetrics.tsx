@@ -599,7 +599,7 @@ export default function ViralMetrics() {
 function GradePill({ grade }: { grade: ContentGrade }) {
   const cls = grade === 'A' ? 'bg-brand-green-bg text-brand-green-text'
     : grade === 'B' ? 'bg-amber-100 text-amber-800'
-    : grade === 'processing' ? 'bg-blue-50 text-blue-600'
+    : grade === 'processing' ? 'bg-blue-100 text-blue-700'
     : 'bg-gray-100 text-gray-600'
   const label = grade === 'processing' ? '산정 중' : grade
   return <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${cls}`}>{label}</span>
@@ -822,7 +822,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
               )}
             </div>
           ) : (
-            <div className="bg-blue-50 rounded-xl px-4 py-3 text-sm text-blue-600">
+            <div className="bg-blue-100 rounded-xl px-4 py-3 text-sm text-blue-700">
               점수 산정 중입니다. 게시 후 일정 시간이 지나면 자동으로 산출됩니다.
             </div>
           )}
