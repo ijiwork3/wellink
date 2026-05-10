@@ -217,8 +217,9 @@ export default function MyPage() {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setInviteModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Users size={14} aria-hidden="true" />
                 멤버 초대
@@ -246,15 +247,17 @@ export default function MyPage() {
                 {member.role !== 'Owner' && (
                   <div className="flex items-center gap-2 shrink-0">
                     <button
+                      type="button"
                       onClick={() => { setChangeRoleModal(member); setChangeRoleValue(member.role) }}
-                      className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
                       <Shield size={12} aria-hidden="true" />
                       권한 변경
                     </button>
                     <button
+                      type="button"
                       onClick={() => setDeleteModal(member)}
-                      className="flex items-center gap-1 text-sm text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                      className="flex items-center gap-1 text-sm text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
                       <Trash2 size={12} aria-hidden="true" />
                       삭제
@@ -326,7 +329,7 @@ export default function MyPage() {
                 { key: 'utm_content', value: '{인플루언서ID 자동}', editable: false, desc: '인플루언서별 자동 생성' },
               ].map(row => (
                 <div key={row.key} className="grid grid-cols-[140px_1fr_auto] items-center gap-3">
-                  <code className="text-sm font-mono text-brand-green bg-brand-green/5 px-2 py-1 rounded">{row.key}</code>
+                  <code className="text-sm font-mono text-brand-green-text bg-brand-green/5 px-2 py-1 rounded">{row.key}</code>
                   {row.editable ? (
                     <input
                       type="text"
@@ -343,8 +346,9 @@ export default function MyPage() {
               ))}
             </div>
             <button
+              type="button"
               onClick={() => showToast('UTM 기본값이 저장되었습니다.', 'success')}
-              className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
+              className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Save size={14} aria-hidden="true" />
               저장
@@ -359,8 +363,8 @@ export default function MyPage() {
                 GA4 연동
               </h2>
               {ga4Connected ? (
-                <span className="flex items-center gap-1 text-sm text-brand-green font-medium">
-                  <CheckCircle2 size={13} aria-hidden="true" />
+                <span className="flex items-center gap-1 text-sm text-brand-green-text font-medium">
+                  <CheckCircle2 size={13} className="text-brand-green" aria-hidden="true" />
                   연결됨
                 </span>
               ) : (
@@ -380,6 +384,7 @@ export default function MyPage() {
                   className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
                 />
                 <button
+                  type="button"
                   disabled={ga4Saving || ga4Id.trim() === ''}
                   onClick={() => {
                     if (!/^G-[A-Z0-9]{6,}$/.test(ga4Id.trim())) {
@@ -663,14 +668,16 @@ export default function MyPage() {
               </div>
               <div className="flex gap-2 mt-3">
                 <button
+                  type="button"
                   onClick={() => setPwModal(true)}
-                  className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   비밀번호 변경하기
                 </button>
                 <button
+                  type="button"
                   onClick={() => setWithdrawModal(true)}
-                  className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors"
+                  className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   회원 탈퇴
                 </button>
@@ -723,8 +730,8 @@ export default function MyPage() {
                   SNS 연동 설정
                 </h3>
                 {snsConnected && (
-                  <span className="flex items-center gap-1 text-sm text-brand-green font-medium">
-                    <CheckCircle2 size={13} aria-hidden="true" />
+                  <span className="flex items-center gap-1 text-sm text-brand-green-text font-medium">
+                    <CheckCircle2 size={13} className="text-brand-green" aria-hidden="true" />
                     연결됨
                   </span>
                 )}
@@ -740,8 +747,9 @@ export default function MyPage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setSnsModal(true)}
-                  className={`px-5 py-2.5 rounded-xl text-base font-medium transition-colors ${
+                  className={`px-5 py-2.5 rounded-xl text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                     snsConnected
                       ? 'border border-gray-200 text-gray-700 hover:bg-gray-50'
                       : 'bg-brand-green text-white hover:bg-brand-green-hover'
