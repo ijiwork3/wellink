@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
 import {
-  CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState,
+  CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState, EmptyState,
   fmtFollowers as formatFollowers, AVATAR_COLORS,
   getEngagementColor, getAuthenticColor, ENGAGEMENT_THRESHOLD,
   INFLUENCER_SORT_OPTIONS, DEFAULT_INFLUENCER_SORT, sortInfluencers,
@@ -569,15 +569,20 @@ export default function InfluencerList() {
       {/* 모바일/태블릿 카드 뷰 — @xl(768px) 미만 */}
       <div className="@xl:hidden @container">
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
-            <Search size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-base text-gray-500 font-medium">
-              {hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다.' : '검색 조건에 맞는 인플루언서가 없습니다.'}
-            </p>
-            <button
-              onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
-              className="mt-3 text-base text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
-            >필터 초기화</button>
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+            <EmptyState
+              size="lg"
+              variant={hasActiveFilters ? 'filter' : 'search'}
+              title={hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다'}
+              description={hasActiveFilters ? '필터를 초기화하거나 다른 조건을 시도해 보세요.' : '다른 키워드로 검색해 보세요.'}
+              action={
+                <button
+                  type="button"
+                  onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
+                  className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >필터 초기화</button>
+              }
+            />
           </div>
         ) : (
           <>
@@ -682,18 +687,20 @@ export default function InfluencerList() {
           <tbody className="divide-y divide-gray-50">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={11} className="py-16 text-center">
-                  <Search size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-                  <p className="text-base text-gray-500 font-medium">
-                    {hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다.' : '검색 조건에 맞는 인플루언서가 없습니다.'}
-                  </p>
-                  <p className="text-base text-gray-500 mt-1">필터를 조정해보세요.</p>
-                  <button
-                    onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
-                    className="mt-3 text-base text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    필터 초기화
-                  </button>
+                <td colSpan={11} className="p-0">
+                  <EmptyState
+                    size="lg"
+                    variant={hasActiveFilters ? 'filter' : 'search'}
+                    title={hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다'}
+                    description="필터를 조정해 보세요."
+                    action={
+                      <button
+                        type="button"
+                        onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
+                        className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >필터 초기화</button>
+                    }
+                  />
                 </td>
               </tr>
             ) : paginated.map(inf => (
