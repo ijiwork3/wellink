@@ -42,7 +42,7 @@ const AD_SECTION_HINTS_KO = {
 }
 
 /** Meta 광고 캠페인 + 광고세트 + 소재 3단계 계층 더미 (원본 CampaignHierarchy 동등, 100개) */
-type Ad = { id: string; adId: string; adName: string; message: string; thumbnailUrl?: string; status: string; spend: number; roas: number; reach: number; clicks: number; ctr: number; cpc: number }
+type Ad = { id: string; adId: string; adName: string; message: string; thumbnailUrl?: string; status: string; spend: number; roas: number; results: number; costPerResult: number; reach: number; clicks: number; ctr: number; cpc: number }
 type AdSet = { id: string; name: string; status: string; spend: number; roas: number; results: number; costPerResult: number; reach: number; clicks: number; ctr: number; cpc: number; ads: Ad[] }
 type CampaignHierarchy = { campaignId: string; campaignName: string; objective: string; status: '게재중' | '일시중지' | '종료'; totalSpend: number; roas: number; totalResults: number; costPerResult: number; totalReach: number; totalClicks: number; ctr: number; cpc: number; adSets: AdSet[] }
 const OBJECTIVES = ['인지도', '전환', '트래픽'] as const
@@ -72,6 +72,7 @@ const buildCampaignHierarchy = (count: number): CampaignHierarchy[] =>
       const setReach = Math.floor(totalReach / adSetCount)
       const setClicks = Math.floor(totalClicks / adSetCount)
       const adCount = 1 + ((i + j) % 3)
+      const setResults = Math.floor(totalResults / adSetCount)
       const ads: Ad[] = Array.from({ length: adCount }, (_, k) => ({
         id: `ad-${i}-${j}-${k}`,
         adId: `ad-${i}-${j}-${k}`,
@@ -80,6 +81,8 @@ const buildCampaignHierarchy = (count: number): CampaignHierarchy[] =>
         status: isClosed ? 'completed' : isPaused ? 'paused' : 'active',
         spend: Math.floor(setSpend / adCount),
         roas,
+        results: Math.floor(setResults / adCount),
+        costPerResult,
         reach: Math.floor(setReach / adCount),
         clicks: Math.floor(setClicks / adCount),
         ctr,
@@ -596,7 +599,7 @@ export default function AdPerformance() {
                                           { k: '지출', v: fmtPrice(set.spend) },
                                           { k: 'ROAS', v: `${set.roas}x` },
                                           { k: '결과', v: fmtNumber(set.results) },
-                                          { k: '결과당비용', v: fmtPrice(set.costPerResult) },
+                                          { k: '결과당 비용', v: fmtPrice(set.costPerResult) },
                                           { k: '도달', v: fmtNumber(set.reach) },
                                           { k: '클릭', v: fmtNumber(set.clicks) },
                                           { k: 'CTR', v: `${set.ctr}%` },
@@ -627,6 +630,8 @@ export default function AdPerformance() {
                                               <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 flex-wrap">
                                                 <span>지출 <strong className="text-gray-900">{fmtPrice(ad.spend)}</strong></span>
                                                 <span>ROAS <strong className={getRoasColor(ad.roas)}>{ad.roas}x</strong></span>
+                                                <span>결과 <strong className="text-gray-900">{fmtNumber(ad.results)}</strong></span>
+                                                <span>결과당 비용 <strong className="text-gray-900">{fmtPrice(ad.costPerResult)}</strong></span>
                                                 <span>도달 <strong className="text-gray-900">{fmtNumber(ad.reach)}</strong></span>
                                                 <span>클릭 <strong className="text-gray-900">{fmtNumber(ad.clicks)}</strong></span>
                                                 <span>CTR <strong className="text-gray-900">{ad.ctr}%</strong></span>
