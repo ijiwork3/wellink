@@ -265,7 +265,7 @@ export default function ViralMetrics() {
             title="바이럴 콘텐츠 데이터가 없습니다"
             description="인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다."
             action={
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => navigate('/campaigns')}
                 className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -392,7 +392,7 @@ export default function ViralMetrics() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
-            <h3 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h3>
+            <h2 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h2>
             <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={11} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <GradeDonut data={viralContentData} />
@@ -438,10 +438,10 @@ export default function ViralMetrics() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h3 className="text-base font-semibold text-gray-900">콘텐츠별 바이럴 성과</h3>
+                <h2 className="text-base font-semibold text-gray-900">콘텐츠별 바이럴 성과</h2>
                 <p className="text-sm text-gray-500 mt-0.5">총 {sorted.length}건 · {getDateLabel(VIEW_MODE_TO_PERIOD[viewMode], dateOffset)}</p>
               </div>
-              <button
+              <button type="button"
                 onClick={() => showToast('CSV 파일 다운로드를 시작합니다.', 'success')}
                 className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -741,7 +741,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
 
           {/* 주요 지표 그리드 */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">주요 지표</h4>
+            <h2 className="text-sm font-semibold text-gray-700 mb-3">주요 지표</h2>
             <div className="grid grid-cols-3 gap-2">
               {metrics.map(m => (
                 <div key={m.label} className="bg-gray-50 rounded-xl p-3">
@@ -757,7 +757,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
           {/* 점수 섹션 */}
           {content.grade !== 'processing' ? (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">성과 점수</h4>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">성과 점수</h2>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="bg-gray-50 rounded-xl p-3">
                   <div className="flex items-center gap-1 mb-1">

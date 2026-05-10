@@ -78,14 +78,14 @@ export default function PaymentSuccess() {
 
         {/* CTA */}
         <div className="flex flex-col gap-3">
-          <button
+          <button type="button"
             type="button"
             onClick={() => navigate('/dashboard')}
             className="w-full py-3 bg-brand-green text-white rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             대시보드로 이동
           </button>
-          <button
+          <button type="button"
             type="button"
             onClick={() => navigate('/subscription')}
             className="w-full py-3 border border-gray-200 text-gray-700 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

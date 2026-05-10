@@ -515,7 +515,7 @@ export default function InfluencerList() {
               className="w-full pl-9 pr-8 py-2 text-base border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-all duration-150"
             />
             {searchInput && (
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => { setSearchInput(''); setSearch(''); setPage(1) }}
                 aria-label="검색어 초기화"
@@ -525,7 +525,7 @@ export default function InfluencerList() {
               </button>
             )}
           </div>
-          <button
+          <button type="button"
             type="button"
             onClick={() => { setSearch(searchInput); setPage(1) }}
             className="shrink-0 px-4 py-2 bg-brand-green text-white text-base font-medium rounded-xl hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -547,7 +547,7 @@ export default function InfluencerList() {
 
       {/* fixed 플로팅 스크롤 버튼 — 테이블 visible 영역 중앙에 동적 배치 */}
       {btnTop !== null && canScrollLeft && (
-        <button
+        <button type="button"
           type="button"
           onClick={() => scrollTable('left')}
           aria-label="왼쪽으로 스크롤"
@@ -558,7 +558,7 @@ export default function InfluencerList() {
         </button>
       )}
       {btnTop !== null && canScrollRight && (
-        <button
+        <button type="button"
           type="button"
           onClick={() => scrollTable('right')}
           aria-label="오른쪽으로 스크롤"
@@ -579,7 +579,7 @@ export default function InfluencerList() {
               title={hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다'}
               description={hasActiveFilters ? '필터를 초기화하거나 다른 조건을 시도해 보세요.' : '다른 키워드로 검색해 보세요.'}
               action={
-                <button
+                <button type="button"
                   type="button"
                   onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                   className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -591,7 +591,7 @@ export default function InfluencerList() {
           <>
             <div className="grid grid-cols-1 @md:grid-cols-2 gap-3">
               {paginated.map(inf => (
-                <button
+                <button type="button"
                   key={inf.id}
                   type="button"
                   onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
@@ -605,7 +605,7 @@ export default function InfluencerList() {
                       <p className="text-base font-semibold text-gray-900 truncate">@{inf.instagramId ?? inf.name}</p>
                       <p className="text-base text-gray-500 truncate">{inf.name}</p>
                     </div>
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
@@ -641,7 +641,7 @@ export default function InfluencerList() {
                     ) : proposableCampaigns.length === 0 ? (
                       <span className="text-base text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed whitespace-nowrap">제안하기</span>
                     ) : (
-                      <button
+                      <button type="button"
                         type="button"
                         onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
                         className="text-base border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:border-gray-400 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
@@ -697,7 +697,7 @@ export default function InfluencerList() {
                     title={hasActiveFilters ? '필터 조건에 맞는 인플루언서가 없습니다' : '검색 조건에 맞는 인플루언서가 없습니다'}
                     description="필터를 조정해 보세요."
                     action={
-                      <button
+                      <button type="button"
                         type="button"
                         onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                         className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -726,7 +726,7 @@ export default function InfluencerList() {
                       <span className="block text-base font-semibold text-gray-900 whitespace-nowrap">@{inf.instagramId ?? inf.name}</span>
                       <span className="block text-base text-gray-500">{inf.name}</span>
                     </div>
-                    <button
+                    <button type="button"
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
                       className="shrink-0 p-2 -m-2"
@@ -800,7 +800,7 @@ export default function InfluencerList() {
                     </span>
                   ) : proposableCampaigns.length === 0 ? (
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                      <button
+                      <button type="button"
                         type="button"
                         disabled
                         className="text-base border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed whitespace-nowrap"
@@ -809,7 +809,7 @@ export default function InfluencerList() {
                       </button>
                     </Tooltip>
                   ) : (
-                    <button
+                    <button type="button"
                       onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
                       disabled={proposalSent}
                       className="text-base border border-gray-200 text-gray-600 px-3 py-1.5 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
@@ -902,7 +902,7 @@ export default function InfluencerList() {
                         <span className="text-base bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
                       <span className="text-base bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full">{inf.type}</span>
-                      <button onClick={closeDetail} aria-label="닫기" className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0">
+                      <button type="button" onClick={closeDetail} aria-label="닫기" className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0">
                         <X size={16} aria-hidden="true" />
                       </button>
                     </div>
@@ -1084,7 +1084,7 @@ export default function InfluencerList() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex gap-0">
                         {(['feed', 'reels'] as const).map(tab => (
-                          <button key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
+                          <button type="button" key={tab} onClick={() => { setContentSubTab(tab); setContentSort('latest'); setContentModalPage(1) }}
                             className={`text-base px-3 py-1.5 rounded-full transition-all duration-150 font-medium ${contentSubTab === tab ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
                             {tab === 'feed' ? '피드' : '릴스'}
                           </button>
@@ -1092,7 +1092,7 @@ export default function InfluencerList() {
                       </div>
                       <div className="flex gap-1">
                         {([['latest', '최신순'], ['likes', '좋아요순'], ['comments', '댓글순']] as const).map(([val, label]) => (
-                          <button key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
+                          <button type="button" key={val} onClick={() => { setContentSort(val); setContentModalPage(1) }}
                             className={`text-base px-2 py-1 rounded-lg transition-all duration-150 ${contentSort === val ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-600'}`}>
                             {label}
                           </button>
@@ -1151,7 +1151,7 @@ export default function InfluencerList() {
                     </p>
                   </div>
                 ) : (
-                  <button onClick={() => setProposalModal(true)} className="w-full bg-brand-green text-white text-base py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium">
+                  <button type="button" onClick={() => setProposalModal(true)} className="w-full bg-brand-green text-white text-base py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium">
                     캠페인 제안보내기
                   </button>
                 )}
@@ -1218,13 +1218,13 @@ export default function InfluencerList() {
         size="md"
         footer={!proposalSent ? (
           <>
-            <button
+            <button type="button"
               onClick={() => setProposalModal(false)}
               className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150"
             >
               취소
             </button>
-            <button
+            <button type="button"
               onClick={handleProposal}
               className="flex-1 bg-brand-green text-white py-2 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150"
             >
@@ -1260,7 +1260,7 @@ export default function InfluencerList() {
                           : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => setProposalExpandedId(isExpanded ? null : c.id)}
                       className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"

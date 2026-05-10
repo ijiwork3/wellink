@@ -244,14 +244,14 @@ export default function Dashboard() {
             캠페인을 등록하면 AI가 브랜드에 맞는 인플루언서를 추천해 드립니다.
           </p>
           <div className="flex justify-center gap-3">
-            <button
+            <button type="button"
               onClick={() => navigate('/campaigns/new')}
               className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Megaphone size={14} className="inline mr-2" aria-hidden="true" />
               첫 캠페인 만들기
             </button>
-            <button
+            <button type="button"
               onClick={() => navigate('/influencers/list')}
               className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
@@ -291,7 +291,7 @@ export default function Dashboard() {
             ))}
           </div>
           <div className="px-5 py-3 border-t border-gray-50">
-            <button
+            <button type="button"
               onClick={() => navigate('/influencers/list')}
               className="w-full text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
             >
@@ -357,7 +357,7 @@ export default function Dashboard() {
             <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
-          <button
+          <button type="button"
             type="button"
             onClick={() => navigate('/campaigns/new')}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
@@ -391,7 +391,7 @@ export default function Dashboard() {
             title="진행 중인 캠페인이 없습니다"
             description="새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요."
             action={
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => navigate('/campaigns/new')}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -425,7 +425,7 @@ export default function Dashboard() {
         <div className="flex items-center flex-wrap gap-2 bg-amber-100 border border-amber-200 text-amber-800 rounded-xl px-5 py-3 text-base">
           <Lock size={14} className="shrink-0" aria-hidden="true" />
           <span>{lockedBannerMessage}</span>
-          <button
+          <button type="button"
             onClick={() => navigate('/subscription')}
             className="ml-auto text-sm font-semibold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
@@ -442,14 +442,14 @@ export default function Dashboard() {
           <AlertTriangle size={15} className="text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
           <span className="flex-1 text-rose-800">{u.text}</span>
           <div className="flex items-center gap-2 shrink-0">
-            <button
+            <button type="button"
               type="button"
               onClick={() => navigate(u.route)}
               className="text-sm font-semibold text-rose-700 hover:text-rose-900 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
               {u.cta} →
             </button>
-            <button
+            <button type="button"
               type="button"
               onClick={() => setDismissedUrgent(prev => new Set([...prev, u.id]))}
               aria-label="닫기"
@@ -467,7 +467,7 @@ export default function Dashboard() {
           <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
           <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
         </div>
-        <button
+        <button type="button"
           type="button"
           onClick={() => navigate('/campaigns/new')}
           className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
@@ -525,7 +525,7 @@ export default function Dashboard() {
         <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
-            <button
+            <button type="button"
               onClick={() => navigate('/campaigns')}
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
@@ -535,7 +535,7 @@ export default function Dashboard() {
 
           {/* fixed 플로팅 스크롤 버튼 */}
           {tableBtnTop !== null && canTableScrollLeft && (
-            <button
+            <button type="button"
               type="button"
               onClick={() => scrollTable('left')}
               aria-label="왼쪽으로 스크롤"
@@ -546,7 +546,7 @@ export default function Dashboard() {
             </button>
           )}
           {tableBtnTop !== null && canTableScrollRight && (
-            <button
+            <button type="button"
               type="button"
               onClick={() => scrollTable('right')}
               aria-label="오른쪽으로 스크롤"
@@ -634,14 +634,14 @@ export default function Dashboard() {
                 </span>
               )}
             </div>
-            <button
+            <button type="button"
               onClick={() => navigate('/notifications')}
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >전체 보기 →</button>
           </div>
           <div className="divide-y divide-gray-50 flex-1">
             {visibleNotifications.map(n => (
-              <button
+              <button type="button"
                 key={n.id}
                 type="button"
                 className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green/5' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50`}
@@ -661,7 +661,7 @@ export default function Dashboard() {
           </div>
           {notifications.length > 4 && (
             <div className="px-5 py-3 border-t border-gray-50">
-              <button
+              <button type="button"
                 onClick={() => setShowAllNotifications(prev => !prev)}
                 className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
@@ -701,14 +701,14 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
-            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
+            <button type="button" onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-gray-900">콘텐츠 성과</h2>
           <div className="flex bg-gray-100 rounded-lg p-0.5">
             {(['일간', '주간', '월간'] as ContentPeriod[]).map(p => (
-              <button
+              <button type="button"
                 key={p}
                 onClick={() => setContentPeriod(p)}
                 tabIndex={isPlanLocked ? -1 : 0}
@@ -759,7 +759,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
-            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
+            <button type="button" onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <h2 className="text-base font-semibold text-gray-900 mb-3">빠른 실행</h2>
@@ -770,7 +770,7 @@ export default function Dashboard() {
             { icon: <Search size={18} aria-hidden="true" />,    label: '인플루언서 관리', sub: '그룹·북마크 관리', route: '/influencers/manage', primary: false },
             { icon: <BarChart3 size={18} aria-hidden="true" />,  label: '성과 분석',      sub: '리포트 확인',     route: '/analytics/profile', primary: false },
           ].map(item => (
-            <button
+            <button type="button"
               key={item.label}
               onClick={() => navigate(item.route)}
               className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

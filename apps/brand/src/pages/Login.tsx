@@ -47,7 +47,7 @@ export default function Login() {
 
       {/* 헤더 */}
       <div className="absolute top-0 left-0 right-0 px-4 @sm:px-8 py-5 flex items-center justify-between z-10">
-        <button
+        <button type="button"
           type="button"
           onClick={() => navigate('/')}
           aria-label="홈으로"
@@ -57,7 +57,7 @@ export default function Login() {
           <span className="text-sm font-bold bg-brand-green text-white px-2 py-1 rounded-full">AI</span>
         </button>
         <div className="flex items-center gap-2">
-          <button
+          <button type="button"
             type="button"
             onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
             aria-label="도움말 문의"
@@ -65,7 +65,7 @@ export default function Login() {
           >
             <HelpCircle size={14} aria-hidden="true" /> 도움말
           </button>
-          <button
+          <button type="button"
             type="button"
             onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}
             className="text-base bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
@@ -91,7 +91,7 @@ export default function Login() {
         {/* 사용자 유형 segmented */}
         <div className="flex rounded-xl border border-gray-200 p-1 mb-6 gap-1" role="tablist" aria-label="사용자 유형">
           {(['인플루언서', '광고주'] as UserType[]).map(type => (
-            <button
+            <button type="button"
               key={type}
               type="button"
               role="tab"
@@ -144,7 +144,7 @@ export default function Login() {
                 aria-invalid={!!loginError}
                 className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
@@ -160,7 +160,7 @@ export default function Login() {
           </div>
         </div>
 
-        <button
+        <button type="button"
           type="submit"
           disabled={loading}
           aria-busy={loading}
@@ -173,7 +173,7 @@ export default function Login() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           계정이 없으신가요?{' '}
-          <button
+          <button type="button"
             type="button"
             onClick={() => navigate('/signup')}
             className="text-brand-green-text font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
@@ -184,7 +184,7 @@ export default function Login() {
       </form>
 
       {/* 모바일 도움말 — @sm 미만에서만 (헤더 도움말 hidden) */}
-      <button
+      <button type="button"
         type="button"
         onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
         className="@sm:hidden absolute bottom-6 right-6 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors border border-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

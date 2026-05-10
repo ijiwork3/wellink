@@ -114,7 +114,7 @@ export default function Signup() {
     >
       {/* 도입문의 */}
       <div className="fixed top-4 right-4 z-10">
-        <button
+        <button type="button"
           type="button"
           onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
           className="px-4 py-2 rounded-xl text-base font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
@@ -186,7 +186,7 @@ export default function Signup() {
                 aria-required="true"
                 className={`${inputCls('password')} pr-10`}
               />
-              <button
+              <button type="button"
                 type="button" onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPassword}
@@ -226,7 +226,7 @@ export default function Signup() {
                 aria-required="true"
                 className={`${inputCls('passwordConfirm')} pr-10`}
               />
-              <button
+              <button type="button"
                 type="button" onClick={() => setShowPasswordConfirm(v => !v)}
                 aria-label={showPasswordConfirm ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPasswordConfirm}
@@ -319,7 +319,7 @@ export default function Signup() {
           </div>
 
           {/* 가입 버튼 */}
-          <button
+          <button type="button"
             type="submit"
             disabled={isSubmitting || !agreedTerms || !agreedPrivacy}
             aria-busy={isSubmitting}
@@ -331,7 +331,7 @@ export default function Signup() {
           {/* 로그인 링크 */}
           <p className="text-center text-base text-gray-500">
             이미 계정이 있으신가요?{' '}
-            <button
+            <button type="button"
               type="button"
               onClick={() => navigate('/login')}
               className="font-medium hover:underline transition-colors duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"

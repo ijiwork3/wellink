@@ -189,7 +189,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
   return (
     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700 whitespace-nowrap">
       {label}
-      <button
+      <button type="button"
         type="button"
         onClick={onRemove}
         className="text-gray-400 hover:text-gray-700 -mr-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
@@ -409,7 +409,7 @@ export default function Campaigns() {
         <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">캠페인 목록</h1>
         <div className="flex items-center gap-2">
           {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
-          <button
+          <button type="button"
             type="button"
             onClick={() => !isGated && setAiModalStep('input')}
             disabled={isGated}
@@ -419,7 +419,7 @@ export default function Campaigns() {
             <Sparkles size={14} aria-hidden="true" />
             AI로 만들기
           </button>
-          <button
+          <button type="button"
             type="button"
             onClick={() => !isGated && navigate('/campaigns/new')}
             disabled={isGated}
@@ -436,7 +436,7 @@ export default function Campaigns() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center border-b border-gray-100">
           {canTabScrollLeft && (
-            <button
+            <button type="button"
               type="button"
               onClick={() => scrollTabs('left')}
               aria-label="탭 왼쪽으로 스크롤"
@@ -447,7 +447,7 @@ export default function Campaigns() {
           )}
           <div ref={tabScrollRef} className="flex-1 flex items-center gap-1 overflow-x-auto scrollbar-none px-2 @sm:px-4">
             {tabs.map(tab => (
-              <button
+              <button type="button"
                 key={tab}
                 onClick={() => handleTabClick(tab)}
                 className={`px-3 py-3 text-base whitespace-nowrap border-b-2 transition-colors ${
@@ -461,7 +461,7 @@ export default function Campaigns() {
             ))}
           </div>
           {canTabScrollRight && (
-            <button
+            <button type="button"
               type="button"
               onClick={() => scrollTabs('right')}
               aria-label="탭 오른쪽으로 스크롤"
@@ -485,7 +485,7 @@ export default function Campaigns() {
               className="w-full pl-8 pr-8 py-2 text-base bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
             {inputValue && (
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => { setInputValue(''); setSearch(''); resetPage() }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -538,7 +538,7 @@ export default function Campaigns() {
             {categoryFilter !== '전체' && (
               <FilterChip label={`카테고리: ${categoryFilter}`} onRemove={() => { setCategoryFilter('전체'); resetPage() }} />
             )}
-            <button
+            <button type="button"
               type="button"
               onClick={resetAllFilters}
               className="ml-auto inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -560,7 +560,7 @@ export default function Campaigns() {
               ? '필터를 조정하거나 초기화해 보세요.'
               : qaEmpty ? '새 캠페인을 등록해 인플루언서 마케팅을 시작해 보세요.' : undefined}
             action={!qaEmpty && hasActiveFilters ? (
-              <button
+              <button type="button"
                 type="button"
                 onClick={resetAllFilters}
                 className="inline-flex items-center gap-1 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
@@ -569,7 +569,7 @@ export default function Campaigns() {
                 필터 초기화
               </button>
             ) : qaEmpty ? (
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => navigate('/campaigns/new')}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -757,12 +757,12 @@ export default function Campaigns() {
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => setAiModalStep(null)}
                 className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >취소</button>
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => setAiModalStep('loading')}
                 disabled={!aiInput.brand.trim()}
@@ -823,12 +823,12 @@ export default function Campaigns() {
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => setAiModalStep('loading')}
                 className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >다시 생성</button>
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users, AlertCircle } from 'lucide-react'
-import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect } from '@wellink/ui'
+import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect, CustomCheckbox } from '@wellink/ui'
 
 const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
 type Platform = typeof PLATFORMS[number]
@@ -177,7 +177,7 @@ export default function CampaignNew() {
   return (
     <div className="space-y-5 pb-24">
       {/* 뒤로가기 */}
-      <button
+      <button type="button"
         onClick={() => navigate('/campaigns')}
         className="flex items-center gap-1 text-base text-gray-600 hover:text-gray-900 transition-colors"
       >
@@ -212,7 +212,7 @@ export default function CampaignNew() {
         <Field label="캠페인 유형">
           <div className="grid grid-cols-2 gap-2">
             {(['방문형', '택배형'] as const).map(t => (
-              <button
+              <button type="button"
                 key={t}
                 type="button"
                 onClick={() => set('type', t)}
@@ -355,7 +355,7 @@ export default function CampaignNew() {
               placeholder="예) #봄요가, #웰니스챌린지 (엔터로 추가)"
               className="flex-1 text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
-            <button
+            <button type="button"
               onClick={addKeyword}
               className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-base hover:bg-gray-800 transition-colors"
             >추가</button>
@@ -404,13 +404,13 @@ export default function CampaignNew() {
 
         <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
           <div className="flex gap-2 mb-2 flex-wrap">
-            <button onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />단답형 추가
             </button>
-            <button onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />서술형 추가
             </button>
-            <button onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
               <Plus size={12} />객관식 추가
             </button>
           </div>
@@ -427,11 +427,14 @@ export default function CampaignNew() {
                     <span className="text-sm px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
                       질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
                     </span>
-                    <label className="ml-auto flex items-center gap-1 text-sm text-gray-600">
-                      <input type="checkbox" checked={q.required} onChange={e => updateQ(q.id, { required: e.target.checked })} />
-                      필수 답변
-                    </label>
-                    <button onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={13} /></button>
+                    <CustomCheckbox
+                      checked={q.required}
+                      onChange={() => updateQ(q.id, { required: !q.required })}
+                      label="필수 답변"
+                      labelClassName="text-sm text-gray-600"
+                      className="ml-auto"
+                    />
+                    <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={13} /></button>
                   </div>
                   <Input value={q.title} onChange={v => updateQ(q.id, { title: v })} placeholder="질문 제목" />
                   <Input value={q.desc} onChange={v => updateQ(q.id, { desc: v })} placeholder="질문 설명 (선택)" />
@@ -439,20 +442,20 @@ export default function CampaignNew() {
                     <div className="space-y-1.5 pl-2">
                       {(q.options ?? []).map((opt, j) => (
                         <div key={j} className="flex items-center gap-2">
-                          <input type="checkbox" disabled />
+                          <CustomCheckbox checked={false} onChange={() => {}} label="" disabled className="pointer-events-none" />
                           <Input
                             value={opt}
                             onChange={v => updateQ(q.id, { options: q.options!.map((o, k) => k === j ? v : o) })}
                             placeholder={`옵션 ${j + 1}`}
                           />
-                          <button
+                          <button type="button"
                             onClick={() => updateQ(q.id, { options: q.options!.filter((_, k) => k !== j) })}
                             aria-label="옵션 삭제"
                             className="text-gray-300 hover:text-red-500"
                           ><X size={13} /></button>
                         </div>
                       ))}
-                      <button
+                      <button type="button"
                         onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
                         className="text-sm text-blue-600 hover:text-blue-700"
                       >+ 옵션 추가하기</button>
@@ -528,11 +531,11 @@ export default function CampaignNew() {
 
       {/* 액션 */}
       <div className="flex items-center justify-end gap-2">
-        <button
+        <button type="button"
           onClick={() => navigate('/campaigns')}
           className="px-4 py-2.5 text-base text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
         >취소하기</button>
-        <button
+        <button type="button"
           onClick={handleSubmit}
           disabled={submitting}
           className="flex items-center gap-1.5 px-4 py-2.5 text-base bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"

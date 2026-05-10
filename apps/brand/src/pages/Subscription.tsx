@@ -274,7 +274,7 @@ export default function Subscription() {
             <p className="text-base font-semibold text-amber-800">결제에 실패했습니다</p>
             <p className="text-sm text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
           </div>
-          <button
+          <button type="button"
             type="button"
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
             className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -372,19 +372,19 @@ export default function Subscription() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {cancelStatus === 'cancel_scheduled' ? (
-                  <button
+                  <button type="button"
                     type="button"
                     onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
                     className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >해지 예약 취소</button>
                 ) : (
                   <>
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => setCancelModal(true)}
                       className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >해지</button>
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => setRefundModal(true)}
                       className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -471,7 +471,7 @@ export default function Subscription() {
                 </li>
               ))}
             </ul>
-            <button
+            <button type="button"
               type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
@@ -517,7 +517,7 @@ export default function Subscription() {
                 </li>
               ))}
             </ul>
-            <button
+            <button type="button"
               type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
@@ -562,7 +562,7 @@ export default function Subscription() {
                 </li>
               ))}
             </ul>
-            <button
+            <button type="button"
               type="button"
               onClick={() => {
                 if (plan.id !== currentPlan) {
@@ -593,7 +593,7 @@ export default function Subscription() {
             <CreditCard size={15} className="text-gray-500" aria-hidden="true" />
             결제 수단
           </h3>
-          <button
+          <button type="button"
             type="button"
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
             className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -611,7 +611,7 @@ export default function Subscription() {
               </div>
               <p className="text-base text-gray-500">등록된 결제 수단이 없습니다</p>
             </div>
-            <button
+            <button type="button"
               type="button"
               onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
               className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -720,8 +720,8 @@ export default function Subscription() {
         size="sm"
         footer={!confirmed ? (
           <>
-            <button onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">확인</button>
+            <button type="button" onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">확인</button>
           </>
         ) : undefined}
       >

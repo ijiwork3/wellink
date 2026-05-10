@@ -213,7 +213,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-base mt-0.5" style={{ color: g.muted }}>2026년 4월 25일 금요일</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>
+          <button type="button" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>
             <Megaphone size={14} /> 새 캠페인
           </button>
         </div>
@@ -240,7 +240,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <div className="@lg:col-span-2 border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: g.border }}>
                 <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
-                <button className="text-sm flex items-center gap-1" style={{ color: d.color }}>전체보기 <ArrowRight size={11}/></button>
+                <button type="button" className="text-sm flex items-center gap-1" style={{ color: d.color }}>전체보기 <ArrowRight size={11}/></button>
               </div>
               <table className="w-full text-base">
                 <thead>
@@ -270,7 +270,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                       </td>
                       <td className="py-3.5 px-4 text-sm" style={{ color: g.muted }}>{c.dday}</td>
                       <td className="py-3.5 px-4">
-                        <button className="text-sm flex items-center gap-1" style={{ color: d.color }}>상세 <ArrowRight size={11}/></button>
+                        <button type="button" className="text-sm flex items-center gap-1" style={{ color: d.color }}>상세 <ArrowRight size={11}/></button>
                       </td>
                     </tr>
                   ))}
@@ -349,7 +349,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
             <p className="text-base mt-0.5" style={{ color: g.muted }}>브랜드에 적합한 인플루언서를 탐색하세요.</p>
           </div>
-          <button className="px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
+          <button type="button" className="px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
@@ -415,7 +415,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <button className="text-sm px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>제안</button>
+                      <button type="button" className="text-sm px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>제안</button>
                     </td>
                   </tr>
                 ))}
@@ -465,7 +465,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                 </span>
               ))}
             </div>
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
+            <button type="button" className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
               <Download size={14}/>내보내기
             </button>
           </div>
@@ -514,7 +514,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           <div className="border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
             <div className="px-5 py-4 flex items-center justify-between border-b" style={{ borderColor: g.border }}>
               <h2 className="text-base font-semibold text-gray-900">캠페인별 성과 비교</h2>
-              <button className="text-sm px-3 py-1.5 rounded-lg border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
+              <button type="button" className="text-sm px-3 py-1.5 rounded-lg border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
             </div>
             <table className="w-full text-base">
               <thead>

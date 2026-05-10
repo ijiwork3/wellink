@@ -183,7 +183,7 @@ export default function MyPage() {
           <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">마이페이지</h1>
           <p className="text-base text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
         </div>
-        <button
+        <button type="button"
           onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
           className="shrink-0 flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
         >
@@ -216,7 +216,7 @@ export default function MyPage() {
                   {isSubscribed ? ` · ${planLabel} 플랜` : ''}
                 </p>
               </div>
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => setInviteModal(true)}
                 className="flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -246,7 +246,7 @@ export default function MyPage() {
                 </div>
                 {member.role !== 'Owner' && (
                   <div className="flex items-center gap-2 shrink-0">
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => { setChangeRoleModal(member); setChangeRoleValue(member.role) }}
                       className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -254,7 +254,7 @@ export default function MyPage() {
                       <Shield size={12} aria-hidden="true" />
                       권한 변경
                     </button>
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => setDeleteModal(member)}
                       className="flex items-center gap-1 text-sm text-red-500 border border-red-100 px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -345,7 +345,7 @@ export default function MyPage() {
                 </div>
               ))}
             </div>
-            <button
+            <button type="button"
               type="button"
               onClick={() => showToast('UTM 기본값이 저장되었습니다.', 'success')}
               className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -383,7 +383,7 @@ export default function MyPage() {
                   placeholder="G-XXXXXXXXXX"
                   className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none"
                 />
-                <button
+                <button type="button"
                   type="button"
                   disabled={ga4Saving || ga4Id.trim() === ''}
                   onClick={() => {
@@ -424,7 +424,7 @@ export default function MyPage() {
                   {'<!-- 웰링크 픽셀 -->\n<script src="https://cdn.wellink.ai/pixel.js"\n  data-id="WL-XXXXXXXX" defer></script>'}
                 </div>
                 <p className="text-sm text-gray-400">{'<head>'} 또는 {'<body>'} 태그 안에 위 코드를 삽입하세요.</p>
-                <button
+                <button type="button"
                   onClick={() => {
                     navigator.clipboard.writeText('<!-- 웰링크 픽셀 -->\n<script src="https://cdn.wellink.ai/pixel.js" data-id="WL-XXXXXXXX" defer></script>')
                     showToast('픽셀 코드가 복사되었습니다.', 'success')
@@ -443,7 +443,7 @@ export default function MyPage() {
                   <p className="text-base font-semibold text-gray-900">Scale 플랜 이상에서 사용 가능합니다</p>
                   <p className="text-sm text-gray-500 mt-0.5">픽셀을 통해 캠페인별 직접 전환을 정확하게 추적할 수 있습니다.</p>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => navigate('/subscription')}
                   className="flex items-center gap-1.5 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-base font-medium hover:bg-gray-700 transition-colors"
                 >
@@ -474,7 +474,7 @@ export default function MyPage() {
               </span>
             )}
           </div>
-          <button
+          <button type="button"
             onClick={() => navigate('/subscription')}
             className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
           >
@@ -491,7 +491,7 @@ export default function MyPage() {
               <h2 className="text-lg font-bold text-gray-900">브랜드 프로필 설정</h2>
               <p className="text-sm text-gray-500 mt-0.5">서비스 이용에 필요한 기본 정보를 관리합니다.</p>
             </div>
-            <button
+            <button type="button"
               onClick={handleSave}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors"
             >
@@ -667,14 +667,14 @@ export default function MyPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <button
+                <button type="button"
                   type="button"
                   onClick={() => setPwModal(true)}
                   className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   비밀번호 변경하기
                 </button>
-                <button
+                <button type="button"
                   type="button"
                   onClick={() => setWithdrawModal(true)}
                   className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -697,7 +697,7 @@ export default function MyPage() {
                   { id: 'alert-payment', label: '정산 알림', desc: '결제 예정일·실패 알림', value: paymentAlert, setter: setPaymentAlert },
                 ].map(item => (
                   <div key={item.id} className="flex items-start gap-3">
-                    <button
+                    <button type="button"
                       onClick={() => item.setter(!item.value)}
                       role="checkbox"
                       aria-checked={item.value}
@@ -746,7 +746,7 @@ export default function MyPage() {
                     <p className="text-sm text-gray-500 mt-0.5">인스타그램 통계 및 광고 데이터를 연동합니다.</p>
                   </div>
                 </div>
-                <button
+                <button type="button"
                   type="button"
                   onClick={() => setSnsModal(true)}
                   className={`px-5 py-2.5 rounded-xl text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
@@ -770,13 +770,13 @@ export default function MyPage() {
         title="비밀번호 변경"
         footer={
           <>
-            <button
+            <button type="button"
               onClick={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               onClick={handlePasswordChange}
               className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
             >
@@ -835,13 +835,13 @@ export default function MyPage() {
         title="Instagram 연결"
         footer={
           <>
-            <button
+            <button type="button"
               onClick={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               onClick={handleSnsConnect}
               disabled={snsHandle.trim() === ''}
               className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -882,13 +882,13 @@ export default function MyPage() {
         title="멤버 초대"
         footer={
           <>
-            <button
+            <button type="button"
               onClick={() => { setInviteModal(false); setInviteEmail('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               disabled={!inviteEmail.trim()}
               onClick={() => {
                 const newMember: TeamMember = {
@@ -926,7 +926,7 @@ export default function MyPage() {
             <label className="text-sm text-gray-500 mb-1.5 block">권한</label>
             <div className="flex gap-2">
               {(['Manager', 'Viewer'] as MemberRole[]).map(role => (
-                <button
+                <button type="button"
                   key={role}
                   onClick={() => setInviteRole(role)}
                   className={`flex-1 py-2 rounded-xl text-base font-medium border transition-colors ${
@@ -950,13 +950,13 @@ export default function MyPage() {
         title="권한 변경"
         footer={changeRoleModal ? (
           <>
-            <button
+            <button type="button"
               onClick={() => setChangeRoleModal(null)}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               onClick={() => {
                 setMembers(prev => prev.map(m =>
                   m.id === changeRoleModal.id ? { ...m, role: changeRoleValue } : m
@@ -978,7 +978,7 @@ export default function MyPage() {
             </p>
             <div className="flex gap-2">
               {(['Manager', 'Viewer'] as MemberRole[]).map(role => (
-                <button
+                <button type="button"
                   key={role}
                   onClick={() => setChangeRoleValue(role)}
                   className={`flex-1 py-2 rounded-xl text-base font-medium border transition-colors ${
@@ -1020,13 +1020,13 @@ export default function MyPage() {
         title="회원 탈퇴"
         footer={
           <>
-            <button
+            <button type="button"
               onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               disabled={withdrawConfirmText !== '탈퇴'}
               onClick={() => {
                 setWithdrawModal(false)

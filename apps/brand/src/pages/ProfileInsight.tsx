@@ -849,9 +849,9 @@ export default function ProfileInsight() {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-purple-600" aria-hidden="true" />
-            <h3 className="text-base font-bold text-gray-900">AI 프로필 분석</h3>
+            <h2 className="text-base font-bold text-gray-900">AI 프로필 분석</h2>
           </div>
-          <button
+          <button type="button"
             onClick={handleAiRefresh}
             disabled={aiRefreshing}
             className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50"
@@ -965,7 +965,7 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
-              <h3 className="text-base font-semibold text-gray-900">피드별 성과 추세</h3>
+              <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
               <p className="text-sm text-gray-400 mt-0.5">
                 {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
                 {nullCount > 0 && <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>}
@@ -973,7 +973,7 @@ export default function ProfileInsight() {
             </div>
             <div className="flex gap-1.5 flex-wrap">
               {(Object.keys(metricColors) as MetricKey[]).map(metric => (
-                <button
+                <button type="button"
                   key={metric}
                   onClick={() => setActiveMetric(metric)}
                   className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
@@ -1025,7 +1025,7 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
-              <h3 className="text-base font-semibold text-gray-900">노출 & 도달</h3>
+              <h2 className="text-base font-semibold text-gray-900">노출 & 도달</h2>
               <p className="text-sm text-gray-400 mt-0.5">
                 노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
                 {impressReachByPeriod[period].some(d => d.impressions === null) && (
@@ -1071,7 +1071,7 @@ export default function ProfileInsight() {
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h3>
+          <h2 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h2>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
             <span className="text-xs text-gray-400 w-16 shrink-0">유형</span>
@@ -1105,7 +1105,7 @@ export default function ProfileInsight() {
         {/* 팔로워 추이 (2/5) */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="mb-4">
-            <h3 className="text-base font-semibold text-gray-900">팔로워 추이</h3>
+            <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <div className="relative">
@@ -1163,9 +1163,9 @@ export default function ProfileInsight() {
         </button>
       )}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+        <h2 className="text-base font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
-        </h3>
+        </h2>
         <div className="relative" ref={tableWrapperRef}>
           {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
           {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
@@ -1221,7 +1221,7 @@ export default function ProfileInsight() {
       {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h3 className="text-base font-semibold text-gray-900">팔로워 분석</h3>
+          <h2 className="text-base font-semibold text-gray-900">팔로워 분석</h2>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{periodLabel}</span>
             <span className="text-sm text-gray-400">비공개 계정 제외</span>
@@ -1505,7 +1505,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           </div>
           {/* 핵심 지표 */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">핵심 지표</h4>
+            <h2 className="text-sm font-semibold text-gray-700 mb-3">핵심 지표</h2>
             <div className="grid grid-cols-3 gap-2">
               <MetricCell label="좋아요"  value={fmtNumber(post.likes)} />
               <MetricCell label="댓글"    value={fmtNumber(post.comments)} />
@@ -1518,7 +1518,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 릴스 전용 */}
           {post.type === 'reels' && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">릴스 인사이트</h4>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">릴스 인사이트</h2>
               <div className="grid grid-cols-2 gap-2">
                 <MetricCell label="조회수"       value={fmtNumber(post.views)}                                                                          color="bg-rose-50" />
                 <MetricCell label="다시 보기"    value={fmtNumber(post.replays ?? 0)}                                                                   color="bg-rose-50" />
@@ -1530,7 +1530,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 피드·카루셀 전용 */}
           {(post.type === 'feed' || post.type === 'carousel') && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">피드 인사이트</h4>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">피드 인사이트</h2>
               <div className="grid grid-cols-2 gap-2">
                 <MetricCell label="프로필 방문" value={fmtNumber(post.profileVisits ?? 0)} color="bg-blue-50" />
                 <MetricCell label="팔로우"       value={fmtNumber(post.follows ?? 0)}       color="bg-blue-50" />
@@ -1540,7 +1540,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 스토리 전용 */}
           {post.type === 'story' && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">스토리 인사이트</h4>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">스토리 인사이트</h2>
               <div className="grid grid-cols-2 gap-2">
                 <MetricCell label="도달" value={fmtNumber(post.reach)}       color="bg-amber-50" />
                 <MetricCell label="노출" value={fmtNumber(post.impressions)} color="bg-amber-50" />
@@ -1660,7 +1660,7 @@ function PostContentTable() {
         {/* 헤더 */}
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">게시물별 상세 성과</h3>
+            <h2 className="text-base font-semibold text-gray-900">게시물별 상세 성과</h2>
             <p className="text-sm text-gray-400 mt-0.5">
               최근 {POST_DATA.length}개 게시물 · 행을 클릭하면 유형별 상세 분석 확인
             </p>
@@ -1669,7 +1669,7 @@ function PostContentTable() {
         {/* 유형 탭 필터 */}
         <div className="flex gap-1.5 px-5 py-3 border-b border-gray-50 flex-wrap">
           {TYPE_TABS.map(tab => (
-            <button key={tab.value}
+            <button type="button" key={tab.value}
               onClick={() => { setActiveType(tab.value); setPage(1) }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 activeType === tab.value

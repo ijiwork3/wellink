@@ -381,7 +381,7 @@ export default function AdPerformance() {
             title="집행 중인 Meta 광고가 없습니다"
             description="Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다."
             action={
-              <button
+              <button type="button"
                 type="button"
                 onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
                 className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg px-2 py-1"
@@ -414,7 +414,7 @@ export default function AdPerformance() {
           <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">광고 성과</h1>
           <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
-        <button
+        <button type="button"
           onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
           className="shrink-0 flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 border border-gray-200 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
@@ -439,9 +439,9 @@ export default function AdPerformance() {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-purple-600" aria-hidden="true" />
-            <h3 className="text-base font-bold text-gray-900">AI 광고 성과 분석</h3>
+            <h2 className="text-base font-bold text-gray-900">AI 광고 성과 분석</h2>
           </div>
-          <button
+          <button type="button"
             onClick={handleAiRefresh}
             disabled={aiRefreshing}
             className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50"
@@ -562,7 +562,7 @@ export default function AdPerformance() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h3 className="text-base font-semibold text-gray-900">캠페인별 성과</h3>
+                <h2 className="text-base font-semibold text-gray-900">캠페인별 성과</h2>
                 <p className="text-sm text-gray-400 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-400">
@@ -572,13 +572,13 @@ export default function AdPerformance() {
             </div>
             {/* 상태 탭 — 진행중 / 종료 */}
             <div className="flex gap-2 px-5 py-3 border-b border-gray-50">
-              <button
+              <button type="button"
                 onClick={() => { setStatusTab('active'); setCampaignPage(1); setExpandedCampaign(null) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   statusTab === 'active' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >진행중 {activeCampaigns.length}</button>
-              <button
+              <button type="button"
                 onClick={() => { setStatusTab('paused'); setCampaignPage(1); setExpandedCampaign(null) }}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   statusTab === 'paused' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -595,7 +595,7 @@ export default function AdPerformance() {
                   const isCampaignOpen = expandedCampaign === c.campaignId
                   return (
                     <div key={c.campaignId} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
-                      <button
+                      <button type="button"
                         onClick={() => { setExpandedCampaign(isCampaignOpen ? null : c.campaignId); setExpandedAdSet(null) }}
                         aria-expanded={isCampaignOpen}
                         aria-controls={`campaign-detail-${c.campaignId}`}
@@ -642,7 +642,7 @@ export default function AdPerformance() {
                               const isSetOpen = expandedAdSet === set.id
                               return (
                                 <div key={set.id} className="rounded-lg border border-gray-100 bg-gray-50/50">
-                                  <button
+                                  <button type="button"
                                     onClick={() => setExpandedAdSet(isSetOpen ? null : set.id)}
                                     aria-expanded={isSetOpen}
                                     aria-controls={`adset-detail-${set.id}`}
@@ -742,7 +742,7 @@ export default function AdPerformance() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
-            <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h3>
+            <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="flex items-center gap-3 text-sm">
@@ -783,7 +783,7 @@ export default function AdPerformance() {
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900">CTR 추이</h3>
+            <h2 className="text-base font-semibold text-gray-900">CTR 추이</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="relative">
@@ -817,7 +817,7 @@ export default function AdPerformance() {
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h3>
+            <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="relative">
@@ -855,7 +855,7 @@ export default function AdPerformance() {
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900">도달 출처</h3>
+            <h2 className="text-base font-semibold text-gray-900">도달 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
@@ -868,7 +868,7 @@ export default function AdPerformance() {
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900">참여 출처</h3>
+            <h2 className="text-base font-semibold text-gray-900">참여 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <DonutChartSimple
@@ -884,7 +884,7 @@ export default function AdPerformance() {
       {/* 광고 소재 유형별 성과 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
-          <h3 className="text-base font-semibold text-gray-900">소재 유형별 성과</h3>
+          <h2 className="text-base font-semibold text-gray-900">소재 유형별 성과</h2>
           <p className="text-sm text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
         </div>
         <div className="p-5 space-y-4">

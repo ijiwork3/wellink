@@ -611,7 +611,7 @@ export default function Library() {
 
       {/* Top Performer */}
       {topPerformer && (
-        <button
+        <button type="button"
           type="button"
           onClick={() => setPreviewItem(topPerformer)}
           aria-label="이번 달 최고 성과 콘텐츠 상세 보기"
@@ -640,7 +640,7 @@ export default function Library() {
       {/* Campaign Tab Filter */}
       <div className="relative border-b border-gray-200">
         {tabScroll.left && (
-          <button
+          <button type="button"
             onClick={() => tabListRef.current?.scrollBy({ left: -140, behavior: 'smooth' })}
             aria-label="이전 탭"
             className="absolute left-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-r from-gray-50 via-gray-50/80 to-transparent pr-3 focus-visible:outline-none"
@@ -660,7 +660,7 @@ export default function Library() {
             const isActive = campaignFilter === camp
             const tabId = `tab-${camp}`
             return (
-              <button
+              <button type="button"
                 key={camp}
                 id={tabId}
                 role="tab"
@@ -685,7 +685,7 @@ export default function Library() {
           })}
         </div>
         {tabScroll.right && (
-          <button
+          <button type="button"
             onClick={() => tabListRef.current?.scrollBy({ left: 140, behavior: 'smooth' })}
             aria-label="다음 탭"
             className="absolute right-0 top-0 bottom-0 z-10 flex items-center px-1 bg-gradient-to-l from-gray-50 via-gray-50/80 to-transparent pl-3 focus-visible:outline-none"
@@ -710,7 +710,7 @@ export default function Library() {
               className="w-full pl-9 pr-8 py-2 text-base border border-gray-200 rounded-xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green transition-colors"
             />
             {search && (
-              <button
+              <button type="button"
                 onClick={() => { setSearch(''); setPage(1) }}
                 aria-label="검색어 초기화"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -722,7 +722,7 @@ export default function Library() {
 
           {/* View mode toggle */}
           <div role="group" aria-label="보기 모드" className="flex bg-gray-100 rounded-lg p-0.5">
-            <button
+            <button type="button"
               onClick={() => { setViewMode('grid'); setSelectedIds(new Set()) }}
               aria-label="그리드 보기"
               aria-pressed={viewMode === 'grid'}
@@ -730,7 +730,7 @@ export default function Library() {
             >
               <LayoutGrid size={16} aria-hidden="true" />
             </button>
-            <button
+            <button type="button"
               onClick={() => { setViewMode('list'); setSelectedIds(new Set()) }}
               aria-label="리스트 보기"
               aria-pressed={viewMode === 'list'}
@@ -742,7 +742,7 @@ export default function Library() {
 
           {/* Sort dropdown */}
           <div className="relative" data-sort-dropdown onKeyDown={handleSortKeyDown}>
-            <button
+            <button type="button"
               onClick={() => setSortOpen(!sortOpen)}
               aria-expanded={sortOpen}
               aria-haspopup="listbox"
@@ -821,7 +821,7 @@ export default function Library() {
                   ? '검색 조건을 변경하거나 필터를 초기화해 보세요.'
                   : '캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.'}
                 action={hasFilters ? (
-                  <button
+                  <button type="button"
                     type="button"
                     onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
                     className="text-base px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -836,7 +836,7 @@ export default function Library() {
         <div>
           {/* Select all bar */}
           <div className="flex items-center gap-2 mb-3">
-            <button
+            <button type="button"
               onClick={toggleSelectAll}
               aria-pressed={isAllSelected}
               aria-label="전체 선택"
@@ -849,7 +849,7 @@ export default function Library() {
             <span className="text-base text-gray-500">전체 선택 ({filtered.length})</span>
             <div className="ml-auto flex items-center gap-1.5">
               {selectedIds.size > 0 && (
-                <button
+                <button type="button"
                   onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
                   className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
@@ -857,7 +857,7 @@ export default function Library() {
                   선택 ({selectedIds.size})
                 </button>
               )}
-              <button
+              <button type="button"
                 onClick={() => setDownloadModal({ open: true, scope: 'all' })}
                 className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -880,7 +880,7 @@ export default function Library() {
                   }`}
                 >
                   {/* Checkbox — 항상 tabIndex=0으로 키보드 접근 보장, 미선택 시 시각적으로만 숨김 */}
-                  <button
+                  <button type="button"
                     onClick={e => { e.stopPropagation(); toggleSelect(c.id) }}
                     aria-pressed={isSelected}
                     aria-label={`${c.creator} 콘텐츠 선택`}
@@ -894,7 +894,7 @@ export default function Library() {
                   </button>
 
                   {/* Thumbnail — button으로 교체하여 iOS VoiceOver 호환성 확보 */}
-                  <button
+                  <button type="button"
                     type="button"
                     aria-label={`${c.creator} 콘텐츠 미리보기`}
                     className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
@@ -921,7 +921,7 @@ export default function Library() {
                   </button>
 
                   <div className="p-3">
-                    <button
+                    <button type="button"
                       type="button"
                       aria-label={`${c.creator} 콘텐츠 상세 보기`}
                       onClick={() => setPreviewItem(c)}
@@ -934,7 +934,7 @@ export default function Library() {
                         </div>
                         <StatusBadge status={displayStatus} dot={false} size="sm" className="shrink-0" />
                       </div>
-                      <button
+                      <button type="button"
                         type="button"
                         onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
                         className="block w-full text-left text-base text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
@@ -953,7 +953,7 @@ export default function Library() {
                     </button>
                     <div className="flex items-center justify-between">
                       <span className="text-base text-gray-500">{fmtDate(c.date)}</span>
-                      <button
+                      <button type="button"
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleLibBookmark(c.creator) }}
                         aria-label={libBookmarked.has(c.creator) ? `${c.creator} 찜 해제` : `${c.creator} 찜하기`}
@@ -979,7 +979,7 @@ export default function Library() {
           {/* List view download bar */}
           <div className="flex items-center justify-end gap-1.5 px-3 py-2 border-b border-gray-100">
             {selectedIds.size > 0 && (
-              <button
+              <button type="button"
                 onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
                 className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -987,7 +987,7 @@ export default function Library() {
                 선택 ({selectedIds.size})
               </button>
             )}
-            <button
+            <button type="button"
               onClick={() => setDownloadModal({ open: true, scope: 'all' })}
               className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
@@ -1018,7 +1018,7 @@ export default function Library() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th scope="col" className="py-3 px-3 w-8 whitespace-nowrap">
-                  <button
+                  <button type="button"
                     onClick={toggleSelectAll}
                     aria-pressed={isAllSelected}
                     aria-label="전체 선택"
@@ -1046,7 +1046,7 @@ export default function Library() {
                     className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-brand-green/5' : ''}`}
                   >
                     <td className="py-3 px-3">
-                      <button
+                      <button type="button"
                         onClick={() => toggleSelect(c.id)}
                         aria-pressed={isSelected}
                         aria-label={`${c.creator} 콘텐츠 선택`}
@@ -1058,7 +1058,7 @@ export default function Library() {
                       </button>
                     </td>
                     <td className="py-3 px-3">
-                      <button
+                      <button type="button"
                         type="button"
                         aria-label={`${c.creator} 콘텐츠 미리보기`}
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
@@ -1082,7 +1082,7 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3 max-w-[140px]">
                       <Tooltip content={c.campaign}>
-                        <button
+                        <button type="button"
                           type="button"
                           onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
                           className="text-base text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
@@ -1110,7 +1110,7 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => setPreviewItem(c)}
                           aria-label={`${c.creator} 미리보기`}
                           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -1118,7 +1118,7 @@ export default function Library() {
                           <Eye size={14} aria-hidden="true" />
                         </button>
                         {isDownloaded ? (
-                          <button
+                          <button type="button"
                             onClick={() => showToast(`${c.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
                             aria-label={`${c.creator} 다시 다운로드 (결제 완료)`}
                             className="p-1.5 rounded-lg hover:bg-brand-green-bg text-brand-green transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -1126,7 +1126,7 @@ export default function Library() {
                             <Download size={14} aria-hidden="true" />
                           </button>
                         ) : (
-                          <button
+                          <button type="button"
                             onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: c.id })}
                             aria-label={`${c.creator} 다운로드`}
                             className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -1160,19 +1160,19 @@ export default function Library() {
           <div className="flex flex-col gap-2 w-full">
             {!approvedIds.has(previewItem.id) && !rejectedIds.has(previewItem.id) && (
               <div className="flex gap-2">
-                <button onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }} className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"><Check size={14} aria-hidden="true" /> 승인</button>
-                <button onClick={() => openRejectConfirm(previewItem)} className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-base font-medium hover:bg-red-50 transition-colors">반려</button>
+                <button type="button" onClick={() => { setApprovedIds(prev => new Set([...prev, previewItem.id])); setPreviewItem(null) }} className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"><Check size={14} aria-hidden="true" /> 승인</button>
+                <button type="button" onClick={() => openRejectConfirm(previewItem)} className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-base font-medium hover:bg-red-50 transition-colors">반려</button>
               </div>
             )}
             {downloadedIds.has(previewItem.id) ? (
-              <button
+              <button type="button"
                 onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
                 className="w-full flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green-text py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors"
               >
                 <Download size={14} aria-hidden="true" /> 다시 다운로드
               </button>
             ) : (
-              <button
+              <button type="button"
                 onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: previewItem.id })}
                 className="w-full flex items-center justify-center gap-1.5 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
               >
@@ -1245,7 +1245,7 @@ export default function Library() {
                     <span className="font-medium text-gray-600">@{previewItem.creatorUsername}</span> 님
                   </p>
                   <div className="flex gap-2">
-                    <button
+                    <button type="button"
                       onClick={() => toggleLibBookmark(previewItem.creator)}
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         libBookmarked.has(previewItem.creator)
@@ -1256,7 +1256,7 @@ export default function Library() {
                       <Heart size={12} className={libBookmarked.has(previewItem.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
                       {libBookmarked.has(previewItem.creator) ? '찜 해제' : '찜하기'}
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => openLibProposal(previewItem.creator)}
                       disabled={libProposedCreators.has(previewItem.creator)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border border-brand-green/30 text-brand-green-text bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1351,8 +1351,8 @@ export default function Library() {
         title="콘텐츠 반려"
         footer={
           <>
-            <button onClick={closeRejectConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleRejectConfirm} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors">반려</button>
+            <button type="button" onClick={closeRejectConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
+            <button type="button" onClick={handleRejectConfirm} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors">반려</button>
           </>
         }
       >
@@ -1409,8 +1409,8 @@ export default function Library() {
             title="콘텐츠를 다운로드하시겠습니까?"
             footer={
               <>
-                <button onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
-                <button onClick={handlePayAndDownload} disabled={isPaying || count === 0} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50">
+                <button type="button" onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
+                <button type="button" onClick={handlePayAndDownload} disabled={isPaying || count === 0} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50">
                   {isPaying ? '결제 중…' : '결제 후 다운로드'}
                 </button>
               </>
@@ -1442,13 +1442,13 @@ export default function Library() {
         size="md"
         footer={!libProposalSent ? (
           <>
-            <button
+            <button type="button"
               onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
-            <button
+            <button type="button"
               onClick={handleLibProposal}
               className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
             >
@@ -1456,7 +1456,7 @@ export default function Library() {
             </button>
           </>
         ) : (
-          <button
+          <button type="button"
             onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
             className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
           >
@@ -1485,7 +1485,7 @@ export default function Library() {
                       isSelected ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <button
+                    <button type="button"
                       type="button"
                       onClick={() => setLibProposalExpandedId(isExpanded ? null : c.id)}
                       className="w-full flex items-center gap-3 p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
