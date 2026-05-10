@@ -6,8 +6,7 @@ import {
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
   ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
 } from 'lucide-react'
-import { StatusBadge } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
+import { StatusBadge, ErrorState, SkeletonCard, Skeleton } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -308,36 +307,32 @@ export default function Dashboard() {
     )
   }
 
-  /* ── QA: 로딩 스켈레톤 ── */
+  /* ── QA: 로딩 스켈레톤 — 공통 Skeleton 컴포넌트 ── */
   if (qa === 'loading') {
     return (
-      <div className="space-y-6 animate-pulse">
-        {/* 헤더 스켈레톤 */}
+      <div className="space-y-6">
+        {/* 헤더 */}
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div className="space-y-2">
-            <div className="h-6 w-48 bg-gray-100 rounded-xl" />
-            <div className="h-4 w-32 bg-gray-100 rounded-xl" />
+            <Skeleton shape="text" width={192} height={24} />
+            <Skeleton shape="text" width={128} height={14} />
           </div>
-          <div className="h-9 w-28 bg-gray-100 rounded-xl" />
+          <Skeleton shape="rect" width={112} height={36} />
         </div>
-        {/* 요약 배너 스켈레톤 */}
-        <div className="h-16 bg-gray-100 rounded-xl" />
-        {/* KPI 4개 스켈레톤 */}
+        {/* 요약 배너 */}
+        <Skeleton shape="card" height={64} />
+        {/* KPI 4개 */}
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="bg-gray-100 rounded-xl h-32" />
-          ))}
+          {[1, 2, 3, 4].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
-        {/* 섹션 2개 스켈레톤 */}
+        {/* 섹션 2개 */}
         <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
-          <div className="col-span-2 bg-gray-100 rounded-xl h-48" />
-          <div className="bg-gray-100 rounded-xl h-48" />
+          <SkeletonCard className="@md:col-span-2" height={192} />
+          <SkeletonCard height={192} />
         </div>
-        {/* 콘텐츠 성과 스켈레톤 */}
+        {/* 콘텐츠 성과 */}
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="bg-gray-100 rounded-xl h-24" />
-          ))}
+          {[1, 2, 3, 4].map(i => <SkeletonCard key={i} height={96} />)}
         </div>
       </div>
     )
