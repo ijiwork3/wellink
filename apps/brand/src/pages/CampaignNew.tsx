@@ -159,6 +159,9 @@ export default function CampaignNew() {
     if (!form.description.trim()) { showToast('캠페인 설명을 입력해주세요', 'error'); return }
     if (form.keywords.length < 1) { showToast('필수 키워드를 1개 이상 추가해주세요', 'error'); return }
     if (!form.guideText.trim()) { showToast('미션 가이드를 입력해주세요', 'error'); return }
+    // 추가한 질문이 있으면 제목 필수
+    const emptyQuestionIdx = questions.findIndex(q => !q.title.trim())
+    if (emptyQuestionIdx >= 0) { showToast(`질문 ${emptyQuestionIdx + 1}의 제목을 입력해주세요`, 'error'); return }
     if (!form.recruitStart || !form.recruitEnd) { showToast('모집 기간을 설정해주세요', 'error'); return }
     if (form.recruitEnd < form.recruitStart) { showToast('모집 종료일은 시작일 이후여야 합니다.', 'error'); return }
     if (!form.announceDate) { showToast('인플루언서 발표일을 설정해주세요', 'error'); return }
