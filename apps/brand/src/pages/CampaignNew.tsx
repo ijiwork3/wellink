@@ -13,7 +13,7 @@ const POST_TYPE_MAP: Record<Platform, string[]> = {
   '틱톡':          [],
 }
 
-const CATEGORIES = ['맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아']
+const CATEGORIES = ['피트니스', '요가·필라테스', '러닝·아웃도어', '뷰티·웰빙', '식품·건강', '기타']
 const PRECAUTIONS = ['릴스 제작 우대', '체험 후기 필수', '없음']
 const PHOTO_COUNTS = ['3장 이상', '5장 이상', '7장 이상', '10장 이상']
 const VIDEO_COUNTS = ['1개 이상 (15초+)', '1개 이상 (30초+)', '2개 이상', '없음']
