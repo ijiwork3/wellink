@@ -11,9 +11,27 @@
 export { default as StatusBadge }    from './components/StatusBadge'
 export { default as PlatformBadge }  from './components/PlatformBadge'
 
-// 카드
+// 카드 / 컨테이너
+export { default as Card, Section }  from './components/Card'
+export type { CardProps, SectionProps } from './components/Card'
 export { default as KPICard }        from './components/KPICard'
 export { default as InfluencerCard } from './components/InfluencerCard'
+
+// 빈 상태 (에러는 ErrorState — 아래 피드백 섹션)
+export { default as EmptyState }     from './components/EmptyState'
+export type { EmptyStateProps, EmptyVariant } from './components/EmptyState'
+
+// 탭
+export { default as Tabs }           from './components/Tabs'
+export type { TabsProps, TabItem, TabVariant } from './components/Tabs'
+
+// 페이지 헤더
+export { default as PageHeader }     from './components/PageHeader'
+export type { PageHeaderProps }      from './components/PageHeader'
+
+// 로딩 스켈레톤
+export { default as Skeleton, SkeletonText, SkeletonCard, SkeletonRow } from './components/Skeleton'
+export type { SkeletonProps }        from './components/Skeleton'
 
 // 입력
 export { default as CustomSelect }   from './components/CustomSelect'
