@@ -579,34 +579,16 @@ export default function ProfileInsight() {
     }
   }, [])
 
-  // period/isTouch 변경 시 차트 인덱스 초기화 + 스크롤 위치 초기화
-  // ⚠️ trimEdgeNulls 적용 후의 실제 데이터 길이로 인덱스 설정 (untrimmed 길이 사용 시 OOB 버그)
+  // period/isTouch 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
   useEffect(() => {
-    if (isTouch) {
-      // 모바일: 마지막 인덱스 선택 (trimEdgeNulls 적용 후 실제 데이터 길이 기반)
-      const fData = trimEdgeNulls(followerDataByPeriod[period],  d => d.value === null)
-      const tData = trimEdgeNulls(trendDataByPeriod[period],     d => d.likes === null)
-      const irData = trimEdgeNulls(impressReachByPeriod[period], d => d.impressions === null)
-      setFollowerChartIdx(fData.length - 1)
-      setTrendChartIdx(tData.length - 1)
-      setImpReachChartIdx(irData.length - 1)
-      // 모바일: 마지막 포인트(활성 툴팁)가 보이도록 오른쪽 끝으로 스크롤
-      requestAnimationFrame(() => {
-        followerChartScrollRef.current?.scrollToEnd()
-        trendChartScrollRef.current?.scrollToEnd()
-        impReachChartScrollRef.current?.scrollToEnd()
-      })
-    } else {
-      setFollowerChartIdx(null)
-      setTrendChartIdx(null)
-      setImpReachChartIdx(null)
-      // PC: 처음으로 스크롤 초기화
-      requestAnimationFrame(() => {
-        followerChartScrollRef.current?.scrollToStart()
-        trendChartScrollRef.current?.scrollToStart()
-        impReachChartScrollRef.current?.scrollToStart()
-      })
-    }
+    setFollowerChartIdx(null)
+    setTrendChartIdx(null)
+    setImpReachChartIdx(null)
+    requestAnimationFrame(() => {
+      followerChartScrollRef.current?.scrollToStart()
+      trendChartScrollRef.current?.scrollToStart()
+      impReachChartScrollRef.current?.scrollToStart()
+    })
   }, [period, isTouch])
 
   const tableScrollRef = useRef<HTMLDivElement>(null)

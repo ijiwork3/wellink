@@ -240,31 +240,16 @@ export default function AdPerformance() {
     setCampaignPage(1)
   }, [period, dateOffset])
 
-  // period/isTouch 변경 시 touch 기본값 설정 (마지막 포인트) + 스크롤 위치 초기화
+  // period/isTouch 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
   useEffect(() => {
-    const chartData = CHART_DATA_BY_PERIOD[period]
-    if (isTouch) {
-      const n = chartData.length
-      setMixedChartIdx(n - 1)
-      setCtrChartIdx(n - 1)
-      setClicksChartIdx(n - 1)
-      // 모바일: 마지막 포인트(활성 툴팁)가 보이도록 오른쪽 끝으로 스크롤
-      requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollToEnd()
-        ctrChartScrollRef.current?.scrollToEnd()
-        clicksChartScrollRef.current?.scrollToEnd()
-      })
-    } else {
-      setMixedChartIdx(null)
-      setCtrChartIdx(null)
-      setClicksChartIdx(null)
-      // PC: 처음으로 스크롤 초기화
-      requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollToStart()
-        ctrChartScrollRef.current?.scrollToStart()
-        clicksChartScrollRef.current?.scrollToStart()
-      })
-    }
+    setMixedChartIdx(null)
+    setCtrChartIdx(null)
+    setClicksChartIdx(null)
+    requestAnimationFrame(() => {
+      mixedChartScrollRef.current?.scrollToStart()
+      ctrChartScrollRef.current?.scrollToStart()
+      clicksChartScrollRef.current?.scrollToStart()
+    })
   }, [period, isTouch])
 
   const headerRef = useRef<HTMLDivElement>(null)

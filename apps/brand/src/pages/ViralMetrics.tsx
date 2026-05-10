@@ -664,23 +664,14 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
   }) : []
 
   // 차트 인터랙티브 인덱스 (모달 열릴 때 마지막 인덱스). content=null이면 빈 배열이라 null 안전 폴백.
-  const [scoreIdx, setScoreIdx] = useState<number | null>(
-    isTouch && scoreHistory.length > 0 ? scoreHistory.length - 1 : null
-  )
+  const [scoreIdx, setScoreIdx] = useState<number | null>(null)
   const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
 
+  // content 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
   useEffect(() => {
-    if (isTouch) {
-      setScoreIdx(scoreHistory.length > 0 ? scoreHistory.length - 1 : null)
-      // 모바일: 마지막 포인트가 보이도록 오른쪽 끝으로 스크롤
-      requestAnimationFrame(() => {
-        scoreScrollRef.current?.scrollToEnd()
-      })
-    } else {
-      setScoreIdx(null)
-      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
-    }
-  }, [isTouch, content])
+    setScoreIdx(null)
+    requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
+  }, [content])
 
 
   const metrics = content ? [
