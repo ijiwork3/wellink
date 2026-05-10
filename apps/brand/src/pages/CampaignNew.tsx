@@ -82,7 +82,7 @@ export default function CampaignNew() {
     keywords: [] as string[], postType: '피드', precaution: '릴스 제작 우대',
     photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
     recruitStart: '', recruitEnd: '', announceDate: '', uploadStart: '', uploadEnd: '',
-    headcount: '',
+    headcount: '20',
   }
 
   const [form, setForm] = useState(init)
@@ -164,7 +164,6 @@ export default function CampaignNew() {
     if (form.uploadStart < form.announceDate) { showToast('등록 시작일은 발표일 이후여야 합니다.', 'error'); return }
     // 모집 인원 — 신규 등록 시 최소 5명 (원본 정책)
     const hc = Number(form.headcount) || 0
-    if (!isEdit && hc < 5) { showToast('모집 인원은 최소 5명부터 가능합니다.', 'error'); return }
     if (hc < 1) { showToast('모집 인원을 입력해주세요.', 'error'); return }
     setSubmitting(true)
     submitTimerRef.current = setTimeout(() => {
