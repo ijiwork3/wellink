@@ -155,6 +155,10 @@ export default function CampaignNew() {
       if (!form.brandName || !form.shippedProductName) { showToast('브랜드명과 상품 이름을 입력해주세요', 'error'); return }
     }
     if (!form.productName || !form.productPrice) { showToast('제공 상품 정보를 입력해주세요', 'error'); return }
+    if (!form.productDetail.trim()) { showToast('제공 상품 상세 내역을 입력해주세요', 'error'); return }
+    if (!form.description.trim()) { showToast('캠페인 설명을 입력해주세요', 'error'); return }
+    if (form.keywords.length < 1) { showToast('필수 키워드를 1개 이상 추가해주세요', 'error'); return }
+    if (!form.guideText.trim()) { showToast('미션 가이드를 입력해주세요', 'error'); return }
     if (!form.recruitStart || !form.recruitEnd) { showToast('모집 기간을 설정해주세요', 'error'); return }
     if (form.recruitEnd < form.recruitStart) { showToast('모집 종료일은 시작일 이후여야 합니다.', 'error'); return }
     if (!form.announceDate) { showToast('인플루언서 발표일을 설정해주세요', 'error'); return }
