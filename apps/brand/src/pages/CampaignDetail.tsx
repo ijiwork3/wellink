@@ -1369,7 +1369,7 @@ export default function CampaignDetail() {
                 onClick={() => setPendingOnlyFilter(v => !v)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-base border transition-colors duration-150 ${
                   pendingOnlyFilter
-                    ? 'bg-amber-50 border-amber-300 text-amber-700'
+                    ? 'bg-amber-100 border-amber-300 text-amber-800'
                     : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -1638,7 +1638,7 @@ export default function CampaignDetail() {
                     <td className="py-2 px-2 sticky right-0 bg-white shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]">
                       {pendingApplicants.has(a.id) ? (
                         <div className="flex flex-col items-stretch gap-1 min-w-[64px]">
-                          <span className="inline-flex items-center justify-center text-sm bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-1 rounded-md whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center text-sm bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-1 rounded-md whitespace-nowrap">
                             선정 예정
                           </span>
                           <Tooltip content="선정 확정">
@@ -1938,7 +1938,7 @@ export default function CampaignDetail() {
             {counts.검수중 > 0 && !isClosed && (
               <button
                 onClick={() => { setContentFilter('검수중'); setContentPage(1); setSelectedContents(new Set()) }}
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-amber-100 border border-amber-200 hover:bg-amber-100 transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
@@ -2125,7 +2125,7 @@ export default function CampaignDetail() {
                           >
                             <Heart
                               size={14}
-                              className={contentInfluencerBookmarks.has(c.influencer) ? 'fill-red-400 text-red-400' : 'text-gray-300'}
+                              className={contentInfluencerBookmarks.has(c.influencer) ? 'fill-red-500 text-red-500' : 'text-gray-300'}
                               aria-hidden="true"
                             />
                           </button>
@@ -2171,8 +2171,8 @@ export default function CampaignDetail() {
                         )}
                         {/* 반려 사유 재제출 안내 */}
                         {status === '반려' && (
-                          <div className="flex items-center gap-1.5 bg-red-50 rounded-xl px-3 py-2">
-                            <X size={12} className="text-red-400 shrink-0" aria-hidden="true" />
+                          <div className="flex items-center gap-1.5 bg-red-100 rounded-xl px-3 py-2">
+                            <X size={12} className="text-red-500 shrink-0" aria-hidden="true" />
                             <p className="text-base text-red-500">반려 처리됨 · 인플루언서에게 피드백 전달</p>
                           </div>
                         )}
@@ -2642,7 +2642,7 @@ export default function CampaignDetail() {
           </div>
         ) : downloadStep === 'plan-select' ? (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-100 border border-amber-100">
               <Crown size={16} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="space-y-0.5">
                 <p className="text-base font-semibold text-amber-900">콘텐츠 다운로드는 유료 플랜 전용 기능입니다</p>

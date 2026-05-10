@@ -35,7 +35,7 @@ const URGENT_ITEMS: UrgentItem[] = [
 
 /* ── 이번 달 성과 하이라이트 ── */
 const HIGHLIGHTS = [
-  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', username: 'changmin_fit', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-50' },
+  { icon: <Trophy size={14} aria-hidden="true" />, label: '가장 높은 참여율', username: 'changmin_fit', name: '이창민', value: '8.1%', sub: '봄 요가 프로모션', color: 'text-amber-500', bg: 'bg-amber-100' },
   { icon: <RefreshCw size={14} aria-hidden="true" />, label: '재협업 추천', username: 'lina_wellness', name: '박리나', value: '전환율 4.2%', sub: '지난 캠페인 기준', color: 'text-brand-green', bg: 'bg-brand-green/5' },
 ]
 
@@ -410,7 +410,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* ── QA: plan-locked 배너 ── */}
       {isPlanLocked && (
-        <div className="flex items-center flex-wrap gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl px-5 py-3 text-base">
+        <div className="flex items-center flex-wrap gap-2 bg-amber-100 border border-amber-200 text-amber-800 rounded-xl px-5 py-3 text-base">
           <Lock size={14} className="shrink-0" aria-hidden="true" />
           <span>{lockedBannerMessage}</span>
           <button

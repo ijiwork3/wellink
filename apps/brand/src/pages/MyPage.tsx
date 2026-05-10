@@ -409,7 +409,7 @@ export default function MyPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <Code2 size={15} className="text-gray-500" aria-hidden="true" />
               웰링크 픽셀
-              <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">Scale 이상</span>
+              <span className="text-sm font-medium text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full border border-amber-200">Scale 이상</span>
             </h2>
             <p className="text-sm text-gray-500 mb-4">직접 전환 추적을 위해 브랜드 사이트에 픽셀 스크립트를 삽입합니다.</p>
 
@@ -464,7 +464,7 @@ export default function MyPage() {
                 현재: {planLabel} 플랜
               </span>
             ) : (
-              <span className="shrink-0 text-sm font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">
+              <span className="shrink-0 text-sm font-semibold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-200">
                 {planLabel}
               </span>
             )}
@@ -1034,7 +1034,7 @@ export default function MyPage() {
         }
       >
         <div className="space-y-4">
-          <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+          <div className="bg-red-100 border border-red-200 rounded-xl p-4">
             <p className="text-base font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
             <ul className="text-sm text-red-600 space-y-1 list-disc list-inside">
               <li>모든 캠페인 데이터 및 인플루언서 이력이 삭제됩니다.</li>

@@ -1109,7 +1109,7 @@ export default function InfluencerList() {
                               {!isFeed && <span className="absolute top-1.5 right-1.5 text-base bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                             </div>
                             <div className="px-2 py-1.5 bg-white flex gap-2">
-                              <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={9} className="text-red-400" aria-hidden="true" />{c.likes.toLocaleString()}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={9} className="text-red-500" aria-hidden="true" />{c.likes.toLocaleString()}</span>
                               <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}</span>
                             </div>
                           </div>

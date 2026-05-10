@@ -254,7 +254,7 @@ export default function Subscription() {
           <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         <div className="bg-white rounded-xl border border-red-100 shadow-sm p-12 text-center">
-          <XCircle size={40} className="text-red-400 mx-auto mb-3" aria-hidden="true" />
+          <XCircle size={40} className="text-red-500 mx-auto mb-3" aria-hidden="true" />
           <p className="text-base font-semibold text-gray-900 mb-1">구독 정보를 불러올 수 없습니다</p>
           <p className="text-sm text-gray-500 mb-4">잠시 후 다시 시도해 주세요.</p>
           <button
@@ -283,7 +283,7 @@ export default function Subscription() {
             {(showExpired || showPaymentFailed) && ' (만료)'}
           </span>
         ) : (
-          <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-300">
+          <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300">
             <AlertTriangle size={12} aria-hidden="true" />
             미구독 · 무료 플랜
           </span>
@@ -292,7 +292,7 @@ export default function Subscription() {
 
       {/* QA: 구독 만료 배너 */}
       {showExpired && (
-        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+        <div className="flex items-start gap-3 bg-red-100 border border-red-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-base font-semibold text-red-700">구독이 만료되었습니다</p>
@@ -303,7 +303,7 @@ export default function Subscription() {
 
       {/* QA: 결제 실패 배너 */}
       {showPaymentFailed && (
-        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-base font-semibold text-amber-800">결제에 실패했습니다</p>
@@ -311,7 +311,7 @@ export default function Subscription() {
           </div>
           <button
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
-            className="ml-auto text-sm border border-amber-300 text-amber-700 px-3 py-1.5 rounded-xl hover:bg-amber-100 transition-colors shrink-0"
+            className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-100 transition-colors shrink-0"
           >
             결제 수단 수정
           </button>
@@ -324,7 +324,7 @@ export default function Subscription() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
-              <span className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
+              <span className="text-sm font-bold text-red-600 bg-red-100 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
             </div>
             <span className="text-sm font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
               체험 중
@@ -345,11 +345,11 @@ export default function Subscription() {
 
       {/* 미구독 안내 배너 — 무료 플랜 / QA plan-free */}
       {(qa === 'plan-free' || (!displayPlan && !showExpired && !showPaymentFailed)) && (
-        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
             <p className="text-base font-bold text-amber-800">현재 무료 플랜을 이용 중입니다</p>
-            <p className="text-sm text-amber-700 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
+            <p className="text-sm text-amber-800 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
           </div>
         </div>
       )}
@@ -384,7 +384,7 @@ export default function Subscription() {
                     <Check size={12} aria-hidden="true" /> 현재 이용중
                   </span>
                   {cancelStatus === 'cancel_scheduled' && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-700 px-2.5 py-1 text-sm font-bold">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-1 text-sm font-bold">
                       해지 예정
                     </span>
                   )}
@@ -399,7 +399,7 @@ export default function Subscription() {
                     다음 결제일은 <span className="font-medium text-gray-900">{fmtDate(nextBillingDate)}</span> 입니다.
                   </p>
                 ) : (
-                  <p className="text-sm text-amber-700 mt-1.5">
+                  <p className="text-sm text-amber-800 mt-1.5">
                     해지 예정일 <span className="font-bold">{fmtDate(nextBillingDate)}</span> 까지 이용 가능합니다.
                   </p>
                 )}
@@ -781,9 +781,9 @@ export default function Subscription() {
               )}
             </div>
             {currentPlan === 'scale' && confirmModal === 'focus' && (
-              <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl">
+              <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
                 <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-                <p className="text-sm text-amber-700">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
+                <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
               </div>
             )}
           </div>

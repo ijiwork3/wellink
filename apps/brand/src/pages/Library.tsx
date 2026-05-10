@@ -959,10 +959,10 @@ export default function Library() {
                         aria-label={libBookmarked.has(c.creator) ? `${c.creator} 찜 해제` : `${c.creator} 찜하기`}
                         aria-pressed={libBookmarked.has(c.creator)}
                         className={`p-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                          libBookmarked.has(c.creator) ? 'text-red-400' : 'text-gray-300 hover:text-red-400'
+                          libBookmarked.has(c.creator) ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
                         }`}
                       >
-                        <Heart size={13} className={libBookmarked.has(c.creator) ? 'fill-red-400' : ''} aria-hidden="true" />
+                        <Heart size={13} className={libBookmarked.has(c.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
                       </button>
                     </div>
                   </div>

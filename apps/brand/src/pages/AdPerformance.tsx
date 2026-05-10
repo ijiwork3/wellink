@@ -159,8 +159,8 @@ const adFormatPerf = [
 
 function getAdStatusBadge(status: string): { label: string; cls: string } {
   if (status === 'active')    return { label: '게재중',   cls: 'bg-emerald-50 text-emerald-600' }
-  if (status === 'paused')    return { label: '일시중지', cls: 'bg-amber-50 text-amber-600' }
-  return                             { label: '종료',     cls: 'bg-red-50 text-red-500' }
+  if (status === 'paused')    return { label: '일시중지', cls: 'bg-amber-100 text-amber-600' }
+  return                             { label: '종료',     cls: 'bg-red-100 text-red-500' }
 }
 
 function getObjectiveBadge(obj: string) {

@@ -323,9 +323,9 @@ export default function ViralMetrics() {
 
       {/* 월간·연간 데이터 부정확 안내 배너 */}
       {(viewMode === 'monthly' || viewMode === 'yearly') && (
-        <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+        <div className="flex items-start gap-2 bg-amber-100 border border-amber-200 rounded-xl px-4 py-3">
           <Info size={14} className="text-amber-500 mt-0.5 shrink-0" aria-hidden="true" />
-          <p className="text-sm text-amber-700 leading-relaxed">
+          <p className="text-sm text-amber-800 leading-relaxed">
             데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
           </p>
         </div>
@@ -598,7 +598,7 @@ export default function ViralMetrics() {
 /** 등급 배지 — 원본 ScorePill 동등 */
 function GradePill({ grade }: { grade: ContentGrade }) {
   const cls = grade === 'A' ? 'bg-brand-green-bg text-brand-green-text'
-    : grade === 'B' ? 'bg-amber-100 text-amber-700'
+    : grade === 'B' ? 'bg-amber-100 text-amber-800'
     : grade === 'processing' ? 'bg-blue-50 text-blue-600'
     : 'bg-gray-100 text-gray-600'
   const label = grade === 'processing' ? '산정 중' : grade

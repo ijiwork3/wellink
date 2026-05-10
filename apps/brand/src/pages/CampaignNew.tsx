@@ -191,7 +191,7 @@ export default function CampaignNew() {
 
       {/* 편집 모드 잠금 배너 — 원본 정책 보강 (PENDING만 수정 가능) */}
       {isEdit && editStatusInfo && !editStatusInfo.editable && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
+        <div className="bg-amber-100 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
           <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
             <p className="text-base font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
