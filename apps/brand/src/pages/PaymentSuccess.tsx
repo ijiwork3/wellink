@@ -19,7 +19,8 @@ export default function PaymentSuccess() {
   const amount  = params.get('amount')  ?? ''
   const planId  = params.get('plan')    ?? ''
 
-  const planName     = PLAN_NAME_MAP[planId] ?? planId
+  // 알려지지 않은 planId는 빈 문자열로 폴백 (PLAN_NAME_MAP에 없는 임의값이 화면에 노출되지 않도록)
+  const planName     = PLAN_NAME_MAP[planId] ?? ''
   // amount 파싱 — 숫자가 아니거나 빈 문자열이면 표시 생략
   const amountNumber = amount.trim() && Number.isFinite(Number(amount)) ? Number(amount) : null
 
@@ -33,7 +34,8 @@ export default function PaymentSuccess() {
         {/* 아이콘 */}
         <div className="flex items-center justify-center">
           <div className="w-20 h-20 bg-brand-green-bg rounded-full flex items-center justify-center">
-            <CheckCircle size={44} className="text-brand-green-text" aria-hidden="true" />
+            {/* 아이콘은 vivid (brand-green) — 텍스트가 아닌 시각 점이므로 brand-green-text 대신 brand-green 사용 (PaymentFail의 text-red-500과 동일 정책) */}
+            <CheckCircle size={44} className="text-brand-green" aria-hidden="true" />
           </div>
         </div>
 
