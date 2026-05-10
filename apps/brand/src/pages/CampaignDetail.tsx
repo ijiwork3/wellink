@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
+import {
+  Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination,
+  ErrorState, SkeletonCard, Skeleton, useToast,
+} from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -696,42 +697,27 @@ export default function CampaignDetail() {
     return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
   }, [])
 
-  // QA: 로딩 상태 — 스켈레톤 전체 레이아웃
+  // QA: 로딩 상태 — 공통 SkeletonCard
   if (qa === 'loading') {
     return (
-      <div className="space-y-5 animate-pulse">
-        {/* 헤더 스켈레톤 */}
+      <div className="space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gray-200" />
+          <Skeleton shape="rect" width={36} height={36} />
           <div className="space-y-2">
-            <div className="h-5 w-40 bg-gray-100 rounded-full" />
-            <div className="h-3 w-24 bg-gray-100 rounded-full" />
+            <Skeleton shape="text" width={160} height={20} />
+            <Skeleton shape="text" width={96} height={12} />
           </div>
         </div>
-        {/* 탭 바 스켈레톤 */}
         <div className="flex gap-1 border-b border-gray-200 pb-0">
           {[80, 72, 88, 72, 72].map((w, i) => (
             <div key={i} className="pb-2.5 px-2">
-              <div className={`h-4 bg-gray-100 rounded-full`} style={{ width: w }} />
+              <Skeleton shape="text" width={w} height={16} />
             </div>
           ))}
         </div>
-        {/* 콘텐츠 영역 스켈레톤 */}
         <div className="space-y-3">
-          <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
-            <div className="h-4 w-32 bg-gray-100 rounded-full" />
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="flex gap-4 py-2 border-b border-gray-50 last:border-0">
-                <div className="h-3 w-20 bg-gray-100 rounded-full" />
-                <div className="h-3 w-28 bg-gray-100 rounded-full" />
-              </div>
-            ))}
-          </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-2">
-            <div className="h-4 w-16 bg-gray-100 rounded-full" />
-            <div className="h-3 w-full bg-gray-100 rounded-full" />
-            <div className="h-3 w-4/5 bg-gray-100 rounded-full" />
-          </div>
+          <SkeletonCard height={240} />
+          <SkeletonCard height={120} />
         </div>
       </div>
     )
