@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, AlertTriangle, X,
   User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent
 } from 'lucide-react'
-import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
+import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -453,8 +453,8 @@ export default function Dashboard() {
       </div>
 
       {/* ── 프로필 인사이트 요약 (원본 대시보드 섹션 1) ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4">
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
             <User size={15} className="text-gray-500" aria-hidden="true" />
             프로필 인사이트
@@ -463,30 +463,24 @@ export default function Dashboard() {
             className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >더보기 <ArrowRight size={12} /></button>
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-4">
-          {PROFILE_METRICS.map(m => {
-            const pos = m.change >= 0
-            return (
-              <div key={m.label} className="space-y-1" title={m.hint}>
-                <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
-                  <span className="text-gray-400">{m.icon}</span>
-                  {m.label}
-                </p>
-                <p className="text-xl font-bold text-gray-900">{m.value}</p>
-                <p className={`text-sm font-medium flex items-center gap-0.5 ${pos ? 'text-brand-green-text' : 'text-red-500'}`}>
-                  {pos ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                  {fmtRate(m.change)}
-                  <span className="text-gray-400 font-normal ml-1">전월 대비</span>
-                </p>
-              </div>
-            )
-          })}
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+          {PROFILE_METRICS.map(m => (
+            <KPICard
+              key={m.label}
+              title={m.label}
+              value={m.value}
+              trend={m.change}
+              trendLabel="전월 대비"
+              icon={m.icon}
+              tooltip={m.hint}
+            />
+          ))}
         </div>
-      </div>
+      </section>
 
       {/* ── 광고 성과 요약 (원본 대시보드 섹션 2) ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4">
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
             <TrendingUp size={15} className="text-gray-500" aria-hidden="true" />
             광고 성과
@@ -495,26 +489,20 @@ export default function Dashboard() {
             className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >더보기 <ArrowRight size={12} /></button>
         </div>
-        <div className="grid grid-cols-2 @md:grid-cols-4 gap-4">
-          {AD_METRICS.map(m => {
-            const pos = m.change >= 0
-            return (
-              <div key={m.label} className="space-y-1" title={m.hint}>
-                <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
-                  <span className="text-gray-400">{m.icon}</span>
-                  {m.label}
-                </p>
-                <p className="text-xl font-bold text-gray-900">{m.value}</p>
-                <p className={`text-sm font-medium flex items-center gap-0.5 ${pos ? 'text-brand-green-text' : 'text-red-500'}`}>
-                  {pos ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                  {fmtRate(m.change)}
-                  <span className="text-gray-400 font-normal ml-1">전월 대비</span>
-                </p>
-              </div>
-            )
-          })}
+        <div className="grid grid-cols-2 @md:grid-cols-4 gap-3 @sm:gap-4">
+          {AD_METRICS.map(m => (
+            <KPICard
+              key={m.label}
+              title={m.label}
+              value={m.value}
+              trend={m.change}
+              trendLabel="전월 대비"
+              icon={m.icon}
+              tooltip={m.hint}
+            />
+          ))}
         </div>
-      </div>
+      </section>
 
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
       <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
