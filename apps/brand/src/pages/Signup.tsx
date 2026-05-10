@@ -318,7 +318,7 @@ export default function Signup() {
           </div>
 
           {/* 가입 버튼 */}
-          <button type="button"
+          <button
             type="submit"
             disabled={isSubmitting || !agreedTerms || !agreedPrivacy}
             aria-busy={isSubmitting}
