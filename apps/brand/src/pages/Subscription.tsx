@@ -67,11 +67,21 @@ const plans = [
   },
 ]
 
-const paymentHistory = [
-  { id: 1, date: '2026-04-01', desc: 'Scale Plan 정기결제', amount: '299,000원', status: '완료' },
-  { id: 2, date: '2026-03-01', desc: 'Scale Plan 정기결제', amount: '299,000원', status: '완료' },
-  { id: 3, date: '2026-02-15', desc: 'Focus → Scale 업그레이드', amount: '200,000원', status: '완료' },
-]
+const PAYMENT_HISTORY: Record<string, { id: number; date: string; desc: string; amount: string; status: string }[]> = {
+  focus: [
+    { id: 1, date: '2026-04-01', desc: 'Focus Plan 정기결제', amount: '99,000원',  status: '완료' },
+    { id: 2, date: '2026-03-01', desc: 'Focus Plan 정기결제', amount: '99,000원',  status: '완료' },
+    { id: 3, date: '2026-02-01', desc: 'Focus Plan 정기결제', amount: '99,000원',  status: '완료' },
+  ],
+  scale: [
+    { id: 1, date: '2026-04-01', desc: 'Scale Plan 정기결제',      amount: '299,000원', status: '완료' },
+    { id: 2, date: '2026-03-01', desc: 'Scale Plan 정기결제',      amount: '299,000원', status: '완료' },
+    { id: 3, date: '2026-02-15', desc: 'Focus → Scale 업그레이드', amount: '200,000원', status: '완료' },
+  ],
+  enterprise: [
+    { id: 1, date: '2026-04-01', desc: 'Enterprise 계약 체결', amount: '별도 문의', status: '완료' },
+  ],
+}
 
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
@@ -623,8 +633,8 @@ export default function Subscription() {
         )}
       </div>
 
-      {/* 최근 결제 내역 — 미구독 / 무료 상태면 숨김 */}
-      {currentPlan && qa !== 'plan-free' && (
+      {/* 최근 결제 내역 — 미구독 / 무료체험 / 무료 상태면 숨김 */}
+      {currentPlan && qa !== 'plan-free' && qa !== 'trial' && (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-50">
             <h3 className="text-base font-semibold text-gray-900">최근 결제 내역</h3>
@@ -657,7 +667,7 @@ export default function Subscription() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {[...paymentHistory].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => (
+                  {[...(PAYMENT_HISTORY[currentPlan] ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => (
                     <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="py-3 px-5 text-base font-medium text-gray-900">{p.desc}</td>
                       <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
