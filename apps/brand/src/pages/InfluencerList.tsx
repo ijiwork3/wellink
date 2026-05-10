@@ -913,7 +913,7 @@ export default function InfluencerList() {
                         <span className="font-semibold text-gray-700">{formatFollowers(inf.followers)}</span>
                       </span>
                       {inf.instagramId ? (
-                        <a href={`https://instagram.com/${inf.instagramId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-base text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">
+                        <a href={`https://instagram.com/${inf.instagramId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">
                           <ExternalLink size={11} aria-hidden="true" />인스타 바로가기
                         </a>
                       ) : (

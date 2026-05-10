@@ -1097,7 +1097,7 @@ export default function ProfileInsight() {
             ))}
           </div>
           <p className="text-sm text-gray-400 mt-4">
-            <span className="text-brand-green font-medium">초록색</span>은 높은 참여율,{' '}
+            <span className="text-brand-green-text font-medium">초록색</span>은 높은 참여율,{' '}
             <span className="text-red-500 font-medium">빨간색</span>은 개선 필요 지표
           </p>
         </div>
@@ -1201,7 +1201,7 @@ export default function ProfileInsight() {
                               const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
                               const isBad  = parseFloat(engRate) < 2.5
                               return (
-                                <span className={`text-sm font-semibold ${isGood ? 'text-brand-green' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                                <span className={`text-sm font-semibold ${isGood ? 'text-brand-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
                                   {engRate}%
                                 </span>
                               )
@@ -1743,7 +1743,7 @@ function PostContentTable() {
                   <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.saves)}</td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     <span className={`text-sm font-bold tabular-nums ${
-                      p.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green'
+                      p.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text'
                       : p.engagementRate < 2.5 ? 'text-red-500'
                       : 'text-gray-700'
                     }`}>

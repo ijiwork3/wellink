@@ -1445,7 +1445,7 @@ export default function CampaignDetail() {
                     ))}
                     <button
                       onClick={() => { setAnswerFilters({}); setApplicantsPage(1) }}
-                      className="text-base text-brand-green hover:underline ml-1 self-center"
+                      className="text-base text-brand-green-text hover:underline ml-1 self-center"
                     >전체 해제</button>
                   </div>
                 )}
@@ -1562,7 +1562,7 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-3 px-4 text-base font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-brand-green">
+                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-brand-green-text">
                         {a.fitScore}
                       </span>
                     </td>
@@ -1841,7 +1841,7 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text-text">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text-text-text">등록 완료</span>
                           ) : (
                             <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-base font-bold text-gray-600">미등록</span>
                           )}
@@ -2022,7 +2022,7 @@ export default function CampaignDetail() {
                 {(contentFilter !== '전체' || contentPlatform !== '전체') && (
                   <button
                     onClick={() => { setContentFilter('전체'); setContentPlatform('전체'); setContentPage(1) }}
-                    className="mt-3 text-base text-brand-green hover:underline"
+                    className="mt-3 text-base text-brand-green-text hover:underline"
                   >
                     필터 초기화
                   </button>
@@ -2132,7 +2132,7 @@ export default function CampaignDetail() {
                           ].map(m => (
                             <div key={m.label}>
                               <p className="text-base text-gray-500 mb-0.5">{m.label}</p>
-                              <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
+                              <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-800'}`}>{m.value}</p>
                             </div>
                           ))}
                         </div>
@@ -2310,7 +2310,7 @@ export default function CampaignDetail() {
                 .slice(0, 3)
                 .map((c, idx) => {
                   const medals = ['🥇', '🥈', '🥉']
-                  const scoreColor = c.viralScore >= 80 ? 'text-brand-green' : c.viralScore >= 50 ? 'text-amber-500' : 'text-gray-500'
+                  const scoreColor = c.viralScore >= 80 ? 'text-brand-green-text' : c.viralScore >= 50 ? 'text-amber-500' : 'text-gray-500'
                   const borderColor = idx === 0 ? 'border-amber-200' : 'border-gray-100'
                   const engRate = c.reach > 0 ? ((c.likes + c.comments + c.saves) / c.reach * 100).toFixed(1) : '0.0'
                   return (
@@ -2345,7 +2345,7 @@ export default function CampaignDetail() {
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">참여율</p>
-                          <p className="text-base font-bold text-brand-green-text">{engRate}%</p>
+                          <p className="text-base font-bold text-brand-green-text-text">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -2463,7 +2463,7 @@ export default function CampaignDetail() {
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className="text-base font-semibold text-brand-green-text">{engRate}%</span>
+                              <span className="text-base font-semibold text-brand-green-text-text">{engRate}%</span>
                             </td>
                           </tr>
                         )
@@ -2561,7 +2561,7 @@ export default function CampaignDetail() {
                 ].map(m => (
                   <div key={m.label}>
                     <p className="text-sm text-gray-500 mb-0.5">{m.label}</p>
-                    <p className={`text-base font-bold ${m.highlight ? 'text-brand-green' : 'text-gray-800'}`}>{m.value}</p>
+                    <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-800'}`}>{m.value}</p>
                   </div>
                 ))}
               </div>
@@ -2877,7 +2877,7 @@ export default function CampaignDetail() {
                           href={detail.latestPostUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-base font-semibold text-brand-green-text-text underline mt-1 inline-block"
+                          className="text-base font-semibold text-brand-green-text-text-text underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
                         <p className="text-base text-gray-500 mt-1">연결된 게시글 없음</p>

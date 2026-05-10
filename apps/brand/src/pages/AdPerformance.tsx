@@ -158,17 +158,19 @@ const adFormatPerf = [
 
 
 function getAdStatusBadge(status: string): { label: string; cls: string } {
-  if (status === 'active')    return { label: '게재중',   cls: 'bg-emerald-50 text-emerald-600' }
-  if (status === 'paused')    return { label: '일시중지', cls: 'bg-amber-100 text-amber-600' }
+  // 채도 v2: bg-X-100 + text-X-700/800 일관
+  if (status === 'active')    return { label: '게재중',   cls: 'bg-emerald-100 text-emerald-700' }
+  if (status === 'paused')    return { label: '일시중지', cls: 'bg-amber-100 text-amber-800' }
   return                             { label: '종료',     cls: 'bg-red-100 text-red-500' }
 }
 
 function getObjectiveBadge(obj: string) {
+  // 채도 v2: bg-X-100 + text-X-700 일관
   switch (obj) {
-    case '인지도': return 'bg-blue-50 text-blue-600'
-    case '전환':   return 'bg-purple-50 text-purple-600'
-    case '트래픽': return 'bg-sky-50 text-sky-600'
-    default:      return 'bg-gray-50 text-gray-500'
+    case '인지도': return 'bg-blue-100 text-blue-700'
+    case '전환':   return 'bg-purple-100 text-purple-700'
+    case '트래픽': return 'bg-sky-100 text-sky-700'
+    default:      return 'bg-gray-100 text-gray-600'
   }
 }
 

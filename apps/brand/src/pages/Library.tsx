@@ -1212,7 +1212,7 @@ export default function Library() {
                       <h4 className="text-lg font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
                       <span className="text-base text-gray-500">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
-                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green font-semibold">
+                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
                         </span>
                       )}
@@ -1309,7 +1309,7 @@ export default function Library() {
                 <div className="bg-gray-50 rounded-xl p-3">
                   <p className="text-sm text-gray-500 mb-1">캠페인 평균 대비 참여율</p>
                   <div className="flex items-baseline gap-1 flex-wrap">
-                    <span className={`text-xl font-bold ${diffPct >= 0 ? 'text-brand-green' : 'text-red-500'}`}>
+                    <span className={`text-xl font-bold ${diffPct >= 0 ? 'text-brand-green-text' : 'text-red-500'}`}>
                       {diffPct >= 0 ? '+' : ''}{diffPct}%
                     </span>
                     <span className="text-sm text-gray-500">
