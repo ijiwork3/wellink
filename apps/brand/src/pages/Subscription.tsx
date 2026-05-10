@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, CreditCard, AlertTriangle, XCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS } from '@wellink/ui'
+import { Check, CreditCard, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, SkeletonCard, Skeleton } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
@@ -201,51 +201,26 @@ export default function Subscription() {
     setConfirmModal(null)
   }
 
-  /* ── QA: 로딩 상태 ── */
+  /* ── QA: 로딩 상태 — 공통 SkeletonCard ── */
   if (qa === 'loading') {
     return (
-      <div className="space-y-8 animate-pulse">
-        <div className="flex items-start justify-between">
+      <div className="space-y-8">
+        <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
-            <div className="h-6 w-28 bg-gray-100 rounded-xl" />
-            <div className="h-3 w-48 bg-gray-100 rounded-xl" />
+            <Skeleton shape="text" width={112} height={24} />
+            <Skeleton shape="text" width={192} height={12} />
           </div>
-          <div className="h-7 w-24 bg-gray-100 rounded-xl" />
+          <Skeleton shape="rect" width={96} height={28} />
         </div>
-        {/* 플랜 카드 3개 스켈레톤 */}
         <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-              <div className="space-y-2">
-                <div className="h-5 w-16 bg-gray-100 rounded-xl" />
-                <div className="h-3 w-32 bg-gray-100 rounded-xl" />
-                <div className="h-8 w-24 bg-gray-100 rounded-xl mt-3" />
-              </div>
-              <div className="space-y-2.5">
-                {[1, 2, 3].map(j => (
-                  <div key={j} className="h-3 w-full bg-gray-100 rounded-xl" />
-                ))}
-              </div>
-              <div className="h-10 w-full bg-gray-100 rounded-xl" />
-            </div>
-          ))}
+          {[1, 2, 3].map(i => <SkeletonCard key={i} height={280} />)}
         </div>
-        {/* 결제 정보 섹션 스켈레톤 */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-4">
-          <div className="h-4 w-20 bg-gray-100 rounded-xl" />
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-            <div className="w-10 h-7 bg-gray-100 rounded-md" />
-            <div className="space-y-1.5">
-              <div className="h-3 w-36 bg-gray-100 rounded-xl" />
-              <div className="h-3 w-24 bg-gray-100 rounded-xl" />
-            </div>
-          </div>
-        </div>
+        <SkeletonCard height={160} />
       </div>
     )
   }
 
-  /* ── QA: 에러 상태 ── */
+  /* ── QA: 에러 상태 — 공통 ErrorState ── */
   if (qa === 'error') {
     return (
       <div className="space-y-6">
@@ -253,17 +228,7 @@ export default function Subscription() {
           <h1 className="text-2xl font-bold text-gray-900">구독 관리</h1>
           <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
-        <div className="bg-white rounded-xl border border-red-100 shadow-sm p-12 text-center">
-          <XCircle size={40} className="text-red-500 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-900 mb-1">구독 정보를 불러올 수 없습니다</p>
-          <p className="text-sm text-gray-500 mb-4">잠시 후 다시 시도해 주세요.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-base bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2 mx-auto"
-          >
-            <RefreshCw size={14} aria-hidden="true" />다시 시도
-          </button>
-        </div>
+        <ErrorState message="구독 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
       </div>
     )
   }
