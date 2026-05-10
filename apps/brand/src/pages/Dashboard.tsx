@@ -6,7 +6,7 @@ import {
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
   ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
 } from 'lucide-react'
-import { StatusBadge, ErrorState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
+import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -14,8 +14,18 @@ import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import type { CampaignStatus } from '@wellink/ui'
 
-/* ── 표시용 status 친절화 (Dashboard 전용) ── */
-function deriveDisplayStatus(status: string): CampaignStatus {
+/* ── 표시용 status 친절화 (Dashboard 전용) — Campaigns 페이지와 동일 정책
+ *  '모집중' + D-3 이내 → '마감임박' 자동 변환 (Campaigns.tsx와 일관)
+ */
+const URGENT_DAYS = 3 // thresholds.ts DDAY_THRESHOLD.urgent와 동일
+function deriveDisplayStatus(status: string, deadline?: string): CampaignStatus {
+  // '모집중'에서 D-Day 임박 자동 변환
+  if (status === '모집중' && deadline) {
+    const d = getDDay(deadline)
+    if (d.label === 'D-Day' || (d.label.startsWith('D-') && Number(d.label.slice(2)) <= URGENT_DAYS)) {
+      return '마감임박'
+    }
+  }
   switch (status) {
     case '대기중': return '지원자 대기'
     case '진행중': return '콘텐츠 등록 중'
@@ -344,17 +354,18 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div>
-            <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+            <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
           <button
+            type="button"
             onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
           >
             <Megaphone size={14} aria-hidden="true" />새 캠페인
           </button>
         </div>
-        {/* 0값 KPI */}
+        {/* 0값 KPI — Card 컴포넌트로 통일 (정상 KPI와 동일 마크업) */}
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
           {[
             { title: '활성 캠페인', value: '0', sub: '진행 중인 캠페인 없음', icon: <Megaphone size={16} aria-hidden="true" /> },
@@ -362,27 +373,33 @@ export default function Dashboard() {
             { title: '이번달 도달', value: '0', sub: '임프레션 없음', icon: <Activity size={16} aria-hidden="true" /> },
             { title: '검수대기', value: '0', sub: '콘텐츠 대기 없음', icon: <Clock size={16} aria-hidden="true" /> },
           ].map(k => (
-            <div key={k.title} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <Card key={k.title} padding="md" className="shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-gray-500 font-medium">{k.title}</span>
                 <span className="text-gray-300">{k.icon}</span>
               </div>
-              <div className="text-[28px] font-bold text-gray-300">{k.value}</div>
+              <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-300 leading-tight`}>{k.value}</div>
               <div className="text-sm text-gray-400 mt-1">{k.sub}</div>
-            </div>
+            </Card>
           ))}
         </div>
-        {/* 빈 캠페인 영역 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Megaphone size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">진행 중인 캠페인이 없습니다</p>
-          <p className="text-sm text-gray-400 mb-4">새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요.</p>
-          <button
-            onClick={() => navigate('/campaigns/new')}
-            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            새 캠페인 만들기
-          </button>
+        {/* 빈 캠페인 영역 — 공통 EmptyState */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<Megaphone size={40} />}
+            title="진행 중인 캠페인이 없습니다"
+            description="새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요."
+            action={
+              <button
+                type="button"
+                onClick={() => navigate('/campaigns/new')}
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                새 캠페인 만들기
+              </button>
+            }
+          />
         </div>
       </div>
     )
@@ -416,19 +433,19 @@ export default function Dashboard() {
           </button>
         </div>
       )}
-      {/* ── 즉각 확인 배너 ── */}
+      {/* ── 즉각 확인 배너 — 채도 v2: bg-rose-50 → bg-rose-100 ── */}
       {visibleUrgent.map(u => (
         <div
           key={u.id}
-          className="flex items-start gap-3 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-base"
+          className="flex items-start gap-3 bg-rose-100 border border-rose-200 rounded-xl px-4 py-3 text-base"
         >
-          <AlertTriangle size={15} className="text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
-          <span className="flex-1 text-rose-700">{u.text}</span>
+          <AlertTriangle size={15} className="text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <span className="flex-1 text-rose-800">{u.text}</span>
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => navigate(u.route)}
-              className="text-sm font-semibold text-rose-600 hover:text-rose-800 whitespace-nowrap transition-colors"
+              className="text-sm font-semibold text-rose-700 hover:text-rose-900 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
               {u.cta} →
             </button>
@@ -436,7 +453,7 @@ export default function Dashboard() {
               type="button"
               onClick={() => setDismissedUrgent(prev => new Set([...prev, u.id]))}
               aria-label="닫기"
-              className="text-rose-300 hover:text-rose-500 transition-colors"
+              className="text-rose-400 hover:text-rose-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
               <X size={14} />
             </button>
@@ -447,12 +464,13 @@ export default function Dashboard() {
       {/* ── 인사말 + 날짜 ── */}
       <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
         <div>
-          <h1 className={`${isPhone ? 'text-base' : 'text-xl'} font-bold text-gray-900`}>안녕하세요, 웰링크 브랜드님</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
           <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
         </div>
         <button
+          type="button"
           onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
+          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
         >
           <Megaphone size={14} aria-hidden="true" />
           새 캠페인
@@ -572,7 +590,7 @@ export default function Dashboard() {
                       >
                         <td className="py-3.5 px-4 text-base font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
-                          <StatusBadge status={deriveDisplayStatus(c.status)} />
+                          <StatusBadge status={deriveDisplayStatus(c.status, c.deadline)} />
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
