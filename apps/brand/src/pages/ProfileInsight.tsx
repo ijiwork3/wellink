@@ -527,31 +527,15 @@ function MultiLineTrendChart({
         )
       })}
 
-      {/* 인터랙티브 active indicator */}
+      {/* 인터랙티브 crosshair — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex != null && (() => {
         const d = data[activeIndex]
         if (!d) return null
         const stepX = chartW / Math.max(1, data.length - 1)
         const x = padX + activeIndex * stepX
-        const tipLines = activeMetrics.map(m => ({
-          label: metricLabelMap[m],
-          value: d[m],
-          color: metricColors[m],
-        }))
-        const tipH = 18 + tipLines.length * 16
-        const tipW = 120
-        const tipX = x + (x > width * 0.65 ? -(tipW + 8) : 8)
         return (
           <g key="active">
             <line x1={x} y1={padY} x2={x} y2={padY + chartH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <rect x={tipX} y={padY} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
-            <text x={tipX + 8} y={padY + 13} fontSize={8} fill="#6b7280">{d.label}</text>
-            {tipLines.map((tl, li) => (
-              <g key={li}>
-                <rect x={tipX + 8} y={padY + 18 + li * 16} width={6} height={6} rx={1} fill={tl.color} />
-                <text x={tipX + 18} y={padY + 25 + li * 16} fontSize={8} fill="#374151">{tl.label}: {fmtVal(tl.value)}</text>
-              </g>
-            ))}
           </g>
         )
       })()}
@@ -1018,6 +1002,34 @@ export default function ProfileInsight() {
                 isTouch={isTouch}
               />
             </div>
+            {/* HTML 툴팁 오버레이 — SVG 스케일 독립, 항상 고정 크기 */}
+            {trendChartIdx != null && (() => {
+              const d = trendData[trendChartIdx]
+              if (!d) return null
+              const scrollLeft = trendChartScrollRef.current?.scrollLeft ?? 0
+              const containerW = trendChartScrollRef.current?.clientWidth ?? 580
+              const padX = 48, chartW = 580 - padX * 2
+              const svgX = padX + (chartW / Math.max(1, trendData.length - 1)) * trendChartIdx
+              const visX = svgX - scrollLeft
+              const isRight = visX > containerW * 0.65
+              const fmtV = (v: number | null) => v === null ? '—' : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v)
+              return (
+                <div
+                  className="absolute top-2 z-20 pointer-events-none"
+                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+                >
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: metricColors[activeMetric] }} />
+                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">
+                        {metricLabels[activeMetric]}: {fmtV(d[activeMetric])}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
 
@@ -1063,6 +1075,36 @@ export default function ProfileInsight() {
                 isTouch={isTouch}
               />
             </div>
+            {/* HTML 툴팁 오버레이 */}
+            {impReachChartIdx != null && (() => {
+              const d = impressReachData[impReachChartIdx]
+              if (!d) return null
+              const scrollLeft = impReachChartScrollRef.current?.scrollLeft ?? 0
+              const containerW = impReachChartScrollRef.current?.clientWidth ?? 580
+              const padL = 52, padR = 12, plotW = 580 - padL - padR
+              const svgX = padL + (plotW / Math.max(1, impressReachData.length - 1)) * impReachChartIdx
+              const visX = svgX - scrollLeft
+              const isRight = visX > containerW * 0.65
+              const fmtV = (v: number | null) => v === null ? '—' : v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)
+              return (
+                <div
+                  className="absolute top-2 z-20 pointer-events-none"
+                  style={{ [isRight ? 'right' : 'left']: Math.max(4, isRight ? containerW - visX + 8 : visX + 8) }}
+                >
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
+                    <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
+                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">노출: {fmtV(d.impressions)}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-emerald-500" />
+                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">도달: {fmtV(d.reach)}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>
@@ -1415,34 +1457,18 @@ function ImpressReachChart({
         )
       })}
 
-      {/* 인터랙티브 active indicator */}
+      {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex != null && (() => {
         const d = data[activeIndex]
         if (!d) return null
         const x = padL + activeIndex * stepX
         const impY = d.impressions !== null ? toY(d.impressions) : null
         const reachY = d.reach !== null ? toY(d.reach) : null
-        const tipW = 130, tipH = 50
-        const tipX = x + (x > W * 0.65 ? -(tipW + 8) : 8)
         return (
           <g key="active">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            {impY !== null && (
-              <>
-                <circle cx={x} cy={impY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
-              </>
-            )}
-            {reachY !== null && (
-              <>
-                <circle cx={x} cy={reachY} r={3.5} fill="#10b981" stroke="white" strokeWidth={1.5} />
-              </>
-            )}
-            <rect x={tipX} y={padT} width={tipW} height={tipH} rx={5} fill="white" stroke="#e5e7eb" strokeWidth={1} filter="drop-shadow(0 1px 3px rgba(0,0,0,.08))" />
-            <text x={tipX + 8} y={padT + 13} fontSize={8} fill="#6b7280">{d.label}</text>
-            <circle cx={tipX + 11} cy={padT + 25} r={3} fill="#8b5cf6" />
-            <text x={tipX + 18} y={padT + 28} fontSize={8} fill="#374151">노출: {d.impressions !== null ? fmtAxis(d.impressions) : '—'}</text>
-            <circle cx={tipX + 11} cy={padT + 40} r={3} fill="#10b981" />
-            <text x={tipX + 18} y={padT + 43} fontSize={8} fill="#374151">도달: {d.reach !== null ? fmtAxis(d.reach) : '—'}</text>
+            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />}
+            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill="#10b981" stroke="white" strokeWidth={1.5} />}
           </g>
         )
       })()}
