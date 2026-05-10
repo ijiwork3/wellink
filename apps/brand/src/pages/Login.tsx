@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Lock, Eye, EyeOff, HelpCircle } from 'lucide-react'
 import { useQAMode, auth, useToast, TIMER_MS } from '@wellink/ui'
 import { CONTACT_EMAIL, HELP_EMAIL } from '../config/urls'
 
-type UserType = '인플루언서' | '광고주'
-
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const qa = useQAMode()
   const { showToast } = useToast()
 
@@ -16,7 +15,6 @@ export default function Login() {
   const isFilled  = qa === 'filled'
   const isLoading = qa === 'loading'
 
-  const [userType, setUserType] = useState<UserType>('인플루언서')
   const [id, setId] = useState(isError ? 'wrong@test.com' : isFilled ? 'admin@wellink.co.kr' : '')
   const [password, setPassword] = useState(isError ? 'pass1234' : isFilled ? 'wellink2026' : '')
   const [showPassword, setShowPassword] = useState(false)
@@ -32,7 +30,9 @@ export default function Login() {
       await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
       showToast('로그인되었습니다.', 'success')
       auth.set('brand')
-      navigate('/dashboard')
+      // 보호 라우트에서 진입한 경우 원래 페이지로 복귀, 아니면 대시보드
+      const redirect = searchParams.get('redirect')
+      navigate(redirect && redirect.startsWith('/') ? redirect : '/dashboard')
     } catch {
       setLoginError('로그인 중 오류가 발생했습니다. 다시 시도해 주세요.')
       setLoading(false)
@@ -85,31 +85,10 @@ export default function Login() {
           </p>
         </div>
 
-        {/* 사용자 유형 segmented */}
-        <div className="flex rounded-xl border border-gray-200 p-1 mb-6 gap-1" role="tablist" aria-label="사용자 유형">
-          {(['인플루언서', '광고주'] as UserType[]).map(type => (
-            <button type="button"
-              key={type}
-              type="button"
-              role="tab"
-              aria-selected={userType === type}
-              onClick={() => { setUserType(type); setLoginError('') }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                userType === type
-                  ? 'bg-brand-green text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <User size={13} aria-hidden="true" />
-              {type}
-            </button>
-          ))}
-        </div>
-
         {/* 폼 */}
         <div className="space-y-3">
           <div>
-            <label htmlFor="login-id" className="text-sm text-gray-500 mb-1.5 block">{userType} 아이디</label>
+            <label htmlFor="login-id" className="text-sm text-gray-500 mb-1.5 block">광고주 아이디</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
               <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
@@ -156,7 +135,7 @@ export default function Login() {
           </div>
         </div>
 
-        <button type="button"
+        <button
           type="submit"
           disabled={loading}
           aria-busy={loading}
