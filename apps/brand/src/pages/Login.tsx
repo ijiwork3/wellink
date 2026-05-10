@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { User, Lock, Eye, EyeOff, HelpCircle } from 'lucide-react'
 import { useQAMode, auth, useToast, TIMER_MS } from '@wellink/ui'
 import { CONTACT_EMAIL, HELP_EMAIL } from '../config/urls'
 
@@ -10,87 +10,106 @@ export default function Login() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const { showToast } = useToast()
+
+  // qa 모드 → 초기값 단일 결정 (useEffect 동기화 불필요)
+  const isError   = qa === 'error'
+  const isFilled  = qa === 'filled'
+  const isLoading = qa === 'loading'
+
   const [userType, setUserType] = useState<UserType>('인플루언서')
-  const [id, setId] = useState(qa === 'error' ? 'wrong@test.com' : qa === 'filled' ? 'admin@wellink.co.kr' : '')
-  const [password, setPassword] = useState(qa === 'error' ? 'pass1234' : qa === 'filled' ? 'wellink2026' : '')
+  const [id, setId] = useState(isError ? 'wrong@test.com' : isFilled ? 'admin@wellink.co.kr' : '')
+  const [password, setPassword] = useState(isError ? 'pass1234' : isFilled ? 'wellink2026' : '')
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(qa === 'loading')
-  const [loginError, setLoginError] = useState(qa === 'error' ? '아이디 또는 비밀번호가 올바르지 않습니다.' : '')
+  const [loading, setLoading] = useState(isLoading)
+  const [loginError, setLoginError] = useState(isError ? '아이디 또는 비밀번호가 올바르지 않습니다.' : '')
 
-  useEffect(() => {
-    if (qa === 'error') {
-      setId('wrong@test.com')
-      setPassword('pass1234')
-      setLoginError('아이디 또는 비밀번호가 올바르지 않습니다.')
-      setLoading(false)
-    } else if (qa === 'filled') {
-      setId('admin@wellink.co.kr')
-      setPassword('wellink2026')
-      setLoginError('')
-      setLoading(false)
-    } else if (qa === 'loading') {
-      setLoading(true)
-    }
-  }, [qa])
-
-  const handleLogin = async () => {
+  const handleLogin = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    if (loading) return
     setLoading(true)
     setLoginError('')
-    await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
-    setLoading(false)
-    showToast('로그인되었습니다.', 'success')
-    auth.set('brand')
-    navigate('/dashboard')
+    try {
+      await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
+      showToast('로그인되었습니다.', 'success')
+      auth.set('brand')
+      navigate('/dashboard')
+    } catch {
+      setLoginError('로그인 중 오류가 발생했습니다. 다시 시도해 주세요.')
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{background: 'var(--gradient-login-bg)'}}>
-      {/* Subtle green blobs */}
-      <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-20" style={{background: `radial-gradient(circle, var(--color-brand-green), transparent)`}} />
-      <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-15" style={{background: `radial-gradient(circle, var(--color-brand-green), transparent)`}} />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4" style={{ background: 'var(--gradient-login-bg)' }}>
+      {/* 배경 데코 */}
+      <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-20" aria-hidden="true" style={{ background: 'radial-gradient(circle, var(--color-brand-green), transparent)' }} />
+      <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-15" aria-hidden="true" style={{ background: 'radial-gradient(circle, var(--color-brand-green), transparent)' }} />
 
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 px-8 py-5 flex items-center justify-between">
-        <button onClick={() => navigate('/')} className="flex items-center gap-1.5">
+      {/* 헤더 */}
+      <div className="absolute top-0 left-0 right-0 px-4 @sm:px-8 py-5 flex items-center justify-between z-10">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="홈으로"
+          className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+        >
           <span className="text-xl font-bold tracking-tight text-gray-900">WELLINK</span>
           <span className="text-sm font-bold bg-brand-green text-white px-2 py-1 rounded-full">AI</span>
         </button>
-        <button
-          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}
-          className="text-base bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors"
-        >
-          도입문의
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
+            aria-label="도움말 문의"
+            className="hidden @sm:inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors px-3 py-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            <HelpCircle size={14} aria-hidden="true" /> 도움말
+          </button>
+          <button
+            type="button"
+            onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_blank')}
+            className="text-base bg-brand-green text-white px-4 py-2 rounded-xl font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+          >
+            도입문의
+          </button>
+        </div>
       </div>
 
-      {/* Login Card */}
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 relative z-10">
+      {/* 로그인 카드 */}
+      <form
+        onSubmit={handleLogin}
+        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm relative z-10"
+        aria-label="로그인 폼"
+      >
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">환영합니다!</h1>
           <p className="text-base text-gray-500 mt-1">
-            서비스 이용을 위해 <span className="text-brand-green font-medium">로그인해 주세요</span>
+            서비스 이용을 위해 <span className="text-brand-green-text font-medium">로그인해 주세요</span>
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex rounded-xl border border-gray-200 p-1 mb-6 gap-1">
+        {/* 사용자 유형 segmented */}
+        <div className="flex rounded-xl border border-gray-200 p-1 mb-6 gap-1" role="tablist" aria-label="사용자 유형">
           {(['인플루언서', '광고주'] as UserType[]).map(type => (
             <button
               key={type}
+              type="button"
+              role="tab"
+              aria-selected={userType === type}
               onClick={() => { setUserType(type); setLoginError('') }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium transition-all duration-150 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 userType === type
                   ? 'bg-brand-green text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <User size={13} />
+              <User size={13} aria-hidden="true" />
               {type}
             </button>
           ))}
         </div>
 
-        {/* Form */}
+        {/* 폼 */}
         <div className="space-y-3">
           <div>
             <label htmlFor="login-id" className="text-sm text-gray-500 mb-1.5 block">{userType} 아이디</label>
@@ -102,11 +121,10 @@ export default function Login() {
                 autoComplete="email"
                 value={id}
                 onChange={e => { setId(e.target.value); setLoginError('') }}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="아이디를 입력해주세요"
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
             </div>
           </div>
@@ -120,17 +138,18 @@ export default function Login() {
                 autoComplete="current-password"
                 value={password}
                 onChange={e => { setPassword(e.target.value); setLoginError('') }}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="••••••••"
                 maxLength={100}
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-300"
               />
               <button
-                onClick={() => setShowPassword(!showPassword)}
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-pressed={showPassword}
+                className="text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 {showPassword ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
               </button>
@@ -142,45 +161,36 @@ export default function Login() {
         </div>
 
         <button
-          onClick={handleLogin}
+          type="submit"
           disabled={loading}
           aria-busy={loading}
-          className="mt-5 w-full py-3 rounded-xl text-base font-semibold flex items-center justify-center gap-2 transition-all duration-150 bg-brand-green text-white hover:bg-brand-green-hover disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-5 w-full py-3 rounded-xl text-base font-semibold flex items-center justify-center gap-2 transition-all duration-150 bg-brand-green text-white hover:bg-brand-green-hover disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           {loading ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
-          ) : (
-            <>로그인 →</>
-          )}
+          ) : '로그인 →'}
         </button>
 
         <p className="text-center text-sm text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button
+            type="button"
             onClick={() => navigate('/signup')}
-            className="text-brand-green font-medium hover:underline"
+            className="text-brand-green-text font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >
             회원가입
           </button>
         </p>
-      </div>
+      </form>
 
-      {/* Help button */}
+      {/* 모바일 도움말 — @sm 미만에서만 (헤더 도움말 hidden) */}
       <button
+        type="button"
         onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_blank')}
-        className="absolute bottom-6 right-20 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors text-base font-bold border border-gray-200"
+        className="@sm:hidden absolute bottom-6 right-6 w-10 h-10 bg-white text-gray-500 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors border border-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         aria-label="도움말 문의"
       >
-        ?
-      </button>
-
-      {/* Quick login */}
-      <button
-        onClick={handleLogin}
-        disabled={loading}
-        className="absolute bottom-6 right-6 px-4 h-10 bg-brand-green text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-green-hover transition-colors text-base font-semibold disabled:opacity-60"
-      >
-        {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '로그인 →'}
+        <HelpCircle size={18} aria-hidden="true" />
       </button>
     </div>
   )
