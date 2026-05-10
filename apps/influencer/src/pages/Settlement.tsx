@@ -38,7 +38,8 @@ export default function Settlement() {
 
   const [items, setItems] = useState<SettlementItem[]>(() => qa === 'empty' ? [] : MOCK_DATA)
   const [requestModal, setRequestModal] = useState(qa === 'modal-request')
-  const [requestTarget, setRequestTarget] = useState<SettlementItem | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
+  // requestTarget: SettlementItem (개별) | 'all' (전체 정산 요청)
+  const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
 
   useEffect(() => {
     if (qa === 'empty') { setItems([]); return }
@@ -86,10 +87,18 @@ export default function Settlement() {
 
   const confirmRequest = () => {
     if (!requestTarget) return
-    setItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: '2026-04-25' } : i))
+    const today = new Date().toISOString().slice(0, 10)
+    if (requestTarget === 'all') {
+      // 전체 정산 가능 항목을 일괄 지급완료 처리
+      const count = items.filter(i => i.status === '정산가능').length
+      setItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+      showToast(`${count}건 전체 정산 요청이 완료됐어요!`, 'success')
+    } else {
+      setItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+      showToast('정산 요청이 완료됐어요!', 'success')
+    }
     setRequestModal(false)
     setRequestTarget(null)
-    showToast('정산 요청이 완료됐어요!', 'success')
   }
 
   return (
@@ -117,7 +126,7 @@ export default function Settlement() {
           </p>
           {availableAmount > 0 && HAS_BANK_ACCOUNT && (
             <button
-              onClick={() => { setRequestTarget(items.find(i => i.status === '정산가능') ?? null); setRequestModal(true) }}
+              onClick={() => { setRequestTarget('all'); setRequestModal(true) }}
               className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"
             >
               <BanknoteIcon size={13} />전체 정산 요청
@@ -200,21 +209,34 @@ export default function Settlement() {
       </div>
 
       {/* 정산 요청 모달 */}
-      <Modal open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title="정산 요청">
+      <Modal open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'}>
         {requestTarget && (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              {[
-                ['캠페인', requestTarget.campaign],
-                ['콘텐츠 유형', requestTarget.type],
-                ['정산 금액', `${fmtNumber(requestTarget.amount)}원`],
-                ['완료일', fmtDate(requestTarget.completedAt)],
-              ].map(([label, value]) => (
-                <div key={label} className="flex justify-between text-sm">
-                  <span className="text-gray-500">{label}</span>
-                  <span className="font-medium text-gray-900">{value}</span>
-                </div>
-              ))}
+              {requestTarget === 'all' ? (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">정산 가능 건수</span>
+                    <span className="font-medium text-gray-900">{items.filter(i => i.status === '정산가능').length}건</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">총 정산 금액</span>
+                    <span className="font-medium text-gray-900">{fmtNumber(availableAmount)}원</span>
+                  </div>
+                </>
+              ) : (
+                [
+                  ['캠페인', requestTarget.campaign],
+                  ['콘텐츠 유형', requestTarget.type],
+                  ['정산 금액', `${fmtNumber(requestTarget.amount)}원`],
+                  ['완료일', fmtDate(requestTarget.completedAt)],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between text-sm">
+                    <span className="text-gray-500">{label}</span>
+                    <span className="font-medium text-gray-900">{value}</span>
+                  </div>
+                ))
+              )}
             </div>
             {!HAS_BANK_ACCOUNT && (
               <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
