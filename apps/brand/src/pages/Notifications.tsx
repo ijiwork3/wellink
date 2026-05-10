@@ -1,12 +1,17 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, AlertCircle } from 'lucide-react'
-import { useToast, ErrorState, Pagination } from '@wellink/ui'
+import {
+  useToast, ErrorState, Pagination,
+  Tabs, EmptyState, SkeletonRow,
+  type TabItem,
+} from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 
 /** 알림 센터 — 원본 NotificationView.tsx 동등 (광고주) */
 
 type NotificationType = 'campaign' | 'system' | 'message'
+type FilterValue = 'all' | NotificationType
 type Notification = {
   id: number
   type: NotificationType
@@ -17,7 +22,7 @@ type Notification = {
   link: string | null
 }
 
-// 100개 더미 — 원본 5개에서 확장 (페이지네이션·엣지케이스 표현)
+// ── 더미 데이터 ──────────────────────────────────────────────────
 const TIME_POOL = ['방금 전', '5분 전', '30분 전', '1시간 전', '2시간 전', '4시간 전', '어제', '2일 전', '3일 전', '1주 전', '2주 전']
 const CAMPAIGN_TITLES = [
   '새로운 지원자가 있습니다',
@@ -61,52 +66,73 @@ const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'campaign', 'sys
 const INITIAL_NOTIFICATIONS: Notification[] = Array.from({ length: 100 }, (_, i) => {
   const type = TYPE_CYCLE[i % TYPE_CYCLE.length]
   const titlePool = type === 'campaign' ? CAMPAIGN_TITLES : type === 'system' ? SYSTEM_TITLES : MESSAGE_TITLES
-  const descPool = type === 'campaign' ? CAMPAIGN_DESCS : type === 'system' ? SYSTEM_DESCS : MESSAGE_DESCS
+  const descPool  = type === 'campaign' ? CAMPAIGN_DESCS : type === 'system' ? SYSTEM_DESCS  : MESSAGE_DESCS
   return {
     id: i + 1,
     type,
     title: titlePool[i % titlePool.length],
-    desc: descPool[i % descPool.length],
-    time: TIME_POOL[i % TIME_POOL.length],
-    unread: i < 8,  // 최근 8개만 미읽음
-    link: type === 'campaign' && i % 3 === 0 ? `/campaigns/1?qa=tab-applicants` : type === 'campaign' && i % 3 === 1 ? `/campaigns/1?qa=tab-report` : null,
+    desc:  descPool[i % descPool.length],
+    time:  TIME_POOL[i % TIME_POOL.length],
+    unread: i < 8,
+    link: type === 'campaign' && i % 3 === 0 ? '/campaigns/1?qa=tab-applicants'
+        : type === 'campaign' && i % 3 === 1 ? '/campaigns/1?qa=tab-report'
+        : null,
   }
 })
 
 const PAGE_SIZE = 15
 
+const FILTER_TABS: readonly TabItem<FilterValue>[] = [
+  { value: 'all',      label: '전체' },
+  { value: 'campaign', label: '캠페인' },
+  { value: 'message',  label: '메시지' },
+  { value: 'system',   label: '시스템/결제' },
+]
+
+const TYPE_AVATAR: Record<NotificationType, { bg: string; icon: React.ReactNode }> = {
+  campaign: { bg: 'bg-brand-green-bg text-brand-green-text', icon: <FileText size={16} aria-hidden="true" /> },
+  system:   { bg: 'bg-amber-100 text-amber-700',             icon: <CreditCard size={16} aria-hidden="true" /> },
+  message:  { bg: 'bg-purple-100 text-purple-700',           icon: <MessageSquare size={16} aria-hidden="true" /> },
+}
+
 export default function Notifications() {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const qa = useQAMode()
-  const initialFilter: 'all' | NotificationType =
+
+  const initialFilter: FilterValue =
     qa === 'tab-campaign' ? 'campaign' :
-    qa === 'tab-message' ? 'message' :
-    qa === 'tab-system' ? 'system' : 'all'
-  const [filter, setFilter] = useState<'all' | NotificationType>(initialFilter)
+    qa === 'tab-message'  ? 'message'  :
+    qa === 'tab-system'   ? 'system'   : 'all'
+
+  const [filter, setFilter] = useState<FilterValue>(initialFilter)
   const [page, setPage] = useState(1)
   const [notifications, setNotifications] = useState<Notification[]>(
     qa === 'empty' ? [] : INITIAL_NOTIFICATIONS
   )
 
+  const filtered = useMemo(
+    () => filter === 'all' ? notifications : notifications.filter(n => n.type === filter),
+    [filter, notifications]
+  )
+  const unreadCount = useMemo(
+    () => notifications.reduce((acc, n) => acc + (n.unread ? 1 : 0), 0),
+    [notifications]
+  )
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage   = Math.min(page, totalPages)
+  const paginated  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
   if (qa === 'loading') {
     return (
-      <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-32 bg-gray-200 rounded-xl" />
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex gap-2 mb-4">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-20 bg-gray-200 rounded-xl" />)}
+      <div className="space-y-5">
+        <div className="h-8 w-32 bg-gray-100 animate-pulse rounded-xl" />
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-50 flex gap-2">
+            {[1, 2, 3, 4].map(i => <div key={i} className="h-9 w-20 bg-gray-100 animate-pulse rounded-lg" />)}
           </div>
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-start gap-4 p-5 border-t border-gray-50">
-                <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-3/4 bg-gray-200 rounded-xl" />
-                  <div className="h-3 w-1/2 bg-gray-100 rounded-xl" />
-                </div>
-              </div>
-            ))}
+          <div className="divide-y divide-gray-50">
+            {[1, 2, 3, 4, 5].map(i => <div key={i} className="px-5"><SkeletonRow cols={3} /></div>)}
           </div>
         </div>
       </div>
@@ -117,7 +143,7 @@ export default function Notifications() {
   }
 
   const handleNotificationClick = (n: Notification) => {
-    setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, unread: false } : x))
+    if (n.unread) setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, unread: false } : x))
     if (n.link) navigate(n.link)
   }
 
@@ -126,118 +152,107 @@ export default function Notifications() {
     showToast('모든 알림을 읽음 처리했습니다.', 'success')
   }
 
-  const filtered = filter === 'all' ? notifications : notifications.filter(n => n.type === filter)
-  const unreadCount = notifications.filter(n => n.unread).length
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const safePage = Math.min(page, totalPages)
-  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
-
   return (
     <div className="space-y-5">
+      {/* 헤더 */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Bell size={20} className="text-gray-700" aria-hidden="true" />
-          <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">알림 센터</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900 whitespace-nowrap">알림 센터</h1>
           {unreadCount > 0 && (
-            <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full">
+            <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full whitespace-nowrap" aria-label={`미읽음 ${unreadCount}건`}>
               {unreadCount}
             </span>
           )}
         </div>
         {unreadCount > 0 && (
           <button
+            type="button"
             onClick={handleMarkAllRead}
-            className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+            className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
           >모두 읽음으로 표시</button>
         )}
       </div>
 
+      {/* 본문 */}
       <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* 필터 탭 — 원본 동등 (전체/캠페인/메시지/시스템) */}
-        <div className="px-5 py-4 border-b border-gray-50">
-          <div className="flex gap-2 flex-wrap">
-            {([
-              { id: 'all', label: '전체' },
-              { id: 'campaign', label: '캠페인' },
-              { id: 'message', label: '메시지' },
-              { id: 'system', label: '시스템/결제' },
-            ] as const).map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => { setFilter(tab.id); setPage(1) }}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  filter === tab.id
-                    ? 'bg-brand-green-bg text-brand-green-text'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >{tab.label}</button>
-            ))}
-          </div>
+        {/* 필터 탭 — 공통 Tabs (variant='soft') */}
+        <div className="px-3 @sm:px-5 py-3 @sm:py-4 border-b border-gray-50">
+          <Tabs<FilterValue>
+            variant="soft"
+            scrollable
+            items={FILTER_TABS}
+            value={filter}
+            onChange={(v) => { setFilter(v); setPage(1) }}
+            ariaLabel="알림 카테고리 필터"
+          />
         </div>
 
         {/* 리스트 */}
         {paginated.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Bell className="text-gray-300" size={28} />
-            </div>
-            <p className="text-base text-gray-500">
-              {notifications.length === 0 ? '새로운 알림이 없습니다.' : '해당 카테고리에 알림이 없습니다.'}
-            </p>
-          </div>
+          <EmptyState
+            size="lg"
+            variant={notifications.length === 0 ? 'default' : 'filter'}
+            icon={<Bell size={40} />}
+            title={notifications.length === 0 ? '새로운 알림이 없습니다' : '해당 카테고리에 알림이 없습니다'}
+            description={notifications.length === 0
+              ? '새 알림이 도착하면 이곳에 표시됩니다.'
+              : '다른 카테고리를 선택해 보세요.'}
+          />
         ) : (
-          <div className="divide-y divide-gray-50">
-            {paginated.map(item => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleNotificationClick(item)}
-                className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
-                  item.unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
-                }`}
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  item.type === 'campaign' ? 'bg-brand-green-bg text-brand-green-text'
-                  : item.type === 'system' ? 'bg-amber-100 text-amber-600'
-                  : 'bg-purple-100 text-purple-600'
-                }`}>
-                  {item.type === 'campaign' ? <FileText size={16} aria-hidden="true" /> :
-                   item.type === 'system' ? <CreditCard size={16} aria-hidden="true" /> :
-                   <MessageSquare size={16} aria-hidden="true" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-3 mb-0.5">
-                    <h3 className={`text-base ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
-                      {item.title}
-                      {item.unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle"></span>}
-                    </h3>
-                    <span className="text-sm text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
-                  </div>
-                  <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
-                </div>
-                {item.link && (
-                  <div className="text-gray-400 shrink-0 self-center">
-                    <ChevronRight size={16} aria-hidden="true" />
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
+          <ul className="divide-y divide-gray-50" role="list">
+            {paginated.map(item => {
+              const avatar = TYPE_AVATAR[item.type]
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleNotificationClick(item)}
+                    className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
+                      item.unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
+                    }`}
+                    aria-label={`${item.unread ? '미읽음 ' : ''}${item.title} — ${item.time}`}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${avatar.bg}`} aria-hidden="true">
+                      {avatar.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-3 mb-0.5">
+                        <h3 className={`text-base ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                          {item.title}
+                          {item.unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
+                        </h3>
+                        <span className="text-sm text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
+                      </div>
+                      <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
+                    </div>
+                    {item.link && (
+                      <div className="text-gray-400 shrink-0 self-center" aria-hidden="true">
+                        <ChevronRight size={16} />
+                      </div>
+                    )}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
         )}
 
-        {/* 페이지네이션 */}
-        <Pagination
-          total={filtered.length}
-          page={safePage}
-          pageSize={PAGE_SIZE}
-          onChange={setPage}
-        />
+        {/* 페이지네이션 — 결과 0건일 때 미렌더 */}
+        {filtered.length > PAGE_SIZE && (
+          <Pagination
+            total={filtered.length}
+            page={safePage}
+            pageSize={PAGE_SIZE}
+            onChange={setPage}
+          />
+        )}
       </div>
 
-      {/* 안내 카드 */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
-        <AlertCircle size={14} className="text-amber-600 mt-0.5 shrink-0" aria-hidden="true" />
-        <p className="text-sm text-amber-700">
+      {/* 안내 카드 — 채도 v2: amber-50 → amber-100 가시성 ↑ */}
+      <div className="bg-amber-100 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <AlertCircle size={14} className="text-amber-700 mt-0.5 shrink-0" aria-hidden="true" />
+        <p className="text-sm text-amber-800">
           알림은 푸시·앱 내에서 확인할 수 있으며, 읽음 처리 후에도 30일간 보관됩니다.
         </p>
       </div>

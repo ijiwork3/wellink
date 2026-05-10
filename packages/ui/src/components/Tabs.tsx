@@ -14,6 +14,7 @@
  */
 
 import { memo, useEffect, useRef, useState, type ReactNode, type KeyboardEvent } from 'react'
+/* memo 적용 시 generic 시그니처가 소실되므로 함수 선언 후 wrapper로 export */
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export type TabVariant = 'underline' | 'pill' | 'soft'
@@ -63,7 +64,7 @@ const BASE_BY_VARIANT: Record<TabVariant, string> = {
 
 const FOCUS = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-offset-1'
 
-const Tabs = memo(function Tabs<V extends string = string>({
+function TabsInner<V extends string = string>({
   items,
   value,
   onChange,
@@ -189,6 +190,9 @@ const Tabs = memo(function Tabs<V extends string = string>({
       )}
     </div>
   )
-})
+}
+
+/** memo wrapper — generic 시그니처 보존 */
+const Tabs = memo(TabsInner) as typeof TabsInner
 
 export default Tabs
