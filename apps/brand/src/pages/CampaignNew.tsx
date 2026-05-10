@@ -156,6 +156,12 @@ export default function CampaignNew() {
     }
     if (!form.productName || !form.productPrice) { showToast('제공 상품 정보를 입력해주세요', 'error'); return }
     if (!form.recruitStart || !form.recruitEnd) { showToast('모집 기간을 설정해주세요', 'error'); return }
+    if (form.recruitEnd < form.recruitStart) { showToast('모집 종료일은 시작일 이후여야 합니다.', 'error'); return }
+    if (!form.announceDate) { showToast('인플루언서 발표일을 설정해주세요', 'error'); return }
+    if (form.announceDate < form.recruitEnd) { showToast('발표일은 모집 종료일 이후여야 합니다.', 'error'); return }
+    if (!form.uploadStart || !form.uploadEnd) { showToast('콘텐츠 등록 기간을 설정해주세요', 'error'); return }
+    if (form.uploadEnd < form.uploadStart) { showToast('등록 종료일은 시작일 이후여야 합니다.', 'error'); return }
+    if (form.uploadStart < form.announceDate) { showToast('등록 시작일은 발표일 이후여야 합니다.', 'error'); return }
     // 모집 인원 — 신규 등록 시 최소 5명 (원본 정책)
     const hc = Number(form.headcount) || 0
     if (!isEdit && hc < 5) { showToast('모집 인원은 최소 5명부터 가능합니다.', 'error'); return }
@@ -181,7 +187,7 @@ export default function CampaignNew() {
 
       {/* 페이지 타이틀 */}
       <div>
-        <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
+        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
         <p className="text-base text-gray-500 mt-1">
           {isEdit
             ? `내용을 수정하면 ${currentApplicantCount > 0 ? `현재 ${currentApplicantCount}명의 지원자에게 [조건 변경 알림]이 발송됩니다.` : '모든 지원자에게 [조건 변경 알림]이 발송됩니다.'}`
@@ -192,7 +198,7 @@ export default function CampaignNew() {
       {/* 편집 모드 잠금 배너 — 원본 정책 보강 (PENDING만 수정 가능) */}
       {isEdit && editStatusInfo && !editStatusInfo.editable && (
         <div className="bg-amber-100 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
-          <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
             <p className="text-base font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
             <p className="text-sm text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
