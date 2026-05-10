@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
-import { ErrorState } from '@wellink/ui'
-import { fmtFollowers as formatFollowers, TIMER_MS } from '@wellink/ui'
-import { AVATAR_COLORS } from '@wellink/ui'
+import {
+  Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip,
+  ErrorState, EmptyState, SkeletonCard,
+  useToast, fmtFollowers as formatFollowers, TIMER_MS, AVATAR_COLORS,
+} from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
 import {
@@ -328,34 +328,18 @@ export default function InfluencerManage() {
   // ── QA 상태 ───────────────────────────────────────────────
   if (qa === 'loading') {
     return (
-      <div className="space-y-5 animate-pulse">
+      <div className="space-y-5">
         <div>
           <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
           <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {[60, 52, 80, 72].map((w, i) => (
-            <div key={i} className="h-9 rounded-full bg-gray-200" style={{ width: w + 'px' }} />
+            <div key={i} className="h-9 rounded-full bg-gray-100 animate-pulse" style={{ width: w + 'px' }} />
           ))}
         </div>
         <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
-          {[0, 1, 2].map(i => (
-            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-11 h-11 rounded-full bg-gray-100 shrink-0" />
-                <div className="flex-1">
-                  <div className="h-4 w-20 bg-gray-100 rounded mb-2" />
-                  <div className="flex gap-1"><div className="h-4 w-14 bg-gray-100 rounded-full" /></div>
-                </div>
-              </div>
-              <div className="flex gap-3 mb-3">
-                {[0, 1, 2].map(j => <div key={j} className="h-12 w-20 bg-gray-100 rounded" />)}
-              </div>
-              <div className="flex gap-1.5">
-                <div className="h-6 w-24 bg-gray-100 rounded-full" />
-              </div>
-            </div>
-          ))}
+          {[1, 2, 3].map(i => <SkeletonCard key={i} height={180} />)}
         </div>
       </div>
     )
@@ -367,17 +351,22 @@ export default function InfluencerManage() {
 
   if (qa === 'empty') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <Heart size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-500 mb-1">찜한 인플루언서가 없습니다</p>
-          <p className="text-sm text-gray-500 mb-4">인플루언서 리스트에서 마음에 드는 인플루언서를 찜해보세요</p>
-          <Link
-            to="/influencers/list"
-            className="inline-block text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors"
-          >
-            인플루언서 찾아보기
-          </Link>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm w-full max-w-sm">
+          <EmptyState
+            size="lg"
+            icon={<Heart size={40} />}
+            title="찜한 인플루언서가 없습니다"
+            description="인플루언서 리스트에서 마음에 드는 인플루언서를 찜해 보세요"
+            action={
+              <Link
+                to="/influencers/list"
+                className="inline-block text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                인플루언서 찾아보기
+              </Link>
+            }
+          />
         </div>
       </div>
     )
