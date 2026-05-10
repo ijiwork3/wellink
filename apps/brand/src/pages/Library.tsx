@@ -22,7 +22,11 @@ import {
   CheckCircle,
   Send,
 } from 'lucide-react'
-import { Modal, StatusBadge, useToast, ErrorState, fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE, CustomSelect, Pagination, Tooltip } from '@wellink/ui'
+import {
+  Modal, StatusBadge, useToast, ErrorState, EmptyState,
+  fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE,
+  CustomSelect, Pagination, Tooltip,
+} from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 
@@ -807,27 +811,23 @@ export default function Library() {
         (() => {
           const hasFilters = search || campaignFilter !== '전체' || statusFilter !== '전체' || platformTypeFilter !== '전체'
           return (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-20 flex flex-col items-center justify-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-                <ImageOff size={28} className="text-gray-400" aria-hidden="true" />
-              </div>
-              {hasFilters ? (
-                <>
-                  <p className="text-base font-medium text-gray-500 mb-1">조건에 맞는 콘텐츠가 없습니다</p>
-                  <p className="text-base text-gray-500">검색 조건을 변경하거나 필터를 초기화해 보세요.</p>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState
+                size="lg"
+                variant={hasFilters ? 'filter' : 'default'}
+                icon={<ImageOff size={40} />}
+                title={hasFilters ? '조건에 맞는 콘텐츠가 없습니다' : '아직 등록된 콘텐츠가 없습니다'}
+                description={hasFilters
+                  ? '검색 조건을 변경하거나 필터를 초기화해 보세요.'
+                  : '캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.'}
+                action={hasFilters ? (
                   <button
+                    type="button"
                     onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
-                    className="mt-4 text-base px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                  >
-                    필터 초기화
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-base font-medium text-gray-500 mb-1">아직 등록된 콘텐츠가 없습니다</p>
-                  <p className="text-base text-gray-500">캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.</p>
-                </>
-              )}
+                    className="text-base px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >필터 초기화</button>
+                ) : undefined}
+              />
             </div>
           )
         })()
