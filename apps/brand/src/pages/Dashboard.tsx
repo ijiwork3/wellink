@@ -656,11 +656,11 @@ export default function Dashboard() {
       </div>
 
       {/* ── 빠른 실행 ── */}
-      <div className={isPlanLocked ? 'relative' : ''}>
+      <div className={isPlanLocked ? 'relative min-h-[260px]' : ''}>
         {isPlanLocked && (
-          <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
-            <Lock size={24} className="text-amber-400" aria-hidden="true" />
-            <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
+          <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 p-8">
+            <Lock size={28} className="text-amber-400" aria-hidden="true" />
+            <p className="text-base font-semibold text-gray-700 text-center">Scale 플랜 이상에서 확인 가능합니다</p>
             <button type="button" onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}

@@ -60,7 +60,8 @@ export function usePlanAccess() {
     plan,
     qaPlan,
     planLabel: PLAN_LABEL[qaPlan],
-    isSubscribed: plan !== '',
+    // 'free'는 미가입(무료) 상태로 취급 — 결제·구독 영역에서 미구독 분기
+    isSubscribed: plan !== '' && plan !== 'free',
     isGated,
     isExpired: qaPlan === 'expired',
     isPaymentFailed: qaPlan === 'payment-failed',

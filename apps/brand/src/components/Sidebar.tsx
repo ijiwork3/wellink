@@ -197,7 +197,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
                     {item.icon}
                     {showNotifDot && (
                       <span
-                        className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"
+                        className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-brand-green ring-2 ring-white"
                         aria-label={`읽지 않은 알림 ${unreadNotifs}건`}
                       />
                     )}

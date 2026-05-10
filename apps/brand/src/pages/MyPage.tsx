@@ -48,6 +48,14 @@ export default function MyPage() {
   const [brandWebsite, setBrandWebsite] = useState('https://wellink.ai')
   const [brandCategory, setBrandCategory] = useState('웰니스/피트니스')
 
+  // 편집 모드 — 디폴트 뷰. '수정' 버튼 클릭 시에만 편집 가능.
+  const [editing, setEditing] = useState(false)
+  // 편집 시작 시 원본 백업 (취소 시 복원용)
+  const [editBackup, setEditBackup] = useState<{
+    name: string; companyName: string; bizNumber: string; managerName: string
+    phone: string; brandWebsite: string; brandCategory: string
+  } | null>(null)
+
   // 마케팅 수신 — ISO 타임스탬프 (null = 미동의, string = 동의 시점)
   const [marketingConsent, setMarketingConsent] = useState<string | null>(null)
   const [campaignAlert, setCampaignAlert] = useState(true)
@@ -95,6 +103,25 @@ export default function MyPage() {
     return <ErrorState message="계정 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
 
+  const handleStartEdit = () => {
+    setEditBackup({ name, companyName, bizNumber, managerName, phone, brandWebsite, brandCategory })
+    setEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    if (editBackup) {
+      setName(editBackup.name)
+      setCompanyName(editBackup.companyName)
+      setBizNumber(editBackup.bizNumber)
+      setManagerName(editBackup.managerName)
+      setPhone(editBackup.phone)
+      setBrandWebsite(editBackup.brandWebsite)
+      setBrandCategory(editBackup.brandCategory)
+    }
+    setEditBackup(null)
+    setEditing(false)
+  }
+
   const handleSave = () => {
     if (!companyName.trim()) { showToast('회사명을 입력하세요.', 'error'); return }
     if (!name.trim()) { showToast('담당자 이름을 입력하세요.', 'error'); return }
@@ -102,6 +129,8 @@ export default function MyPage() {
       showToast('사업자 등록번호 형식을 확인해 주세요. (예: 123-45-67890)', 'error'); return
     }
     showToast('변경사항이 저장되었습니다.', 'success')
+    setEditBackup(null)
+    setEditing(false)
   }
 
   const handlePasswordChange = () => {
@@ -176,18 +205,35 @@ export default function MyPage() {
       {/* ── 브랜드 프로필 탭 ── */}
       {activeTab === '브랜드 프로필' && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 gap-3 flex-wrap">
             <div>
               <h2 className="text-lg font-bold text-gray-900">브랜드 프로필 설정</h2>
               <p className="text-sm text-gray-500 mt-0.5">서비스 이용에 필요한 기본 정보를 관리합니다.</p>
             </div>
-            <button type="button"
-              onClick={handleSave}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors"
-            >
-              <Save size={14} aria-hidden="true" />
-              변경사항 저장
-            </button>
+            {editing ? (
+              <div className="flex items-center gap-2 shrink-0">
+                <button type="button"
+                  onClick={handleCancelEdit}
+                  className="px-4 py-2 rounded-xl text-base font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  취소
+                </button>
+                <button type="button"
+                  onClick={handleSave}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Save size={14} aria-hidden="true" />
+                  저장
+                </button>
+              </div>
+            ) : (
+              <button type="button"
+                onClick={handleStartEdit}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                수정
+              </button>
+            )}
           </div>
 
           <div className="p-6 space-y-8">
@@ -200,61 +246,65 @@ export default function MyPage() {
               <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="mypage-company" className="text-sm text-gray-500 mb-1.5 block">브랜드명 (회사명)</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <Building2 size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-company"
                       type="text"
                       value={companyName}
                       onChange={e => setCompanyName(e.target.value)}
+                      readOnly={!editing}
                       aria-label="브랜드명"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="브랜드명을 입력하세요"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-category" className="text-sm text-gray-500 mb-1.5 block">업종 카테고리</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <Target size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-category"
                       type="text"
                       value={brandCategory}
                       onChange={e => setBrandCategory(e.target.value)}
+                      readOnly={!editing}
                       aria-label="업종 카테고리"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="예: 웰니스/피트니스"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-website" className="text-sm text-gray-500 mb-1.5 block">웹사이트 URL</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <Globe size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-website"
                       type="url"
                       value={brandWebsite}
                       onChange={e => setBrandWebsite(e.target.value)}
+                      readOnly={!editing}
                       aria-label="웹사이트 URL"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="https://your-brand.com"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-biz-number" className="text-sm text-gray-500 mb-1.5 block">사업자 등록번호</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <Hash size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-biz-number"
                       type="text"
                       value={bizNumber}
                       onChange={e => setBizNumber(e.target.value)}
+                      readOnly={!editing}
                       aria-label="사업자 등록번호"
                       pattern="[0-9]{3}-[0-9]{2}-[0-9]{5}"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="예: 123-45-67890"
                     />
                   </div>
@@ -278,46 +328,49 @@ export default function MyPage() {
                 </div>
                 <div>
                   <label htmlFor="mypage-name" className="text-sm text-gray-500 mb-1.5 block">담당자 이름</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-name"
                       type="text"
                       value={name}
                       onChange={e => setName(e.target.value)}
+                      readOnly={!editing}
                       aria-label="담당자 이름"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="이름을 입력하세요"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-manager" className="text-sm text-gray-500 mb-1.5 block">담당자명 (계약)</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-manager"
                       type="text"
                       value={managerName}
                       onChange={e => setManagerName(e.target.value)}
+                      readOnly={!editing}
                       aria-label="담당자명"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="담당자명"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-phone" className="text-sm text-gray-500 mb-1.5 block">연락처</label>
-                  <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-gray-400 transition-colors">
+                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
                     <Phone size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-phone"
                       type="text"
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
+                      readOnly={!editing}
                       aria-label="연락처"
                       inputMode="tel"
-                      className="flex-1 text-base text-gray-900 outline-none bg-transparent"
+                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="연락처"
                     />
                   </div>

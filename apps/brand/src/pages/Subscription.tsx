@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Check, CreditCard, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -91,6 +92,7 @@ function planFromQA(qa: string): string {
 }
 
 export default function Subscription() {
+  const navigate = useNavigate()
   const qa = useQAMode()
   const { plan: globalPlan, qaPlan } = usePlanAccess()
   // 전역 plan 우선, ?qa=plan-X 도 호환 (페이지 단축경로)
@@ -316,8 +318,8 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* 미구독 안내 배너 — 무료 플랜 / QA plan-free */}
-      {(qa === 'plan-free' || (!displayPlan && !showExpired && !showPaymentFailed)) && (
+      {/* 미구독 안내 배너 — 무료 플랜 / QA plan-free / globalPlan='free' */}
+      {(qa === 'plan-free' || displayPlan === 'free' || (!displayPlan && !showExpired && !showPaymentFailed)) && (
         <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
@@ -327,8 +329,8 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* 현재 구독 정보 + 사용량 + 액션 — 신규, 원본 보강 (구독 중일 때만) */}
-      {displayPlan && !showExpired && !showPaymentFailed && qa !== 'plan-free' && (() => {
+      {/* 현재 구독 정보 + 사용량 + 액션 — 유료 플랜 구독자만 노출 (free·미구독 제외) */}
+      {displayPlan && displayPlan !== 'free' && !showExpired && !showPaymentFailed && qa !== 'plan-free' && (() => {
         const cur = plans.find(p => p.id === displayPlan)
         // 다음 결제일 — 오늘 + 30일
         const next = new Date()
@@ -729,41 +731,66 @@ export default function Subscription() {
             <div className="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-3">
               <Check size={20} className="text-white" aria-hidden="true" />
             </div>
-            <p className="text-base font-semibold text-gray-900">플랜이 변경되었습니다!</p>
+            <p className="text-base font-semibold text-gray-900">
+              {!currentPlan || currentPlan === 'free' ? '구독이 시작되었습니다!' : '플랜이 변경되었습니다!'}
+            </p>
           </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-base text-gray-600"><strong>{selectedPlan?.name}</strong> 플랜으로 변경하시겠습니까?</p>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              <div className="flex justify-between text-base">
-                <span className="text-gray-600">변경 플랜</span>
-                <span className="font-semibold">{selectedPlan?.name}</span>
-              </div>
-              <div className="flex justify-between text-base">
-                <span className="text-gray-600">금액</span>
-                <span className="font-semibold">
-                  {selectedPlan?.price === '커스텀' ? '커스텀' : `₩${selectedPlan?.price}${selectedPlan?.unit?.replace('원', '')}`}
-                </span>
-              </div>
-              <div className="flex justify-between text-base">
-                <span className="text-gray-600">적용일</span>
-                <span className="text-gray-500">다음 결제일부터 적용</span>
-              </div>
-              {currentPlan && (
+        ) : (() => {
+          const isNewSubscribe = !currentPlan || currentPlan === 'free'
+          const isDowngrade = currentPlan === 'scale' && confirmModal === 'focus'
+          return (
+            <div className="space-y-3">
+              <p className="text-base text-gray-600">
+                <strong>{selectedPlan?.name}</strong> 플랜으로 {isNewSubscribe ? '구독을 시작' : '변경'}하시겠습니까?
+              </p>
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-base">
-                  <span className="text-gray-600">현재 플랜</span>
-                  <span className="text-gray-500">{plans.find(p => p.id === currentPlan)?.name ?? '없음'}</span>
+                  <span className="text-gray-600">{isNewSubscribe ? '구독 플랜' : '변경 플랜'}</span>
+                  <span className="font-semibold">{selectedPlan?.name}</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-600">금액</span>
+                  <span className="font-semibold">
+                    {selectedPlan?.price === '커스텀' ? '커스텀' : `₩${selectedPlan?.price}${selectedPlan?.unit?.replace('원', '')}`}
+                  </span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-600">적용일</span>
+                  <span className="text-gray-500">{isNewSubscribe ? '즉시 결제 후 적용' : '다음 결제일부터 적용'}</span>
+                </div>
+                {currentPlan && currentPlan !== 'free' && (
+                  <div className="flex justify-between text-base">
+                    <span className="text-gray-600">현재 플랜</span>
+                    <span className="text-gray-500">{plans.find(p => p.id === currentPlan)?.name ?? '없음'}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* 결제 수단 안내 — 미구독→유료 시 즉시 결제, 변경 시 등록 카드로 결제 */}
+              <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl">
+                <CreditCard size={14} className="text-blue-700 shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="text-sm text-blue-800 flex-1">
+                  {isNewSubscribe
+                    ? '등록된 결제 수단으로 즉시 결제됩니다. 결제 수단을 확인하거나 변경하시려면 아래 링크를 이용해 주세요.'
+                    : '다음 결제일에 등록된 결제 수단으로 자동 결제됩니다.'}
+                  <button type="button"
+                    onClick={() => { handleCloseConfirmModal(); navigate('/payment/method') }}
+                    className="block mt-1 font-semibold underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                  >
+                    결제 수단 관리 →
+                  </button>
+                </div>
+              </div>
+
+              {isDowngrade && (
+                <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
+                  <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                  <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
                 </div>
               )}
             </div>
-            {currentPlan === 'scale' && confirmModal === 'focus' && (
-              <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
-                <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
-                <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
-              </div>
-            )}
-          </div>
-        )}
+          )
+        })()}
       </Modal>
 
       {/* 해지 확인 모달 — 신규, 원본 CancelPaymentModal 동등 */}

@@ -518,6 +518,54 @@ export default function InfluencerManage() {
                   </div>
                 </div>
 
+                {/* 그룹 태그 (좌) + 그룹에 추가 버튼 (우) — 썸네일 위 상단으로 이동 (카드 간 일관 정렬) */}
+                <div className="flex items-center justify-between gap-2 mb-3" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                    {inf.groups.map(g => (
+                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green-text whitespace-nowrap">
+                        {g}
+                        <button type="button" onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
+                          <X size={11} aria-hidden="true" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* 데스크톱: 드롭다운 / 모바일·태블릿: 바텀시트 */}
+                  <div className="relative shrink-0" ref={!isMobile && addToGroupTarget === inf.id ? dropdownRef : null}>
+                    <button type="button"
+                      onClick={() => setAddToGroupTarget(addToGroupTarget === inf.id ? null : inf.id)}
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-gray-400 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
+                    >
+                      <Plus size={11} aria-hidden="true" />
+                      그룹에 추가
+                    </button>
+
+                    {/* 데스크톱 드롭다운 */}
+                    {!isMobile && addToGroupTarget === inf.id && (
+                      <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50 min-w-[160px]">
+                        {getAddableGroups(inf).length === 0 ? (
+                          groups.length === 0
+                            ? (
+                              <div className="px-3 py-2 text-sm text-gray-400">
+                                생성된 그룹이 없습니다.
+                                <button type="button" onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }} className="block text-brand-green-text mt-1 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">새 그룹 만들기</button>
+                              </div>
+                            ) : (
+                              <div className="px-3 py-2 text-sm text-gray-400">모든 그룹에 소속됨</div>
+                            )
+                        ) : (
+                          getAddableGroups(inf).map(g => (
+                            <button type="button" key={g} onClick={() => addToGroup(inf.id, g)} className="w-full text-left px-3 py-2 text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                              {g}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* 최근 피드 썸네일 영역 — 항상 동일 높이 (썸네일 3장 그리드 높이)
                     엣지케이스:
                     1) 비공개 계정 → 안내 메시지 오버레이
@@ -568,53 +616,6 @@ export default function InfluencerManage() {
                   </div>
                 )}
 
-                {/* 그룹 태그 (좌) + 그룹에 추가 버튼 (우) — § 5-1 정렬 정책 */}
-                <div className="flex items-center justify-between gap-2" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                    {inf.groups.map(g => (
-                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green-text whitespace-nowrap">
-                        {g}
-                        <button type="button" onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
-                          <X size={11} aria-hidden="true" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* 데스크톱: 드롭다운 / 모바일·태블릿: 바텀시트 */}
-                  <div className="relative shrink-0" ref={!isMobile && addToGroupTarget === inf.id ? dropdownRef : null}>
-                    <button type="button"
-                      onClick={() => setAddToGroupTarget(addToGroupTarget === inf.id ? null : inf.id)}
-                      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-gray-400 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
-                    >
-                      <Plus size={11} aria-hidden="true" />
-                      그룹에 추가
-                    </button>
-
-                    {/* 데스크톱 드롭다운 */}
-                    {!isMobile && addToGroupTarget === inf.id && (
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50 min-w-[160px]">
-                        {getAddableGroups(inf).length === 0 ? (
-                          groups.length === 0
-                            ? (
-                              <div className="px-3 py-2 text-sm text-gray-400">
-                                생성된 그룹이 없습니다.
-                                <button type="button" onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }} className="block text-brand-green-text mt-1 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">새 그룹 만들기</button>
-                              </div>
-                            ) : (
-                              <div className="px-3 py-2 text-sm text-gray-400">모든 그룹에 소속됨</div>
-                            )
-                        ) : (
-                          getAddableGroups(inf).map(g => (
-                            <button type="button" key={g} onClick={() => addToGroup(inf.id, g)} className="w-full text-left px-3 py-2 text-base text-gray-700 hover:bg-gray-50 transition-colors">
-                              {g}
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             ))}
           </div>
