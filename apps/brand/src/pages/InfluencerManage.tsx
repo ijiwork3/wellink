@@ -485,12 +485,12 @@ export default function InfluencerManage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <p className="text-base font-semibold text-gray-900 truncate min-w-0">@{inf.instagramId ?? inf.name}</p>
+                      <p className="text-base font-semibold text-gray-900 break-words min-w-0">@{inf.instagramId ?? inf.name}</p>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
                         <span className="shrink-0 text-sm font-semibold bg-brand-green text-white px-2 py-1 rounded-full">NEW</span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500 truncate">{inf.name}</p>
+                    <p className="text-sm text-gray-500">{inf.name}</p>
                     <div className="flex gap-1 flex-wrap mt-0.5">
                       {inf.category.map(c => (
                         <span key={c} className="text-sm bg-gray-100 text-gray-500 px-2 py-1 rounded-full whitespace-nowrap">{c}</span>
@@ -804,7 +804,6 @@ export default function InfluencerManage() {
                       ) : (
                         <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
                           <button type="button"
-                            type="button"
                             disabled
                             className="flex items-center gap-0.5 text-sm text-gray-400 cursor-not-allowed"
                           >
@@ -1082,7 +1081,6 @@ export default function InfluencerManage() {
                   <div className="space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
                       <button type="button"
-                        type="button"
                         disabled
                         className="w-full bg-brand-green/50 text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
                       >
@@ -1092,7 +1090,6 @@ export default function InfluencerManage() {
                     <p className="text-sm text-gray-500 text-center">
                       진행 중인 캠페인이 없습니다.{' '}
                       <button type="button"
-                        type="button"
                         onClick={() => navigate('/campaigns/new')}
                         className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover"
                       >
@@ -1200,7 +1197,6 @@ export default function InfluencerManage() {
                   >
                     {/* 헤더 행 — 라디오 + 이름 + Chevron (펼침 토글) */}
                     <button type="button"
-                      type="button"
                       onClick={() => setProposalExpandedId(isExpanded ? null : c.id)}
                       className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
                       aria-expanded={isExpanded}
@@ -1215,7 +1211,7 @@ export default function InfluencerManage() {
                         onClick={e => e.stopPropagation()}
                         className="accent-gray-900 disabled:cursor-not-allowed"
                       />
-                      <span className={`text-base flex-1 truncate ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
+                      <span className={`text-base flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
                       {hasApplied && (
                         <span className="shrink-0 text-sm px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
                       )}

@@ -50,7 +50,6 @@ export default function PaymentFail() {
         {/* CTA — '다시 시도' = 이전 결제 화면으로 / '구독 페이지로' = /subscription */}
         <div className="flex flex-col gap-3">
           <button type="button"
-            type="button"
             onClick={() => {
               if (window.history.length > 1) navigate(-1)
               else navigate('/subscription')
@@ -60,7 +59,6 @@ export default function PaymentFail() {
             다시 시도하기
           </button>
           <button type="button"
-            type="button"
             onClick={() => navigate('/subscription')}
             className="w-full py-3 border border-gray-200 text-gray-700 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >

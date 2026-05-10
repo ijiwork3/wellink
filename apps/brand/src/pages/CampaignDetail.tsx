@@ -1227,7 +1227,6 @@ export default function CampaignDetail() {
           <Section title="캠페인 설명" icon={<FileText size={14} />}>
             <div className="flex flex-col @sm:flex-row gap-4">
               <button type="button"
-                type="button"
                 onClick={() => setCampaignImageOpen(true)}
                 aria-label="대표 이미지 크게 보기"
                 className="group relative w-full @sm:w-32 @md:w-40 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -1277,7 +1276,6 @@ export default function CampaignDetail() {
               ))}
             </div>
             <button type="button"
-              type="button"
               onClick={() => {
                 navigator.clipboard?.writeText(meta.requiredKeywords.join(' '))
                 showToast('키워드가 복사되었습니다', 'success')
@@ -1411,7 +1409,6 @@ export default function CampaignDetail() {
                   </div>
                   {hasOptions && (
                     <button type="button"
-                      type="button"
                       onClick={() => setOptionFilterOpen(o => !o)}
                       aria-expanded={optionFilterOpen}
                       className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-base font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -1434,7 +1431,6 @@ export default function CampaignDetail() {
                           <span className="text-gray-500">{q.replace(/\?$/, '')}:</span> <span className="font-medium">{v}</span>
                         </span>
                         <button type="button"
-                          type="button"
                           onClick={() => { setAnswerFilters(prev => ({ ...prev, [q]: '' })); setApplicantsPage(1) }}
                           aria-label={`${q} 필터 제거`}
                           className="w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
@@ -1576,7 +1572,6 @@ export default function CampaignDetail() {
                         <div className="flex items-center gap-1.5">
                           {a.previewFeed ? (
                             <button type="button"
-                              type="button"
                               onClick={() => setPreviewModal({ applicantId: a.id, type: 'feed' })}
                               className={`w-12 h-12 rounded-lg bg-gradient-to-br ${a.previewFeed} flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-brand-green/50 transition-all`}
                               aria-label={`${a.name} 최근 피드 미리보기`}
@@ -1588,7 +1583,6 @@ export default function CampaignDetail() {
                           )}
                           {a.previewReels ? (
                             <button type="button"
-                              type="button"
                               onClick={() => setPreviewModal({ applicantId: a.id, type: 'reels' })}
                               className={`w-8 h-12 rounded-lg bg-gradient-to-br ${a.previewReels} flex items-center justify-center relative cursor-pointer hover:ring-2 hover:ring-brand-green/50 transition-all`}
                               aria-label={`${a.name} 최근 릴스 미리보기`}
@@ -2719,7 +2713,6 @@ export default function CampaignDetail() {
             className="relative max-w-3xl w-full max-h-[85vh] rounded-2xl overflow-hidden bg-brand-green-bg cursor-default"
           >
             <button type="button"
-              type="button"
               onClick={() => setCampaignImageOpen(false)}
               aria-label="닫기"
               className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-gray-700"

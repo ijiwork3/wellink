@@ -266,7 +266,6 @@ export default function ViralMetrics() {
             description="인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다."
             action={
               <button type="button"
-                type="button"
                 onClick={() => navigate('/campaigns')}
                 className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >

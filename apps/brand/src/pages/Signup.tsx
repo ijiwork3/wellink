@@ -115,7 +115,6 @@ export default function Signup() {
       {/* 도입문의 */}
       <div className="fixed top-4 right-4 z-10">
         <button type="button"
-          type="button"
           onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
           className="px-4 py-2 rounded-xl text-base font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
         >
@@ -187,7 +186,7 @@ export default function Signup() {
                 className={`${inputCls('password')} pr-10`}
               />
               <button type="button"
-                type="button" onClick={() => setShowPassword(v => !v)}
+  onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPassword}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded p-1"
@@ -227,7 +226,7 @@ export default function Signup() {
                 className={`${inputCls('passwordConfirm')} pr-10`}
               />
               <button type="button"
-                type="button" onClick={() => setShowPasswordConfirm(v => !v)}
+  onClick={() => setShowPasswordConfirm(v => !v)}
                 aria-label={showPasswordConfirm ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPasswordConfirm}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded p-1"
@@ -332,7 +331,6 @@ export default function Signup() {
           <p className="text-center text-base text-gray-500">
             이미 계정이 있으신가요?{' '}
             <button type="button"
-              type="button"
               onClick={() => navigate('/login')}
               className="font-medium hover:underline transition-colors duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >

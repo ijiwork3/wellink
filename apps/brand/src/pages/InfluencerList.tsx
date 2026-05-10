@@ -516,7 +516,6 @@ export default function InfluencerList() {
             />
             {searchInput && (
               <button type="button"
-                type="button"
                 onClick={() => { setSearchInput(''); setSearch(''); setPage(1) }}
                 aria-label="검색어 초기화"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full p-0.5"
@@ -526,7 +525,6 @@ export default function InfluencerList() {
             )}
           </div>
           <button type="button"
-            type="button"
             onClick={() => { setSearch(searchInput); setPage(1) }}
             className="shrink-0 px-4 py-2 bg-brand-green text-white text-base font-medium rounded-xl hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
@@ -548,7 +546,6 @@ export default function InfluencerList() {
       {/* fixed 플로팅 스크롤 버튼 — 테이블 visible 영역 중앙에 동적 배치 */}
       {btnTop !== null && canScrollLeft && (
         <button type="button"
-          type="button"
           onClick={() => scrollTable('left')}
           aria-label="왼쪽으로 스크롤"
           style={{ top: btnTop }}
@@ -559,7 +556,6 @@ export default function InfluencerList() {
       )}
       {btnTop !== null && canScrollRight && (
         <button type="button"
-          type="button"
           onClick={() => scrollTable('right')}
           aria-label="오른쪽으로 스크롤"
           style={{ top: btnTop }}
@@ -580,7 +576,6 @@ export default function InfluencerList() {
               description={hasActiveFilters ? '필터를 초기화하거나 다른 조건을 시도해 보세요.' : '다른 키워드로 검색해 보세요.'}
               action={
                 <button type="button"
-                  type="button"
                   onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                   className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >필터 초기화</button>
@@ -602,11 +597,10 @@ export default function InfluencerList() {
                       {(inf.instagramId ?? inf.name)[0]}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-base font-semibold text-gray-900 truncate">@{inf.instagramId ?? inf.name}</p>
-                      <p className="text-base text-gray-500 truncate">{inf.name}</p>
+                      <p className="text-base font-semibold text-gray-900 break-words">@{inf.instagramId ?? inf.name}</p>
+                      <p className="text-base text-gray-500">{inf.name}</p>
                     </div>
                     <button type="button"
-                      type="button"
                       onClick={e => { e.stopPropagation(); toggleBookmark(inf.id) }}
                       aria-label={bookmarked.has(inf.id) ? '찜 해제' : '찜하기'}
                       aria-pressed={bookmarked.has(inf.id)}
@@ -642,7 +636,6 @@ export default function InfluencerList() {
                       <span className="text-base text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed whitespace-nowrap">제안하기</span>
                     ) : (
                       <button type="button"
-                        type="button"
                         onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
                         className="text-base border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:border-gray-400 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                       >제안하기</button>
@@ -698,7 +691,6 @@ export default function InfluencerList() {
                     description="필터를 조정해 보세요."
                     action={
                       <button type="button"
-                        type="button"
                         onClick={() => { setSearch(''); setSearchInput(''); setCategory(''); setEngagementFilter(''); setFollowerTier(''); setJoinType(''); setChannel(''); setPage(1) }}
                         className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >필터 초기화</button>
@@ -801,7 +793,6 @@ export default function InfluencerList() {
                   ) : proposableCampaigns.length === 0 ? (
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
                       <button type="button"
-                        type="button"
                         disabled
                         className="text-base border border-gray-200 text-gray-400 px-3 py-1.5 rounded-xl bg-gray-50 cursor-not-allowed whitespace-nowrap"
                       >
@@ -1261,7 +1252,6 @@ export default function InfluencerList() {
                     }`}
                   >
                     <button type="button"
-                      type="button"
                       onClick={() => setProposalExpandedId(isExpanded ? null : c.id)}
                       className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
                       aria-expanded={isExpanded}
@@ -1276,7 +1266,7 @@ export default function InfluencerList() {
                         onClick={e => e.stopPropagation()}
                         className="accent-gray-900 disabled:cursor-not-allowed"
                       />
-                      <span className={`text-base flex-1 truncate ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
+                      <span className={`text-base flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
                       {hasApplied && (
                         <span className="shrink-0 text-base px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
                       )}

@@ -190,7 +190,6 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700 whitespace-nowrap">
       {label}
       <button type="button"
-        type="button"
         onClick={onRemove}
         className="text-gray-400 hover:text-gray-700 -mr-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
         aria-label={`${label} 제거`}
@@ -410,7 +409,6 @@ export default function Campaigns() {
         <div className="flex items-center gap-2">
           {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
           <button type="button"
-            type="button"
             onClick={() => !isGated && setAiModalStep('input')}
             disabled={isGated}
             aria-label={isGated ? 'AI로 만들기 (구독 만료)' : 'AI로 만들기'}
@@ -420,7 +418,6 @@ export default function Campaigns() {
             AI로 만들기
           </button>
           <button type="button"
-            type="button"
             onClick={() => !isGated && navigate('/campaigns/new')}
             disabled={isGated}
             aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
@@ -437,7 +434,6 @@ export default function Campaigns() {
         <div className="flex items-center border-b border-gray-100">
           {canTabScrollLeft && (
             <button type="button"
-              type="button"
               onClick={() => scrollTabs('left')}
               aria-label="탭 왼쪽으로 스크롤"
               className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
@@ -462,7 +458,6 @@ export default function Campaigns() {
           </div>
           {canTabScrollRight && (
             <button type="button"
-              type="button"
               onClick={() => scrollTabs('right')}
               aria-label="탭 오른쪽으로 스크롤"
               className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
@@ -486,7 +481,6 @@ export default function Campaigns() {
             />
             {inputValue && (
               <button type="button"
-                type="button"
                 onClick={() => { setInputValue(''); setSearch(''); resetPage() }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 aria-label="검색어 지우기"
@@ -539,7 +533,6 @@ export default function Campaigns() {
               <FilterChip label={`카테고리: ${categoryFilter}`} onRemove={() => { setCategoryFilter('전체'); resetPage() }} />
             )}
             <button type="button"
-              type="button"
               onClick={resetAllFilters}
               className="ml-auto inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
@@ -561,7 +554,6 @@ export default function Campaigns() {
               : qaEmpty ? '새 캠페인을 등록해 인플루언서 마케팅을 시작해 보세요.' : undefined}
             action={!qaEmpty && hasActiveFilters ? (
               <button type="button"
-                type="button"
                 onClick={resetAllFilters}
                 className="inline-flex items-center gap-1 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
@@ -570,7 +562,6 @@ export default function Campaigns() {
               </button>
             ) : qaEmpty ? (
               <button type="button"
-                type="button"
                 onClick={() => navigate('/campaigns/new')}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -758,12 +749,10 @@ export default function Campaigns() {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button"
-                type="button"
                 onClick={() => setAiModalStep(null)}
                 className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >취소</button>
               <button type="button"
-                type="button"
                 onClick={() => setAiModalStep('loading')}
                 disabled={!aiInput.brand.trim()}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -824,12 +813,10 @@ export default function Campaigns() {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button"
-                type="button"
                 onClick={() => setAiModalStep('loading')}
                 className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >다시 생성</button>
               <button type="button"
-                type="button"
                 onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >

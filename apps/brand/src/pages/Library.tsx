@@ -612,7 +612,6 @@ export default function Library() {
       {/* Top Performer */}
       {topPerformer && (
         <button type="button"
-          type="button"
           onClick={() => setPreviewItem(topPerformer)}
           aria-label="이번 달 최고 성과 콘텐츠 상세 보기"
           className="w-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md p-4 flex items-center gap-3 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -822,7 +821,6 @@ export default function Library() {
                   : '캠페인이 진행되면 인플루언서들이 등록한 콘텐츠가 이곳에 표시됩니다.'}
                 action={hasFilters ? (
                   <button type="button"
-                    type="button"
                     onClick={() => { setSearch(''); setCampaignFilter('전체'); setStatusFilter('전체'); setPlatformTypeFilter('전체') }}
                     className="text-base px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >필터 초기화</button>
@@ -895,7 +893,6 @@ export default function Library() {
 
                   {/* Thumbnail — button으로 교체하여 iOS VoiceOver 호환성 확보 */}
                   <button type="button"
-                    type="button"
                     aria-label={`${c.creator} 콘텐츠 미리보기`}
                     className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                     onClick={() => setPreviewItem(c)}
@@ -922,7 +919,6 @@ export default function Library() {
 
                   <div className="p-3">
                     <button type="button"
-                      type="button"
                       aria-label={`${c.creator} 콘텐츠 상세 보기`}
                       onClick={() => setPreviewItem(c)}
                       className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
@@ -935,7 +931,6 @@ export default function Library() {
                         <StatusBadge status={displayStatus} dot={false} size="sm" className="shrink-0" />
                       </div>
                       <button type="button"
-                        type="button"
                         onClick={(e) => { e.stopPropagation(); navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`) }}
                         className="block w-full text-left text-base text-gray-500 hover:text-brand-green hover:underline line-clamp-2 mb-2 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50 rounded"
                       >{c.campaign}</button>
@@ -954,7 +949,6 @@ export default function Library() {
                     <div className="flex items-center justify-between">
                       <span className="text-base text-gray-500">{fmtDate(c.date)}</span>
                       <button type="button"
-                        type="button"
                         onClick={(e) => { e.stopPropagation(); toggleLibBookmark(c.creator) }}
                         aria-label={libBookmarked.has(c.creator) ? `${c.creator} 찜 해제` : `${c.creator} 찜하기`}
                         aria-pressed={libBookmarked.has(c.creator)}
@@ -1059,7 +1053,6 @@ export default function Library() {
                     </td>
                     <td className="py-3 px-3">
                       <button type="button"
-                        type="button"
                         aria-label={`${c.creator} 콘텐츠 미리보기`}
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
                         onClick={() => setPreviewItem(c)}
@@ -1083,9 +1076,8 @@ export default function Library() {
                     <td className="py-3 px-3 max-w-[140px]">
                       <Tooltip content={c.campaign}>
                         <button type="button"
-                          type="button"
                           onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
-                          className="text-base text-gray-600 hover:text-brand-green hover:underline truncate block w-full text-left"
+                          className="text-base text-gray-600 hover:text-brand-green hover:underline block w-full text-left break-words"
                         >{c.campaign}</button>
                       </Tooltip>
                     </td>
@@ -1241,7 +1233,7 @@ export default function Library() {
                 </div>
                 {/* 인플루언서 액션 */}
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5 space-y-2">
-                  <p className="text-base text-gray-500 truncate">
+                  <p className="text-base text-gray-500">
                     <span className="font-medium text-gray-600">@{previewItem.creatorUsername}</span> 님
                   </p>
                   <div className="flex gap-2">
@@ -1486,7 +1478,6 @@ export default function Library() {
                     }`}
                   >
                     <button type="button"
-                      type="button"
                       onClick={() => setLibProposalExpandedId(isExpanded ? null : c.id)}
                       className="w-full flex items-center gap-3 p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
                       aria-expanded={isExpanded}
@@ -1500,7 +1491,7 @@ export default function Library() {
                         onClick={e => e.stopPropagation()}
                         className="accent-gray-900"
                       />
-                      <span className="text-base flex-1 truncate text-gray-700">{c.name}</span>
+                      <span className="text-base flex-1 break-words text-gray-700">{c.name}</span>
                       <ChevronDown size={16} className={`text-gray-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                     {isExpanded && (

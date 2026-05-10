@@ -358,7 +358,6 @@ export default function Dashboard() {
             <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
           </div>
           <button type="button"
-            type="button"
             onClick={() => navigate('/campaigns/new')}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
           >
@@ -392,7 +391,6 @@ export default function Dashboard() {
             description="새 캠페인을 등록하고 인플루언서 마케팅을 시작해 보세요."
             action={
               <button type="button"
-                type="button"
                 onClick={() => navigate('/campaigns/new')}
                 className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -443,14 +441,12 @@ export default function Dashboard() {
           <span className="flex-1 text-rose-800">{u.text}</span>
           <div className="flex items-center gap-2 shrink-0">
             <button type="button"
-              type="button"
               onClick={() => navigate(u.route)}
               className="text-sm font-semibold text-rose-700 hover:text-rose-900 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >
               {u.cta} →
             </button>
             <button type="button"
-              type="button"
               onClick={() => setDismissedUrgent(prev => new Set([...prev, u.id]))}
               aria-label="닫기"
               className="text-rose-400 hover:text-rose-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
@@ -468,7 +464,6 @@ export default function Dashboard() {
           <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
         </div>
         <button type="button"
-          type="button"
           onClick={() => navigate('/campaigns/new')}
           className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
         >
@@ -502,7 +497,7 @@ export default function Dashboard() {
               className="flex flex-col gap-3 shadow-sm cursor-default"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm text-gray-500 font-medium min-w-0 truncate">{kpi.title}</span>
+                <span className="text-sm text-gray-500 font-medium min-w-0 break-words">{kpi.title}</span>
                 <span className="text-gray-400 shrink-0">{kpi.icon}</span>
               </div>
               <div>
@@ -520,9 +515,9 @@ export default function Dashboard() {
       </div>
 
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
-      <div className="grid grid-cols-1 @md:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
         {/* 활성 캠페인 현황 */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="@xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
             <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
             <button type="button"
@@ -536,7 +531,6 @@ export default function Dashboard() {
           {/* fixed 플로팅 스크롤 버튼 */}
           {tableBtnTop !== null && canTableScrollLeft && (
             <button type="button"
-              type="button"
               onClick={() => scrollTable('left')}
               aria-label="왼쪽으로 스크롤"
               style={{ top: tableBtnTop }}
@@ -547,7 +541,6 @@ export default function Dashboard() {
           )}
           {tableBtnTop !== null && canTableScrollRight && (
             <button type="button"
-              type="button"
               onClick={() => scrollTable('right')}
               aria-label="오른쪽으로 스크롤"
               style={{ top: tableBtnTop }}
@@ -673,7 +666,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── 이번 달 성과 하이라이트 ── */}
-      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 @md:grid-cols-2 gap-3">
         {HIGHLIGHTS.map(h => (
           <div key={h.label} className={`${h.bg} rounded-xl border border-gray-100 shadow-sm px-5 py-4 flex items-start gap-4`}>
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white shadow-sm ${h.color} mt-0.5`}>
@@ -681,15 +674,13 @@ export default function Dashboard() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm text-gray-500 mb-1">{h.label}</p>
-              {/* @username + value: 좌우 분리로 행 붕괴 방지 */}
+              {/* @username + value: 상하 분리 — truncate 금지 정책 */}
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-base font-bold text-gray-900 truncate">@{h.username}</p>
-                  <p className="text-sm text-gray-500">{h.name}</p>
-                </div>
-                <span className={`text-base font-semibold ${h.color} shrink-0`}>{h.value}</span>
+                <p className="text-base font-bold text-gray-900 break-all leading-snug">@{h.username}</p>
+                <span className={`text-base font-semibold ${h.color} shrink-0 ml-1`}>{h.value}</span>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{h.sub}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{h.name}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{h.sub}</p>
             </div>
           </div>
         ))}

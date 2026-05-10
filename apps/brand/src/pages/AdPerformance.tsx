@@ -382,7 +382,6 @@ export default function AdPerformance() {
             description="Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다."
             action={
               <button type="button"
-                type="button"
                 onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
                 className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg px-2 py-1"
               >

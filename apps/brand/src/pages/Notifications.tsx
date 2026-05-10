@@ -184,7 +184,6 @@ export default function Notifications() {
         </div>
         {unreadCount > 0 && (
           <button type="button"
-            type="button"
             onClick={handleMarkAllRead}
             className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
           >모두 읽음으로 표시</button>
@@ -223,7 +222,6 @@ export default function Notifications() {
               return (
                 <li key={item.id}>
                   <button type="button"
-                    type="button"
                     onClick={() => handleNotificationClick(item)}
                     className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
                       item.unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
