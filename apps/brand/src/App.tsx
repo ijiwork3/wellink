@@ -17,6 +17,7 @@ import Library from './pages/Library'
 import Subscription from './pages/Subscription'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentFail from './pages/PaymentFail'
+import PaymentMethod from './pages/PaymentMethod'
 import MyPage from './pages/MyPage'
 import Notifications from './pages/Notifications'
 import Moodboard from './pages/Moodboard'
@@ -301,6 +302,7 @@ function AppRoutes() {
           <Route path="/campaigns/:id" element={<CampaignDetail />} />
           <Route path="/library" element={<Library />} />
           <Route path="/subscription" element={<Subscription />} />
+          <Route path="/payment/method" element={<PaymentMethod />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>

@@ -283,7 +283,7 @@ export default function Subscription() {
             <p className="text-sm text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
           </div>
           <button type="button"
-            onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
+            onClick={() => navigate('/payment/method')}
             className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             결제 수단 수정
@@ -595,7 +595,7 @@ export default function Subscription() {
             결제 수단
           </h3>
           <button type="button"
-            onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
+            onClick={() => navigate('/payment/method')}
             className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             변경
@@ -612,7 +612,7 @@ export default function Subscription() {
               <p className="text-base text-gray-500">등록된 결제 수단이 없습니다</p>
             </div>
             <button type="button"
-              onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
+              onClick={() => navigate('/payment/method')}
               className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               등록하기

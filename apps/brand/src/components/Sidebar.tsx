@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { Modal } from '@wellink/ui'
 import { usePlanAccess } from '../hooks/usePlanAccess'
+import { useUnreadCount } from '../services/notifications'
 
 const sections = [
   {
@@ -46,7 +47,8 @@ const ALWAYS_ACCESSIBLE = new Set(['/campaigns', '/subscription'])
 export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = false }: { onNavigate?: () => void; hideLogo?: boolean; fullWidth?: boolean } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isGated, planLabel } = usePlanAccess()
+  const { isGated, planLabel, isSubscribed } = usePlanAccess()
+  const unreadNotifs = useUnreadCount(isSubscribed)
   const isMyPageActive = location.pathname === '/mypage'
   const [menuSearch, setMenuSearch] = useState('')
   const [gatedModalOpen, setGatedModalOpen] = useState(false)
@@ -176,6 +178,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
                   </button>
                 )
               }
+              const showNotifDot = item.to === '/notifications' && unreadNotifs > 0
               return (
                 <NavLink
                   key={item.to}
@@ -190,7 +193,15 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
                     }`
                   }
                 >
-                  {item.icon}
+                  <span className="relative inline-flex">
+                    {item.icon}
+                    {showNotifDot && (
+                      <span
+                        className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"
+                        aria-label={`읽지 않은 알림 ${unreadNotifs}건`}
+                      />
+                    )}
+                  </span>
                   {item.label}
                 </NavLink>
               )

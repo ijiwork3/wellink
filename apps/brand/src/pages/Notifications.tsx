@@ -8,78 +8,14 @@ import {
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
+import {
+  getVisibleNotifications, isUnread, markAsRead, markAllAsRead, useReadIds,
+  type NotificationItem, type NotificationType,
+} from '../services/notifications'
 
 /** 알림 센터 — 원본 NotificationView.tsx 동등 (광고주) */
 
-type NotificationType = 'campaign' | 'system' | 'message'
 type FilterValue = 'all' | NotificationType
-type Notification = {
-  id: number
-  type: NotificationType
-  title: string
-  desc: string
-  time: string
-  unread: boolean
-  link: string | null
-}
-
-// ── 더미 데이터 ──────────────────────────────────────────────────
-const TIME_POOL = ['방금 전', '5분 전', '30분 전', '1시간 전', '2시간 전', '4시간 전', '어제', '2일 전', '3일 전', '1주 전', '2주 전']
-const CAMPAIGN_TITLES = [
-  '새로운 지원자가 있습니다',
-  '캠페인 리포트 생성 완료',
-  '캠페인 모집 마감 임박',
-  '인플루언서가 콘텐츠를 제출했습니다',
-  '캠페인 발표일이 도래했습니다',
-]
-const SYSTEM_TITLES = [
-  '포인트 충전 완료',
-  '정기 점검 안내',
-  '구독 결제 예정',
-  '결제 실패 알림',
-  '플랜 업그레이드 완료',
-]
-const MESSAGE_TITLES = [
-  '새로운 메시지',
-  '제안에 인플루언서가 답변했습니다',
-  '캠페인 문의가 도착했습니다',
-]
-const CAMPAIGN_DESCS = [
-  "'봄 요가 프로모션' 캠페인에 새로운 인플루언서가 지원했습니다.",
-  "'비건 신제품 론칭' 캠페인의 최종 성과 리포트가 생성되었습니다.",
-  "'여름 캠페인' 모집이 24시간 안에 마감됩니다.",
-  "선정 인플루언서가 검수용 콘텐츠를 제출했습니다.",
-  "오늘이 인플루언서 발표일입니다.",
-]
-const SYSTEM_DESCS = [
-  '500,000 포인트가 성공적으로 충전되었습니다.',
-  '정기 점검이 새벽 2시부터 4시까지 진행될 예정입니다.',
-  '다음 결제일이 7일 남았습니다.',
-  '카드 결제에 실패했습니다. 결제 수단을 확인해주세요.',
-  'Scale 플랜으로 업그레이드되었습니다.',
-]
-const MESSAGE_DESCS = [
-  "인플루언서 '@yoga_jimin'님으로부터 새로운 메시지가 도착했습니다.",
-  "'@daily_hana'님이 캠페인 제안을 수락했습니다.",
-  "'@beauty_sora'님이 캠페인 관련 문의를 보냈습니다.",
-]
-const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'campaign', 'system', 'system', 'message', 'message']
-const INITIAL_NOTIFICATIONS: Notification[] = Array.from({ length: 100 }, (_, i) => {
-  const type = TYPE_CYCLE[i % TYPE_CYCLE.length]
-  const titlePool = type === 'campaign' ? CAMPAIGN_TITLES : type === 'system' ? SYSTEM_TITLES : MESSAGE_TITLES
-  const descPool  = type === 'campaign' ? CAMPAIGN_DESCS : type === 'system' ? SYSTEM_DESCS  : MESSAGE_DESCS
-  return {
-    id: i + 1,
-    type,
-    title: titlePool[i % titlePool.length],
-    desc:  descPool[i % descPool.length],
-    time:  TIME_POOL[i % TIME_POOL.length],
-    unread: i < 8,
-    link: type === 'campaign' && i % 3 === 0 ? '/campaigns/1?qa=tab-applicants'
-        : type === 'campaign' && i % 3 === 1 ? '/campaigns/1?qa=tab-report'
-        : null,
-  }
-})
 
 const PAGE_SIZE = 15
 
@@ -108,13 +44,12 @@ export default function Notifications() {
 
   const { isSubscribed } = usePlanAccess()
 
-  // 미구독자는 결제·플랜 관련 시스템 알림 제외 (정합성)
-  const [notifications, setNotifications] = useState<Notification[]>(() => {
-    if (qa === 'empty') return []
-    return isSubscribed
-      ? INITIAL_NOTIFICATIONS
-      : INITIAL_NOTIFICATIONS.filter(n => n.type !== 'system')
-  })
+  // 알림 데이터·읽음 상태는 글로벌 store에서 (Sidebar dot과 동기화)
+  const readIds = useReadIds()
+  const notifications: NotificationItem[] = useMemo(
+    () => qa === 'empty' ? [] : getVisibleNotifications(isSubscribed),
+    [qa, isSubscribed]
+  )
 
   const [filter, setFilter] = useState<FilterValue>(initialFilter)
   const [page, setPage] = useState(1)
@@ -124,8 +59,8 @@ export default function Notifications() {
     [filter, notifications]
   )
   const unreadCount = useMemo(
-    () => notifications.reduce((acc, n) => acc + (n.unread ? 1 : 0), 0),
-    [notifications]
+    () => notifications.filter(n => isUnread(n.id, readIds)).length,
+    [notifications, readIds]
   )
 
   // 카테고리별 카운트 — 탭에 표시
@@ -167,13 +102,13 @@ export default function Notifications() {
     return <ErrorState message="알림을 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
 
-  const handleNotificationClick = (n: Notification) => {
-    if (n.unread) setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, unread: false } : x))
+  const handleNotificationClick = (n: NotificationItem) => {
+    if (isUnread(n.id, readIds)) markAsRead(n.id)
     if (n.link) navigate(n.link)
   }
 
   const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, unread: false })))
+    markAllAsRead(notifications.map(n => n.id))
     showToast('모든 알림을 읽음 처리했습니다.', 'success')
   }
 
@@ -227,26 +162,26 @@ export default function Notifications() {
           <ul className="divide-y divide-gray-50" role="list">
             {paginated.map(item => {
               const avatar = TYPE_AVATAR[item.type]
+              const unread = isUnread(item.id, readIds)
               return (
                 <li key={item.id}>
                   <button type="button"
                     onClick={() => handleNotificationClick(item)}
                     className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
-                      item.unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
+                      unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
                     }`}
-                    aria-label={`${item.unread ? '미읽음 ' : ''}${item.title} — ${item.time}`}
+                    aria-label={`${unread ? '미읽음 ' : ''}${item.title} — ${item.time}`}
                   >
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${avatar.bg}`} aria-hidden="true">
                       {avatar.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3 mb-0.5">
-                        <h3 className={`text-base ${item.unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
-                          {item.title}
-                          {item.unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
-                        </h3>
-                        <span className="text-sm text-gray-400 whitespace-nowrap shrink-0">{item.time}</span>
-                      </div>
+                      {/* 제목 + 시간 inline (메일 인박스 스타일) — 시간을 좌측 영역으로 이동 */}
+                      <h3 className={`text-base mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                        {item.title}
+                        {unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
+                        <span className="ml-2 text-sm font-normal text-gray-400 whitespace-nowrap">· {item.time}</span>
+                      </h3>
                       <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
                     </div>
                     {item.link && (
