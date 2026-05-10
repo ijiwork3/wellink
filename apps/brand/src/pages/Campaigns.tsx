@@ -406,23 +406,25 @@ export default function Campaigns() {
     <div className="space-y-5">
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h1 className="text-2xl @md:text-3xl font-bold text-gray-900">캠페인 목록</h1>
+        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">캠페인 목록</h1>
         <div className="flex items-center gap-2">
           {/* AI 캠페인 생성 (정책서 § 16) — 보조 CTA */}
           <button
+            type="button"
             onClick={() => !isGated && setAiModalStep('input')}
             disabled={isGated}
             aria-label={isGated ? 'AI로 만들기 (구독 만료)' : 'AI로 만들기'}
-            className="flex items-center gap-1.5 border border-brand-green text-brand-green px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base @sm:text-base font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 border border-brand-green text-brand-green-text px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Sparkles size={14} aria-hidden="true" />
             AI로 만들기
           </button>
           <button
+            type="button"
             onClick={() => !isGated && navigate('/campaigns/new')}
             disabled={isGated}
             aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
-            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base @sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Plus size={14} aria-hidden="true" />
             새 캠페인 등록
