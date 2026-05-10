@@ -436,13 +436,16 @@ export default function InfluencerList() {
     return (
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">인플루언서 리스트</h1>
           <p className="text-base text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Users size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-500 mb-1">인플루언서 데이터가 없습니다</p>
-          <p className="text-base text-gray-500">구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다.</p>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<Users size={40} />}
+            title="인플루언서 데이터가 없습니다"
+            description="구독 플랜에 따라 접근 가능한 인플루언서 수가 결정됩니다."
+          />
         </div>
       </div>
     )

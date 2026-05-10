@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination,
-  ErrorState, SkeletonCard, Skeleton, useToast,
+  ErrorState, EmptyState, SkeletonCard, Skeleton, useToast,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
@@ -1891,10 +1891,13 @@ export default function CampaignDetail() {
 
       {/* ─── D) 등록 콘텐츠 탭 ─── */}
       {activeTab === '등록 콘텐츠' && !isGated && qa === 'tab-content-empty' && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <Image size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-medium text-gray-500">등록된 콘텐츠가 없습니다</p>
-          <p className="text-base text-gray-500 mt-1">인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다.</p>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<Image size={40} />}
+            title="등록된 콘텐츠가 없습니다"
+            description="인플루언서가 콘텐츠를 제출하면 여기에 표시됩니다."
+          />
         </div>
       )}
       {activeTab === '등록 콘텐츠' && !isGated && qa !== 'tab-content-empty' && (() => {
@@ -2212,10 +2215,13 @@ export default function CampaignDetail() {
 
       {/* ─── E) 성과 리포트 탭 — 빈 상태 ─── */}
       {activeTab === '성과 리포트' && !isGated && qa === 'tab-report-empty' && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-          <BarChart3 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-medium text-gray-500">성과 데이터가 없습니다</p>
-          <p className="text-base text-gray-500 mt-1">캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다.</p>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<BarChart3 size={40} />}
+            title="성과 데이터가 없습니다"
+            description="캠페인이 진행되면 성과 리포트가 자동으로 생성됩니다."
+          />
         </div>
       )}
 
