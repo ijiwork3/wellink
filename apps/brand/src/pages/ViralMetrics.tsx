@@ -324,7 +324,7 @@ export default function ViralMetrics() {
       {/* 월간·연간 데이터 부정확 안내 배너 */}
       {(viewMode === 'monthly' || viewMode === 'yearly') && (
         <div className="flex items-start gap-2 bg-amber-100 border border-amber-200 rounded-xl px-4 py-3">
-          <Info size={14} className="text-amber-500 mt-0.5 shrink-0" aria-hidden="true" />
+          <Info size={14} className="text-amber-700 mt-0.5 shrink-0" aria-hidden="true" />
           <p className="text-sm text-amber-800 leading-relaxed">
             데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
           </p>
@@ -367,7 +367,7 @@ export default function ViralMetrics() {
           trend={isZero ? 0 : parseFloat(trendPct[viewMode].viral)}
           trendLabel="전기간 대비"
           icon={<Zap size={16} aria-hidden="true" />}
-          valueColor="text-brand-green"
+          valueColor="text-brand-green-text"
           tooltip="공유·저장 기반으로 산출한 바이럴 확산 지수 (x배) — 높을수록 자생적 확산"
         />
       </div>
@@ -563,7 +563,7 @@ export default function ViralMetrics() {
                                 }}
                               />
                             </div>
-                            <span className={`text-base font-bold ${item.viralScore >= 80 ? 'text-brand-green' : item.viralScore >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+                            <span className={`text-base font-bold ${item.viralScore >= 80 ? 'text-brand-green-text' : item.viralScore >= 50 ? 'text-amber-700' : 'text-gray-400'}`}>
                               {item.viralScore}
                             </span>
                           </div>
@@ -610,7 +610,7 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
   const counts = { A: 0, B: 0, C: 0, D: 0, E: 0, processing: 0 } as Record<ContentGrade, number>
   for (const c of data) counts[c.grade] = (counts[c.grade] ?? 0) + 1
   const arr = [
-    { label: 'A 우수', value: counts.A, color: '#8CC63F' },
+    { label: 'A 우수', value: counts.A, color: '#9DD737' },
     { label: 'B', value: counts.B, color: '#f59e0b' },
     { label: 'C', value: counts.C, color: '#9ca3af' },
     { label: 'D', value: counts.D, color: '#d1d5db' },
@@ -664,8 +664,10 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
     return { label: `D-${6 - i}`, performance: Math.min(100, base), momentum: Math.min(100, mom) }
   }) : []
 
-  // 차트 인터랙티브 인덱스 (모달 열릴 때 마지막 인덱스)
-  const [scoreIdx, setScoreIdx] = useState<number | null>(isTouch ? scoreHistory.length - 1 : null)
+  // 차트 인터랙티브 인덱스 (모달 열릴 때 마지막 인덱스). content=null이면 빈 배열이라 null 안전 폴백.
+  const [scoreIdx, setScoreIdx] = useState<number | null>(
+    isTouch && scoreHistory.length > 0 ? scoreHistory.length - 1 : null
+  )
   const scoreScrollRef = useRef<HTMLDivElement>(null)
   const [scoreScrollLeft, setScoreScrollLeft] = useState(false)
   const [scoreScrollRight, setScoreScrollRight] = useState(false)
