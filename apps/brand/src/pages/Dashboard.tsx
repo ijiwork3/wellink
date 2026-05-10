@@ -222,7 +222,7 @@ export default function Dashboard() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
           <p className="text-base text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
         </div>
         <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green-border rounded-2xl p-8 text-center">

@@ -180,7 +180,7 @@ export default function MyPage() {
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">마이페이지</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">마이페이지</h1>
           <p className="text-base text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
         </div>
         <button

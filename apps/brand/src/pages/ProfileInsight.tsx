@@ -777,7 +777,7 @@ export default function ProfileInsight() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">프로필 인사이트</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">프로필 인사이트</h1>
           <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
         </div>
         <InstagramConnectPrompt featureName="프로필 인사이트" />
@@ -829,7 +829,7 @@ export default function ProfileInsight() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div ref={headerRef}>
-        <h1 className="text-2xl font-bold text-gray-900">프로필 인사이트</h1>
+        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">프로필 인사이트</h1>
         <p className="text-base text-gray-500 mt-0.5">브랜드 프로필의 콘텐츠 성과 및 팔로워 현황</p>
       </div>
 

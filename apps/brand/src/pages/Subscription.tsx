@@ -225,7 +225,7 @@ export default function Subscription() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">구독 관리</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">구독 관리</h1>
           <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         <ErrorState message="구독 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
@@ -238,7 +238,7 @@ export default function Subscription() {
       {/* 타이틀 */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">구독 관리</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">구독 관리</h1>
           <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
         </div>
         {/* 현재 플랜 뱃지 */}

@@ -242,7 +242,7 @@ export default function ViralMetrics() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">바이럴 지표</h1>
           <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
         <InstagramConnectPrompt featureName="바이럴 지표" />
@@ -255,7 +255,7 @@ export default function ViralMetrics() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">바이럴 지표</h1>
           <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -306,7 +306,7 @@ export default function ViralMetrics() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div ref={headerRef} className="flex items-center gap-2.5">
-        <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">바이럴 지표</h1>
+        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900 whitespace-nowrap">바이럴 지표</h1>
         <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap">Beta</span>
       </div>
 

@@ -360,7 +360,7 @@ export default function AdPerformance() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">광고 성과</h1>
           <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
         <InstagramConnectPrompt featureName="광고 성과" />
@@ -409,7 +409,7 @@ export default function AdPerformance() {
       {/* 헤더 */}
       <div ref={headerRef} className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">광고 성과</h1>
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">광고 성과</h1>
           <p className="text-base text-gray-500 mt-0.5">Meta 광고 캠페인 성과 및 전환 분석</p>
         </div>
         <button
