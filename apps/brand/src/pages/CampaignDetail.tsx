@@ -1652,7 +1652,7 @@ export default function CampaignDetail() {
                             <button
                               onClick={() => handlePendApplicant(a.id)}
                               aria-label="선정 예정"
-                              className="w-full inline-flex items-center justify-center bg-white border border-brand-green text-brand-green p-1.5 rounded-md hover:bg-brand-green/5 transition-colors duration-150"
+                              className="w-full inline-flex items-center justify-center bg-white border border-brand-green text-brand-green-text p-1.5 rounded-md hover:bg-brand-green/5 transition-colors duration-150"
                             >
                               <Check size={14} aria-hidden="true" />
                             </button>

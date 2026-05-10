@@ -1167,7 +1167,7 @@ export default function Library() {
             {downloadedIds.has(previewItem.id) ? (
               <button
                 onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
-                className="w-full flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green-text py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors"
               >
                 <Download size={14} aria-hidden="true" /> 다시 다운로드
               </button>
@@ -1259,7 +1259,7 @@ export default function Library() {
                     <button
                       onClick={() => openLibProposal(previewItem.creator)}
                       disabled={libProposedCreators.has(previewItem.creator)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border border-brand-green/30 text-brand-green bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border border-brand-green/30 text-brand-green-text bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send size={12} aria-hidden="true" />
                       {libProposedCreators.has(previewItem.creator) ? '제안 완료' : '제안하기'}

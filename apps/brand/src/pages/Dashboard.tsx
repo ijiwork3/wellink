@@ -720,7 +720,7 @@ export default function Dashboard() {
                     <span className="text-sm text-gray-500 font-medium">{item.label}</span>
                   </div>
                   <span
-                    className={`text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}
+                    className={`text-sm font-medium ${isPositive ? 'text-brand-green-text' : 'text-red-500'}`}
                   >
                     {fmtRate(item.change)}
                   </span>
