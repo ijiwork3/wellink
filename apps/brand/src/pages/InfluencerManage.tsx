@@ -1195,21 +1195,25 @@ export default function InfluencerManage() {
                           : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    {/* 헤더 행 — 라디오 + 이름 + Chevron (펼침 토글) */}
+                    {/* 헤더 행 — 카드 전체 클릭으로 선택·펼치기 동시 처리 */}
                     <button type="button"
-                      onClick={() => setProposalExpandedId(isExpanded ? null : c.id)}
+                      onClick={() => {
+                        if (!hasApplied) setSelectedCampaign(c.id)
+                        setProposalExpandedId(isExpanded ? null : c.id)
+                      }}
                       className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
                       aria-expanded={isExpanded}
                     >
+                      {/* 라디오는 visual cue — 클릭은 부모 button이 처리 */}
                       <input
                         type="radio"
                         name="campaign"
                         value={c.id}
                         checked={isSelected}
                         disabled={hasApplied}
-                        onChange={() => { if (!hasApplied) setSelectedCampaign(c.id) }}
-                        onClick={e => e.stopPropagation()}
-                        className="accent-gray-900 disabled:cursor-not-allowed"
+                        readOnly
+                        tabIndex={-1}
+                        className="accent-gray-900 disabled:cursor-not-allowed pointer-events-none"
                       />
                       <span className={`text-base flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
                       {hasApplied && (
