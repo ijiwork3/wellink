@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
-import { KPICard, StatusBadge, ErrorState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -330,22 +330,22 @@ export default function AdPerformance() {
     return () => observer.disconnect()
   }, [])
 
-  /* ── QA: 로딩 ── */
+  /* ── QA: 로딩 — 공통 SkeletonCard ── */
   if (qa === 'loading') {
     return (
-      <div className="space-y-6 animate-pulse">
+      <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div className="space-y-2">
-            <div className="h-6 w-32 bg-gray-100 rounded-xl" />
-            <div className="h-4 w-56 bg-gray-100 rounded-xl" />
+            <div className="h-6 w-32 bg-gray-100 animate-pulse rounded-xl" />
+            <div className="h-4 w-56 bg-gray-100 animate-pulse rounded-xl" />
           </div>
-          <div className="h-9 w-48 bg-gray-100 rounded-xl" />
+          <div className="h-9 w-48 bg-gray-100 animate-pulse rounded-xl" />
         </div>
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4,5,6,7,8].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
+          {[1,2,3,4,5,6,7,8].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
-        <div className="bg-gray-100 rounded-xl h-64" />
-        <div className="bg-gray-100 rounded-xl h-40" />
+        <SkeletonCard height={256} />
+        <SkeletonCard height={160} />
       </div>
     )
   }
@@ -368,20 +368,26 @@ export default function AdPerformance() {
     )
   }
 
-  /* ── QA: 빈 상태 ── */
+  /* ── QA: 빈 상태 — 공통 EmptyState ── */
   if (qa === 'empty') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">집행 중인 Meta 광고가 없습니다</p>
-          <p className="text-sm text-gray-300 mb-4">Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다.</p>
-          <button
-            onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
-            className="flex items-center gap-1.5 mx-auto text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg px-2 py-1"
-          >
-            <ExternalLink size={12} aria-hidden="true" />Meta 광고 관리자 열기
-          </button>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm w-full max-w-sm">
+          <EmptyState
+            size="lg"
+            icon={<BarChart2 size={40} />}
+            title="집행 중인 Meta 광고가 없습니다"
+            description="Meta 광고를 집행하면 성과 데이터가 여기에 표시됩니다."
+            action={
+              <button
+                type="button"
+                onClick={() => window.open('https://business.facebook.com/ads/manager/', '_blank', 'noopener,noreferrer')}
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg px-2 py-1"
+              >
+                <ExternalLink size={12} aria-hidden="true" />Meta 광고 관리자 열기
+              </button>
+            }
+          />
         </div>
       </div>
     )

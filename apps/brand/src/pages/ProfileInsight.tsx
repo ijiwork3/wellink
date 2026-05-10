@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'lucide-react'
-import { KPICard, ErrorState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination, useIsTouchDevice } from '@wellink/ui'
+import { KPICard, ErrorState, EmptyState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination, useIsTouchDevice, SkeletonCard } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -752,21 +752,21 @@ export default function ProfileInsight() {
   /* ── QA: 로딩 스켈레톤 ── */
   if (qa === 'loading') {
     return (
-      <div className="space-y-6 animate-pulse">
+      <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
           <div className="space-y-2">
-            <div className="h-6 w-40 bg-gray-100 rounded-xl" />
-            <div className="h-4 w-56 bg-gray-100 rounded-xl" />
+            <div className="h-6 w-40 bg-gray-100 animate-pulse rounded-xl" />
+            <div className="h-4 w-56 bg-gray-100 animate-pulse rounded-xl" />
           </div>
-          <div className="h-9 w-36 bg-gray-100 rounded-xl" />
+          <div className="h-9 w-36 bg-gray-100 animate-pulse rounded-xl" />
         </div>
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 rounded-xl h-32" />)}
+          {[1,2,3,4].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
-        <div className="bg-gray-100 rounded-xl h-64" />
+        <SkeletonCard height={256} />
         <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
-          <div className="bg-gray-100 rounded-xl h-48" />
-          <div className="bg-gray-100 rounded-xl h-48" />
+          <SkeletonCard height={192} />
+          <SkeletonCard height={192} />
         </div>
       </div>
     )
@@ -790,14 +790,17 @@ export default function ProfileInsight() {
     return <ErrorState message="프로필 인사이트를 불러올 수 없습니다" subMessage="네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." onRetry={() => window.location.reload()} />
   }
 
-  /* ── QA: 빈 상태 ── */
+  /* ── QA: 빈 상태 — 공통 EmptyState ── */
   if (qa === 'empty') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center w-full max-w-sm">
-          <BarChart2 size={40} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">분석 데이터가 없습니다</p>
-          <p className="text-sm text-gray-300 mb-4">인스타그램 계정을 연결하면 자동으로 수집됩니다</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm w-full max-w-sm">
+          <EmptyState
+            size="lg"
+            icon={<BarChart2 size={40} />}
+            title="분석 데이터가 없습니다"
+            description="인스타그램 계정을 연결하면 자동으로 수집됩니다"
+          />
         </div>
       </div>
     )

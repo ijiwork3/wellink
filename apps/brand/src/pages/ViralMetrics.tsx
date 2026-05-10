@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
-import { KPICard, Modal, ErrorState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, type DatePeriod } from '@wellink/ui'
+import { KPICard, Modal, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, SkeletonCard, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -217,28 +217,22 @@ export default function ViralMetrics() {
     return () => observer.disconnect()
   }, [])
 
-  /* ── QA: 로딩 스켈레톤 ── */
+  /* ── QA: 로딩 스켈레톤 — 공통 SkeletonCard ── */
   if (qa === 'loading') {
     return (
-      <div className="space-y-6 animate-pulse">
-        {/* 헤더 스켈레톤 */}
+      <div className="space-y-6">
         <div className="flex flex-col @sm:flex-row @sm:items-start @sm:justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-32 bg-gray-100 rounded-xl" />
-            <div className="h-5 w-10 bg-gray-100 rounded-full" />
+            <div className="h-7 w-32 bg-gray-100 animate-pulse rounded-xl" />
+            <div className="h-5 w-10 bg-gray-100 animate-pulse rounded-full" />
           </div>
-          <div className="h-9 w-64 bg-gray-100 rounded-xl" />
+          <div className="h-9 w-64 bg-gray-100 animate-pulse rounded-xl" />
         </div>
-        {/* KPI 4개 스켈레톤 */}
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="bg-gray-100 rounded-xl h-32" />
-          ))}
+          {[1,2,3,4].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
-        {/* 차트/배너 스켈레톤 */}
-        <div className="bg-gray-100 rounded-xl h-16" />
-        {/* 테이블 스켈레톤 */}
-        <div className="bg-gray-100 rounded-xl h-64" />
+        <SkeletonCard height={64} />
+        <SkeletonCard height={256} />
       </div>
     )
   }
@@ -256,7 +250,7 @@ export default function ViralMetrics() {
     )
   }
 
-  /* ── QA: 빈 상태 — 바이럴 콘텐츠 없음 ── */
+  /* ── QA: 빈 상태 — 바이럴 콘텐츠 없음 (공통 EmptyState) ── */
   if (qa === 'empty') {
     return (
       <div className="space-y-6">
@@ -264,16 +258,22 @@ export default function ViralMetrics() {
           <h1 className="text-2xl font-bold text-gray-900">바이럴 지표</h1>
           <span className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none">Beta</span>
         </div>
-        <div className="flex flex-col items-center justify-center min-h-[380px] bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center">
-          <Zap size={40} className="text-gray-200 mb-3" aria-hidden="true" />
-          <p className="text-base font-semibold text-gray-400 mb-1">바이럴 콘텐츠 데이터가 없습니다</p>
-          <p className="text-sm text-gray-400 max-w-[220px] mb-4">인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다.</p>
-          <button
-            onClick={() => navigate('/campaigns')}
-            className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            캠페인 만들기
-          </button>
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<Zap size={40} />}
+            title="바이럴 콘텐츠 데이터가 없습니다"
+            description="인플루언서 캠페인 콘텐츠가 게시되면 바이럴 지표가 자동으로 집계됩니다."
+            action={
+              <button
+                type="button"
+                onClick={() => navigate('/campaigns')}
+                className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                캠페인 만들기
+              </button>
+            }
+          />
         </div>
       </div>
     )
