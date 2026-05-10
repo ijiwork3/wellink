@@ -4,7 +4,8 @@ import {
   Megaphone, Users, Activity, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Search,
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
-  ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
+  ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw,
+  User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent
 } from 'lucide-react'
 import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -93,6 +94,26 @@ const INITIAL_NOTIFICATIONS: { id: number; text: string; time: string; dot: stri
   { id: 3, text: '인플루언서 관리에 새 그룹이 추가되었습니다.', time: '3시간 전', dot: 'bg-slate-400', route: '/influencers/manage', unread: true },
   { id: 4, text: '구독이 5일 후 만료됩니다. 갱신해 주세요.', time: '어제', dot: 'bg-amber-400', route: '/subscription', unread: false },
   { id: 5, text: '박리나님과의 협의가 수락되었습니다.', time: '2일 전', dot: 'bg-slate-400', route: '/influencers/manage', unread: false },
+]
+
+/* ── 프로필 인사이트 요약 mock (원본 대시보드 섹션 1) ── */
+const PROFILE_METRICS = [
+  { label: '팔로워',   value: fmtNumber(12400),  change: 3.2,   icon: <User size={14} aria-hidden="true" />,         hint: '계정을 팔로우하는 사용자 수. 기본 도달 가능성 지표.' },
+  { label: '도달',     value: fmtNumber(48200),  change: 8.5,   icon: <Globe size={14} aria-hidden="true" />,        hint: '콘텐츠를 한 번 이상 본 고유 사용자 수.' },
+  { label: '참여율',   value: '4.1%',            change: 1.2,   icon: <MousePointer2 size={14} aria-hidden="true" />, hint: '좋아요·댓글·저장·공유 등 상호작용 비율. 높을수록 콘텐츠 반응 우수.' },
+  { label: '노출',     value: fmtNumber(93500),  change: 12.4,  icon: <Zap size={14} aria-hidden="true" />,          hint: '콘텐츠가 화면에 표시된 총 횟수 (동일 사용자 중복 포함).' },
+]
+
+/* ── 광고 성과 요약 mock (원본 대시보드 섹션 2) ── */
+const AD_METRICS = [
+  { label: '총 광고 지출',  value: '285만원',           change: 15.0,  icon: <DollarSign size={14} aria-hidden="true" />,  hint: '선택 기간 광고 집행에 사용된 총 금액.' },
+  { label: 'ROAS',         value: '3.2x',              change: 5.1,   icon: <Percent size={14} aria-hidden="true" />,    hint: '광고 지출 대비 수익 효율. 높을수록 수익성 우수.' },
+  { label: '총 결과',       value: '94',                change: 22.0,  icon: <ListChecks size={14} aria-hidden="true" />, hint: '광고 목표(구매·문의 등) 달성 총 횟수.' },
+  { label: '결과당 비용',   value: '30,319원',           change: -5.8,  icon: <Calculator size={14} aria-hidden="true" />, hint: '목표 1건 달성 평균 비용. 낮을수록 효율 우수.' },
+  { label: '총 광고 도달',  value: fmtNumber(184000),   change: 9.3,   icon: <Users size={14} aria-hidden="true" />,     hint: '광고를 한 번 이상 본 고유 사용자 수.' },
+  { label: '총 광고 클릭',  value: '3,290',             change: 14.2,  icon: <MousePointer2 size={14} aria-hidden="true" />, hint: '광고가 클릭된 총 횟수.' },
+  { label: '평균 CTR',     value: '1.79%',              change: 4.5,   icon: <Percent size={14} aria-hidden="true" />,   hint: '클릭 수 ÷ 노출 수 × 100%. 높을수록 광고 소재 효과적.' },
+  { label: '평균 CPC',     value: '866원',               change: -0.7,  icon: <Calculator size={14} aria-hidden="true" />, hint: '클릭 1회당 평균 광고 비용. 낮을수록 효율 우수.' },
 ]
 
 /* ── 콘텐츠 성과 — 기간별 ── */
@@ -512,6 +533,70 @@ export default function Dashboard() {
             </Card>
           )
         })}
+      </div>
+
+      {/* ── 프로필 인사이트 요약 (원본 대시보드 섹션 1) ── */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <User size={15} className="text-gray-500" aria-hidden="true" />
+            프로필 인사이트
+          </h2>
+          <button type="button" onClick={() => navigate('/analytics/profile')}
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+          >더보기 <ArrowRight size={12} /></button>
+        </div>
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-4">
+          {PROFILE_METRICS.map(m => {
+            const pos = m.change >= 0
+            return (
+              <div key={m.label} className="space-y-1" title={m.hint}>
+                <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
+                  <span className="text-gray-400">{m.icon}</span>
+                  {m.label}
+                </p>
+                <p className="text-xl font-bold text-gray-900">{m.value}</p>
+                <p className={`text-sm font-medium flex items-center gap-0.5 ${pos ? 'text-brand-green-text' : 'text-red-500'}`}>
+                  {pos ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                  {fmtRate(m.change)}
+                  <span className="text-gray-400 font-normal ml-1">전월 대비</span>
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── 광고 성과 요약 (원본 대시보드 섹션 2) ── */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <TrendingUp size={15} className="text-gray-500" aria-hidden="true" />
+            광고 성과
+          </h2>
+          <button type="button" onClick={() => navigate('/analytics/ad')}
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+          >더보기 <ArrowRight size={12} /></button>
+        </div>
+        <div className="grid grid-cols-2 @md:grid-cols-4 gap-4">
+          {AD_METRICS.map(m => {
+            const pos = m.change >= 0
+            return (
+              <div key={m.label} className="space-y-1" title={m.hint}>
+                <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
+                  <span className="text-gray-400">{m.icon}</span>
+                  {m.label}
+                </p>
+                <p className="text-xl font-bold text-gray-900">{m.value}</p>
+                <p className={`text-sm font-medium flex items-center gap-0.5 ${pos ? 'text-brand-green-text' : 'text-red-500'}`}>
+                  {pos ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                  {fmtRate(m.change)}
+                  <span className="text-gray-400 font-normal ml-1">전월 대비</span>
+                </p>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* ── 활성 캠페인 현황 + 최근 알림 ── */}
