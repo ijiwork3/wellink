@@ -6,7 +6,7 @@ import {
   Eye, Heart, MessageCircle, BarChart3, Sparkles, Lock,
   ChevronLeft, ChevronRight, AlertTriangle, X, Trophy, RefreshCw
 } from 'lucide-react'
-import { StatusBadge, ErrorState, SkeletonCard, Skeleton } from '@wellink/ui'
+import { StatusBadge, ErrorState, SkeletonCard, Skeleton, Card } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -225,8 +225,8 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
           <p className="text-base text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
         </div>
-        <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green/20 rounded-2xl p-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-brand-green/15 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green-border rounded-2xl p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-brand-green-bg flex items-center justify-center mx-auto mb-4">
             <Sparkles size={24} className="text-brand-green" aria-hidden="true" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
@@ -477,9 +477,11 @@ export default function Dashboard() {
         {kpis.map(kpi => {
           const isPositive = kpi.trend >= 0
           return (
-            <div
+            <Card
               key={kpi.title}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 transition-all duration-200 hover:shadow-md cursor-default"
+              padding="md"
+              interactive
+              className="flex flex-col gap-3 shadow-sm cursor-default"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm text-gray-500 font-medium min-w-0 truncate">{kpi.title}</span>
@@ -489,12 +491,12 @@ export default function Dashboard() {
                 <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-900 leading-tight`}>{kpi.value}</div>
                 <div className="text-sm text-gray-500 mt-1">{kpi.sub}</div>
               </div>
-              <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green' : 'text-red-500'}`}>
+              <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-brand-green-text' : 'text-red-500'}`}>
                 {isPositive ? <TrendingUp size={12} aria-hidden="true" /> : <TrendingDown size={12} aria-hidden="true" />}
                 <span>{isPositive ? '+' : ''}{kpi.trend}%</span>
                 <span className="text-gray-500 font-normal">전월 대비</span>
               </div>
-            </div>
+            </Card>
           )
         })}
       </div>

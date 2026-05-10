@@ -243,7 +243,7 @@ export default function Subscription() {
         </div>
         {/* 현재 플랜 뱃지 */}
         {displayPlan ? (
-          <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+          <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
             현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
             {(showExpired || showPaymentFailed) && ' (만료)'}
           </span>
@@ -269,10 +269,10 @@ export default function Subscription() {
       {/* QA: 결제 실패 배너 */}
       {showPaymentFailed && (
         <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-base font-semibold text-amber-800">결제에 실패했습니다</p>
-            <p className="text-sm text-amber-600 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
+            <p className="text-sm text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
           </div>
           <button
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
@@ -311,7 +311,7 @@ export default function Subscription() {
       {/* 미구독 안내 배너 — 무료 플랜 / QA plan-free */}
       {(qa === 'plan-free' || (!displayPlan && !showExpired && !showPaymentFailed)) && (
         <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
             <p className="text-base font-bold text-amber-800">현재 무료 플랜을 이용 중입니다</p>
             <p className="text-sm text-amber-800 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
@@ -747,7 +747,7 @@ export default function Subscription() {
             </div>
             {currentPlan === 'scale' && confirmModal === 'focus' && (
               <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
-                <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+                <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
                 <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
               </div>
             )}

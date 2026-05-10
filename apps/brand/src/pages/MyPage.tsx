@@ -460,7 +460,7 @@ export default function MyPage() {
               <p className="text-sm text-gray-500 mt-0.5">현재 플랜과 결제 정보를 확인합니다.</p>
             </div>
             {isSubscribed ? (
-              <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+              <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
                 현재: {planLabel} 플랜
               </span>
             ) : (

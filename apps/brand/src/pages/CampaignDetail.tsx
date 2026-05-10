@@ -2628,8 +2628,8 @@ export default function CampaignDetail() {
           </div>
         ) : downloadStep === 'plan-select' ? (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-100 border border-amber-100">
-              <Crown size={16} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-100 border border-amber-200">
+              <Crown size={16} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="space-y-0.5">
                 <p className="text-base font-semibold text-amber-900">콘텐츠 다운로드는 유료 플랜 전용 기능입니다</p>
                 <p className="text-base text-amber-700">선택 콘텐츠 <span className="font-semibold">{selectedContents.size}건</span> · 현재 <span className="font-semibold">{planLabel}</span></p>

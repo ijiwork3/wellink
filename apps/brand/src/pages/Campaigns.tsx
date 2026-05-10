@@ -790,7 +790,7 @@ export default function Campaigns() {
 
         {aiModalStep === 'result' && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 bg-brand-green/5 border border-brand-green/20 rounded-xl px-3 py-2">
+            <div className="flex items-center gap-2 bg-brand-green/5 border border-brand-green-border rounded-xl px-3 py-2">
               <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
               <span className="text-base text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
             </div>
