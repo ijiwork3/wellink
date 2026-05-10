@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, CreditCard, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, SkeletonCard, Skeleton } from '@wellink/ui'
+import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
@@ -275,8 +275,9 @@ export default function Subscription() {
             <p className="text-sm text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
           </div>
           <button
+            type="button"
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
-            className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-100 transition-colors shrink-0"
+            className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             결제 수단 수정
           </button>
@@ -285,7 +286,7 @@ export default function Subscription() {
 
       {/* QA: 무료 체험 중 배너 */}
       {showTrial && (
-        <div className="bg-brand-green-bg border border-brand-green/30 rounded-xl p-4 space-y-3">
+        <div className="bg-brand-green-bg border border-brand-green-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
@@ -354,7 +355,7 @@ export default function Subscription() {
                     </span>
                   )}
                 </div>
-                <h2 className="text-2xl @md:text-3xl font-bold text-gray-900">{cur?.name} 플랜</h2>
+                <h2 className="text-xl @md:text-2xl font-bold text-gray-900">{cur?.name} 플랜</h2>
                 <div className="flex items-baseline gap-1 mt-1">
                   <span className="text-lg @md:text-xl font-bold text-gray-900">{cur?.price}</span>
                   <span className="text-sm text-gray-500">{cur?.unit}</span>
@@ -372,16 +373,19 @@ export default function Subscription() {
               <div className="flex flex-wrap items-center gap-2">
                 {cancelStatus === 'cancel_scheduled' ? (
                   <button
+                    type="button"
                     onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
                     className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >해지 예약 취소</button>
                 ) : (
                   <>
                     <button
+                      type="button"
                       onClick={() => setCancelModal(true)}
                       className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >해지</button>
                     <button
+                      type="button"
                       onClick={() => setRefundModal(true)}
                       className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >환불 요청</button>
@@ -468,6 +472,7 @@ export default function Subscription() {
               ))}
             </ul>
             <button
+              type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
               className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
@@ -481,7 +486,7 @@ export default function Subscription() {
           </div>
         ))}
 
-        {/* Scale — 흰 배경 + 그린 테두리 */}
+        {/* Scale — 흰 배경 + 그린 테두리 (border opacity 60% 의도된 alpha — 비활성 시 약화 표시) */}
         {plans.filter(p => p.style === 'green').map(plan => (
           <div
             key={plan.id}
@@ -513,6 +518,7 @@ export default function Subscription() {
               ))}
             </ul>
             <button
+              type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
               className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
@@ -557,6 +563,7 @@ export default function Subscription() {
               ))}
             </ul>
             <button
+              type="button"
               onClick={() => {
                 if (plan.id !== currentPlan) {
                   setEnterpriseModal(true)
@@ -587,6 +594,7 @@ export default function Subscription() {
             결제 수단
           </h3>
           <button
+            type="button"
             onClick={() => showToast('결제 수단 변경 페이지로 이동합니다.', 'info')}
             className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
@@ -604,6 +612,7 @@ export default function Subscription() {
               <p className="text-base text-gray-500">등록된 결제 수단이 없습니다</p>
             </div>
             <button
+              type="button"
               onClick={() => showToast('결제 수단 등록 페이지로 이동합니다.', 'info')}
               className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
@@ -674,12 +683,15 @@ export default function Subscription() {
         </div>
       )}
 
-      {/* 미구독 상태 빈 결제내역 */}
+      {/* 미구독 상태 빈 결제내역 — 공통 EmptyState */}
       {(!currentPlan || qa === 'plan-free') && (
-        <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
-          <CreditCard size={32} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base text-gray-500">결제 내역이 없습니다</p>
-          <p className="text-sm text-gray-500 mt-1">플랜 구독 후 결제 내역이 표시됩니다</p>
+        <div className="bg-white rounded-xl border border-gray-100">
+          <EmptyState
+            size="md"
+            icon={<CreditCard size={32} />}
+            title="결제 내역이 없습니다"
+            description="플랜 구독 후 결제 내역이 표시됩니다."
+          />
         </div>
       )}
 
@@ -793,7 +805,7 @@ export default function Subscription() {
         }}
       >
         <p className="text-sm text-gray-500">
-          환불 요청 시 <strong className="text-red-600">구독이 즉시 종료</strong>되며, 결제 금액은 영업일 기준 3~5일 내 카드사를 통해 환불됩니다.
+          환불 요청 시 <strong className="text-red-700">구독이 즉시 종료</strong>되며, 결제 금액은 영업일 기준 3~5일 내 카드사를 통해 환불됩니다.
           미사용 일수에 따라 부분 환불됩니다.
         </p>
       </AlertModal>
