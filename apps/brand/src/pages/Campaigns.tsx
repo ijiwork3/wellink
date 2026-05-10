@@ -6,7 +6,7 @@ import {
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import {
-  ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
+  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
   Skeleton, SkeletonRow,
   getDDay, getDDayBadgeStyle, useToast,
 } from '@wellink/ui'
@@ -549,28 +549,35 @@ export default function Campaigns() {
           </div>
         )}
 
-        {/* 리스트 / 빈 상태 */}
+        {/* 리스트 / 빈 상태 — 공통 EmptyState (variant 분기) */}
         {filtered.length === 0 ? (
-          <div className="py-20 text-center">
-            <Megaphone size={36} className="text-gray-200 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-base text-gray-500 mb-3">
-              {qaEmpty
-                ? '등록된 캠페인이 없습니다.'
-                : hasActiveFilters
-                ? '조건에 맞는 캠페인이 없습니다.'
-                : '등록된 캠페인이 없습니다.'}
-            </p>
-            {!qaEmpty && hasActiveFilters && (
+          <EmptyState
+            size="lg"
+            variant={!qaEmpty && hasActiveFilters ? 'filter' : 'default'}
+            icon={<Megaphone size={40} />}
+            title={!qaEmpty && hasActiveFilters ? '조건에 맞는 캠페인이 없습니다' : '등록된 캠페인이 없습니다'}
+            description={!qaEmpty && hasActiveFilters
+              ? '필터를 조정하거나 초기화해 보세요.'
+              : qaEmpty ? '새 캠페인을 등록해 인플루언서 마케팅을 시작해 보세요.' : undefined}
+            action={!qaEmpty && hasActiveFilters ? (
               <button
                 type="button"
                 onClick={resetAllFilters}
-                className="inline-flex items-center gap-1 text-base text-brand-green hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="inline-flex items-center gap-1 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 필터 초기화
               </button>
-            )}
-          </div>
+            ) : qaEmpty ? (
+              <button
+                type="button"
+                onClick={() => navigate('/campaigns/new')}
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                새 캠페인 등록
+              </button>
+            ) : undefined}
+          />
         ) : (
           <ul className="divide-y divide-gray-50">
             {paged.map(c => {
@@ -750,11 +757,16 @@ export default function Campaigns() {
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setAiModalStep(null)} className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">취소</button>
               <button
+                type="button"
+                onClick={() => setAiModalStep(null)}
+                className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >취소</button>
+              <button
+                type="button"
                 onClick={() => setAiModalStep('loading')}
                 disabled={!aiInput.brand.trim()}
-                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Sparkles size={14} aria-hidden="true" />
                 AI로 캠페인 생성하기
@@ -811,10 +823,15 @@ export default function Campaigns() {
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setAiModalStep('loading')} className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50">다시 생성</button>
               <button
+                type="button"
+                onClick={() => setAiModalStep('loading')}
+                className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >다시 생성</button>
+              <button
+                type="button"
                 onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
-                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:opacity-90"
+                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 이대로 등록 화면으로
               </button>
