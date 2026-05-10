@@ -636,14 +636,12 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
           return <path key={a.label} d={d} fill={a.color} />
         })}
       </svg>
-      <div className="flex-1 grid grid-cols-1 @md:grid-cols-2 gap-x-3 gap-y-1 min-w-[120px]">
+      <div className="grid grid-cols-1 @md:grid-cols-2 gap-x-5 gap-y-1.5">
         {arr.map(a => (
-          <div key={a.label} className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1 text-sm text-gray-700">
-              <span className="w-2 h-2 rounded-full" style={{ background: a.color }} />
-              {a.label}
-            </span>
-            <span className="text-sm font-semibold text-gray-900">{a.value}</span>
+          <div key={a.label} className="flex items-center gap-2 text-sm">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: a.color }} />
+            <span className="text-gray-700 break-keep">{a.label}</span>
+            <span className="font-semibold text-gray-900 tabular-nums whitespace-nowrap">{a.value}</span>
           </div>
         ))}
       </div>

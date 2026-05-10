@@ -406,7 +406,7 @@ export default function Subscription() {
                 이번 달 사용량 현황
                 <span className="text-sm font-normal text-gray-500">(매월 결제일 초기화)</span>
               </h3>
-              <div className="grid grid-cols-1 @xl:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
                 {usage.map(f => {
                   const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
                   const isOver = f.used >= f.limit
@@ -414,8 +414,8 @@ export default function Subscription() {
                   return (
                     <div key={f.name} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-sm font-medium text-gray-700">{f.name}</span>
-                        <span className="text-sm font-bold text-gray-900 tabular-nums shrink-0">
+                        <span className="text-sm font-medium text-gray-700 break-keep min-w-0">{f.name}</span>
+                        <span className="text-sm font-bold text-gray-900 tabular-nums shrink-0 whitespace-nowrap">
                           {f.used.toLocaleString()} / {f.limit >= 999999 ? '∞' : f.limit.toLocaleString()}{f.unit}
                         </span>
                       </div>
@@ -634,54 +634,79 @@ export default function Subscription() {
       </div>
 
       {/* 최근 결제 내역 — 미구독 / 무료체험 / 무료 상태면 숨김 */}
-      {currentPlan && qa !== 'plan-free' && qa !== 'trial' && (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-50">
-            <h3 className="text-base font-semibold text-gray-900">최근 결제 내역</h3>
-          </div>
-          {/* 가로스크롤 화살표 버튼 */}
-          {tableBtnTop !== null && canTableScrollLeft && (
-            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-              <ChevronLeft size={15} />
-            </button>
-          )}
-          {tableBtnTop !== null && canTableScrollRight && (
-            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-              <ChevronRight size={15} />
-            </button>
-          )}
-          <div className="relative" ref={tableWrapperRef}>
-            {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
-            {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
-            <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
-              <table className="w-full" ref={tableRef}>
-                <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100">
-                    {['내용', '금액', '날짜', '상태'].map(h => (
-                      <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-5 whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {[...(PAYMENT_HISTORY[currentPlan] ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(p => (
-                    <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="py-3 px-5 text-base font-medium text-gray-900">{p.desc}</td>
-                      <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
-                      <td className="py-3 px-5 text-base text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
-                      <td className="py-3 px-5 whitespace-nowrap">
-                        <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {currentPlan && qa !== 'plan-free' && qa !== 'trial' && (() => {
+        const sortedHistory = [...(PAYMENT_HISTORY[currentPlan] ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        return (
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-50">
+              <h3 className="text-base font-semibold text-gray-900">최근 결제 내역</h3>
+            </div>
+
+            {/* 모바일 (< @md) — 카드 리스트 */}
+            <ul className="@md:hidden divide-y divide-gray-50">
+              {sortedHistory.map(p => (
+                <li key={p.id} className="px-5 py-4">
+                  <div className="flex items-start justify-between gap-3 mb-1.5">
+                    <p className="text-base font-medium text-gray-900 break-keep min-w-0">{p.desc}</p>
+                    <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium whitespace-nowrap shrink-0">{p.status}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <span className="text-base font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
+                    <span className="text-gray-300">·</span>
+                    <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* 태블릿/데스크톱 (@md+) — 테이블 */}
+            <div className="hidden @md:block">
+              {/* 가로스크롤 화살표 버튼 */}
+              {tableBtnTop !== null && canTableScrollLeft && (
+                <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
+                  style={{ top: tableBtnTop }}
+                  className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+                  <ChevronLeft size={15} />
+                </button>
+              )}
+              {tableBtnTop !== null && canTableScrollRight && (
+                <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
+                  style={{ top: tableBtnTop }}
+                  className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
+                  <ChevronRight size={15} />
+                </button>
+              )}
+              <div className="relative" ref={tableWrapperRef}>
+                {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
+                {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
+                <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
+                  <table className="w-full" ref={tableRef}>
+                    <thead>
+                      <tr className="bg-gray-50/50 border-b border-gray-100">
+                        {['내용', '금액', '날짜', '상태'].map(h => (
+                          <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-5 whitespace-nowrap">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {sortedHistory.map(p => (
+                        <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
+                          <td className="py-3 px-5 text-base font-medium text-gray-900 whitespace-nowrap">{p.desc}</td>
+                          <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
+                          <td className="py-3 px-5 text-base text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
+                          <td className="py-3 px-5 whitespace-nowrap">
+                            <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )
+      })()}
       )}
 
       {/* 미구독 상태 빈 결제내역 — 공통 EmptyState */}
