@@ -79,7 +79,7 @@ export default function CampaignApply() {
     return (
       <Layout showSidebar={false} pageTitle={isEditMode ? '신청 정보 수정' : '캠페인 신청'} onBack={() => navigate(-1)}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-6">
-          <div className="w-20 h-20 rounded-full bg-brand-green/10 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-brand-green-bg flex items-center justify-center">
             <CheckCircle2 size={40} className="text-brand-green" />
           </div>
           <div className="text-center">
@@ -111,14 +111,14 @@ export default function CampaignApply() {
 
         {/* view 모드 배너 */}
         {isViewMode && (
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={15} className="text-brand-green flex-shrink-0" />
               <span className="text-sm font-medium text-brand-green-text">신청 완료된 정보입니다</span>
             </div>
             <button
               onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
-              className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green/30 rounded-lg px-2.5 py-1 hover:bg-brand-green/10 transition-colors"
+              className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors"
             >
               <Pencil size={11} />수정하기
             </button>
@@ -222,7 +222,7 @@ export default function CampaignApply() {
                           setDeliveryZip('06234')
                           setDeliveryAddr('서울 강남구 테헤란로 123')
                         }}
-                        className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                        className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
                         주소 검색
                       </button>
@@ -366,7 +366,7 @@ function AgreementRow({ checked, onChange, error, text }: {
 }) {
   return (
     <label className={`flex items-start gap-2.5 cursor-pointer p-3 rounded-xl border transition-colors ${
-      error ? 'border-red-200 bg-red-50' : checked ? 'border-brand-green/30 bg-brand-green/5' : 'border-gray-100 bg-gray-50'
+      error ? 'border-red-200 bg-red-50' : checked ? 'border-brand-green-border bg-brand-green-bg' : 'border-gray-100 bg-gray-50'
     }`}>
       <input
         type="checkbox"

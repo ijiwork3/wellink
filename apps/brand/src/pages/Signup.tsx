@@ -195,7 +195,7 @@ export default function Signup() {
               </button>
             </div>
             {!errors.password && (
-              <p id="signup-password-hint" className="text-sm text-gray-400 mt-1">8자 이상, 영문과 숫자를 모두 포함해 주세요</p>
+              <p id="signup-password-hint" className="text-sm text-gray-500 mt-1">8자 이상, 영문과 숫자를 모두 포함해 주세요</p>
             )}
             {renderError('password')}
           </div>

@@ -25,12 +25,12 @@ export default function BottomTabBar() {
             onClick={() => navigate(path)}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-colors ${
-              isActive ? 'text-brand-green' : 'text-gray-400'
+            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset ${
+              isActive ? 'text-brand-green' : 'text-gray-500'
             }`}
           >
-            <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} />
-            <span className="text-[10px] font-medium leading-none">{label}</span>
+            <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" />
+            <span className="text-xs font-medium leading-none whitespace-nowrap">{label}</span>
           </button>
         )
       })}

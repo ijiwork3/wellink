@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass, Edit2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, StatusBadge } from '@wellink/ui'
+import { Modal, StatusBadge, Tabs, EmptyState } from '@wellink/ui'
 import type { ParticipationStatus } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -141,7 +141,7 @@ export default function MyCampaign() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-gray-900">나의 캠페인</h2>
-            <p className="text-xs text-gray-400 mt-0.5">총 {campaigns.length}개 참여 중</p>
+            <p className="text-xs text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
@@ -164,46 +164,41 @@ export default function MyCampaign() {
           />
         </div>
 
-        {/* 탭 */}
-        <div className="flex gap-2 flex-wrap">
-          {STATUS_TABS.map(tab => {
-            const count = countByTab(tab)
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
-                  activeTab === tab ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {tab}
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                  activeTab === tab ? 'bg-white/20 text-white' : 'bg-white text-gray-500'
-                }`}>
-                  {count}
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        {/* 탭 — 가로 스크롤 + 쉐브론 */}
+        <Tabs
+          variant="pill"
+          value={activeTab}
+          onChange={(v) => setActiveTab(v as TabKey)}
+          ariaLabel="캠페인 상태 필터"
+          items={STATUS_TABS.map(tab => ({
+            value: tab,
+            label: tab,
+            trailing: (
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap ${
+                activeTab === tab ? 'bg-white/20 text-white' : 'bg-white text-gray-500'
+              }`}>
+                {countByTab(tab)}
+              </span>
+            ),
+          }))}
+        />
 
         {/* 카드 리스트 */}
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 py-16 flex flex-col items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-brand-green/10 flex items-center justify-center">
-              <Search size={24} className="text-brand-green" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">
-                {search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
-              </p>
-              {!search && <p className="text-xs text-gray-400 mt-0.5">새로운 캠페인에 신청해 보세요</p>}
-            </div>
-            {!search && (
-              <button onClick={() => navigate('/campaigns/browse')} className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity">
-                캠페인 찾아보기
-              </button>
-            )}
+          <div className="bg-white rounded-2xl border border-gray-100 py-12">
+            <EmptyState
+              variant={search ? 'search' : 'default'}
+              title={search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
+              description={!search ? '새로운 캠페인에 신청해 보세요' : undefined}
+              action={!search ? (
+                <button
+                  onClick={() => navigate('/campaigns/browse')}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  캠페인 찾아보기
+                </button>
+              ) : undefined}
+            />
           </div>
         ) : (
           <div className="space-y-3">
@@ -224,13 +219,13 @@ export default function MyCampaign() {
                     <div className="flex-1 min-w-0 pr-2">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <StatusBadge status={c.status as ParticipationStatus} size="sm" />
-                        <span className="text-[10px] text-gray-400">{c.channel}</span>
+                        <span className="text-xs text-gray-500">{c.channel}</span>
                       </div>
-                      <p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                      <p className="text-sm font-semibold text-gray-900 break-keep">{c.name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-xs text-gray-400">리워드</p>
+                      <p className="text-xs text-gray-500">리워드</p>
                       <p className="text-sm font-bold text-gray-900">{c.reward}</p>
                     </div>
                   </div>
@@ -255,7 +250,7 @@ export default function MyCampaign() {
                         <React.Fragment key="검수중-actions">
                           <button
                             onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                            className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green/30 text-brand-green hover:bg-brand-green/5 transition-colors">
+                            className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green-border text-brand-green hover:bg-brand-green/5 transition-colors">
                             <Edit2 size={11} />콘텐츠 수정
                           </button>
                           <button
@@ -301,7 +296,7 @@ export default function MyCampaign() {
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요.</p>
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
             <Upload size={22} className="text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-400">인스타그램, 블로그, 유튜브 등 게시 링크</p>
+            <p className="text-xs text-gray-500">인스타그램, 블로그, 유튜브 등 게시 링크</p>
           </div>
           <div>
             <label className="text-xs text-gray-500 mb-1.5 block">콘텐츠 URL</label>
@@ -325,7 +320,7 @@ export default function MyCampaign() {
       <Modal open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
-          <p className="text-xs text-gray-400">취소 후 재신청이 가능하지 않을 수 있어요.</p>
+          <p className="text-xs text-gray-500">취소 후 재신청이 가능하지 않을 수 있어요.</p>
           <div className="flex gap-2">
             <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">유지하기</button>
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors">취소하기</button>

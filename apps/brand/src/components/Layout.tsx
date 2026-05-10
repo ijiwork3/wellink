@@ -53,7 +53,7 @@ export default function Layout() {
               <span className="text-base font-bold text-gray-900">
                 WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
               </span>
-              <button type="button" onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="p-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <button type="button" onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-500" aria-hidden="true" />
               </button>
             </div>
@@ -72,7 +72,7 @@ export default function Layout() {
         {/* 태블릿·스마트폰 GNB — sticky로 목업 박스 내부에 고정 */}
         {!isDesktop && (
           <div className="sticky top-0 h-12 bg-white border-b border-gray-100 flex items-center px-4 z-50 shrink-0">
-            <button type="button" onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="p-1.5 -ml-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <button type="button" onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="w-10 h-10 flex items-center justify-center -ml-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Menu size={20} className="text-gray-700" aria-hidden="true" />
             </button>
             <span className="ml-2 text-base font-bold text-gray-900">WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span></span>

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2 } from 'lucide-react'
+import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Sparkles, Loader2, Layers } from 'lucide-react'
 import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -552,9 +552,9 @@ export default function AdPerformance() {
                             <Megaphone size={16} aria-hidden="true" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            {/* 모바일: 타이틀 한 줄 truncate + 배지 두 번째 줄 / @sm 이상: 한 줄 정렬 */}
+                            {/* 모바일: 타이틀 행 분할 + 배지 두 번째 줄 / @sm 이상: 한 줄 정렬 (truncate 금지 정책) */}
                             <div className="flex flex-col @sm:flex-row @sm:items-center @sm:gap-2 min-w-0">
-                              <span className="font-medium text-base text-gray-900 truncate min-w-0">{c.campaignName}</span>
+                              <span className="font-medium text-base text-gray-900 break-keep min-w-0">{c.campaignName}</span>
                               <div className="flex items-center gap-2 mt-1 @sm:mt-0 shrink-0">
                                 <span className={`text-sm font-semibold px-2 py-1 rounded-full whitespace-nowrap ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
                                 <StatusBadge status={c.status} dot={false} />
@@ -585,31 +585,35 @@ export default function AdPerformance() {
                               </div>
                             ))}
                           </div>
-                          {/* 광고세트 리스트 */}
-                          <div className="space-y-2">
+                          {/* 광고세트 리스트 — 캠페인 하위 계층 시각화 (좌측 트리 라인) */}
+                          <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-violet-700 uppercase tracking-wide">
+                            <span className="inline-block w-3 h-px bg-violet-200" />
+                            <span>광고세트 ({c.adSets.length})</span>
+                          </div>
+                          <div className="space-y-2 ml-2 @sm:ml-4 pl-3 border-l-2 border-violet-100">
                             {c.adSets.map(set => {
                               const isSetOpen = expandedAdSet === set.id
                               return (
-                                <div key={set.id} className="rounded-lg border border-gray-100 bg-gray-50/50">
+                                <div key={set.id} className="rounded-lg border border-gray-200 border-l-4 border-l-teal-300 bg-white shadow-sm">
                                   <button type="button"
                                     onClick={() => setExpandedAdSet(isSetOpen ? null : set.id)}
                                     aria-expanded={isSetOpen}
                                     aria-controls={`adset-detail-${set.id}`}
-                                    className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
+                                    className="w-full flex items-center justify-between p-3 text-left hover:bg-teal-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                                   >
                                     <div className="flex items-center gap-2.5 min-w-0">
                                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-100 text-teal-600 shrink-0">
-                                        <Megaphone size={12} aria-hidden="true" />
+                                        <Layers size={12} aria-hidden="true" />
                                       </div>
-                                      <div>
-                                        <span className="text-sm font-medium text-gray-900">{set.name}</span>
-                                        <span className="ml-2 text-sm text-gray-500">소재 {set.ads.length}개</span>
+                                      <div className="min-w-0">
+                                        <span className="text-sm font-medium text-gray-900 break-keep">{set.name}</span>
+                                        <span className="ml-2 text-sm text-gray-500 whitespace-nowrap">소재 {set.ads.length}개</span>
                                       </div>
                                     </div>
-                                    {isSetOpen ? <ChevronUp size={14} className="text-gray-400" aria-hidden="true" /> : <ChevronDown size={14} className="text-gray-400" aria-hidden="true" />}
+                                    {isSetOpen ? <ChevronUp size={14} className="text-gray-400 shrink-0" aria-hidden="true" /> : <ChevronDown size={14} className="text-gray-400 shrink-0" aria-hidden="true" />}
                                   </button>
                                   {isSetOpen && (
-                                    <div className="border-t border-gray-100 p-3" id={`adset-detail-${set.id}`}>
+                                    <div className="border-t border-gray-100 p-3 bg-teal-50/20" id={`adset-detail-${set.id}`}>
                                       {/* 광고세트 KPI */}
                                       <div className="grid grid-cols-2 @lg:grid-cols-4 gap-x-3 gap-y-2 mb-3">
                                         {([
@@ -628,31 +632,35 @@ export default function AdPerformance() {
                                           </div>
                                         ))}
                                       </div>
-                                      {/* 소재 리스트 */}
-                                      <div className="space-y-2">
+                                      {/* 소재 리스트 — 광고세트 하위 계층 시각화 (좌측 트리 라인 + 카드 분리) */}
+                                      <div className="mt-1 mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-teal-700 uppercase tracking-wide">
+                                        <span className="inline-block w-3 h-px bg-teal-200" />
+                                        <span>소재 ({set.ads.length})</span>
+                                      </div>
+                                      <div className="space-y-2 ml-1 @sm:ml-3 pl-3 border-l-2 border-teal-100">
                                         {set.ads.map(ad => (
-                                          <div key={ad.id} className="flex gap-3 border-t border-gray-100 pt-3 first:border-0 first:pt-0">
+                                          <div key={ad.id} className="flex gap-3 rounded-lg border border-gray-100 border-l-4 border-l-brand-green-border bg-white p-2.5 shadow-sm">
                                             <div className="h-12 w-12 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
                                               <ImageIcon size={16} aria-hidden="true" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="text-sm font-bold bg-brand-green-bg text-brand-green-text px-2 py-1 rounded">소재</span>
+                                                <span className="text-sm font-bold bg-brand-green-bg text-brand-green-text px-2 py-1 rounded whitespace-nowrap">소재</span>
                                                 <span className="text-sm font-medium text-gray-900">{ad.adName}</span>
-                                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getAdStatusBadge(ad.status).cls}`}>
+                                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${getAdStatusBadge(ad.status).cls}`}>
                                                   {getAdStatusBadge(ad.status).label}
                                                 </span>
                                               </div>
                                               <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{ad.message}</p>
                                               <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 flex-wrap">
-                                                <span>지출 <strong className="text-gray-900">{fmtPrice(ad.spend)}</strong></span>
-                                                <span>ROAS <strong className={getRoasColor(ad.roas)}>{ad.roas}x</strong></span>
-                                                <span>결과 <strong className="text-gray-900">{fmtNumber(ad.results)}</strong></span>
-                                                <span>결과당 비용 <strong className="text-gray-900">{fmtPrice(ad.costPerResult)}</strong></span>
-                                                <span>도달 <strong className="text-gray-900">{fmtNumber(ad.reach)}</strong></span>
-                                                <span>클릭 <strong className="text-gray-900">{fmtNumber(ad.clicks)}</strong></span>
-                                                <span>CTR <strong className="text-gray-900">{ad.ctr}%</strong></span>
-                                                <span>CPC <strong className="text-gray-900">{fmtPrice(ad.cpc)}</strong></span>
+                                                <span className="whitespace-nowrap">지출 <strong className="text-gray-900">{fmtPrice(ad.spend)}</strong></span>
+                                                <span className="whitespace-nowrap">ROAS <strong className={getRoasColor(ad.roas)}>{ad.roas}x</strong></span>
+                                                <span className="whitespace-nowrap">결과 <strong className="text-gray-900">{fmtNumber(ad.results)}</strong></span>
+                                                <span className="whitespace-nowrap">결과당 비용 <strong className="text-gray-900">{fmtPrice(ad.costPerResult)}</strong></span>
+                                                <span className="whitespace-nowrap">도달 <strong className="text-gray-900">{fmtNumber(ad.reach)}</strong></span>
+                                                <span className="whitespace-nowrap">클릭 <strong className="text-gray-900">{fmtNumber(ad.clicks)}</strong></span>
+                                                <span className="whitespace-nowrap">CTR <strong className="text-gray-900">{ad.ctr}%</strong></span>
+                                                <span className="whitespace-nowrap">CPC <strong className="text-gray-900">{fmtPrice(ad.cpc)}</strong></span>
                                               </div>
                                             </div>
                                           </div>
@@ -905,7 +913,7 @@ function MixedChart({
       height={H}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
-      className="overflow-visible"
+      className="overflow-visible [&_*]:pointer-events-none"
       role="img"
       aria-label="기간별 광고 지출(막대)과 클릭 수(선) 추이 차트"
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW }}
@@ -1021,7 +1029,7 @@ function SimpleLineChart({
       height={H}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
-      className="overflow-visible"
+      className="overflow-visible [&_*]:pointer-events-none"
       role="img"
       aria-label={ariaLabel ?? '추이 차트'}
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW }}

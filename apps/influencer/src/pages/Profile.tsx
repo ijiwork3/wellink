@@ -157,17 +157,17 @@ export default function Profile() {
             {!isEditing ? (
               <button
                 onClick={() => { setDraftName(name); setDraftFields(new Set(selectedFields)); setDraftType(influencerType); setIsEditing(true) }}
-                className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                <Pencil size={12} />편집
+                <Pencil size={14} />편집
               </button>
             ) : (
               <div className="flex gap-2">
-                <button onClick={handleCancel} className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-xl hover:bg-gray-50 transition-colors">
-                  <X size={12} />취소
+                <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <X size={14} />취소
                 </button>
-                <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-1 text-xs text-white bg-brand-green px-2.5 py-1.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60">
-                  <Check size={12} />{isSaving ? '저장 중' : '저장'}
+                <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <Check size={14} />{isSaving ? '저장 중' : '저장'}
                 </button>
               </div>
             )}
@@ -226,7 +226,7 @@ export default function Profile() {
                       onClick={() => setDraftType(t.value)}
                       className={`px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-all border ${
                         draftType === t.value
-                          ? 'border-brand-green bg-brand-green/5 text-brand-green'
+                          ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300'
                       }`}
                     >
@@ -283,7 +283,7 @@ export default function Profile() {
           >
             <LogOut size={14} />로그아웃
           </button>
-          <button onClick={() => setWithdrawModalOpen(true)} className="text-xs text-gray-400 hover:text-red-400 underline underline-offset-2 transition-colors">
+          <button onClick={() => setWithdrawModalOpen(true)} className="text-sm text-gray-500 hover:text-red-500 underline underline-offset-2 px-3 py-2.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
             회원탈퇴
           </button>
         </div>

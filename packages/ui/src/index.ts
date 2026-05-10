@@ -44,6 +44,8 @@ export { default as CustomCheckbox } from './components/CustomCheckbox'
 // 피드백·레이어
 export { default as ChartScrollContainer } from './components/ChartScrollContainer'
 export type { ChartScrollContainerHandle, ChartScrollContainerProps } from './components/ChartScrollContainer'
+export { default as FloatingScrollChevrons } from './components/FloatingScrollChevrons'
+export type { FloatingScrollChevronsProps } from './components/FloatingScrollChevrons'
 export { default as Modal }          from './components/Modal'
 export { default as AlertModal }     from './components/AlertModal'
 export { default as BottomSheet }    from './components/BottomSheet'

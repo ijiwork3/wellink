@@ -220,7 +220,6 @@ export default function CampaignNew() {
             {(['방문형', '택배형'] as const).map(t => (
               <button type="button"
                 key={t}
-                type="button"
                 onClick={() => set('type', t)}
                 aria-pressed={form.type === t}
                 className={`py-3 rounded-xl text-base font-medium border transition-colors ${
@@ -344,10 +343,12 @@ export default function CampaignNew() {
           </Field>
         </div>
 
-        <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-sm text-blue-800">
-          <p className="font-semibold mb-0.5">배송형 캠페인 안내</p>
-          <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
-        </div>
+        {form.type === '택배형' && (
+          <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-sm text-blue-800">
+            <p className="font-semibold mb-0.5">택배형 캠페인 안내</p>
+            <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
+          </div>
+        )}
       </Section>
 
       {/* ── 섹션 3: 미션 및 키워드 ── */}
@@ -410,13 +411,13 @@ export default function CampaignNew() {
 
         <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
           <div className="flex gap-2 mb-2 flex-wrap">
-            <button type="button" onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />단답형 추가
             </button>
-            <button type="button" onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />서술형 추가
             </button>
-            <button type="button" onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">
+            <button type="button" onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />객관식 추가
             </button>
           </div>
@@ -479,9 +480,10 @@ export default function CampaignNew() {
         <Field label={<span className="flex items-center gap-1"><Calendar size={13} /> 모집 일정</span>}>
           <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
             <SubField label="모집 기간">
-              <div className="flex items-center gap-1.5">
+              <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5">
                 <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
-                <span className="text-gray-400 text-sm">~</span>
+                <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
+                <span className="@sm:hidden text-gray-500 text-xs">종료일</span>
                 <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
               </div>
             </SubField>
@@ -493,9 +495,10 @@ export default function CampaignNew() {
 
         <Field label={<span className="flex items-center gap-1"><Upload size={13} /> 콘텐츠 등록 일정</span>}>
           <SubField label="등록 기간">
-            <div className="flex items-center gap-1.5 max-w-md">
+            <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5 max-w-md">
               <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
-              <span className="text-gray-400 text-sm">~</span>
+              <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
+              <span className="@sm:hidden text-gray-500 text-xs">종료일</span>
               <DateInput value={form.uploadEnd} min={form.uploadStart || TODAY} onChange={v => set('uploadEnd', v)} />
             </div>
           </SubField>
@@ -584,10 +587,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function Field({ label, hint, children }: { label: React.ReactNode; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, children, required, optional }: { label: React.ReactNode; hint?: string; children: React.ReactNode; required?: boolean; optional?: boolean }) {
   return (
     <div>
-      <label className="text-base font-semibold text-gray-800 block mb-2">{label}</label>
+      <label className="text-base font-semibold text-gray-800 block mb-2">
+        {label}
+        {required && <span className="ml-1 text-red-500" aria-label="필수 입력">*</span>}
+        {optional && <span className="ml-1 text-sm font-normal text-gray-500">(선택)</span>}
+      </label>
       {hint && <p className="text-sm text-gray-500 -mt-1 mb-2">{hint}</p>}
       {children}
     </div>

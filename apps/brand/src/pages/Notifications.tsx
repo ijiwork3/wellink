@@ -168,7 +168,7 @@ export default function Notifications() {
                   <button type="button"
                     onClick={() => handleNotificationClick(item)}
                     className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
-                      unread ? 'bg-brand-green/5 hover:bg-brand-green-bg' : 'hover:bg-gray-50/50'
+                      unread ? 'bg-brand-green-bg hover:bg-brand-green-border/40' : 'hover:bg-gray-50/50'
                     }`}
                     aria-label={`${unread ? '미읽음 ' : ''}${item.title} — ${item.time}`}
                   >

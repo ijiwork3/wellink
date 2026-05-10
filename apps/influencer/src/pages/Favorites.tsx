@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Users, Gift, Bookmark, XCircle, RefreshCw, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, EmptyState } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
 import type { BookmarkedCampaign } from '../services/mock/campaigns'
 
 const STATUS_STYLE: Record<string, string> = {
-  '모집중':   'bg-brand-green/10 text-brand-green-text',
+  '모집중':   'bg-brand-green-bg text-brand-green-text',
   '마감임박': 'bg-orange-50 text-orange-600',
   '종료':     'bg-gray-100 text-gray-400',
 }
@@ -86,7 +86,7 @@ export default function Favorites() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-gray-900">관심 캠페인</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{visible.length}개 저장됨</p>
+            <p className="text-xs text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
@@ -98,17 +98,20 @@ export default function Favorites() {
         </div>
 
         {visible.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 py-16 flex flex-col items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
-              <Heart size={24} className="text-red-300" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">저장한 캠페인이 없어요</p>
-              <p className="text-xs text-gray-400 mt-0.5">마음에 드는 캠페인에 북마크를 눌러보세요</p>
-            </div>
-            <button onClick={() => navigate('/campaigns/browse')} className="mt-1 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity">
-              캠페인 둘러보기
-            </button>
+          <div className="bg-white rounded-2xl border border-gray-100 py-12">
+            <EmptyState
+              icon={<Heart size={32} className="text-red-300" aria-hidden="true" />}
+              title="저장한 캠페인이 없어요"
+              description="마음에 드는 캠페인에 북마크를 눌러보세요"
+              action={
+                <button
+                  onClick={() => navigate('/campaigns/browse')}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  캠페인 둘러보기
+                </button>
+              }
+            />
           </div>
         ) : (
           <div className="space-y-3">
@@ -130,13 +133,13 @@ export default function Favorites() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${STATUS_STYLE[c.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                        <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${STATUS_STYLE[c.status] ?? 'bg-gray-100 text-gray-500'}`}>
                           {c.status}
                         </span>
-                        <span className={`text-[10px] font-medium ${ddayColor}`}>{ddayLabel}</span>
+                        <span className={`text-xs font-medium ${ddayColor}`}>{ddayLabel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{c.brand} · {c.channel}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
                     </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
@@ -150,13 +153,13 @@ export default function Favorites() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green/5 border border-brand-green/10">
+                  <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
                     <Gift size={11} className="text-brand-green shrink-0" />
                     <span className="text-xs font-medium text-gray-700 truncate">{c.reward}</span>
                   </div>
 
                   <div className="mt-2.5 flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-[11px] text-gray-400 shrink-0">
+                    <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0">
                       <Users size={11} />{c.applied}/{c.headcount}명
                     </span>
                     <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
@@ -165,7 +168,7 @@ export default function Favorites() {
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-[11px] text-gray-400 shrink-0">마감 {fmtDate(c.deadline)}</span>
+                    <span className="text-xs text-gray-500 shrink-0">마감 {fmtDate(c.deadline)}</span>
                   </div>
                 </div>
               )

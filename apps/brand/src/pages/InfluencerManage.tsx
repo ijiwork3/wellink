@@ -386,9 +386,9 @@ export default function InfluencerManage() {
           <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
 
-      {/* 그룹 탭 + 공통 정렬 */}
+      {/* 그룹 필터 + 공통 정렬 — role=group (tablist는 단일 패널 토글에만 사용. 여기는 X 삭제 액션 동반된 필터) */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-      <div role="tablist" className="flex gap-2 flex-wrap">
+      <div role="group" aria-label="그룹 필터" className="flex gap-2 flex-wrap">
         {tabs.map(tab => (
           <div
             key={tab}
@@ -399,10 +399,9 @@ export default function InfluencerManage() {
             }`}
           >
             <button type="button"
-              role="tab"
-              aria-selected={activeTab === tab}
+              aria-pressed={activeTab === tab}
               onClick={() => setActiveTab(tab)}
-              className="flex items-center gap-1.5"
+              className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
             >
               {tab}
             </button>
@@ -410,11 +409,11 @@ export default function InfluencerManage() {
               <button type="button"
                 onClick={() => deleteGroup(tab)}
                 aria-label={`${tab} 그룹 삭제`}
-                className={`ml-0.5 rounded-full transition-colors ${
-                  activeTab === tab ? 'text-white/70 hover:text-white' : 'text-gray-400 hover:text-red-500'
+                className={`ml-0.5 w-6 h-6 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                  activeTab === tab ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                 }`}
               >
-                <X size={12} aria-hidden="true" />
+                <X size={14} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -1052,7 +1051,7 @@ export default function InfluencerManage() {
                           </div>
                           <div className="px-2 py-1.5 bg-white flex gap-2">
                             <span className="flex items-center gap-0.5 text-sm text-gray-500"><Heart size={9} className="text-red-500" />{c.likes.toLocaleString()}</span>
-                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><MessageCircle size={9} className="text-gray-300" />{c.comments}</span>
+                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><MessageCircle size={11} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
                           </div>
                         </div>
                       )
@@ -1083,7 +1082,7 @@ export default function InfluencerManage() {
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
                       <button type="button"
                         disabled
-                        className="w-full bg-brand-green/50 text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                        className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
                       >
                         캠페인 제안보내기
                       </button>

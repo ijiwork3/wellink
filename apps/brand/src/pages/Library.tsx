@@ -25,7 +25,7 @@ import {
 import {
   Modal, StatusBadge, useToast, ErrorState, EmptyState,
   fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE,
-  CustomSelect, Pagination, Tooltip,
+  CustomSelect, Pagination, Tooltip, FloatingScrollChevrons,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
@@ -273,12 +273,12 @@ export default function Library() {
   const [focusSortKey, setFocusSortKey] = useState<SortKey | null>(null)
   const tabListRef = useRef<HTMLDivElement>(null)
   const [tabScroll, setTabScroll] = useState({ left: false, right: false })
+  // 가로 스크롤 그라디언트 오버레이용 — 쉐브론은 FloatingScrollChevrons에서 처리
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
   const [canTableScrollRight, setCanTableScrollRight] = useState(false)
-  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
 
   const [focusTabId, setFocusTabId] = useState<string | null>(null)
 
@@ -331,43 +331,6 @@ export default function Library() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [viewMode])
-
-  useEffect(() => {
-    if (viewMode !== 'list') { setTableBtnTop(null); return }
-    const update = () => {
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    update()
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null
-    const onResize = () => {
-      if (resizeTimer !== null) clearTimeout(resizeTimer)
-      resizeTimer = setTimeout(update, 150)
-    }
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = tableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', onResize)
-    const ro = new ResizeObserver(update)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => {
-      scrollTarget.removeEventListener('scroll', update)
-      window.removeEventListener('resize', onResize)
-      if (resizeTimer !== null) clearTimeout(resizeTimer)
-      ro.disconnect()
-    }
   }, [viewMode])
 
   const handleSortKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -989,21 +952,8 @@ export default function Library() {
               전체
             </button>
           </div>
-          {/* 플로팅 스크롤 버튼 */}
-          {tableBtnTop !== null && canTableScrollLeft && (
-            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-              <ChevronLeft size={15} />
-            </button>
-          )}
-          {tableBtnTop !== null && canTableScrollRight && (
-            <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-              <ChevronRight size={15} />
-            </button>
-          )}
+          {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 (list view 전용) */}
+          {viewMode === 'list' && <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />}
           <div className="relative" ref={tableWrapperRef}>
             {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
             {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
@@ -1037,7 +987,7 @@ export default function Library() {
                 return (
                   <tr
                     key={c.id}
-                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-brand-green/5' : ''}`}
+                    className={`border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${isSelected ? 'bg-brand-green-bg' : ''}`}
                   >
                     <td className="py-3 px-3">
                       <button type="button"
@@ -1077,7 +1027,7 @@ export default function Library() {
                       <Tooltip content={c.campaign}>
                         <button type="button"
                           onClick={() => navigate(`/campaigns?q=${encodeURIComponent(c.campaign)}`)}
-                          className="text-base text-gray-600 hover:text-brand-green hover:underline block w-full text-left break-words"
+                          className="text-base text-gray-600 hover:text-brand-green-text hover:underline block w-full text-left truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                         >{c.campaign}</button>
                       </Tooltip>
                     </td>
@@ -1092,8 +1042,8 @@ export default function Library() {
                     <td className="py-3 px-3 text-base text-gray-500 whitespace-nowrap">{fmtDate(c.date)}</td>
                     <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                     <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.likes)}</td>
-                    <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{c.comments}</td>
-                    <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{c.saves}</td>
+                    <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{c.comments.toLocaleString('ko-KR')}</td>
+                    <td className="py-3 px-3 text-base text-gray-700 whitespace-nowrap">{c.saves.toLocaleString('ko-KR')}</td>
                     <td className="py-3 px-3 text-base font-medium whitespace-nowrap">
                       <span className={c.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : c.engagementRate >= ENGAGEMENT_THRESHOLD.low ? 'text-gray-700' : 'text-red-500'}>{c.engagementRate}%</span>
                     </td>
@@ -1159,7 +1109,7 @@ export default function Library() {
             {downloadedIds.has(previewItem.id) ? (
               <button type="button"
                 onClick={() => showToast(`${previewItem.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
-                className="w-full flex items-center justify-center gap-1.5 border border-brand-green/30 text-brand-green-text py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 border border-brand-green-border text-brand-green-text py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors"
               >
                 <Download size={14} aria-hidden="true" /> 다시 다운로드
               </button>
@@ -1251,7 +1201,7 @@ export default function Library() {
                     <button type="button"
                       onClick={() => openLibProposal(previewItem.creator)}
                       disabled={libProposedCreators.has(previewItem.creator)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border border-brand-green/30 text-brand-green-text bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-base font-medium border border-brand-green-border text-brand-green-text bg-white hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send size={12} aria-hidden="true" />
                       {libProposedCreators.has(previewItem.creator) ? '제안 완료' : '제안하기'}
@@ -1320,7 +1270,7 @@ export default function Library() {
               </div>
 
               {/* AI 인사이트 */}
-              <div className="bg-brand-green/5 border border-brand-green/15 rounded-xl p-3">
+              <div className="bg-brand-green-bg border border-brand-green-border rounded-xl p-3">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
                   <span className="text-base font-semibold text-brand-green-text">AI 인사이트</span>
@@ -1492,7 +1442,7 @@ export default function Library() {
                         onClick={e => e.stopPropagation()}
                         className="accent-gray-900"
                       />
-                      <span className="text-base flex-1 break-words text-gray-700">{c.name}</span>
+                      <span className="text-base flex-1 break-keep text-gray-700">{c.name}</span>
                       <ChevronDown size={16} className={`text-gray-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                     {isExpanded && (

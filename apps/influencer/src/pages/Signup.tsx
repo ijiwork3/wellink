@@ -102,7 +102,7 @@ export default function Signup() {
         </button>
       </div>
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         {/* 로고 */}
         <div className="text-center mb-7">
           <h1 className="text-2xl font-black text-brand-green">WELLINK AI</h1>
@@ -199,7 +199,7 @@ export default function Signup() {
                   showToast('인증번호가 발송됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  phoneVerified ? 'bg-brand-green/10 text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
+                  phoneVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
                 {phoneVerified && <CheckCircle2 size={13} />}
@@ -229,7 +229,7 @@ export default function Signup() {
                   showToast('인스타그램 연동이 완료됐어요')
                 }}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                  instaVerified ? 'bg-brand-green/10 text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
+                  instaVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
                 {instaVerified && <CheckCircle2 size={13} />}

@@ -246,7 +246,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                 <thead>
                   <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                     {['캠페인명','상태','진행률','마감일',''].map(h => (
-                      <th key={h} className="text-left text-sm font-medium py-2.5 px-4" style={{ color: g.muted }}>{h}</th>
+                      <th key={h} className="text-left text-sm font-medium py-2.5 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -377,7 +377,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
               <thead>
                 <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                   {['인플루언서','카테고리','팔로워','참여율','Fit Score','진성비율','최근 콘텐츠',''].map(h => (
-                    <th key={h} className="text-left text-sm font-medium py-3 px-4" style={{ color: g.muted }}>{h}</th>
+                    <th key={h} className="text-left text-sm font-medium py-3 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -415,7 +415,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <button type="button" className="text-sm px-3 py-1.5 rounded-lg font-medium text-white" style={{ backgroundColor: p.green }}>제안</button>
+                      <button type="button" className="text-sm px-3 py-2.5 rounded-lg font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>제안</button>
                     </td>
                   </tr>
                 ))}
@@ -514,13 +514,13 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           <div className="border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
             <div className="px-5 py-4 flex items-center justify-between border-b" style={{ borderColor: g.border }}>
               <h2 className="text-base font-semibold text-gray-900">캠페인별 성과 비교</h2>
-              <button type="button" className="text-sm px-3 py-1.5 rounded-lg border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
+              <button type="button" className="text-sm px-3 py-2.5 rounded-lg border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
             </div>
             <table className="w-full text-base">
               <thead>
                 <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                   {['캠페인','총 도달','평균 참여율','콘텐츠 수','ROAS','상태'].map(h => (
-                    <th key={h} className="px-5 py-3 text-left text-sm font-medium" style={{ color: g.muted }}>{h}</th>
+                    <th key={h} className="px-5 py-3 text-left text-sm font-medium whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                   ))}
                 </tr>
               </thead>

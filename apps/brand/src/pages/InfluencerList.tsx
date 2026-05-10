@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
+import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, ExternalLink } from 'lucide-react'
 import {
   CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState, EmptyState,
+  FloatingScrollChevrons,
   fmtFollowers as formatFollowers, AVATAR_COLORS,
   getEngagementColor, getAuthenticColor, ENGAGEMENT_THRESHOLD,
   INFLUENCER_SORT_OPTIONS, DEFAULT_INFLUENCER_SORT, sortInfluencers,
@@ -248,9 +249,9 @@ export default function InfluencerList() {
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const modalScrollRef = useRef<HTMLDivElement>(null)
+  // 가로 스크롤 상태 — 그라디언트 오버레이 표시용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
-  const [btnTop, setBtnTop] = useState<number | null>(null)
 
   useEffect(() => {
     const el = tableScrollRef.current
@@ -264,33 +265,6 @@ export default function InfluencerList() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  useEffect(() => {
-    const update = () => {
-      // tableRef(실제 <table> 높이 기준) → 빈 공간에 버튼 떠있는 문제 방지
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    update()
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = tableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', update)
-    const ro = new ResizeObserver(update)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
   }, [])
 
   useEffect(() => {
@@ -314,10 +288,6 @@ export default function InfluencerList() {
     }
     return () => { document.body.style.overflow = '' }
   }, [isDetailOpen])
-
-  const scrollTable = (dir: 'left' | 'right') => {
-    tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
-  }
 
   // URL ↔ 필터 상태 동기화 (QA 모드에서는 건너뜀)
   useEffect(() => {
@@ -547,27 +517,8 @@ export default function InfluencerList() {
       </div>
 
 
-      {/* fixed 플로팅 스크롤 버튼 — 테이블 visible 영역 중앙에 동적 배치 */}
-      {btnTop !== null && canScrollLeft && (
-        <button type="button"
-          onClick={() => scrollTable('left')}
-          aria-label="왼쪽으로 스크롤"
-          style={{ top: btnTop }}
-          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
-        >
-          <ChevronLeft size={15} />
-        </button>
-      )}
-      {btnTop !== null && canScrollRight && (
-        <button type="button"
-          onClick={() => scrollTable('right')}
-          aria-label="오른쪽으로 스크롤"
-          style={{ top: btnTop }}
-          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
-        >
-          <ChevronRight size={15} />
-        </button>
-      )}
+      {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+      <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
 
       {/* 모바일/태블릿 카드 뷰 — @xl(768px) 미만 */}
       <div className="@xl:hidden @container">
@@ -592,7 +543,6 @@ export default function InfluencerList() {
               {paginated.map(inf => (
                 <button type="button"
                   key={inf.id}
-                  type="button"
                   onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                   className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-left hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
@@ -705,7 +655,7 @@ export default function InfluencerList() {
             ) : paginated.map(inf => (
               <tr
                 key={inf.id}
-                className="hover:bg-gray-50 cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:bg-brand-green/5"
+                className="hover:bg-gray-50 cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:bg-brand-green-bg"
                 onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
                 role="button"
                 tabIndex={0}
@@ -897,7 +847,7 @@ export default function InfluencerList() {
                         <span className="text-base bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
                       <span className="text-base bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full">{inf.type}</span>
-                      <button type="button" onClick={closeDetail} aria-label="닫기" className="ml-auto text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0">
+                      <button type="button" onClick={closeDetail} aria-label="닫기" className="ml-auto w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                         <X size={16} aria-hidden="true" />
                       </button>
                     </div>
@@ -1115,7 +1065,7 @@ export default function InfluencerList() {
                             </div>
                             <div className="px-2 py-1.5 bg-white flex gap-2">
                               <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={9} className="text-red-500" aria-hidden="true" />{c.likes.toLocaleString()}</span>
-                              <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={9} className="text-gray-300" aria-hidden="true" />{c.comments}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={11} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
                             </div>
                           </div>
                         )
@@ -1136,7 +1086,7 @@ export default function InfluencerList() {
                 ) : proposableCampaigns.length === 0 ? (
                   <div className="w-full space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                      <button type="button" disabled className="w-full bg-brand-green/50 text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed">
+                      <button type="button" disabled className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed">
                         캠페인 제안보내기
                       </button>
                     </Tooltip>

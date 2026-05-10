@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination,
-  ErrorState, EmptyState, SkeletonCard, Skeleton, useToast,
+  ErrorState, EmptyState, SkeletonCard, Skeleton, useToast, FloatingScrollChevrons,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
@@ -388,9 +388,10 @@ export default function CampaignDetail() {
     setActiveTab(tabFromQA(qa))
   }, [qa])
 
-  // 탭 전환 시 스크롤 초기화
+  // 탭 전환 시 스크롤 초기화 — Layout의 실제 스크롤 컨테이너 (main의 부모: overflow-y-auto)로 동작
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const scrollRoot = document.getElementById('main-content')?.parentElement
+    scrollRoot?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [activeTab])
 
   // 지원자 관리 state
@@ -584,21 +585,19 @@ export default function CampaignDetail() {
   const [canTabScrollLeft, setCanTabScrollLeft] = useState(false)
   const [canTabScrollRight, setCanTabScrollRight] = useState(false)
 
-  // 지원자 관리 테이블 스크롤
+  // 지원자 관리 테이블 가로 스크롤 — 그라디언트 오버레이용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const applicantTableScrollRef = useRef<HTMLDivElement>(null)
   const applicantTableWrapperRef = useRef<HTMLDivElement>(null)
   const applicantTableRef = useRef<HTMLTableElement>(null)
   const [canApplicantScrollLeft, setCanApplicantScrollLeft] = useState(false)
   const [canApplicantScrollRight, setCanApplicantScrollRight] = useState(false)
-  const [applicantBtnTop, setApplicantBtnTop] = useState<number | null>(null)
 
-  // 선정 인플루언서 테이블 스크롤
+  // 선정 인플루언서 테이블 가로 스크롤
   const selectedTableScrollRef = useRef<HTMLDivElement>(null)
   const selectedTableWrapperRef = useRef<HTMLDivElement>(null)
   const selectedTableRef = useRef<HTMLTableElement>(null)
   const [canSelectedScrollLeft, setCanSelectedScrollLeft] = useState(false)
   const [canSelectedScrollRight, setCanSelectedScrollRight] = useState(false)
-  const [selectedBtnTop, setSelectedBtnTop] = useState<number | null>(null)
 
   // 탭 바 스크롤 상태
   useEffect(() => {
@@ -630,31 +629,6 @@ export default function CampaignDetail() {
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
 
-  useEffect(() => {
-    const update = () => {
-      const el = applicantTableRef.current ?? applicantTableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setApplicantBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    update()
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = applicantTableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', update)
-    const ro = new ResizeObserver(update)
-    if (applicantTableRef.current) ro.observe(applicantTableRef.current)
-    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
-  }, [])
 
   // 선정 인플루언서 테이블 스크롤 상태
   useEffect(() => {
@@ -671,31 +645,6 @@ export default function CampaignDetail() {
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
 
-  useEffect(() => {
-    const update = () => {
-      const el = selectedTableRef.current ?? selectedTableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setSelectedBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    update()
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = selectedTableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', update)
-    const ro = new ResizeObserver(update)
-    if (selectedTableRef.current) ro.observe(selectedTableRef.current)
-    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', update); ro.disconnect() }
-  }, [])
 
   // QA: 로딩 상태 — 공통 SkeletonCard
   if (qa === 'loading') {
@@ -728,7 +677,7 @@ export default function CampaignDetail() {
     return (
       <div className="space-y-5">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => navigate('/campaigns')} aria-label="이전" className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
+          <button type="button" onClick={() => navigate('/campaigns')} aria-label="이전" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
             <ArrowLeft size={18} aria-hidden="true" />
           </button>
           <h1 className="text-2xl font-bold text-gray-900">캠페인 상세</h1>
@@ -1106,18 +1055,18 @@ export default function CampaignDetail() {
               </div>
               <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>
             </div>
-            <Tooltip content="공유"><button type="button" onClick={handleShareCampaign} aria-label="공유" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0"><Share2 size={16} /></button></Tooltip>
+            <Tooltip content="공유"><button type="button" onClick={handleShareCampaign} aria-label="공유" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Share2 size={16} /></button></Tooltip>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <button type="button" onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700"><Edit2 size={13} />정보 변경</button>
+            <button type="button" onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Edit2 size={13} />정보 변경</button>
             {canCancelCampaign && (
-              <button type="button" onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-orange-200 bg-orange-100 hover:bg-orange-200 text-base text-orange-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><X size={13} />캠페인 취소</button>
+              <button type="button" onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-orange-200 bg-orange-100 hover:bg-orange-200 text-base text-orange-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><X size={13} />캠페인 취소</button>
             )}
             {canDeleteCampaign ? (
-              <button type="button" onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600"><Trash2 size={13} />삭제</button>
+              <button type="button" onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Trash2 size={13} />삭제</button>
             ) : (
               <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
-                <span aria-disabled="true" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-base text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
+                <span aria-disabled="true" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-base text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
               </Tooltip>
             )}
           </div>
@@ -1165,8 +1114,9 @@ export default function CampaignDetail() {
       <div className={`relative flex items-center border-b border-gray-200 sticky bg-gray-50 z-10 -mx-4 @sm:mx-0 px-4 @sm:px-0 ${device !== 'desktop' ? 'top-12' : 'top-0'}`}>
         {canTabScrollLeft && (
           <button type="button" onClick={() => tabScrollRef.current?.scrollBy({ left: -120, behavior: 'smooth' })}
-            className="shrink-0 p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-            <ChevronLeft size={14} aria-hidden="true" />
+            aria-label="탭 왼쪽으로 스크롤"
+            className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <ChevronLeft size={16} aria-hidden="true" />
           </button>
         )}
         <div ref={tabScrollRef} className="flex-1 flex items-center overflow-x-auto scrollbar-hide">
@@ -1214,8 +1164,9 @@ export default function CampaignDetail() {
         </div>
         {canTabScrollRight && (
           <button type="button" onClick={() => tabScrollRef.current?.scrollBy({ left: 120, behavior: 'smooth' })}
-            className="shrink-0 p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-            <ChevronRight size={14} aria-hidden="true" />
+            aria-label="탭 오른쪽으로 스크롤"
+            className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <ChevronRight size={16} aria-hidden="true" />
           </button>
         )}
       </div>
@@ -1466,20 +1417,8 @@ export default function CampaignDetail() {
             )
           })()}
 
-          {applicantBtnTop !== null && canApplicantScrollLeft && (
-            <button type="button" onClick={() => applicantTableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
-              aria-label="왼쪽으로 스크롤" style={{ top: applicantBtnTop }}
-              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronLeft size={15} aria-hidden="true" />
-            </button>
-          )}
-          {applicantBtnTop !== null && canApplicantScrollRight && (
-            <button type="button" onClick={() => applicantTableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
-              aria-label="오른쪽으로 스크롤" style={{ top: applicantBtnTop }}
-              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronRight size={15} aria-hidden="true" />
-            </button>
-          )}
+          {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+          <FloatingScrollChevrons scrollRef={applicantTableScrollRef} contentRef={applicantTableRef} />
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="relative" ref={applicantTableWrapperRef}>
               {canApplicantScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
@@ -1751,20 +1690,8 @@ export default function CampaignDetail() {
             const pagedSelected = filteredSelected.slice((selectedPage - 1) * PAGE_SIZE, selectedPage * PAGE_SIZE)
             return (
               <>
-              {selectedBtnTop !== null && canSelectedScrollLeft && (
-                <button type="button" onClick={() => selectedTableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
-                  aria-label="왼쪽으로 스크롤" style={{ top: selectedBtnTop }}
-                  className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <ChevronLeft size={15} aria-hidden="true" />
-                </button>
-              )}
-              {selectedBtnTop !== null && canSelectedScrollRight && (
-                <button type="button" onClick={() => selectedTableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
-                  aria-label="오른쪽으로 스크롤" style={{ top: selectedBtnTop }}
-                  className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
-              )}
+              {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+              <FloatingScrollChevrons scrollRef={selectedTableScrollRef} contentRef={selectedTableRef} />
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="relative" ref={selectedTableWrapperRef}>
                   {canSelectedScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
@@ -1835,7 +1762,7 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text-text-text">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text">등록 완료</span>
                           ) : (
                             <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-base font-bold text-gray-600">미등록</span>
                           )}
@@ -2339,7 +2266,7 @@ export default function CampaignDetail() {
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">참여율</p>
-                          <p className="text-base font-bold text-brand-green-text-text">{engRate}%</p>
+                          <p className="text-base font-bold text-brand-green-text">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -2457,7 +2384,7 @@ export default function CampaignDetail() {
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className="text-base font-semibold text-brand-green-text-text">{engRate}%</span>
+                              <span className="text-base font-semibold text-brand-green-text">{engRate}%</span>
                             </td>
                           </tr>
                         )
@@ -2645,10 +2572,9 @@ export default function CampaignDetail() {
                 return (
                   <button type="button"
                     key={p.id}
-                    type="button"
                     onClick={() => setPickedPlan(p.id)}
                     className={`w-full text-left p-3 rounded-xl border transition-colors ${
-                      active ? 'border-brand-green bg-brand-green/5' : 'border-gray-200 hover:border-gray-300'
+                      active ? 'border-brand-green bg-brand-green-bg' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -2870,7 +2796,7 @@ export default function CampaignDetail() {
                           href={detail.latestPostUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-base font-semibold text-brand-green-text-text-text underline mt-1 inline-block"
+                          className="text-base font-semibold text-brand-green-text underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
                         <p className="text-base text-gray-500 mt-1">연결된 게시글 없음</p>
@@ -3056,9 +2982,9 @@ export default function CampaignDetail() {
                       <div key={i} className={`${isFeed ? 'aspect-square' : 'aspect-[9/16]'} bg-gradient-to-br ${g} rounded-lg flex flex-col items-center justify-center relative overflow-hidden`}>
                         <Image size={22} className="text-white/50" aria-hidden="true" />
                         {!isFeed && i === 0 && (
-                          <span className="absolute top-1.5 right-1.5 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded-full leading-none">릴스</span>
+                          <span className="absolute top-1.5 right-1.5 text-xs bg-black/60 text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap">릴스</span>
                         )}
-                        <span className="absolute bottom-1.5 left-1.5 text-[11px] text-white/80 font-medium">♥ {fmtNumber(likes)}</span>
+                        <span className="absolute bottom-1.5 left-1.5 text-xs text-white font-medium whitespace-nowrap">♥ {fmtNumber(likes)}</span>
                       </div>
                     )
                   })}

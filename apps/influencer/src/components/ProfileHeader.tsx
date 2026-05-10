@@ -29,14 +29,14 @@ export default function ProfileHeader() {
             <div className="flex items-center justify-between mb-0.5 @[640px]:mb-1">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="text-base @[640px]:text-lg font-bold text-gray-900 truncate">{mockProfile.name}님</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-green/10 text-brand-green flex-shrink-0">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-green-bg text-brand-green flex-shrink-0">
                   인플루언서
                 </span>
               </div>
               {/* 모바일 SNS 버튼 */}
               <button
                 onClick={() => setSnsOpen(true)}
-                className="@[640px]:hidden flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green/30 rounded-lg px-2.5 py-1 hover:bg-brand-green/5 transition-colors"
+                className="@[640px]:hidden flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green/5 transition-colors"
                 aria-label="SNS 연결 상태 보기"
               >
                 <Link2 size={12} />

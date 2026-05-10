@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, useToast, useQAMode, ErrorState, fmtNumber, fmtDate } from '@wellink/ui'
+import { Modal, useToast, useQAMode, ErrorState, EmptyState, fmtNumber, fmtDate } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 
 type SettlementStatus = '정산가능' | '지급완료' | '정산대기'
@@ -24,7 +24,7 @@ const MOCK_DATA: SettlementItem[] = [
 ]
 
 const STATUS_BADGE: Record<SettlementStatus, string> = {
-  '정산가능': 'bg-brand-green/10 text-brand-green-text border border-brand-green/20',
+  '정산가능': 'bg-brand-green-bg text-brand-green-text border border-brand-green-border',
   '지급완료': 'bg-slate-100 text-slate-600 border border-slate-200',
   '정산대기': 'bg-amber-50 text-amber-700 border border-amber-200',
 }
@@ -112,7 +112,7 @@ export default function Settlement() {
               <p className="text-sm font-semibold text-amber-800">계좌 정보가 없어요</p>
               <p className="text-xs text-amber-600 mt-0.5">정산을 받으려면 계좌를 먼저 등록해야 해요.</p>
             </div>
-            <button onClick={() => showToast('계좌 등록 화면으로 이동합니다.', 'info')} className="shrink-0 text-xs font-semibold text-amber-700 border border-amber-300 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition-colors">
+            <button onClick={() => showToast('계좌 등록 화면으로 이동합니다.', 'info')} className="shrink-0 text-sm font-semibold text-amber-700 border border-amber-300 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60">
               계좌 등록
             </button>
           </div>
@@ -156,15 +156,15 @@ export default function Settlement() {
         </div>
 
         {/* 정산 내역 */}
-        <h2 className="text-sm font-semibold text-gray-700">정산 내역</h2>
+        <h2 className="text-base font-semibold text-gray-900">정산 내역</h2>
 
         {items.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-16 gap-3">
-            <Wallet size={36} className="text-gray-300" />
-            <div className="text-center">
-              <p className="text-sm font-semibold text-gray-600">정산 내역이 없어요</p>
-              <p className="text-xs text-gray-400 mt-0.5">캠페인을 완료하면 내역이 쌓여요</p>
-            </div>
+          <div className="bg-white rounded-2xl border border-gray-100 py-12">
+            <EmptyState
+              icon={<Wallet size={32} className="text-gray-400" aria-hidden="true" />}
+              title="정산 내역이 없어요"
+              description="캠페인을 완료하면 내역이 쌓여요"
+            />
           </div>
         ) : (
           <div className="space-y-3">
@@ -172,8 +172,8 @@ export default function Settlement() {
               <div key={item.id} className="bg-white rounded-2xl border border-gray-100 p-4">
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{item.campaign}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
+                    <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
                   </div>
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${STATUS_BADGE[item.status]}`}>
                     {item.status}
@@ -184,21 +184,21 @@ export default function Settlement() {
                   <p className="text-lg font-bold text-gray-900">{fmtNumber(item.amount)}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
                   <div className="flex items-center gap-2">
                     {item.status === '지급완료' && HAS_BUSINESS_REG && (
-                      <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
-                        <FileText size={12} />세금계산서
+                      <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                        <FileText size={14} />세금계산서
                       </button>
                     )}
                     {item.status === '정산가능' && (
                       <button
                         onClick={() => { setRequestTarget(item); setRequestModal(true) }}
                         disabled={!HAS_BANK_ACCOUNT}
-                        className="flex items-center gap-1 text-xs bg-brand-green text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
-                        <BanknoteIcon size={12} />정산 요청
+                        <BanknoteIcon size={14} />정산 요청
                       </button>
                     )}
                     {item.status === '정산대기' && (
-                      <span className="text-xs text-gray-400">콘텐츠 완료 후 정산 가능</span>
+                      <span className="text-xs text-gray-500">콘텐츠 완료 후 정산 가능</span>
                     )}
                   </div>
                 </div>
@@ -243,7 +243,7 @@ export default function Settlement() {
                 <p className="text-xs text-amber-700">계좌 정보가 없어요. 먼저 계좌를 등록해 주세요.</p>
               </div>
             )}
-            <p className="text-xs text-gray-400">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요.</p>
+            <p className="text-xs text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요.</p>
             <div className="flex gap-2">
               <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
               <button onClick={confirmRequest} disabled={!HAS_BANK_ACCOUNT} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">요청하기</button>

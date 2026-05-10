@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, CreditCard, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton } from '@wellink/ui'
+import { Check, CreditCard, AlertTriangle } from 'lucide-react'
+import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
@@ -111,13 +111,12 @@ export default function Subscription() {
   const [cancelModal, setCancelModal] = useState(false)
   const [refundModal, setRefundModal] = useState(false)
 
-  // 테이블 가로스크롤
+  // 테이블 가로스크롤 — 그라디언트 오버레이 표시용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
   const [canTableScrollRight, setCanTableScrollRight] = useState(false)
-  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
 
   useEffect(() => {
     const el = tableScrollRef.current
@@ -131,33 +130,6 @@ export default function Subscription() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  useEffect(() => {
-    const update = () => {
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    update()
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null
-    const onResize = () => {
-      if (resizeTimer !== null) clearTimeout(resizeTimer)
-      resizeTimer = setTimeout(update, 150)
-    }
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', onResize)
-    const ro = new ResizeObserver(update)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => {
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', onResize)
-      if (resizeTimer !== null) clearTimeout(resizeTimer)
-      ro.disconnect()
-    }
   }, [])
 
   // QA 파라미터 변경 시 상태 동기화
@@ -222,7 +194,7 @@ export default function Subscription() {
           </div>
           <Skeleton shape="rect" width={96} height={28} />
         </div>
-        <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
+        <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-4 @sm:gap-5">
           {[1, 2, 3].map(i => <SkeletonCard key={i} height={280} />)}
         </div>
         <SkeletonCard height={160} />
@@ -301,17 +273,17 @@ export default function Subscription() {
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
               <span className="text-sm font-bold text-red-600 bg-red-100 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
             </div>
-            <span className="text-sm font-medium text-brand-green-text bg-brand-green/20 px-2.5 py-1 rounded-full">
+            <span className="text-sm font-medium text-brand-green-text bg-brand-green-border px-2.5 py-1 rounded-full">
               체험 중
             </span>
           </div>
           {/* 체험 진행 바 */}
           <div>
-            <div className="flex justify-between text-sm text-brand-green-text/70 mb-1.5">
+            <div className="flex justify-between text-sm text-brand-green-text mb-1.5">
               <span>시작일</span>
               <span>D-3 / 7일</span>
             </div>
-            <div className="h-2 bg-brand-green/20 rounded-full overflow-hidden">
+            <div className="h-2 bg-brand-green-border rounded-full overflow-hidden">
               <div className="h-full bg-brand-green rounded-full" style={{ width: '57%' }} />
             </div>
           </div>
@@ -443,7 +415,7 @@ export default function Subscription() {
       })()}
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰 배경 + 검정 테두리 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div
@@ -498,7 +470,7 @@ export default function Subscription() {
             className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
               currentPlan === plan.id
                 ? 'border-2 border-brand-green shadow-md'
-                : 'border-2 border-brand-green/60'
+                : 'border-2 border-brand-green'
             }`}
           >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -553,7 +525,7 @@ export default function Subscription() {
             )}
             <div className="mb-5">
               <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
+              <p className="text-sm text-gray-300 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-white">{plan.price}</span>
               </div>
@@ -652,7 +624,7 @@ export default function Subscription() {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-500">
                     <span className="text-base font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
-                    <span className="text-gray-300">·</span>
+                    <span className="text-gray-400" aria-hidden="true">·</span>
                     <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
                   </div>
                 </li>
@@ -661,21 +633,8 @@ export default function Subscription() {
 
             {/* 태블릿/데스크톱 (@md+) — 테이블 */}
             <div className="hidden @md:block">
-              {/* 가로스크롤 화살표 버튼 */}
-              {tableBtnTop !== null && canTableScrollLeft && (
-                <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
-                  style={{ top: tableBtnTop }}
-                  className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-                  <ChevronLeft size={15} />
-                </button>
-              )}
-              {tableBtnTop !== null && canTableScrollRight && (
-                <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
-                  style={{ top: tableBtnTop }}
-                  className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all">
-                  <ChevronRight size={15} />
-                </button>
-              )}
+              {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+              <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
               <div className="relative" ref={tableWrapperRef}>
                 {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
                 {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
@@ -707,7 +666,6 @@ export default function Subscription() {
           </div>
         )
       })()}
-      )}
 
       {/* 미구독 상태 빈 결제내역 — 공통 EmptyState */}
       {(!currentPlan || qa === 'plan-free') && (

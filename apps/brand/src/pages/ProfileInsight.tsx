@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark, Loader2, Sparkles, ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'lucide-react'
-import { KPICard, ErrorState, EmptyState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination, useIsTouchDevice, SkeletonCard, ChartScrollContainer, type ChartScrollContainerHandle } from '@wellink/ui'
+import { KPICard, ErrorState, EmptyState, DateRangePicker, Modal, fmtNumber, ENGAGEMENT_THRESHOLD, CHART_COLORS, getEngagementColor, Pagination, useIsTouchDevice, SkeletonCard, ChartScrollContainer, FloatingScrollChevrons, Tabs, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -333,7 +333,7 @@ function FollowerBarChart({
           const isActive = activeIndex === idx
           return (
             <div key={label} className="flex-1 min-w-0 text-center" style={{ visibility: doShow ? 'visible' : 'hidden' }}>
-              <span className={`text-xs truncate block ${isNull ? 'text-gray-300' : isActive ? 'text-brand-green-text font-medium' : 'text-gray-400'}`}>{label}</span>
+              <span className={`text-xs truncate block ${isNull ? 'text-gray-400' : isActive ? 'text-brand-green-text font-medium' : 'text-gray-500'}`}>{label}</span>
             </div>
           )
         })}
@@ -391,26 +391,13 @@ function MultiLineTrendChart({
     onActiveIndex?.(Math.max(0, Math.min(data.length - 1, idx)))
   }
 
-  const metricLabelMap: Record<MetricKey, string> = {
-    likes: '좋아요',
-    reach: '도달',
-    comments: '댓글',
-    saves: '저장',
-  }
-
-  const fmtVal = (v: number | null) => {
-    if (v === null) return '—'
-    if (v >= 1000) return `${(v / 1000).toFixed(1)}k`
-    return String(v)
-  }
-
   return (
     <svg
       width="100%"
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
-      className="overflow-visible"
+      className="overflow-visible [&_*]:pointer-events-none"
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44) }}
       role="img"
       aria-label="기간별 지표 추이 차트"
@@ -552,7 +539,19 @@ export default function ProfileInsight() {
   const isTouch = useIsTouchDevice()
   const [period, setPeriod] = useState<Period>('월간')
   const [dateOffset, setDateOffset] = useState(0)
-  const [activeMetric, setActiveMetric] = useState<MetricKey>('likes')
+  // 복수 메트릭 동시 활성화 — 최소 1개는 유지
+  const [activeMetrics, setActiveMetrics] = useState<MetricKey[]>(['likes'])
+  const toggleMetric = useCallback((metric: MetricKey) => {
+    setActiveMetrics(prev => {
+      if (prev.includes(metric)) {
+        if (prev.length === 1) return prev // 최소 1개 유지
+        return prev.filter(m => m !== metric)
+      }
+      // 정의된 순서(metricColors) 유지 — 툴팁/범례 정렬 일관성
+      const order = Object.keys(metricColors) as MetricKey[]
+      return order.filter(m => prev.includes(m) || m === metric)
+    })
+  }, [])
   const [aiRefreshing, setAiRefreshing] = useState(false)
   const aiRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -607,12 +606,12 @@ export default function ProfileInsight() {
     }
   }, [period, isTouch])
 
+  // 테이블 가로 스크롤 — 그라디언트 오버레이 표시용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
   const [canTableScrollRight, setCanTableScrollRight] = useState(false)
-  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
 
   useEffect(() => {
     const el = tableScrollRef.current
@@ -626,43 +625,6 @@ export default function ProfileInsight() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null
-    const update = () => {
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    const debouncedUpdate = () => {
-      if (debounceTimer !== null) clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(update, 150)
-    }
-    update()
-    // Layout의 overflow-y-auto div이 실제 스크롤 컨테이너 — window.scroll은 발생하지 않음
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = tableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', debouncedUpdate)
-    const ro = new ResizeObserver(debouncedUpdate)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => {
-      scrollTarget.removeEventListener('scroll', update)
-      window.removeEventListener('resize', debouncedUpdate)
-      ro.disconnect()
-      if (debounceTimer !== null) clearTimeout(debounceTimer)
-    }
   }, [])
 
   const headerRef = useRef<HTMLDivElement>(null)
@@ -901,28 +863,35 @@ export default function ProfileInsight() {
               <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
               <p className="text-sm text-gray-400 mt-0.5">
                 {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
-                {nullCount > 0 && <span className="ml-1.5 text-gray-300">· 회색 구간은 데이터 없음</span>}
+                {nullCount > 0 && <span className="ml-1.5 text-gray-500">· 회색 구간은 데이터 없음</span>}
               </p>
             </div>
-            <div className="flex gap-1.5 flex-wrap">
-              {(Object.keys(metricColors) as MetricKey[]).map(metric => (
-                <button type="button"
-                  key={metric}
-                  onClick={() => setActiveMetric(metric)}
-                  className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                    activeMetric === metric
-                      ? 'border-transparent text-white'
-                      : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
-                  }`}
-                  style={activeMetric === metric ? { backgroundColor: metricColors[metric] } : {}}
-                >
-                  {metric === 'likes'    && <Heart size={10} aria-hidden="true" />}
-                  {metric === 'reach'    && <Eye size={10} aria-hidden="true" />}
-                  {metric === 'comments' && <MessageCircle size={10} aria-hidden="true" />}
-                  {metric === 'saves'    && <Bookmark size={10} aria-hidden="true" />}
-                  {metricLabels[metric]}
-                </button>
-              ))}
+            <div className="flex gap-1.5 flex-wrap" role="group" aria-label="표시할 지표 선택 (복수 선택 가능)">
+              {(Object.keys(metricColors) as MetricKey[]).map(metric => {
+                const isActive = activeMetrics.includes(metric)
+                const isOnly = isActive && activeMetrics.length === 1
+                return (
+                  <button type="button"
+                    key={metric}
+                    onClick={() => toggleMetric(metric)}
+                    aria-pressed={isActive}
+                    disabled={isOnly}
+                    title={isOnly ? '최소 1개 지표는 활성화돼야 합니다' : undefined}
+                    className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                      isActive
+                        ? 'border-transparent text-white'
+                        : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
+                    } ${isOnly ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
+                    style={isActive ? { backgroundColor: metricColors[metric] } : {}}
+                  >
+                    {metric === 'likes'    && <Heart size={10} aria-hidden="true" />}
+                    {metric === 'reach'    && <Eye size={10} aria-hidden="true" />}
+                    {metric === 'comments' && <MessageCircle size={10} aria-hidden="true" />}
+                    {metric === 'saves'    && <Bookmark size={10} aria-hidden="true" />}
+                    {metricLabels[metric]}
+                  </button>
+                )
+              })}
             </div>
           </div>
           <ChartScrollContainer
@@ -937,21 +906,23 @@ export default function ProfileInsight() {
               return (
                 <>
                   <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
-                  {activeMetric !== undefined && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: metricColors[activeMetric] }} />
-                      <span className="text-xs text-gray-700 whitespace-nowrap font-medium">
-                        {metricLabels[activeMetric]}: {fmtV(d[activeMetric])}
-                      </span>
-                    </div>
-                  )}
+                  <div className="space-y-1">
+                    {activeMetrics.map(metric => (
+                      <div key={metric} className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: metricColors[metric] }} />
+                        <span className="text-xs text-gray-700 whitespace-nowrap font-medium">
+                          {metricLabels[metric]}: {fmtV(d[metric])}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </>
               )
             }}
           >
             <MultiLineTrendChart
               data={trendData}
-              activeMetrics={[activeMetric]}
+              activeMetrics={activeMetrics}
               activeIndex={trendChartIdx}
               onActiveIndex={setTrendChartIdx}
               isTouch={isTouch}
@@ -967,7 +938,7 @@ export default function ProfileInsight() {
               <p className="text-sm text-gray-400 mt-0.5">
                 노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
                 {impressReachByPeriod[period].some(d => d.impressions === null) && (
-                  <span className="ml-1.5 text-gray-300">· 일부 구간 데이터 없음</span>
+                  <span className="ml-1.5 text-gray-500">· 일부 구간 데이터 없음</span>
                 )}
               </p>
             </div>
@@ -1065,7 +1036,7 @@ export default function ProfileInsight() {
             />
           </ChartScrollContainer>
           {nullCount > 0 && (
-            <p className="text-sm text-gray-300 mt-2">
+            <p className="text-sm text-gray-500 mt-2">
               회색 점선 바: 해당 기간 데이터 없음
             </p>
           )}
@@ -1078,20 +1049,8 @@ export default function ProfileInsight() {
       </div>
 
       {/* 최근 게시물 상세 */}
-      {tableBtnTop !== null && canTableScrollLeft && (
-        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
-          style={{ top: tableBtnTop }}
-          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-          <ChevronLeft size={15} aria-hidden="true" />
-        </button>
-      )}
-      {tableBtnTop !== null && canTableScrollRight && (
-        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
-          style={{ top: tableBtnTop }}
-          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-          <ChevronRight size={15} aria-hidden="true" />
-        </button>
-      )}
+      {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+      <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <h2 className="text-base font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
@@ -1116,9 +1075,9 @@ export default function ProfileInsight() {
                   const isNull = d.reach === null
                   return (
                     <tr key={i} className={`transition-colors ${isNull ? '' : 'hover:bg-gray-50'}`}>
-                      <td className={`py-2.5 pr-4 text-sm whitespace-nowrap ${isNull ? 'text-gray-300' : 'text-gray-500'}`}>{d.label}</td>
+                      <td className={`py-2.5 pr-4 text-sm whitespace-nowrap ${isNull ? 'text-gray-400' : 'text-gray-500'}`}>{d.label}</td>
                       {isNull ? (
-                        <td colSpan={5} className="py-2.5 text-center text-sm text-gray-300 whitespace-nowrap">데이터 없음</td>
+                        <td colSpan={5} className="py-2.5 text-center text-sm text-gray-500 whitespace-nowrap">데이터 없음</td>
                       ) : (
                         <>
                           <td className="py-2.5 px-4 text-right text-sm text-gray-700 whitespace-nowrap">{fmtNumber(d.reach as number)}</td>
@@ -1282,7 +1241,7 @@ function ImpressReachChart({
       height={H}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
-      className="overflow-visible"
+      className="overflow-visible [&_*]:pointer-events-none"
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
       role="img"
       aria-label="노출 및 도달 추이 차트"
@@ -1582,25 +1541,21 @@ function PostContentTable() {
             </p>
           </div>
         </div>
-        {/* 유형 탭 필터 */}
-        <div className="flex gap-1.5 px-5 py-3 border-b border-gray-50 flex-wrap">
-          {TYPE_TABS.map(tab => (
-            <button type="button" key={tab.value}
-              onClick={() => { setActiveType(tab.value); setPage(1) }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                activeType === tab.value
-                  ? 'bg-brand-green-bg text-brand-green-text'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {tab.label}
-              {tab.value !== 'all' && (
-                <span className="ml-1 text-xs opacity-60">
-                  {POST_DATA.filter(p => p.type === tab.value).length}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* 유형 탭 필터 — 가로 스크롤 + 쉐브론 (Tabs 컴포넌트) */}
+        <div className="px-5 py-3 border-b border-gray-50">
+          <Tabs
+            variant="soft"
+            value={activeType}
+            onChange={(v) => { setActiveType(v as 'all' | PostType); setPage(1) }}
+            ariaLabel="게시물 유형 필터"
+            items={TYPE_TABS.map(tab => ({
+              value: tab.value,
+              label: tab.label,
+              trailing: tab.value !== 'all'
+                ? <span className="text-xs opacity-60">{POST_DATA.filter(p => p.type === tab.value).length}</span>
+                : undefined,
+            }))}
+          />
         </div>
         {/* 테이블 */}
         <div className="relative">

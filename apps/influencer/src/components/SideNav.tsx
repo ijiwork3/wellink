@@ -27,7 +27,7 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
     <nav className="w-52 flex-shrink-0 space-y-6 sticky top-0 self-start">
       {sections.map((section) => (
         <div key={section.title}>
-          <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-1.5 px-3">
+          <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1.5 px-3">
             {section.title}
           </p>
           <ul className="space-y-1">

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Share2, Bookmark, Eye, Zap, Image, Info, Award, ChevronLeft, ChevronRight, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
-import { KPICard, Modal, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, SkeletonCard, ChartScrollContainer, type ChartScrollContainerHandle, type DatePeriod } from '@wellink/ui'
+import { Share2, Bookmark, Eye, Zap, Image, Info, Award, Megaphone, TrendingUp, Heart, MessageCircle } from 'lucide-react'
+import { KPICard, Modal, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, useIsTouchDevice, SkeletonCard, ChartScrollContainer, FloatingScrollChevrons, type ChartScrollContainerHandle, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -146,13 +146,12 @@ export default function ViralMetrics() {
   const [selectedContent, setSelectedContent] = useState<ViralContent | null>(null)
   const VC_PAGE_SIZE = 10
 
-  // 테이블 가로 스크롤 화살표
+  // 테이블 가로 스크롤 — 그라디언트 오버레이 표시용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
   const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
   const [canTableScrollRight, setCanTableScrollRight] = useState(false)
-  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
 
   useEffect(() => {
     const el = tableScrollRef.current
@@ -166,43 +165,6 @@ export default function ViralMetrics() {
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
-  }, [])
-
-  useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null
-    const update = () => {
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    const debouncedUpdate = () => {
-      if (debounceTimer !== null) clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(update, 150)
-    }
-    update()
-    // Layout의 overflow-y-auto div이 실제 스크롤 컨테이너 — window.scroll은 발생하지 않음
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = tableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', debouncedUpdate)
-    const ro = new ResizeObserver(debouncedUpdate)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => {
-      scrollTarget.removeEventListener('scroll', update)
-      window.removeEventListener('resize', debouncedUpdate)
-      ro.disconnect()
-      if (debounceTimer !== null) clearTimeout(debounceTimer)
-    }
   }, [])
 
   useEffect(() => { setContentPage(1) }, [viewMode, dateOffset])
@@ -385,7 +347,7 @@ export default function ViralMetrics() {
               return reels.length > 0 ? fmtNumber(Math.floor(reels.reduce((s, c) => s + c.reach, 0) / reels.length)) : '—'
             })()}
           </p>
-          <p className="text-sm text-gray-400 mt-1">릴스 콘텐츠 {viralContentData.filter(c => c.type === '릴스').length}건 평균</p>
+          <p className="text-sm text-gray-500 mt-1">릴스 콘텐츠 {viralContentData.filter(c => c.type === '릴스').length}건 평균</p>
         </div>
         {/* 등급 분포 도넛 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
@@ -398,21 +360,8 @@ export default function ViralMetrics() {
         </div>
       </div>
 
-      {/* 테이블 가로 스크롤 — 고정 화살표 버튼 */}
-      {tableBtnTop !== null && canTableScrollLeft && (
-        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })} aria-label="왼쪽으로 스크롤"
-          style={{ top: tableBtnTop }}
-          className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-          <ChevronLeft size={15} aria-hidden="true" />
-        </button>
-      )}
-      {tableBtnTop !== null && canTableScrollRight && (
-        <button type="button" onClick={() => tableScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })} aria-label="오른쪽으로 스크롤"
-          style={{ top: tableBtnTop }}
-          className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-          <ChevronRight size={15} aria-hidden="true" />
-        </button>
-      )}
+      {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+      <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
 
       {/* 콘텐츠별 바이럴 성과 테이블 (필터·정렬·페이지네이션 보강) */}
       {(() => {
@@ -498,8 +447,21 @@ export default function ViralMetrics() {
               <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-50">
-                    {['콘텐츠', '캠페인', '인플루언서', '플랫폼', '유형', '등급', '도달', '좋아요', '댓글', '저장', '공유', '바이럴 점수'].map(h => (
-                      <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
+                    {([
+                      { h: '콘텐츠',     w: 'min-w-[180px]' },
+                      { h: '캠페인',     w: 'min-w-[140px]' },
+                      { h: '인플루언서', w: 'min-w-[120px]' },
+                      { h: '플랫폼',     w: 'min-w-[80px]' },
+                      { h: '유형',       w: 'min-w-[72px]' },
+                      { h: '등급',       w: 'min-w-[64px]' },
+                      { h: '도달',       w: 'min-w-[88px]' },
+                      { h: '좋아요',     w: 'min-w-[80px]' },
+                      { h: '댓글',       w: 'min-w-[72px]' },
+                      { h: '저장',       w: 'min-w-[72px]' },
+                      { h: '공유',       w: 'min-w-[72px]' },
+                      { h: '바이럴 점수', w: 'min-w-[96px]' },
+                    ] as const).map(({ h, w }) => (
+                      <th key={h} scope="col" className={`text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap ${w}`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -572,7 +534,7 @@ export default function ViralMetrics() {
                   ))}
                   {paginated.length === 0 && (
                     <tr>
-                      <td colSpan={12} className="py-12 text-center text-sm text-gray-400">조건에 맞는 콘텐츠가 없습니다.</td>
+                      <td colSpan={12} className="py-12 text-center text-sm text-gray-500">조건에 맞는 콘텐츠가 없습니다.</td>
                     </tr>
                   )}
                 </tbody>
@@ -617,12 +579,12 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
     { label: '산정중', value: counts.processing, color: '#3b82f6' },
   ].filter(a => a.value > 0)
   const total = arr.reduce((s, a) => s + a.value, 0)
-  if (total === 0) return <p className="text-base text-gray-400 text-center py-8">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-base text-gray-500 text-center py-8">데이터가 없습니다.</p>
   const cx = 60, cy = 60, r = 50, ir = 32
   let acc = 0
   return (
     <div className="flex items-center gap-4 flex-wrap">
-      <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
+      <svg viewBox="0 0 120 120" className="w-[120px] h-[120px] @sm:w-[140px] @sm:h-[140px] shrink-0" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
         {arr.map(a => {
           const start = (acc / total) * Math.PI * 2 - Math.PI / 2
           acc += a.value
@@ -782,7 +744,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                       if (!d) return null
                       return (
                         <>
-                          <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                          <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
                             <span className="text-xs text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
@@ -848,7 +810,7 @@ function ScoreHistoryChart({
       height={H}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
-      className="overflow-visible"
+      className="overflow-visible [&_*]:pointer-events-none"
       style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
       role="img"
       aria-label="퍼포먼스·모멘텀 점수 추이 차트"

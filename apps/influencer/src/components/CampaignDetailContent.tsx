@@ -36,8 +36,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
   const wrapCls = inModal ? '' : '@container'
   const imgCls = inModal
-    ? 'h-48 flex items-center justify-center text-7xl bg-brand-green/10 rounded-xl overflow-hidden mb-5'
-    : 'h-52 @[640px]:h-64 flex items-center justify-center text-8xl bg-brand-green/10 @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden'
+    ? 'h-48 flex items-center justify-center text-7xl bg-brand-green-bg rounded-xl overflow-hidden mb-5'
+    : 'h-52 @[640px]:h-64 flex items-center justify-center text-8xl bg-brand-green-bg @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden'
 
   const sectionCls = inModal ? 'py-4' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
   const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @[640px]:p-6'
@@ -113,7 +113,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                   <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-1">{pct}% 모집</p>
+                  <p className="text-xs text-gray-500 mt-1">{pct}% 모집</p>
                 </div>
               )
             })()}
@@ -179,7 +179,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               </div>
               <div className="flex flex-wrap gap-2">
                 {campaign.keywords!.map(k => (
-                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green/10 text-xs font-medium text-brand-green">
+                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green-bg text-xs font-medium text-brand-green">
                     #{k}
                   </span>
                 ))}
@@ -190,7 +190,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
           {/* 보상 */}
           {campaign.reward && (
             <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
-              <div className="p-4 rounded-xl border border-brand-green/20 bg-brand-green/5 flex items-start gap-3">
+              <div className="p-4 rounded-xl border border-brand-green-border bg-brand-green-bg flex items-start gap-3">
                 <Gift size={17} className="text-brand-green-text flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
                   <p className="text-xs font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
@@ -239,7 +239,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                 마감된 캠페인입니다
               </div>
             ) : applied ? (
-              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green bg-brand-green/5 flex items-center justify-center gap-2">
+              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
                 <CheckCircle2 size={16} aria-hidden="true" />신청완료
               </div>
             ) : (

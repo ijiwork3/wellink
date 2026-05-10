@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import {
   Megaphone, Users, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Search,
-  BarChart3, Sparkles, Lock,
-  ChevronLeft, ChevronRight, AlertTriangle, X,
+  BarChart3, Sparkles, Lock, AlertTriangle, X,
   User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent
 } from 'lucide-react'
-import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard } from '@wellink/ui'
+import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard, FloatingScrollChevrons } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtNumber, fmtRate, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
+import { fmtNumber, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
@@ -127,9 +126,9 @@ export default function Dashboard() {
   const tableScrollRef = useRef<HTMLDivElement>(null)
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
+  // 그라디언트 오버레이용 가로 스크롤 상태 (쉐브론은 FloatingScrollChevrons에서 처리)
   const [canTableScrollLeft, setCanTableScrollLeft] = useState(false)
   const [canTableScrollRight, setCanTableScrollRight] = useState(false)
-  const [tableBtnTop, setTableBtnTop] = useState<number | null>(null)
 
   useEffect(() => {
     const el = tableScrollRef.current
@@ -144,38 +143,6 @@ export default function Dashboard() {
     ro.observe(el)
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
-
-  useEffect(() => {
-    const update = () => {
-      const el = tableRef.current ?? tableWrapperRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const visTop = Math.max(rect.top, 0)
-      const visBottom = Math.min(rect.bottom, window.innerHeight)
-      setTableBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-    }
-    let resizeTimer: ReturnType<typeof setTimeout>
-    const handleResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(update, 150) }
-    update()
-    const scrollTarget: EventTarget = ((): EventTarget => {
-      let p = tableRef.current?.parentElement
-      while (p) {
-        const ov = getComputedStyle(p).overflowY
-        if (ov === 'auto' || ov === 'scroll') return p
-        p = p.parentElement
-      }
-      return window
-    })()
-    scrollTarget.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions)
-    window.addEventListener('resize', handleResize)
-    const ro = new ResizeObserver(update)
-    if (tableRef.current) ro.observe(tableRef.current)
-    return () => { scrollTarget.removeEventListener('scroll', update); window.removeEventListener('resize', handleResize); clearTimeout(resizeTimer); ro.disconnect() }
-  }, [])
-
-  const scrollTable = (dir: 'left' | 'right') => {
-    tableScrollRef.current?.scrollBy({ left: dir === 'left' ? -240 : 240, behavior: 'smooth' })
-  }
 
   /* ── QA: 에러 상태 ── */
   if (qa === 'error') {
@@ -435,7 +402,7 @@ export default function Dashboard() {
               className="flex flex-col gap-3 shadow-sm cursor-default"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm text-gray-500 font-medium min-w-0 break-words">{kpi.title}</span>
+                <span className="text-sm text-gray-500 font-medium min-w-0 break-keep">{kpi.title}</span>
                 <span className="text-gray-400 shrink-0">{kpi.icon}</span>
               </div>
               <div>
@@ -518,27 +485,8 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* fixed 플로팅 스크롤 버튼 */}
-          {tableBtnTop !== null && canTableScrollLeft && (
-            <button type="button"
-              onClick={() => scrollTable('left')}
-              aria-label="왼쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed left-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
-            >
-              <ChevronLeft size={15} />
-            </button>
-          )}
-          {tableBtnTop !== null && canTableScrollRight && (
-            <button type="button"
-              onClick={() => scrollTable('right')}
-              aria-label="오른쪽으로 스크롤"
-              style={{ top: tableBtnTop }}
-              className="fixed right-2 z-30 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all duration-150"
-            >
-              <ChevronRight size={15} />
-            </button>
-          )}
+          {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
+          <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
 
           <div className="relative" ref={tableWrapperRef}>
             {/* 그라데이션 페이드 오버레이 */}
@@ -626,8 +574,7 @@ export default function Dashboard() {
             {visibleNotifications.map(n => (
               <button type="button"
                 key={n.id}
-                type="button"
-                className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green/5' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50`}
+                className={`w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors duration-150 ${n.unread ? 'bg-brand-green-bg' : ''} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50`}
                 onClick={() => handleNotificationClick(n.id, n.route)}
               >
                 <div className="flex gap-2.5 items-start">

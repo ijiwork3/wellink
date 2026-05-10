@@ -53,15 +53,15 @@ export default function Home() {
         </div>
 
         {/* 활동 통계 */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 @[480px]:grid-cols-4 gap-2">
           {SUMMARY_CARDS.map(card => (
             <button
               key={card.key}
               onClick={() => navigate('/campaigns/my')}
-              className="bg-white rounded-2xl border border-gray-100 p-3 text-center hover:border-gray-200 hover:shadow-sm transition-all"
+              className="bg-white rounded-2xl border border-gray-100 p-3 text-center hover:border-gray-200 hover:shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <p className={`text-xl font-bold ${card.color}`}>{mockCampaignSummary[card.key]}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{card.label}</p>
+              <p className="text-xs text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
             </button>
           ))}
         </div>
@@ -81,10 +81,10 @@ export default function Home() {
                   className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-50 transition-colors"
                 >
                   <div className="min-w-0">
-                    <p className="text-xs font-medium text-gray-900 truncate">{c.name}</p>
-                    <p className="text-[10px] text-orange-500">{fmtDate(c.contentDeadline!)}까지</p>
+                    <p className="text-sm font-medium text-gray-900 break-keep">{c.name}</p>
+                    <p className="text-xs text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
                   </div>
-                  <ChevronRight size={13} className="text-gray-400 shrink-0 ml-2" />
+                  <ChevronRight size={14} className="text-gray-400 shrink-0 ml-2" aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -104,10 +104,10 @@ export default function Home() {
           </div>
           {activeCampaigns.length === 0 ? (
             <div className="py-10 text-center">
-              <p className="text-xs text-gray-400">진행 중인 캠페인이 없어요</p>
+              <p className="text-sm text-gray-500">진행 중인 캠페인이 없어요</p>
               <button
                 onClick={() => navigate('/campaigns/browse')}
-                className="mt-3 px-4 py-2 rounded-xl text-xs font-medium text-white bg-brand-green"
+                className="mt-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 찾아보기
               </button>
@@ -124,10 +124,10 @@ export default function Home() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <StatusBadge status={c.status as ParticipationStatus} size="sm" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{c.progress}</p>
+                    <p className="text-sm font-medium text-gray-900 break-keep">{c.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{c.progress}</p>
                   </div>
-                  <ChevronRight size={14} className="text-gray-300 shrink-0" />
+                  <ChevronRight size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -171,14 +171,14 @@ export default function Home() {
               { label: '게시물', value: String(mockInstaStats.posts) },
             ].map(item => (
               <div key={item.label} className="text-center px-3">
-                <p className={`text-base font-bold ${item.highlight ? 'text-brand-green' : 'text-gray-900'}`}>{item.value}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{item.label}</p>
+                <p className={`text-base font-bold ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
+                <p className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
-            <TrendingUp size={12} className="text-brand-green" />
-            <p className="text-[11px] text-gray-500">인스타그램 <span className="font-medium text-gray-700">@{mockProfile.instagram}</span> 연결됨</p>
+            <TrendingUp size={12} className="text-brand-green" aria-hidden="true" />
+            <p className="text-xs text-gray-600">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ function QuickMenu({ icon, label, onClick }: { icon: React.ReactNode; label: str
       className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-2 py-4 hover:border-gray-200 hover:shadow-sm transition-all"
     >
       {icon}
-      <span className="text-[11px] font-medium text-gray-600 text-center leading-tight">{label}</span>
+      <span className="text-xs font-medium text-gray-700 text-center leading-tight whitespace-nowrap">{label}</span>
     </button>
   )
 }

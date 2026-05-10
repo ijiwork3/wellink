@@ -190,11 +190,11 @@ export default function CampaignBrowse() {
           </div>
         ) : (
           <div className="py-20 flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-brand-green/10 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-brand-green-bg flex items-center justify-center">
               <Search size={28} className="text-brand-green" />
             </div>
             <p className="text-sm font-medium text-gray-500">검색 결과가 없어요</p>
-            <p className="text-xs text-gray-400">다른 키워드나 카테고리로 검색해 보세요</p>
+            <p className="text-xs text-gray-500">다른 키워드나 카테고리로 검색해 보세요</p>
             <button
               onClick={() => { setSearch(''); setSelectedCategory('전체') }}
               className="mt-1 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity"
@@ -218,10 +218,10 @@ export default function CampaignBrowse() {
               onClick={e => e.stopPropagation()}
             >
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
-              <p className="text-xs text-gray-400 mb-1">{c.brand}</p>
+              <p className="text-xs text-gray-500 mb-1">{c.brand}</p>
               <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
               {c.reward && (
-                <div className="flex items-center gap-2 mb-3 p-3 rounded-xl bg-brand-green/5 border border-brand-green/10">
+                <div className="flex items-center gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
                   <span className="text-xs font-medium text-gray-700">🎁 {c.reward}</span>
                 </div>
               )}
@@ -262,15 +262,15 @@ export default function CampaignBrowse() {
           <div className="flex flex-col @[640px]:flex-row @[640px]:items-center justify-between gap-4 mb-6">
             <div>
               <span className="text-base font-bold text-brand-green">WELLINK AI</span>
-              <p className="text-xs text-gray-400 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
+              <p className="text-xs text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
             </div>
-            <div className="flex gap-4 text-xs text-gray-400">
-              <button onClick={() => window.open(`mailto:${HELP_EMAIL}`)} className="hover:text-white transition-colors">문의하기</button>
-              <button onClick={() => window.open('https://wellink.co.kr/terms', '_blank', 'noopener,noreferrer')} className="hover:text-white transition-colors">이용약관</button>
-              <button onClick={() => window.location.href = `${BRAND_URL}/#faq`} className="hover:text-white transition-colors">FAQ</button>
+            <div className="flex gap-4 text-sm text-gray-300">
+              <button onClick={() => window.open(`mailto:${HELP_EMAIL}`)} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>
+              <button onClick={() => window.open('https://wellink.co.kr/terms', '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</button>
+              <button onClick={() => window.location.href = `${BRAND_URL}/#faq`} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-4 text-[11px] text-gray-600 space-y-0.5">
+          <div className="border-t border-gray-800 pt-4 text-xs text-gray-400 space-y-0.5">
             <p>상호명: 주식회사 애프터액션 | 대표자: 안정식 | 사업자등록번호: 196-86-03374</p>
             <p>서울 영등포구 당산로 241 유니언타워 514호 | 070-8655-2299</p>
             <p className="mt-2">© 2026 WELLINK AI. All rights reserved.</p>

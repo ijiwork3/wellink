@@ -54,7 +54,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
                 <button
                   onClick={() => setDrawerOpen(true)}
                   aria-label="메뉴 열기"
-                  className="hidden @[640px]:flex @[1024px]:hidden p-1.5 -ml-1 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="hidden @[640px]:flex @[1024px]:hidden w-10 h-10 items-center justify-center -ml-1 rounded-lg hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Menu size={20} className="text-gray-700" />
                 </button>
@@ -65,13 +65,13 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
                 className="flex items-center gap-1.5 transition-opacity hover:opacity-80"
               >
                 <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
-                <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">인플루언서</span>
+                <span className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap">인플루언서</span>
               </button>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { auth.clear(); navigate('/login') }}
-                className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150"
+                className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
               </button>
@@ -113,9 +113,9 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-bold text-gray-900">WELLINK</span>
-                <span className="text-[10px] font-medium bg-brand-green text-white px-1.5 py-0.5 rounded-full leading-none">인플루언서</span>
+                <span className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap">인플루언서</span>
               </div>
-              <button onClick={() => setDrawerOpen(false)} aria-label="메뉴 닫기" className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              <button onClick={() => setDrawerOpen(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-600" />
               </button>
             </div>

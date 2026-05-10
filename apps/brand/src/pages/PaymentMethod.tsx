@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, CreditCard, ShieldCheck, AlertCircle, CheckCircle2, Plus, Trash2 } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS } from '@wellink/ui'
+import { Modal, AlertModal, useToast, TIMER_MS, CustomCheckbox } from '@wellink/ui'
+import { fmtDate } from '../utils/fmtDate'
 
 /** 결제 수단 변경 — 토스페이먼츠 빌링 인증 mock */
 
@@ -138,7 +139,7 @@ export default function PaymentMethod() {
             <p className="text-xl font-mono tracking-widest mb-4">**** **** **** {defaultMethod.last4}</p>
             <div className="flex items-center justify-between text-sm opacity-80">
               <span>유효기간 {defaultMethod.expiresAt}</span>
-              <span>등록일 {defaultMethod.registeredAt}</span>
+              <span>등록일 {fmtDate(defaultMethod.registeredAt)}</span>
             </div>
           </div>
         </div>
@@ -147,7 +148,7 @@ export default function PaymentMethod() {
       {/* 등록된 결제 수단 목록 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-          <h2 className="text-base font-semibold text-gray-900">등록된 결제 수단 <span className="text-gray-400 font-normal">{methods.length}개</span></h2>
+          <h2 className="text-base font-semibold text-gray-900">등록된 결제 수단 <span className="text-gray-500 font-normal">{methods.length}개</span></h2>
           <button type="button"
             onClick={() => setAddModal(true)}
             className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -160,7 +161,7 @@ export default function PaymentMethod() {
           <div className="px-5 py-12 text-center">
             <CreditCard size={32} className="text-gray-300 mx-auto mb-3" aria-hidden="true" />
             <p className="text-base text-gray-500 mb-1">등록된 결제 수단이 없습니다.</p>
-            <p className="text-sm text-gray-400">결제 수단을 추가하면 자동 결제가 활성화됩니다.</p>
+            <p className="text-sm text-gray-500">결제 수단을 추가하면 자동 결제가 활성화됩니다.</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-50">
@@ -177,7 +178,7 @@ export default function PaymentMethod() {
                       <span className="text-sm bg-brand-green-bg text-brand-green-text font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">기본</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-400 mt-0.5">유효기간 {m.expiresAt} · 등록일 {m.registeredAt}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">유효기간 {m.expiresAt} · 등록일 {fmtDate(m.registeredAt)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {!m.isDefault && (
@@ -288,15 +289,13 @@ export default function PaymentMethod() {
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
           </div>
-          <label className="flex items-center gap-2 mt-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={setAsDefault}
-              onChange={e => setSetAsDefault(e.target.checked)}
-              className="accent-brand-green w-4 h-4"
-            />
-            <span className="text-sm text-gray-600">기본 결제 수단으로 설정</span>
-          </label>
+          <CustomCheckbox
+            checked={setAsDefault}
+            onChange={() => setSetAsDefault(prev => !prev)}
+            label="기본 결제 수단으로 설정"
+            labelClassName="text-sm text-gray-600"
+            className="mt-2"
+          />
           <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 flex items-start gap-2 mt-2">
             <CheckCircle2 size={12} className="text-gray-400 mt-0.5 shrink-0" aria-hidden="true" />
             <p className="text-sm text-gray-500">테스트 환경에서는 실제 결제가 발생하지 않습니다.</p>

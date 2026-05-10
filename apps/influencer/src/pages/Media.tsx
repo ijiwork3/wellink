@@ -142,16 +142,16 @@ export default function Media() {
       <div className="space-y-4 max-w-lg">
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
-          <div className="bg-white rounded-2xl border border-brand-green/20 p-5">
+          <div className="bg-white rounded-2xl border border-brand-green-border p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-base">📷</span>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">@{instaPlatform.url}</p>
-                  <p className="text-[11px] text-gray-400">인스타그램</p>
+                  <p className="text-xs text-gray-500">인스타그램</p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-brand-green/10 text-brand-green-text flex items-center gap-1">
+              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1">
                 <CheckCircle2 size={10} />연결됨
               </span>
             </div>
@@ -161,42 +161,42 @@ export default function Media() {
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Users size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">팔로워</p>
+                  <p className="text-xs text-gray-500">팔로워</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{fmtFollowers(mockInstaStats.followers)}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Image size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">게시물</p>
+                  <p className="text-xs text-gray-500">게시물</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.posts}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <TrendingUp size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">참여율</p>
+                  <p className="text-xs text-gray-500">참여율</p>
                 </div>
                 <p className={`text-sm font-bold ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Heart size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">평균 좋아요</p>
+                  <p className="text-xs text-gray-500">평균 좋아요</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgLikes}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <MessageCircle size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">평균 댓글</p>
+                  <p className="text-xs text-gray-500">평균 댓글</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgComments}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Clock size={11} className="text-gray-400" />
-                  <p className="text-[10px] text-gray-500">최근 활동</p>
+                  <p className="text-xs text-gray-500">최근 활동</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.lastActive}</p>
               </div>
@@ -210,19 +210,19 @@ export default function Media() {
               </div>
               <div className="grid grid-cols-3 gap-1.5">
                 {MOCK_CONTENT.map(post => (
-                  <div key={post.id} className="aspect-square bg-brand-green/5 rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group cursor-pointer">
+                  <div key={post.id} className="aspect-square bg-brand-green-bg rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group cursor-pointer">
                     <span className="text-2xl">{post.emoji}</span>
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
-                      <span className="text-white text-[10px] font-medium flex items-center gap-0.5">
-                        <Heart size={9} fill="white" />
-                        {post.likes}
+                      <span className="text-white text-xs font-medium flex items-center gap-0.5 whitespace-nowrap">
+                        <Heart size={11} fill="white" aria-hidden="true" />
+                        {post.likes.toLocaleString('ko-KR')}
                       </span>
-                      <span className="text-white text-[10px] flex items-center gap-0.5">
-                        <MessageCircle size={9} />
-                        {post.comments}
+                      <span className="text-white text-xs flex items-center gap-0.5 whitespace-nowrap">
+                        <MessageCircle size={11} aria-hidden="true" />
+                        {post.comments.toLocaleString('ko-KR')}
                       </span>
                     </div>
-                    <p className="text-[9px] text-gray-400">{post.date}</p>
+                    <p className="text-xs text-gray-500">{post.date}</p>
                   </div>
                 ))}
               </div>
@@ -236,12 +236,12 @@ export default function Media() {
             <Link2 size={16} className="text-brand-green" />
             <h2 className="text-base font-semibold text-gray-900">SNS 관리</h2>
           </div>
-          <span className="text-xs text-gray-400">{connectedCount}/{platforms.length} 연결됨</span>
+          <span className="text-xs text-gray-500">{connectedCount}/{platforms.length} 연결됨</span>
         </div>
 
         {/* 플랫폼 카드들 */}
         {platforms.map(p => (
-          <div key={p.id} className={`bg-white rounded-2xl border p-4 transition-all ${p.connected ? 'border-brand-green/20' : 'border-gray-100'}`}>
+          <div key={p.id} className={`bg-white rounded-2xl border p-4 transition-all ${p.connected ? 'border-brand-green-border' : 'border-gray-100'}`}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 {/* 아이콘 + 연결 인디케이터 */}
@@ -260,14 +260,14 @@ export default function Media() {
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="text-sm font-medium text-gray-900">{p.name}</p>
                     {p.connected && (
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-brand-green/10 text-brand-green-text">연결됨</span>
+                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text">연결됨</span>
                     )}
                   </div>
 
                   {p.connected && p.url ? (
                     <p className="text-xs text-gray-500 truncate">@{p.url}</p>
                   ) : (
-                    <p className="text-xs text-gray-400">{p.description}</p>
+                    <p className="text-xs text-gray-500">{p.description}</p>
                   )}
 
                   {/* 연결된 계정 지표 */}
@@ -309,7 +309,7 @@ export default function Media() {
           </div>
         ))}
 
-        <div className="p-4 rounded-xl bg-brand-green/5 border-l-[3px] border-brand-green">
+        <div className="p-4 rounded-xl bg-brand-green-bg border-l-[3px] border-brand-green">
           <p className="text-xs text-gray-600">SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인됩니다.</p>
         </div>
       </div>
@@ -340,7 +340,7 @@ export default function Media() {
         {disconnectModal && (
           <>
             <p className="text-sm text-gray-600 mb-2"><strong>{disconnectModal.name}</strong> 연결을 해제할까요?</p>
-            <p className="text-xs text-gray-400 mb-5">해제 후 해당 채널로 캠페인 신청이 어려울 수 있어요.</p>
+            <p className="text-xs text-gray-500 mb-5">해제 후 해당 채널로 캠페인 신청이 어려울 수 있어요.</p>
             <div className="flex gap-3">
               <button onClick={() => setDisconnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
               <button onClick={handleDisconnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">연결 해제</button>

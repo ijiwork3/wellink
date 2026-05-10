@@ -12,7 +12,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
   )
 }
 import {
-  Modal, AlertModal, TIMER_MS, useToast,
+  Modal, TIMER_MS, useToast,
   Tabs, ErrorState, SkeletonCard, SkeletonRow,
   type TabItem,
 } from '@wellink/ui'
@@ -399,16 +399,18 @@ export default function MyPage() {
                 알림 설정
               </h3>
               <div className="space-y-3">
-                {/* 이메일 마케팅 수신 — 동의 시점 ISO 타임스탬프 저장 */}
-                <div className="flex items-start gap-3">
-                  <button type="button"
-                    onClick={() => setMarketingConsent(marketingConsent ? null : new Date().toISOString())}
-                    role="checkbox"
-                    aria-checked={!!marketingConsent}
-                    aria-label="이메일 마케팅 수신"
-                    id="alert-email-mkt"
+                {/* 이메일 마케팅 수신 — 동의 시점 ISO 타임스탬프 저장. 전체 영역 클릭 가능 */}
+                <button type="button"
+                  onClick={() => setMarketingConsent(marketingConsent ? null : new Date().toISOString())}
+                  role="checkbox"
+                  aria-checked={!!marketingConsent}
+                  aria-label="이메일 마케팅 수신 동의"
+                  className="flex items-start gap-3 w-full text-left rounded-lg -mx-1 px-1 py-1 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+                >
+                  <span
+                    aria-hidden="true"
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                      marketingConsent ? 'bg-brand-green border-brand-green' : 'border-gray-300 hover:border-gray-400'
+                      marketingConsent ? 'bg-brand-green border-brand-green' : 'border-gray-300'
                     }`}
                   >
                     {marketingConsent && (
@@ -416,33 +418,35 @@ export default function MyPage() {
                         <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
-                  </button>
-                  <div>
-                    <p className="text-base font-medium text-gray-900">이메일 마케팅 수신</p>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                  </span>
+                  <span>
+                    <span className="block text-base font-medium text-gray-900">이메일 마케팅 수신</span>
+                    <span className="block text-sm text-gray-500 mt-0.5">
                       이벤트, 프로모션 등 다양한 혜택 안내
                       {marketingConsent && (
-                        <span className="ml-2 text-xs text-gray-400">
+                        <span className="ml-2 text-xs text-gray-500">
                           (동의: {new Date(marketingConsent).toLocaleDateString('ko-KR')})
                         </span>
                       )}
-                    </p>
-                  </div>
-                </div>
+                    </span>
+                  </span>
+                </button>
                 {/* 캠페인·정산 알림 */}
                 {[
                   { id: 'alert-campaign', label: '캠페인 알림', desc: '지원자·콘텐츠 제출·발표일 알림 (이메일 + 서비스 내)', value: campaignAlert, setter: setCampaignAlert },
                   { id: 'alert-payment',  label: '정산 알림',   desc: '결제 예정일·실패 알림',                               value: paymentAlert,  setter: setPaymentAlert },
                 ].map(item => (
-                  <div key={item.id} className="flex items-start gap-3">
-                    <button type="button"
-                      onClick={() => item.setter(!item.value)}
-                      role="checkbox"
-                      aria-checked={item.value}
-                      aria-label={item.label}
-                      id={item.id}
+                  <button key={item.id} type="button"
+                    onClick={() => item.setter(!item.value)}
+                    role="checkbox"
+                    aria-checked={item.value}
+                    aria-label={item.label}
+                    className="flex items-start gap-3 w-full text-left rounded-lg -mx-1 px-1 py-1 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+                  >
+                    <span
+                      aria-hidden="true"
                       className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                        item.value ? 'bg-brand-green border-brand-green' : 'border-gray-300 hover:border-gray-400'
+                        item.value ? 'bg-brand-green border-brand-green' : 'border-gray-300'
                       }`}
                     >
                       {item.value && (
@@ -450,12 +454,12 @@ export default function MyPage() {
                           <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       )}
-                    </button>
-                    <div>
-                      <p className="text-base font-medium text-gray-900">{item.label}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">{item.desc}</p>
-                    </div>
-                  </div>
+                    </span>
+                    <span>
+                      <span className="block text-base font-medium text-gray-900">{item.label}</span>
+                      <span className="block text-sm text-gray-500 mt-0.5">{item.desc}</span>
+                    </span>
+                  </button>
                 ))}
               </div>
             </section>

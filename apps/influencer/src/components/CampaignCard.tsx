@@ -33,7 +33,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
     >
       {/* 마감임박 상단 띠 */}
       {isUrgent && (
-        <div className="bg-orange-500 text-white text-[11px] font-semibold text-center py-1 tracking-wide">
+        <div className="bg-orange-500 text-white text-xs font-semibold text-center py-1 tracking-wide whitespace-nowrap">
           마감 임박
         </div>
       )}
@@ -76,17 +76,17 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
 
         {/* 리워드 */}
         {campaign.reward && (
-          <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-brand-green/5 border border-brand-green/10">
-            <Gift size={12} className="text-brand-green shrink-0" />
-            <span className="text-xs font-medium text-gray-700 truncate">{campaign.reward}</span>
+          <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
+            <Gift size={12} className="text-brand-green shrink-0" aria-hidden="true" />
+            <span className="text-xs font-medium text-gray-700 break-keep">{campaign.reward}</span>
           </div>
         )}
 
         {/* 모집 현황 + 마감일 */}
-        <div className="flex items-center justify-between text-[11px] text-gray-400">
-          <span className="flex items-center gap-1">
-            <Users size={11} />
-            {campaign.applied}/{campaign.headcount}명 모집
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <Users size={12} aria-hidden="true" />
+            {campaign.applied.toLocaleString('ko-KR')}/{campaign.headcount.toLocaleString('ko-KR')}명 모집
           </span>
           <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
         </div>

@@ -436,7 +436,7 @@ export default function Campaigns() {
             <button type="button"
               onClick={() => scrollTabs('left')}
               aria-label="탭 왼쪽으로 스크롤"
-              className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
+              className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -460,7 +460,7 @@ export default function Campaigns() {
             <button type="button"
               onClick={() => scrollTabs('right')}
               aria-label="탭 오른쪽으로 스크롤"
-              className="shrink-0 px-1.5 py-3 text-gray-400 hover:text-gray-700 transition-colors"
+              className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </button>
@@ -611,7 +611,7 @@ export default function Campaigns() {
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
                       )}
                     </div>
-                    <p className="text-base @sm:text-base font-semibold text-gray-900 break-words mb-1">{c.name}</p>
+                    <p className="text-base @sm:text-base font-semibold text-gray-900 break-keep mb-1">{c.name}</p>
                     <div className="flex items-center gap-x-2 @sm:gap-x-3 gap-y-0.5 text-sm flex-wrap">
                       {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
                       {(() => {
@@ -793,7 +793,7 @@ export default function Campaigns() {
 
         {aiModalStep === 'result' && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 bg-brand-green/5 border border-brand-green-border rounded-xl px-3 py-2">
+            <div className="flex items-center gap-2 bg-brand-green-bg border border-brand-green-border rounded-xl px-3 py-2">
               <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
               <span className="text-base text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
             </div>
