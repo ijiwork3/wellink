@@ -82,12 +82,12 @@ const INITIAL_NOTIFICATIONS: Notification[] = Array.from({ length: 100 }, (_, i)
 
 const PAGE_SIZE = 15
 
-const FILTER_TABS: readonly TabItem<FilterValue>[] = [
-  { value: 'all',      label: '전체' },
-  { value: 'campaign', label: '캠페인' },
-  { value: 'message',  label: '메시지' },
-  { value: 'system',   label: '시스템/결제' },
-]
+const FILTER_LABELS: Record<FilterValue, string> = {
+  all: '전체',
+  campaign: '캠페인',
+  message: '메시지',
+  system: '시스템/결제',
+}
 
 const TYPE_AVATAR: Record<NotificationType, { bg: string; icon: React.ReactNode }> = {
   campaign: { bg: 'bg-brand-green-bg text-brand-green-text', icon: <FileText size={16} aria-hidden="true" /> },
@@ -119,6 +119,23 @@ export default function Notifications() {
     () => notifications.reduce((acc, n) => acc + (n.unread ? 1 : 0), 0),
     [notifications]
   )
+
+  // 카테고리별 카운트 — 탭에 표시
+  const filterTabs: readonly TabItem<FilterValue>[] = useMemo(() => {
+    const counts: Record<FilterValue, number> = {
+      all:      notifications.length,
+      campaign: notifications.filter(n => n.type === 'campaign').length,
+      message:  notifications.filter(n => n.type === 'message').length,
+      system:   notifications.filter(n => n.type === 'system').length,
+    }
+    return (['all', 'campaign', 'message', 'system'] as const).map(v => ({
+      value: v,
+      label: FILTER_LABELS[v],
+      trailing: counts[v] > 0 ? (
+        <span className="ml-1 text-xs text-gray-400 font-normal">{counts[v]}</span>
+      ) : undefined,
+    }))
+  }, [notifications])
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage   = Math.min(page, totalPages)
   const paginated  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
@@ -181,7 +198,7 @@ export default function Notifications() {
           <Tabs<FilterValue>
             variant="soft"
             scrollable
-            items={FILTER_TABS}
+            items={filterTabs}
             value={filter}
             onChange={(v) => { setFilter(v); setPage(1) }}
             ariaLabel="알림 카테고리 필터"
