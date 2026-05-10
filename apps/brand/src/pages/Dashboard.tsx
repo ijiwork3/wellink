@@ -283,7 +283,7 @@ export default function Dashboard() {
           <div className="px-5 py-3 border-t border-gray-50">
             <button
               onClick={() => navigate('/influencers/list')}
-              className="w-full text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
+              className="w-full text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
             >
               전체 보기 <ArrowRight size={12} />
             </button>
@@ -297,7 +297,7 @@ export default function Dashboard() {
             { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
           ].map(s => (
             <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
-              <span className="text-sm font-bold text-brand-green">Step {s.step}</span>
+              <span className="text-sm font-bold text-brand-green-text">Step {s.step}</span>
               <p className="text-base font-semibold text-gray-900 mt-1">{s.title}</p>
               <p className="text-sm text-gray-500 mt-1">{s.desc}</p>
             </div>
@@ -683,7 +683,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
-            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
+            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <div className="flex items-center justify-between mb-3">
@@ -741,7 +741,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 z-10 rounded-xl bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
             <Lock size={24} className="text-amber-400" aria-hidden="true" />
             <p className="text-base font-semibold text-gray-700">Scale 플랜 이상에서 확인 가능합니다</p>
-            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
+            <button onClick={() => navigate('/subscription')} className="mt-1 text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 업그레이드 →</button>
           </div>
         )}
         <h2 className="text-base font-semibold text-gray-900 mb-3">빠른 실행</h2>

@@ -605,7 +605,7 @@ export default function Library() {
             <TrendingUp size={12} aria-hidden="true" />
             평균 참여율
           </div>
-          <div className="text-2xl font-bold text-brand-green">{avgEngagement}%</div>
+          <div className="text-2xl font-bold text-brand-green-text">{avgEngagement}%</div>
         </div>
       </div>
 
@@ -628,7 +628,7 @@ export default function Library() {
           </div>
           <div className="text-right">
             <div className="text-base text-gray-500">참여율</div>
-            <div className="text-base font-bold text-brand-green">{topPerformer.engagementRate}%</div>
+            <div className="text-base font-bold text-brand-green-text">{topPerformer.engagementRate}%</div>
           </div>
           <div className="text-right">
             <div className="text-base text-gray-500">도달</div>
@@ -1331,7 +1331,7 @@ export default function Library() {
               <div className="bg-brand-green/5 border border-brand-green/15 rounded-xl p-3">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
-                  <span className="text-base font-semibold text-brand-green">AI 인사이트</span>
+                  <span className="text-base font-semibold text-brand-green-text">AI 인사이트</span>
                 </div>
                 <p className="text-base text-gray-600 leading-relaxed">
                   {modalInsight(previewItem, saveRate, commentRate, diffPct)}

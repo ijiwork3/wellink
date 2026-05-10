@@ -1841,7 +1841,7 @@ export default function CampaignDetail() {
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
                           {(i.uploadedPostCount ?? 0) > 0 ? (
-                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text">등록 완료</span>
+                            <span className="inline-flex rounded-full bg-brand-green-bg px-2.5 py-1 text-base font-bold text-brand-green-text-text">등록 완료</span>
                           ) : (
                             <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-base font-bold text-gray-600">미등록</span>
                           )}
@@ -2339,7 +2339,7 @@ export default function CampaignDetail() {
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">참여율</p>
-                          <p className="text-base font-bold text-brand-green">{engRate}%</p>
+                          <p className="text-base font-bold text-brand-green-text">{engRate}%</p>
                         </div>
                       </div>
                     </div>
@@ -2457,7 +2457,7 @@ export default function CampaignDetail() {
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{fmtNumber(c.reach)}</td>
                             <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{c.likes.toLocaleString()}</td>
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className="text-base font-semibold text-brand-green">{engRate}%</span>
+                              <span className="text-base font-semibold text-brand-green-text">{engRate}%</span>
                             </td>
                           </tr>
                         )
@@ -2871,7 +2871,7 @@ export default function CampaignDetail() {
                           href={detail.latestPostUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-base font-semibold text-brand-green-text underline mt-1 inline-block"
+                          className="text-base font-semibold text-brand-green-text-text underline mt-1 inline-block"
                         >게시글로 이동 ↗</a>
                       ) : (
                         <p className="text-base text-gray-500 mt-1">연결된 게시글 없음</p>
