@@ -2275,9 +2275,9 @@ export default function CampaignDetail() {
             </div>
           )}
 
-          {/* 시계열 차트 3종 — 항상 1열 (각 차트 내부 가로 스크롤로 확인) */}
+          {/* 시계열 차트 3종 — 좁은 폭은 1열, 충분히 넓은 폭(@xl ≈ 1280px+)은 2열 */}
           {trendData.length > 0 && (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 @xl:grid-cols-2 gap-4">
               <TrendChart title="좋아요 추이" data={trendData} dataKey="likes" stroke="#ef4444" />
               <TrendChart title="비디오 재생수 추이" data={trendData} dataKey="views" stroke="#3b82f6" />
               <TrendChart title="공유·댓글 추이" data={trendData} multi={[
