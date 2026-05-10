@@ -10,7 +10,7 @@ const ErrorState = memo(function ErrorState({ message = '데이터를 불러올 
         <p className="text-sm text-gray-500 mt-1">{subMessage}</p>
       </div>
       {onRetry && (
-        <button onClick={onRetry} className="flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+        <button type="button" onClick={onRetry} className="flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
           <RefreshCw size={14} aria-hidden="true" />다시 시도
         </button>
       )}

@@ -47,10 +47,10 @@ export default function ChipSelect({
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
               value === opt.value
                 ? 'text-white bg-brand-green shadow-sm'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green/40 hover:text-brand-green'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green-border hover:text-brand-green-text'
             }`}
           >
             {opt.label}

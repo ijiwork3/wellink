@@ -2693,10 +2693,10 @@ export default function CampaignDetail() {
             <div className="space-y-2">
               <p className="text-base text-gray-500">결제 수단을 입력해 주세요</p>
               <div className="space-y-2">
-                <input type="text" placeholder="카드 번호 (1234-5678-9012-3456)" disabled className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
+                <input type="text" aria-label="카드 번호" placeholder="카드 번호 (1234-5678-9012-3456)" disabled className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
                 <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="MM/YY" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
-                  <input type="text" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
+                  <input type="text" aria-label="카드 만료일" placeholder="MM/YY" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
+                  <input type="text" aria-label="카드 보안 코드 CVC" placeholder="CVC" disabled className="px-3 py-2.5 border border-gray-200 rounded-xl text-base bg-gray-50 text-gray-400 cursor-not-allowed" />
                 </div>
               </div>
               <p className="text-base text-gray-500">실제 결제는 PG사 보안 페이지로 안전하게 연결됩니다 (mock).</p>

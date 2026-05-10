@@ -49,11 +49,12 @@ export default function TagInput({
     }
   }
 
+  // 채도 v2 — bg-X-100 + text-X-700 일관
   const colorMap = {
-    blue:  'bg-blue-50 text-blue-600 border-blue-200',
-    red:   'bg-red-50 text-red-600 border-red-200',
+    blue:  'bg-blue-100 text-blue-700 border-blue-200',
+    red:   'bg-red-100 text-red-700 border-red-200',
     gray:  'bg-gray-100 text-gray-700 border-gray-200',
-    brand: 'bg-brand-green/10 text-brand-green-text border-brand-green/30',
+    brand: 'bg-brand-green-bg text-brand-green-text border-brand-green-border',
   }
 
   return (

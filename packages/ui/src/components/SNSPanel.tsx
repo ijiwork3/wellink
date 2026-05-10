@@ -66,7 +66,8 @@ export default function SNSPanel({
               </div>
             ) : (
               <button
-                className="text-sm text-brand-green flex items-center gap-0.5 hover:opacity-70 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
+                type="button"
+                className="text-sm text-brand-green-text flex items-center gap-0.5 hover:text-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
                 onClick={() => onConnectClick?.(p.id)}
                 aria-label={`${p.name} 연결하기`}
               >

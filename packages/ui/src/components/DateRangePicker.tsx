@@ -223,7 +223,7 @@ function DailyCalendar({ dateOffset, onSelect }: { dateOffset: number; onSelect:
                   : isFuture
                     ? 'text-gray-300 cursor-not-allowed'
                     : isToday
-                      ? 'bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100'
+                      ? 'bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200'
                       : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
