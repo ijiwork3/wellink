@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronLeft, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
   MoreVertical, Copy, Share2,
-  Dumbbell, Leaf, Wind, Sparkles, Utensils, Tag,
+  Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import {
   ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
@@ -16,12 +16,12 @@ import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '../utils/fmtDate'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
-  '피트니스':      { Icon: Dumbbell,  bg: 'bg-emerald-50', fg: 'text-emerald-600' },
-  '요가·필라테스': { Icon: Leaf,      bg: 'bg-teal-50',    fg: 'text-teal-600' },
-  '러닝·아웃도어': { Icon: Wind,      bg: 'bg-sky-50',     fg: 'text-sky-500' },
-  '뷰티·웰빙':     { Icon: Sparkles,  bg: 'bg-pink-50',    fg: 'text-pink-500' },
-  '식품·건강':     { Icon: Utensils,  bg: 'bg-lime-50',    fg: 'text-lime-600' },
-  '기타':          { Icon: Tag,       bg: 'bg-gray-50',    fg: 'text-gray-400' },
+  '맛집/푸드':     { Icon: Utensils, bg: 'bg-orange-50',   fg: 'text-orange-500' },
+  '뷰티/패션':     { Icon: Sparkles, bg: 'bg-pink-50',     fg: 'text-pink-500' },
+  '피트니스':      { Icon: Dumbbell, bg: 'bg-emerald-50',  fg: 'text-emerald-600' },
+  '여행':          { Icon: Plane,    bg: 'bg-sky-50',      fg: 'text-sky-500' },
+  '라이프스타일':  { Icon: Home,     bg: 'bg-violet-50',   fg: 'text-violet-500' },
+  '육아':          { Icon: Baby,     bg: 'bg-amber-50',    fg: 'text-amber-500' },
 }
 
 type Campaign = {
@@ -34,20 +34,20 @@ type Campaign = {
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '요가·필라테스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티·웰빙', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18' },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18' },
   { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05' },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '식품·건강', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25' },
-  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티·웰빙', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12' },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25' },
+  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12' },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
-  '피트니스':      ['홈트 루틴 챌린지', '단백질 보충제 리뷰', '헬스장 체험단 모집', '스포츠 용품 리뷰'],
-  '요가·필라테스': ['아침 요가 루틴 공유', '필라테스 클래스 체험', '명상 & 마음챙김', '요가매트 신제품'],
-  '러닝·아웃도어': ['마라톤 준비 챌린지', '트레일 러닝 후기', '아웃도어 장비 리뷰', '러닝화 신제품'],
-  '뷰티·웰빙':     ['스킨케어 루틴 공유', '웰니스 뷰티 체험', '천연 화장품 리뷰', '아로마 테라피'],
-  '식품·건강':     ['비건 식단 챌린지', '건강 기능식품 리뷰', '슈퍼푸드 체험단', '유기농 식품 리뷰'],
-  '기타':          ['웰니스 라이프스타일', '건강 챌린지 참여', '웰빙 루틴 공유', '건강 제품 체험'],
+  '맛집/푸드': ['신메뉴 시식 리뷰', '비건 디저트 체험', '수제 베이커리 캠페인', '프리미엄 한식 디너'],
+  '뷰티/패션': ['앰플 신제품 체험', '봄 신상 메이크업', 'SS 컬렉션 룩북', '향수 시그니처 라인'],
+  '피트니스': ['홈트 루틴 챌린지', '단백질 보충제 리뷰', '필라테스 클래스 체험', '러닝화 신제품'],
+  '여행': ['제주 호캉스 패키지', '동남아 휴양지 후기', '강원도 워케이션', '유럽 자유여행 가이드'],
+  '라이프스타일': ['미니멀 인테리어', '홈카페 굿즈 리뷰', '반려동물 용품', '독서 챌린지'],
+  '육아': ['신생아 용품 체험', '유아식 레시피', '교육 완구 리뷰', '주말 가족 나들이'],
 }
 const PLATFORM_LIST = ['인스타그램', '유튜브', '네이버 블로그', '틱톡']
 const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
@@ -172,7 +172,7 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
  */
 
 const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
-const CATEGORIES = ['전체', '피트니스', '요가·필라테스', '러닝·아웃도어', '뷰티·웰빙', '식품·건강', '기타'] as const
+const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
 const SORTS = [
   { value: 'deadline', label: '마감 임박순' },
   { value: 'recent', label: '최근 등록순' },

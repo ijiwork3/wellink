@@ -35,7 +35,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '그린푸드',
     name: '비건 단백질 쉐이크 체험단 모집',
     channel: '인스타그램',
-    category: '피트니스',
+    category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-04-28',
     postEnd: '2026-05-08',
@@ -58,7 +58,7 @@ export const mockCampaigns: Campaign[] = [
     brand: 'SMILEATO',
     name: '크로스핏 보충제 리뷰어 모집',
     channel: '인스타그램',
-    category: '피트니스',
+    category: '피트니스·스포츠',
     status: '마감임박',
     applyEnd: '2026-04-25',
     postEnd: '2026-05-10',
@@ -80,7 +80,7 @@ export const mockCampaigns: Campaign[] = [
     brand: 'ENUF',
     name: '프리미엄 요가매트 체험단',
     channel: '인스타그램',
-    category: '요가·필라테스',
+    category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-05-18',
     postEnd: '2026-05-28',
@@ -99,7 +99,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '웰링크뷰티',
     name: '웰니스 스킨케어 리뷰어',
     channel: '인스타그램',
-    category: '뷰티·웰빙',
+    category: '뷰티·패션',
     status: '모집중',
     applyEnd: '2026-05-07',
     postEnd: '2026-05-17',
@@ -116,7 +116,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '프리코',
     name: '유기농 샐러드 키트 체험',
     channel: '네이버 블로그',
-    category: '식품·건강',
+    category: '맛집·푸드',
     status: '모집중',
     applyEnd: '2026-04-22',
     postEnd: '2026-05-02',
@@ -133,7 +133,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '필라핏',
     name: '홈트 스트레칭 밴드 리뷰',
     channel: '유튜브',
-    category: '피트니스',
+    category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-04-30',
     postEnd: '2026-05-15',
@@ -150,7 +150,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '모닝핏',
     name: '아침 루틴 라이프스타일 캠페인',
     channel: '인스타그램',
-    category: '기타',
+    category: '라이프스타일',
     status: '모집중',
     applyEnd: '2026-05-10',
     postEnd: '2026-05-25',
@@ -167,7 +167,7 @@ export const mockCampaigns: Campaign[] = [
     brand: '베베핏',
     name: '유아 건강식 체험단',
     channel: '인스타그램',
-    category: '식품·건강',
+    category: '육아·펫',
     status: '모집중',
     applyEnd: '2026-05-15',
     postEnd: '2026-05-30',
@@ -225,12 +225,12 @@ export interface BookmarkedCampaign {
 }
 
 export const mockBookmarkedCampaigns: BookmarkedCampaign[] = [
-  { id: '1', name: '비건 단백질 쉐이크 체험단 모집', brand: '그린푸드', category: '식품·건강', channel: '인스타그램', deadline: '2026-04-28', reward: '제품 + 활동비 5만원', rewardAmount: 50000, headcount: 15, applied: 8, status: '모집중', thumbnailBg: '#ede9fe', thumbnailEmoji: '🥗' },
-  { id: '2', name: '크로스핏 보충제 리뷰어 모집', brand: 'SMILEATO', category: '피트니스', channel: '인스타그램', deadline: '2026-04-25', reward: '보충제 풀패키지 + 10만원', rewardAmount: 100000, headcount: 10, applied: 9, status: '마감임박', thumbnailBg: '#dcfce7', thumbnailEmoji: '💪' },
-  { id: '3', name: '프리미엄 요가매트 체험단', brand: 'ENUF', category: '요가·필라테스', channel: '인스타그램', deadline: '2026-05-18', reward: '요가매트 (7만원 상당)', rewardAmount: 70000, headcount: 5, applied: 3, status: '모집중', thumbnailBg: '#dbeafe', thumbnailEmoji: '🧘' },
+  { id: '1', name: '비건 단백질 쉐이크 체험단 모집', brand: '그린푸드', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-04-28', reward: '제품 + 활동비 5만원', rewardAmount: 50000, headcount: 15, applied: 8, status: '모집중', thumbnailBg: '#ede9fe', thumbnailEmoji: '🥗' },
+  { id: '2', name: '크로스핏 보충제 리뷰어 모집', brand: 'SMILEATO', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-04-25', reward: '보충제 풀패키지 + 10만원', rewardAmount: 100000, headcount: 10, applied: 9, status: '마감임박', thumbnailBg: '#dcfce7', thumbnailEmoji: '💪' },
+  { id: '3', name: '프리미엄 요가매트 체험단', brand: 'ENUF', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-05-18', reward: '요가매트 (7만원 상당)', rewardAmount: 70000, headcount: 5, applied: 3, status: '모집중', thumbnailBg: '#dbeafe', thumbnailEmoji: '🧘' },
 ]
 
-export const BROWSE_CATEGORIES = ['전체', '피트니스', '요가·필라테스', '러닝·아웃도어', '뷰티·웰빙', '식품·건강', '기타']
+export const BROWSE_CATEGORIES = ['전체', '뷰티·패션', '피트니스·스포츠', '맛집·푸드', '라이프스타일', '육아·펫']
 
 export interface AppliedData {
   phone: string
