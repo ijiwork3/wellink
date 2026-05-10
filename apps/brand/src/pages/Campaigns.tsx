@@ -5,7 +5,11 @@ import {
   MoreVertical, Copy, Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
-import { ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal, getDDay, getDDayBadgeStyle, useToast } from '@wellink/ui'
+import {
+  ErrorState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
+  Skeleton, SkeletonRow,
+  getDDay, getDDayBadgeStyle, useToast,
+} from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
@@ -372,28 +376,17 @@ export default function Campaigns() {
 
   if (qa === 'loading') {
     return (
-      <div className="space-y-5 animate-pulse">
-        <div className="flex items-center justify-between">
-          <div className="h-7 w-32 bg-gray-200 rounded" />
-          <div className="h-9 w-32 bg-gray-200 rounded-xl" />
+      <div className="space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <Skeleton shape="text" width={128} height={28} />
+          <Skeleton shape="rect" width={128} height={36} />
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex gap-4 px-5 py-3 border-b border-gray-100">
-            {[40, 40, 40, 40].map((w, i) => (
-              <div key={i} className="h-5 bg-gray-200 rounded" style={{ width: w + 'px' }} />
-            ))}
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} shape="text" width={40} height={20} />)}
           </div>
           <div className="divide-y divide-gray-50">
-            {[0, 1, 2].map(i => (
-              <div key={i} className="flex items-center gap-4 px-5 py-4">
-                <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-40 bg-gray-200 rounded" />
-                  <div className="h-3 w-56 bg-gray-200 rounded" />
-                </div>
-                <div className="h-4 w-16 bg-gray-200 rounded" />
-              </div>
-            ))}
+            {[1, 2, 3].map(i => <div key={i} className="px-5"><SkeletonRow cols={4} /></div>)}
           </div>
         </div>
       </div>
