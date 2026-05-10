@@ -274,7 +274,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="text-base font-semibold text-gray-900">@{inf.username}</span>
                     <span className="text-sm text-gray-500">{inf.name}</span>
-                    <span className="text-sm bg-brand-green/10 text-brand-green-text px-2 py-1 rounded-md font-medium">Fit {inf.fit}</span>
+                    <span className="text-sm bg-brand-green-bg text-brand-green-text px-2 py-1 rounded-md font-medium">Fit {inf.fit}</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-0.5">{inf.tags} · {inf.followers}</p>
                 </div>
@@ -760,7 +760,7 @@ export default function Dashboard() {
               onClick={() => navigate(item.route)}
               className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-left hover:shadow-md hover:border-gray-200 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-brand-green/10' : 'bg-gray-100'}`}>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${item.primary ? 'bg-brand-green-bg' : 'bg-gray-100'}`}>
                 <span className={item.primary ? 'text-brand-green' : 'text-gray-500'}>{item.icon}</span>
               </div>
               <p className="text-base font-semibold text-gray-900">{item.label}</p>

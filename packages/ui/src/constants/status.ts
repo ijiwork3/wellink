@@ -33,30 +33,35 @@ export const PARTICIPATION_STATUS = {
 
 export type ParticipationStatus = typeof PARTICIPATION_STATUS[keyof typeof PARTICIPATION_STATUS]
 
-/** 캠페인 상태 배지 스타일 */
+/** 캠페인 상태 배지 스타일 — 채도 v2 (2026-05-10)
+ *  • bg-X-50 → bg-X-100 일괄 (가시성↑, 흰 카드 위 인지도)
+ *  • bg-brand-green/10 → bg-brand-green-bg (토큰 일관)
+ *  • '취소' bg-red-100 text-red-500 (회색 톤이지만 가시성 확보)
+ *  • '종료' bg-gray-100는 중립 — 채도 정책 비대상
+ */
 export const CAMPAIGN_STATUS_STYLE: Record<CampaignStatus, string> = {
-  '대기중':        'bg-amber-50 text-amber-700',
-  '지원자 대기':    'bg-amber-50 text-amber-700',
-  '모집중':        'bg-brand-green/10 text-brand-green-text',
+  '대기중':        'bg-amber-100 text-amber-800',
+  '지원자 대기':    'bg-amber-100 text-amber-800',
+  '모집중':        'bg-brand-green-bg text-brand-green-text',
   '진행중':        'bg-emerald-100 text-emerald-700',
   '콘텐츠 등록 중': 'bg-emerald-100 text-emerald-700',
-  '완료':          'bg-brand-green/10 text-brand-green-text',
+  '완료':          'bg-brand-green-bg text-brand-green-text',
   '종료':          'bg-gray-100 text-gray-500',
   '마감임박':      'bg-orange-100 text-orange-700',
   '선정 필요':     'bg-rose-100 text-rose-700',
-  '취소':          'bg-red-50 text-red-400',
+  '취소':          'bg-red-100 text-red-500',
 }
 
-/** 인플루언서 참여 상태 배지 스타일 */
+/** 인플루언서 참여 상태 배지 스타일 — 채도 v2 (2026-05-10) */
 export const PARTICIPATION_STATUS_STYLE: Record<ParticipationStatus, string> = {
   '지원완료':   'bg-gray-100 text-gray-600',
-  '검토중':     'bg-amber-50 text-amber-700',
-  '선정':       'bg-brand-green/10 text-brand-green-text',
-  '미선정':     'bg-red-50 text-red-600',
+  '검토중':     'bg-amber-100 text-amber-800',
+  '선정':       'bg-brand-green-bg text-brand-green-text',
+  '미선정':     'bg-red-100 text-red-700',
   '콘텐츠대기': 'bg-gray-100 text-gray-600',
-  '검수중':     'bg-sky-50 text-sky-700',
-  '완료':       'bg-brand-green/10 text-brand-green-text',
-  '반려':       'bg-red-50 text-red-600',
+  '검수중':     'bg-sky-100 text-sky-700',
+  '완료':       'bg-brand-green-bg text-brand-green-text',
+  '반려':       'bg-red-100 text-red-700',
 }
 
 // FollowerTier 정의 (정책 §2-6)

@@ -583,7 +583,7 @@ export default function InfluencerManage() {
                 <div className="flex items-center justify-between gap-2" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                     {inf.groups.map(g => (
-                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green/10 text-brand-green whitespace-nowrap">
+                      <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green whitespace-nowrap">
                         {g}
                         <button onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
                           <X size={11} aria-hidden="true" />

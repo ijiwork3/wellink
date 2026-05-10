@@ -7,14 +7,16 @@
   --color-landing-lime:      #BFF264;  /* 랜딩 라임 — 포인트 컬러 */
   --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 — gray-900 */
 
-  --color-brand-green:       #8CC63F;  /* 메인 그린 — 버튼 bg, 아이콘, 포인트 */
-  --color-brand-green-text:  #5a8228;  /* 텍스트/아이콘 그린 — 밝은 배경 위 */
-  --color-brand-green-hover: #7AB535;  /* hover 그린 */
-  --color-brand-green-bg:    #f0f9e8;  /* 연한 그린 배경 */
-  --color-brand-green-border:#c5e39a;  /* 연한 그린 보더 */
+  /* 채도 정책 v2 (2026-05-10) — HSL 기준 채도 +12~16pt 상향
+   * 변경 시 packages/ui/src/constants/colors.ts > BRAND 동기화 필수 */
+  --color-brand-green:       #9DD737;  /* HSL(82,67%,53%) — 메인 (was #8CC63F H82 S54 L51) */
+  --color-brand-green-text:  #527F1B;  /* HSL(82,65%,30%) — 텍스트 (was #5a8228, 대비 4.6:1 유지) */
+  --color-brand-green-hover: #88C420;  /* HSL(82,72%,45%) — hover (was #7AB535) */
+  --color-brand-green-bg:    #EEF8D9;  /* HSL(82,71%,91%) — 연한 배경 (was #f0f9e8) */
+  --color-brand-green-border:#C0E384;  /* HSL(82,57%,71%) — 연한 보더 (was #c5e39a) */
 
-  --color-sparkline-success: #8CC63F;  /* 스파크라인 상승 — 브랜드 그린 */
-  --color-sparkline-alert:   #EF4444;  /* 스파크라인 하락 — 빨강 */
+  --color-sparkline-success: #9DD737;  /* 스파크라인 상승 — 브랜드 그린 동기화 */
+  --color-sparkline-alert:   #EF4444;  /* 스파크라인 하락 — 빨강 (red-500, 채도 충분) */
 
   --color-roas-warning:      #F59E0B;  /* ROAS ≥1.5 amber */
   --color-roas-danger:       #EF4444;  /* ROAS <1.5 red */
@@ -28,6 +30,7 @@
 
 :root {
   --gradient-auth-bg: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 15%, transparent) 0%, #ffffff 70%);
-  --gradient-login-bg: linear-gradient(135deg, #f0f9e8 0%, #e8f5d8 30%, #d4edba 60%, #c8e8a8 100%);
+  /* 로그인 그라디언트 — 채도 v2 동기화 (was #f0f9e8 → #c8e8a8) */
+  --gradient-login-bg: linear-gradient(135deg, #EEF8D9 0%, #E2F3C0 30%, #CFEC9A 60%, #BFE57E 100%);
   --gradient-instagram: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
 }

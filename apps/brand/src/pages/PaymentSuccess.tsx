@@ -39,7 +39,7 @@ export default function PaymentSuccess() {
       <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full text-center space-y-6">
         {/* 아이콘 */}
         <div className="flex items-center justify-center">
-          <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 bg-brand-green-bg rounded-full flex items-center justify-center">
             <CheckCircle size={44} className="text-brand-green" aria-hidden="true" />
           </div>
         </div>

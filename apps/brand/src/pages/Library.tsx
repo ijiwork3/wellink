@@ -613,7 +613,7 @@ export default function Library() {
           aria-label="이번 달 최고 성과 콘텐츠 상세 보기"
           className="w-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md p-4 flex items-center gap-3 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-brand-green/10">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-brand-green-bg">
             <Crown size={16} className="text-brand-green" aria-hidden="true" />
           </div>
           <div className="flex-1">
@@ -1121,7 +1121,7 @@ export default function Library() {
                           <button
                             onClick={() => showToast(`${c.creator}님의 콘텐츠를 다운로드합니다.`, 'success')}
                             aria-label={`${c.creator} 다시 다운로드 (결제 완료)`}
-                            className="p-1.5 rounded-lg hover:bg-brand-green/10 text-brand-green transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                            className="p-1.5 rounded-lg hover:bg-brand-green-bg text-brand-green transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                           >
                             <Download size={14} aria-hidden="true" />
                           </button>
@@ -1212,7 +1212,7 @@ export default function Library() {
                       <h4 className="text-lg font-semibold text-gray-900">@{previewItem.creatorUsername}</h4>
                       <span className="text-base text-gray-500">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
-                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green/10 text-brand-green font-semibold">
+                        <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green font-semibold">
                           <Crown size={11} aria-hidden="true" />상위 참여율
                         </span>
                       )}

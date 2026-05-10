@@ -49,16 +49,19 @@ export const SEMANTIC_COLORS = {
 /** QA 목업킷 전용 강조색 */
 export const QA_ACCENT_COLOR = '#8736E3' as const
 
+/** 채도 정책 v2 (2026-05-10) — HSL 기준 +12~16pt 상향
+ *  packages/ui/src/theme.css 의 --color-brand-* 와 1:1 동기화
+ */
 export const BRAND = {
-  /** 메인 그린 — 버튼 bg, 아이콘, 포인트 */
-  green:     '#8CC63F',
-  /** 텍스트/아이콘 그린 — 밝은 배경 위 */
-  greenText: '#5a8228',
-  /** hover 그린 */
-  greenHover:'#7AB535',
-  /** 연한 그린 배경 (10% opacity 대체) */
-  greenBg:   '#f0f9e8',
-  /** 연한 그린 보더 */
-  greenBorder:'#c5e39a',
+  /** 메인 그린 — HSL(82,67%,53%) (was #8CC63F) */
+  green:      '#9DD737',
+  /** 텍스트/아이콘 그린 — HSL(82,65%,30%), 대비 4.6:1 (was #5a8228) */
+  greenText:  '#527F1B',
+  /** hover 그린 — HSL(82,72%,45%) (was #7AB535) */
+  greenHover: '#88C420',
+  /** 연한 그린 배경 — HSL(82,71%,91%) (was #f0f9e8) */
+  greenBg:    '#EEF8D9',
+  /** 연한 그린 보더 — HSL(82,57%,71%) (was #c5e39a) */
+  greenBorder:'#C0E384',
 } as const
 

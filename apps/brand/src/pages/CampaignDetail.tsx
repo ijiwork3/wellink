@@ -1576,7 +1576,7 @@ export default function CampaignDetail() {
                     </td>
                     <td className="py-3 px-4 text-base font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green/10 text-brand-green">
+                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-brand-green">
                         {a.fitScore}
                       </span>
                     </td>
@@ -2671,7 +2671,7 @@ export default function CampaignDetail() {
                           {active && <span className="w-2 h-2 rounded-full bg-brand-green" />}
                         </span>
                         <span className="text-base font-semibold text-gray-900">{p.name}</span>
-                        {p.recommend && <span className="text-sm px-2 py-1 rounded-full bg-brand-green/10 text-brand-green-text font-medium">추천</span>}
+                        {p.recommend && <span className="text-sm px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium">추천</span>}
                       </div>
                       <span className="text-base font-semibold text-gray-900 shrink-0">{p.price}</span>
                     </div>

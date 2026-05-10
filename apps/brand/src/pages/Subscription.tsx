@@ -278,7 +278,7 @@ export default function Subscription() {
         </div>
         {/* 현재 플랜 뱃지 */}
         {displayPlan ? (
-          <span className="shrink-0 text-sm font-semibold bg-brand-green/10 text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
+          <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green/20">
             현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
             {(showExpired || showPaymentFailed) && ' (만료)'}
           </span>
@@ -320,7 +320,7 @@ export default function Subscription() {
 
       {/* QA: 무료 체험 중 배너 */}
       {showTrial && (
-        <div className="bg-brand-green/10 border border-brand-green/30 rounded-xl p-4 space-y-3">
+        <div className="bg-brand-green-bg border border-brand-green/30 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
@@ -380,7 +380,7 @@ export default function Subscription() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-green/10 text-brand-green-text px-2.5 py-1 text-sm font-bold">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-green-bg text-brand-green-text px-2.5 py-1 text-sm font-bold">
                     <Check size={12} aria-hidden="true" /> 현재 이용중
                   </span>
                   {cancelStatus === 'cancel_scheduled' && (
@@ -698,7 +698,7 @@ export default function Subscription() {
                       <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
                       <td className="py-3 px-5 text-base text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
                       <td className="py-3 px-5 whitespace-nowrap">
-                        <span className="text-sm bg-brand-green/10 text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
+                        <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
                       </td>
                     </tr>
                   ))}
