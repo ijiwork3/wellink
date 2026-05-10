@@ -267,9 +267,9 @@ export default function MyCampaign() {
                       )
                       if (action === '수정') return (
                         <button key={action}
-                          onClick={() => navigate(`/campaigns/${c.id}/apply?mode=view`)}
+                          onClick={() => navigate(`/campaigns/${c.id}/apply?mode=edit`)}
                           className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
-                          신청 정보 보기
+                          신청 정보 수정
                         </button>
                       )
                       if (action === '취소') return (

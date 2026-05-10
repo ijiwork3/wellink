@@ -20,18 +20,21 @@ export default function CampaignApply() {
   const { showToast } = useToast()
   const campaign = mockCampaigns.find(c => c.id === Number(id))
 
-  const isViewMode = searchParams.get('mode') === 'view'
+  const mode = searchParams.get('mode')
+  const isViewMode = mode === 'view'
+  const isEditMode = mode === 'edit'
+  const hasPrefill = isViewMode || isEditMode
   const appliedData = mockAppliedData[id ?? '']
 
-  const [phone, setPhone] = useState(isViewMode ? (appliedData?.phone ?? mockProfile.phone) : '')
-  const [agreed1, setAgreed1] = useState(isViewMode)
-  const [agreed2, setAgreed2] = useState(isViewMode)
-  const [answers, setAnswers] = useState<Record<string, string>>(isViewMode ? (appliedData?.answers ?? {}) : {})
-  const [deliveryName, setDeliveryName] = useState(isViewMode ? (appliedData?.deliveryName ?? '') : '')
-  const [deliveryPhone, setDeliveryPhone] = useState(isViewMode ? (appliedData?.deliveryPhone ?? '') : '')
-  const [deliveryZip, setDeliveryZip] = useState(isViewMode ? (appliedData?.deliveryZip ?? '') : '')
-  const [deliveryAddr, setDeliveryAddr] = useState(isViewMode ? (appliedData?.deliveryAddr ?? '') : '')
-  const [deliveryAddrDetail, setDeliveryAddrDetail] = useState(isViewMode ? (appliedData?.deliveryAddrDetail ?? '') : '')
+  const [phone, setPhone] = useState(hasPrefill ? (appliedData?.phone ?? mockProfile.phone) : '')
+  const [agreed1, setAgreed1] = useState(hasPrefill)
+  const [agreed2, setAgreed2] = useState(hasPrefill)
+  const [answers, setAnswers] = useState<Record<string, string>>(hasPrefill ? (appliedData?.answers ?? {}) : {})
+  const [deliveryName, setDeliveryName] = useState(hasPrefill ? (appliedData?.deliveryName ?? '') : '')
+  const [deliveryPhone, setDeliveryPhone] = useState(hasPrefill ? (appliedData?.deliveryPhone ?? '') : '')
+  const [deliveryZip, setDeliveryZip] = useState(hasPrefill ? (appliedData?.deliveryZip ?? '') : '')
+  const [deliveryAddr, setDeliveryAddr] = useState(hasPrefill ? (appliedData?.deliveryAddr ?? '') : '')
+  const [deliveryAddrDetail, setDeliveryAddrDetail] = useState(hasPrefill ? (appliedData?.deliveryAddrDetail ?? '') : '')
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
 
@@ -74,14 +77,14 @@ export default function CampaignApply() {
 
   if (submitted) {
     return (
-      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} pageTitle={isEditMode ? '신청 정보 수정' : '캠페인 신청'} onBack={() => navigate(-1)}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-6">
           <div className="w-20 h-20 rounded-full bg-brand-green/10 flex items-center justify-center">
             <CheckCircle2 size={40} className="text-brand-green" />
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-gray-900">신청 완료!</p>
-            <p className="text-sm text-gray-500 mt-1">브랜드 검토 후 결과를 알려드릴게요</p>
+            <p className="text-lg font-bold text-gray-900">{isEditMode ? '수정 완료!' : '신청 완료!'}</p>
+            <p className="text-sm text-gray-500 mt-1">{isEditMode ? '변경 사항이 반영되었습니다' : '브랜드 검토 후 결과를 알려드릴게요'}</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/my')}
@@ -100,7 +103,7 @@ export default function CampaignApply() {
     )
   }
 
-  const pageTitle = isViewMode ? '신청 정보 확인' : `${campaign.name} 신청`
+  const pageTitle = isViewMode ? '신청 정보 확인' : isEditMode ? '신청 정보 수정' : `${campaign.name} 신청`
 
   return (
     <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)}>
@@ -114,7 +117,7 @@ export default function CampaignApply() {
               <span className="text-sm font-medium text-brand-green-text">신청 완료된 정보입니다</span>
             </div>
             <button
-              onClick={() => navigate(`/campaigns/${id}/apply`)}
+              onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
               className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green/30 rounded-lg px-2.5 py-1 hover:bg-brand-green/10 transition-colors"
             >
               <Pencil size={11} />수정하기
