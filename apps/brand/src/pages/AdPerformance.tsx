@@ -547,15 +547,18 @@ export default function AdPerformance() {
                         aria-controls={`campaign-detail-${c.campaignId}`}
                         className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
                             <Megaphone size={16} aria-hidden="true" />
                           </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-medium text-base text-gray-900 break-words">{c.campaignName}</span>
-                              <span className={`text-sm font-semibold px-2 py-1 rounded-full ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
-                              <StatusBadge status={c.status} dot={false} />
+                          <div className="min-w-0 flex-1">
+                            {/* 모바일: 타이틀 한 줄 truncate + 배지 두 번째 줄 / @sm 이상: 한 줄 정렬 */}
+                            <div className="flex flex-col @sm:flex-row @sm:items-center @sm:gap-2 min-w-0">
+                              <span className="font-medium text-base text-gray-900 truncate min-w-0">{c.campaignName}</span>
+                              <div className="flex items-center gap-2 mt-1 @sm:mt-0 shrink-0">
+                                <span className={`text-sm font-semibold px-2 py-1 rounded-full whitespace-nowrap ${getObjectiveBadge(c.objective)}`}>{c.objective}</span>
+                                <StatusBadge status={c.status} dot={false} />
+                              </div>
                             </div>
                             <p className="text-sm text-gray-500 mt-0.5">광고세트 {c.adSets.length}개</p>
                           </div>
