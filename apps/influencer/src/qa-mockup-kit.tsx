@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components, react-hooks/refs, no-useless-escape */
 /**
- * qa-mockup-kit.tsx  v4
+ * qa-mockup-kit.tsx  v4 — 개발용 QA 목업 도구. (브랜드와 동일 구조)
  *
  * ────────────────────────────────────────────
  * 구조

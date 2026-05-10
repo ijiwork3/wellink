@@ -90,7 +90,7 @@ export default function Login() {
           <div>
             <label htmlFor="login-id" className="text-sm text-gray-500 mb-1.5 block">광고주 아이디</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
-              <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+              <User size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
                 id="login-id"
                 type="email"
@@ -100,14 +100,14 @@ export default function Login() {
                 placeholder="아이디를 입력해주세요"
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
           <div>
             <label htmlFor="login-password" className="text-sm text-gray-500 mb-1.5 block">비밀번호</label>
             <div className="flex items-center gap-2.5 border border-gray-200 rounded-xl px-4 py-3 focus-within:border-brand-green transition-colors">
-              <Lock size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+              <Lock size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
               <input
                 id="login-password"
                 type={showPassword ? 'text' : 'password'}
@@ -118,15 +118,15 @@ export default function Login() {
                 maxLength={100}
                 aria-describedby={loginError ? 'login-error' : undefined}
                 aria-invalid={!!loginError}
-                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-300"
+                className="flex-1 text-base outline-none rounded bg-transparent text-gray-900 placeholder:text-gray-400"
               />
               <button type="button"
                 onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPassword}
-                className="text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded p-1 -m-1"
               >
-                {showPassword ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
+                {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
               </button>
             </div>
             {loginError && (

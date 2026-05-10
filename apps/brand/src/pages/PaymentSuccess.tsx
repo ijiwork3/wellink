@@ -56,15 +56,15 @@ export default function PaymentSuccess() {
           <dl className="bg-gray-50 rounded-xl p-4 text-left space-y-2">
             {orderId && (
               <div className="flex justify-between items-center gap-3 text-base">
-                <dt className="text-gray-500 whitespace-nowrap">주문 번호</dt>
-                <dd className="text-gray-900 font-medium text-sm break-all">{orderId}</dd>
+                <dt className="text-gray-600 whitespace-nowrap">주문 번호</dt>
+                <dd className="text-gray-900 font-medium text-sm break-all"><code className="font-mono">{orderId}</code></dd>
               </div>
             )}
             {amountNumber !== null && (
               <div className="flex justify-between items-center gap-3 text-base">
-                <dt className="text-gray-500 whitespace-nowrap">결제 금액</dt>
-                <dd className="text-gray-900 font-semibold whitespace-nowrap">
-                  ₩{amountNumber.toLocaleString()}
+                <dt className="text-gray-600 whitespace-nowrap">결제 금액</dt>
+                <dd className="text-gray-900 font-semibold whitespace-nowrap tabular-nums">
+                  ₩{amountNumber.toLocaleString('ko-KR')}
                 </dd>
               </div>
             )}

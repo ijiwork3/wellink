@@ -167,7 +167,11 @@ export default function ViralMetrics() {
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
 
-  useEffect(() => { setContentPage(1) }, [viewMode, dateOffset])
+  // 뷰모드/날짜 변경 시 페이지 1 리셋 — 외부 prop sync (정책 §외부동기화)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setContentPage(1)
+  }, [viewMode, dateOffset])
 
   const headerRef = useRef<HTMLDivElement>(null)
   const [isStuck, setIsStuck] = useState(false)
@@ -354,7 +358,7 @@ export default function ViralMetrics() {
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
             <h2 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h2>
-            <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={11} className="text-gray-400" aria-hidden="true" /></Tooltip>
+            <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <GradeDonut data={viralContentData} />
         </div>
@@ -487,7 +491,7 @@ export default function ViralMetrics() {
                         {CAMPAIGN_MATCH_MAP[item.id] ? (
                           <Tooltip content={`${CAMPAIGN_MATCH_MAP[item.id].uploadPeriodLabel}`}>
                             <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
-                              <Megaphone size={10} aria-hidden="true" />
+                              <Megaphone size={12} aria-hidden="true" />
                               {CAMPAIGN_MATCH_MAP[item.id].campaignName}
                             </span>
                           </Tooltip>
@@ -581,14 +585,16 @@ function GradeDonut({ data }: { data: ViralContent[] }) {
   const total = arr.reduce((s, a) => s + a.value, 0)
   if (total === 0) return <p className="text-base text-gray-500 text-center py-8">데이터가 없습니다.</p>
   const cx = 60, cy = 60, r = 50, ir = 32
-  let acc = 0
+  // 누적값 immutable scan (react-hooks/immutability 준수)
+  const cumulative = arr.reduce<number[]>((carry, a) => [...carry, (carry[carry.length - 1] ?? 0) + a.value], [])
   return (
     <div className="flex items-center gap-4 flex-wrap">
       <svg viewBox="0 0 120 120" className="w-[120px] h-[120px] @sm:w-[140px] @sm:h-[140px] shrink-0" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
-        {arr.map(a => {
-          const start = (acc / total) * Math.PI * 2 - Math.PI / 2
-          acc += a.value
-          const end = (acc / total) * Math.PI * 2 - Math.PI / 2
+        {arr.map((a, i) => {
+          const startAcc = i === 0 ? 0 : cumulative[i - 1]
+          const endAcc = cumulative[i]
+          const start = (startAcc / total) * Math.PI * 2 - Math.PI / 2
+          const end = (endAcc / total) * Math.PI * 2 - Math.PI / 2
           const large = end - start > Math.PI ? 1 : 0
           const sx = cx + r * Math.cos(start), sy = cy + r * Math.sin(start)
           const ex = cx + r * Math.cos(end), ey = cy + r * Math.sin(end)
@@ -627,11 +633,12 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
   const [scoreIdx, setScoreIdx] = useState<number | null>(null)
   const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
 
-  // content/isTouch 변경 시 인덱스·스크롤 초기화
+  // content/isTouch 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화 (외부 prop sync)
   // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
     if (isTouch) {
       const len = scoreHistory.length
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScoreIdx(len > 0 ? len - 1 : null)
       requestAnimationFrame(() => { scoreScrollRef.current?.scrollToEnd() })
     } else {
@@ -642,12 +649,12 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
 
 
   const metrics = content ? [
-    { label: '도달',   value: content.reach,    icon: <Eye size={13} aria-hidden="true" />,          color: 'text-blue-600' },
-    { label: '좋아요', value: content.likes,    icon: <Heart size={13} aria-hidden="true" />,         color: 'text-rose-500' },
-    { label: '댓글',   value: content.comments, icon: <MessageCircle size={13} aria-hidden="true" />, color: 'text-amber-600' },
-    { label: '저장',   value: content.saves,    icon: <Bookmark size={13} aria-hidden="true" />,      color: 'text-violet-600' },
-    { label: '공유',   value: content.shares,   icon: <Share2 size={13} aria-hidden="true" />,        color: 'text-emerald-600' },
-    { label: '바이럴 점수', value: content.viralScore, icon: <TrendingUp size={13} aria-hidden="true" />, color: 'text-brand-green' },
+    { label: '도달',   value: content.reach,    icon: <Eye size={14} aria-hidden="true" />,          color: 'text-blue-600' },
+    { label: '좋아요', value: content.likes,    icon: <Heart size={14} aria-hidden="true" />,         color: 'text-rose-500' },
+    { label: '댓글',   value: content.comments, icon: <MessageCircle size={14} aria-hidden="true" />, color: 'text-amber-600' },
+    { label: '저장',   value: content.saves,    icon: <Bookmark size={14} aria-hidden="true" />,      color: 'text-violet-600' },
+    { label: '공유',   value: content.shares,   icon: <Share2 size={14} aria-hidden="true" />,        color: 'text-emerald-600' },
+    { label: '바이럴 점수', value: content.viralScore, icon: <TrendingUp size={14} aria-hidden="true" />, color: 'text-brand-green' },
   ] : []
 
   return (
@@ -705,7 +712,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm text-gray-500">퍼포먼스 점수</span>
                     <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 누적 조회수 수준" multiline>
-                      <Info size={11} className="text-gray-400" aria-hidden="true" />
+                      <Info size={12} className="text-gray-400" aria-hidden="true" />
                     </Tooltip>
                   </div>
                   <p className="text-2xl font-bold text-gray-900">{content.performanceScore}</p>
@@ -717,7 +724,7 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm text-gray-500">모멘텀 점수</span>
                     <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 최근 조회수 증가 속도" multiline>
-                      <Info size={11} className="text-gray-400" aria-hidden="true" />
+                      <Info size={12} className="text-gray-400" aria-hidden="true" />
                     </Tooltip>
                   </div>
                   <p className="text-2xl font-bold text-gray-900">{content.momentumScore}</p>

@@ -72,8 +72,10 @@ export default function Media() {
   const [urlInput, setUrlInput] = useState('')
   const { showToast } = useToast()
 
+  // URL search params + QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
     const m = searchParams.get('modal')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (m === 'connect')    setConnectModal(platforms.find(p => p.id === 'naver') ?? null)
     if (m === 'disconnect') setDisconnectModal(platforms.find(p => p.id === 'instagram') ?? null)
     if (qa === 'modal-connect')    setConnectModal(platforms.find(p => p.id === 'naver') ?? null)
@@ -152,7 +154,7 @@ export default function Media() {
                 </div>
               </div>
               <span className="text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1">
-                <CheckCircle2 size={10} />연결됨
+                <CheckCircle2 size={12} />연결됨
               </span>
             </div>
 
@@ -160,42 +162,42 @@ export default function Media() {
             <div className="grid grid-cols-3 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <Users size={11} className="text-gray-400" />
+                  <Users size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">팔로워</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{fmtFollowers(mockInstaStats.followers)}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <Image size={11} className="text-gray-400" />
+                  <Image size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">게시물</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.posts}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <TrendingUp size={11} className="text-gray-400" />
+                  <TrendingUp size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">참여율</p>
                 </div>
                 <p className={`text-sm font-bold ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <Heart size={11} className="text-gray-400" />
+                  <Heart size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">평균 좋아요</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgLikes}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <MessageCircle size={11} className="text-gray-400" />
+                  <MessageCircle size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">평균 댓글</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgComments}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <Clock size={11} className="text-gray-400" />
+                  <Clock size={12} className="text-gray-400" />
                   <p className="text-xs text-gray-500">최근 활동</p>
                 </div>
                 <p className="text-sm font-bold text-gray-900">{mockInstaStats.lastActive}</p>
@@ -205,7 +207,7 @@ export default function Media() {
             {/* 콘텐츠 썸네일 그리드 */}
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <BarChart3 size={13} className="text-brand-green" />
+                <BarChart3 size={14} className="text-brand-green" />
                 <p className="text-xs font-semibold text-gray-700">최근 콘텐츠</p>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
@@ -214,11 +216,11 @@ export default function Media() {
                     <span className="text-2xl">{post.emoji}</span>
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
                       <span className="text-white text-xs font-medium flex items-center gap-0.5 whitespace-nowrap">
-                        <Heart size={11} fill="white" aria-hidden="true" />
+                        <Heart size={12} fill="white" aria-hidden="true" />
                         {post.likes.toLocaleString('ko-KR')}
                       </span>
                       <span className="text-white text-xs flex items-center gap-0.5 whitespace-nowrap">
-                        <MessageCircle size={11} aria-hidden="true" />
+                        <MessageCircle size={12} aria-hidden="true" />
                         {post.comments.toLocaleString('ko-KR')}
                       </span>
                     </div>
@@ -274,12 +276,12 @@ export default function Media() {
                   {p.connected && p.followers && (
                     <div className="flex items-center gap-3 mt-2">
                       <span className="flex items-center gap-1 text-xs text-gray-600">
-                        <Users size={11} className="text-gray-400" />
+                        <Users size={12} className="text-gray-400" />
                         <strong>{fmtFollowers(p.followers)}</strong> 팔로워
                       </span>
                       {p.engagementRate != null && (
                         <span className="flex items-center gap-1 text-xs">
-                          <TrendingUp size={11} className="text-gray-400" />
+                          <TrendingUp size={12} className="text-gray-400" />
                           <strong className={getEngagementColor(p.engagementRate)}>{p.engagementRate}%</strong>
                           <span className="text-gray-400">참여율</span>
                         </span>
@@ -300,7 +302,7 @@ export default function Media() {
               ) : (
                 <button
                   onClick={() => { setUrlInput(''); setConnectModal(p) }}
-                  className="shrink-0 text-xs px-3.5 py-1.5 rounded-xl text-white bg-brand-green hover:opacity-90 transition-opacity"
+                  className="shrink-0 text-xs px-3.5 py-1.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   연결하기
                 </button>
@@ -329,7 +331,7 @@ export default function Media() {
             />
             <div className="flex gap-3">
               <button onClick={() => setConnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-              <button onClick={handleConnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity">연결</button>
+              <button onClick={handleConnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">연결</button>
             </div>
           </>
         )}
@@ -343,7 +345,7 @@ export default function Media() {
             <p className="text-xs text-gray-500 mb-5">해제 후 해당 채널로 캠페인 신청이 어려울 수 있어요.</p>
             <div className="flex gap-3">
               <button onClick={() => setDisconnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-              <button onClick={handleDisconnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">연결 해제</button>
+              <button onClick={handleDisconnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">연결 해제</button>
             </div>
           </>
         )}

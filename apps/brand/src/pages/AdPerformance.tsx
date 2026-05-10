@@ -236,19 +236,21 @@ export default function AdPerformance() {
     }
   }, [])
 
-  // 기간·날짜 변경 시 캠페인 상세 패널 리셋 — 다른 기간 데이터가 열린 채로 보이는 혼란 방지
+  // 기간·날짜(외부 prop) 변경 시 패널 리셋 — 정당한 외부 동기화. (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExpandedCampaign(null)
     setExpandedAdSet(null)
     setCampaignPage(1)
   }, [period, dateOffset])
 
-  // period/isTouch 변경 시 인덱스·스크롤 초기화
+  // period/isTouch(외부 prop) 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화.
   // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
     if (isTouch) {
       const len = CHART_DATA_BY_PERIOD[period].length
       const lastIdx = len > 0 ? len - 1 : null
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMixedChartIdx(lastIdx)
       setCtrChartIdx(lastIdx)
       setClicksChartIdx(lastIdx)
@@ -509,7 +511,7 @@ export default function AdPerformance() {
             <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h2 className="text-base font-semibold text-gray-900">캠페인별 성과</h2>
-                <p className="text-sm text-gray-400 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
+                <p className="text-sm text-gray-500 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-400">
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
@@ -720,7 +722,7 @@ export default function AdPerformance() {
             if (!d) return null
             return (
               <>
-                <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="w-2 h-2 rounded-sm shrink-0 bg-violet-500" />
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
@@ -729,7 +731,7 @@ export default function AdPerformance() {
                   <span className="w-3 h-0.5 shrink-0 bg-blue-500" />
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
                 </div>
-                <p className="text-xs text-gray-400 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
+                <p className="text-xs text-gray-500 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
               </>
             )
           }}
@@ -760,7 +762,7 @@ export default function AdPerformance() {
               if (!d) return null
               return (
                 <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#f97316' }} />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
@@ -794,7 +796,7 @@ export default function AdPerformance() {
               if (!d) return null
               return (
                 <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
@@ -848,14 +850,14 @@ export default function AdPerformance() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h2 className="text-base font-semibold text-gray-900">소재 유형별 성과</h2>
-          <p className="text-sm text-gray-400 mt-0.5">광고 포맷별 효율 비교</p>
+          <p className="text-sm text-gray-500 mt-0.5">광고 포맷별 효율 비교</p>
         </div>
         <div className="p-5 space-y-4">
           {adFormatPerf.map(f => (
             <div key={f.format} className="flex items-center gap-2 @sm:gap-4">
               <div className="w-20 @sm:w-24 shrink-0">
                 <span className="text-sm font-medium text-gray-700">{f.format}</span>
-                <p className="text-sm text-gray-400 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
+                <p className="text-sm text-gray-500 mt-0.5">CPM {fmtPrice(f.cpm)}</p>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
@@ -1074,16 +1076,18 @@ function SimpleLineChart({
   )
 }
 
-/** 도넛 차트 — 원본 DonutChart 동등 (SVG 인라인) */
+/** 도넛 차트 — 원본 DonutChart 동등 (SVG 인라인). 누적값을 immutable scan으로 계산 (react-hooks/immutability 준수) */
 function DonutChartSimple({ data, ariaLabel }: { data: { label: string; value: number; color: string }[]; ariaLabel?: string }) {
   const total = data.reduce((s, d) => s + d.value, 0)
-  if (total === 0) return <p className="text-base text-gray-400 text-center py-12">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-base text-gray-500 text-center py-12">데이터가 없습니다.</p>
   const cx = 90, cy = 90, r = 70, ir = 50
-  let acc = 0
-  const arcs = data.map(d => {
-    const start = (acc / total) * Math.PI * 2 - Math.PI / 2
-    acc += d.value
-    const end = (acc / total) * Math.PI * 2 - Math.PI / 2
+  // 누적값 계산 — reduce로 mutation 없이 [acc0, acc1, ...] 생성
+  const cumulative = data.reduce<number[]>((arr, d) => [...arr, (arr[arr.length - 1] ?? 0) + d.value], [])
+  const arcs = data.map((d, i) => {
+    const startAcc = i === 0 ? 0 : cumulative[i - 1]
+    const endAcc = cumulative[i]
+    const start = (startAcc / total) * Math.PI * 2 - Math.PI / 2
+    const end = (endAcc / total) * Math.PI * 2 - Math.PI / 2
     const large = end - start > Math.PI ? 1 : 0
     const sx = cx + r * Math.cos(start), sy = cy + r * Math.sin(start)
     const ex = cx + r * Math.cos(end), ey = cy + r * Math.sin(end)

@@ -30,8 +30,10 @@ export default function Signup() {
   const [instaVerified, setInstaVerified] = useState(qa === 'verified')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
     if (qa === 'filled') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({ ...FILLED_FORM })
       setErrors({})
       setPhoneVerified(false)
@@ -202,7 +204,7 @@ export default function Signup() {
                   phoneVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
-                {phoneVerified && <CheckCircle2 size={13} />}
+                {phoneVerified && <CheckCircle2 size={14} />}
                 {phoneVerified ? '인증완료' : '인증하기'}
               </button>
             </div>
@@ -232,7 +234,7 @@ export default function Signup() {
                   instaVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
-                {instaVerified && <CheckCircle2 size={13} />}
+                {instaVerified && <CheckCircle2 size={14} />}
                 {instaVerified ? '인증완료' : '인증하기'}
               </button>
             </div>

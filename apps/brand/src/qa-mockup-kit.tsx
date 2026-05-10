@@ -1,5 +1,8 @@
+/* eslint-disable react-refresh/only-export-components, react-hooks/refs */
 /**
- * qa-mockup-kit.tsx  v4
+ * qa-mockup-kit.tsx  v4 — 개발용 QA 목업 도구. component + constants + types를 단일 파일로 묶음.
+ * - react-refresh hot reload 최적화 룰 disable (개발 도구 단일 파일 정책)
+ * - react-hooks/refs disable (이벤트 핸들러 안의 ref 접근은 안전)
  *
  * ────────────────────────────────────────────
  * 구조

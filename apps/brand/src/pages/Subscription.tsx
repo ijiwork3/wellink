@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, CreditCard, AlertTriangle } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons } from '@wellink/ui'
@@ -132,8 +132,10 @@ export default function Subscription() {
     return () => { el.removeEventListener('scroll', update); ro.disconnect() }
   }, [])
 
-  // QA 파라미터 변경 시 상태 동기화
+  // QA 파라미터(URL search param) 변경 시 외부 시스템 동기화 — 정당한 useEffect 패턴.
+  // React 19 idiomatic 대안(key 기반 리마운트·useSyncExternalStore)은 이 케이스에서 더 무거움.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'modal-upgrade')   { setConfirmModal('scale'); return }
     if (qa === 'modal-downgrade') { setConfirmModal('focus'); return }
     setConfirmModal(null)
@@ -174,14 +176,14 @@ export default function Subscription() {
     }, TIMER_MS.MOCK_PLAN_CHANGE)
   }
 
-  const handleCloseConfirmModal = () => {
+  const handleCloseConfirmModal = useCallback(() => {
     if (confirmTimerRef.current) {
       clearTimeout(confirmTimerRef.current)
       confirmTimerRef.current = null
     }
     setConfirmed(false)
     setConfirmModal(null)
-  }
+  }, [])
 
   /* ── QA: 로딩 상태 — 공통 SkeletonCard ── */
   if (qa === 'loading') {
@@ -401,7 +403,7 @@ export default function Subscription() {
                       </div>
                       {isOver && (
                         <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                          <AlertTriangle size={10} aria-hidden="true" />
+                          <AlertTriangle size={12} aria-hidden="true" />
                           한도 초과! 플랜 업그레이드를 검토해 주세요.
                         </p>
                       )}
@@ -444,7 +446,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
-                  <Check size={15} className="shrink-0 mt-0.5 text-gray-900" aria-hidden="true" />
+                  <Check size={16} className="shrink-0 mt-0.5 text-gray-900" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -489,7 +491,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
-                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
+                  <Check size={16} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -533,7 +535,7 @@ export default function Subscription() {
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-300">
-                  <Check size={15} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
+                  <Check size={16} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
               ))}
@@ -565,7 +567,7 @@ export default function Subscription() {
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <CreditCard size={15} className="text-gray-500" aria-hidden="true" />
+            <CreditCard size={16} className="text-gray-500" aria-hidden="true" />
             결제 수단
           </h3>
           <button type="button"
@@ -757,6 +759,7 @@ export default function Subscription() {
                     ? '등록된 결제 수단으로 즉시 결제됩니다. 결제 수단을 확인하거나 변경하시려면 아래 링크를 이용해 주세요.'
                     : '다음 결제일에 등록된 결제 수단으로 자동 결제됩니다.'}
                   <button type="button"
+                    // eslint-disable-next-line react-hooks/refs -- onClick은 이벤트 시점 호출이라 안전 (룰 false positive)
                     onClick={() => { handleCloseConfirmModal(); navigate('/payment/method') }}
                     className="block mt-1 font-semibold underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                   >

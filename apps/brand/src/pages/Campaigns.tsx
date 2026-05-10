@@ -194,7 +194,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
         className="text-gray-400 hover:text-gray-700 -mr-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
         aria-label={`${label} 제거`}
       >
-        <X size={10} aria-hidden="true" />
+        <X size={12} aria-hidden="true" />
       </button>
     </span>
   )
@@ -242,8 +242,10 @@ export default function Campaigns() {
   const [aiProgress, setAiProgress] = useState(0)
   const [aiPhase, setAiPhase] = useState<1 | 2 | 3 | 4>(1)
   const [aiInput, setAiInput] = useState({ brand: '', category: '피트니스', headcount: 5, requirement: '' })
+  // AI 추천 모달 진행률 — setInterval 기반 외부 sync (정당한 useEffect)
   useEffect(() => {
     if (aiModalStep !== 'loading') return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAiProgress(0); setAiPhase(1)
     const start = Date.now()
     const total = 90_000
@@ -470,7 +472,7 @@ export default function Campaigns() {
         {/* 검색 + 필터 + 정렬 */}
         <div className="px-3 @sm:px-5 py-3 border-b border-gray-100 space-y-2 @sm:space-y-0 @sm:flex @sm:items-center @sm:gap-2 @sm:flex-wrap">
           <div className="relative w-full @sm:flex-1 @sm:min-w-[200px]">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={inputValue}
@@ -536,7 +538,7 @@ export default function Campaigns() {
               onClick={resetAllFilters}
               className="ml-auto inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <RotateCcw size={11} aria-hidden="true" />
+              <RotateCcw size={12} aria-hidden="true" />
               초기화
             </button>
           </div>
@@ -618,18 +620,18 @@ export default function Campaigns() {
                         const meta = getCampaignDeadlineMeta(c)
                         return (
                           <span className={`flex items-center gap-1 ${meta.muted ? 'text-gray-400' : 'font-medium text-gray-700'}`}>
-                            <Calendar size={11} aria-hidden="true" />
+                            <Calendar size={12} aria-hidden="true" />
                             <span>{meta.prefix} {fmtDate(c.deadline)}</span>
                           </span>
                         )
                       })()}
                       {/* 인원 3분할 — 지원 / 선정 / 모집 (정책서 § 7-2) */}
                       <span className="flex items-center gap-1 text-gray-500">
-                        <Users size={11} aria-hidden="true" />
+                        <Users size={12} aria-hidden="true" />
                         <span className="hidden @sm:inline">지원 {c.current} · 선정 {c.selectedCount ?? 0} · 모집 {c.total}</span>
                         <span className="@sm:hidden">{c.current} · {c.selectedCount ?? 0} · {c.total}</span>
                       </span>
-                      <span className="flex items-center gap-1 text-gray-500"><Wallet size={11} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
+                      <span className="flex items-center gap-1 text-gray-500"><Wallet size={12} aria-hidden="true" />예산 {fmtBudget(c.budget)}</span>
                     </div>
                     {/* 등록 마감 + 추가 대기 기간 보조 안내 (정책서 § 7-1) */}
                     {(() => {

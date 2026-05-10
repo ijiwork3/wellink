@@ -75,7 +75,7 @@ export default function Notifications() {
       value: v,
       label: FILTER_LABELS[v],
       trailing: counts[v] > 0 ? (
-        <span className="ml-1 text-xs text-gray-400 font-normal">{counts[v]}</span>
+        <span className="ml-1 text-xs text-gray-500 font-normal whitespace-nowrap">{counts[v]}</span>
       ) : undefined,
     }))
   }, [notifications])
@@ -152,7 +152,7 @@ export default function Notifications() {
           <EmptyState
             size="lg"
             variant={notifications.length === 0 ? 'default' : 'filter'}
-            icon={<Bell size={40} />}
+            icon={<Bell size={40} aria-hidden="true" />}
             title={notifications.length === 0 ? '새로운 알림이 없습니다' : '해당 카테고리에 알림이 없습니다'}
             description={notifications.length === 0
               ? '새 알림이 도착하면 이곳에 표시됩니다.'
@@ -180,7 +180,7 @@ export default function Notifications() {
                       <h3 className={`text-base mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                         {item.title}
                         {unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
-                        <span className="ml-2 text-sm font-normal text-gray-400 whitespace-nowrap">· {item.time}</span>
+                        <span className="ml-2 text-sm font-normal text-gray-500 whitespace-nowrap">· {item.time}</span>
                       </h3>
                       <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
                     </div>

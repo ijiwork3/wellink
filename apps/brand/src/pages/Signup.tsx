@@ -185,13 +185,14 @@ export default function Signup() {
                 aria-required="true"
                 className={`${inputCls('password')} pr-10`}
               />
-              <button type="button"
-  onClick={() => setShowPassword(v => !v)}
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPassword}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded p-1"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
-                {showPassword ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
+                {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
               </button>
             </div>
             {!errors.password && (
@@ -225,13 +226,14 @@ export default function Signup() {
                 aria-required="true"
                 className={`${inputCls('passwordConfirm')} pr-10`}
               />
-              <button type="button"
-  onClick={() => setShowPasswordConfirm(v => !v)}
+              <button
+                type="button"
+                onClick={() => setShowPasswordConfirm(v => !v)}
                 aria-label={showPasswordConfirm ? '비밀번호 숨기기' : '비밀번호 보기'}
                 aria-pressed={showPasswordConfirm}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded p-1"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
-                {showPasswordConfirm ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
+                {showPasswordConfirm ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
               </button>
             </div>
             {renderError('passwordConfirm')}

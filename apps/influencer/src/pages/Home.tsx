@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -20,11 +21,17 @@ export default function Home() {
   const activeCampaigns = mockMyCampaigns.filter(c =>
     ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status)
   )
-  const urgentCampaigns = mockMyCampaigns.filter(c => {
-    if (c.status !== '콘텐츠대기' || !c.contentDeadline) return false
-    const diff = new Date(c.contentDeadline).getTime() - Date.now()
-    return diff > 0 && diff < 1000 * 60 * 60 * 24 * 3
-  })
+  // 임박 캠페인 — Date.now()는 impure 함수. mount 시점 한 번만 계산 (시간 갱신 필요시 useEffect)
+  const urgentCampaigns = useMemo(() => {
+    // eslint-disable-next-line react-hooks/purity
+    const now = Date.now()
+    const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3
+    return mockMyCampaigns.filter(c => {
+      if (c.status !== '콘텐츠대기' || !c.contentDeadline) return false
+      const diff = new Date(c.contentDeadline).getTime() - now
+      return diff > 0 && diff < THREE_DAYS_MS
+    })
+  }, [])
   const bookmarkCount = mockBookmarkedCampaigns.length
 
   if (qa === 'loading') {
@@ -99,7 +106,7 @@ export default function Home() {
               onClick={() => navigate('/campaigns/my')}
               className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
             >
-              전체보기 <ChevronRight size={13} />
+              전체보기 <ChevronRight size={14} />
             </button>
           </div>
           {activeCampaigns.length === 0 ? (
@@ -161,7 +168,7 @@ export default function Home() {
               onClick={() => navigate('/media')}
               className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
             >
-              자세히 <ChevronRight size={13} />
+              자세히 <ChevronRight size={14} />
             </button>
           </div>
           <div className="grid grid-cols-3 divide-x divide-gray-50 px-2 py-3">

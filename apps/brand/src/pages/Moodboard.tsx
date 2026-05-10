@@ -143,12 +143,12 @@ function Badge({ bg, text, children }: { bg: string; text: string; children: Rea
 // ─── 공통 사이드바 ────────────────────────────────────────────────
 function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) {
   const navItems = [
-    { key: 'dashboard', icon: <LayoutDashboard size={15} />, label: '대시보드', section: null },
-    { key: 'profile',   icon: <BarChart3 size={15} />,       label: '프로필 인사이트', section: '분석' },
-    { key: 'ads',       icon: <TrendingUp size={15} />,       label: '광고 성과', section: '분석' },
-    { key: 'list',      icon: <Users size={15} />,            label: '인플루언서 리스트', section: '인플루언서' },
-    { key: 'manage',    icon: <Users size={15} />,            label: '인플루언서 관리', section: '인플루언서' },
-    { key: 'campaign',  icon: <Megaphone size={15} />,        label: '캠페인 목록', section: '캠페인' },
+    { key: 'dashboard', icon: <LayoutDashboard size={16} />, label: '대시보드', section: null },
+    { key: 'profile',   icon: <BarChart3 size={16} />,       label: '프로필 인사이트', section: '분석' },
+    { key: 'ads',       icon: <TrendingUp size={16} />,       label: '광고 성과', section: '분석' },
+    { key: 'list',      icon: <Users size={16} />,            label: '인플루언서 리스트', section: '인플루언서' },
+    { key: 'manage',    icon: <Users size={16} />,            label: '인플루언서 관리', section: '인플루언서' },
+    { key: 'campaign',  icon: <Megaphone size={16} />,        label: '캠페인 목록', section: '캠페인' },
   ]
   let lastSection = ''
   return (
@@ -213,8 +213,8 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
             <p className="text-base mt-0.5" style={{ color: g.muted }}>2026년 4월 25일 금요일</p>
           </div>
-          <button type="button" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>
-            <Megaphone size={14} /> 새 캠페인
+          <button type="button" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>
+            <Megaphone size={14} aria-hidden="true" /> 새 캠페인
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
@@ -240,7 +240,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <div className="@lg:col-span-2 border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: g.border }}>
                 <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
-                <button type="button" className="text-sm flex items-center gap-1" style={{ color: d.color }}>전체보기 <ArrowRight size={11}/></button>
+                <button type="button" className="text-sm flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>전체보기 <ArrowRight size={12} aria-hidden="true" /></button>
               </div>
               <table className="w-full text-base">
                 <thead>
@@ -270,7 +270,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                       </td>
                       <td className="py-3.5 px-4 text-sm" style={{ color: g.muted }}>{c.dday}</td>
                       <td className="py-3.5 px-4">
-                        <button type="button" className="text-sm flex items-center gap-1" style={{ color: d.color }}>상세 <ArrowRight size={11}/></button>
+                        <button type="button" className="text-sm flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>상세 <ArrowRight size={12} aria-hidden="true" /></button>
                       </td>
                     </tr>
                   ))}
@@ -349,7 +349,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
             <p className="text-base mt-0.5" style={{ color: g.muted }}>브랜드에 적합한 인플루언서를 탐색하세요.</p>
           </div>
-          <button type="button" className="px-4 py-2.5 rounded-xl text-base font-medium text-white" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
+          <button type="button" className="px-4 py-2.5 rounded-xl text-base font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
@@ -390,7 +390,7 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                           {r.name[0]}
                         </div>
                         <span className="text-base font-medium text-gray-900">{r.name}</span>
-                        <Heart size={13}
+                        <Heart size={14}
                           style={{ color: r.bookmarked ? a.av4 : g.subtle }}
                           fill={r.bookmarked ? a.av4 : 'none'}
                         />
@@ -431,10 +431,10 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
 // ─── 3. 성과 분석 ─────────────────────────────────────────────────
 function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
   const metrics = [
-    { label: '총 도달',       value: '284K',  change: '+18.3%', up: true,  icon: <Eye size={15}/> },
-    { label: '총 참여',       value: '23.4K', change: '+24.1%', up: true,  icon: <Activity size={15}/> },
-    { label: '업로드 콘텐츠', value: '47건',  change: '+8건',   up: true,  icon: <Image size={15}/> },
-    { label: '평균 ROAS',    value: '3.2x',  change: '-0.3x',  up: false, icon: <TrendingUp size={15}/> },
+    { label: '총 도달',       value: '284K',  change: '+18.3%', up: true,  icon: <Eye size={16}/> },
+    { label: '총 참여',       value: '23.4K', change: '+24.1%', up: true,  icon: <Activity size={16}/> },
+    { label: '업로드 콘텐츠', value: '47건',  change: '+8건',   up: true,  icon: <Image size={16}/> },
+    { label: '평균 ROAS',    value: '3.2x',  change: '-0.3x',  up: false, icon: <TrendingUp size={16}/> },
   ]
   const chartData = [
     { label: '3/1', a: 62, b: 44 }, { label: '3/8', a: 51, b: 35 },
@@ -465,8 +465,8 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                 </span>
               ))}
             </div>
-            <button type="button" className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium border" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
-              <Download size={14}/>내보내기
+            <button type="button" className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-base font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
+              <Download size={14} aria-hidden="true" />내보내기
             </button>
           </div>
         </div>
@@ -480,7 +480,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                 </div>
                 <p className="text-3xl font-bold text-gray-900 mb-2">{m.value}</p>
                 <span className="text-sm font-medium inline-flex items-center gap-1" style={{ color: m.up ? d.color : a.trendDown }}>
-                  {m.up ? <TrendingUp size={10}/> : <TrendingDown size={10}/>}{m.change}
+                  {m.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}{m.change}
                 </span>
               </div>
             ))}

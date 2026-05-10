@@ -225,11 +225,12 @@ export default function Library() {
   const [statusFilter, setStatusFilter] = useState('전체')
   const [platformTypeFilter, setPlatformTypeFilter] = useState('전체')
 
-  // ?campaign 미매칭 시 검색어로 폴백 → 사용자가 어떤 캠페인에서 점프했는지 보이도록
+  // ?campaign 미매칭 시 검색어로 폴백 — URL search params(외부 시스템) 정리 (정당한 useEffect)
   useEffect(() => {
     const next = new URLSearchParams(searchParams)
     let changed = false
     if (initialCampaign) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!campaigns.includes(initialCampaign)) setSearch(initialCampaign)
       next.delete('campaign')
       changed = true
@@ -293,9 +294,11 @@ export default function Library() {
     setFocusTabId(`tab-${next}`)
   }, [campaignFilter])
 
+  // focusTabId가 설정되면 DOM 포커스 이동 후 reset — DOM(외부 시스템) 동기화 패턴
   useEffect(() => {
     if (!focusTabId) return
     document.getElementById(focusTabId)?.focus()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusTabId(null)
   }, [focusTabId])
 
@@ -348,11 +351,12 @@ export default function Library() {
     }
   }, [sortOpen, sortKey])
 
-  // focusSortKey가 바뀌면 해당 option으로 DOM 포커스 이동
+  // focusSortKey가 바뀌면 해당 option으로 DOM 포커스 이동 — DOM 동기화 후 자체 reset
   useEffect(() => {
     if (!focusSortKey) return
     const option = sortListboxRef.current?.querySelector<HTMLElement>(`[data-sort-key="${focusSortKey}"]`)
     option?.focus()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusSortKey(null)
   }, [focusSortKey])
 
@@ -391,8 +395,12 @@ export default function Library() {
     sortKey,
   ), [qa, search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
 
-  // 검색·필터·정렬 변경 시 페이지 1로 리셋
-  useEffect(() => { setPage(1) }, [search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
+  // 검색·필터·정렬 변경 시 페이지 1로 리셋 — 핸들러 호출 시 직접 setPage(1)도 처리하지만,
+  // 사이드 효과 누락 방지(다중 진입점) 위해 useEffect 유지. (정책 §외부동기화)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1)
+  }, [search, campaignFilter, statusFilter, platformTypeFilter, sortKey])
 
   // 캠페인 필터 기반 요약 지표 — 캠페인 탭 변경 시 갱신
   const campaignStats = useMemo(() => {
@@ -662,7 +670,7 @@ export default function Library() {
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Search */}
           <div className="relative flex-1 min-w-0">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
               type="text"
               placeholder="제작자, 캠페인 검색..."
@@ -814,7 +822,7 @@ export default function Library() {
                   onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
                   className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
-                  <Download size={11} aria-hidden="true" />
+                  <Download size={12} aria-hidden="true" />
                   선택 ({selectedIds.size})
                 </button>
               )}
@@ -822,7 +830,7 @@ export default function Library() {
                 onClick={() => setDownloadModal({ open: true, scope: 'all' })}
                 className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                <Download size={11} aria-hidden="true" />
+                <Download size={12} aria-hidden="true" />
                 전체
               </button>
             </div>
@@ -851,7 +859,7 @@ export default function Library() {
                         : 'border-white/80 bg-white/80'
                     }`}
                   >
-                    {isSelected && <Check size={11} strokeWidth={3} className="text-white" aria-hidden="true" />}
+                    {isSelected && <Check size={12} strokeWidth={3} className="text-white" aria-hidden="true" />}
                   </button>
 
                   {/* Thumbnail — button으로 교체하여 iOS VoiceOver 호환성 확보 */}
@@ -870,12 +878,12 @@ export default function Library() {
                     {isDownloaded && (
                       <div className="absolute bottom-2 left-2">
                         <span className="inline-flex items-center gap-1 text-sm px-2 py-1 rounded-full bg-brand-green text-white font-semibold">
-                          <Check size={9} aria-hidden="true" />결제 완료
+                          <Check size={12} aria-hidden="true" />결제 완료
                         </span>
                       </div>
                     )}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-12 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity flex items-end justify-center pb-2 gap-1" aria-hidden="true">
-                      <Eye size={13} className="text-white" />
+                      <Eye size={14} className="text-white" />
                       <span className="text-base text-white font-medium">미리보기</span>
                     </div>
                   </button>
@@ -899,13 +907,13 @@ export default function Library() {
                       >{c.campaign}</button>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base text-gray-500 mb-2">
                         <span className="flex items-center gap-0.5">
-                          <Eye size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
+                          <Eye size={12} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.reach)}
                         </span>
                         <span className="flex items-center gap-0.5">
-                          <Heart size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.likes)}
+                          <Heart size={12} aria-hidden="true" /> {c.reach === 0 ? '—' : fmtNumber(c.likes)}
                         </span>
                         <span className="flex items-center gap-0.5">
-                          <MessageCircle size={11} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
+                          <MessageCircle size={12} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
                         </span>
                       </div>
                     </button>
@@ -919,7 +927,7 @@ export default function Library() {
                           libBookmarked.has(c.creator) ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
                         }`}
                       >
-                        <Heart size={13} className={libBookmarked.has(c.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
+                        <Heart size={14} className={libBookmarked.has(c.creator) ? 'fill-red-500' : ''} aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -940,7 +948,7 @@ export default function Library() {
                 onClick={() => setDownloadModal({ open: true, scope: 'selected' })}
                 className="flex items-center gap-1 bg-brand-green text-white px-2.5 py-1 rounded-lg text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                <Download size={11} aria-hidden="true" />
+                <Download size={12} aria-hidden="true" />
                 선택 ({selectedIds.size})
               </button>
             )}
@@ -948,7 +956,7 @@ export default function Library() {
               onClick={() => setDownloadModal({ open: true, scope: 'all' })}
               className="flex items-center gap-1 border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <Download size={11} aria-hidden="true" />
+              <Download size={12} aria-hidden="true" />
               전체
             </button>
           </div>
@@ -970,7 +978,7 @@ export default function Library() {
                       isAllSelected ? 'border-brand-green bg-brand-green' : 'border-gray-300 bg-white'
                     }`}
                   >
-                    {isAllSelected && <Check size={10} className="text-white" aria-hidden="true" />}
+                    {isAllSelected && <Check size={12} className="text-white" aria-hidden="true" />}
                   </button>
                 </th>
                 {['콘텐츠', '제작자', '캠페인', '유형', '플랫폼', '날짜', '도달', '좋아요', '댓글', '저장', '참여율', '상태'].map(h => (
@@ -998,7 +1006,7 @@ export default function Library() {
                           isSelected ? 'border-brand-green bg-brand-green' : 'border-gray-300 bg-white'
                         }`}
                       >
-                        {isSelected && <Check size={10} className="text-white" aria-hidden="true" />}
+                        {isSelected && <Check size={12} className="text-white" aria-hidden="true" />}
                       </button>
                     </td>
                     <td className="py-3 px-3">
@@ -1155,12 +1163,12 @@ export default function Library() {
                       <span className="text-base text-gray-500">{previewItem.creator}</span>
                       {previewItem.engagementRate >= ENGAGEMENT_THRESHOLD.high && (
                         <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-semibold">
-                          <Crown size={11} aria-hidden="true" />상위 참여율
+                          <Crown size={12} aria-hidden="true" />상위 참여율
                         </span>
                       )}
                       {downloadedIds.has(previewItem.id) && (
                         <span className="inline-flex items-center gap-1 text-base px-2.5 py-1 rounded-full bg-brand-green text-white font-semibold">
-                          <Check size={9} aria-hidden="true" />결제 완료
+                          <Check size={12} aria-hidden="true" />결제 완료
                         </span>
                       )}
                     </div>
@@ -1213,12 +1221,12 @@ export default function Library() {
               {/* KPI 6개 */}
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { icon: <Eye size={13} />,          label: '도달',   value: fmtNumber(previewItem.reach) },
-                  { icon: <Heart size={13} />,         label: '좋아요', value: fmtNumber(previewItem.likes) },
-                  { icon: <MessageCircle size={13} />, label: '댓글',   value: String(previewItem.comments) },
-                  { icon: <Bookmark size={13} />,      label: '저장',   value: String(previewItem.saves) },
-                  { icon: <Share2 size={13} />,        label: '공유율', value: previewItem.shareRate + '%' },
-                  { icon: <TrendingUp size={13} />,    label: '참여율', value: previewItem.engagementRate + '%' },
+                  { icon: <Eye size={14} />,          label: '도달',   value: fmtNumber(previewItem.reach) },
+                  { icon: <Heart size={14} />,         label: '좋아요', value: fmtNumber(previewItem.likes) },
+                  { icon: <MessageCircle size={14} />, label: '댓글',   value: String(previewItem.comments) },
+                  { icon: <Bookmark size={14} />,      label: '저장',   value: String(previewItem.saves) },
+                  { icon: <Share2 size={14} />,        label: '공유율', value: previewItem.shareRate + '%' },
+                  { icon: <TrendingUp size={14} />,    label: '참여율', value: previewItem.engagementRate + '%' },
                 ].map(stat => (
                   <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
                     <div className="flex items-center justify-center gap-1 text-gray-500 mb-1">{stat.icon}<span className="text-base">{stat.label}</span></div>
@@ -1260,7 +1268,7 @@ export default function Library() {
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-sm text-gray-500 mb-1.5 flex items-center gap-1"><Tag size={10} />캠페인 필수 키워드</p>
+                  <p className="text-sm text-gray-500 mb-1.5 flex items-center gap-1"><Tag size={12} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (
                       <span key={tag} className="text-sm px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded-full whitespace-nowrap">{tag}</span>
@@ -1293,8 +1301,8 @@ export default function Library() {
         title="콘텐츠 반려"
         footer={
           <>
-            <button type="button" onClick={closeRejectConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
-            <button type="button" onClick={handleRejectConfirm} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors">반려</button>
+            <button type="button" onClick={closeRejectConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleRejectConfirm} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">반려</button>
           </>
         }
       >
@@ -1352,8 +1360,8 @@ export default function Library() {
             title="콘텐츠를 다운로드하시겠습니까?"
             footer={
               <>
-                <button type="button" onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
-                <button type="button" onClick={handlePayAndDownload} disabled={isPaying || count === 0} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50">
+                <button type="button" onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+                <button type="button" onClick={handlePayAndDownload} disabled={isPaying || count === 0} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   {isPaying ? '결제 중…' : '결제 후 다운로드'}
                 </button>
               </>
@@ -1387,13 +1395,13 @@ export default function Library() {
           <>
             <button type="button"
               onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
             <button type="button"
               onClick={handleLibProposal}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               제안 보내기
             </button>
@@ -1401,7 +1409,7 @@ export default function Library() {
         ) : (
           <button type="button"
             onClick={() => { setLibProposalModal(false); setLibSelectedCampaign(null); setLibProposalExpandedId(null); setLibProposalSent(false) }}
-            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
+            className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             확인
           </button>

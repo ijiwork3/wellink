@@ -578,7 +578,7 @@ export default function ProfileInsight() {
     }
   }, [])
 
-  // period/isTouch 변경 시 인덱스·스크롤 초기화
+  // period/isTouch(외부 prop) 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화
   // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
     if (isTouch) {
@@ -586,6 +586,7 @@ export default function ProfileInsight() {
       const followerLen  = followerDataByPeriod[period].length
       const trendLen     = trendDataByPeriod[period].length
       const impReachLen  = impressReachByPeriod[period].length
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFollowerChartIdx(followerLen > 0 ? followerLen - 1 : null)
       setTrendChartIdx(trendLen > 0 ? trendLen - 1 : null)
       setImpReachChartIdx(impReachLen > 0 ? impReachLen - 1 : null)
@@ -861,7 +862,7 @@ export default function ProfileInsight() {
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
-              <p className="text-sm text-gray-400 mt-0.5">
+              <p className="text-sm text-gray-500 mt-0.5">
                 {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
                 {nullCount > 0 && <span className="ml-1.5 text-gray-500">· 회색 구간은 데이터 없음</span>}
               </p>
@@ -884,10 +885,10 @@ export default function ProfileInsight() {
                     } ${isOnly ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
                     style={isActive ? { backgroundColor: metricColors[metric] } : {}}
                   >
-                    {metric === 'likes'    && <Heart size={10} aria-hidden="true" />}
-                    {metric === 'reach'    && <Eye size={10} aria-hidden="true" />}
-                    {metric === 'comments' && <MessageCircle size={10} aria-hidden="true" />}
-                    {metric === 'saves'    && <Bookmark size={10} aria-hidden="true" />}
+                    {metric === 'likes'    && <Heart size={12} aria-hidden="true" />}
+                    {metric === 'reach'    && <Eye size={12} aria-hidden="true" />}
+                    {metric === 'comments' && <MessageCircle size={12} aria-hidden="true" />}
+                    {metric === 'saves'    && <Bookmark size={12} aria-hidden="true" />}
                     {metricLabels[metric]}
                   </button>
                 )
@@ -905,7 +906,7 @@ export default function ProfileInsight() {
               const fmtV = (v: number | null) => v === null ? '—' : v >= 1000 ? `${(v/1000).toFixed(1)}k` : String(v)
               return (
                 <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                  <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
                   <div className="space-y-1">
                     {activeMetrics.map(metric => (
                       <div key={metric} className="flex items-center gap-1.5">
@@ -935,7 +936,7 @@ export default function ProfileInsight() {
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">노출 & 도달</h2>
-              <p className="text-sm text-gray-400 mt-0.5">
+              <p className="text-sm text-gray-500 mt-0.5">
                 노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
                 {impressReachByPeriod[period].some(d => d.impressions === null) && (
                   <span className="ml-1.5 text-gray-500">· 일부 구간 데이터 없음</span>
@@ -958,7 +959,7 @@ export default function ProfileInsight() {
               const fmtV = (v: number | null) => v === null ? '—' : v >= 1000 ? `${(v/1000).toFixed(1)}k` : String(v)
               return (
                 <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                  <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">노출: {fmtV(d.impressions)}</span>
@@ -988,10 +989,10 @@ export default function ProfileInsight() {
           <h2 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h2>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
-            <span className="text-xs text-gray-400 w-16 shrink-0">유형</span>
+            <span className="text-xs text-gray-500 w-16 shrink-0">유형</span>
             <div className="flex-1" />
-            <span className="text-xs text-gray-400 w-14 text-right">평균 도달</span>
-            <span className="text-xs text-gray-400 w-10 text-right">참여율</span>
+            <span className="text-xs text-gray-500 w-14 text-right">평균 도달</span>
+            <span className="text-xs text-gray-500 w-10 text-right">참여율</span>
           </div>
           <div className="space-y-3">
             {contentTypeData.map(ct => (
@@ -1010,7 +1011,7 @@ export default function ProfileInsight() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-400 mt-4">
+          <p className="text-sm text-gray-500 mt-4">
             <span className="text-brand-green-text font-medium">초록색</span>은 높은 참여율,{' '}
             <span className="text-red-500 font-medium">빨간색</span>은 개선 필요 지표
           </p>
@@ -1041,7 +1042,7 @@ export default function ProfileInsight() {
             </p>
           )}
           {period === '연간' && (
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-gray-500 mt-2">
               * 2026년은 1~4월 기준
             </p>
           )}
@@ -1113,7 +1114,7 @@ export default function ProfileInsight() {
           <h2 className="text-base font-semibold text-gray-900">팔로워 분석</h2>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{periodLabel}</span>
-            <span className="text-sm text-gray-400">비공개 계정 제외</span>
+            <span className="text-sm text-gray-500">비공개 계정 제외</span>
           </div>
         </div>
         <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
@@ -1332,7 +1333,7 @@ function ImpressReachChart({
 function MetricCell({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) {
   return (
     <div className={`${color} rounded-xl p-3`}>
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className="text-base font-bold text-gray-900">{value}</p>
     </div>
   )
@@ -1420,7 +1421,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
                 <MetricCell label="도달" value={fmtNumber(post.reach)}       color="bg-amber-50" />
                 <MetricCell label="노출" value={fmtNumber(post.impressions)} color="bg-amber-50" />
               </div>
-              <p className="text-xs text-gray-400 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
+              <p className="text-xs text-gray-500 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
             </div>
           )}
         </div>
@@ -1522,10 +1523,10 @@ function PostContentTable() {
     feed:     'bg-gray-100 text-gray-600',
   }
   const TYPE_ICON: Record<PostType, React.ReactNode> = {
-    reels:    <Play      size={10} className="inline mr-0.5" />,
-    carousel: <Layers    size={10} className="inline mr-0.5" />,
-    story:    <ImageIcon size={10} className="inline mr-0.5" />,
-    feed:     <ImageIcon size={10} className="inline mr-0.5" />,
+    reels:    <Play      size={12} className="inline mr-0.5" />,
+    carousel: <Layers    size={12} className="inline mr-0.5" />,
+    story:    <ImageIcon size={12} className="inline mr-0.5" />,
+    feed:     <ImageIcon size={12} className="inline mr-0.5" />,
   }
 
   return (
@@ -1536,7 +1537,7 @@ function PostContentTable() {
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
           <div>
             <h2 className="text-base font-semibold text-gray-900">게시물별 상세 성과</h2>
-            <p className="text-sm text-gray-400 mt-0.5">
+            <p className="text-sm text-gray-500 mt-0.5">
               최근 {POST_DATA.length}개 게시물 · 행을 클릭하면 유형별 상세 분석 확인
             </p>
           </div>
@@ -1565,14 +1566,14 @@ function PostContentTable() {
             <button type="button" onClick={() => postScrollRef.current?.scrollBy({ left: -240, behavior: 'smooth' })}
               aria-label="왼쪽으로 스크롤"
               className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronLeft size={13} aria-hidden="true" />
+              <ChevronLeft size={14} aria-hidden="true" />
             </button>
           )}
           {postCanScrollRight && (
             <button type="button" onClick={() => postScrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' })}
               aria-label="오른쪽으로 스크롤"
               className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-7 h-7 flex items-center justify-center bg-white/90 border border-gray-200 rounded-full shadow-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-              <ChevronRight size={13} aria-hidden="true" />
+              <ChevronRight size={14} aria-hidden="true" />
             </button>
           )}
           <div className="overflow-x-auto scrollbar-none" ref={postScrollRef}>
@@ -1625,7 +1626,7 @@ function PostContentTable() {
               ))}
               {paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-sm text-gray-400">게시물이 없습니다.</td>
+                  <td colSpan={8} className="py-12 text-center text-sm text-gray-500">게시물이 없습니다.</td>
                 </tr>
               )}
             </tbody>

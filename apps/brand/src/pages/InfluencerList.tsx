@@ -478,7 +478,7 @@ export default function InfluencerList() {
         {/* 1행: 검색창 + 검색 버튼 */}
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
               type="text"
               placeholder="이름·카테고리로 검색..."
@@ -494,7 +494,7 @@ export default function InfluencerList() {
                 aria-label="검색어 초기화"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full p-0.5"
               >
-                <X size={13} aria-hidden="true" />
+                <X size={14} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -560,7 +560,7 @@ export default function InfluencerList() {
                       aria-pressed={bookmarked.has(inf.id)}
                       className="shrink-0 p-2 -m-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                     >
-                      <Heart size={15} className={bookmarked.has(inf.id) ? 'text-red-500 fill-red-500' : 'text-gray-300'} aria-hidden="true" />
+                      <Heart size={16} className={bookmarked.has(inf.id) ? 'text-red-500 fill-red-500' : 'text-gray-300'} aria-hidden="true" />
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-3">
@@ -585,9 +585,9 @@ export default function InfluencerList() {
                   <div className="flex items-center justify-between flex-wrap gap-y-1.5">
                     <span className="text-base text-gray-500">{inf.platform} · {inf.lastActive}</span>
                     {proposedSet.has(inf.id) ? (
-                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg whitespace-nowrap">제안 완료</span>
+                      <span className="text-base text-gray-500 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg whitespace-nowrap">제안 완료</span>
                     ) : proposableCampaigns.length === 0 ? (
-                      <span className="text-base text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed whitespace-nowrap">제안하기</span>
+                      <span className="text-base text-gray-500 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg cursor-not-allowed whitespace-nowrap">제안하기</span>
                     ) : (
                       <button type="button"
                         onClick={e => { e.stopPropagation(); setSelectedInfluencer(inf); setProposalModal(true) }}
@@ -859,12 +859,12 @@ export default function InfluencerList() {
                       </span>
                       {inf.instagramId ? (
                         <a href={`https://instagram.com/${inf.instagramId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">
-                          <ExternalLink size={11} aria-hidden="true" />인스타 바로가기
+                          <ExternalLink size={12} aria-hidden="true" />인스타 바로가기
                         </a>
                       ) : (
                         <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
-                          <button type="button" disabled className="flex items-center gap-0.5 text-base text-gray-400 cursor-not-allowed">
-                            <ExternalLink size={11} aria-hidden="true" />인스타 바로가기
+                          <button type="button" disabled className="flex items-center gap-0.5 text-base text-gray-500 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                            <ExternalLink size={12} aria-hidden="true" />인스타 바로가기
                           </button>
                         </Tooltip>
                       )}
@@ -907,7 +907,7 @@ export default function InfluencerList() {
                   <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                     <div className="border border-gray-100 rounded-xl p-4">
                       <div className="flex items-center gap-1.5 mb-3">
-                        <MessageCircle size={13} className="text-gray-400" />
+                        <MessageCircle size={14} className="text-gray-400" />
                         <p className="text-base font-semibold text-gray-500">성과 지표</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
@@ -927,7 +927,7 @@ export default function InfluencerList() {
                     </div>
                     <div className="border border-gray-100 rounded-xl p-4">
                       <div className="flex items-center gap-1.5 mb-3">
-                        <Image size={13} className="text-gray-400" />
+                        <Image size={14} className="text-gray-400" />
                         <p className="text-base font-semibold text-gray-500">최근 콘텐츠 분석</p>
                       </div>
                       <div className="flex items-center gap-4">
@@ -1005,7 +1005,7 @@ export default function InfluencerList() {
                   {/* AI 인사이트 */}
                   <div>
                     <div className="flex items-center gap-1.5 mb-3">
-                      <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
+                      <Sparkles size={14} className="text-gray-400" aria-hidden="true" />
                       <p className="text-base font-semibold text-gray-900">AI 인사이트 가이드</p>
                       <span className="text-base font-medium bg-gray-100 text-gray-500 px-2 py-1 rounded-full ml-1">Beta</span>
                     </div>
@@ -1064,8 +1064,8 @@ export default function InfluencerList() {
                               {!isFeed && <span className="absolute top-1.5 right-1.5 text-base bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                             </div>
                             <div className="px-2 py-1.5 bg-white flex gap-2">
-                              <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={9} className="text-red-500" aria-hidden="true" />{c.likes.toLocaleString()}</span>
-                              <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={11} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={12} className="text-red-500" aria-hidden="true" />{c.likes.toLocaleString()}</span>
+                              <span className="flex items-center gap-0.5 text-base text-gray-500"><MessageCircle size={12} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
                             </div>
                           </div>
                         )
@@ -1080,13 +1080,13 @@ export default function InfluencerList() {
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
                 {proposedSet.has(inf.id) ? (
                   <div className="w-full flex items-center justify-center gap-2 py-1.5">
-                    <CheckCircle size={15} className="text-green-500" aria-hidden="true" />
+                    <CheckCircle size={16} className="text-green-500" aria-hidden="true" />
                     <span className="text-base text-gray-500">이미 제안을 보냈습니다</span>
                   </div>
                 ) : proposableCampaigns.length === 0 ? (
                   <div className="w-full space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                      <button type="button" disabled className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed">
+                      <button type="button" disabled className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                         캠페인 제안보내기
                       </button>
                     </Tooltip>
@@ -1234,15 +1234,15 @@ export default function InfluencerList() {
                       <div className="border-t border-gray-100 px-3 py-3 text-base">
                         <dl className="flex flex-col gap-y-3">
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">개요</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">개요</dt>
                             <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-line break-words">{c.summary}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">기간</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">기간</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">리워드</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">리워드</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
                           </div>
                         </dl>

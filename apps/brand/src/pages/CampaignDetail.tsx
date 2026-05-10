@@ -383,8 +383,9 @@ export default function CampaignDetail() {
 
   const [activeTab, setActiveTab] = useState(() => tabFromQA(qa))
 
-  // qa 파라미터 변경 시 탭 동기화
+  // qa 파라미터(URL search) 변경 시 탭 동기화 — 정당한 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveTab(tabFromQA(qa))
   }, [qa])
 
@@ -1058,15 +1059,15 @@ export default function CampaignDetail() {
             <Tooltip content="공유"><button type="button" onClick={handleShareCampaign} aria-label="공유" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Share2 size={16} /></button></Tooltip>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <button type="button" onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Edit2 size={13} />정보 변경</button>
+            <button type="button" onClick={handleEditCampaign} aria-label="정보 변경" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-base text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Edit2 size={14} />정보 변경</button>
             {canCancelCampaign && (
-              <button type="button" onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-orange-200 bg-orange-100 hover:bg-orange-200 text-base text-orange-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><X size={13} />캠페인 취소</button>
+              <button type="button" onClick={() => setCancelCampaignModal(true)} aria-label="캠페인 취소" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-orange-200 bg-orange-100 hover:bg-orange-200 text-base text-orange-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><X size={14} />캠페인 취소</button>
             )}
             {canDeleteCampaign ? (
-              <button type="button" onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Trash2 size={13} />삭제</button>
+              <button type="button" onClick={() => setDeleteCampaignModal(true)} aria-label="삭제" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-base text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"><Trash2 size={14} />삭제</button>
             ) : (
               <Tooltip side="bottom" multiline content="지원자가 있는 캠페인은 삭제할 수 없습니다. 취소 후 종료 처리하세요.">
-                <span aria-disabled="true" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-base text-gray-400 cursor-not-allowed"><Trash2 size={13} />삭제</span>
+                <span aria-disabled="true" className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-base text-gray-400 cursor-not-allowed"><Trash2 size={14} />삭제</span>
               </Tooltip>
             )}
           </div>
@@ -1094,9 +1095,9 @@ export default function CampaignDetail() {
           <KpiCell label="모집 마감" value={(() => {
             const end = meta.recruitPeriod?.split(' ~ ')[1]
             if (!end) return '—'
-            const t = new Date(end).getTime()
-            if (isNaN(t)) return '—'
-            return `D-${Math.max(0, Math.ceil((t - Date.now()) / 86400000))}`
+            // getDDay(@wellink/ui)는 내부적으로 Date 처리. impure call을 한 곳에 캡슐화.
+            const dday = getDDay(end)
+            return dday.label
           })()} />
           <KpiCell label="제공 상품" value={meta.productName} small />
           <KpiCell label="리워드" value={fmtKRW(meta.productPrice)} />
@@ -1233,7 +1234,7 @@ export default function CampaignDetail() {
               }}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-gray-300 text-base text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              <Copy size={13} />
+              <Copy size={14} />
               키워드 한 번에 복사하기
             </button>
           </Section>
@@ -1295,7 +1296,7 @@ export default function CampaignDetail() {
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-              <Users size={15} className="text-gray-400" aria-hidden="true" />
+              <Users size={16} className="text-gray-400" aria-hidden="true" />
               지원자 <span className="text-gray-900 font-bold">{totalCount}</span>명
               {totalCount !== applicants.length && <span className="text-base text-gray-500 font-normal">(전체 {applicants.length}명)</span>}
             </h2>
@@ -1317,7 +1318,7 @@ export default function CampaignDetail() {
                 disabled={applicants.length === 0}
                 className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <UserCheck size={13} aria-hidden="true" />
+                <UserCheck size={14} aria-hidden="true" />
                 일괄 선정 예정
               </button>
               {pendingApplicants.size > 0 && (
@@ -1325,7 +1326,7 @@ export default function CampaignDetail() {
                   onClick={() => setConfirmSelectionModal({ ids: Array.from(pendingApplicants) })}
                   className="flex items-center gap-2 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150"
                 >
-                  <Check size={13} aria-hidden="true" />
+                  <Check size={14} aria-hidden="true" />
                   선정 예정 {pendingApplicants.size}명 일괄 확정
                 </button>
               )}
@@ -1333,7 +1334,7 @@ export default function CampaignDetail() {
                 onClick={handleExportApplicants}
                 className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150"
               >
-                <Download size={13} aria-hidden="true" />
+                <Download size={14} aria-hidden="true" />
                 리스트 Export
               </button>
             </div>
@@ -1386,7 +1387,7 @@ export default function CampaignDetail() {
                           aria-label={`${q} 필터 제거`}
                           className="w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
                         >
-                          <X size={10} />
+                          <X size={12} />
                         </button>
                       </span>
                     ))}
@@ -1445,17 +1446,17 @@ export default function CampaignDetail() {
                     <span className="inline-flex items-center gap-1">
                       참여율
                       <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
-                        <Info size={11} className="text-gray-400 cursor-help" />
+                        <Info size={12} className="text-gray-400 cursor-help" />
                       </Tooltip>
                       {sortIcon('engagement')}
                     </span>
                   </th>
                   <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
                     <span className="inline-flex items-center gap-1">
-                      <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
+                      <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
                       Fit Score
                       <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
-                        <Info size={11} className="text-gray-400 cursor-help" />
+                        <Info size={12} className="text-gray-400 cursor-help" />
                       </Tooltip>
                       {sortIcon('fitScore')}
                     </span>
@@ -1626,14 +1627,14 @@ export default function CampaignDetail() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-              <UserCheck size={15} className="text-gray-400" aria-hidden="true" />
+              <UserCheck size={16} className="text-gray-400" aria-hidden="true" />
               선정된 인플루언서 {selectedInfluencers.length}명
             </h2>
             <button type="button"
               onClick={handleExportSelected}
               className="flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150"
             >
-              <Download size={13} aria-hidden="true" />
+              <Download size={14} aria-hidden="true" />
               리스트 Export
             </button>
           </div>
@@ -1707,16 +1708,16 @@ export default function CampaignDetail() {
                         <span className="inline-flex items-center gap-1">
                           참여율
                           <Tooltip content="(좋아요 + 댓글) ÷ 팔로워 × 100" multiline>
-                            <Info size={11} className="text-gray-400 cursor-help" />
+                            <Info size={12} className="text-gray-400 cursor-help" />
                           </Tooltip>
                         </span>
                       </th>
                       <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
                         <span className="inline-flex items-center gap-1">
-                          <Sparkles size={11} className="text-brand-green" aria-hidden="true" />
+                          <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
                           Fit Score
                           <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
-                            <Info size={11} className="text-gray-400 cursor-help" />
+                            <Info size={12} className="text-gray-400 cursor-help" />
                           </Tooltip>
                         </span>
                       </th>
@@ -1869,7 +1870,7 @@ export default function CampaignDetail() {
                   onClick={() => navigate(`/library?campaign=${encodeURIComponent(campaign.name)}`)}
                   className="inline-flex items-center gap-1.5 text-base text-gray-700 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-colors whitespace-nowrap"
                 >
-                  <FolderOpen size={13} aria-hidden="true" />
+                  <FolderOpen size={14} aria-hidden="true" />
                   라이브러리에서 보기
                 </button>
                 <button type="button"
@@ -1895,7 +1896,7 @@ export default function CampaignDetail() {
                   }}
                   className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
                 >
-                  <Download size={13} aria-hidden="true" />
+                  <Download size={14} aria-hidden="true" />
                   다운로드{selectedContents.size > 0 && ` (${selectedContents.size})`}
                 </button>
               </div>
@@ -1977,7 +1978,7 @@ export default function CampaignDetail() {
                           }`}
                           onClick={e => { e.stopPropagation(); toggleContentCheck(c.id) }}
                         >
-                          {isChecked && <Check size={11} className="text-white" strokeWidth={3} aria-hidden="true" />}
+                          {isChecked && <Check size={12} className="text-white" strokeWidth={3} aria-hidden="true" />}
                         </div>
                         {/* 플랫폼 + 유형 배지 */}
                         <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
@@ -2156,11 +2157,11 @@ export default function CampaignDetail() {
               return (
                 <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @sm:p-5 min-w-0">
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Icon size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Icon size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <span className="text-base text-gray-500 break-words">{k.label}</span>
                     {k.tooltip && (
                       <Tooltip content={k.tooltip} multiline>
-                        <Info size={11} className="text-gray-400 cursor-help shrink-0" />
+                        <Info size={12} className="text-gray-400 cursor-help shrink-0" />
                       </Tooltip>
                     )}
                   </div>
@@ -2221,7 +2222,7 @@ export default function CampaignDetail() {
               <h3 className="text-base font-semibold text-gray-900">중요 릴스 콘텐츠 TOP 3</h3>
               <span className="text-base text-gray-500">· 릴스 한정 · 콘텐츠 점수 기준</span>
               <Tooltip content="콘텐츠 점수는 도달·참여·반응을 종합한 자체 산출 점수입니다. 자세한 산식은 검증 단계입니다." multiline>
-                <Info size={11} className="text-gray-400 cursor-help" />
+                <Info size={12} className="text-gray-400 cursor-help" />
               </Tooltip>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-1 @md:grid @md:grid-cols-3 @md:overflow-visible @md:pb-0">
@@ -2420,17 +2421,17 @@ export default function CampaignDetail() {
                     <button type="button"
                       onClick={() => { setContentStatuses(prev => ({ ...prev, [dc.id]: '승인' })); sendNotificationMock('content-approve', 1); showToast(`${dc.influencer} 콘텐츠를 승인했습니다. 인플루언서에게 알림이 발송되었습니다.`, 'success'); setContentDetailModal(null) }}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
-                    ><Check size={13} /> 승인</button>
+                    ><Check size={14} /> 승인</button>
                     <button type="button"
                       onClick={() => { setContentDetailModal(null); setContentRejectModal(dc.id) }}
                       className="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-red-500 py-2.5 rounded-xl text-base font-medium hover:bg-red-50 transition-colors"
-                    ><X size={13} /> 반려</button>
+                    ><X size={14} /> 반려</button>
                   </>
                 )}
                 <button type="button"
                   onClick={() => { setContentDetailModal(null); toggleContentCheck(dc.id); setDownloadModal(true) }}
                   className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors"
-                ><Download size={13} /> 다운로드</button>
+                ><Download size={14} /> 다운로드</button>
               </>
             }
           >
@@ -2499,29 +2500,29 @@ export default function CampaignDetail() {
         size={canDownloadContent ? 'sm' : 'md'}
         footer={canDownloadContent ? (
           <>
-            <button type="button" onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50">취소</button>
+            <button type="button" onClick={closeDownloadModal} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
             <button type="button"
               onClick={handleDownload}
               disabled={isPaying || selectedContents.size === 0}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {isPaying ? '결제 중…' : '결제 후 다운로드'}
             </button>
           </>
         ) : downloadStep === 'plan-select' ? (
           <>
-            <button type="button" onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
+            <button type="button" onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
             {pickedPlan === 'enterprise' ? (
               <button type="button"
                 onClick={() => { closeDownloadModal(); window.location.href = 'mailto:enterprise@wellink.ai?subject=Enterprise 플랜 문의' }}
-                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 문의하기
               </button>
             ) : (
               <button type="button"
                 onClick={() => setDownloadStep('payment')}
-                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors"
+                className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 결제하기
               </button>
@@ -2529,8 +2530,8 @@ export default function CampaignDetail() {
           </>
         ) : (
           <>
-            <button type="button" onClick={() => setDownloadStep('plan-select')} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-60">이전</button>
-            <button type="button" onClick={handlePayAndDownload} disabled={isPaying} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            <button type="button" onClick={() => setDownloadStep('plan-select')} disabled={isPaying} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">이전</button>
+            <button type="button" onClick={handlePayAndDownload} disabled={isPaying} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               {isPaying ? '결제 중...' : '결제 완료'}
             </button>
           </>
@@ -2715,7 +2716,7 @@ export default function CampaignDetail() {
               detail ? (
                 <button type="button"
                   onClick={() => setUploadOverviewDetailId(null)}
-                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >← 목록으로</button>
               ) : (
                 <button type="button"
@@ -2818,7 +2819,7 @@ export default function CampaignDetail() {
         title="콘텐츠 반려"
         footer={
           <>
-            <button type="button" onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
+            <button type="button" onClick={() => { setContentRejectModal(null); setContentRejectFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
             <button type="button"
               onClick={() => {
                 if (contentRejectModal === null) return
@@ -2830,7 +2831,7 @@ export default function CampaignDetail() {
                 setContentRejectModal(null)
                 setContentRejectFeedback('')
               }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors"
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60"
             >반려 전송</button>
           </>
         }
@@ -3040,8 +3041,8 @@ export default function CampaignDetail() {
         size="sm"
         footer={
           <>
-            <button type="button" onClick={() => { setRejectModal(null); setFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
-            <button type="button" onClick={handleReject} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors">반려 전송</button>
+            <button type="button" onClick={() => { setRejectModal(null); setFeedback('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleReject} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-base hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">반려 전송</button>
           </>
         }
       >

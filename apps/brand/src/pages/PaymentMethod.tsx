@@ -104,7 +104,7 @@ export default function PaymentMethod() {
         <button type="button"
           onClick={() => navigate(-1)}
           aria-label="뒤로 가기"
-          className="text-gray-500 hover:text-gray-900 transition-colors"
+          className="w-10 h-10 -ml-2 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           <ArrowLeft size={18} aria-hidden="true" />
         </button>
@@ -151,9 +151,9 @@ export default function PaymentMethod() {
           <h2 className="text-base font-semibold text-gray-900">등록된 결제 수단 <span className="text-gray-500 font-normal">{methods.length}개</span></h2>
           <button type="button"
             onClick={() => setAddModal(true)}
-            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
           >
-            <Plus size={13} aria-hidden="true" />
+            <Plus size={14} aria-hidden="true" />
             결제 수단 추가
           </button>
         </div>
@@ -184,7 +184,7 @@ export default function PaymentMethod() {
                   {!m.isDefault && (
                     <button type="button"
                       onClick={() => handleSetDefault(m.id)}
-                      className="text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      className="text-sm text-gray-700 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                     >
                       기본으로 설정
                     </button>
@@ -192,9 +192,9 @@ export default function PaymentMethod() {
                   <button type="button"
                     onClick={() => setDeleteTarget(m)}
                     aria-label={`${m.brand} **** ${m.last4} 삭제`}
-                    className="text-red-500 border border-red-100 p-1.5 rounded-lg hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    className="w-10 h-10 flex items-center justify-center text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60"
                   >
-                    <Trash2 size={13} aria-hidden="true" />
+                    <Trash2 size={14} aria-hidden="true" />
                   </button>
                 </div>
               </li>
@@ -297,8 +297,8 @@ export default function PaymentMethod() {
             className="mt-2"
           />
           <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 flex items-start gap-2 mt-2">
-            <CheckCircle2 size={12} className="text-gray-400 mt-0.5 shrink-0" aria-hidden="true" />
-            <p className="text-sm text-gray-500">테스트 환경에서는 실제 결제가 발생하지 않습니다.</p>
+            <CheckCircle2 size={14} className="text-gray-500 mt-0.5 shrink-0" aria-hidden="true" />
+            <p className="text-sm text-gray-600">테스트 환경에서는 실제 결제가 발생하지 않습니다.</p>
           </div>
         </div>
       </Modal>

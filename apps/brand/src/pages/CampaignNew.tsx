@@ -372,7 +372,7 @@ export default function CampaignNew() {
               {form.keywords.map(k => (
                 <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
                   {k}
-                  <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={11} /></button>
+                  <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={12} /></button>
                 </span>
               ))}
             </div>
@@ -441,7 +441,7 @@ export default function CampaignNew() {
                       labelClassName="text-sm text-gray-600"
                       className="ml-auto"
                     />
-                    <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={13} /></button>
+                    <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
                   </div>
                   <Input value={q.title} onChange={v => updateQ(q.id, { title: v })} placeholder="질문 제목" />
                   <Input value={q.desc} onChange={v => updateQ(q.id, { desc: v })} placeholder="질문 설명 (선택)" />
@@ -459,7 +459,7 @@ export default function CampaignNew() {
                             onClick={() => updateQ(q.id, { options: q.options!.filter((_, k) => k !== j) })}
                             aria-label="옵션 삭제"
                             className="text-gray-300 hover:text-red-500"
-                          ><X size={13} /></button>
+                          ><X size={14} /></button>
                         </div>
                       ))}
                       <button type="button"
@@ -477,7 +477,7 @@ export default function CampaignNew() {
 
       {/* ── 섹션 4: 일정 및 모집 인원 ── */}
       <Section title="일정 및 모집 인원">
-        <Field label={<span className="flex items-center gap-1"><Calendar size={13} /> 모집 일정</span>}>
+        <Field label={<span className="flex items-center gap-1"><Calendar size={14} /> 모집 일정</span>}>
           <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
             <SubField label="모집 기간">
               <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5">
@@ -493,7 +493,7 @@ export default function CampaignNew() {
           </div>
         </Field>
 
-        <Field label={<span className="flex items-center gap-1"><Upload size={13} /> 콘텐츠 등록 일정</span>}>
+        <Field label={<span className="flex items-center gap-1"><Upload size={14} /> 콘텐츠 등록 일정</span>}>
           <SubField label="등록 기간">
             <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5 max-w-md">
               <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
@@ -504,7 +504,7 @@ export default function CampaignNew() {
           </SubField>
         </Field>
 
-        <Field label={<span className="flex items-center gap-1"><Users size={13} /> 모집 인원</span>}>
+        <Field label={<span className="flex items-center gap-1"><Users size={14} /> 모집 인원</span>}>
           <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-base font-medium text-gray-900">총 모집 인원</p>

@@ -296,7 +296,7 @@ export default function Dashboard() {
                 <span className="text-gray-300">{k.icon}</span>
               </div>
               <div className={`${isPhone ? 'text-xl' : 'text-[28px]'} font-bold text-gray-300 leading-tight`}>{k.value}</div>
-              <div className="text-sm text-gray-400 mt-1">{k.sub}</div>
+              <div className="text-sm text-gray-500 mt-1">{k.sub}</div>
             </Card>
           ))}
         </div>
@@ -355,7 +355,7 @@ export default function Dashboard() {
           key={u.id}
           className="flex items-start gap-3 bg-rose-100 border border-rose-200 rounded-xl px-4 py-3 text-base"
         >
-          <AlertTriangle size={15} className="text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle size={16} className="text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
           <span className="flex-1 text-rose-800">{u.text}</span>
           <div className="flex items-center gap-2 shrink-0">
             <button type="button"
@@ -423,7 +423,7 @@ export default function Dashboard() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <User size={15} className="text-gray-500" aria-hidden="true" />
+            <User size={16} className="text-gray-500" aria-hidden="true" />
             프로필 인사이트
           </h2>
           <button type="button" onClick={() => navigate('/analytics/profile')}
@@ -449,7 +449,7 @@ export default function Dashboard() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <TrendingUp size={15} className="text-gray-500" aria-hidden="true" />
+            <TrendingUp size={16} className="text-gray-500" aria-hidden="true" />
             광고 성과
           </h2>
           <button type="button" onClick={() => navigate('/analytics/ad')}
@@ -595,7 +595,7 @@ export default function Dashboard() {
                 onClick={() => setShowAllNotifications(prev => !prev)}
                 className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-1 w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
-                {showAllNotifications ? '접기' : '더보기'} <ArrowRight size={11} className={showAllNotifications ? 'rotate-90' : ''} />
+                {showAllNotifications ? '접기' : '더보기'} <ArrowRight size={12} className={showAllNotifications ? 'rotate-90' : ''} />
               </button>
             </div>
           )}

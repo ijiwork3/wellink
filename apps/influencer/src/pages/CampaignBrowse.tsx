@@ -62,7 +62,9 @@ export default function CampaignBrowse() {
     return () => clearTimeout(t)
   }, [qa])
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty-search') setSearch('검색결과없음xyz')
     if (qa === 'modal-detail') setQuickViewId(1)
   }, [qa])
@@ -130,7 +132,7 @@ export default function CampaignBrowse() {
             />
             {search && (
               <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                <X size={15} />
+                <X size={16} />
               </button>
             )}
           </div>

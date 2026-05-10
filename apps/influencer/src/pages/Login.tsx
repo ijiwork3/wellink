@@ -18,8 +18,10 @@ export default function Login() {
     qa === 'error' ? '아이디 또는 비밀번호가 올바르지 않습니다.' : ''
   )
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
     if (qa === 'error') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setId('wrong@test.com')
       setPassword('pass1234')
       setError('아이디 또는 비밀번호가 올바르지 않습니다.')
@@ -112,7 +114,7 @@ export default function Login() {
               aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
 
@@ -129,7 +131,7 @@ export default function Login() {
           </button>
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button onClick={() => navigate('/signup')} className="text-brand-green hover:underline">회원가입</button>
         </p>

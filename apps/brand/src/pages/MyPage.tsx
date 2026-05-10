@@ -159,7 +159,7 @@ export default function MyPage() {
           onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
           className="shrink-0 flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
         >
-          <LogOut size={15} aria-hidden="true" />
+          <LogOut size={16} aria-hidden="true" />
           로그아웃
         </button>
       </div>
@@ -247,7 +247,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-company" className="text-sm text-gray-500 mb-1.5 block">브랜드명 (회사명)</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Building2 size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Building2 size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-company"
                       type="text"
@@ -263,7 +263,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-category" className="text-sm text-gray-500 mb-1.5 block">업종 카테고리</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Target size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Target size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-category"
                       type="text"
@@ -279,7 +279,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-website" className="text-sm text-gray-500 mb-1.5 block">웹사이트 URL</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Globe size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Globe size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-website"
                       type="url"
@@ -295,7 +295,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-biz-number" className="text-sm text-gray-500 mb-1.5 block">사업자 등록번호</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Hash size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Hash size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-biz-number"
                       type="text"
@@ -322,14 +322,14 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-email" className="text-sm text-gray-500 mb-1.5 block">이메일 주소</label>
                   <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
-                    <Mail size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Mail size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <span id="mypage-email" className="text-base text-gray-500">{email}</span>
                   </div>
                 </div>
                 <div>
                   <label htmlFor="mypage-name" className="text-sm text-gray-500 mb-1.5 block">담당자 이름</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <User size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-name"
                       type="text"
@@ -345,7 +345,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-manager" className="text-sm text-gray-500 mb-1.5 block">담당자명 (계약)</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <User size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <User size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-manager"
                       type="text"
@@ -361,7 +361,7 @@ export default function MyPage() {
                 <div>
                   <label htmlFor="mypage-phone" className="text-sm text-gray-500 mb-1.5 block">연락처</label>
                   <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Phone size={15} className="text-gray-400 shrink-0" aria-hidden="true" />
+                    <Phone size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
                     <input
                       id="mypage-phone"
                       type="text"
@@ -473,7 +473,7 @@ export default function MyPage() {
                 </h3>
                 {snsConnected && (
                   <span className="flex items-center gap-1 text-sm text-brand-green-text font-medium">
-                    <CheckCircle2 size={13} className="text-brand-green" aria-hidden="true" />
+                    <CheckCircle2 size={14} className="text-brand-green" aria-hidden="true" />
                     연결됨
                   </span>
                 )}

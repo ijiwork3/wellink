@@ -43,11 +43,15 @@ export default function Profile() {
   const [phoneCodeSent, setPhoneCodeSent] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  // URL search param 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (searchParams.get('modal') === 'password') setPwModalOpen(true)
   }, [searchParams, location.key])
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'edit') setIsEditing(true)
   }, [qa])
 
@@ -186,7 +190,7 @@ export default function Profile() {
             {/* 이메일 (읽기 전용) */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">이메일</label>
-              <p className="text-sm text-gray-400 px-3 py-2.5 bg-gray-50 rounded-xl">{mockProfile.email}</p>
+              <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl">{mockProfile.email}</p>
             </div>
 
             {/* 전화번호 */}
@@ -198,7 +202,7 @@ export default function Profile() {
                   onClick={() => setPhoneModalOpen(true)}
                   className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
-                  <Phone size={13} />변경
+                  <Phone size={14} />변경
                 </button>
               </div>
             </div>
@@ -210,7 +214,7 @@ export default function Profile() {
                 onClick={() => setPwModalOpen(true)}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green"
               >
-                <Lock size={13} />비밀번호 변경
+                <Lock size={14} />비밀번호 변경
               </button>
             </div>
 
@@ -260,7 +264,7 @@ export default function Profile() {
             ))}
           </div>
           {!isEditing && (
-            <p className="text-xs text-gray-400 mt-3">편집 버튼을 눌러 활동 분야를 변경할 수 있어요</p>
+            <p className="text-xs text-gray-500 mt-3">편집 버튼을 눌러 활동 분야를 변경할 수 있어요</p>
           )}
         </div>
 
@@ -305,7 +309,7 @@ export default function Profile() {
         </div>
         <div className="flex gap-3 mt-5">
           <button onClick={() => setPwModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-          <button onClick={handlePwChange} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity">변경하기</button>
+          <button onClick={handlePwChange} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">변경하기</button>
         </div>
       </Modal>
 
@@ -342,12 +346,12 @@ export default function Profile() {
             </div>
           )}
           {phoneCodeSent && (
-            <p className="text-xs text-gray-400">인증번호가 발송되었어요. 3분 내에 입력해 주세요.</p>
+            <p className="text-xs text-gray-500">인증번호가 발송되었어요. 3분 내에 입력해 주세요.</p>
           )}
         </div>
         <div className="flex gap-3 mt-5">
           <button onClick={() => setPhoneModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50">취소</button>
-          <button onClick={handlePhoneVerify} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity">인증 완료</button>
+          <button onClick={handlePhoneVerify} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">인증 완료</button>
         </div>
       </Modal>
 
@@ -358,7 +362,7 @@ export default function Profile() {
           <div className="p-3 rounded-xl text-sm bg-red-50 text-red-600">탈퇴 시 캠페인 내역, 프로필 정보 등이 모두 삭제됩니다.</div>
           <div className="flex gap-3">
             <button onClick={() => setWithdrawModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={() => { setWithdrawModalOpen(false); showToast('탈퇴 기능은 준비 중이에요', 'info') }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors">탈퇴하기</button>
+            <button onClick={() => { setWithdrawModalOpen(false); showToast('탈퇴 기능은 준비 중이에요', 'info') }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">탈퇴하기</button>
           </div>
         </div>
       </Modal>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import {
@@ -319,11 +319,13 @@ export default function InfluencerManage() {
   }, [influencers, activeTab, sortKey])
 
   const totalPages = Math.max(1, Math.ceil(filteredInfluencers.length / PAGE_SIZE))
-  useEffect(() => { if (page > totalPages) setPage(1) }, [page, totalPages])
-  const pagedInfluencers = filteredInfluencers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  // page > totalPages 가드 — derived clamp 패턴 (setState in effect 회피)
+  const safePage = page > totalPages ? 1 : page
+  const pagedInfluencers = filteredInfluencers.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
-  // 탭/정렬 변경 시 1페이지로 리셋
-  useEffect(() => { setPage(1) }, [activeTab, sortKey])
+  // 탭/정렬 변경 시 1페이지 리셋은 핸들러에서 직접 처리 (handleTabChange, handleSortChange)
+  const handleTabChange = useCallback((tab: string) => { setActiveTab(tab); setPage(1) }, [])
+  const handleSortChange = useCallback((v: string) => { setSortKey(v as InfluencerSortKey); setPage(1) }, [])
 
   // ── QA 상태 ───────────────────────────────────────────────
   if (qa === 'loading') {
@@ -400,7 +402,7 @@ export default function InfluencerManage() {
           >
             <button type="button"
               aria-pressed={activeTab === tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-full"
             >
               {tab}
@@ -422,14 +424,14 @@ export default function InfluencerManage() {
           onClick={() => setNewGroupModal(true)}
           className="flex items-center gap-1 px-3 py-2 rounded-full text-base border border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
         >
-          <Plus size={13} aria-hidden="true" />
+          <Plus size={14} aria-hidden="true" />
           그룹 추가
         </button>
       </div>
         {/* 공통 정렬 — 인플루언서 프로필 화면 통일 정책 */}
         <CustomSelect
           value={sortKey}
-          onChange={(v: string) => setSortKey(v as InfluencerSortKey)}
+          onChange={handleSortChange}
           options={INFLUENCER_SORT_OPTIONS.map(opt => ({ label: opt.label, value: opt.value }))}
           className="shrink-0"
         />
@@ -524,7 +526,7 @@ export default function InfluencerManage() {
                       <span key={g} className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium bg-brand-green-bg text-brand-green-text whitespace-nowrap">
                         {g}
                         <button type="button" onClick={() => removeFromGroup(inf.id, g)} aria-label={`${g} 그룹에서 제거`} className="hover:text-red-500 transition-colors">
-                          <X size={11} aria-hidden="true" />
+                          <X size={12} aria-hidden="true" />
                         </button>
                       </span>
                     ))}
@@ -534,9 +536,9 @@ export default function InfluencerManage() {
                   <div className="relative shrink-0" ref={!isMobile && addToGroupTarget === inf.id ? dropdownRef : null}>
                     <button type="button"
                       onClick={() => setAddToGroupTarget(addToGroupTarget === inf.id ? null : inf.id)}
-                      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-gray-400 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-gray-500 border border-dashed border-gray-300 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
                     >
-                      <Plus size={11} aria-hidden="true" />
+                      <Plus size={12} aria-hidden="true" />
                       그룹에 추가
                     </button>
 
@@ -546,12 +548,12 @@ export default function InfluencerManage() {
                         {getAddableGroups(inf).length === 0 ? (
                           groups.length === 0
                             ? (
-                              <div className="px-3 py-2 text-sm text-gray-400">
+                              <div className="px-3 py-2 text-sm text-gray-500">
                                 생성된 그룹이 없습니다.
                                 <button type="button" onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }} className="block text-brand-green-text mt-1 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">새 그룹 만들기</button>
                               </div>
                             ) : (
-                              <div className="px-3 py-2 text-sm text-gray-400">모든 그룹에 소속됨</div>
+                              <div className="px-3 py-2 text-sm text-gray-500">모든 그룹에 소속됨</div>
                             )
                         ) : (
                           getAddableGroups(inf).map(g => (
@@ -619,10 +621,10 @@ export default function InfluencerManage() {
             ))}
           </div>
 
-          {/* 페이지네이션 */}
+          {/* 페이지네이션 — safePage 사용으로 totalPages 초과 방지 */}
           <Pagination
             total={filteredInfluencers.length}
-            page={page}
+            page={safePage}
             pageSize={PAGE_SIZE}
             onChange={setPage}
           />
@@ -680,8 +682,8 @@ export default function InfluencerManage() {
         size="sm"
         footer={
           <>
-            <button type="button" onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors">취소</button>
-            <button type="button" onClick={createGroup} disabled={!newGroupName.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors">생성</button>
+            <button type="button" onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={createGroup} disabled={!newGroupName.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">생성</button>
           </>
         }
       >
@@ -798,16 +800,16 @@ export default function InfluencerManage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-0.5 text-sm text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                         >
-                          <ExternalLink size={11} aria-hidden="true" />
+                          <ExternalLink size={12} aria-hidden="true" />
                           인스타 바로가기
                         </a>
                       ) : (
                         <Tooltip content="인스타그램 username이 등록되지 않았습니다." multiline>
                           <button type="button"
                             disabled
-                            className="flex items-center gap-0.5 text-sm text-gray-400 cursor-not-allowed"
+                            className="flex items-center gap-0.5 text-sm text-gray-500 cursor-not-allowed"
                           >
-                            <ExternalLink size={11} aria-hidden="true" />
+                            <ExternalLink size={12} aria-hidden="true" />
                             인스타 바로가기
                           </button>
                         </Tooltip>
@@ -853,7 +855,7 @@ export default function InfluencerManage() {
                 <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2'}`}>
                   <div className="border border-gray-100 rounded-xl p-4">
                     <div className="flex items-center gap-1.5 mb-3">
-                      <MessageCircle size={13} className="text-gray-400" />
+                      <MessageCircle size={14} className="text-gray-400" />
                       <p className="text-sm font-semibold text-gray-500">성과 지표</p>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -874,7 +876,7 @@ export default function InfluencerManage() {
 
                   <div className="border border-gray-100 rounded-xl p-4">
                     <div className="flex items-center gap-1.5 mb-3">
-                      <Image size={13} className="text-gray-400" />
+                      <Image size={14} className="text-gray-400" />
                       <p className="text-sm font-semibold text-gray-500">최근 콘텐츠 분석</p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -953,7 +955,7 @@ export default function InfluencerManage() {
                 {/* AI 인사이트 */}
                 <div>
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Sparkles size={13} className="text-gray-400" aria-hidden="true" />
+                    <Sparkles size={14} className="text-gray-400" aria-hidden="true" />
                     <p className="text-base font-semibold text-gray-900">AI 인사이트 가이드</p>
                     <span className="text-sm font-medium bg-gray-100 text-gray-500 px-2 py-1 rounded-full ml-1">Beta</span>
                   </div>
@@ -1050,8 +1052,8 @@ export default function InfluencerManage() {
                             {!isFeed && <span className="absolute top-1.5 right-1.5 text-sm bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
                           </div>
                           <div className="px-2 py-1.5 bg-white flex gap-2">
-                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><Heart size={9} className="text-red-500" />{c.likes.toLocaleString()}</span>
-                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><MessageCircle size={11} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
+                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><Heart size={12} className="text-red-500" />{c.likes.toLocaleString()}</span>
+                            <span className="flex items-center gap-0.5 text-sm text-gray-500"><MessageCircle size={12} className="text-gray-400" aria-hidden="true" />{c.comments.toLocaleString('ko-KR')}</span>
                           </div>
                         </div>
                       )
@@ -1074,7 +1076,7 @@ export default function InfluencerManage() {
               <div className="border-t border-gray-100 px-6 py-4 shrink-0">
                 {proposedSet.has(inf.id) ? (
                   <div className="w-full flex items-center justify-center gap-2 py-1.5">
-                    <CheckCircle size={15} className="text-green-500" aria-hidden="true" />
+                    <CheckCircle size={16} className="text-green-500" aria-hidden="true" />
                     <span className="text-base text-gray-500">이미 제안을 보냈습니다</span>
                   </div>
                 ) : proposableCampaigns.length === 0 ? (
@@ -1166,8 +1168,8 @@ export default function InfluencerManage() {
         size="md"
         footer={!proposalSent ? (
           <>
-            <button type="button" onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150">취소</button>
-            <button type="button" onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150">제안 보내기</button>
+            <button type="button" onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제안 보내기</button>
           </>
         ) : undefined}
       >
@@ -1226,15 +1228,15 @@ export default function InfluencerManage() {
                       <div className="border-t border-gray-100 px-3 py-3 text-sm">
                         <dl className="flex flex-col gap-y-3">
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">개요</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">개요</dt>
                             <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-line break-words">{c.summary}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">기간</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">기간</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
                           </div>
                           <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-400">리워드</dt>
+                            <dt className="w-16 shrink-0 text-gray-500">리워드</dt>
                             <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
                           </div>
                         </dl>

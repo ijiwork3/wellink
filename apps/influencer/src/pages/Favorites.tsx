@@ -154,13 +154,13 @@ export default function Favorites() {
                   </div>
 
                   <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                    <Gift size={11} className="text-brand-green shrink-0" />
+                    <Gift size={12} className="text-brand-green shrink-0" />
                     <span className="text-xs font-medium text-gray-700 truncate">{c.reward}</span>
                   </div>
 
                   <div className="mt-2.5 flex items-center gap-3">
                     <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0">
-                      <Users size={11} />{c.applied}/{c.headcount}명
+                      <Users size={12} />{c.applied}/{c.headcount}명
                     </span>
                     <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
                       <div

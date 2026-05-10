@@ -41,7 +41,9 @@ export default function Settlement() {
   // requestTarget: SettlementItem (개별) | 'all' (전체 정산 요청)
   const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty') { setItems([]); return }
     if (qa === 'modal-request') { setRequestTarget(MOCK_DATA[0]); setRequestModal(true); return }
     setItems(MOCK_DATA)
@@ -127,9 +129,9 @@ export default function Settlement() {
           {availableAmount > 0 && HAS_BANK_ACCOUNT && (
             <button
               onClick={() => { setRequestTarget('all'); setRequestModal(true) }}
-              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"
+              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <BanknoteIcon size={13} />전체 정산 요청
+              <BanknoteIcon size={14} />전체 정산 요청
             </button>
           )}
           {availableAmount > 0 && !HAS_BANK_ACCOUNT && (
@@ -246,7 +248,7 @@ export default function Settlement() {
             <p className="text-xs text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요.</p>
             <div className="flex gap-2">
               <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-              <button onClick={confirmRequest} disabled={!HAS_BANK_ACCOUNT} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">요청하기</button>
+              <button onClick={confirmRequest} disabled={!HAS_BANK_ACCOUNT} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
             </div>
           </div>
         )}

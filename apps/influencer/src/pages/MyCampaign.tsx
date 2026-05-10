@@ -55,7 +55,9 @@ export default function MyCampaign() {
   const [contentUrl, setContentUrl] = useState('')
   const [search, setSearch] = useState('')
 
+  // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty') { setCampaigns([]); return }
     if (qa === 'modal-cancel') { setCancelModal(mockMyCampaigns[0]); return }
     if (qa === 'modal-submit') { setSubmitModal(mockMyCampaigns[0]); return }
@@ -242,7 +244,7 @@ export default function MyCampaign() {
                       if (action === '콘텐츠 제출') return (
                         <button key={action}
                           onClick={() => setSubmitModal(c)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity">
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                           <Upload size={12} />콘텐츠 제출
                         </button>
                       )
@@ -251,7 +253,7 @@ export default function MyCampaign() {
                           <button
                             onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
                             className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-medium border border-brand-green-border text-brand-green hover:bg-brand-green/5 transition-colors">
-                            <Edit2 size={11} />콘텐츠 수정
+                            <Edit2 size={12} />콘텐츠 수정
                           </button>
                           <button
                             onClick={() => navigate(`/campaigns/${c.id}`)}
@@ -311,7 +313,7 @@ export default function MyCampaign() {
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">제출하기</button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제출하기</button>
           </div>
         </div>
       </Modal>
@@ -323,7 +325,7 @@ export default function MyCampaign() {
           <p className="text-xs text-gray-500">취소 후 재신청이 가능하지 않을 수 있어요.</p>
           <div className="flex gap-2">
             <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">유지하기</button>
-            <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors">취소하기</button>
+            <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
           </div>
         </div>
       </Modal>

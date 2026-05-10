@@ -32,12 +32,12 @@ export default function PaymentFail() {
           <p className="text-base text-gray-600 break-keep">{message}</p>
         </div>
 
-        {/* 에러 코드 — code 있을 때만 */}
+        {/* 에러 코드 — code 있을 때만 (font-mono로 코드 가독성 확보) */}
         {code && (
           <div className="bg-red-100 border border-red-200 rounded-xl p-4 text-left">
             <div className="flex justify-between items-center gap-3 text-base">
-              <span className="text-gray-500 whitespace-nowrap">에러 코드</span>
-              <span className="text-red-700 font-medium text-sm break-all">{code}</span>
+              <span className="text-gray-600 whitespace-nowrap">에러 코드</span>
+              <code className="text-red-700 font-medium text-sm font-mono break-all">{code}</code>
             </div>
           </div>
         )}

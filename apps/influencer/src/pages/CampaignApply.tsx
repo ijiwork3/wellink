@@ -113,14 +113,14 @@ export default function CampaignApply() {
         {isViewMode && (
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={15} className="text-brand-green flex-shrink-0" />
+              <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" />
               <span className="text-sm font-medium text-brand-green-text">신청 완료된 정보입니다</span>
             </div>
             <button
               onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
               className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors"
             >
-              <Pencil size={11} />수정하기
+              <Pencil size={12} />수정하기
             </button>
           </div>
         )}
@@ -133,8 +133,8 @@ export default function CampaignApply() {
             <p className="text-sm font-semibold text-gray-900 truncate">{campaign.name}</p>
             <div className="flex items-center gap-2 mt-1">
               {isDelivery
-                ? <span className="flex items-center gap-1 text-xs text-brand-green"><Package size={11} />배송형</span>
-                : <span className="flex items-center gap-1 text-xs text-blue-500"><Footprints size={11} />방문형</span>
+                ? <span className="flex items-center gap-1 text-xs text-brand-green"><Package size={12} />배송형</span>
+                : <span className="flex items-center gap-1 text-xs text-blue-500"><Footprints size={12} />방문형</span>
               }
               {campaign.reward && <span className="text-xs text-gray-500">· {campaign.reward}</span>}
             </div>
