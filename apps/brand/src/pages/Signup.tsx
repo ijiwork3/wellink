@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
-import { useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS, CustomCheckbox } from '@wellink/ui'
+import { useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS, CustomCheckbox, auth } from '@wellink/ui'
 import { CONTACT_EMAIL } from '../config/urls'
 
 const FILLED_FORM = {
@@ -71,12 +71,31 @@ export default function Signup() {
     setIsSubmitting(true)
     try {
       await new Promise<void>(resolve => setTimeout(resolve, TIMER_MS.MOCK_SIGNUP))
+      // 가입 성공 → 인증 토큰 설정 후 대시보드 (auth.set 누락 시 ProtectedRoute가 /login 으로 다시 redirect)
+      auth.set('brand')
       showToast('웰링크에 오신 것을 환영합니다 🎉', 'success')
       navigate('/dashboard')
     } catch {
       showToast('가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error')
       setIsSubmitting(false)
     }
+  }
+
+  /** 비밀번호 변경 시 confirm 일치 재검증 — 비밀번호 먼저 채우고 confirm 채운 후 비밀번호만 바꾸면 confirm 에러가 안 나는 버그 방지 */
+  const handlePasswordChange = (val: string) => {
+    setForm(prev => ({ ...prev, password: val }))
+    setErrors(prev => {
+      const next = { ...prev }
+      // 본인 비밀번호 에러는 비움 (재검증은 submit 시)
+      if (next.password) delete next.password
+      // confirm 입력된 상태라면 일치 재검증
+      if (form.passwordConfirm && form.passwordConfirm !== val) {
+        next.passwordConfirm = '비밀번호가 일치하지 않아요'
+      } else if (form.passwordConfirm && form.passwordConfirm === val) {
+        delete next.passwordConfirm
+      }
+      return next
+    })
   }
 
   const inputCls = (key: FieldKey) =>
@@ -161,7 +180,7 @@ export default function Signup() {
               <input
                 id="signup-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password"
                 placeholder="8자 이상, 영문+숫자 조합"
-                value={form.password} onChange={e => setField('password', e.target.value)}
+                value={form.password} onChange={e => handlePasswordChange(e.target.value)}
                 aria-describedby={errors.password ? errorId('password') : 'signup-password-hint'}
                 aria-invalid={!!errors.password}
                 aria-required="true"
