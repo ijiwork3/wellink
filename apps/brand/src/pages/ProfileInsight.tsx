@@ -556,7 +556,7 @@ export default function ProfileInsight() {
   const [aiRefreshing, setAiRefreshing] = useState(false)
   const aiRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 차트 인터랙티브 인덱스
+  // 차트 인터랙티브 인덱스 — 모바일/태블릿은 호버 불가능하므로 마지막 포인트를 기본 노출 (정책)
   const [followerChartIdx, setFollowerChartIdx] = useState<number | null>(null)
   const [trendChartIdx, setTrendChartIdx] = useState<number | null>(null)
   const [impReachChartIdx, setImpReachChartIdx] = useState<number | null>(null)
@@ -579,16 +579,32 @@ export default function ProfileInsight() {
     }
   }, [])
 
-  // period/isTouch 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
+  // period/isTouch 변경 시 인덱스·스크롤 초기화
+  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
-    setFollowerChartIdx(null)
-    setTrendChartIdx(null)
-    setImpReachChartIdx(null)
-    requestAnimationFrame(() => {
-      followerChartScrollRef.current?.scrollToStart()
-      trendChartScrollRef.current?.scrollToStart()
-      impReachChartScrollRef.current?.scrollToStart()
-    })
+    if (isTouch) {
+      // 데이터는 이 effect 내부에서 직접 계산 (period 변경 시 재계산)
+      const followerLen  = followerDataByPeriod[period].length
+      const trendLen     = trendDataByPeriod[period].length
+      const impReachLen  = impressReachByPeriod[period].length
+      setFollowerChartIdx(followerLen > 0 ? followerLen - 1 : null)
+      setTrendChartIdx(trendLen > 0 ? trendLen - 1 : null)
+      setImpReachChartIdx(impReachLen > 0 ? impReachLen - 1 : null)
+      requestAnimationFrame(() => {
+        followerChartScrollRef.current?.scrollToEnd()
+        trendChartScrollRef.current?.scrollToEnd()
+        impReachChartScrollRef.current?.scrollToEnd()
+      })
+    } else {
+      setFollowerChartIdx(null)
+      setTrendChartIdx(null)
+      setImpReachChartIdx(null)
+      requestAnimationFrame(() => {
+        followerChartScrollRef.current?.scrollToStart()
+        trendChartScrollRef.current?.scrollToStart()
+        impReachChartScrollRef.current?.scrollToStart()
+      })
+    }
   }, [period, isTouch])
 
   const tableScrollRef = useRef<HTMLDivElement>(null)

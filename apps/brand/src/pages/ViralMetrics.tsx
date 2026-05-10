@@ -667,11 +667,18 @@ function ContentDetailModal({ content, onClose }: { content: ViralContent | null
   const [scoreIdx, setScoreIdx] = useState<number | null>(null)
   const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
 
-  // content 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
+  // content/isTouch 변경 시 인덱스·스크롤 초기화
+  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
-    setScoreIdx(null)
-    requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
-  }, [content])
+    if (isTouch) {
+      const len = scoreHistory.length
+      setScoreIdx(len > 0 ? len - 1 : null)
+      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToEnd() })
+    } else {
+      setScoreIdx(null)
+      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
+    }
+  }, [content, isTouch, scoreHistory.length])
 
 
   const metrics = content ? [

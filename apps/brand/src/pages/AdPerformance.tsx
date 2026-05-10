@@ -243,16 +243,30 @@ export default function AdPerformance() {
     setCampaignPage(1)
   }, [period, dateOffset])
 
-  // period/isTouch 변경 시 인덱스 초기화 + 스크롤 맨 왼쪽으로
+  // period/isTouch 변경 시 인덱스·스크롤 초기화
+  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
   useEffect(() => {
-    setMixedChartIdx(null)
-    setCtrChartIdx(null)
-    setClicksChartIdx(null)
-    requestAnimationFrame(() => {
-      mixedChartScrollRef.current?.scrollToStart()
-      ctrChartScrollRef.current?.scrollToStart()
-      clicksChartScrollRef.current?.scrollToStart()
-    })
+    if (isTouch) {
+      const len = CHART_DATA_BY_PERIOD[period].length
+      const lastIdx = len > 0 ? len - 1 : null
+      setMixedChartIdx(lastIdx)
+      setCtrChartIdx(lastIdx)
+      setClicksChartIdx(lastIdx)
+      requestAnimationFrame(() => {
+        mixedChartScrollRef.current?.scrollToEnd()
+        ctrChartScrollRef.current?.scrollToEnd()
+        clicksChartScrollRef.current?.scrollToEnd()
+      })
+    } else {
+      setMixedChartIdx(null)
+      setCtrChartIdx(null)
+      setClicksChartIdx(null)
+      requestAnimationFrame(() => {
+        mixedChartScrollRef.current?.scrollToStart()
+        ctrChartScrollRef.current?.scrollToStart()
+        clicksChartScrollRef.current?.scrollToStart()
+      })
+    }
   }, [period, isTouch])
 
   const headerRef = useRef<HTMLDivElement>(null)
