@@ -46,7 +46,7 @@ interface Content {
   saves: number
   shareRate: number
   engagementRate: number
-  status: '승인' | '검수중' | '대기중' | '반려'
+  status: '승인' | '검수중' | '반려'
   thumbnailClass: string
   postUrl?: string
 }
@@ -95,7 +95,7 @@ const PLATFORM_TYPE_OPTIONS: Array<{ label: string; value: string; platform: Lib
   { label: '틱톡', value: '틱톡', platform: '틱톡', type: null },
 ]
 const THUMB_POOL = ['from-pink-100 to-pink-200', 'from-blue-100 to-blue-200', 'from-violet-100 to-violet-200', 'from-red-100 to-red-200', 'from-yellow-100 to-yellow-200', 'from-emerald-100 to-emerald-200', 'from-orange-100 to-orange-200', 'from-indigo-100 to-indigo-200', 'from-rose-100 to-rose-200', 'from-green-100 to-green-200', 'from-cyan-100 to-cyan-200', 'from-lime-100 to-lime-200', 'from-amber-100 to-amber-200', 'from-fuchsia-100 to-fuchsia-200', 'from-teal-100 to-teal-200']
-const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '대기중', '반려']
+const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '반려']
 const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   const creatorEntry = CREATOR_POOL[i % CREATOR_POOL.length]
   const creator = creatorEntry.name
@@ -785,7 +785,7 @@ export default function Library() {
             <CustomSelect
               value={statusFilter}
               onChange={v => setStatusFilter(v)}
-              options={['전체', '승인', '검수중', '대기중', '반려'].map(s => ({ label: s, value: s }))}
+              options={['전체', '승인', '검수중', '반려'].map(s => ({ label: s, value: s }))}
               className="flex-1 min-w-0"
             />
           </div>
