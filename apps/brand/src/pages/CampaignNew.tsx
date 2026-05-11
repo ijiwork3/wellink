@@ -1,7 +1,16 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users, AlertCircle } from 'lucide-react'
-import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect, CustomCheckbox } from '@wellink/ui'
+import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect, CustomCheckbox, PageHeader } from '@wellink/ui'
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor,
+  useSensor, useSensors, type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
 type Platform = typeof PLATFORMS[number]
@@ -142,6 +151,23 @@ export default function CampaignNew() {
   const updateQ = (id: string, patch: Partial<Question>) => setQuestions(q => q.map(x => x.id === id ? { ...x, ...patch } : x))
   const removeQ = (id: string) => setQuestions(q => q.filter(x => x.id !== id))
 
+  // ── 질문 드래그 정렬 (정책서 § 7-4) ──
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+  const handleQuestionDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      setQuestions(prev => {
+        const oldIndex = prev.findIndex(q => q.id === active.id)
+        const newIndex = prev.findIndex(q => q.id === over.id)
+        if (oldIndex < 0 || newIndex < 0) return prev
+        return arrayMove(prev, oldIndex, newIndex)
+      })
+    }
+  }
+
   const handleSubmit = () => {
     // 편집 잠금 — 원본 정책 (PENDING 외엔 차단)
     if (isEdit && editStatusInfo && !editStatusInfo.editable) {
@@ -192,14 +218,12 @@ export default function CampaignNew() {
       </button>
 
       {/* 페이지 타이틀 */}
-      <div>
-        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">{isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}</h1>
-        <p className="text-base text-gray-500 mt-1">
-          {isEdit
-            ? `내용을 수정하면 ${currentApplicantCount > 0 ? `현재 ${currentApplicantCount}명의 지원자에게 [조건 변경 알림]이 발송됩니다.` : '모든 지원자에게 [조건 변경 알림]이 발송됩니다.'}`
-            : '인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.'}
-        </p>
-      </div>
+      <PageHeader
+        title={isEdit ? '캠페인 정보 변경' : '새 캠페인 등록'}
+        description={isEdit
+          ? `내용을 수정하면 ${currentApplicantCount > 0 ? `현재 ${currentApplicantCount}명의 지원자에게 [조건 변경 알림]이 발송됩니다.` : '모든 지원자에게 [조건 변경 알림]이 발송됩니다.'}`
+          : '인플루언서들에게 매력적으로 보일 수 있는 캠페인을 만들어보세요.'}
+      />
 
       {/* 편집 모드 잠금 배너 — 원본 정책 보강 (PENDING만 수정 가능) */}
       {isEdit && editStatusInfo && !editStatusInfo.editable && (
@@ -426,51 +450,19 @@ export default function CampaignNew() {
               추가된 질문이 없습니다.
             </div>
           ) : (
-            <div className="space-y-2">
-              {questions.map((q, i) => (
-                <div key={q.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <GripVertical size={14} className="text-gray-300" />
-                    <span className="text-sm px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
-                      질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
-                    </span>
-                    <CustomCheckbox
-                      checked={q.required}
-                      onChange={() => updateQ(q.id, { required: !q.required })}
-                      label="필수 답변"
-                      labelClassName="text-sm text-gray-600"
-                      className="ml-auto"
-                    />
-                    <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
-                  </div>
-                  <Input value={q.title} onChange={v => updateQ(q.id, { title: v })} placeholder="질문 제목" />
-                  <Input value={q.desc} onChange={v => updateQ(q.id, { desc: v })} placeholder="질문 설명 (선택)" />
-                  {q.type === 'choice' && (
-                    <div className="space-y-1.5 pl-2">
-                      {(q.options ?? []).map((opt, j) => (
-                        <div key={j} className="flex items-center gap-2">
-                          <CustomCheckbox checked={false} onChange={() => {}} label="" disabled className="pointer-events-none" />
-                          <Input
-                            value={opt}
-                            onChange={v => updateQ(q.id, { options: q.options!.map((o, k) => k === j ? v : o) })}
-                            placeholder={`옵션 ${j + 1}`}
-                          />
-                          <button type="button"
-                            onClick={() => updateQ(q.id, { options: q.options!.filter((_, k) => k !== j) })}
-                            aria-label="옵션 삭제"
-                            className="text-gray-300 hover:text-red-500"
-                          ><X size={14} /></button>
-                        </div>
-                      ))}
-                      <button type="button"
-                        onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
-                        className="text-sm text-blue-600 hover:text-blue-700"
-                      >+ 옵션 추가하기</button>
-                    </div>
-                  )}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleQuestionDragEnd}
+            >
+              <SortableContext items={questions.map(q => q.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2">
+                  {questions.map((q, i) => (
+                    <SortableQuestion key={q.id} q={q} i={i} updateQ={updateQ} removeQ={removeQ} />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           )}
         </Field>
       </Section>
@@ -640,5 +632,76 @@ function DateInput({ value, min, onChange }: { value: string; min?: string; onCh
       onChange={e => onChange(e.target.value)}
       className="flex-1 text-base border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
     />
+  )
+}
+
+/** 드래그 가능한 질문 카드 — @dnd-kit/sortable 기반 (정책서 § 7-4) */
+function SortableQuestion({
+  q, i, updateQ, removeQ,
+}: {
+  q: Question
+  i: number
+  updateQ: (id: string, patch: Partial<Question>) => void
+  removeQ: (id: string) => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: q.id })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : 'auto',
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} className="border border-gray-200 rounded-xl p-3 space-y-2 bg-white">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label={`질문 ${i + 1} 순서 변경`}
+          className="text-gray-300 hover:text-gray-600 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded touch-none"
+        >
+          <GripVertical size={14} aria-hidden="true" />
+        </button>
+        <span className="text-sm px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+          질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
+        </span>
+        <CustomCheckbox
+          checked={q.required}
+          onChange={() => updateQ(q.id, { required: !q.required })}
+          label="필수 답변"
+          labelClassName="text-sm text-gray-600"
+          className="ml-auto"
+        />
+        <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+      </div>
+      <Input value={q.title} onChange={v => updateQ(q.id, { title: v })} placeholder="질문 제목" />
+      <Input value={q.desc} onChange={v => updateQ(q.id, { desc: v })} placeholder="질문 설명 (선택)" />
+      {q.type === 'choice' && (
+        <div className="space-y-1.5 pl-2">
+          {(q.options ?? []).map((opt, j) => (
+            <div key={j} className="flex items-center gap-2">
+              <CustomCheckbox checked={false} onChange={() => {}} label="" disabled className="pointer-events-none" />
+              <Input
+                value={opt}
+                onChange={v => updateQ(q.id, { options: q.options!.map((o, k) => k === j ? v : o) })}
+                placeholder={`옵션 ${j + 1}`}
+              />
+              <button type="button"
+                onClick={() => updateQ(q.id, { options: q.options!.filter((_, k) => k !== j) })}
+                aria-label="옵션 삭제"
+                className="text-gray-300 hover:text-red-500"
+              ><X size={14} /></button>
+            </div>
+          ))}
+          <button type="button"
+            onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
+            className="text-sm text-blue-600 hover:text-blue-700"
+          >+ 옵션 추가하기</button>
+        </div>
+      )}
+    </div>
   )
 }
