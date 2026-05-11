@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npm install -g pnpm@9.15.0 && pnpm install --frozen-lockfile=false && pnpm --filter @wellink/ui build && pnpm --filter wellink-influencer build",
+  "outputDirectory": "apps/influencer/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "alias": ["wellink-influencer.vercel.app"]
+}
