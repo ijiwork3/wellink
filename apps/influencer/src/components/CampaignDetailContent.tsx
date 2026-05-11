@@ -88,8 +88,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                     showToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
                   }}
                   aria-pressed={liked}
-                  aria-label={liked ? '좋아요 취소' : '좋아요'}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 ${liked ? 'border-red-300' : 'border-gray-200'}`}
+                  aria-label={liked ? '관심등록 취소' : '관심등록'}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300' : 'border-gray-200'}`}
                 >
                   <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
                   <span className={`text-sm ${liked ? 'text-red-500' : 'text-gray-500'}`}>{liked ? '관심등록됨' : '관심등록'}</span>
@@ -245,7 +245,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             ) : (
               <button
                 onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 ${campaign.status === '마감임박' ? 'animate-pulse' : ''}`}
+                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${campaign.status === '마감임박' ? 'animate-pulse' : ''}`}
               >
                 신청하기
               </button>

@@ -88,13 +88,13 @@ export default function CampaignApply() {
           </div>
           <button
             onClick={() => navigate('/campaigns/my')}
-            className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green"
+            className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             나의 캠페인 확인
           </button>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="w-full max-w-sm py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="w-full max-w-sm py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             계속 둘러보기
           </button>
@@ -315,14 +315,14 @@ export default function CampaignApply() {
         {isViewMode ? (
           <button
             onClick={() => navigate('/campaigns/my')}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             돌아가기
           </button>
         ) : (
           <button
             onClick={handleSubmit}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity"
+            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             신청하기
           </button>

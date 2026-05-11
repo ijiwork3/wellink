@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Upload, X, XCircle, RefreshCw, AlertCircle, Compass, Edit2 } from 'lucide-react'
+import { Search, Upload, X, AlertCircle, Compass, Edit2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, StatusBadge, Tabs, EmptyState } from '@wellink/ui'
+import { Modal, StatusBadge, Tabs, EmptyState, ErrorState } from '@wellink/ui'
 import type { ParticipationStatus } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -23,8 +23,8 @@ function statusToTab(s: string): TabKey {
   return '전체'
 }
 
-const ACTION_MAP: Partial<Record<string, Array<'수정' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
-  '지원완료':   ['수정', '취소'],
+const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
+  '지원완료':   ['신청 정보 보기', '취소'],
   '검토중':     ['취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
   '검수중':     ['상세보기'],
@@ -33,7 +33,7 @@ const ACTION_MAP: Partial<Record<string, Array<'수정' | '취소' | '콘텐츠 
 }
 
 function getActions(status: string) {
-  return ACTION_MAP[status] ?? ['상세보기']
+  return ACTION_MAP[status] ?? (['상세보기'] as const)
 }
 
 // 콘텐츠 제출 마감 임박 여부 (3일 이내)
@@ -125,12 +125,8 @@ export default function MyCampaign() {
   if (qa === 'error') {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">나의 캠페인을 불러오지 못했어요</p>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
-            <RefreshCw size={14} />다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="나의 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )
@@ -262,11 +258,11 @@ export default function MyCampaign() {
                           </button>
                         </React.Fragment>
                       )
-                      if (action === '수정') return (
+                      if (action === '신청 정보 보기') return (
                         <button key={action}
-                          onClick={() => navigate(`/campaigns/${c.id}/apply?mode=edit`)}
-                          className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
-                          신청 정보 수정
+                          onClick={() => navigate(`/campaigns/${c.id}/apply?mode=view`)}
+                          className="flex-1 py-2.5 rounded-xl text-xs font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          신청 정보 보기
                         </button>
                       )
                       if (action === '취소') return (

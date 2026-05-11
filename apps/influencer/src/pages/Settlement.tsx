@@ -84,7 +84,8 @@ export default function Settlement() {
   }
 
   const availableAmount = items.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
-  const thisMonthEarnings = items.filter(i => i.completedAt.startsWith('2026-04')).reduce((s, i) => s + i.amount, 0)
+  const thisMonthPrefix = new Date().toISOString().slice(0, 7)
+  const thisMonthEarnings = items.filter(i => i.completedAt.startsWith(thisMonthPrefix)).reduce((s, i) => s + i.amount, 0)
   const totalEarnings = items.reduce((s, i) => s + i.amount, 0)
 
   const confirmRequest = () => {

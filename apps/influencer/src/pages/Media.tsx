@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { Link2, XCircle, RefreshCw, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
+import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers } from '@wellink/ui'
+import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats } from '../services/mock/profile'
@@ -108,15 +108,8 @@ export default function Media() {
   if (qa === 'error') {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <div className="text-center">
-            <p className="text-sm font-semibold text-gray-900">SNS 연결 정보를 불러오지 못했어요</p>
-            <p className="text-xs text-gray-500 mt-1">잠시 후 다시 시도해 주세요</p>
-          </div>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors">
-            <RefreshCw size={14} />다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="SNS 연결 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )

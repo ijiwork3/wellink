@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, XCircle, RefreshCw, Phone, Lock, LogOut } from 'lucide-react'
+import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState } from '@wellink/ui'
 import { Toggle, Modal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -136,12 +136,8 @@ export default function Profile() {
   if (qa === 'error') {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">프로필을 불러오지 못했어요</p>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
-            <RefreshCw size={14} />다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="프로필을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )

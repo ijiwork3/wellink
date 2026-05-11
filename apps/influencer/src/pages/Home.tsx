@@ -18,10 +18,9 @@ export default function Home() {
   const navigate = useNavigate()
   const qa = useQAMode()
 
-  const activeCampaigns = mockMyCampaigns.filter(c =>
-    ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status)
-  )
-  // 임박 캠페인 — Date.now()는 impure 함수. mount 시점 한 번만 계산 (시간 갱신 필요시 useEffect)
+  const activeCampaigns = useMemo(() =>
+    mockMyCampaigns.filter(c => ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status))
+  , [])
   const urgentCampaigns = useMemo(() => {
     // eslint-disable-next-line react-hooks/purity
     const now = Date.now()

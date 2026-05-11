@@ -1,14 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
-type SortKey = 'deadline' | 'reward' | 'recent'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, X, SlidersHorizontal, XCircle, RefreshCw } from 'lucide-react'
+import { Search, X, SlidersHorizontal } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import CampaignDetailContent from '../components/CampaignDetailContent'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast } from '@wellink/ui'
-import { BRAND_URL, HELP_EMAIL } from '../config/urls'
+import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast, ErrorState, EmptyState } from '@wellink/ui'
+
+type SortKey = 'deadline' | 'reward' | 'recent'
+import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
 function SkeletonCard() {
   return (
@@ -97,12 +98,8 @@ export default function CampaignBrowse() {
   if (qa === 'error') {
     return (
       <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">캠페인 목록을 불러오지 못했어요</p>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
-            <RefreshCw size={14} />다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="캠페인 목록을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )
@@ -191,19 +188,19 @@ export default function CampaignBrowse() {
             ))}
           </div>
         ) : (
-          <div className="py-20 flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-brand-green-bg flex items-center justify-center">
-              <Search size={28} className="text-brand-green" />
-            </div>
-            <p className="text-sm font-medium text-gray-500">검색 결과가 없어요</p>
-            <p className="text-xs text-gray-500">다른 키워드나 카테고리로 검색해 보세요</p>
-            <button
-              onClick={() => { setSearch(''); setSelectedCategory('전체') }}
-              className="mt-1 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity"
-            >
-              전체 캠페인 보기
-            </button>
-          </div>
+          <EmptyState
+            variant="search"
+            title="검색 결과가 없어요"
+            description="다른 키워드나 카테고리로 검색해 보세요"
+            action={
+              <button
+                onClick={() => { setSearch(''); setSelectedCategory('전체') }}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                전체 캠페인 보기
+              </button>
+            }
+          />
         )}
       </div>
 
@@ -268,7 +265,7 @@ export default function CampaignBrowse() {
             </div>
             <div className="flex gap-4 text-sm text-gray-300">
               <button onClick={() => window.open(`mailto:${HELP_EMAIL}`)} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>
-              <button onClick={() => window.open('https://wellink.co.kr/terms', '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</button>
+              <button onClick={() => window.open(TERMS_URL, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</button>
               <button onClick={() => window.location.href = `${BRAND_URL}/#faq`} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
             </div>
           </div>

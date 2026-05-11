@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift, Bookmark, XCircle, RefreshCw, Compass } from 'lucide-react'
+import { Heart, Users, Gift, Bookmark, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay, EmptyState } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, EmptyState, ErrorState } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
 import type { BookmarkedCampaign } from '../services/mock/campaigns'
@@ -69,12 +69,8 @@ export default function Favorites() {
   if (qa === 'error') {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[350px] gap-4">
-          <XCircle size={44} className="text-red-300" />
-          <p className="text-sm font-semibold text-gray-900">관심 캠페인을 불러오지 못했어요</p>
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green">
-            <RefreshCw size={14} />다시 시도
-          </button>
+        <div className="flex items-center justify-center min-h-[350px]">
+          <ErrorState message="관심 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )
@@ -121,8 +117,11 @@ export default function Favorites() {
               return (
                 <div
                   key={c.id}
-                  className="bg-white rounded-2xl border border-gray-100 p-4 cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150"
+                  role="button"
+                  tabIndex={0}
+                  className="bg-white rounded-2xl border border-gray-100 p-4 cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   onClick={() => navigate(`/campaigns/${c.id}`)}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/campaigns/${c.id}`) } }}
                 >
                   <div className="flex items-start gap-3">
                     <div
