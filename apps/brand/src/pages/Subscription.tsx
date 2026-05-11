@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, CreditCard, AlertTriangle } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons } from '@wellink/ui'
+import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons, PageHeader } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
@@ -208,10 +208,7 @@ export default function Subscription() {
   if (qa === 'error') {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">구독 관리</h1>
-          <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
-        </div>
+        <PageHeader title="구독 관리" description="가장 합리적인 가격으로 캠페인 기능을 이용하세요" />
         <ErrorState message="구독 정보를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
       </div>
     )
@@ -219,25 +216,24 @@ export default function Subscription() {
 
   return (
     <div className="space-y-8">
-      {/* 타이틀 */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">구독 관리</h1>
-          <p className="text-base text-gray-500 mt-1">가장 합리적인 가격으로 캠페인 기능을 이용하세요</p>
-        </div>
-        {/* 현재 플랜 뱃지 */}
-        {displayPlan ? (
-          <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
-            현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
-            {(showExpired || showPaymentFailed) && ' (만료)'}
-          </span>
-        ) : (
-          <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300">
-            <AlertTriangle size={12} aria-hidden="true" />
-            미구독 · 무료 플랜
-          </span>
-        )}
-      </div>
+      {/* 헤더 */}
+      <PageHeader
+        title="구독 관리"
+        description="가장 합리적인 가격으로 캠페인 기능을 이용하세요"
+        meta={
+          displayPlan ? (
+            <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
+              현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
+              {(showExpired || showPaymentFailed) && ' (만료)'}
+            </span>
+          ) : (
+            <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300">
+              <AlertTriangle size={12} aria-hidden="true" />
+              미구독 · 무료 플랜
+            </span>
+          )
+        }
+      />
 
       {/* QA: 구독 만료 배너 */}
       {showExpired && (

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, CreditCard, ShieldCheck, AlertCircle, CheckCircle2, Plus, Trash2 } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS, CustomCheckbox } from '@wellink/ui'
+import { Modal, AlertModal, useToast, TIMER_MS, CustomCheckbox, PageHeader } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
 
 /** 결제 수단 변경 — 토스페이먼츠 빌링 인증 mock */
@@ -108,7 +108,7 @@ export default function PaymentMethod() {
         >
           <ArrowLeft size={18} aria-hidden="true" />
         </button>
-        <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">결제 수단 관리</h1>
+        <PageHeader title="결제 수단 관리" className="flex-1" />
       </div>
 
       {/* 결제 실패 배너 */}

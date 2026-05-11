@@ -13,7 +13,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
 }
 import {
   Modal, TIMER_MS, useToast,
-  Tabs, ErrorState, SkeletonCard, SkeletonRow,
+  Tabs, ErrorState, SkeletonCard, SkeletonRow, PageHeader,
   type TabItem,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -150,19 +150,19 @@ export default function MyPage() {
   return (
     <div className="space-y-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">마이페이지</h1>
-          <p className="text-base text-gray-500 mt-0.5">계정 설정 및 구독 정보를 한눈에 확인하세요.</p>
-        </div>
-        <button type="button"
-          onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
-          className="shrink-0 flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          <LogOut size={16} aria-hidden="true" />
-          로그아웃
-        </button>
-      </div>
+      <PageHeader
+        title="마이페이지"
+        description="계정 설정 및 구독 정보를 한눈에 확인하세요."
+        actions={
+          <button type="button"
+            onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
+            className="shrink-0 flex items-center gap-1.5 text-base text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <LogOut size={16} aria-hidden="true" />
+            로그아웃
+          </button>
+        }
+      />
 
       {/* 탭 — 공통 Tabs (variant='pill', scrollable=false → wrap) */}
       <Tabs<TabName>

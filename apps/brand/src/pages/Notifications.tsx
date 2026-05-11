@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, AlertCircle } from 'lucide-react'
 import {
   useToast, ErrorState, Pagination,
-  Tabs, EmptyState, SkeletonRow,
+  Tabs, EmptyState, SkeletonRow, PageHeader,
   type TabItem,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -115,23 +115,20 @@ export default function Notifications() {
   return (
     <div className="space-y-5">
       {/* 헤더 */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <Bell size={20} className="text-gray-700" aria-hidden="true" />
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900 whitespace-nowrap">알림 센터</h1>
-          {unreadCount > 0 && (
-            <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full whitespace-nowrap" aria-label={`미읽음 ${unreadCount}건`}>
-              {unreadCount}
-            </span>
-          )}
-        </div>
-        {unreadCount > 0 && (
+      <PageHeader
+        title="알림 센터"
+        meta={unreadCount > 0 ? (
+          <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full whitespace-nowrap" aria-label={`미읽음 ${unreadCount}건`}>
+            {unreadCount}
+          </span>
+        ) : undefined}
+        actions={unreadCount > 0 ? (
           <button type="button"
             onClick={handleMarkAllRead}
             className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
           >모두 읽음으로 표시</button>
-        )}
-      </div>
+        ) : undefined}
+      />
 
       {/* 본문 */}
       <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

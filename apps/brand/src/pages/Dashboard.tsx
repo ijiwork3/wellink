@@ -6,7 +6,7 @@ import {
   BarChart3, Sparkles, Lock, AlertTriangle, X,
   User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent
 } from 'lucide-react'
-import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard, FloatingScrollChevrons } from '@wellink/ui'
+import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard, FloatingScrollChevrons, PageHeader } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { fmtDate } from '../utils/fmtDate'
@@ -153,10 +153,10 @@ export default function Dashboard() {
   if (qa === 'new-user') {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크에 오신 것을 환영합니다 👋</h1>
-          <p className="text-base text-gray-500 mt-0.5">웰링크에서 첫 캠페인을 시작해 보세요.</p>
-        </div>
+        <PageHeader
+          title="안녕하세요, 웰링크에 오신 것을 환영합니다 👋"
+          description="웰링크에서 첫 캠페인을 시작해 보세요."
+        />
         <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green-border rounded-2xl p-8 text-center">
           <div className="w-14 h-14 rounded-2xl bg-brand-green-bg flex items-center justify-center mx-auto mb-4">
             <Sparkles size={24} className="text-brand-green" aria-hidden="true" />
@@ -271,18 +271,18 @@ export default function Dashboard() {
   if (qa === 'empty') {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
-            <p className="text-base text-gray-500 mt-0.5">아직 진행 중인 캠페인이 없습니다.</p>
-          </div>
-          <button type="button"
-            onClick={() => navigate('/campaigns/new')}
-            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
-          >
-            <Megaphone size={14} aria-hidden="true" />새 캠페인
-          </button>
-        </div>
+        <PageHeader
+          title="안녕하세요, 웰링크 브랜드님"
+          description="아직 진행 중인 캠페인이 없습니다."
+          actions={
+            <button type="button"
+              onClick={() => navigate('/campaigns/new')}
+              className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+            >
+              <Megaphone size={14} aria-hidden="true" />새 캠페인
+            </button>
+          }
+        />
         {/* 0값 KPI — Card 컴포넌트로 통일 (정상 KPI와 동일 마크업) */}
         <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
           {[
@@ -376,19 +376,19 @@ export default function Dashboard() {
       ))}
 
       {/* ── 인사말 + 날짜 ── */}
-      <div className="flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
-          <p className="text-base text-gray-500 mt-0.5">{dateStr}</p>
-        </div>
-        <button type="button"
-          onClick={() => navigate('/campaigns/new')}
-          className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
-        >
-          <Megaphone size={14} aria-hidden="true" />
-          새 캠페인
-        </button>
-      </div>
+      <PageHeader
+        title="안녕하세요, 웰링크 브랜드님"
+        description={dateStr}
+        actions={
+          <button type="button"
+            onClick={() => navigate('/campaigns/new')}
+            className="flex items-center gap-2 bg-brand-green text-white px-4 py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+          >
+            <Megaphone size={14} aria-hidden="true" />
+            새 캠페인
+          </button>
+        }
+      />
 
       {/* ── KPI 카드 (3개) ── */}
       <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">

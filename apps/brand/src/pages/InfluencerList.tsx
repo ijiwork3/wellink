@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, ExternalLink } from 'lucide-react'
 import {
   CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState, EmptyState,
-  FloatingScrollChevrons,
+  FloatingScrollChevrons, PageHeader,
   fmtFollowers as formatFollowers, AVATAR_COLORS,
   getEngagementColor, getAuthenticColor, ENGAGEMENT_THRESHOLD,
   INFLUENCER_SORT_OPTIONS, DEFAULT_INFLUENCER_SORT, sortInfluencers,
@@ -352,10 +352,7 @@ export default function InfluencerList() {
   if (qa === 'loading') {
     return (
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
-          <p className="text-base text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
-        </div>
+        <PageHeader title="인플루언서 리스트" description="브랜드에 적합한 인플루언서를 탐색하세요." />
         {/* KPI 3개 스켈레톤 */}
         <div className="grid grid-cols-2 @md:grid-cols-3 gap-3 animate-pulse">
           {[0, 1, 2].map(i => (
@@ -396,10 +393,7 @@ export default function InfluencerList() {
   if (qa === 'error') {
     return (
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
-          <p className="text-base text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
-        </div>
+        <PageHeader title="인플루언서 리스트" description="브랜드에 적합한 인플루언서를 탐색하세요." />
         <ErrorState message="인플루언서 목록을 불러올 수 없습니다" onRetry={() => window.location.reload()} />
       </div>
     )
@@ -409,10 +403,7 @@ export default function InfluencerList() {
   if (qa === 'empty') {
     return (
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">인플루언서 리스트</h1>
-          <p className="text-base text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
-        </div>
+        <PageHeader title="인플루언서 리스트" description="브랜드에 적합한 인플루언서를 탐색하세요." />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <EmptyState
             size="lg"
@@ -458,10 +449,7 @@ export default function InfluencerList() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
-        <p className="text-base text-gray-500 mt-0.5">브랜드에 적합한 인플루언서를 탐색하세요.</p>
-      </div>
+      <PageHeader title="인플루언서 리스트" description="브랜드에 적합한 인플루언서를 탐색하세요." />
 
       {/* 요약 통계 */}
       <div className="grid grid-cols-2 @md:grid-cols-3 gap-3">
