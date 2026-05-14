@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, AlertCircle } from 'lucide-react'
+import { Bell, ChevronRight, CreditCard, FileText, MessageSquare } from 'lucide-react'
 import {
   useToast, ErrorState, Pagination,
-  Tabs, EmptyState, SkeletonRow, PageHeader,
+  Tabs, EmptyState, SkeletonRow, PageHeader, Toggle,
   type TabItem,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 import {
   getVisibleNotifications, isUnread, markAsRead, markAllAsRead, useReadIds,
   type NotificationItem, type NotificationType,
@@ -42,22 +41,23 @@ export default function Notifications() {
     qa === 'tab-message'  ? 'message'  :
     qa === 'tab-system'   ? 'system'   : 'all'
 
-  const { isSubscribed } = usePlanAccess()
-
   // 알림 데이터·읽음 상태는 글로벌 store에서 (Sidebar dot과 동기화)
+  // 구독 여부와 무관히 모든 카테고리(시스템·결제 포함) 동일 노출 — 클라이언트 결정
   const readIds = useReadIds()
   const notifications: NotificationItem[] = useMemo(
-    () => qa === 'empty' ? [] : getVisibleNotifications(isSubscribed),
-    [qa, isSubscribed]
+    () => qa === 'empty' ? [] : getVisibleNotifications(true),
+    [qa]
   )
 
   const [filter, setFilter] = useState<FilterValue>(initialFilter)
   const [page, setPage] = useState(1)
+  const [unreadOnly, setUnreadOnly] = useState(false)
 
-  const filtered = useMemo(
-    () => filter === 'all' ? notifications : notifications.filter(n => n.type === filter),
-    [filter, notifications]
-  )
+  const filtered = useMemo(() => {
+    let list = filter === 'all' ? notifications : notifications.filter(n => n.type === filter)
+    if (unreadOnly) list = list.filter(n => isUnread(n.id, readIds))
+    return list
+  }, [filter, notifications, unreadOnly, readIds])
   const unreadCount = useMemo(
     () => notifications.filter(n => isUnread(n.id, readIds)).length,
     [notifications, readIds]
@@ -132,28 +132,48 @@ export default function Notifications() {
 
       {/* 본문 */}
       <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* 필터 탭 — 공통 Tabs (variant='soft') */}
-        <div className="px-3 @sm:px-5 py-3 @sm:py-4 border-b border-gray-50">
-          <Tabs<FilterValue>
-            variant="soft"
-            scrollable
-            items={filterTabs}
-            value={filter}
-            onChange={(v) => { setFilter(v); setPage(1) }}
-            ariaLabel="알림 카테고리 필터"
-          />
+        {/* 필터 탭 + 읽지 않음만 보기 토글 */}
+        <div className="px-3 @sm:px-5 py-3 @sm:py-4 border-b border-gray-50 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex-1 min-w-0">
+            <Tabs<FilterValue>
+              variant="soft"
+              scrollable
+              items={filterTabs}
+              value={filter}
+              onChange={(v) => { setFilter(v); setPage(1) }}
+              ariaLabel="알림 카테고리 필터"
+            />
+          </div>
+          <label className="flex items-center gap-2 shrink-0 cursor-pointer text-sm">
+            <span className="text-gray-700 whitespace-nowrap">읽지 않음만</span>
+            <Toggle
+              checked={unreadOnly}
+              onChange={() => { setUnreadOnly(prev => !prev); setPage(1) }}
+              label="읽지 않은 알림만 보기"
+            />
+          </label>
         </div>
 
         {/* 리스트 */}
         {paginated.length === 0 ? (
           <EmptyState
             size="lg"
-            variant={notifications.length === 0 ? 'default' : 'filter'}
+            variant={unreadOnly || filter !== 'all' || notifications.length > 0 ? 'filter' : 'default'}
             icon={<Bell size={40} aria-hidden="true" />}
-            title={notifications.length === 0 ? '새로운 알림이 없습니다' : '해당 카테고리에 알림이 없습니다'}
-            description={notifications.length === 0
-              ? '새 알림이 도착하면 이곳에 표시됩니다.'
-              : '다른 카테고리를 선택해 보세요.'}
+            title={
+              notifications.length === 0
+                ? '새로운 알림이 없습니다'
+                : unreadOnly
+                  ? '읽지 않은 알림이 없습니다'
+                  : '해당 카테고리에 알림이 없습니다'
+            }
+            description={
+              notifications.length === 0
+                ? '새 알림이 도착하면 이곳에 표시됩니다.'
+                : unreadOnly
+                  ? '읽지 않음만 보기를 끄거나 다른 카테고리를 선택해 보세요.'
+                  : '다른 카테고리를 선택해 보세요.'
+            }
           />
         ) : (
           <ul className="divide-y divide-gray-50" role="list">
@@ -204,13 +224,6 @@ export default function Notifications() {
         )}
       </div>
 
-      {/* 안내 카드 — 채도 v2: amber-50 → amber-100 가시성 ↑ */}
-      <div className="bg-amber-100 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
-        <AlertCircle size={14} className="text-amber-700 mt-0.5 shrink-0" aria-hidden="true" />
-        <p className="text-sm text-amber-800">
-          알림은 푸시·앱 내에서 확인할 수 있으며, 읽음 처리 후에도 30일간 보관됩니다.
-        </p>
-      </div>
     </div>
   )
 }

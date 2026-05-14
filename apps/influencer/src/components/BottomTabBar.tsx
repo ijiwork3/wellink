@@ -26,7 +26,7 @@ export default function BottomTabBar() {
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset ${
-              isActive ? 'text-brand-green' : 'text-gray-500'
+              isActive ? 'text-brand-green-text' : 'text-gray-500'
             }`}
           >
             <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" />

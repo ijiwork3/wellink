@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useEscToClose } from '../utils/useEscToClose'
 import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
@@ -20,12 +21,13 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
   const bottomTab = showBottomTab ?? showSidebar
   const [drawerOpen, setDrawerOpen] = useState(false)
   const navigate = useNavigate()
+  useEscToClose(drawerOpen, () => setDrawerOpen(false))
 
   return (
     <div className="@container flex flex-col w-full h-full">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-sm focus:font-medium"
+        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[9999] focus-visible:px-4 focus-visible:py-2 focus-visible:bg-brand-green focus-visible:text-white focus-visible:rounded-xl focus-visible:shadow-lg focus-visible:text-sm focus-visible:font-medium"
       >
         메인 콘텐츠로 이동
       </a>
@@ -38,7 +40,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             <button
               onClick={onBack}
               aria-label="이전으로"
-              className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <ArrowLeft size={20} />
               <span className="text-sm font-medium truncate max-w-[200px]">{pageTitle}</span>
@@ -62,7 +64,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
               <button
                 onClick={() => navigate('/home')}
                 aria-label="WELLINK AI 홈으로"
-                className="flex items-center gap-1.5 transition-opacity hover:opacity-80"
+                className="flex items-center gap-1.5 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <span className="text-base font-bold tracking-tight text-gray-900">WELLINK</span>
                 <span className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap">인플루언서</span>
@@ -84,7 +86,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
       <div className="flex-1 overflow-y-auto flex flex-col">
         {profileHeader && <ProfileHeader />}
         {showSidebar ? (
-          <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @[640px]:px-6 @[640px]:py-6 pb-20 @[640px]:pb-6">
+          <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @[640px]:px-6 @[640px]:py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-6">
             <div className="flex gap-6">
               {/* SideNav: 컨테이너 lg 이상에서만 표시 */}
               <div className="hidden @[640px]:block">
@@ -96,7 +98,11 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             </div>
           </div>
         ) : (
-          <main id="main-content" className={`flex-1 ${bottomTab ? 'pb-20 @[640px]:pb-0' : ''}`} style={{ animation: 'fadeIn 0.15s ease-out' }}>
+          <main
+            id="main-content"
+            className={`flex-1 ${bottomTab ? 'pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-0' : ''}`}
+            style={{ animation: 'fadeIn 0.15s ease-out' }}
+          >
             {children}
           </main>
         )}
@@ -104,9 +110,12 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
 
       {/* 태블릿 드로어 */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex" onClick={() => setDrawerOpen(false)}>
+        <div className="fixed inset-0 z-[200] flex" onClick={() => setDrawerOpen(false)}>
           <div className="absolute inset-0 bg-black/40" />
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="메뉴"
             className="relative w-64 bg-white h-full flex flex-col shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
@@ -125,7 +134,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
             <div className="border-t border-gray-100 p-4">
               <button
                 onClick={() => { auth.clear(); navigate('/login') }}
-                className="w-full text-sm py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                className="w-full text-sm py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
               </button>

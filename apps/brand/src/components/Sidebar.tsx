@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, ExternalLink, Home, Search, Bell, Lock,
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Search, Bell, Lock,
 } from 'lucide-react'
 import { Modal } from '@wellink/ui'
 import { usePlanAccess } from '../hooks/usePlanAccess'
@@ -53,8 +53,9 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
   const [menuSearch, setMenuSearch] = useState('')
   const [gatedModalOpen, setGatedModalOpen] = useState(false)
   const q = menuSearch.trim().toLowerCase()
-  const showHome = !q || '홈'.includes(q)
+  // 클라 #5: 사이드바 *홈* 탭 삭제. 좌상단 WELLINK 로고 클릭으로 대시보드 이동
   const showDashboard = !q || '대시보드'.includes(q)
+  const showDashboardV2 = !q || '대시보드 v2'.includes(q) || 'v2'.includes(q)
   const filteredSections = useMemo(
     () =>
       sections
@@ -67,14 +68,19 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
 
   return (
     <aside className={`${fullWidth ? 'w-full h-full' : 'w-[220px] shrink-0 sticky top-0'} bg-white border-r border-gray-100 flex flex-col min-h-0`}>
-      {/* 로고 */}
+      {/* 로고 — 클라 #5: 로고 클릭 시 홈(대시보드)으로 이동 */}
       {!hideLogo && (
-        <div className="px-5 pt-5 pb-4">
+        <button
+          type="button"
+          onClick={() => { navigate('/dashboard'); onNavigate?.() }}
+          className="px-5 pt-5 pb-4 text-left hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
+          aria-label="홈으로 이동"
+        >
           <div className="flex items-center gap-1.5">
             <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
             <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full leading-none">광고주</span>
           </div>
-        </div>
+        </button>
       )}
 
       {/* 구독 만료 배너 */}
@@ -105,36 +111,14 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         </div>
       </div>
 
-      {/* 내비게이션 */}
+      {/* 내비게이션 — 클라 #5: 홈 탭 제거 (WELLINK 로고로 대체) */}
       <nav className="flex-1 overflow-y-auto px-3 pb-2">
-        {showHome && (
-          isGated ? (
-            <button
-              type="button"
-              onClick={openGatedModal}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
-            >
-              <Home size={15} />
-              <span className="flex-1 text-left">홈</span>
-              <Lock size={11} className="shrink-0 opacity-50" aria-hidden="true" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => { navigate('/dashboard'); onNavigate?.() }}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-600 hover:bg-gray-100 hover:text-gray-900 w-full transition-all duration-150 mb-0.5"
-            >
-              <Home size={15} />
-              홈
-            </button>
-          )
-        )}
         {showDashboard && (
           isGated ? (
             <button
               type="button"
               onClick={openGatedModal}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-2 cursor-not-allowed"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
             >
               <LayoutDashboard size={15} />
               <span className="flex-1 text-left">대시보드</span>
@@ -146,7 +130,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
               end
               onClick={() => onNavigate?.()}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-2 ${
+                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-0.5 ${
                   isActive
                     ? 'bg-gray-100 text-gray-900 font-medium'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -157,6 +141,25 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
               대시보드
             </NavLink>
           )
+        )}
+        {/* 대시보드 v2 — 재설계 (피드백 반영 후) */}
+        {showDashboardV2 && (
+          <NavLink
+            to="/dashboard-v2"
+            end
+            onClick={() => onNavigate?.()}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-2 ${
+                isActive
+                  ? 'bg-gray-100 text-gray-900 font-medium'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`
+            }
+          >
+            <LayoutDashboard size={15} />
+            <span className="flex-1">대시보드 v2</span>
+            <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded">NEW</span>
+          </NavLink>
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">

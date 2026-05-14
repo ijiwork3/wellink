@@ -236,7 +236,7 @@ export default function PostContentTable() {
               value: tab.value,
               label: tab.label,
               trailing: tab.value !== 'all'
-                ? <span className="text-xs opacity-60">{POST_DATA.filter(p => p.type === tab.value).length}</span>
+                ? <span className="text-sm opacity-60 tabular-nums">{POST_DATA.filter(p => p.type === tab.value).length}</span>
                 : undefined,
             }))}
           />

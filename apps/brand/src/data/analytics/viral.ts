@@ -62,25 +62,45 @@ const VC_INFLUENCERS = [
 ]
 const VC_TYPES: ViralContentType[] = ['릴스', '피드', '스토리', '영상', '쇼츠']
 
+/**
+ * createdAt 정책 (영상 매칭):
+ *  - 최신 12개(i < 12) — 최근 1시간 ~ 7일 전 ISO datetime (N시간/N일 전 표시)
+ *  - 그 중 8개 = 평가중 (데이터 부족 상태 — 최신순 첫 화면에 평가중 다수 노출)
+ *  - 그 외 — 1~4월 분포 (정상 등급)
+ */
+const NOW_MS = Date.now()
+const RECENT_HOURS_AGO = [3, 7, 11, 14, 18, 22, 28, 36, 48, 72, 120, 168]  // 12개
+
 export const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, i) => {
-  const isProcessing = i % 19 === 18  // 5%는 점수 산정 중
+  const isRecent = i < 12
+  // 최신 12개 중 첫 8개 평가중 (영상 패턴: 갓 게시된 콘텐츠는 평가 대기) + 정기 평가중 5%
+  const isProcessing = isRecent ? i < 8 : (i % 19 === 18)
   const viralScore = isProcessing ? 0 : Math.max(8, Math.min(98, 30 + (i * 7) % 70))
   const performanceScore = isProcessing ? 0 : Math.max(0, viralScore - 5 + (i % 9))
   const momentumScore = isProcessing ? 0 : Math.max(0, viralScore - 8 + (i % 13))
   const grade: ContentGrade = isProcessing ? 'processing' : calcGrade(performanceScore)
-  const reach = isProcessing ? 0 : 1000 + (i * 511) % 30000
-  const likes = isProcessing ? 0 : Math.floor(reach * (0.06 + (i % 7) * 0.005))
-  const comments = isProcessing ? 0 : Math.floor(likes * (0.08 + (i % 5) * 0.01))
+  // 평가중이면 reach/comments는 적게 있을 수 있지만 viral score 계산 불가 — likes/shares/saves는 0
+  const reach = isProcessing ? Math.floor(500 + (i * 313) % 8000) : 1000 + (i * 511) % 30000
+  const likes = isProcessing ? Math.floor((i * 47) % 200) : Math.floor(reach * (0.06 + (i % 7) * 0.005))
+  const comments = isProcessing ? Math.floor((i * 13) % 40) : Math.floor(likes * (0.08 + (i % 5) * 0.01))
   const saves = isProcessing ? 0 : Math.floor(likes * (0.3 + (i % 4) * 0.05))
   const shares = isProcessing ? 0 : Math.floor(likes * (0.15 + (i % 6) * 0.02))
-  const monthIdx = (i * 7) % 4 + 1
-  const dayIdx = ((i * 11) % 28) + 1
   const type = VC_TYPES[i % VC_TYPES.length]
   const platform: ViralPlatform = type === '영상'
     ? 'youtube'
     : type === '쇼츠'
       ? (i % 2 === 0 ? 'youtube' : 'tiktok')
       : 'instagram'
+
+  // createdAt — 최신 12개는 ISO datetime (N시간/N일 전), 그 외는 1-4월 분포
+  const createdAt = isRecent
+    ? new Date(NOW_MS - RECENT_HOURS_AGO[i] * 3600000).toISOString()
+    : (() => {
+        const monthIdx = (i * 7) % 4 + 1
+        const dayIdx = ((i * 11) % 28) + 1
+        return `2026-${String(monthIdx).padStart(2, '0')}-${String(dayIdx).padStart(2, '0')}`
+      })()
+
   return {
     id: `v-${i + 1}`,
     title: i < VC_TITLES.length ? VC_TITLES[i] : `${VC_TITLES[i % VC_TITLES.length]} #${Math.floor(i / VC_TITLES.length) + 1}`,
@@ -92,7 +112,7 @@ export const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, 
     performanceScore,
     momentumScore,
     grade,
-    createdAt: `2026-${String(monthIdx).padStart(2, '0')}-${String(dayIdx).padStart(2, '0')}`,
+    createdAt,
   }
 })
 

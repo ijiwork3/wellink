@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, CreditCard, AlertTriangle } from 'lucide-react'
-import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons, PageHeader } from '@wellink/ui'
+import { Check, CreditCard, AlertTriangle, CheckCircle2, Receipt } from 'lucide-react'
+import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons, PageHeader, fmtPrice } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
 import { ENTERPRISE_EMAIL } from '../config/urls'
@@ -66,6 +66,15 @@ const plans = [
   },
 ]
 
+// 플랜 혜택 리스트 — 해지·환불 모달에서 *잃게 되는 혜택* 안내용
+const PLAN_BENEFITS = [
+  'IG 브랜드 계정 분석 및 AI 가이드',
+  '메타 광고 데이터 분석 및 AI 가이드',
+  '웰니스·피트니스 인플루언서 Pool',
+  '무가/유가 시딩 캠페인 운영',
+  'SNS 바이럴 지표 제공 및 분석',
+] as const
+
 const PAYMENT_HISTORY: Record<string, { id: number; date: string; desc: string; amount: string; status: string }[]> = {
   focus: [
     { id: 1, date: '2026-04-01', desc: 'Focus Plan 정기결제', amount: '99,000원',  status: '완료' },
@@ -110,6 +119,23 @@ export default function Subscription() {
   const [cancelStatus, setCancelStatus] = useState<'active' | 'cancel_scheduled'>('active')
   const [cancelModal, setCancelModal] = useState(false)
   const [refundModal, setRefundModal] = useState(false)
+  const [refundReason, setRefundReason] = useState('')
+  // 다음 결제일·남은 이용 기간 (mock — 실제는 백엔드)
+  const nextPaymentDate = '2026-06-14'
+  const remainingDays = (() => {
+    const diff = new Date(nextPaymentDate).getTime() - new Date().getTime()
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+  })()
+  // 환불 예정 금액 (mock) — 현재 plan 월 가격 × 남은 일수 / 30 ÷ 1.1 (VAT 분리)
+  const refundEstimate = (() => {
+    const planObj = plans.find(p => p.id === currentPlan)
+    if (!planObj || !/^\d/.test(planObj.price)) return 0
+    const monthlyKRW = parseInt(planObj.price.replace(/,/g, ''), 10) || 0
+    return Math.floor((monthlyKRW / 1.1) * (remainingDays / 30))
+  })()
+  // 부분 환불 — 환불 직전 플랜과 환불 금액·일자·대상 결제건 기록 (결제 내역 유지용)
+  const [refundedFromPlan, setRefundedFromPlan] = useState<string | null>(null)
+  const [refundInfo, setRefundInfo] = useState<{ amount: string; refundedAt: string; lastPaymentId: number } | null>(null)
 
   // 테이블 가로스크롤 — 그라디언트 오버레이 표시용 (쉐브론은 FloatingScrollChevrons에서 처리)
   const tableScrollRef = useRef<HTMLDivElement>(null)
@@ -168,6 +194,9 @@ export default function Subscription() {
       if (confirmModal) {
         setCurrentPlan(confirmModal)
         setQAState({ plan: confirmModal as QAPlan })
+        // 재구독 시 이전 환불 정보 초기화 (부분 환불 배지 자동 해제)
+        setRefundedFromPlan(null)
+        setRefundInfo(null)
       }
       setConfirmModal(null)
       setConfirmed(false)
@@ -603,9 +632,10 @@ export default function Subscription() {
         )}
       </div>
 
-      {/* 최근 결제 내역 — 미구독 / 무료체험 / 무료 상태면 숨김 */}
-      {currentPlan && qa !== 'plan-free' && qa !== 'trial' && (() => {
-        const sortedHistory = [...(PAYMENT_HISTORY[currentPlan] ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      {/* 최근 결제 내역 — 구독 중이거나 환불됨 상태(부분 환불 표시 유지)에서 노출 */}
+      {((currentPlan && qa !== 'plan-free' && qa !== 'trial') || refundedFromPlan) && (() => {
+        const planKey = currentPlan || refundedFromPlan || ''
+        const sortedHistory = [...(PAYMENT_HISTORY[planKey] ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         return (
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50">
@@ -614,19 +644,29 @@ export default function Subscription() {
 
             {/* 모바일 (< @md) — 카드 리스트 */}
             <ul className="@md:hidden divide-y divide-gray-50">
-              {sortedHistory.map(p => (
-                <li key={p.id} className="px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-1.5">
-                    <p className="text-base font-medium text-gray-900 break-keep min-w-0">{p.desc}</p>
-                    <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium whitespace-nowrap shrink-0">{p.status}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span className="text-base font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
-                    <span className="text-gray-400" aria-hidden="true">·</span>
-                    <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
-                  </div>
-                </li>
-              ))}
+              {sortedHistory.map(p => {
+                const isRefunded = !!(refundInfo && p.id === refundInfo.lastPaymentId)
+                return (
+                  <li key={p.id} className="px-5 py-4">
+                    <div className="flex items-start justify-between gap-3 mb-1.5">
+                      <p className="text-base font-medium text-gray-900 break-keep min-w-0">{p.desc}</p>
+                      <span className={`text-sm px-2.5 py-1 rounded-full font-medium whitespace-nowrap shrink-0 ${
+                        isRefunded ? 'bg-amber-100 text-amber-700' : 'bg-brand-green-bg text-brand-green-text'
+                      }`}>{isRefunded ? '부분 환불 처리됨' : p.status}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-500">
+                      <span className="text-base font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
+                      <span className="text-gray-400" aria-hidden="true">·</span>
+                      <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
+                    </div>
+                    {isRefunded && refundInfo && (
+                      <p className="text-xs text-amber-700 mt-1.5 whitespace-nowrap">
+                        결제일 {fmtDate(p.date)} · 환불 요청일 {fmtDate(refundInfo.refundedAt)}
+                      </p>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
 
             {/* 태블릿/데스크톱 (@md+) — 테이블 */}
@@ -646,16 +686,26 @@ export default function Subscription() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {sortedHistory.map(p => (
-                        <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
-                          <td className="py-3 px-5 text-base font-medium text-gray-900 whitespace-nowrap">{p.desc}</td>
-                          <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
-                          <td className="py-3 px-5 text-base text-gray-600 whitespace-nowrap">{fmtDate(p.date)}</td>
-                          <td className="py-3 px-5 whitespace-nowrap">
-                            <span className="text-sm bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full font-medium">{p.status}</span>
-                          </td>
-                        </tr>
-                      ))}
+                      {sortedHistory.map(p => {
+                        const isRefunded = !!(refundInfo && p.id === refundInfo.lastPaymentId)
+                        return (
+                          <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
+                            <td className="py-3 px-5 text-base font-medium text-gray-900 whitespace-nowrap">{p.desc}</td>
+                            <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
+                            <td className="py-3 px-5 whitespace-nowrap">
+                              <div className="text-base text-gray-600">{fmtDate(p.date)}</div>
+                              {isRefunded && refundInfo && (
+                                <div className="text-xs text-amber-700 mt-0.5">환불 요청일 {fmtDate(refundInfo.refundedAt)}</div>
+                              )}
+                            </td>
+                            <td className="py-3 px-5 whitespace-nowrap">
+                              <span className={`text-sm px-2.5 py-1 rounded-full font-medium ${
+                                isRefunded ? 'bg-amber-100 text-amber-700' : 'bg-brand-green-bg text-brand-green-text'
+                              }`}>{isRefunded ? '부분 환불 처리됨' : p.status}</span>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -665,8 +715,8 @@ export default function Subscription() {
         )
       })()}
 
-      {/* 미구독 상태 빈 결제내역 — 공통 EmptyState */}
-      {(!currentPlan || qa === 'plan-free') && (
+      {/* 미구독 상태 빈 결제내역 — 환불 직후에는 결제 내역이 부분 환불 표시로 유지되므로 노출 X */}
+      {(!currentPlan && !refundedFromPlan) || qa === 'plan-free' ? (
         <div className="bg-white rounded-xl border border-gray-100">
           <EmptyState
             size="md"
@@ -675,7 +725,7 @@ export default function Subscription() {
             description="플랜 구독 후 결제 내역이 표시됩니다."
           />
         </div>
-      )}
+      ) : null}
 
       {/* Enterprise 도입 문의 모달 */}
       <AlertModal
@@ -775,48 +825,168 @@ export default function Subscription() {
         })()}
       </Modal>
 
-      {/* 해지 확인 모달 — 신규, 원본 CancelPaymentModal 동등 */}
-      <AlertModal
+      {/* ── 해지 예약 모달 — 정기 결제만 해지, 만료일까지 혜택 유지 (이미지 매칭) ── */}
+      <Modal
         open={cancelModal}
         onClose={() => setCancelModal(false)}
-        title="구독을 해지하시겠습니까?"
-        confirmLabel="해지하기"
-        cancelLabel="유지"
-        variant="danger"
-        size="sm"
-        onConfirm={() => {
-          setCancelStatus('cancel_scheduled')
-          setCancelModal(false)
-          showToast('해지가 예약되었습니다. 다음 결제일까지 이용 가능합니다.', 'info')
-        }}
+        size="lg"
+        noDividers
+        footer={
+          <div className="flex flex-col gap-2 w-full">
+            <button type="button"
+              onClick={() => setCancelModal(false)}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >구독 유지하기</button>
+            <button type="button"
+              onClick={() => {
+                setCancelStatus('cancel_scheduled')
+                setCancelModal(false)
+                showToast('해지가 예약되었습니다. 다음 결제일까지 이용 가능합니다.', 'info')
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+            >해지 예약하기</button>
+          </div>
+        }
       >
-        <p className="text-sm text-gray-500">
-          해지하면 <strong className="text-gray-700">다음 결제일까지 계속 이용</strong>한 뒤 자동으로 해지됩니다.
-          그 전까지는 언제든 해지 예약을 취소할 수 있습니다.
-        </p>
-      </AlertModal>
+        {/* 헤더 — 아이콘 + 제목 + 메시지 (모두 가운데) */}
+        <div className="flex flex-col items-center text-center mb-5">
+          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+            <AlertTriangle size={28} className="text-amber-500" aria-hidden="true" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">정기 결제 해지</h2>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            해지하셔도 <strong className="text-gray-900 font-semibold">{fmtDate(nextPaymentDate)}</strong>까지는<br />
+            혜택을 계속 이용하실 수 있습니다.
+          </p>
+        </div>
 
-      {/* 환불 요청 모달 — 신규, 원본 동등 (즉시 종료) */}
-      <AlertModal
+        {/* 정보 박스 — gray + 체크 아이콘 */}
+        <div className="bg-gray-50 rounded-xl p-4 flex items-start gap-2.5 mb-6">
+          <CheckCircle2 size={18} className="text-gray-500 shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="text-sm font-medium text-gray-900">다음 결제일부터 요금이 청구되지 않습니다.</p>
+            <p className="text-xs text-gray-500 mt-1">현재 이용 중인 혜택은 만료일까지 유지됩니다.</p>
+          </div>
+        </div>
+
+        {/* 잃게 되는 혜택 — 체크 아이콘 + 회색 텍스트 */}
+        <p className="text-sm font-bold text-gray-900 mb-3">해지 후 잃게 되는 혜택:</p>
+        <ul className="space-y-2.5">
+          {PLAN_BENEFITS.map((b) => (
+            <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+              <CheckCircle2 size={16} className="text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </Modal>
+
+      {/* ── 환불 및 즉시 해지 모달 — 남은 기간 환불 + 혜택 즉시 중단 + 환불 사유 (이미지 매칭) ── */}
+      <Modal
         open={refundModal}
-        onClose={() => setRefundModal(false)}
-        title="환불을 요청하시겠습니까?"
-        confirmLabel="환불 요청"
-        cancelLabel="취소"
-        variant="danger"
-        size="sm"
-        onConfirm={() => {
-          setRefundModal(false)
-          setCancelStatus('active')
-          setCurrentPlan('')  // 즉시 미구독
-          showToast('환불 요청이 접수되었습니다. 검토 후 영업일 기준 3~5일 내 처리됩니다.', 'info')
-        }}
+        onClose={() => { setRefundModal(false); setRefundReason('') }}
+        size="lg"
+        noDividers
+        footer={
+          <div className="flex flex-col gap-2 w-full">
+            <button type="button"
+              onClick={() => { setRefundModal(false); setRefundReason('') }}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >구독 유지하기</button>
+            <button type="button"
+              onClick={() => {
+                setRefundModal(false)
+                setCancelStatus('active')
+
+                // 마지막 결제건 + 미사용 일수 비례 환불 (결제 내역엔 부분 환불 일자만, 금액은 미노출 정책)
+                const history = PAYMENT_HISTORY[currentPlan] ?? []
+                const sorted = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                const last = sorted[0]
+                if (last) {
+                  setRefundedFromPlan(currentPlan)
+                  setRefundInfo({
+                    amount: '',  // 결제 내역 노출 X (이전 정책 유지)
+                    refundedAt: new Date().toISOString().slice(0, 10),
+                    lastPaymentId: last.id,
+                  })
+                }
+
+                setCurrentPlan('')
+                setRefundReason('')
+                showToast('환불 요청이 접수되었습니다. 검토 후 영업일 기준 3~5일 내 처리됩니다.', 'info')
+              }}
+              disabled={!refundReason.trim()}
+              className="text-sm text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded disabled:text-gray-300 disabled:cursor-not-allowed"
+            >환불 및 해지하기</button>
+          </div>
+        }
       >
-        <p className="text-sm text-gray-500">
-          환불 요청 시 <strong className="text-red-700">구독이 즉시 종료</strong>되며, 결제 금액은 영업일 기준 3~5일 내 카드사를 통해 환불됩니다.
-          미사용 일수에 따라 부분 환불됩니다.
-        </p>
-      </AlertModal>
+        {/* 헤더 — 아이콘 + 제목 + 메시지 (컴팩트, 첫 화면 안에 textarea 들어오게 압축) */}
+        <div className="flex flex-col items-center text-center mb-3">
+          <div className="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center mb-2">
+            <AlertTriangle size={20} className="text-amber-500" aria-hidden="true" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 mb-1">환불 및 구독 취소</h2>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            지금 취소하시면 남은 기간에 대한 금액이 환불되며,<br />
+            <strong className="text-gray-900 font-semibold">{plans.find(p => p.id === currentPlan)?.name ?? '현재 플랜'}</strong>의 혜택이 즉시 중단됩니다.
+          </p>
+        </div>
+
+        {/* 예상 환불 금액 박스 */}
+        <div className="bg-gray-50 rounded-lg p-3 mb-3">
+          <p className="text-sm font-medium text-gray-900 flex items-center gap-1.5 mb-2">
+            <Receipt size={14} aria-hidden="true" />
+            예상 환불 금액
+          </p>
+          <div className="space-y-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">다음 결제일</span>
+              <span className="text-gray-900 font-medium tabular-nums">{fmtDate(nextPaymentDate)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">남은 이용 기간</span>
+              <span className="text-gray-900 font-medium tabular-nums">{remainingDays}일</span>
+            </div>
+          </div>
+          {/* 구분선 + 환불 예정 금액 */}
+          <div className="border-t border-gray-200 pt-2 mt-2 flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-900">
+              환불 예정 금액 <span className="text-xs font-normal text-gray-500">(vat 미포함)</span>
+            </span>
+            <span className="text-base font-bold text-brand-green-text tabular-nums">{fmtPrice(refundEstimate)}</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+            * 실제 환불 금액은 결제 수단 및 카드사 정책에 따라 차이가 있을 수 있습니다.
+          </p>
+        </div>
+
+        {/* 잃게 되는 혜택 */}
+        <p className="text-sm font-bold text-gray-900 mb-1.5">취소 시 잃게 되는 혜택:</p>
+        <ul className="space-y-1 mb-3">
+          {PLAN_BENEFITS.map((b) => (
+            <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+              <CheckCircle2 size={14} className="text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* 환불 사유 — 필수 */}
+        <div>
+          <label htmlFor="refund-reason" className="text-sm font-medium text-gray-900 block mb-1.5">
+            환불 사유를 알려주세요 <span className="text-rose-500" aria-label="필수">*</span>
+          </label>
+          <textarea
+            id="refund-reason"
+            value={refundReason}
+            onChange={(e) => setRefundReason(e.target.value)}
+            placeholder="서비스 이용에 불편하셨던 점이나 환불 사유를 자세히 적어주시면 서비스 개선에 큰 도움이 됩니다."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none placeholder:text-gray-400 focus-visible:outline-none focus-visible:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/20 transition-colors"
+          />
+        </div>
+      </Modal>
     </div>
   )
 }

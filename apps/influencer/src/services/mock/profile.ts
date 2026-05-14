@@ -33,7 +33,7 @@ export interface CampaignSummary {
 
 export const mockProfile: InfluencerProfile = {
   name: '김찬기',
-  email: 'chanki@wellink.co.kr',
+  email: 'chanki@example.com',
   instagram: 'chanstyler',
   bio: '헬스·필라테스 전문 인플루언서 | 건강한 라이프스타일을 공유합니다',
   marketing: true,

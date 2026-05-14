@@ -11,6 +11,21 @@ import {
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useDeviceMode } from '../qa-mockup-kit'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
+
+/* ── 인플루언서 콘텐츠 썸네일 — 실제 사진 + onError fallback ── */
+function ContentThumb({ seed, className, alt }: { seed: string; className?: string; alt: string }) {
+  const [src, setSrc] = useState(getThumbnailFromPool(seed))
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading="lazy"
+      onError={() => setSrc(getPlaceholderDataUri(seed))}
+    />
+  )
+}
 
 // 인플루언서 더미 데이터 100개 — 다양한 카테고리·팔로워 규모·엣지케이스 (avgLikes·avgComments 추가)
 type InfluencerCat = '피트니스' | '요가' | '웰니스' | '필라테스' | '운동' | '크로스핏'
@@ -167,11 +182,7 @@ const channelOptions = [
   { label: '틱톡', value: '틱톡' },
 ]
 
-const THUMB_GRADIENTS = [
-  'from-pink-100 to-pink-200', 'from-blue-100 to-blue-200',
-  'from-green-100 to-green-200', 'from-yellow-100 to-yellow-200',
-  'from-purple-100 to-purple-200', 'from-amber-100 to-amber-200',
-]
+/* THUMB_GRADIENTS — Unsplash 사진 매핑(getThumbnailFromPool)으로 대체됨 */
 
 function getFollowerTier(followers: number): string {
   if (followers < 10_000) return 'nano'
@@ -712,17 +723,14 @@ export default function InfluencerList() {
                 {/* 최근 활동 */}
                 <td className="py-3 px-4 text-base text-gray-500 whitespace-nowrap hidden @xl:table-cell">{inf.lastActive}</td>
 
-                {/* 최근 콘텐츠 미리보기 — inf.id 기반 개별화 */}
+                {/* 최근 콘텐츠 미리보기 — Unsplash 사진 매핑 */}
                 <td className="py-3 px-4 hidden @xl:table-cell">
                   <div className="flex gap-1.5">
-                    {[0, 1, 2].map(i => {
-                      const bg = THUMB_GRADIENTS[(inf.id + i) % THUMB_GRADIENTS.length]
-                      return (
-                        <div key={i} aria-label={`최근 콘텐츠 ${i + 1}`} className={`w-12 h-12 rounded-lg bg-gradient-to-br ${bg} flex items-center justify-center`}>
-                          <Image size={12} className="text-white/60" aria-hidden="true" />
-                        </div>
-                      )
-                    })}
+                    {[0, 1, 2].map(i => (
+                      <div key={i} aria-label={`최근 콘텐츠 ${i + 1}`} className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+                        <ContentThumb seed={`${inf.id}-${i}`} className="w-full h-full object-cover" alt={`최근 콘텐츠 ${i + 1}`} />
+                      </div>
+                    ))}
                   </div>
                 </td>
 
@@ -1047,9 +1055,9 @@ export default function InfluencerList() {
                         return (
                           <div key={globalIdx} className="rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow duration-150"
                             onClick={() => setContentDetail({ bg: c.bg, likes: c.likes, comments: c.comments, saves, views, caption: captions[(s + globalIdx) % captions.length], postedAt: `${(globalIdx % 7) + 1}일 전`, type: contentSubTab, index: globalIdx })}>
-                            <div className={`bg-gradient-to-br ${c.bg} flex items-center justify-center relative ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
-                              <Image size={18} className="text-white/50" aria-hidden="true" />
-                              {!isFeed && <span className="absolute top-1.5 right-1.5 text-base bg-black/50 text-white px-2 py-1 rounded-full">릴스</span>}
+                            <div className={`relative overflow-hidden bg-gray-100 ${isFeed ? 'aspect-square' : 'aspect-[9/16]'}`}>
+                              <ContentThumb seed={`modal-${s}-${globalIdx}`} className="w-full h-full object-cover" alt={`${isFeed ? '피드' : '릴스'} 콘텐츠 ${globalIdx + 1}`} />
+                              {!isFeed && <span className="absolute top-1.5 right-1.5 text-sm bg-black/55 text-white px-2 py-0.5 rounded-md font-medium">릴스</span>}
                             </div>
                             <div className="px-2 py-1.5 bg-white flex gap-2">
                               <span className="flex items-center gap-0.5 text-base text-gray-500"><Heart size={12} className="text-red-500" aria-hidden="true" />{c.likes.toLocaleString()}</span>
@@ -1103,10 +1111,10 @@ export default function InfluencerList() {
       >
         {contentDetail && (
           <div className="space-y-4">
-            <div className={`bg-gradient-to-br ${contentDetail.bg} rounded-xl flex items-center justify-center relative ${contentDetail.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[280px] mx-auto'}`}>
-              <Image size={32} className="text-white/60" aria-hidden="true" />
+            <div className={`bg-gray-100 rounded-xl overflow-hidden relative ${contentDetail.type === 'feed' ? 'aspect-square' : 'aspect-[9/16] max-h-[420px] mx-auto'}`}>
+              <ContentThumb seed={`detail-${contentDetail.index}-${contentDetail.type}`} className="w-full h-full object-cover" alt={contentDetail.type === 'feed' ? '피드 콘텐츠 상세' : '릴스 콘텐츠 상세'} />
               {contentDetail.type === 'reels' && (
-                <span className="absolute top-2 right-2 text-base bg-black/60 text-white px-2.5 py-1 rounded-full">릴스</span>
+                <span className="absolute top-2 right-2 text-sm bg-black/60 text-white px-2.5 py-1 rounded-full font-medium">릴스</span>
               )}
             </div>
             <div className="grid grid-cols-2 gap-2">

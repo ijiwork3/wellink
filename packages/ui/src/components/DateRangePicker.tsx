@@ -24,7 +24,8 @@ export type DateRangePickerProps = {
   compact?: boolean
 }
 
-const ALL_PERIODS: readonly DatePeriod[] = ['일간', '주간', '월간', '연간'] as const
+// 기본 노출 기간: 연간은 제외 (클라이언트 결정). 연간이 필요한 페이지는 periods prop으로 명시
+const ALL_PERIODS: readonly DatePeriod[] = ['일간', '주간', '월간'] as const
 
 export default function DateRangePicker({
   period,

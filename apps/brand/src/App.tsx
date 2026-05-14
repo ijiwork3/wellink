@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
+import DashboardV2 from './pages/DashboardV2'
 import ProfileInsight from './pages/ProfileInsight'
 import AdPerformance from './pages/AdPerformance'
 import ViralMetrics from './pages/ViralMetrics'
@@ -63,6 +64,14 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '신규 회원 온보딩', path: '/dashboard?qa=new-user' },
       { label: 'Focus 플랜 — 기능 잠금', path: '/dashboard?qa=plan-locked' },
       { label: '에러', path: '/dashboard?qa=error' },
+    ],
+  },
+
+  /* ────────────────── 대시보드 v2 (재설계) ────────────────── */
+  {
+    label: '대시보드 v2',
+    children: [
+      { label: '기본 (재설계 — 시각 hook 9개)', path: '/dashboard-v2' },
     ],
   },
 
@@ -260,6 +269,7 @@ function AppRoutes() {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/dashboard':          '대시보드 — WELLINK AI',
+      '/dashboard-v2':       '대시보드 v2 — WELLINK AI',
       '/analytics/profile':  '프로필 인사이트 — WELLINK AI',
       '/analytics/ads':      '광고 성과 — WELLINK AI',
       '/analytics/viral':    '바이럴 지표 — WELLINK AI',
@@ -292,6 +302,7 @@ function AppRoutes() {
         <Route path="/moodboard" element={<Moodboard />} />
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard-v2" element={<DashboardV2 />} />
           <Route path="/analytics/profile" element={<ProfileInsight />} />
           <Route path="/analytics/ads" element={<AdPerformance />} />
           <Route path="/analytics/viral" element={<ViralMetrics />} />

@@ -2,9 +2,10 @@
  * DonutChartSimple — 도달 출처·참여 출처 도넛 차트
  *
  * AdPerformance에서 사용. 누적값을 immutable scan으로 계산 (react-hooks/immutability 준수).
+ * 클라 피드백: hover 시 활성 segment 강조 + 툴팁 노출 (라벨/값/퍼센트)
  */
 
-import { memo } from 'react'
+import { memo, useRef, useState } from 'react'
 import { fmtNumber } from '@wellink/ui'
 
 interface Props {
@@ -13,6 +14,9 @@ interface Props {
 }
 
 const DonutChartSimple = memo(function DonutChartSimple({ data, ariaLabel }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [hover, setHover] = useState<{ idx: number; x: number; y: number } | null>(null)
+
   const total = data.reduce((s, d) => s + d.value, 0)
   if (total === 0) return <p className="text-base text-gray-500 text-center py-12">데이터가 없습니다.</p>
   const cx = 90, cy = 90, r = 70, ir = 50
@@ -34,25 +38,61 @@ const DonutChartSimple = memo(function DonutChartSimple({ data, ariaLabel }: Pro
       d: `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 ${large} 0 ${iex} ${iey} Z`,
     }
   })
+
+  const handlePathMove = (idx: number, clientX: number, clientY: number) => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setHover({ idx, x: clientX - rect.left, y: clientY - rect.top })
+  }
+
   return (
-    <div className="flex items-center gap-6 flex-wrap">
+    <div ref={containerRef} className="relative flex items-center gap-6 flex-wrap">
       <svg className="w-36 h-36 @sm:w-44 @sm:h-44 shrink-0" viewBox="0 0 180 180" role="img" aria-label={ariaLabel ?? '도넛 차트'}>
-        {arcs.map((a, i) => <path key={i} d={a.d} fill={a.color} />)}
+        {arcs.map((a, i) => (
+          <path
+            key={i}
+            d={a.d}
+            fill={a.color}
+            className="cursor-pointer transition-opacity"
+            style={{ opacity: hover && hover.idx !== i ? 0.4 : 1 }}
+            onMouseMove={(e) => handlePathMove(i, e.clientX, e.clientY)}
+            onMouseLeave={() => setHover(null)}
+          />
+        ))}
       </svg>
-      <div className="flex-1 min-w-[120px] space-y-2">
-        {arcs.map(a => (
-          <div key={a.label} className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full" style={{ background: a.color }} />
-              <span className="text-sm text-gray-700 whitespace-nowrap">{a.label}</span>
-            </div>
-            <div className="text-right">
-              <span className="text-sm font-semibold text-gray-900">{fmtNumber(a.value)}</span>
-              <span className="text-sm text-gray-500 ml-1">({a.pct}%)</span>
-            </div>
+      <div className="min-w-[120px] space-y-2">
+        {arcs.map((a, i) => (
+          <div
+            key={a.label}
+            className="flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            onMouseEnter={(e) => handlePathMove(i, e.clientX, e.clientY)}
+            onMouseLeave={() => setHover(null)}
+          >
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: a.color }} aria-hidden="true" />
+            {/* 라벨 폭 고정 — 항목 간 값 시작 X 좌표 정렬 (4글자 한국어 기준 64px) */}
+            <span className="text-sm text-gray-700" style={{ minWidth: 64 }}>{a.label}</span>
+            <span className="text-sm font-semibold text-gray-900 tabular-nums">{fmtNumber(a.value)}</span>
+            <span className="text-sm text-gray-500">({a.pct}%)</span>
           </div>
         ))}
       </div>
+
+      {/* 호버 툴팁 — 마우스 좌표 따라감 */}
+      {hover && (
+        <div
+          className="absolute z-20 pointer-events-none bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2"
+          style={{ left: hover.x + 14, top: hover.y - 12 }}
+        >
+          <div className="flex items-center gap-1.5 whitespace-nowrap mb-0.5">
+            <span className="w-2 h-2 rounded-full" style={{ background: arcs[hover.idx].color }} aria-hidden="true" />
+            <span className="text-sm font-medium text-gray-700">{arcs[hover.idx].label}</span>
+          </div>
+          <p className="text-sm font-semibold text-gray-900 tabular-nums whitespace-nowrap">
+            {fmtNumber(arcs[hover.idx].value)}
+            <span className="text-sm text-gray-500 font-normal ml-1">({arcs[hover.idx].pct}%)</span>
+          </p>
+        </div>
+      )}
     </div>
   )
 })

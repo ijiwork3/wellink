@@ -1,17 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
-import { useToast } from '@wellink/ui'
+import { useToast, ErrorState } from '@wellink/ui'
+import { formatPhone } from '../utils/format'
 
-function formatPhone(v: string) {
-  const d = v.replace(/\D/g, '').slice(0, 11)
-  if (d.length < 4) return d
-  if (d.length < 8) return `${d.slice(0, 3)}-${d.slice(3)}`
-  return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`
-}
 
 export default function CampaignApply() {
   const { id } = useParams()
@@ -19,6 +14,10 @@ export default function CampaignApply() {
   const [searchParams] = useSearchParams()
   const { showToast } = useToast()
   const campaign = mockCampaigns.find(c => c.id === Number(id))
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => {
+    if (submitTimerRef.current) clearTimeout(submitTimerRef.current)
+  }, [])
 
   const mode = searchParams.get('mode')
   const isViewMode = mode === 'view'
@@ -36,14 +35,19 @@ export default function CampaignApply() {
   const [deliveryAddr, setDeliveryAddr] = useState(hasPrefill ? (appliedData?.deliveryAddr ?? '') : '')
   const [deliveryAddrDetail, setDeliveryAddrDetail] = useState(hasPrefill ? (appliedData?.deliveryAddrDetail ?? '') : '')
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
 
   if (!campaign) {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)}>
-        <div className="flex items-center justify-center min-h-[300px] text-sm text-gray-500">
-          캠페인 정보를 찾을 수 없습니다.
-        </div>
+        <ErrorState
+          message="캠페인을 찾을 수 없어요"
+          subMessage="이미 삭제됐거나 잘못된 링크일 수 있어요"
+          retryLabel="캠페인 탐색으로 이동"
+          showRetryIcon={false}
+          onRetry={() => navigate('/campaigns/browse')}
+        />
       </Layout>
     )
   }
@@ -52,12 +56,14 @@ export default function CampaignApply() {
 
   const validate = () => {
     const e: Record<string, boolean> = {}
-    if (!phone || phone.replace(/\D/g, '').length < 10) e.phone = true
+    // 전화번호 형식: 010-1234-5678 또는 숫자 10~11자리
+    const phoneRe = /^01[0-9]-?\d{3,4}-?\d{4}$/
+    if (!phone || !phoneRe.test(phone)) e.phone = true
     if (!agreed1) e.agreed1 = true
     if (!agreed2) e.agreed2 = true
     if (isDelivery) {
-      if (!deliveryName.trim()) e.deliveryName = true
-      if (!deliveryPhone || deliveryPhone.replace(/\D/g, '').length < 10) e.deliveryPhone = true
+      if (!deliveryName.trim() || deliveryName.trim().length < 2) e.deliveryName = true
+      if (!deliveryPhone || !phoneRe.test(deliveryPhone)) e.deliveryPhone = true
       if (!deliveryAddr.trim()) e.deliveryAddr = true
     }
     for (const q of campaign.questions ?? []) {
@@ -69,10 +75,15 @@ export default function CampaignApply() {
 
   const handleSubmit = () => {
     if (!validate()) {
-      showToast('필수 항목을 모두 입력해 주세요.', 'error')
+      showToast('필수 항목을 모두 입력해 주세요', 'error')
       return
     }
-    setSubmitted(true)
+    setIsSubmitting(true)
+    // mock: 즉시 완료 처리 (실제 API 연동 시 async 교체)
+    submitTimerRef.current = setTimeout(() => {
+      setIsSubmitting(false)
+      setSubmitted(true)
+    }, 600)
   }
 
   if (submitted) {
@@ -84,14 +95,23 @@ export default function CampaignApply() {
           </div>
           <div className="text-center">
             <p className="text-lg font-bold text-gray-900">{isEditMode ? '수정 완료!' : '신청 완료!'}</p>
-            <p className="text-sm text-gray-500 mt-1">{isEditMode ? '변경 사항이 반영되었습니다' : '브랜드 검토 후 결과를 알려드릴게요'}</p>
+            <p className="text-sm text-gray-500 mt-1">{isEditMode ? '변경 사항을 반영했어요' : '브랜드 검토 후 결과를 알려드릴게요'}</p>
           </div>
-          <button
-            onClick={() => navigate('/campaigns/my')}
-            className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            나의 캠페인 확인
-          </button>
+          {isEditMode ? (
+            <button
+              onClick={() => navigate(`/campaigns/${id}/apply?mode=view`)}
+              className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              신청 정보 보기
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/campaigns/my')}
+              className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              나의 캠페인 확인
+            </button>
+          )}
           <button
             onClick={() => navigate('/campaigns/browse')}
             className="w-full max-w-sm py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -107,36 +127,37 @@ export default function CampaignApply() {
 
   return (
     <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)}>
-      <div className="max-w-lg mx-auto px-4 py-6 pb-24 space-y-6">
+      <div className="max-w-lg mx-auto px-4 py-6 pb-10 space-y-6">
+        <h1 className="sr-only">{pageTitle}</h1>
 
         {/* view 모드 배너 */}
         {isViewMode && (
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" />
-              <span className="text-sm font-medium text-brand-green-text">신청 완료된 정보입니다</span>
+          <div className="flex items-center justify-between gap-2 p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
+            <div className="flex items-center gap-2 min-w-0">
+              <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-brand-green-text truncate">신청 완료된 정보예요</span>
             </div>
             <button
               onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
-              className="flex items-center gap-1 text-xs text-brand-green font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors"
+              className="shrink-0 flex items-center gap-1 text-xs text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <Pencil size={12} />수정하기
+              <Pencil size={12} aria-hidden="true" />수정하기
             </button>
           </div>
         )}
 
         {/* 캠페인 요약 */}
         <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-          <div className="text-3xl">{campaign.image}</div>
-          <div className="min-w-0">
+          <div className="text-3xl flex-shrink-0" aria-hidden="true">{campaign.image}</div>
+          <div className="min-w-0 flex-1">
             <p className="text-xs text-gray-500 truncate">{campaign.brand}</p>
             <p className="text-sm font-semibold text-gray-900 truncate">{campaign.name}</p>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-x-2 gap-y-0.5 mt-1 flex-wrap">
               {isDelivery
-                ? <span className="flex items-center gap-1 text-xs text-brand-green"><Package size={12} />배송형</span>
-                : <span className="flex items-center gap-1 text-xs text-blue-500"><Footprints size={12} />방문형</span>
+                ? <span className="flex items-center gap-1 text-xs text-brand-green-text whitespace-nowrap"><Package size={12} />배송형</span>
+                : <span className="flex items-center gap-1 text-xs text-blue-700 whitespace-nowrap"><Footprints size={12} />방문형</span>
               }
-              {campaign.reward && <span className="text-xs text-gray-500">· {campaign.reward}</span>}
+              {campaign.reward && <span className="text-xs text-gray-500 break-keep">· {campaign.reward}</span>}
             </div>
           </div>
         </div>
@@ -144,13 +165,13 @@ export default function CampaignApply() {
         {/* 신청자 정보 (읽기 전용) */}
         <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5">
           <p className="text-xs font-semibold text-gray-500 mb-1">신청자 정보</p>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             <User size={14} className="text-gray-400 flex-shrink-0" />
-            <span className="text-sm text-gray-900">{mockProfile.name}</span>
+            <span className="text-sm text-gray-900 truncate">{mockProfile.name}</span>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             <AtSign size={14} className="text-gray-400 flex-shrink-0" />
-            <span className="text-sm text-gray-900">@{mockProfile.instagram}</span>
+            <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
           </div>
         </div>
 
@@ -165,9 +186,14 @@ export default function CampaignApply() {
                 value={phone}
                 onChange={e => setPhone(formatPhone(e.target.value))}
                 placeholder="010-0000-0000"
+                autoComplete="tel"
+                inputMode="tel"
+                maxLength={13}
                 className={fieldCls(errors.phone)}
+                aria-invalid={!!errors.phone}
+                aria-describedby={errors.phone ? 'apply-error-phone' : undefined}
               />
-              {errors.phone && <p className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요.</p>}
+              {errors.phone && <p id="apply-error-phone" role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요</p>}
             </>
           )}
         </Section>
@@ -181,12 +207,20 @@ export default function CampaignApply() {
                 {isViewMode ? (
                   <ViewField value={deliveryName} />
                 ) : (
-                  <input
-                    value={deliveryName}
-                    onChange={e => setDeliveryName(e.target.value)}
-                    placeholder="배송받는 분의 이름"
-                    className={fieldCls(errors.deliveryName)}
-                  />
+                  <>
+                    <input
+                      type="text"
+                      value={deliveryName}
+                      onChange={e => setDeliveryName(e.target.value)}
+                      placeholder="배송받는 분의 이름"
+                      autoComplete="name"
+                      maxLength={20}
+                      className={fieldCls(errors.deliveryName)}
+                      aria-invalid={!!errors.deliveryName}
+                      aria-describedby={errors.deliveryName ? 'apply-error-delivery-name' : undefined}
+                    />
+                    {errors.deliveryName && <p id="apply-error-delivery-name" role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">수령인 이름을 입력해 주세요</p>}
+                  </>
                 )}
               </div>
               <div>
@@ -194,13 +228,21 @@ export default function CampaignApply() {
                 {isViewMode ? (
                   <ViewField value={deliveryPhone} />
                 ) : (
-                  <input
-                    type="tel"
-                    value={deliveryPhone}
-                    onChange={e => setDeliveryPhone(formatPhone(e.target.value))}
-                    placeholder="010-0000-0000"
-                    className={fieldCls(errors.deliveryPhone)}
-                  />
+                  <>
+                    <input
+                      type="tel"
+                      value={deliveryPhone}
+                      onChange={e => setDeliveryPhone(formatPhone(e.target.value))}
+                      placeholder="010-0000-0000"
+                      autoComplete="tel"
+                      inputMode="tel"
+                      maxLength={13}
+                      className={fieldCls(errors.deliveryPhone)}
+                      aria-invalid={!!errors.deliveryPhone}
+                      aria-describedby={errors.deliveryPhone ? 'apply-error-delivery-phone' : undefined}
+                    />
+                    {errors.deliveryPhone && <p id="apply-error-delivery-phone" role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요</p>}
+                  </>
                 )}
               </div>
               <div>
@@ -211,13 +253,16 @@ export default function CampaignApply() {
                   <>
                     <div className="flex gap-2 mb-2">
                       <input
+                        type="text"
                         value={deliveryZip}
                         readOnly
                         placeholder="우편번호"
-                        className={`${fieldCls(false)} flex-1`}
+                        autoComplete="postal-code"
+                        inputMode="numeric"
+                        aria-label="우편번호"
+                        className={`${fieldCls(false)} flex-1 tabular-nums`}
                       />
                       <button
-                        type="button"
                         onClick={() => {
                           setDeliveryZip('06234')
                           setDeliveryAddr('서울 강남구 테헤란로 123')
@@ -228,18 +273,27 @@ export default function CampaignApply() {
                       </button>
                     </div>
                     <input
+                      type="text"
                       value={deliveryAddr}
                       readOnly
                       placeholder="기본 주소"
+                      autoComplete="street-address"
+                      aria-label="기본 주소"
                       className={`${fieldCls(errors.deliveryAddr)} mb-2`}
+                      aria-invalid={!!errors.deliveryAddr}
+                      aria-describedby={errors.deliveryAddr ? 'apply-error-addr' : undefined}
                     />
                     <input
+                      type="text"
                       value={deliveryAddrDetail}
                       onChange={e => setDeliveryAddrDetail(e.target.value)}
                       placeholder="상세 주소 (예: 101동 202호)"
+                      autoComplete="address-line2"
+                      aria-label="상세 주소"
+                      maxLength={50}
                       className={fieldCls(false)}
                     />
-                    {errors.deliveryAddr && <p className="text-xs text-red-500 mt-1">주소를 입력해 주세요.</p>}
+                    {errors.deliveryAddr && <p id="apply-error-addr" role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">주소를 입력해 주세요</p>}
                   </>
                 )}
               </div>
@@ -262,29 +316,35 @@ export default function CampaignApply() {
                   ) : q.type === 'radio' && q.options ? (
                     <div className="space-y-2">
                       {q.options.map(opt => (
-                        <label key={opt} className="flex items-center gap-2.5 cursor-pointer">
+                        <label key={opt} className="flex items-start gap-2.5 cursor-pointer">
                           <input
                             type="radio"
                             name={q.id}
                             value={opt}
                             checked={answers[q.id] === opt}
                             onChange={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
-                            className="accent-brand-green"
+                            className="accent-brand-green mt-0.5 flex-shrink-0"
                           />
-                          <span className="text-sm text-gray-700">{opt}</span>
+                          <span className="text-sm text-gray-700 break-keep min-w-0 flex-1">{opt}</span>
                         </label>
                       ))}
                     </div>
                   ) : (
-                    <textarea
-                      value={answers[q.id] ?? ''}
-                      onChange={e => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                      placeholder="답변을 입력해 주세요"
-                      rows={3}
-                      className={`${fieldCls(errors[`q_${q.id}`])} resize-none`}
-                    />
+                    <>
+                      <textarea
+                        value={answers[q.id] ?? ''}
+                        onChange={e => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        placeholder="답변을 입력해 주세요"
+                        rows={3}
+                        maxLength={500}
+                        className={`${fieldCls(errors[`q_${q.id}`])} resize-none`}
+                        aria-invalid={!!errors[`q_${q.id}`]}
+                        aria-describedby={errors[`q_${q.id}`] ? `apply-error-q-${q.id}` : undefined}
+                      />
+                      <p className="text-xs text-gray-400 mt-1 text-right tabular-nums">{(answers[q.id] ?? '').length}/500</p>
+                    </>
                   )}
-                  {errors[`q_${q.id}`] && <p className="text-xs text-red-500 mt-1">필수 항목입니다.</p>}
+                  {errors[`q_${q.id}`] && <p id={`apply-error-q-${q.id}`} role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">필수 항목이에요</p>}
                 </div>
               ))}
             </div>
@@ -322,9 +382,12 @@ export default function CampaignApply() {
         ) : (
           <button
             onClick={handleSubmit}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            disabled={isSubmitting}
+            aria-disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
-            신청하기
+            {isSubmitting ? '제출 중...' : '신청하기'}
           </button>
         )}
       </div>
@@ -374,7 +437,7 @@ function AgreementRow({ checked, onChange, error, text }: {
         onChange={e => onChange(e.target.checked)}
         className="mt-0.5 accent-brand-green"
       />
-      <span className="text-sm text-gray-700 leading-snug">{text}</span>
+      <span className="text-sm text-gray-700 leading-snug break-keep">{text}</span>
     </label>
   )
 }

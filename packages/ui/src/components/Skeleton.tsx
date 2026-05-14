@@ -48,7 +48,7 @@ const Skeleton = memo(function Skeleton({
   return (
     <div
       aria-hidden="true"
-      className={`bg-gray-100 animate-pulse ${RADIUS[shape]} ${wCls} ${hCls} ${className}`.trim()}
+      className={`bg-gray-100 motion-safe:animate-pulse ${RADIUS[shape]} ${wCls} ${hCls} ${className}`.trim()}
       style={inline}
     />
   )

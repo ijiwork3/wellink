@@ -1,10 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Heart, UserCircle, Link2, Wallet } from 'lucide-react'
+import { LayoutDashboard, Heart, UserCircle, Link2, Wallet, Search } from 'lucide-react'
 
 const sections = [
   {
     title: '활동 관리',
     items: [
+      { label: '캠페인 탐색', path: '/campaigns/browse', icon: Search },
       { label: '나의 캠페인', path: '/campaigns/my', icon: LayoutDashboard },
       { label: '관심 캠페인', path: '/campaigns/favorites', icon: Heart },
       { label: '정산', path: '/settlement', icon: Wallet },
@@ -39,7 +40,7 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
                   <button
                     onClick={() => { navigate(item.path); onNavigate?.() }}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isActive
                         ? 'bg-gray-100 text-gray-900 font-medium'
                         : 'text-gray-600 hover:bg-gray-100'

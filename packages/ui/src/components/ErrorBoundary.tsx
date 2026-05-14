@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div role="alert" className="flex flex-col items-center justify-center min-h-[300px] gap-4 p-8">
           <p className="text-base font-semibold text-gray-900">오류가 발생했습니다</p>
-          <p className="text-sm text-gray-500">페이지를 새로고침하거나 잠시 후 다시 시도해 주세요.</p>
+          <p className="text-sm text-gray-500">페이지를 새로고침하거나 잠시 후 다시 시도해 주세요</p>
           <button
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
             className="px-4 py-2 rounded-xl text-base font-medium text-white bg-brand-green hover:opacity-90 transition-opacity"

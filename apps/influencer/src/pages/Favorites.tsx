@@ -2,16 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Users, Gift, Bookmark, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay, EmptyState, ErrorState } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
 import type { BookmarkedCampaign } from '../services/mock/campaigns'
-
-const STATUS_STYLE: Record<string, string> = {
-  '모집중':   'bg-brand-green-bg text-brand-green-text',
-  '마감임박': 'bg-orange-50 text-orange-600',
-  '종료':     'bg-gray-100 text-gray-400',
-}
 
 export default function Favorites() {
   const qa = useQAMode()
@@ -26,7 +20,7 @@ export default function Favorites() {
       if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
-    showToast(wasBookmarked ? '관심 캠페인에서 제거했어요.' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
+    showToast(wasBookmarked ? '관심 캠페인에서 제거했어요' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
   }
 
   const visible: BookmarkedCampaign[] = qa === 'empty' ? [] : mockBookmarkedCampaigns.filter(c => bookmarks.has(c.id))
@@ -34,30 +28,30 @@ export default function Favorites() {
   if (qa === 'loading') {
     return (
       <Layout>
-        <div className="space-y-4 animate-pulse">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="h-5 bg-gray-100 rounded-xl w-28" />
-            <div className="h-7 bg-gray-100 rounded-xl w-24" />
+            <Skeleton shape="text" height={20} width="7rem" />
+            <Skeleton shape="card" height={28} width="6rem" />
           </div>
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
               <div className="flex items-start gap-3">
-                <div className="w-14 h-14 rounded-xl bg-gray-100 shrink-0" />
+                <Skeleton shape="card" height={56} width={56} className="shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-2">
-                    <div className="h-4 bg-gray-100 rounded-full w-14" />
-                    <div className="h-4 bg-gray-100 rounded-full w-10" />
+                    <Skeleton shape="circle" height={16} width="3.5rem" />
+                    <Skeleton shape="circle" height={16} width="2.5rem" />
                   </div>
-                  <div className="h-4 bg-gray-100 rounded-xl w-3/4" />
-                  <div className="h-3 bg-gray-100 rounded-xl w-1/2" />
+                  <Skeleton shape="text" height={16} width="75%" />
+                  <Skeleton shape="text" height={12} width="50%" />
                 </div>
-                <div className="w-7 h-7 bg-gray-100 rounded-full shrink-0" />
+                <Skeleton shape="circle" height={28} width={28} className="shrink-0" />
               </div>
-              <div className="h-8 bg-gray-100 rounded-xl" />
+              <Skeleton shape="card" height={32} width="100%" />
               <div className="flex gap-3 items-center">
-                <div className="h-3 bg-gray-100 rounded-xl w-16" />
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full" />
-                <div className="h-3 bg-gray-100 rounded-xl w-14" />
+                <Skeleton shape="text" height={12} width="4rem" />
+                <Skeleton shape="circle" height={6} className="flex-1" />
+                <Skeleton shape="text" height={12} width="3.5rem" />
               </div>
             </div>
           ))}
@@ -81,12 +75,12 @@ export default function Favorites() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">관심 캠페인</h2>
+            <h1 className="text-base font-semibold text-gray-900">관심 캠페인</h1>
             <p className="text-xs text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Compass size={12} />
             캠페인 탐색
@@ -127,14 +121,13 @@ export default function Favorites() {
                     <div
                       className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0"
                       style={{ backgroundColor: c.thumbnailBg }}
+                      aria-hidden="true"
                     >
                       {c.thumbnailEmoji}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                        <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${STATUS_STYLE[c.status] ?? 'bg-gray-100 text-gray-500'}`}>
-                          {c.status}
-                        </span>
+                        <StatusBadge status={c.status} size="sm" dot={false} />
                         <span className={`text-xs font-medium ${ddayColor}`}>{ddayLabel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
@@ -143,7 +136,7 @@ export default function Favorites() {
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
                       aria-label={bookmarks.has(c.id) ? '북마크 해제' : '북마크'}
-                      className="shrink-0 p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+                      className="shrink-0 p-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
                       <Bookmark
                         size={16}
@@ -152,22 +145,22 @@ export default function Favorites() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                    <Gift size={12} className="text-brand-green shrink-0" />
-                    <span className="text-xs font-medium text-gray-700 truncate">{c.reward}</span>
+                  <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
+                    <Gift size={12} className="text-brand-green shrink-0 mt-0.5" />
+                    <span className="text-xs font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
                   </div>
 
-                  <div className="mt-2.5 flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0">
-                      <Users size={12} />{c.applied}/{c.headcount}명
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
+                      <Users size={12} aria-hidden="true" />{c.applied}/{c.headcount}명
                     </span>
-                    <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="flex-1 min-w-0 h-1 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${progressPct >= 80 ? 'bg-orange-400' : 'bg-brand-green'}`}
+                        className={`h-full rounded-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500 shrink-0">마감 {fmtDate(c.deadline)}</span>
+                    <span className="text-xs text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.deadline)}</span>
                   </div>
                 </div>
               )

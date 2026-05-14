@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { BarChart2, Users, TrendingUp, Eye, Heart, MessageCircle, Bookmark } from 'lucide-react'
-import { KPICard, ErrorState, EmptyState, DateRangePicker, Tooltip, fmtNumber, ENGAGEMENT_THRESHOLD, getEngagementColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, FloatingScrollChevrons, PageHeader, type ChartScrollContainerHandle, type DatePeriod } from '@wellink/ui'
+import { KPICard, ErrorState, EmptyState, DateRangePicker, Tooltip, fmtNumber, ENGAGEMENT_THRESHOLD, useIsTouchDevice, SkeletonCard, ChartScrollContainer, FloatingScrollChevrons, PageHeader, type ChartScrollContainerHandle, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -14,7 +14,7 @@ import {
   kpiByPeriod,
   conversionByPeriod,
   FOLLOWER_DEMOGRAPHIC,
-  PROFILE_AI_SUMMARY,
+  PROFILE_AI_DATA,
   followerDataByPeriod,
   trendDataByPeriod,
   impressReachByPeriod,
@@ -48,45 +48,34 @@ export default function ProfileInsight() {
     })
   }, [])
   // AI 분석 새로고침 — 공통 훅(useAiRefresh)으로 추출
-  const { refreshing: aiRefreshing, refresh: handleAiRefresh } = useAiRefresh()
+  const { refreshing: aiRefreshing, refresh: handleAiRefresh, generatedAt: aiGeneratedAt } = useAiRefresh()
 
   // 차트 인터랙티브 인덱스 — 모바일/태블릿은 호버 불가능하므로 마지막 포인트를 기본 노출 (정책)
-  const [followerChartIdx, setFollowerChartIdx] = useState<number | null>(null)
-  const [trendChartIdx, setTrendChartIdx] = useState<number | null>(null)
-  const [impReachChartIdx, setImpReachChartIdx] = useState<number | null>(null)
+  // 초기값 0 — 맨 왼쪽 데이터 포인트에 툴팁 자동 노출
+  const [followerChartIdx, setFollowerChartIdx] = useState<number | null>(0)
+  const [trendChartIdx, setTrendChartIdx] = useState<number | null>(0)
+  const [impReachChartIdx, setImpReachChartIdx] = useState<number | null>(0)
 
   // 차트 가로 스크롤 refs
   const followerChartScrollRef = useRef<ChartScrollContainerHandle>(null)
   const trendChartScrollRef    = useRef<ChartScrollContainerHandle>(null)
   const impReachChartScrollRef = useRef<ChartScrollContainerHandle>(null)
 
-  // period/isTouch(외부 prop) 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화
-  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
+  // period 변경 시 차트 인덱스·스크롤 초기화 — 맨 왼쪽 포인트(0) 기본 노출 + scrollToStart
   useEffect(() => {
-    if (isTouch) {
-      const followerLen  = followerDataByPeriod[period].length
-      const trendLen     = trendDataByPeriod[period].length
-      const impReachLen  = impressReachByPeriod[period].length
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFollowerChartIdx(followerLen > 0 ? followerLen - 1 : null)
-      setTrendChartIdx(trendLen > 0 ? trendLen - 1 : null)
-      setImpReachChartIdx(impReachLen > 0 ? impReachLen - 1 : null)
-      requestAnimationFrame(() => {
-        followerChartScrollRef.current?.scrollToEnd()
-        trendChartScrollRef.current?.scrollToEnd()
-        impReachChartScrollRef.current?.scrollToEnd()
-      })
-    } else {
-      setFollowerChartIdx(null)
-      setTrendChartIdx(null)
-      setImpReachChartIdx(null)
-      requestAnimationFrame(() => {
-        followerChartScrollRef.current?.scrollToStart()
-        trendChartScrollRef.current?.scrollToStart()
-        impReachChartScrollRef.current?.scrollToStart()
-      })
-    }
-  }, [period, isTouch])
+    const followerLen  = followerDataByPeriod[period].length
+    const trendLen     = trendDataByPeriod[period].length
+    const impReachLen  = impressReachByPeriod[period].length
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFollowerChartIdx(followerLen > 0 ? 0 : null)
+    setTrendChartIdx(trendLen > 0 ? 0 : null)
+    setImpReachChartIdx(impReachLen > 0 ? 0 : null)
+    requestAnimationFrame(() => {
+      followerChartScrollRef.current?.scrollToStart()
+      trendChartScrollRef.current?.scrollToStart()
+      impReachChartScrollRef.current?.scrollToStart()
+    })
+  }, [period])
 
   // 테이블 가로 스크롤 — 공통 훅(useTableScroll)으로 추출 (쉐브론은 FloatingScrollChevrons에서 처리)
   const { scrollRef: tableScrollRef, canScrollLeft: canTableScrollLeft, canScrollRight: canTableScrollRight } = useTableScroll<HTMLDivElement>()
@@ -196,20 +185,21 @@ export default function ProfileInsight() {
         />
       </div>
 
-      {/* AI 프로필 분석 카드 — 공통 <AIAnalysisCard> */}
+      {/* AI 프로필 분석 카드 — 분석/가이드 그룹 분리 (광고주 결정 v3) */}
       <AIAnalysisCard
         title="AI 프로필 분석"
-        summary={PROFILE_AI_SUMMARY}
+        analysis={PROFILE_AI_DATA.analysis}
+        guides={PROFILE_AI_DATA.guides}
+        generatedAt={aiGeneratedAt}
         refreshing={aiRefreshing}
         onRefresh={handleAiRefresh}
       />
 
-      {/* KPI 카드 4개 */}
+      {/* KPI 카드 4개 — 클라 #1: 부연 설명(sub) 제거. 라벨/값/전기간 대비만 간결하게 */}
       <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="팔로워 수"
           value={isZero ? '0' : fmtNumber(kpi.followers)}
-          sub="@wellink_brand"
           trend={isZero ? 0 : kpi.trends.followers}
           trendLabel="전기간 대비"
           icon={<Users size={16} aria-hidden="true" />}
@@ -218,7 +208,6 @@ export default function ProfileInsight() {
         <KPICard
           title="평균 도달률"
           value={isZero ? '0%' : `${kpi.reach}%`}
-          sub="게시물 기준"
           trend={isZero ? 0 : kpi.trends.reach}
           trendLabel="전기간 대비"
           icon={<Eye size={16} aria-hidden="true" />}
@@ -227,17 +216,15 @@ export default function ProfileInsight() {
         <KPICard
           title="참여율"
           value={isZero ? '0%' : `${kpi.engagement}%`}
-          sub="좋아요+댓글 기준"
           trend={isZero ? 0 : kpi.trends.engagement}
           trendLabel="전기간 대비"
-          valueColor={isZero ? undefined : getEngagementColor(kpi.engagement)}
+          /* valueColor 제거 — trend(증감) 색상과 시각 모순 방지 (값=검정, 흐름=trend) — AdPerformance ROAS/CTR과 동일 정책 */
           icon={<TrendingUp size={16} aria-hidden="true" />}
           tooltip="(좋아요+댓글) / 도달 수 x 100으로 산출"
         />
         <KPICard
           title="노출 수"
           value={isZero ? '0' : fmtNumber(kpi.impressions)}
-          sub={period === '일간' ? '당일 누적' : period === '주간' ? '주간 누적' : period === '월간' ? '월간 누적' : '연간 누적'}
           trend={isZero ? 0 : kpi.trends.impressions}
           trendLabel="전기간 대비"
           icon={<BarChart2 size={16} aria-hidden="true" />}
@@ -245,7 +232,7 @@ export default function ProfileInsight() {
         />
       </div>
 
-      {/* 전환 KPI 3개 — 원본 buildProfileConversionMetrics 보강 */}
+      {/* 전환 KPI 3개 — 원본 buildProfileConversionMetrics 보강. 클라 #1: sub 제거 */}
       {(() => {
         const conv = conversionByPeriod[period]
         const ctr = conv.profileViews > 0 ? +((conv.websiteClicks / conv.profileViews) * 100).toFixed(1) : 0
@@ -254,7 +241,6 @@ export default function ProfileInsight() {
             <KPICard
               title="프로필 방문"
               value={isZero ? '0' : fmtNumber(conv.profileViews)}
-              sub="계정 관심도"
               trend={isZero ? 0 : conv.profileViewsGrowth}
               trendLabel="전기간 대비"
               icon={<Users size={16} aria-hidden="true" />}
@@ -263,7 +249,6 @@ export default function ProfileInsight() {
             <KPICard
               title="웹사이트 클릭"
               value={isZero ? '0' : fmtNumber(conv.websiteClicks)}
-              sub="외부 유입"
               trend={isZero ? 0 : conv.websiteClicksGrowth}
               trendLabel="전기간 대비"
               icon={<TrendingUp size={16} aria-hidden="true" />}
@@ -272,7 +257,6 @@ export default function ProfileInsight() {
             <KPICard
               title="클릭률"
               value={isZero ? '0%' : `${ctr}%`}
-              sub="전환율"
               trend={isZero ? 0 : conv.ctrGrowth}
               trendLabel="전기간 대비"
               icon={<BarChart2 size={16} aria-hidden="true" />}
@@ -285,7 +269,7 @@ export default function ProfileInsight() {
       {/* 피드별 성과 추세 + 노출&도달 — 960px+ 부터 1:1 2열 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         {/* 피드별 추세선 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
@@ -328,7 +312,7 @@ export default function ProfileInsight() {
           </div>
           <ChartScrollContainer
             ref={trendChartScrollRef}
-            chartW={580} padL={48} padR={48}
+            chartW={580} padL={56} padR={56}
             dataLength={trendData.length}
             activeIndex={trendChartIdx}
             tooltipContent={(i) => {
@@ -363,7 +347,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 노출 & 도달 라인 차트 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">노출 & 도달</h2>
@@ -381,7 +365,7 @@ export default function ProfileInsight() {
           </div>
           <ChartScrollContainer
             ref={impReachChartScrollRef}
-            chartW={580} padL={52} padR={12}
+            chartW={580} padL={60} padR={16}
             dataLength={impressReachData.length}
             activeIndex={impReachChartIdx}
             tooltipContent={(i) => {
@@ -415,9 +399,10 @@ export default function ProfileInsight() {
 
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
-        {/* 콘텐츠 유형별 성과 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="text-base font-semibold text-gray-900 mb-3">콘텐츠 유형별 성과</h2>
+        {/* 콘텐츠 유형별 성과 — 클라 #2: bar 기준을 *최상위 참여율 100% 상대 비교* 로 명시 */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
+          <h2 className="text-base font-semibold text-gray-900 mb-1">콘텐츠 유형별 성과</h2>
+          <p className="text-xs text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
             <span className="text-xs text-gray-500 w-16 shrink-0">유형</span>
@@ -426,41 +411,43 @@ export default function ProfileInsight() {
             <span className="text-xs text-gray-500 w-10 text-right">참여율</span>
           </div>
           <div className="space-y-3">
-            {contentTypeData.map(ct => {
-              const reachPct = Math.round((ct.avgReach / 5200) * 100)
-              return (
-              <div key={ct.type} className="flex items-center gap-4">
-                <span className="text-sm text-gray-700 font-medium w-16 shrink-0">{ct.type}</span>
-                <div
-                  className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-label={`${ct.type} 평균 도달 (최상위 대비)`}
-                  aria-valuenow={reachPct}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuetext={`${fmtNumber(ct.avgReach)} (${reachPct}%)`}
-                >
-                  <div
-                    className="h-full rounded-full bg-brand-green"
-                    style={{ width: `${reachPct}%` }}
-                  />
-                </div>
-                <span className="text-sm font-semibold text-gray-900 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
-                <span className={`text-sm font-semibold w-10 text-right ${ct.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text' : ct.engagementRate >= 2.5 ? 'text-gray-700' : 'text-red-500'}`}>
-                  {ct.engagementRate}%
-                </span>
-              </div>
-              )
-            })}
+            {(() => {
+              // 막대 분모: 최상위 참여율 (클라가 가정한 "릴스 4.8% = 100% 기준")
+              const maxEng = Math.max(0.001, ...contentTypeData.map(c => c.engagementRate))
+              return contentTypeData.map(ct => {
+                const engPct = Math.round((ct.engagementRate / maxEng) * 100)
+                const isMax = ct.engagementRate === maxEng
+                return (
+                  <div key={ct.type} className="flex items-center gap-4">
+                    <span className="text-sm text-gray-700 font-medium w-16 shrink-0">{ct.type}</span>
+                    <div
+                      className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-label={`${ct.type} 참여율 비교 (최상위 ${maxEng.toFixed(1)}% 대비)`}
+                      aria-valuenow={engPct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuetext={`참여율 ${ct.engagementRate}% (${engPct}%)`}
+                    >
+                      {/* 공통 정책 — 최대값만 brand-green (진함), 나머지는 brand-green-border (옅음) */}
+                      <div
+                        className={`h-full rounded-full ${isMax ? 'bg-brand-green' : 'bg-brand-green-border'}`}
+                        style={{ width: `${engPct}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
+                    <span className="text-sm font-semibold text-brand-green-text w-10 text-right tabular-nums">
+                      {ct.engagementRate}%
+                    </span>
+                  </div>
+                )
+              })
+            })()}
           </div>
-          <p className="text-sm text-gray-500 mt-4">
-            <span className="text-brand-green-text font-medium">초록색</span>은 높은 참여율,{' '}
-            <span className="text-red-500 font-medium">빨간색</span>은 개선 필요 지표
-          </p>
         </div>
 
         {/* 팔로워 추이 (2/5) */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
           <div className="mb-4">
             <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
@@ -494,7 +481,7 @@ export default function ProfileInsight() {
       {/* 최근 게시물 상세 */}
       {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
       <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
         <h2 className="text-base font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
         </h2>
@@ -551,7 +538,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h2 className="text-base font-semibold text-gray-900">팔로워 분석</h2>
           <div className="flex items-center gap-2">
@@ -559,78 +546,85 @@ export default function ProfileInsight() {
             <span className="text-sm text-gray-500">비공개 계정 제외</span>
           </div>
         </div>
-        <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
-          {/* 성별 */}
-          <div>
-            <p className="text-sm font-medium text-gray-500 mb-3">성별</p>
-            <div className="space-y-3">
+        {(() => {
+          // 공통 정책 (2026-05-14): 막대 차트 = brand-green-border (옅음) + 최대값만 brand-green (진함)
+          const malePct = FOLLOWER_DEMOGRAPHIC.gender.malePercent
+          const femalePct = FOLLOWER_DEMOGRAPHIC.gender.femalePercent
+          const maleIsMax = malePct >= femalePct
+          const ageMaxIdx = FOLLOWER_DEMOGRAPHIC.age.reduce((mi, a, i, arr) => a.percent > arr[mi].percent ? i : mi, 0)
+          return (
+            <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
+              {/* 성별 */}
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-700 font-medium">남성</span>
-                  <span className="text-gray-900 font-bold">{FOLLOWER_DEMOGRAPHIC.gender.malePercent}%</span>
-                </div>
-                <div
-                  className="h-2 bg-gray-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-label="남성 팔로워 비율"
-                  aria-valuenow={FOLLOWER_DEMOGRAPHIC.gender.malePercent}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuetext={`${FOLLOWER_DEMOGRAPHIC.gender.malePercent}%`}
-                >
-                  <div className="h-full bg-gray-700 rounded-full" style={{ width: `${FOLLOWER_DEMOGRAPHIC.gender.malePercent}%` }} />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-700 font-medium">여성</span>
-                  <span className="text-gray-900 font-bold">{FOLLOWER_DEMOGRAPHIC.gender.femalePercent}%</span>
-                </div>
-                <div
-                  className="h-2 bg-gray-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-label="여성 팔로워 비율"
-                  aria-valuenow={FOLLOWER_DEMOGRAPHIC.gender.femalePercent}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuetext={`${FOLLOWER_DEMOGRAPHIC.gender.femalePercent}%`}
-                >
-                  <div className="h-full bg-brand-green rounded-full" style={{ width: `${FOLLOWER_DEMOGRAPHIC.gender.femalePercent}%` }} />
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* 연령대 */}
-          <div>
-            <p className="text-sm font-medium text-gray-500 mb-3">연령대</p>
-            <div className="space-y-2.5">
-              {FOLLOWER_DEMOGRAPHIC.age.map((a, i) => (
-                <div key={a.range}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700 font-medium">{a.range}세</span>
-                    <span className="text-gray-900 font-bold">{a.percent}%</span>
-                  </div>
-                  <div
-                    className="h-2 bg-gray-100 rounded-full overflow-hidden"
-                    role="progressbar"
-                    aria-label={`${a.range}세 팔로워 비율`}
-                    aria-valuenow={a.percent}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuetext={`${a.percent}%`}
-                  >
+                <p className="text-sm font-medium text-gray-500 mb-3">성별</p>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-700 font-medium">남성</span>
+                      <span className="text-brand-green-text font-bold">{malePct}%</span>
+                    </div>
                     <div
-                      className={`h-full rounded-full ${
-                        i === 1 ? 'bg-gray-900' : i === 2 ? 'bg-gray-700' : i === 0 ? 'bg-gray-500' : 'bg-gray-400'
-                      }`}
-                      style={{ width: `${a.percent}%` }}
-                    />
+                      className="h-2 bg-gray-100 rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-label="남성 팔로워 비율"
+                      aria-valuenow={malePct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuetext={`${malePct}%`}
+                    >
+                      <div className={`h-full rounded-full ${maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${malePct}%` }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-700 font-medium">여성</span>
+                      <span className="text-brand-green-text font-bold">{femalePct}%</span>
+                    </div>
+                    <div
+                      className="h-2 bg-gray-100 rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-label="여성 팔로워 비율"
+                      aria-valuenow={femalePct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuetext={`${femalePct}%`}
+                    >
+                      <div className={`h-full rounded-full ${!maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${femalePct}%` }} />
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
+              {/* 연령대 */}
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-3">연령대</p>
+                <div className="space-y-2.5">
+                  {FOLLOWER_DEMOGRAPHIC.age.map((a, i) => (
+                    <div key={a.range}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 font-medium">{a.range}세</span>
+                        <span className="text-brand-green-text font-bold">{a.percent}%</span>
+                      </div>
+                      <div
+                        className="h-2 bg-gray-100 rounded-full overflow-hidden"
+                        role="progressbar"
+                        aria-label={`${a.range}세 팔로워 비율`}
+                        aria-valuenow={a.percent}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuetext={`${a.percent}%`}
+                      >
+                        <div
+                          className={`h-full rounded-full ${i === ageMaxIdx ? 'bg-brand-green' : 'bg-brand-green-border'}`}
+                          style={{ width: `${a.percent}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )
+        })()}
       </div>
 
       {/* 게시물별 상세 성과 — 기존 서비스 ContentPerformance 동등 */}

@@ -17,6 +17,11 @@ export type { CardProps, SectionProps } from './components/Card'
 export { default as KPICard }        from './components/KPICard'
 export { default as InfluencerCard } from './components/InfluencerCard'
 
+// 시각화 — Sparkline / WordCloud (대시보드 v2)
+export { default as Sparkline }      from './components/Sparkline'
+export { default as WordCloud }      from './components/WordCloud'
+export type { WordCloudEntry }       from './components/WordCloud'
+
 // 빈 상태 (에러는 ErrorState — 아래 피드백 섹션)
 export { default as EmptyState }     from './components/EmptyState'
 export type { EmptyStateProps, EmptyVariant } from './components/EmptyState'
@@ -42,7 +47,7 @@ export { default as Toggle }         from './components/Toggle'
 export { default as CustomCheckbox } from './components/CustomCheckbox'
 
 // 피드백·레이어
-export { default as ChartScrollContainer } from './components/ChartScrollContainer'
+export { default as ChartScrollContainer, useChartScrollContext } from './components/ChartScrollContainer'
 export type { ChartScrollContainerHandle, ChartScrollContainerProps } from './components/ChartScrollContainer'
 export { default as FloatingScrollChevrons } from './components/FloatingScrollChevrons'
 export type { FloatingScrollChevronsProps } from './components/FloatingScrollChevrons'

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
 import InstagramGlobalBanner from './InstagramGlobalBanner'
@@ -7,6 +7,7 @@ import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
 export default function Layout() {
+  const navigate = useNavigate()
   const [mobileNav, setMobileNav] = useState(false)
   const device = useDeviceMode()
   const isDesktop = device === 'desktop'
@@ -50,9 +51,15 @@ export default function Layout() {
             }`}
           >
             <div className="flex items-center justify-between px-4 py-3 shrink-0">
-              <span className="text-base font-bold text-gray-900">
+              {/* 클라 #5: drawer 패널 로고도 클릭 시 홈 이동 + drawer 닫기 */}
+              <button
+                type="button"
+                onClick={() => { navigate('/dashboard'); setMobileNav(false) }}
+                className="text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                aria-label="홈으로 이동"
+              >
                 WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
-              </span>
+              </button>
               <button type="button" onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-500" aria-hidden="true" />
               </button>
@@ -75,7 +82,15 @@ export default function Layout() {
             <button type="button" onClick={() => setMobileNav(true)} aria-label="메뉴 열기" className="w-10 h-10 flex items-center justify-center -ml-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Menu size={20} className="text-gray-700" aria-hidden="true" />
             </button>
-            <span className="ml-2 text-base font-bold text-gray-900">WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span></span>
+            {/* 클라 #5: 모바일 헤더 로고도 클릭 시 홈(/dashboard) 이동 — 사이드바 홈 탭 삭제 보완 */}
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard')}
+              className="ml-2 text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+              aria-label="홈으로 이동"
+            >
+              WELLINK <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
+            </button>
           </div>
         )}
         <InstagramGlobalBanner />

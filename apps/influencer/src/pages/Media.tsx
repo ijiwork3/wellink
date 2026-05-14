@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState } from '@wellink/ui'
+import { Modal, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats } from '../services/mock/profile'
+import { ko주격조사 } from '../utils/format'
 
 interface Platform {
   id: string
@@ -86,18 +87,18 @@ export default function Media() {
   if (qa === 'loading') {
     return (
       <Layout>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse space-y-3">
-          <div className="h-4 bg-gray-100 rounded-xl w-28 mb-5" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+          <Skeleton shape="text" height={16} width="7rem" className="mb-5" />
           {[1,2,3].map(i => (
             <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-gray-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-100" />
+                <Skeleton shape="circle" height={40} width={40} />
                 <div className="space-y-1.5">
-                  <div className="h-4 bg-gray-100 rounded-xl w-24" />
-                  <div className="h-3 bg-gray-100 rounded-xl w-32" />
+                  <Skeleton shape="text" height={16} width="6rem" />
+                  <Skeleton shape="text" height={12} width="8rem" />
                 </div>
               </div>
-              <div className="h-8 bg-gray-100 rounded-xl w-16" />
+              <Skeleton shape="card" height={32} width="4rem" />
             </div>
           ))}
         </div>
@@ -117,8 +118,24 @@ export default function Media() {
 
   const handleConnect = () => {
     if (!urlInput.trim()) { showToast('URL을 입력해 주세요', 'error'); return }
-    setPlatforms(prev => prev.map(p => p.id === connectModal?.id ? { ...p, connected: true, url: urlInput.trim().replace(/^@/, '') } : p))
-    showToast(`${connectModal?.name}이(가) 연결되었어요!`, 'success')
+    const input = urlInput.trim()
+    // 플랫폼별 검증 — 인스타는 핸들/URL 모두 허용, 네이버/유튜브는 URL 형식 요구
+    if (connectModal?.id === 'instagram') {
+      const handle = input.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')
+      if (!/^[a-zA-Z0-9_.]{1,30}$/.test(handle)) {
+        showToast('올바른 인스타그램 아이디를 입력해 주세요', 'error'); return
+      }
+    } else {
+      if (!/^https?:\/\/.+\..+/.test(input)) {
+        showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return
+      }
+    }
+    // 인스타그램만 @ 핸들 정규화. 네이버 블로그·유튜브는 URL 그대로 저장 (L264 @${url} 노출 방지)
+    const normalized = connectModal?.id === 'instagram'
+      ? input.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')
+      : input
+    setPlatforms(prev => prev.map(p => p.id === connectModal?.id ? { ...p, connected: true, url: normalized } : p))
+    showToast(`${connectModal?.name}${ko주격조사(connectModal?.name ?? '')} 연결됐어요!`, 'success')
     setConnectModal(null)
     setUrlInput('')
   }
@@ -137,63 +154,63 @@ export default function Media() {
       <div className="space-y-4 max-w-lg">
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
-          <div className="bg-white rounded-2xl border border-brand-green-border p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-base">📷</span>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">@{instaPlatform.url}</p>
+          <div className="bg-white rounded-2xl border border-brand-green-border shadow-sm p-5">
+            <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="text-base flex-shrink-0" aria-hidden="true">📷</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-gray-900 truncate">@{instaPlatform.url}</p>
                   <p className="text-xs text-gray-500">인스타그램</p>
                 </div>
               </div>
-              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1">
+              <span className="shrink-0 text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1 whitespace-nowrap">
                 <CheckCircle2 size={12} />연결됨
               </span>
             </div>
 
-            {/* 6개 통계 그리드 */}
+            {/* 6개 통계 그리드 — 360px 카드 p-5 → 가용 248px → 셀 (248-16)/3 = 77px. text-sm + tabular-nums + truncate 일관 적용 */}
             <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">팔로워</p>
+                  <p className="text-xs text-gray-500 break-keep">팔로워</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{fmtFollowers(mockInstaStats.followers)}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtFollowers(mockInstaStats.followers)}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Image size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">게시물</p>
+                  <p className="text-xs text-gray-500 break-keep">게시물</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{mockInstaStats.posts}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.posts.toLocaleString('ko-KR')}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <TrendingUp size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">참여율</p>
+                  <p className="text-xs text-gray-500 break-keep">참여율</p>
                 </div>
-                <p className={`text-sm font-bold ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
+                <p className={`text-sm font-bold tabular-nums truncate ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Heart size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">평균 좋아요</p>
+                  <p className="text-xs text-gray-500 break-keep">평균 좋아요</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgLikes}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgLikes.toLocaleString('ko-KR')}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <MessageCircle size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">평균 댓글</p>
+                  <p className="text-xs text-gray-500 break-keep">평균 댓글</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{mockInstaStats.avgComments}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgComments.toLocaleString('ko-KR')}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Clock size={12} className="text-gray-400" />
-                  <p className="text-xs text-gray-500">최근 활동</p>
+                  <p className="text-xs text-gray-500 break-keep">최근 활동</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900">{mockInstaStats.lastActive}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.lastActive}</p>
               </div>
             </div>
 
@@ -205,8 +222,8 @@ export default function Media() {
               </div>
               <div className="grid grid-cols-3 gap-1.5">
                 {MOCK_CONTENT.map(post => (
-                  <div key={post.id} className="aspect-square bg-brand-green-bg rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group cursor-pointer">
-                    <span className="text-2xl">{post.emoji}</span>
+                  <div key={post.id} className="aspect-square bg-brand-green-bg rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group">
+                    <span className="text-2xl" aria-hidden="true">{post.emoji}</span>
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
                       <span className="text-white text-xs font-medium flex items-center gap-0.5 whitespace-nowrap">
                         <Heart size={12} fill="white" aria-hidden="true" />
@@ -229,14 +246,14 @@ export default function Media() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link2 size={16} className="text-brand-green" />
-            <h2 className="text-base font-semibold text-gray-900">SNS 관리</h2>
+            <h1 className="text-base font-semibold text-gray-900">SNS 관리</h1>
           </div>
           <span className="text-xs text-gray-500">{connectedCount}/{platforms.length} 연결됨</span>
         </div>
 
         {/* 플랫폼 카드들 */}
         {platforms.map(p => (
-          <div key={p.id} className={`bg-white rounded-2xl border p-4 transition-all ${p.connected ? 'border-brand-green-border' : 'border-gray-100'}`}>
+          <div key={p.id} className={`bg-white rounded-2xl border shadow-sm p-4 transition-all ${p.connected ? 'border-brand-green-border' : 'border-gray-100'}`}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 {/* 아이콘 + 연결 인디케이터 */}
@@ -252,30 +269,30 @@ export default function Media() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-medium text-gray-900">{p.name}</p>
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <p className="text-sm font-medium text-gray-900 break-keep">{p.name}</p>
                     {p.connected && (
-                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text">연결됨</span>
+                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">연결됨</span>
                     )}
                   </div>
 
                   {p.connected && p.url ? (
-                    <p className="text-xs text-gray-500 truncate">@{p.url}</p>
+                    <p className="text-xs text-gray-500 truncate">{p.id === 'instagram' ? `@${p.url}` : p.url}</p>
                   ) : (
-                    <p className="text-xs text-gray-500">{p.description}</p>
+                    <p className="text-xs text-gray-500 break-keep">{p.description}</p>
                   )}
 
                   {/* 연결된 계정 지표 */}
                   {p.connected && p.followers && (
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="flex items-center gap-1 text-xs text-gray-600">
+                    <div className="flex items-center gap-x-3 gap-y-1 mt-2 flex-wrap">
+                      <span className="flex items-center gap-1 text-xs text-gray-600 whitespace-nowrap">
                         <Users size={12} className="text-gray-400" />
-                        <strong>{fmtFollowers(p.followers)}</strong> 팔로워
+                        <strong className="tabular-nums">{fmtFollowers(p.followers)}</strong> 팔로워
                       </span>
                       {p.engagementRate != null && (
-                        <span className="flex items-center gap-1 text-xs">
+                        <span className="flex items-center gap-1 text-xs whitespace-nowrap">
                           <TrendingUp size={12} className="text-gray-400" />
-                          <strong className={getEngagementColor(p.engagementRate)}>{p.engagementRate}%</strong>
+                          <strong className={`${getEngagementColor(p.engagementRate)} tabular-nums`}>{p.engagementRate}%</strong>
                           <span className="text-gray-400">참여율</span>
                         </span>
                       )}
@@ -288,7 +305,7 @@ export default function Media() {
               {p.connected ? (
                 <button
                   onClick={() => setDisconnectModal(p)}
-                  className="shrink-0 text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+                  className="shrink-0 text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   관리
                 </button>
@@ -305,7 +322,7 @@ export default function Media() {
         ))}
 
         <div className="p-4 rounded-xl bg-brand-green-bg border-l-[3px] border-brand-green">
-          <p className="text-xs text-gray-600">SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인됩니다.</p>
+          <p className="text-xs text-gray-600 break-keep">SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인돼요</p>
         </div>
       </div>
 
@@ -319,11 +336,17 @@ export default function Media() {
               value={urlInput}
               onChange={e => setUrlInput(e.target.value)}
               placeholder={connectModal.placeholder}
+              aria-label={`${connectModal.name} ${connectModal.id === 'instagram' ? '아이디' : 'URL'}`}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={200}
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all mb-4"
               onKeyDown={e => e.key === 'Enter' && handleConnect()}
             />
             <div className="flex gap-3">
-              <button onClick={() => setConnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
+              <button onClick={() => setConnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
               <button onClick={handleConnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">연결</button>
             </div>
           </>
@@ -331,18 +354,16 @@ export default function Media() {
       </Modal>
 
       {/* 연결 해제 모달 */}
-      <Modal open={!!disconnectModal} onClose={() => setDisconnectModal(null)} title="연결 해제" size="sm">
-        {disconnectModal && (
-          <>
-            <p className="text-sm text-gray-600 mb-2"><strong>{disconnectModal.name}</strong> 연결을 해제할까요?</p>
-            <p className="text-xs text-gray-500 mb-5">해제 후 해당 채널로 캠페인 신청이 어려울 수 있어요.</p>
-            <div className="flex gap-3">
-              <button onClick={() => setDisconnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-              <button onClick={handleDisconnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">연결 해제</button>
-            </div>
-          </>
-        )}
-      </Modal>
+      <AlertModal
+        open={!!disconnectModal}
+        onClose={() => setDisconnectModal(null)}
+        title="연결 해제"
+        description={disconnectModal ? `${disconnectModal.name} 연결을 해제할까요? 해제 후 해당 채널로 캠페인 신청이 어려울 수 있어요` : ''}
+        variant="danger"
+        confirmLabel="연결 해제"
+        cancelLabel="취소"
+        onConfirm={handleDisconnect}
+      />
     </Layout>
   )
 }

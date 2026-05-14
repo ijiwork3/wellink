@@ -1,5 +1,22 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
+
+/* ── 인플루언서 카드 — 최근 피드 썸네일 (3그리드) ───── */
+function InfluencerThumb({ src, seed, index }: { src: string; seed: string; index: number }) {
+  const [imgSrc, setImgSrc] = useState(src)
+  return (
+    <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden">
+      <img
+        src={imgSrc}
+        alt={`최근 피드 ${index + 1}`}
+        className="w-full h-full object-cover"
+        loading="lazy"
+        onError={() => setImgSrc(getPlaceholderDataUri(seed))}
+      />
+    </div>
+  )
+}
 import { useNavigate, Link } from 'react-router-dom'
 import {
   Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip,
@@ -600,15 +617,11 @@ export default function InfluencerManage() {
                     {Array.from({ length: 3 }).map((_, i) => {
                       const thumb = inf.recentThumbnails[i]
                       if (thumb) {
+                        // mock URL 또는 BE URL이면 Unsplash 풀에서 실제 사진 매핑
+                        // (mock://thumb-N-M 같은 fetch 불가 URL → seed로 사진 선택)
+                        const src = thumb.startsWith('http') ? thumb : getThumbnailFromPool(`${inf.instagramId}-${i}`)
                         return (
-                          <div
-                            key={i}
-                            className="aspect-square rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-                            aria-label={`최근 피드 ${i + 1}`}
-                          >
-                            {/* TODO: BE 연동 시 <img src={thumb} /> 로 교체 */}
-                            <Image size={18} className="text-gray-300" aria-hidden="true" />
-                          </div>
+                          <InfluencerThumb key={i} src={src} seed={`${inf.instagramId}-${i}`} index={i} />
                         )
                       }
                       // 1~2장 케이스의 빈 슬롯

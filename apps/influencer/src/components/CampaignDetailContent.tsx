@@ -39,7 +39,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
     ? 'h-48 flex items-center justify-center text-7xl bg-brand-green-bg rounded-xl overflow-hidden mb-5'
     : 'h-52 @[640px]:h-64 flex items-center justify-center text-8xl bg-brand-green-bg @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden'
 
-  const sectionCls = inModal ? 'py-4' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
+  // inModal·페이지 모두 섹션 간 border-t 유지. 페이지일 때만 좌우 패딩 추가.
+  const sectionCls = inModal ? 'py-4 border-t border-gray-100 first:border-t-0' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
   const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @[640px]:p-6'
 
   return (
@@ -52,32 +53,44 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
       )}
 
       {/* 이미지 배너 */}
-      <div className={imgCls}>{campaign.image}</div>
+      <div className={imgCls} aria-hidden="true">{campaign.image}</div>
 
       <div className={inModal ? '' : '@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6'}>
         <div className={inModal ? '' : '@[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 @[640px]:overflow-hidden'}>
 
-          {/* 브랜드 + 상태 + 관심등록 */}
+          {/* 브랜드 + 상태 + 관심등록 — 좁은 모바일에서 한 줄 강제 X. flex-wrap 으로 자연 줄바꿈 */}
           <div className={firstSectionCls}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-gray-500">{campaign.brand}</span>
+            <div className="flex flex-col @[480px]:flex-row @[480px]:items-center @[480px]:justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <span className="text-sm font-semibold text-gray-500 break-keep">{campaign.brand}</span>
                 <StatusBadge status={campaign.status} />
                 <PlatformBadge platform={campaign.channel} />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const url = `${window.location.origin}/campaigns/${campaign.id}`
                     if (navigator.share) {
-                      navigator.share({ title: campaign.name, text: `${campaign.brand} · ${campaign.name}`, url })
+                      try {
+                        await navigator.share({ title: campaign.name, text: `${campaign.brand} · ${campaign.name}`, url })
+                      } catch {
+                        // 사용자가 공유 시트를 닫은 경우(AbortError) 등 조용히 무시
+                      }
+                      return
+                    }
+                    if (navigator.clipboard?.writeText) {
+                      try {
+                        await navigator.clipboard.writeText(url)
+                        showToast('링크를 복사했어요!', 'success')
+                      } catch {
+                        showToast('링크 복사에 실패했어요', 'error')
+                      }
                     } else {
-                      navigator.clipboard.writeText(url)
-                      showToast('링크가 복사되었어요!', 'success')
+                      showToast('이 브라우저는 공유를 지원하지 않아요', 'info')
                     }
                   }}
                   aria-label="공유하기"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 transition-all duration-150 hover:bg-gray-50"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 transition-all duration-150 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Share2 size={15} className="text-gray-500" aria-hidden="true" />
                   <span className="text-sm text-gray-500">공유</span>
@@ -85,7 +98,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                 <button
                   onClick={() => {
                     setLiked(!liked)
-                    showToast(liked ? '관심 등록을 취소했어요.' : '관심 캠페인에 등록되었어요!', liked ? 'info' : 'success')
+                    showToast(liked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', liked ? 'info' : 'success')
                   }}
                   aria-pressed={liked}
                   aria-label={liked ? '관심등록 취소' : '관심등록'}
@@ -97,60 +110,63 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               </div>
             </div>
 
-            <h2 className="text-xl font-bold text-gray-900 mb-4">{campaign.name}</h2>
+            {inModal
+              ? <h3 className="text-xl font-bold text-gray-900 mb-4 break-keep">{campaign.name}</h3>
+              : <h1 className="text-xl font-bold text-gray-900 mb-4 break-keep">{campaign.name}</h1>
+            }
 
             {/* 모집 현황 */}
             {(() => {
               const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
               return (
                 <div className="mb-5 p-4 rounded-xl bg-gray-50">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-gray-700 flex items-center gap-1">
-                      <Users size={13} className="text-brand-green" />모집 현황
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-xs font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
+                      <Users size={13} className="text-brand-green" aria-hidden="true" />모집 현황
                     </span>
-                    <span className="text-xs text-gray-500">{campaign.applied}/{campaign.headcount}명</span>
+                    <span className="text-xs text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
                   </div>
                   <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">{pct}% 모집</p>
+                  <p className="text-xs text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
                 </div>
               )
             })()}
 
-            <p className="text-sm text-gray-600">{campaign.description}</p>
+            <p className="text-sm text-gray-600 break-keep">{campaign.description}</p>
           </div>
 
           {/* 기간/채널 */}
-          <div className={`${sectionCls} grid grid-cols-1 @[640px]:grid-cols-2 gap-3`} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+          <div className={`${sectionCls} grid grid-cols-1 @[640px]:grid-cols-2 gap-3`}>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-              <Calendar size={17} className="text-brand-green" aria-hidden="true" />
-              <div>
+              <Calendar size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
                 <p className="text-xs text-gray-500">신청 마감</p>
-                <p className="text-sm font-semibold text-gray-900">{campaign.applyEnd}</p>
+                <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.applyEnd}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-              <Clock size={17} className="text-brand-green" aria-hidden="true" />
-              <div>
+              <Clock size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
                 <p className="text-xs text-gray-500">게시 마감</p>
-                <p className="text-sm font-semibold text-gray-900">{campaign.postEnd}</p>
+                <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.postEnd}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
-              <Users size={17} className="text-brand-green" aria-hidden="true" />
-              <div>
+              <Users size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
                 <p className="text-xs text-gray-500">모집 채널</p>
-                <p className="text-sm font-semibold text-gray-900">{campaign.channel}</p>
+                <p className="text-sm font-semibold text-gray-900 break-keep">{campaign.channel}</p>
               </div>
             </div>
             {campaign.type && (
               <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
                 {campaign.type === 'delivery'
-                  ? <Package size={17} className="text-brand-green" aria-hidden="true" />
-                  : <Footprints size={17} className="text-blue-500" aria-hidden="true" />
+                  ? <Package size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+                  : <Footprints size={17} className="text-blue-500 flex-shrink-0" aria-hidden="true" />
                 }
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-gray-500">캠페인 유형</p>
                   <p className={`text-sm font-semibold ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
                     {campaign.type === 'delivery' ? '배송형' : '방문형'}
@@ -162,24 +178,33 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
 
           {/* 필수 키워드 */}
           {(campaign.keywords ?? []).length > 0 && (
-            <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-                  <Hash size={14} className="text-brand-green" />필수 키워드
+            <div className={sectionCls}>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5 whitespace-nowrap">
+                  <Hash size={14} className="text-brand-green" aria-hidden="true" />필수 키워드
                 </p>
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(campaign.keywords!.map(k => `#${k}`).join(' '))
-                    showToast('키워드가 복사되었어요!', 'success')
+                  onClick={async () => {
+                    const text = campaign.keywords!.map(k => `#${k}`).join(' ')
+                    if (navigator.clipboard?.writeText) {
+                      try {
+                        await navigator.clipboard.writeText(text)
+                        showToast('키워드를 복사했어요!', 'success')
+                      } catch {
+                        showToast('복사에 실패했어요', 'error')
+                      }
+                    } else {
+                      showToast('이 브라우저는 복사를 지원하지 않아요', 'info')
+                    }
                   }}
-                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-brand-green transition-colors"
+                  className="shrink-0 flex items-center gap-1 text-xs text-gray-500 hover:text-brand-green-text transition-colors rounded-md whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
-                  <Copy size={12} />한 번에 복사
+                  <Copy size={12} aria-hidden="true" />한 번에 복사
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {campaign.keywords!.map(k => (
-                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green-bg text-xs font-medium text-brand-green">
+                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green-bg text-xs font-medium text-brand-green-text whitespace-nowrap break-keep">
                     #{k}
                   </span>
                 ))}
@@ -189,12 +214,12 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
 
           {/* 보상 */}
           {campaign.reward && (
-            <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+            <div className={sectionCls}>
               <div className="p-4 rounded-xl border border-brand-green-border bg-brand-green-bg flex items-start gap-3">
                 <Gift size={17} className="text-brand-green-text flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-xs font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
-                  <p className="text-sm font-medium text-gray-900">{campaign.reward}</p>
+                  <p className="text-sm font-medium text-gray-900 break-keep">{campaign.reward}</p>
                 </div>
               </div>
             </div>
@@ -208,7 +233,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             if (content.length) groups.push({ label: '콘텐츠 업로드 조건', icon: <FileText size={14} className="text-brand-green" />, items: content })
             if (etc.length) groups.push({ label: '기타 조건', icon: <CheckCircle2 size={14} className="text-brand-green" />, items: etc })
             return (
-              <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+              <div className={sectionCls}>
                 <p className="text-sm font-semibold text-gray-900 mb-3">참여 조건</p>
                 <div className="space-y-3">
                   {groups.map((g, gi) => (
@@ -219,9 +244,9 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                       </div>
                       <ul className="px-3 py-2 space-y-1.5">
                         {g.items.map((cond, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <li key={i} className="flex items-start gap-2 text-sm text-gray-700 break-keep">
                             <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-green flex-shrink-0" />
-                            {cond}
+                            <span className="min-w-0 flex-1">{cond}</span>
                           </li>
                         ))}
                       </ul>
@@ -233,10 +258,10 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
           })()}
 
           {/* 신청 버튼 */}
-          <div className={sectionCls} style={inModal ? { borderTop: '1px solid #f3f4f6' } : {}}>
+          <div className={sectionCls}>
             {isClosed ? (
               <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
-                마감된 캠페인입니다
+                마감된 캠페인이에요
               </div>
             ) : applied ? (
               <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
@@ -245,7 +270,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             ) : (
               <button
                 onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${campaign.status === '마감임박' ? 'animate-pulse' : ''}`}
+                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${campaign.status === '마감임박' ? 'motion-safe:animate-pulse' : ''}`}
               >
                 신청하기
               </button>

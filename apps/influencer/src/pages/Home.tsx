@@ -1,15 +1,14 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, StatusBadge, fmtFollowers } from '@wellink/ui'
-import type { ParticipationStatus } from '@wellink/ui'
+import { useQAMode, fmtDate, StatusBadge, fmtFollowers, ErrorState, EmptyState, Skeleton } from '@wellink/ui'
 import { mockMyCampaigns, mockBookmarkedCampaigns } from '../services/mock/campaigns'
 import { mockProfile, mockCampaignSummary, mockInstaStats } from '../services/mock/profile'
 
 const SUMMARY_CARDS = [
   { label: '지원 완료', key: 'applied' as const,   color: 'text-gray-900' },
-  { label: '참여중',    key: 'ongoing' as const,    color: 'text-brand-green' },
+  { label: '참여중',    key: 'ongoing' as const,    color: 'text-brand-green-text' },
   { label: '참여 완료', key: 'completed' as const,  color: 'text-gray-900' },
   { label: '탈락',      key: 'eliminated' as const, color: 'text-red-400' },
 ]
@@ -18,30 +17,58 @@ export default function Home() {
   const navigate = useNavigate()
   const qa = useQAMode()
 
-  const activeCampaigns = useMemo(() =>
-    mockMyCampaigns.filter(c => ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status))
-  , [])
-  const urgentCampaigns = useMemo(() => {
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now()
-    const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3
-    return mockMyCampaigns.filter(c => {
-      if (c.status !== '콘텐츠대기' || !c.contentDeadline) return false
-      const diff = new Date(c.contentDeadline).getTime() - now
-      return diff > 0 && diff < THREE_DAYS_MS
-    })
-  }, [])
+  // mockMyCampaigns / mockBookmarkedCampaigns 는 정적 import 라 useMemo 불필요.
+  // 마감 임박 계산도 mount 시 한 번 캡처(useState 지연 초기화)해 React 19 purity 규칙을 위반하지 않는다.
+  const [now] = useState(() => Date.now())
+  const activeCampaigns = mockMyCampaigns.filter(c =>
+    ['지원완료', '검토중', '콘텐츠대기', '검수중'].includes(c.status)
+  )
+  const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3
+  const urgentCampaigns = mockMyCampaigns.filter(c => {
+    if (c.status !== '콘텐츠대기' || !c.contentDeadline) return false
+    const diff = new Date(c.contentDeadline).getTime() - now
+    return diff > 0 && diff < THREE_DAYS_MS
+  })
   const bookmarkCount = mockBookmarkedCampaigns.length
 
   if (qa === 'loading') {
     return (
       <Layout>
-        <div className="space-y-4 animate-pulse">
-          <div className="h-24 bg-gray-100 rounded-2xl" />
+        <div className="space-y-4">
+          <Skeleton shape="card" height={96} width="100%" />
           <div className="grid grid-cols-2 gap-3">
-            {[1,2,3,4].map(i => <div key={i} className="h-20 bg-gray-100 rounded-2xl" />)}
+            {[1,2,3,4].map(i => <Skeleton key={i} shape="card" height={80} width="100%" />)}
           </div>
-          <div className="h-36 bg-gray-100 rounded-2xl" />
+          <Skeleton shape="card" height={144} width="100%" />
+        </div>
+      </Layout>
+    )
+  }
+
+  if (qa === 'error') {
+    return (
+      <Layout>
+        <ErrorState message="홈 데이터를 불러오지 못했어요" onRetry={() => window.location.reload()} />
+      </Layout>
+    )
+  }
+
+  if (qa === 'empty') {
+    return (
+      <Layout>
+        <div className="bg-white rounded-2xl border border-gray-100 py-12">
+          <EmptyState
+            title="아직 활동 내역이 없어요"
+            description="첫 캠페인에 신청해 보세요"
+            action={
+              <button
+                onClick={() => navigate('/campaigns/browse')}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                캠페인 찾아보기
+              </button>
+            }
+          />
         </div>
       </Layout>
     )
@@ -50,12 +77,13 @@ export default function Home() {
   return (
     <Layout>
       <div className="space-y-4">
+        <h1 className="sr-only">홈</h1>
 
         {/* 인사말 배너 */}
         <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
-          <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 👋</p>
-          <p className="text-lg font-bold">{mockProfile.name}님</p>
-          <p className="text-xs opacity-70 mt-1">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+          <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
+          <p className="text-lg font-bold truncate">{mockProfile.name}님</p>
+          <p className="text-xs opacity-70 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
         </div>
 
         {/* 활동 통계 */}
@@ -64,9 +92,10 @@ export default function Home() {
             <button
               key={card.key}
               onClick={() => navigate('/campaigns/my')}
-              className="bg-white rounded-2xl border border-gray-100 p-3 text-center hover:border-gray-200 hover:shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 text-center hover:border-gray-200 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              aria-label={`${card.label} ${mockCampaignSummary[card.key]}건 보기`}
             >
-              <p className={`text-xl font-bold ${card.color}`}>{mockCampaignSummary[card.key]}</p>
+              <p className={`text-xl font-bold tabular-nums ${card.color}`}>{mockCampaignSummary[card.key]}</p>
               <p className="text-xs text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
             </button>
           ))}
@@ -84,10 +113,11 @@ export default function Home() {
                 <button
                   key={c.id}
                   onClick={() => navigate('/campaigns/my')}
-                  className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-50 transition-colors"
+                  className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  aria-label={`${c.name} — ${fmtDate(c.contentDeadline!)}까지 콘텐츠 제출`}
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 break-keep">{c.name}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
                     <p className="text-xs text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0 ml-2" aria-hidden="true" />
@@ -98,12 +128,12 @@ export default function Home() {
         )}
 
         {/* 진행 중인 캠페인 */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
             <p className="text-sm font-semibold text-gray-900">진행 중인 캠페인</p>
             <button
               onClick={() => navigate('/campaigns/my')}
-              className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
+              className="flex items-center gap-0.5 text-xs text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               전체보기 <ChevronRight size={14} />
             </button>
@@ -124,14 +154,15 @@ export default function Home() {
                 <button
                   key={c.id}
                   onClick={() => navigate('/campaigns/my')}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  aria-label={`${c.name} — ${c.progress}`}
                 >
                   <div className="flex-1 min-w-0 pr-2">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <StatusBadge status={c.status as ParticipationStatus} size="sm" />
+                      <StatusBadge status={c.status} size="sm" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900 break-keep">{c.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{c.progress}</p>
+                    <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{c.progress}</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
                 </button>
@@ -140,7 +171,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* 빠른 메뉴 */}
+        {/* 빠른 메뉴 — 모바일 360px 한 셀 약 95px. 라벨은 4글자 이내로 통일하고 카운트는 별도 줄. */}
         <div className="grid grid-cols-3 gap-3">
           <QuickMenu
             icon={<Compass size={20} className="text-brand-green" />}
@@ -149,7 +180,8 @@ export default function Home() {
           />
           <QuickMenu
             icon={<Heart size={20} className="text-red-400" />}
-            label={`관심 캠페인 ${bookmarkCount}`}
+            label="관심 캠페인"
+            badge={bookmarkCount > 0 ? String(bookmarkCount) : undefined}
             onClick={() => navigate('/campaigns/favorites')}
           />
           <QuickMenu
@@ -160,31 +192,32 @@ export default function Home() {
         </div>
 
         {/* SNS 지표 요약 */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
             <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
             <button
               onClick={() => navigate('/media')}
-              className="flex items-center gap-0.5 text-xs text-brand-green font-medium hover:underline"
+              className="flex items-center gap-0.5 text-xs text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               자세히 <ChevronRight size={14} />
             </button>
           </div>
-          <div className="grid grid-cols-3 divide-x divide-gray-50 px-2 py-3">
+          {/* 360px 한 셀 가용 80px. fmtFollowers가 6자(예 123.4만) 일 때 text-base는 overflow → text-sm + px 축소 */}
+          <div className="grid grid-cols-3 divide-x divide-gray-50 px-1 py-3">
             {[
               { label: '팔로워', value: fmtFollowers(mockInstaStats.followers) },
               { label: '참여율', value: `${mockInstaStats.engagementRate}%`, highlight: true },
               { label: '게시물', value: String(mockInstaStats.posts) },
             ].map(item => (
-              <div key={item.label} className="text-center px-3">
-                <p className={`text-base font-bold ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
+              <div key={item.label} className="text-center px-1.5 min-w-0">
+                <p className={`text-sm @[480px]:text-base font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
                 <p className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
-            <TrendingUp size={12} className="text-brand-green" aria-hidden="true" />
-            <p className="text-xs text-gray-600">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
+            <TrendingUp size={12} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+            <p className="text-xs text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
           </div>
         </div>
 
@@ -193,14 +226,24 @@ export default function Home() {
   )
 }
 
-function QuickMenu({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+function QuickMenu({ icon, label, badge, onClick }: { icon: React.ReactNode; label: string; badge?: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-2 py-4 hover:border-gray-200 hover:shadow-sm transition-all"
+      className="relative bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center gap-2 py-4 px-2 hover:border-gray-200 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
     >
       {icon}
-      <span className="text-xs font-medium text-gray-700 text-center leading-tight whitespace-nowrap">{label}</span>
+      <span className="text-xs font-medium text-gray-700 text-center leading-tight break-keep">
+        {label}
+      </span>
+      {badge && (
+        <span
+          className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-green text-white text-[10px] font-bold flex items-center justify-center"
+          aria-label={`${badge}개`}
+        >
+          {badge}
+        </span>
+      )}
     </button>
   )
 }

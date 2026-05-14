@@ -12,7 +12,7 @@ import Media from './pages/Media'
 import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
-import { GlobalQAHeader, GLOBAL_QA_HEADER_HEIGHT, type StatusItem } from './qa-mockup-kit'
+import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
 const STATUS_ITEMS: StatusItem[] = [
@@ -37,6 +37,8 @@ const STATUS_ITEMS: StatusItem[] = [
     children: [
       { label: '기본', path: '/home' },
       { label: '로딩 스켈레톤', path: '/home?qa=loading' },
+      { label: '빈 상태 — 활동 없음', path: '/home?qa=empty' },
+      { label: '에러', path: '/home?qa=error' },
     ],
   },
 
@@ -115,6 +117,7 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '로딩 스켈레톤', path: '/profile?qa=loading' },
       { label: '수정 모드', path: '/profile?qa=edit' },
       { label: '모달 — 비밀번호 변경', path: '/profile?qa=modal-password' },
+      { label: '모달 — 전화번호 변경', path: '/profile?qa=modal-phone' },
       { label: '모달 — 회원 탈퇴', path: '/profile?qa=modal-withdraw' },
       { label: '에러', path: '/profile?qa=error' },
     ],
@@ -146,8 +149,6 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 ]
-
-void GLOBAL_QA_HEADER_HEIGHT
 
 function AppRoutes() {
   const navigate = useNavigate()
@@ -196,7 +197,8 @@ function AppRoutes() {
       <button
         onClick={() => setQaOpen(o => !o)}
         aria-label="QA 패널 열기"
-        className="fixed bottom-4 right-4 z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+        className="fixed z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+        style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))', right: '1rem' }}
       >
         {qaOpen ? <X size={16} /> : <Settings size={16} />}
         <span>QA</span>

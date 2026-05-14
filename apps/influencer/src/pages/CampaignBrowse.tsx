@@ -4,28 +4,29 @@ import { Search, X, SlidersHorizontal } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import CampaignDetailContent from '../components/CampaignDetailContent'
-import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
+import { mockCampaigns, mockAppliedData, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast, ErrorState, EmptyState } from '@wellink/ui'
+import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
+import { useEscToClose } from '../utils/useEscToClose'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
 import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
-function SkeletonCard() {
+function CampaignSkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
-      <div className="h-36 bg-gray-100" />
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <Skeleton shape="rect" height={144} width="100%" />
       <div className="p-4 space-y-2.5">
         <div className="flex gap-2">
-          <div className="h-4 bg-gray-100 rounded-full w-14" />
-          <div className="h-4 bg-gray-100 rounded-full w-10" />
+          <Skeleton shape="circle" height={16} width="3.5rem" />
+          <Skeleton shape="circle" height={16} width="2.5rem" />
         </div>
-        <div className="h-3 bg-gray-100 rounded-xl w-1/4" />
-        <div className="h-4 bg-gray-100 rounded-xl w-4/5" />
-        <div className="h-8 bg-gray-100 rounded-xl mt-1" />
+        <Skeleton shape="text" height={12} width="25%" />
+        <Skeleton shape="text" height={16} width="80%" />
+        <Skeleton shape="card" height={32} width="100%" className="mt-1" />
         <div className="flex justify-between">
-          <div className="h-3 bg-gray-100 rounded-xl w-16" />
-          <div className="h-3 bg-gray-100 rounded-xl w-16" />
+          <Skeleton shape="text" height={12} width="4rem" />
+          <Skeleton shape="text" height={12} width="4rem" />
         </div>
       </div>
     </div>
@@ -48,6 +49,9 @@ export default function CampaignBrowse() {
   const [loading, setLoading] = useState(true)
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
   const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null)
+
+  // PC 상세 모달 ESC 닫기 (퀵뷰 바텀시트는 BottomSheet 내부 처리)
+  useEscToClose(detailCampaign !== null, () => setDetailCampaign(null))
 
   const handleCardClick = (campaign: Campaign) => {
     if (isTouch) {
@@ -108,34 +112,36 @@ export default function CampaignBrowse() {
   return (
     <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-6 py-10" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 10%, transparent) 0%, rgba(255,255,255,0) 60%)' }}>
+      <div className="px-4 @[640px]:px-6 py-10 bg-gradient-to-br from-brand-green-bg to-white">
         <div className="max-w-screen-xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 캠페인</h1>
-          <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요.</p>
+          <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
         </div>
       </div>
 
-      <div className="max-w-screen-xl mx-auto px-6 pb-12">
+      <div className="max-w-screen-xl mx-auto px-4 @[640px]:px-6 pb-12">
         {/* 검색 + 필터 */}
         <div className="-mt-4 mb-5 flex gap-2">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
-              type="text"
+              type="search"
               placeholder="캠페인 또는 브랜드 검색"
+              aria-label="캠페인 검색"
+              autoComplete="off"
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-sm shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={16} />
               </button>
             )}
           </div>
           <button
             onClick={() => showToast('상세 필터 기능은 준비 중이에요', 'info')}
-            className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors"
+            className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             aria-label="상세 필터"
           >
             <SlidersHorizontal size={16} />
@@ -173,7 +179,7 @@ export default function CampaignBrowse() {
         {/* 카드 그리드 */}
         {loading ? (
           <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: 6 }).map((_, i) => <CampaignSkeletonCard key={i} />)}
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
@@ -205,71 +211,77 @@ export default function CampaignBrowse() {
       </div>
 
       {/* 퀵뷰 바텀시트 */}
-      {quickViewId !== null && (() => {
+      {(() => {
         const c = mockCampaigns.find(x => x.id === quickViewId)
-        if (!c) return null
         return (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setQuickViewId(null)}>
-            <div
-              role="dialog"
-              aria-modal="true"
-              className="bg-white rounded-t-2xl w-full max-w-lg p-6 pb-8 max-h-[80vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
-              <p className="text-xs text-gray-500 mb-1">{c.brand}</p>
-              <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
-              {c.reward && (
-                <div className="flex items-center gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
-                  <span className="text-xs font-medium text-gray-700">🎁 {c.reward}</span>
+          <BottomSheet
+            open={quickViewId !== null}
+            onClose={() => setQuickViewId(null)}
+            label="캠페인 퀵뷰"
+          >
+            {c && (
+              <div className="p-6 pb-8">
+                <p className="text-xs text-gray-500 mb-1">{c.brand}</p>
+                <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
+                {c.reward && (
+                  <div className="flex items-start gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
+                    <span className="text-xs font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
+                  </div>
+                )}
+                <div className="flex gap-2 flex-wrap mb-4">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-brand-green text-white whitespace-nowrap">{c.category}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">{c.channel}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap tabular-nums">{c.applied}/{c.headcount}명 모집</span>
                 </div>
-              )}
-              <div className="flex gap-2 flex-wrap mb-4">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-brand-green text-white">{c.category}</span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{c.channel}</span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{c.applied}/{c.headcount}명 모집</span>
+                <button
+                  onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
+                  className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  상세보기 · 신청하기
+                </button>
               </div>
-              <button
-                onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
-                className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity"
-              >
-                상세보기 · 신청하기
-              </button>
-            </div>
-          </div>
+            )}
+          </BottomSheet>
         )
       })()}
 
       {/* PC 캠페인 상세 모달 */}
       {detailCampaign && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
           onClick={() => setDetailCampaign(null)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${detailCampaign.brand} ${detailCampaign.name} 상세`}
             className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
-            <CampaignDetailContent campaign={detailCampaign} inModal />
+            <CampaignDetailContent
+              campaign={detailCampaign}
+              inModal
+              forceApplied={!!mockAppliedData[String(detailCampaign.id)]}
+            />
           </div>
         </div>
       )}
 
       {/* 푸터 */}
       <footer className="bg-gray-900 text-white mt-8">
-        <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto px-4 @[640px]:px-6 py-8">
           <div className="flex flex-col @[640px]:flex-row @[640px]:items-center justify-between gap-4 mb-6">
             <div>
               <span className="text-base font-bold text-brand-green">WELLINK AI</span>
               <p className="text-xs text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
             </div>
             <div className="flex gap-4 text-sm text-gray-300">
-              <button onClick={() => window.open(`mailto:${HELP_EMAIL}`)} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>
+              <button onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_self')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>
               <button onClick={() => window.open(TERMS_URL, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</button>
-              <button onClick={() => window.location.href = `${BRAND_URL}/#faq`} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
+              <button onClick={() => window.open(`${BRAND_URL}/#faq`, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-4 text-xs text-gray-400 space-y-0.5">
+          <div className="border-t border-gray-800 pt-4 text-xs text-gray-400 space-y-0.5 break-keep">
             <p>상호명: 주식회사 애프터액션 | 대표자: 안정식 | 사업자등록번호: 196-86-03374</p>
             <p>서울 영등포구 당산로 241 유니언타워 514호 | 070-8655-2299</p>
             <p className="mt-2">© 2026 WELLINK AI. All rights reserved.</p>

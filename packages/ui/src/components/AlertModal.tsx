@@ -34,15 +34,15 @@ interface AlertModalProps {
 
 const VARIANT_STYLES = {
   default: {
-    confirm: 'bg-gray-900 text-white hover:bg-gray-700',
+    confirm: 'bg-gray-900 text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50',
     icon: null,
   },
   danger: {
-    confirm: 'bg-red-500 text-white hover:bg-red-600',
+    confirm: 'bg-red-500 text-white hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60',
     icon: <AlertTriangle size={20} className="text-red-500" aria-hidden="true" />,
   },
   confirm: {
-    confirm: 'bg-brand-green text-white hover:bg-brand-green-hover',
+    confirm: 'bg-brand-green text-white hover:bg-brand-green-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50',
     icon: <CheckCircle size={20} className="text-brand-green" aria-hidden="true" />,
   },
 }
@@ -75,15 +75,17 @@ export default function AlertModal({
         <>
           {showCancel && (
             <button
+              type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {cancelLabel}
             </button>
           )}
           {onConfirm && (
             <button
+              type="button"
               onClick={onConfirm}
               disabled={confirmDisabled || loading}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${styles.confirm}`}

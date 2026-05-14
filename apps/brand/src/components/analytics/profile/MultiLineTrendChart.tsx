@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { CHART_COLORS } from '@wellink/ui'
+import { CHART_COLORS, useChartScrollContext } from '@wellink/ui'
 import { metricColors, type TrendItem, type MetricKey } from '../../../data/analytics/profile'
 
 interface Props {
@@ -22,10 +22,11 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
   onActiveIndex,
   isTouch,
 }: Props) {
-  const width = 580
-  const height = 200
-  const padX = 48
-  const padY = 24
+  const ctx = useChartScrollContext()
+  const width = ctx?.measuredW ?? 580
+  const height = 220
+  const padX = 56
+  const padY = 28
 
   const chartW = width - padX * 2
   const chartH = height - padY * 2
@@ -60,15 +61,14 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
   return (
     <svg
       width="100%"
-      height={height}
       viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="none"
-      className="overflow-visible [&_*]:pointer-events-none"
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44) }}
+      preserveAspectRatio="xMidYMid meet"
+      className="[&_*]:pointer-events-none"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44), height }}
       role="img"
       aria-label="기간별 지표 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      /* PC hover 떠나도 activeIndex 유지 — 항상 1개 노출 정책 */
       onClick={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchStart={isTouch ? (e) => handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
@@ -78,6 +78,21 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         const y = padY + chartH - ratio * chartH
         return <line key={ratio} x1={padX} y1={y} x2={width - padX} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
+
+      {/* Y축 라벨 — 단일 메트릭일 때만 표시 (X축과 동일 spec: axisLabel, 10pt, regular) */}
+      {activeMetrics.length === 1 && (() => {
+        const primary = activeMetrics[0]
+        const { min, max } = metricRanges[primary]
+        return [0, 0.5, 1].map(ratio => {
+          const y = padY + chartH - ratio * chartH + 3
+          const value = min + (max - min) * ratio
+          return (
+            <text key={ratio} x={padX - 6} y={y} textAnchor="end" fontSize="12" fill={CHART_COLORS.axisLabel}>
+              {value >= 1000 ? `${(value / 1000).toFixed(1)}k` : Math.round(value).toString()}
+            </text>
+          )
+        })
+      })()}
 
       {/* null 구간 배경 음영 */}
       {(() => {
@@ -119,7 +134,7 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         if (firstNullEnd < 0) return null
         const cx = padX + (chartW / Math.max(1, data.length - 1)) * (firstNullEnd / 2)
         return (
-          <text x={cx} y={padY + chartH / 2 + 4} textAnchor="middle" fill={CHART_COLORS.nullText} fontSize="10">
+          <text x={cx} y={padY + chartH / 2 + 4} textAnchor="middle" fill={CHART_COLORS.nullText} fontSize="12">
             데이터 없음
           </text>
         )
@@ -164,6 +179,58 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         )
       })}
 
+      {/* 각 라인 우측 끝 — 최종값 라벨 (복수 메트릭일 때만, 색상별 / 겹침 자동 정렬) */}
+      {activeMetrics.length > 1 && (() => {
+        type EndLabel = { metric: MetricKey; x: number; y: number; color: string; text: string }
+        const labels: EndLabel[] = []
+        activeMetrics.forEach(metric => {
+          const points = getPoints(metric)
+          let lastIdx = -1
+          for (let i = points.length - 1; i >= 0; i--) {
+            if (points[i].y !== null) { lastIdx = i; break }
+          }
+          if (lastIdx < 0) return
+          const p = points[lastIdx]
+          const value = p.value as number
+          labels.push({
+            metric,
+            x: p.x,
+            y: p.y as number,
+            color: metricColors[metric],
+            text: value >= 1000 ? `${(value / 1000).toFixed(1)}k` : Math.round(value).toString(),
+          })
+        })
+        // 겹침 방지 — Y 기준 정렬 후 최소 간격 12px 보장 (위→아래)
+        labels.sort((a, b) => a.y - b.y)
+        const MIN_GAP = 12
+        for (let i = 1; i < labels.length; i++) {
+          if (labels[i].y - labels[i - 1].y < MIN_GAP) {
+            labels[i].y = labels[i - 1].y + MIN_GAP
+          }
+        }
+        // 하단 경계 초과 시 위로 밀어내기
+        const maxY = padY + chartH
+        for (let i = labels.length - 1; i >= 0; i--) {
+          if (labels[i].y > maxY) labels[i].y = maxY
+          if (i > 0 && labels[i].y - labels[i - 1].y < MIN_GAP) {
+            labels[i - 1].y = labels[i].y - MIN_GAP
+          }
+        }
+        return labels.map(l => (
+          <text
+            key={`endlabel-${l.metric}`}
+            x={l.x + 6}
+            y={l.y + 3}
+            fontSize="12"
+            fill={l.color}
+            fontWeight="600"
+            textAnchor="start"
+          >
+            {l.text}
+          </text>
+        ))
+      })()}
+
       {/* x축 라벨 — showLabel 조건 적용, null은 회색 */}
       {data.map((d, i) => {
         const x = padX + (chartW / Math.max(1, data.length - 1)) * i
@@ -176,7 +243,7 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
             : true
         if (!doShow) return null
         return (
-          <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize="10">
+          <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize="12">
             {d.label}
           </text>
         )

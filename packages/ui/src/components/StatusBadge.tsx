@@ -46,15 +46,18 @@ const statusConfig: Record<string, Cfg> = {
   '대기중':       pending,
   '지원자 대기':  pending, // 친절화 라벨 (정책서 § 4-0)
   '신청완료':     pending,
+  '지원완료':     pending, // 인플 — 신청 직후 (MyCampaignStatus)
   '콘텐츠대기':   pending,
   // review
   '검수중':     review,
+  '검토중':     review, // 인플 — 브랜드 검토 단계 (MyCampaignStatus)
   // done
   '완료':       done,
   '종료':       done,
   '마감':       done,
   '게시완료':   done,
   '포인트지급': done,
+  '미선정':     alert, // 인플 — PARTICIPATION_STATUS_STYLE 정책에 따라 rose/red 톤
   // alert
   '반려':       alert,
   '마감임박':   alert,
@@ -63,9 +66,14 @@ const statusConfig: Record<string, Cfg> = {
   '게재중':     active,
   '일시중지':   pending,
   // 플랫폼
-  '인스타그램': { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
-  '유튜브':     { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
-  '틱톡':       { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
+  '인스타그램':   { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
+  '유튜브':       { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
+  '틱톡':         { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
+  '네이버 블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
+  // 정산 (인플 — SettlementStatus)
+  '정산가능':   { bg: 'bg-brand-green-bg', text: 'text-brand-green-text', dot: 'bg-brand-green' },
+  '정산대기':   pending,
+  '지급완료':   done,
 }
 
 const StatusBadge = memo(function StatusBadge({ status, size = 'sm', dot = true, className = '' }: StatusBadgeProps) {

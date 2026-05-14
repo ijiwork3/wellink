@@ -62,7 +62,7 @@ export default function SNSPanel({
             {p.connected ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-green inline-block" />
-                <span className="text-sm text-green-600 font-medium">연결됨</span>
+                <span className="text-sm text-brand-green-text font-medium">연결됨</span>
               </div>
             ) : (
               <button

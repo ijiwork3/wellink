@@ -64,9 +64,23 @@ import {
   useState,
   useEffect,
   useImperativeHandle,
+  useContext,
+  createContext,
   type ReactNode,
 } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+/**
+ * 컨테이너 측정 width를 자식 차트에 전달하는 Context.
+ * 자식 SVG 차트는 useChartScrollContext()로 measuredW를 받아 viewBox 동기화.
+ * → 큰 화면에서 좌우 여백 없이 fluid 반응형.
+ */
+const ChartScrollContext = createContext<{ measuredW: number } | null>(null)
+
+/** 자식 차트에서 컨테이너 측정 width 받기. context 없으면 null. */
+export function useChartScrollContext(): { measuredW: number } | null {
+  return useContext(ChartScrollContext)
+}
 
 export interface ChartScrollContainerHandle {
   /** 스크롤 시작점으로 이동 (기본 instant) */
@@ -104,11 +118,16 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
     const scrollRef = useRef<HTMLDivElement>(null)
     const [canScrollLeft, setCanScrollLeft] = useState(false)
     const [canScrollRight, setCanScrollRight] = useState(false)
-    const [scrollLeft, setScrollLeft] = useState(0)
+    // scrollLeft 값 자체는 더이상 사용하지 않음 (getScreenCTM이 정확한 변환 자동 처리).
+    // setter는 re-render 트리거용 — 스크롤 시 툴팁 위치가 갱신되도록.
+    const [, setScrollLeft] = useState(0)
+    // 측정 width — 자식 차트에 Context로 전달. 초기값은 prop chartW (fallback).
+    // 컨테이너 너비가 chartW 이상이면 자식 차트가 그 크기로 펼쳐짐 (fluid 반응형).
+    const [measuredW, setMeasuredW] = useState(chartW)
 
     const pR = padR ?? padL
 
-    /* ── 스크롤 상태 추적 ─────────────────────────────────────── */
+    /* ── 스크롤 상태 + 측정 width 추적 ──────────────────────────── */
     useEffect(() => {
       const el = scrollRef.current
       if (!el) return
@@ -117,6 +136,10 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
         setScrollLeft(sl)
         setCanScrollLeft(sl > 2)
         setCanScrollRight(sl + el.clientWidth < el.scrollWidth - 2)
+        // 측정 width — 컨테이너 client width 기준 (자식 차트 viewBox 동기용)
+        // chartW(initial)보다 작으면 가로 스크롤 발생, 크면 자식 차트가 펼쳐짐
+        const cw = el.clientWidth
+        if (cw > 0) setMeasuredW(Math.max(chartW, cw))
       }
       update()
       el.addEventListener('scroll', update, { passive: true })
@@ -126,7 +149,7 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
         el.removeEventListener('scroll', update)
         ro.disconnect()
       }
-    }, [])
+    }, [chartW])
 
     /* ── 부모 imperative handle ──────────────────────────────── */
     useImperativeHandle(ref, () => ({
@@ -139,23 +162,77 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
       },
     }))
 
-    /* ── HTML 툴팁 오버레이 ──────────────────────────────────── */
+    /* ── HTML 툴팁 오버레이 — getScreenCTM으로 viewBox → 화면 좌표 정확 변환 ─── */
+    /*
+     * preserveAspectRatio="xMidYMid meet"의 경우 SVG content가 element 안에서 가운데 정렬되어
+     * 좌우 여백 발생. (svgX/chartW) * scrollContentW 단순 비례식은 큰 화면에서 어긋남.
+     * → SVG의 getScreenCTM() 활용해 viewBox 좌표를 정확한 화면 좌표로 변환.
+     * scrollLeft 의존 — 스크롤 시 자동 갱신.
+     */
     const tooltipNode = (() => {
       if (activeIndex == null || !tooltipContent) return null
       const content = tooltipContent(activeIndex)
       if (!content) return null
 
-      const containerW = scrollRef.current?.clientWidth ?? chartW
-      const stepX = (chartW - padL - pR) / Math.max(1, dataLength - 1)
+      const scrollEl = scrollRef.current
+      if (!scrollEl) return null
+      const svgEl = scrollEl.querySelector('svg') as SVGSVGElement | null
+      if (!svgEl) return null
+
+      // 측정 width 기반 stepX — 자식 차트가 measuredW로 viewBox 렌더하므로 동일하게 사용
+      const stepX = (measuredW - padL - pR) / Math.max(1, dataLength - 1)
       const svgX = padL + activeIndex * stepX
-      const visX = svgX - scrollLeft
-      const isRight = visX > containerW * 0.65
-      const offset = Math.max(4, isRight ? containerW - visX + 8 : visX + 8)
+
+      // viewBox → 화면 좌표 변환 (preserveAspectRatio 자동 처리)
+      const ctm = svgEl.getScreenCTM()
+      if (!ctm) return null
+      const scrollRect = scrollEl.getBoundingClientRect()
+      const containerW = scrollEl.clientWidth
+
+      const toContainerX = (vbX: number) => {
+        const p = svgEl.createSVGPoint()
+        p.x = vbX
+        p.y = 0
+        return p.matrixTransform(ctm).x - scrollRect.left
+      }
+
+      const actualX = toContainerX(svgX)
+      const padLActual = toContainerX(padL)
+      const padRActual = toContainerX(measuredW - pR)
+
+      // 툴팁 위치 분기 — 박스 좌·우 끝이 padL/padR 영역을 침범하는지 체크
+      // (단순 화면 좌·우 끝 기준이 아닌 *차트 plot 영역* 기준 — Y축 라벨 가림 방지)
+      const tooltipHalfW = 80
+      const SAFE_MARGIN = 4
+
+      let leftPos: number
+      let transformX: string
+
+      if (actualX - tooltipHalfW < padLActual + SAFE_MARGIN) {
+        // 박스 왼쪽이 plot 좌측(padL) 침범 → 데이터 포인트 우측에 툴팁 (왼쪽 정렬)
+        leftPos = actualX + 8
+        transformX = 'translateX(0)'
+      } else if (actualX + tooltipHalfW > padRActual - SAFE_MARGIN) {
+        // 박스 오른쪽이 plot 우측(padR) 침범 → 데이터 포인트 좌측에 툴팁 (오른쪽 정렬)
+        leftPos = actualX - 8
+        transformX = 'translateX(-100%)'
+      } else {
+        // 중간 — 중앙 정렬
+        leftPos = actualX
+        transformX = 'translateX(-50%)'
+      }
+
+      // 최종 컨테이너 경계 clamp (예외 케이스 safety)
+      if (transformX === 'translateX(0)') {
+        leftPos = Math.min(leftPos, containerW - 8)
+      } else if (transformX === 'translateX(-100%)') {
+        leftPos = Math.max(leftPos, 8)
+      }
 
       return (
         <div
           className="absolute top-2 z-20 pointer-events-none"
-          style={{ [isRight ? 'right' : 'left']: offset }}
+          style={{ left: leftPos, transform: transformX }}
         >
           <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2">
             {content}
@@ -196,9 +273,11 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
           </button>
         )}
 
-        {/* 스크롤 컨테이너 */}
+        {/* 스크롤 컨테이너 — 자식 차트에 measuredW 전달 (fluid 반응형) */}
         <div ref={scrollRef} className="overflow-x-auto scrollbar-none">
-          {children}
+          <ChartScrollContext.Provider value={{ measuredW }}>
+            {children}
+          </ChartScrollContext.Provider>
         </div>
 
         {/* HTML 툴팁 오버레이 */}

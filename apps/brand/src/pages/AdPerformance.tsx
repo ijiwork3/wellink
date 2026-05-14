@@ -14,7 +14,7 @@ import {
   kpiByPeriod,
   CHART_DATA_BY_PERIOD,
   CHART_PERIOD_LABEL,
-  AD_AI_SUMMARY,
+  AD_AI_DATA,
   AD_SECTION_HINTS_KO,
   adFormatPerf,
   getAdStatusBadge,
@@ -42,15 +42,16 @@ export default function AdPerformance() {
   )
   const [expandedAdSet, setExpandedAdSet] = useState<string | null>(null)
   // AI 분석 새로고침 — 공통 훅(useAiRefresh)으로 추출
-  const { refreshing: aiRefreshing, refresh: handleAiRefresh } = useAiRefresh()
+  const { refreshing: aiRefreshing, refresh: handleAiRefresh, generatedAt: aiGeneratedAt } = useAiRefresh()
 
   // 터치 디바이스 감지
   const isTouch = useIsTouchDevice()
 
   // 각 차트별 active index
-  const [mixedChartIdx, setMixedChartIdx] = useState<number | null>(null)
-  const [ctrChartIdx, setCtrChartIdx] = useState<number | null>(null)
-  const [clicksChartIdx, setClicksChartIdx] = useState<number | null>(null)
+  // 초기값 0 — 맨 왼쪽 데이터 포인트에 툴팁 자동 노출. 다른 곳 hover/click 시 그곳으로 이동
+  const [mixedChartIdx, setMixedChartIdx] = useState<number | null>(0)
+  const [ctrChartIdx, setCtrChartIdx] = useState<number | null>(0)
+  const [clicksChartIdx, setClicksChartIdx] = useState<number | null>(0)
 
   // ChartScrollContainer refs — imperativeHandle (scrollToStart / scrollToEnd)
   const mixedChartScrollRef = useRef<ChartScrollContainerHandle>(null)
@@ -65,32 +66,20 @@ export default function AdPerformance() {
     setCampaignPage(1)
   }, [period, dateOffset])
 
-  // period/isTouch(외부 prop) 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화.
-  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
+  // period 변경 시 차트 인덱스·스크롤 초기화 — 맨 왼쪽 포인트(0) 기본 노출 + scrollToStart
   useEffect(() => {
-    if (isTouch) {
-      const len = CHART_DATA_BY_PERIOD[period].length
-      const lastIdx = len > 0 ? len - 1 : null
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMixedChartIdx(lastIdx)
-      setCtrChartIdx(lastIdx)
-      setClicksChartIdx(lastIdx)
-      requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollToEnd()
-        ctrChartScrollRef.current?.scrollToEnd()
-        clicksChartScrollRef.current?.scrollToEnd()
-      })
-    } else {
-      setMixedChartIdx(null)
-      setCtrChartIdx(null)
-      setClicksChartIdx(null)
-      requestAnimationFrame(() => {
-        mixedChartScrollRef.current?.scrollToStart()
-        ctrChartScrollRef.current?.scrollToStart()
-        clicksChartScrollRef.current?.scrollToStart()
-      })
-    }
-  }, [period, isTouch])
+    const len = CHART_DATA_BY_PERIOD[period].length
+    const firstIdx = len > 0 ? 0 : null
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMixedChartIdx(firstIdx)
+    setCtrChartIdx(firstIdx)
+    setClicksChartIdx(firstIdx)
+    requestAnimationFrame(() => {
+      mixedChartScrollRef.current?.scrollToStart()
+      ctrChartScrollRef.current?.scrollToStart()
+      clicksChartScrollRef.current?.scrollToStart()
+    })
+  }, [period])
 
   // 헤더 sticky 상태 추적 — 공통 훅(useHeaderStuck)으로 추출
   const { headerRef, isStuck } = useHeaderStuck<HTMLDivElement>()
@@ -195,10 +184,12 @@ export default function AdPerformance() {
         />
       </div>
 
-      {/* AI 광고 성과 분석 카드 — 공통 <AIAnalysisCard> */}
+      {/* AI 광고 성과 분석 카드 — 분석/가이드 그룹 분리 (광고주 결정 v3) */}
       <AIAnalysisCard
         title="AI 광고 성과 분석"
-        summary={AD_AI_SUMMARY}
+        analysis={AD_AI_DATA.analysis}
+        guides={AD_AI_DATA.guides}
+        generatedAt={aiGeneratedAt}
         refreshing={aiRefreshing}
         onRefresh={handleAiRefresh}
       />
@@ -221,7 +212,7 @@ export default function AdPerformance() {
           trend={isZero ? 0 : kpi.trends.roas}
           trendLabel="전기간 대비"
           icon={<ShoppingBag size={16} aria-hidden="true" />}
-          valueColor={getRoasColor(isZero ? 0 : kpi.roas)}
+          /* valueColor 제거 — trend 색상과 시각 모순 방지 (ROAS·CTR 모두 검정 통일) */
           tooltip="광고 지출 1원당 발생한 매출 (≥4.0x 우수)"
         />
         <KPICard
@@ -241,6 +232,7 @@ export default function AdPerformance() {
           trendLabel="전기간 대비"
           icon={<DollarSign size={16} aria-hidden="true" />}
           tooltip="목표 1건을 달성하는 데 든 평균 비용 — 낮을수록 효율 ↑"
+          positive={false}
         />
         <KPICard
           title="총 도달"
@@ -266,7 +258,7 @@ export default function AdPerformance() {
           sub="클릭률"
           trend={isZero ? 0 : kpi.trends.ctr}
           trendLabel="전기간 대비"
-          valueColor={getCtrColor(isZero ? 0 : kpi.ctr)}
+          /* valueColor 제거 — trend(positive) 기반 색상과 분리 (값은 검정, 흐름은 trend로) */
           icon={<MousePointer size={16} aria-hidden="true" />}
           tooltip="클릭 ÷ 노출 × 100 — 광고 소재·타게팅 효과 지표"
         />
@@ -278,6 +270,7 @@ export default function AdPerformance() {
           trendLabel="전기간 대비"
           icon={<DollarSign size={16} aria-hidden="true" />}
           tooltip="클릭 1회당 평균 광고 비용 — 낮을수록 효율 ↑"
+          positive={false}
         />
       </div>
 
@@ -296,7 +289,7 @@ export default function AdPerformance() {
       />
 
       {/* 기간별 광고 성과 차트 (지출 bar + 클릭 line) */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
             <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h2>
@@ -304,12 +297,12 @@ export default function AdPerformance() {
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-violet-500 inline-block" />지출</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block" />클릭</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-500 inline-block" />클릭</span>
           </div>
         </div>
         <ChartScrollContainer
           ref={mixedChartScrollRef}
-          chartW={700} padL={50} padR={50}
+          chartW={700} padL={130} padR={130}
           dataLength={chartData.length}
           activeIndex={mixedChartIdx}
           tooltipContent={(i) => {
@@ -323,7 +316,7 @@ export default function AdPerformance() {
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-3 h-0.5 shrink-0 bg-blue-500" />
+                  <span className="w-3 h-0.5 shrink-0 bg-orange-500" />
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
                 </div>
                 <p className="text-xs text-gray-500 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
@@ -342,14 +335,14 @@ export default function AdPerformance() {
 
       {/* CTR 추이 + 기간별 클릭 — 2열 배치 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">CTR 추이</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <ChartScrollContainer
             ref={ctrChartScrollRef}
-            chartW={400} padL={36} padR={12}
+            chartW={400} padL={56} padR={16}
             dataLength={chartData.length}
             activeIndex={ctrChartIdx}
             tooltipContent={(i) => {
@@ -370,20 +363,21 @@ export default function AdPerformance() {
               data={chartData.map(d => ({ label: d.date, value: d.ctr }))}
               stroke="#f97316"
               ariaLabel="CTR 추이 차트"
+              yLabelFormatter={(n) => `${n.toFixed(1)}%`}
               activeIndex={ctrChartIdx}
               onActiveIndex={setCtrChartIdx}
               isTouch={isTouch}
             />
           </ChartScrollContainer>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <ChartScrollContainer
             ref={clicksChartScrollRef}
-            chartW={400} padL={36} padR={12}
+            chartW={400} padL={56} padR={16}
             dataLength={chartData.length}
             activeIndex={clicksChartIdx}
             tooltipContent={(i) => {
@@ -404,6 +398,7 @@ export default function AdPerformance() {
               data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
               stroke="#3b82f6"
               ariaLabel="기간별 클릭 수 추이 차트"
+              yLabelFormatter={(n) => fmtNumber(Math.round(n))}
               activeIndex={clicksChartIdx}
               onActiveIndex={setClicksChartIdx}
               isTouch={isTouch}
@@ -414,7 +409,7 @@ export default function AdPerformance() {
 
       {/* 도달·참여 출처 도넛 (광고 vs 유기적) */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">도달 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -427,7 +422,7 @@ export default function AdPerformance() {
             ]}
           />
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">참여 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -446,7 +441,9 @@ export default function AdPerformance() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
           <h2 className="text-base font-semibold text-gray-900">소재 유형별 성과</h2>
-          <p className="text-sm text-gray-500 mt-0.5">광고 포맷별 효율 비교</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            광고 포맷별 효율 비교 · <span className="text-gray-600 font-medium">CPM</span> = 1,000회 노출당 비용 (Cost Per Mille)
+          </p>
         </div>
         <div className="p-5 space-y-4">
           {adFormatPerf.map(f => {
@@ -509,7 +506,7 @@ function CampaignList({
   expandedCampaign, setExpandedCampaign, expandedAdSet, setExpandedAdSet,
   pageSize,
 }: CampaignListProps) {
-  // visibleList useMemo — conditional 배열의 reference 안정화 (maxRoas 의존성 안전)
+  // visibleList useMemo — conditional 배열의 reference 안정화 (avgRoas 의존성 안전)
   const visibleList = useMemo(
     () => isZero ? [] : (statusTab === 'active' ? ALL_ACTIVE_CAMPAIGNS : ALL_CLOSED_CAMPAIGNS),
     [isZero, statusTab]
@@ -517,10 +514,16 @@ function CampaignList({
   const totalPages = Math.max(1, Math.ceil(visibleList.length / pageSize))
   const safePage = Math.min(campaignPage, totalPages)
   const pagedCampaigns = visibleList.slice((safePage - 1) * pageSize, safePage * pageSize)
-  // 같은 탭 내 캠페인 ROAS 비교용 max — 캠페인 RoasBar 분모. useMemo로 100개 max 호출 캐시
-  const maxRoas = useMemo(() => Math.max(1, ...visibleList.map(x => x.roas)), [visibleList])
-  // 같은 광고세트 내 소재 ROAS 비교용 max — 정책 § 1-2 "소재: ROAS 비교 바"
-  const adsetMaxRoas = (ads: Ad[]) => Math.max(1, ...ads.map(a => a.roas))
+  // 같은 탭 내 캠페인 ROAS 비교용 평균 — RoasBar 평균 기준 (v2). 진행바 50% = 평균(1.0x)
+  const avgRoas = useMemo(() => {
+    const list = visibleList.filter(x => x.roas > 0)
+    return list.length > 0 ? list.reduce((s, x) => s + x.roas, 0) / list.length : 0
+  }, [visibleList])
+  // 같은 광고세트 내 소재 ROAS 비교용 평균 — 정책 § 1-2 "소재: ROAS 비교 바"
+  const adsetAvgRoas = (ads: Ad[]) => {
+    const list = ads.filter(a => a.roas > 0)
+    return list.length > 0 ? list.reduce((s, a) => s + a.roas, 0) / list.length : 0
+  }
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -554,11 +557,12 @@ function CampaignList({
           {visibleList.length === 0 ? '해당 상태의 캠페인이 없습니다.' : '결과가 없습니다.'}
         </div>
       ) : (
-        <div className="space-y-2 p-3">
+        /* 캠페인 리스트 — 그레이 배경 위 흰색 카드로 시인성 ↑ (펼침 식별 명확) */
+        <div className="space-y-2 p-3 bg-gray-50">
           {pagedCampaigns.map(c => {
             const isCampaignOpen = expandedCampaign === c.campaignId
             return (
-              <div key={c.campaignId} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+              <div key={c.campaignId} className="rounded-xl border border-gray-100 bg-white overflow-hidden shadow-sm">
                 <button type="button"
                   onClick={() => { setExpandedCampaign(isCampaignOpen ? null : c.campaignId); setExpandedAdSet(null) }}
                   aria-expanded={isCampaignOpen}
@@ -603,17 +607,16 @@ function CampaignList({
                         </div>
                       ))}
                     </div>
-                    {/* 광고세트 리스트 — 캠페인 하위 계층 시각화 (좌측 트리 라인) */}
-                    <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-violet-700 uppercase tracking-wide">
-                      <span className="inline-block w-3 h-px bg-violet-200" />
-                      <span>광고세트 ({c.adSets.length})</span>
+                    {/* 광고세트 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
+                    <div className="mb-2 text-xs font-semibold text-violet-700 uppercase tracking-wide">
+                      광고세트 ({c.adSets.length})
                     </div>
-                    <div className="space-y-2 ml-2 @sm:ml-4 pl-3 border-l-2 border-violet-100">
+                    <div className="space-y-2">
                       {c.adSets.map(set => {
                         const isSetOpen = expandedAdSet === set.id
-                        const setAdsetMax = adsetMaxRoas(set.ads)
+                        const setAdsetAvg = adsetAvgRoas(set.ads)
                         return (
-                          <div key={set.id} className="rounded-lg border border-gray-200 border-l-4 border-l-teal-300 bg-white shadow-sm">
+                          <div key={set.id} className="rounded-lg border border-gray-200 bg-white shadow-sm">
                             <button type="button"
                               onClick={() => setExpandedAdSet(isSetOpen ? null : set.id)}
                               aria-expanded={isSetOpen}
@@ -651,14 +654,13 @@ function CampaignList({
                                     </div>
                                   ))}
                                 </div>
-                                {/* 소재 리스트 — 광고세트 하위 계층 시각화 (좌측 트리 라인 + 카드 분리) */}
-                                <div className="mt-1 mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-teal-700 uppercase tracking-wide">
-                                  <span className="inline-block w-3 h-px bg-teal-200" />
-                                  <span>소재 ({set.ads.length})</span>
+                                {/* 소재 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
+                                <div className="mt-1 mb-1.5 text-xs font-semibold text-teal-700 uppercase tracking-wide">
+                                  소재 ({set.ads.length})
                                 </div>
-                                <div className="space-y-2 ml-1 @sm:ml-3 pl-3 border-l-2 border-teal-100">
+                                <div className="space-y-2">
                                   {set.ads.map(ad => (
-                                    <div key={ad.id} className="flex gap-3 rounded-lg border border-gray-100 border-l-4 border-l-brand-green-border bg-white p-2.5 shadow-sm">
+                                    <div key={ad.id} className="flex gap-3 rounded-lg border border-gray-100 bg-white p-2.5 shadow-sm">
                                       <div className="h-12 w-12 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
                                         <ImageIcon size={16} aria-hidden="true" />
                                       </div>
@@ -684,7 +686,7 @@ function CampaignList({
                                         {/* ROAS 비교 바 — 정책 § 1-2 소재 레벨 (같은 광고세트 내 비교) */}
                                         <div className="flex items-center gap-2 text-sm text-gray-500 mt-1.5">
                                           <span className="whitespace-nowrap">ROAS 비교</span>
-                                          <RoasBar value={ad.roas} max={setAdsetMax} />
+                                          <RoasBar value={ad.roas} avg={setAdsetAvg} />
                                         </div>
                                       </div>
                                     </div>
@@ -700,7 +702,7 @@ function CampaignList({
                     <div className="mt-3 pt-3 border-t border-gray-100">
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <span>ROAS 비교</span>
-                        <RoasBar value={c.roas} max={maxRoas} />
+                        <RoasBar value={c.roas} avg={avgRoas} />
                       </div>
                     </div>
                   </div>

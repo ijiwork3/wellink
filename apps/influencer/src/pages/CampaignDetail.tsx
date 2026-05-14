@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { ErrorState } from '@wellink/ui'
-import { mockCampaigns as campaigns } from '../services/mock/campaigns'
+import { ErrorState, Skeleton } from '@wellink/ui'
+import { mockCampaigns as campaigns, mockAppliedData } from '../services/mock/campaigns'
 import { useQAMode } from '@wellink/ui'
 import CampaignDetailContent from '../components/CampaignDetailContent'
 
@@ -10,22 +10,33 @@ export default function CampaignDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const campaign = campaigns.find((c) => c.id === Number(id))
+  // 이미 신청한 캠페인이면 신청 버튼 대신 '신청완료' 표시 (mockAppliedData 기반)
+  const isAlreadyApplied = id ? !!mockAppliedData[id] : false
 
   const goBack = () => window.history.length > 1 ? navigate(-1) : navigate('/campaigns/browse')
 
   if (qa === 'loading') {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 상세" onBack={goBack}>
-        <div className="max-w-3xl mx-auto px-6 py-8 animate-pulse">
-          <div className="h-52 bg-gray-100 rounded-2xl mb-4" />
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
-            <div className="flex gap-2"><div className="h-4 bg-gray-100 rounded-full w-20" /><div className="h-4 bg-gray-100 rounded-full w-12" /></div>
-            <div className="h-6 bg-gray-100 rounded-xl w-3/4" />
-            <div className="h-4 bg-gray-100 rounded-xl w-full" />
-            <div className="h-4 bg-gray-100 rounded-xl w-5/6" />
-            <div className="grid grid-cols-2 gap-3"><div className="h-16 bg-gray-100 rounded-xl" /><div className="h-16 bg-gray-100 rounded-xl" /></div>
-            <div className="h-14 bg-gray-100 rounded-xl" />
-            <div className="h-12 bg-gray-100 rounded-xl" />
+        <div className="@container">
+          {/* 실제 콘텐츠와 동일한 컨테이너 정책: 모바일 풀폭, @[640px] 이상에서만 max-w-3xl + px-6 */}
+          <Skeleton shape="rect" height={208} width="100%" className="@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:mt-6 @[640px]:rounded-2xl" />
+          <div className="@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6">
+            <div className="px-4 py-5 @[640px]:p-6 @[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 space-y-4">
+              <div className="flex gap-2">
+                <Skeleton shape="circle" height={16} width="5rem" />
+                <Skeleton shape="circle" height={16} width="3rem" />
+              </div>
+              <Skeleton shape="text" height={24} width="75%" />
+              <Skeleton shape="text" height={16} width="100%" />
+              <Skeleton shape="text" height={16} width="83%" />
+              <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-3">
+                <Skeleton shape="card" height={64} width="100%" />
+                <Skeleton shape="card" height={64} width="100%" />
+              </div>
+              <Skeleton shape="card" height={56} width="100%" />
+              <Skeleton shape="card" height={48} width="100%" />
+            </div>
           </div>
         </div>
       </Layout>
@@ -46,7 +57,13 @@ export default function CampaignDetail() {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 상세" onBack={goBack}>
         <div className="flex items-center justify-center min-h-[350px]">
-          <ErrorState message="캠페인을 찾을 수 없어요" onRetry={() => navigate('/campaigns/browse')} />
+          <ErrorState
+            message="캠페인을 찾을 수 없어요"
+            subMessage="이미 삭제됐거나 잘못된 링크일 수 있어요"
+            retryLabel="캠페인 탐색으로 이동"
+            showRetryIcon={false}
+            onRetry={() => navigate('/campaigns/browse')}
+          />
         </div>
       </Layout>
     )
@@ -56,7 +73,7 @@ export default function CampaignDetail() {
     <Layout showSidebar={false} pageTitle={campaign.name} onBack={goBack}>
       <CampaignDetailContent
         campaign={campaign}
-        forceApplied={qa === 'applied'}
+        forceApplied={qa === 'applied' || isAlreadyApplied}
         forceClosed={qa === 'closed'}
       />
     </Layout>

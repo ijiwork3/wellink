@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, ExternalLink, Globe, Target } from 'lucide-react'
+import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, ExternalLink } from 'lucide-react'
 
 function InstagramIcon({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
@@ -45,15 +45,13 @@ export default function MyPage() {
   const [bizNumber, setBizNumber] = useState('123-45-67890')
   const [managerName, setManagerName] = useState('이지훈')
   const [phone, setPhone] = useState('010-1234-5678')
-  const [brandWebsite, setBrandWebsite] = useState('https://wellink.ai')
-  const [brandCategory, setBrandCategory] = useState('웰니스/피트니스')
 
   // 편집 모드 — 디폴트 뷰. '수정' 버튼 클릭 시에만 편집 가능.
   const [editing, setEditing] = useState(false)
   // 편집 시작 시 원본 백업 (취소 시 복원용)
   const [editBackup, setEditBackup] = useState<{
     name: string; companyName: string; bizNumber: string; managerName: string
-    phone: string; brandWebsite: string; brandCategory: string
+    phone: string
   } | null>(null)
 
   // 마케팅 수신 — ISO 타임스탬프 (null = 미동의, string = 동의 시점)
@@ -104,7 +102,7 @@ export default function MyPage() {
   }
 
   const handleStartEdit = () => {
-    setEditBackup({ name, companyName, bizNumber, managerName, phone, brandWebsite, brandCategory })
+    setEditBackup({ name, companyName, bizNumber, managerName, phone })
     setEditing(true)
   }
 
@@ -115,8 +113,6 @@ export default function MyPage() {
       setBizNumber(editBackup.bizNumber)
       setManagerName(editBackup.managerName)
       setPhone(editBackup.phone)
-      setBrandWebsite(editBackup.brandWebsite)
-      setBrandCategory(editBackup.brandCategory)
     }
     setEditBackup(null)
     setEditing(false)
@@ -257,38 +253,6 @@ export default function MyPage() {
                       aria-label="브랜드명"
                       className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
                       placeholder="브랜드명을 입력하세요"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="mypage-category" className="text-sm text-gray-500 mb-1.5 block">업종 카테고리</label>
-                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Target size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
-                    <input
-                      id="mypage-category"
-                      type="text"
-                      value={brandCategory}
-                      onChange={e => setBrandCategory(e.target.value)}
-                      readOnly={!editing}
-                      aria-label="업종 카테고리"
-                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
-                      placeholder="예: 웰니스/피트니스"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="mypage-website" className="text-sm text-gray-500 mb-1.5 block">웹사이트 URL</label>
-                  <div className={`flex items-center gap-2.5 border rounded-xl px-4 py-3 transition-colors ${editing ? 'border-gray-200 focus-within:border-gray-400' : 'border-gray-100 bg-gray-50'}`}>
-                    <Globe size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
-                    <input
-                      id="mypage-website"
-                      type="url"
-                      value={brandWebsite}
-                      onChange={e => setBrandWebsite(e.target.value)}
-                      readOnly={!editing}
-                      aria-label="웹사이트 URL"
-                      className={`flex-1 text-base outline-none bg-transparent ${editing ? 'text-gray-900' : 'text-gray-600 cursor-default'}`}
-                      placeholder="https://your-brand.com"
                     />
                   </div>
                 </div>

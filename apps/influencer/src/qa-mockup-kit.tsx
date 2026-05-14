@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
-import { useQAState, setQAState, resetQAState, type QAPlan } from './qa-state';
+import { useQAState, setQAState, resetQAState } from './qa-state';
 
 // ─────────────────────────────────────────────────────────────
 // 타입 & 상수
@@ -877,5 +877,3 @@ function GlobalPathDropdown<S extends string, T extends string>({
   );
 }
 
-// QAPlan 타입 재export (인플루언서에서 직접 쓸 경우 대비)
-export type { QAPlan };

@@ -1,25 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState } from '@wellink/ui'
-import { Toggle, Modal } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
+import { Toggle, Modal, AlertModal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { ACTIVITY_FIELDS, INFLUENCER_TYPES, mockProfile } from '../services/mock/profile'
+import { formatPhone } from '../utils/format'
 
-function formatPhone(v: string) {
-  const d = v.replace(/\D/g, '').slice(0, 11)
-  if (d.length < 4) return d
-  if (d.length < 8) return `${d.slice(0, 3)}-${d.slice(3)}`
-  return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`
-}
 
 const inputClass = `${inputBase} w-full`
 
 export default function Profile() {
   const qa = useQAMode()
   const navigate = useNavigate()
+  // 비동기 작업(setTimeout) 완료 후 unmount된 경우 setState 호출 방지
+  const isMountedRef = useRef(true)
+  useEffect(() => () => { isMountedRef.current = false }, [])
   const [isEditing, setIsEditing] = useState(qa === 'edit')
   const [name, setName] = useState(mockProfile.name)
   const [draftName, setDraftName] = useState(mockProfile.name)
@@ -42,6 +40,8 @@ export default function Profile() {
   const [phoneCode, setPhoneCode] = useState('')
   const [phoneCodeSent, setPhoneCodeSent] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isPwSubmitting, setIsPwSubmitting] = useState(false)
+  const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
 
   // URL search param 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -65,14 +65,16 @@ export default function Profile() {
 
   const handleSave = async () => {
     if (!draftName.trim()) { showToast('이름을 입력해 주세요', 'error'); return }
+    if (draftName.trim().length < 2) { showToast('이름은 2자 이상이어야 해요', 'error'); return }
     setIsSaving(true)
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
+    if (!isMountedRef.current) return
     setName(draftName)
     setSelectedFields(new Set(draftFields))
     setInfluencerType(draftType)
     setIsEditing(false)
     setIsSaving(false)
-    showToast('저장되었어요!', 'success')
+    showToast('저장했어요!', 'success')
   }
 
   const handleCancel = () => {
@@ -83,49 +85,62 @@ export default function Profile() {
   }
 
   const handlePwChange = async () => {
+    if (isPwSubmitting) return
     if (!currentPw || !newPw || !confirmPw) { showToast('모든 항목을 입력해 주세요', 'error'); return }
+    if (newPw.length < 8) { showToast('새 비밀번호는 8자 이상이어야 해요', 'error'); return }
+    if (newPw === currentPw) { showToast('현재 비밀번호와 다른 비밀번호로 변경해 주세요', 'error'); return }
     if (newPw !== confirmPw) { showToast('새 비밀번호가 일치하지 않아요', 'error'); return }
+    setIsPwSubmitting(true)
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
+    if (!isMountedRef.current) return
+    setIsPwSubmitting(false)
     setPwModalOpen(false)
     setCurrentPw(''); setNewPw(''); setConfirmPw('')
-    showToast('비밀번호가 변경되었어요!', 'success')
+    showToast('비밀번호를 변경했어요!', 'success')
   }
 
   const handlePhoneSendCode = () => {
     if (!newPhone || newPhone.replace(/\D/g, '').length < 10) {
       showToast('올바른 전화번호를 입력해 주세요', 'error'); return
     }
+    if (newPhone === phone) {
+      showToast('현재 번호와 다른 번호로 변경해 주세요', 'error'); return
+    }
     setPhoneCodeSent(true)
-    showToast('인증번호가 발송되었어요', 'success')
+    showToast('인증번호가 발송됐어요', 'success')
   }
 
   const handlePhoneVerify = async () => {
+    if (isPhoneSubmitting) return
     if (!phoneCodeSent) { showToast('인증번호를 먼저 받아주세요', 'error'); return }
     if (phoneCode.length < 4) { showToast('인증번호를 입력해 주세요', 'error'); return }
+    setIsPhoneSubmitting(true)
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
+    if (!isMountedRef.current) return
+    setIsPhoneSubmitting(false)
     setPhone(newPhone)
     setPhoneModalOpen(false)
     setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false)
-    showToast('전화번호가 변경되었어요!', 'success')
+    showToast('전화번호를 변경했어요!', 'success')
   }
 
   if (qa === 'loading') {
     return (
       <Layout>
-        <div className="space-y-4 animate-pulse">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 bg-gray-100 rounded-full" />
-              <div className="h-4 bg-gray-100 rounded-xl w-20" />
+              <Skeleton shape="circle" height={20} width={20} />
+              <Skeleton shape="text" height={16} width="5rem" />
             </div>
             <div className="space-y-3">
-              {[1,2,3,4].map(i => <div key={i} className="h-10 bg-gray-100 rounded-xl" />)}
+              {[1,2,3,4].map(i => <Skeleton key={i} shape="card" height={40} width="100%" />)}
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="h-4 bg-gray-100 rounded-xl w-20 mb-4" />
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <Skeleton shape="text" height={16} width="5rem" className="mb-4" />
             <div className="grid grid-cols-2 gap-3">
-              {Array.from({length: 10}).map((_, i) => <div key={i} className="h-9 bg-gray-100 rounded-xl" />)}
+              {Array.from({length: 10}).map((_, i) => <Skeleton key={i} shape="card" height={36} width="100%" />)}
             </div>
           </div>
         </div>
@@ -146,9 +161,10 @@ export default function Profile() {
   return (
     <Layout>
       <div className="space-y-4 max-w-xl">
+        <h1 className="sr-only">내 정보</h1>
 
         {/* 기본 정보 카드 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <User size={16} className="text-brand-green" />
@@ -166,8 +182,8 @@ export default function Profile() {
                 <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   <X size={14} />취소
                 </button>
-                <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <Check size={14} />{isSaving ? '저장 중' : '저장'}
+                <button onClick={handleSave} disabled={isSaving} aria-disabled={isSaving} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
                 </button>
               </div>
             )}
@@ -176,27 +192,27 @@ export default function Profile() {
           <div className="space-y-3">
             {/* 이름 */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">이름</label>
+              <label htmlFor="profile-name" className="block text-xs font-medium text-gray-500 mb-1.5">이름</label>
               {isEditing
-                ? <input type="text" value={draftName} onChange={e => setDraftName(e.target.value)} className={inputClass} />
-                : <p className="text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl">{name}</p>
+                ? <input id="profile-name" type="text" value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !isSaving) { e.preventDefault(); handleSave() } }} maxLength={20} autoComplete="name" className={inputClass} />
+                : <p className="text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl break-keep">{name}</p>
               }
             </div>
 
             {/* 이메일 (읽기 전용) */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">이메일</label>
-              <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl">{mockProfile.email}</p>
+              <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl break-all">{mockProfile.email}</p>
             </div>
 
-            {/* 전화번호 */}
+            {/* 전화번호 — 320px 단말까지 대비해서 좁으면 한 줄 띄움 */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">전화번호</label>
-              <div className="flex items-center gap-2">
-                <p className="flex-1 text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl">{phone}</p>
+              <div className="flex flex-col @[400px]:flex-row @[400px]:items-center gap-2">
+                <p className="flex-1 text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl tabular-nums">{phone}</p>
                 <button
                   onClick={() => setPhoneModalOpen(true)}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Phone size={14} />변경
                 </button>
@@ -208,7 +224,7 @@ export default function Profile() {
               <label className="block text-xs font-medium text-gray-500 mb-1.5">비밀번호</label>
               <button
                 onClick={() => setPwModalOpen(true)}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Lock size={14} />비밀번호 변경
               </button>
@@ -222,9 +238,8 @@ export default function Profile() {
                   {INFLUENCER_TYPES.map(t => (
                     <button
                       key={t.value}
-                      type="button"
                       onClick={() => setDraftType(t.value)}
-                      className={`px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-all border ${
+                      className={`px-3 py-2.5 rounded-xl text-xs @[480px]:text-sm font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         draftType === t.value
                           ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300'
@@ -244,7 +259,7 @@ export default function Profile() {
         </div>
 
         {/* 활동 분야 카드 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity size={16} className="text-brand-green" />
             <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
@@ -265,13 +280,13 @@ export default function Profile() {
         </div>
 
         {/* 알림 설정 카드 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
-              <p className="text-xs text-gray-500 mt-0.5">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p id="profile-marketing-label" className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
+              <p className="text-xs text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
             </div>
-            <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} label="마케팅 수신 동의" />
+            <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} ariaLabelledBy="profile-marketing-label" />
           </div>
         </div>
 
@@ -279,7 +294,7 @@ export default function Profile() {
         <div className="flex flex-col items-center gap-3 pt-1 pb-4">
           <button
             onClick={() => { auth.clear(); navigate('/login') }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <LogOut size={14} />로그아웃
           </button>
@@ -293,19 +308,21 @@ export default function Profile() {
       <Modal open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw('') }} title="비밀번호 변경" size="sm">
         <div className="space-y-3">
           {([
-            { ph: '현재 비밀번호', val: currentPw, setter: setCurrentPw },
-            { ph: '새 비밀번호', val: newPw, setter: setNewPw },
-            { ph: '새 비밀번호 확인', val: confirmPw, setter: setConfirmPw },
-          ] as const).map(({ ph, val, setter }) => (
+            { ph: '현재 비밀번호', val: currentPw, setter: setCurrentPw, auto: 'current-password' as const },
+            { ph: '새 비밀번호 (8자 이상)', val: newPw, setter: setNewPw, auto: 'new-password' as const },
+            { ph: '새 비밀번호 확인', val: confirmPw, setter: setConfirmPw, auto: 'new-password' as const },
+          ] as const).map(({ ph, val, setter, auto }) => (
             <input key={ph} type="password" placeholder={ph} value={val}
+              autoComplete={auto}
+              maxLength={50}
               onChange={e => setter(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handlePwChange()}
               className={inputClass} />
           ))}
         </div>
         <div className="flex gap-3 mt-5">
-          <button onClick={() => setPwModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-          <button onClick={handlePwChange} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">변경하기</button>
+          <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+          <button onClick={handlePwChange} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
         </div>
       </Modal>
 
@@ -313,17 +330,21 @@ export default function Profile() {
       <Modal open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경" size="sm">
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-gray-500 block mb-1.5">새 전화번호</label>
-            <div className="flex gap-2">
+            <label htmlFor="profile-new-phone" className="text-xs text-gray-500 block mb-1.5">새 전화번호</label>
+            <div className="flex flex-col @[400px]:flex-row gap-2">
               <input
+                id="profile-new-phone"
                 type="tel" value={newPhone}
+                autoComplete="tel"
+                inputMode="tel"
+                maxLength={13}
                 onChange={e => setNewPhone(formatPhone(e.target.value))}
                 placeholder="010-0000-0000"
-                className={`${inputClass} flex-1`}
+                className={`${inputClass} flex-1 tabular-nums`}
               />
               <button
                 onClick={handlePhoneSendCode}
-                className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green hover:bg-brand-green/5 transition-colors whitespace-nowrap"
+                className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 {phoneCodeSent ? '재발송' : '인증번호 받기'}
               </button>
@@ -331,9 +352,12 @@ export default function Profile() {
           </div>
           {phoneCodeSent && (
             <div>
-              <label className="text-xs text-gray-500 block mb-1.5">인증번호</label>
+              <label htmlFor="profile-phone-code" className="text-xs text-gray-500 block mb-1.5">인증번호</label>
               <input
+                id="profile-phone-code"
                 type="text" value={phoneCode}
+                autoComplete="one-time-code"
+                inputMode="numeric"
                 onChange={e => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="6자리 입력"
                 className={inputClass}
@@ -342,26 +366,30 @@ export default function Profile() {
             </div>
           )}
           {phoneCodeSent && (
-            <p className="text-xs text-gray-500">인증번호가 발송되었어요. 3분 내에 입력해 주세요.</p>
+            <p className="text-xs text-gray-500">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
           )}
         </div>
         <div className="flex gap-3 mt-5">
-          <button onClick={() => setPhoneModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50">취소</button>
-          <button onClick={handlePhoneVerify} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">인증 완료</button>
+          <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+          <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
         </div>
       </Modal>
 
-      {/* 회원탈퇴 모달 */}
-      <Modal open={withdrawModalOpen} onClose={() => setWithdrawModalOpen(false)} title="회원탈퇴" size="sm">
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">정말 탈퇴하시겠어요? 탈퇴 후 모든 데이터가 삭제되며 복구할 수 없어요.</p>
-          <div className="p-3 rounded-xl text-sm bg-red-50 text-red-600">탈퇴 시 캠페인 내역, 프로필 정보 등이 모두 삭제됩니다.</div>
-          <div className="flex gap-3">
-            <button onClick={() => setWithdrawModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">취소</button>
-            <button onClick={() => { setWithdrawModalOpen(false); showToast('탈퇴 기능은 준비 중이에요', 'info') }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">탈퇴하기</button>
-          </div>
+      {/* 회원탈퇴 모달 — 광고주 패턴과 통일 (AlertModal variant="danger") */}
+      <AlertModal
+        open={withdrawModalOpen}
+        onClose={() => setWithdrawModalOpen(false)}
+        title="회원탈퇴"
+        description="정말 탈퇴하시겠어요? 탈퇴 후 모든 데이터는 복구할 수 없어요"
+        variant="danger"
+        confirmLabel="탈퇴하기"
+        cancelLabel="취소"
+        onConfirm={() => { setWithdrawModalOpen(false); showToast('탈퇴 기능은 준비 중이에요', 'info') }}
+      >
+        <div className="p-3 rounded-xl text-sm bg-red-100 border border-red-200 text-red-700 break-keep">
+          탈퇴 시 캠페인 내역, 프로필 정보 등이 모두 삭제돼요
         </div>
-      </Modal>
+      </AlertModal>
     </Layout>
   )
 }

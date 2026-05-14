@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
 import { CustomCheckbox, useQAMode, useToast, INPUT_BASE as inputBase, TIMER_MS, auth } from '@wellink/ui'
-import { BRAND_URL, CONTACT_EMAIL } from '../config/urls'
+import { CONTACT_EMAIL } from '../config/urls'
 import { ACTIVITY_FIELDS as activityFields } from '../services/mock/profile'
 
 const FILLED_FORM = {
@@ -24,11 +24,16 @@ export default function Signup() {
   const [form, setForm] = useState(initForm)
   const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set())
   const [errors, setErrors] = useState<Record<string, string>>(
-    qa === 'error' ? { email: '이미 가입된 이메일입니다.', password: '비밀번호는 8자 이상이어야 해요' } : {}
+    qa === 'error' ? { email: '이미 가입된 이메일입니다', password: '비밀번호는 8자 이상이어야 해요' } : {}
   )
   const [phoneVerified, setPhoneVerified] = useState(qa === 'verified')
   const [instaVerified, setInstaVerified] = useState(qa === 'verified')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // unmount 시 진행 중인 setTimeout 정리 (메모리 누수 + unmounted setState 방지)
+  useEffect(() => () => {
+    if (submitTimerRef.current) clearTimeout(submitTimerRef.current)
+  }, [])
 
   // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -45,7 +50,7 @@ export default function Signup() {
       setInstaVerified(true)
     } else if (qa === 'error') {
       setForm({ ...FILLED_FORM })
-      setErrors({ email: '이미 가입된 이메일입니다.', password: '비밀번호는 8자 이상이어야 해요' })
+      setErrors({ email: '이미 가입된 이메일입니다', password: '비밀번호는 8자 이상이어야 해요' })
       setPhoneVerified(false)
       setInstaVerified(false)
     } else {
@@ -80,13 +85,21 @@ export default function Signup() {
   const handleSubmit = () => {
     const newErrors = validate()
     setErrors(newErrors)
-    if (Object.keys(newErrors).length > 0) { showToast('입력 정보를 확인해 주세요'); return }
+    if (Object.keys(newErrors).length > 0) { showToast('입력 정보를 확인해 주세요', 'error'); return }
     setIsSubmitting(true)
-    setTimeout(() => {
+    submitTimerRef.current = setTimeout(() => {
       setIsSubmitting(false)
       auth.set('influencer')
       navigate('/home')
     }, TIMER_MS.FORM_SUBMIT)
+  }
+
+  // Enter 키로 폼 제출 (form 태그 미사용 환경)
+  const onEnterSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isSubmitting) {
+      e.preventDefault()
+      handleSubmit()
+    }
   }
 
   return (
@@ -97,8 +110,8 @@ export default function Signup() {
       {/* 도입문의 버튼 */}
       <div className="fixed top-4 right-4 z-10">
         <button
-          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green"
+          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_self')}
+          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           도입문의
         </button>
@@ -107,7 +120,7 @@ export default function Signup() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         {/* 로고 */}
         <div className="text-center mb-7">
-          <h1 className="text-2xl font-black text-brand-green">WELLINK AI</h1>
+          <h1 className="text-2xl font-black text-brand-green-text">WELLINK AI</h1>
           <p className="text-sm text-gray-500 mt-1">인플루언서 포털 회원가입</p>
         </div>
 
@@ -119,14 +132,16 @@ export default function Signup() {
               id="signup-name"
               type="text"
               autoComplete="name"
+              maxLength={20}
               placeholder="실명을 입력해 주세요"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onKeyDown={onEnterSubmit}
               aria-describedby={errors.name ? 'inf-signup-name-error' : undefined}
               aria-invalid={!!errors.name}
               className={`${inputBase} ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.name && <p id="inf-signup-name-error" className="text-xs text-red-500 mt-1" role="alert">{errors.name}</p>}
+            {errors.name && <p id="inf-signup-name-error" className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{errors.name}</p>}
           </div>
 
           {/* 이메일 */}
@@ -135,15 +150,21 @@ export default function Signup() {
             <input
               id="signup-email"
               type="email"
+              inputMode="email"
               autoComplete="email"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={100}
               placeholder="example@email.com"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onKeyDown={onEnterSubmit}
               aria-describedby={errors.email ? 'inf-signup-email-error' : undefined}
               aria-invalid={!!errors.email}
               className={`${inputBase} ${errors.email ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.email && <p id="inf-signup-email-error" className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}
+            {errors.email && <p id="inf-signup-email-error" className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{errors.email}</p>}
           </div>
 
           {/* 비밀번호 */}
@@ -153,14 +174,16 @@ export default function Signup() {
               id="signup-password"
               type="password"
               autoComplete="new-password"
+              maxLength={50}
               placeholder="8자 이상 입력해 주세요"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onKeyDown={onEnterSubmit}
               aria-describedby={errors.password ? 'inf-signup-password-error' : undefined}
               aria-invalid={!!errors.password}
               className={`${inputBase} ${errors.password ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.password && <p id="inf-signup-password-error" className="text-xs text-red-500 mt-1" role="alert">{errors.password}</p>}
+            {errors.password && <p id="inf-signup-password-error" className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{errors.password}</p>}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -170,20 +193,22 @@ export default function Signup() {
               id="signup-password-confirm"
               type="password"
               autoComplete="new-password"
+              maxLength={50}
               placeholder="비밀번호를 다시 입력해 주세요"
               value={form.passwordConfirm}
               onChange={(e) => setForm({ ...form, passwordConfirm: e.target.value })}
+              onKeyDown={onEnterSubmit}
               aria-describedby={errors.passwordConfirm ? 'inf-signup-password-confirm-error' : undefined}
               aria-invalid={!!errors.passwordConfirm}
               className={`${inputBase} ${errors.passwordConfirm ? 'border-red-400' : 'border-gray-200'}`}
             />
-            {errors.passwordConfirm && <p id="inf-signup-password-confirm-error" className="text-xs text-red-500 mt-1" role="alert">{errors.passwordConfirm}</p>}
+            {errors.passwordConfirm && <p id="inf-signup-password-confirm-error" className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{errors.passwordConfirm}</p>}
           </div>
 
-          {/* 전화번호 — 인증하기 인라인 */}
+          {/* 전화번호 — 인증하기 인라인 (좁은 모바일에서 줄바꿈) */}
           <div>
             <label htmlFor="signup-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 id="signup-phone"
                 type="tel"
@@ -191,20 +216,20 @@ export default function Signup() {
                 placeholder="010-0000-0000"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className={`${inputBase} flex-1 border-gray-200`}
+                className={`${inputBase} flex-1 min-w-0 border-gray-200 tabular-nums`}
               />
               <button
                 onClick={() => {
-                  if (!form.phone) { showToast('전화번호를 입력해 주세요'); return }
-                  if (!/^01[0-9]-\d{3,4}-\d{4}$/.test(form.phone)) { showToast('전화번호 형식을 확인해 주세요 (예: 010-1234-5678)'); return }
+                  if (!form.phone) { showToast('전화번호를 입력해 주세요', 'error'); return }
+                  if (!/^01[0-9]-\d{3,4}-\d{4}$/.test(form.phone)) { showToast('전화번호 형식을 확인해 주세요 (예: 010-1234-5678)', 'error'); return }
                   setPhoneVerified(true)
-                  showToast('인증번호가 발송됐어요')
+                  showToast('인증번호가 발송됐어요', 'success')
                 }}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   phoneVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
-                {phoneVerified && <CheckCircle2 size={14} />}
+                {phoneVerified && <CheckCircle2 size={14} aria-hidden="true" />}
                 {phoneVerified ? '인증완료' : '인증하기'}
               </button>
             </div>
@@ -213,28 +238,31 @@ export default function Signup() {
           {/* 인스타그램 — 인증하기 인라인 */}
           <div>
             <label htmlFor="signup-instagram" className="block text-sm font-medium text-gray-700 mb-1.5">인스타그램 아이디</label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 id="signup-instagram"
                 type="text"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
                 placeholder="@아이디"
                 value={form.instagram}
                 onChange={(e) => setForm({ ...form, instagram: e.target.value })}
-                className={`${inputBase} flex-1 border-gray-200`}
+                className={`${inputBase} flex-1 min-w-0 border-gray-200`}
               />
               <button
                 onClick={() => {
-                  if (!form.instagram) { showToast('인스타그램 아이디를 입력해 주세요'); return }
+                  if (!form.instagram) { showToast('인스타그램 아이디를 입력해 주세요', 'error'); return }
                   const handle = form.instagram.replace(/^@/, '')
-                  if (!/^[a-zA-Z0-9_.]{1,30}$/.test(handle)) { showToast('올바른 인스타그램 아이디를 입력해 주세요'); return }
+                  if (!/^[a-zA-Z0-9_.]{1,30}$/.test(handle)) { showToast('올바른 인스타그램 아이디를 입력해 주세요', 'error'); return }
                   setInstaVerified(true)
-                  showToast('인스타그램 연동이 완료됐어요')
+                  showToast('인스타그램 연동이 완료됐어요', 'success')
                 }}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   instaVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
-                {instaVerified && <CheckCircle2 size={14} />}
+                {instaVerified && <CheckCircle2 size={14} aria-hidden="true" />}
                 {instaVerified ? '인증완료' : '인증하기'}
               </button>
             </div>
@@ -243,7 +271,7 @@ export default function Signup() {
           {/* 활동 분야 — CustomCheckbox */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2.5">활동 분야</label>
-            <div className="grid grid-cols-2 @[640px]:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {activityFields.map((field) => (
                 <CustomCheckbox
                   key={field}
@@ -259,7 +287,9 @@ export default function Signup() {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green"
+            aria-disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             {isSubmitting ? '처리 중...' : '회원 인증 후 가입하기'}
           </button>
@@ -268,8 +298,8 @@ export default function Signup() {
           <p className="text-center text-sm text-gray-500">
             이미 계정이 있으신가요?{' '}
             <button
-              onClick={() => window.location.href = `${BRAND_URL}/login`}
-              className="font-medium hover:underline transition-colors duration-150 text-brand-green"
+              onClick={() => navigate('/login')}
+              className="font-medium hover:underline transition-colors duration-150 text-brand-green-text rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               로그인하기
             </button>

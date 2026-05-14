@@ -7,7 +7,7 @@
 
 import { memo, useState, useEffect, useRef } from 'react'
 import { Megaphone, Info, Eye, Heart, MessageCircle, Bookmark, Share2, TrendingUp } from 'lucide-react'
-import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useIsTouchDevice, type ChartScrollContainerHandle } from '@wellink/ui'
+import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useChartScrollContext, useIsTouchDevice, type ChartScrollContainerHandle } from '@wellink/ui'
 import GradePill from './GradePill'
 import { CAMPAIGN_MATCH_MAP, type ViralContent } from '../../../data/analytics/viral'
 
@@ -28,21 +28,15 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
   }) : []
 
   // 차트 인터랙티브 인덱스 (모달 열릴 때 마지막 인덱스). content=null이면 빈 배열이라 null 안전 폴백.
-  const [scoreIdx, setScoreIdx] = useState<number | null>(null)
+  const [scoreIdx, setScoreIdx] = useState<number | null>(0)
   const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
 
-  // content/isTouch 변경 시 차트 인덱스·스크롤 초기화 — 차트 인터랙션 정책 동기화 (외부 prop sync)
-  // 정책: PC = activeIndex=null + scrollToStart / 모바일·태블릿 = 마지막 포인트 기본 노출 + scrollToEnd
+  // content 변경 시 차트 인덱스·스크롤 초기화 — 맨 왼쪽 포인트(0) 기본 노출 + scrollToStart
   useEffect(() => {
-    if (isTouch) {
-      const len = scoreHistory.length
-      setScoreIdx(len > 0 ? len - 1 : null)
-      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToEnd() })
-    } else {
-      setScoreIdx(null)
-      requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
-    }
-  }, [content, isTouch, scoreHistory.length])
+    const len = scoreHistory.length
+    setScoreIdx(len > 0 ? 0 : null)
+    requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
+  }, [content, scoreHistory.length])
 
 
   const metrics = content ? [
@@ -164,14 +158,14 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                       if (!d) return null
                       return (
                         <>
-                          <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
+                          <p className="text-sm text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
-                            <span className="text-xs text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
+                            <span className="text-sm text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full shrink-0 bg-amber-400" />
-                            <span className="text-xs text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
+                            <span className="text-sm text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
                           </div>
                         </>
                       )
@@ -212,7 +206,9 @@ const ScoreHistoryChart = memo(function ScoreHistoryChart({
   onActiveIndex?: (i: number | null) => void
   isTouch?: boolean
 }) {
-  const W = 400, H = 120, padL = 8, padR = 8, padT = 8, padB = 24
+  const ctx = useChartScrollContext()
+  const W = ctx?.measuredW ?? 400
+  const H = 120, padL = 8, padR = 8, padT = 8, padB = 24
   const plotW = W - padL - padR, plotH = H - padT - padB
   const stepX = plotW / Math.max(data.length - 1, 1)
   const toY = (v: number) => padT + plotH - (v / 100) * plotH
@@ -229,15 +225,14 @@ const ScoreHistoryChart = memo(function ScoreHistoryChart({
   return (
     <svg
       width="100%"
-      height={H}
       viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      className="overflow-visible [&_*]:pointer-events-none"
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      preserveAspectRatio="xMidYMid meet"
+      className="[&_*]:pointer-events-none"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(400, data.length * 44), height: H }}
       role="img"
       aria-label="퍼포먼스·모멘텀 점수 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      /* PC hover 떠나도 activeIndex 유지 — 항상 1개 노출 정책 */
       onClick={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchStart={isTouch ? (e) => handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
@@ -249,7 +244,7 @@ const ScoreHistoryChart = memo(function ScoreHistoryChart({
       <path d={line('momentum')} fill="none" stroke="#f59e0b" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
       {data.map((d, i) => {
         const x = padL + i * stepX
-        return <text key={i} x={x} y={H - 4} textAnchor="middle" fontSize={8} fill="#9ca3af">{d.label}</text>
+        return <text key={i} x={x} y={H - 4} textAnchor="middle" fontSize={11} fill="#9ca3af">{d.label}</text>
       })}
 
       {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}

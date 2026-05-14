@@ -4,6 +4,7 @@
  */
 
 import { memo } from 'react'
+import { useChartScrollContext } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -14,7 +15,9 @@ interface Props {
 }
 
 const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, onActiveIndex, isTouch }: Props) {
-  const W = 580, H = 200, padL = 52, padR = 12, padT = 12, padB = 28
+  const ctx = useChartScrollContext()
+  const W = ctx?.measuredW ?? 580
+  const H = 220, padL = 60, padR = 16, padT = 18, padB = 32
   const plotW = W - padL - padR
   const plotH = H - padT - padB
 
@@ -68,15 +71,14 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
   return (
     <svg
       width="100%"
-      height={H}
       viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      className="overflow-visible [&_*]:pointer-events-none"
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(W, data.length * 44) }}
+      preserveAspectRatio="xMidYMid meet"
+      className="[&_*]:pointer-events-none"
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44), height: H }}
       role="img"
       aria-label="노출 및 도달 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onMouseLeave={!isTouch ? () => onActiveIndex?.(null) : undefined}
+      /* PC hover 떠나도 activeIndex 유지 — 항상 1개 노출 정책 */
       onClick={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchStart={isTouch ? (e) => handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) : undefined}
       onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
@@ -86,7 +88,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
       })}
       {[0, 0.5, 1].map(r => (
-        <text key={r} x={padL - 6} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={9} fill="#9ca3af">
+        <text key={r} x={padL - 6} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill="#6b7280">
           {fmtAxis(Math.round(r * maxVal))}
         </text>
       ))}
@@ -130,7 +132,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         const show = isDense ? (d.showLabel ?? false) : true
         if (!show) return null
         return (
-          <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? '#d1d5db' : '#6b7280'} fontSize={9}>
+          <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? '#d1d5db' : '#6b7280'} fontSize={12}>
             {d.label}
           </text>
         )

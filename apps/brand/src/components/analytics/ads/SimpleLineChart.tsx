@@ -6,18 +6,23 @@
  */
 
 import { memo } from 'react'
+import { useChartScrollContext } from '@wellink/ui'
 
 interface Props {
   data: { label: string; value: number }[]
   stroke: string
   ariaLabel?: string
+  /** Y축 라벨 포매터 — 단위에 맞게 (예: (n) => `${n.toFixed(1)}%` / (n) => fmtNumber(Math.round(n))) */
+  yLabelFormatter?: (n: number) => string
   activeIndex?: number | null
   onActiveIndex?: (i: number | null) => void
   isTouch?: boolean
 }
 
-const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel, activeIndex, onActiveIndex, isTouch }: Props) {
-  const W = 400, H = 180, padL = 36, padR = 12, padT = 12, padB = 28
+const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel, yLabelFormatter, activeIndex, onActiveIndex, isTouch }: Props) {
+  const ctx = useChartScrollContext()
+  const W = ctx?.measuredW ?? 400
+  const H = 200, padL = 56, padR = 16, padT = 18, padB = 32
   const plotW = W - padL - padR, plotH = H - padT - padB
   const max = Math.max(1, ...data.map(d => d.value))
   const stepX = plotW / Math.max(data.length - 1, 1)
@@ -30,7 +35,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
   const fillPath = points.length > 0
     ? `${path} L ${points[points.length - 1].x} ${padT + plotH} L ${points[0].x} ${padT + plotH} Z`
     : ''
-  const svgMinW = Math.max(W, data.length * 44)
+  const svgMinW = Math.max(400, data.length * 44)
 
   // X축 라벨 간격: data.length 기반
   const labelInterval = data.length > 20 ? 7 : data.length > 8 ? 3 : 1
@@ -41,15 +46,14 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
   return (
     <svg
       width="100%"
-      height={H}
       viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      className="overflow-visible [&_*]:pointer-events-none"
+      preserveAspectRatio="xMidYMid meet"
+      className="[&_*]:pointer-events-none"
       role="img"
       aria-label={ariaLabel ?? '추이 차트'}
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW }}
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: svgMinW, height: H }}
       onMouseMove={!isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
-      onMouseLeave={!isTouch && onActiveIndex ? () => onActiveIndex(null) : undefined}
+      /* PC hover 떠나도 activeIndex 유지 — 항상 1개 노출 정책 */
       onClick={!isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.clientX, e.currentTarget.getBoundingClientRect())) : undefined}
       onTouchStart={isTouch && onActiveIndex ? (e) => onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) : undefined}
       onTouchMove={isTouch && onActiveIndex ? (e) => { e.preventDefault(); onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) } : undefined}
@@ -64,6 +68,16 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
         const y = padT + plotH - r * plotH
         return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
       })}
+      {/* Y축 라벨 — 0 / 50% / max (X축과 동일 spec: #6b7280, 9pt, regular) */}
+      {[0, 0.5, 1].map(r => {
+        const labelValue = r * max
+        const formatted = yLabelFormatter ? yLabelFormatter(labelValue) : Math.round(labelValue).toLocaleString()
+        return (
+          <text key={r} x={padL - 8} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill="#6b7280">
+            {formatted}
+          </text>
+        )
+      })}
       <path d={fillPath} fill={`url(#grad-${stroke.replace('#', '')})`} />
       <path d={path} fill="none" stroke={stroke} strokeWidth={2} />
       {points.map((p, i) => (
@@ -72,7 +86,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
       {/* X축 라벨 — data.length 기반 간격 */}
       {points.map((p, i) => {
         if (i % labelInterval !== 0 && i !== points.length - 1) return null
-        return <text key={i} x={p.x} y={padT + plotH + 14} textAnchor="middle" fontSize={9} fill="#6b7280">{p.label}</text>
+        return <text key={i} x={p.x} y={padT + plotH + 20} textAnchor="middle" fontSize={12} fill="#6b7280">{p.label}</text>
       })}
       {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex != null && (() => {
