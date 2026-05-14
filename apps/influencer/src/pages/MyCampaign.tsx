@@ -146,11 +146,11 @@ export default function MyCampaign() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-base font-semibold text-gray-900">나의 캠페인</h1>
-            <p className="text-xs text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
+            <p className="text-sm text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="flex items-center gap-1.5 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Compass size={12} />
             캠페인 찾기
@@ -339,10 +339,10 @@ export default function MyCampaign() {
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
             <Upload size={22} className="text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-500">인스타그램, 블로그, 유튜브 등 게시 링크</p>
+            <p className="text-sm text-gray-500">인스타그램, 블로그, 유튜브 등 게시 링크</p>
           </div>
           <div>
-            <label htmlFor="content-url" className="text-xs text-gray-500 mb-1.5 block">콘텐츠 URL</label>
+            <label htmlFor="content-url" className="text-sm text-gray-600 mb-1.5 block font-medium">콘텐츠 URL</label>
             <input
               id="content-url"
               type="url"
@@ -369,7 +369,7 @@ export default function MyCampaign() {
       <Modal open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
-          <p className="text-xs text-gray-500">취소 후 재신청이 가능하지 않을 수 있어요</p>
+          <p className="text-sm text-gray-500">취소 후 재신청이 가능하지 않을 수 있어요</p>
           <div className="flex gap-2">
             <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">유지하기</button>
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>

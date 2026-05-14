@@ -273,7 +273,7 @@ export default function CampaignBrowse() {
           <div className="flex flex-col @[640px]:flex-row @[640px]:items-center justify-between gap-4 mb-6">
             <div>
               <span className="text-base font-bold text-brand-green">WELLINK AI</span>
-              <p className="text-xs text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
+              <p className="text-sm text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
             </div>
             <div className="flex gap-4 text-sm text-gray-300">
               <button onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_self')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>

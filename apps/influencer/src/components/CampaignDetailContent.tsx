@@ -218,7 +218,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               <div className="p-4 rounded-xl border border-brand-green-border bg-brand-green-bg flex items-start gap-3">
                 <Gift size={17} className="text-brand-green-text flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
+                  <p className="text-sm font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
                   <p className="text-sm font-medium text-gray-900 break-keep">{campaign.reward}</p>
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                     <div key={gi} className="rounded-xl border border-gray-100 overflow-hidden">
                       <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
                         {g.icon}
-                        <span className="text-xs font-semibold text-gray-600">{g.label}</span>
+                        <span className="text-sm font-semibold text-gray-600">{g.label}</span>
                       </div>
                       <ul className="px-3 py-2 space-y-1.5">
                         {g.items.map((cond, i) => (
