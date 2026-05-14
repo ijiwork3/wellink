@@ -83,7 +83,7 @@ export default function Home() {
         <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
           <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
           <p className="text-lg font-bold truncate">{mockProfile.name}님</p>
-          <p className="text-xs opacity-70 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+          <p className="text-sm opacity-80 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
         </div>
 
         {/* 활동 통계 */}
@@ -96,7 +96,7 @@ export default function Home() {
               aria-label={`${card.label} ${mockCampaignSummary[card.key]}건 보기`}
             >
               <p className={`text-xl font-bold tabular-nums ${card.color}`}>{mockCampaignSummary[card.key]}</p>
-              <p className="text-xs text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
+              <p className="text-sm text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
             </button>
           ))}
         </div>
@@ -106,7 +106,7 @@ export default function Home() {
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle size={14} className="text-orange-500 shrink-0" />
-              <p className="text-xs font-semibold text-orange-700">콘텐츠 제출 마감 임박!</p>
+              <p className="text-sm font-semibold text-orange-700">콘텐츠 제출 마감 임박!</p>
             </div>
             <div className="space-y-1.5">
               {urgentCampaigns.map(c => (
@@ -118,7 +118,7 @@ export default function Home() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
-                    <p className="text-xs text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
+                    <p className="text-sm text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0 ml-2" aria-hidden="true" />
                 </button>
@@ -133,7 +133,7 @@ export default function Home() {
             <p className="text-sm font-semibold text-gray-900">진행 중인 캠페인</p>
             <button
               onClick={() => navigate('/campaigns/my')}
-              className="flex items-center gap-0.5 text-xs text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               전체보기 <ChevronRight size={14} />
             </button>
@@ -162,7 +162,7 @@ export default function Home() {
                       <StatusBadge status={c.status} size="sm" />
                     </div>
                     <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 truncate">{c.progress}</p>
+                    <p className="text-sm text-gray-500 mt-0.5 truncate">{c.progress}</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
                 </button>
@@ -197,7 +197,7 @@ export default function Home() {
             <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
             <button
               onClick={() => navigate('/media')}
-              className="flex items-center gap-0.5 text-xs text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               자세히 <ChevronRight size={14} />
             </button>
@@ -211,13 +211,13 @@ export default function Home() {
             ].map(item => (
               <div key={item.label} className="text-center px-1.5 min-w-0">
                 <p className={`text-sm @[480px]:text-base font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
-                <p className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
+                <p className="text-sm text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
             <TrendingUp size={12} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-            <p className="text-xs text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
+            <p className="text-sm text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
           </div>
         </div>
 
@@ -233,7 +233,7 @@ function QuickMenu({ icon, label, badge, onClick }: { icon: React.ReactNode; lab
       className="relative bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center gap-2 py-4 px-2 hover:border-gray-200 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
     >
       {icon}
-      <span className="text-xs font-medium text-gray-700 text-center leading-tight break-keep">
+      <span className="text-sm font-medium text-gray-700 text-center leading-tight break-keep">
         {label}
       </span>
       {badge && (

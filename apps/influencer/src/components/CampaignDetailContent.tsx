@@ -121,15 +121,15 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               return (
                 <div className="mb-5 p-4 rounded-xl bg-gray-50">
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xs font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
                       <Users size={13} className="text-brand-green" aria-hidden="true" />모집 현황
                     </span>
-                    <span className="text-xs text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
+                    <span className="text-sm text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
                   </div>
                   <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
+                  <p className="text-sm text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
                 </div>
               )
             })()}
@@ -142,21 +142,21 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
               <Calendar size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="text-xs text-gray-500">신청 마감</p>
+                <p className="text-sm text-gray-500">신청 마감</p>
                 <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.applyEnd}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
               <Clock size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="text-xs text-gray-500">게시 마감</p>
+                <p className="text-sm text-gray-500">게시 마감</p>
                 <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.postEnd}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
               <Users size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="text-xs text-gray-500">모집 채널</p>
+                <p className="text-sm text-gray-500">모집 채널</p>
                 <p className="text-sm font-semibold text-gray-900 break-keep">{campaign.channel}</p>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                   : <Footprints size={17} className="text-blue-500 flex-shrink-0" aria-hidden="true" />
                 }
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-500">캠페인 유형</p>
+                  <p className="text-sm text-gray-500">캠페인 유형</p>
                   <p className={`text-sm font-semibold ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
                     {campaign.type === 'delivery' ? '배송형' : '방문형'}
                   </p>
@@ -197,7 +197,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                       showToast('이 브라우저는 복사를 지원하지 않아요', 'info')
                     }
                   }}
-                  className="shrink-0 flex items-center gap-1 text-xs text-gray-500 hover:text-brand-green-text transition-colors rounded-md whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="shrink-0 flex items-center gap-1 text-sm text-gray-500 hover:text-brand-green-text transition-colors rounded-md whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Copy size={12} aria-hidden="true" />한 번에 복사
                 </button>

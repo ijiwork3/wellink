@@ -171,7 +171,7 @@ export default function CampaignBrowse() {
 
         {/* 결과 수 */}
         {!loading && (
-          <p className="text-xs text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-4">
             총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
           </p>
         )}
@@ -221,11 +221,11 @@ export default function CampaignBrowse() {
           >
             {c && (
               <div className="p-6 pb-8">
-                <p className="text-xs text-gray-500 mb-1">{c.brand}</p>
+                <p className="text-sm text-gray-500 mb-1">{c.brand}</p>
                 <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
                 {c.reward && (
                   <div className="flex items-start gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
-                    <span className="text-xs font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
+                    <span className="text-sm font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
                   </div>
                 )}
                 <div className="flex gap-2 flex-wrap mb-4">
@@ -281,7 +281,7 @@ export default function CampaignBrowse() {
               <button onClick={() => window.open(`${BRAND_URL}/#faq`, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-4 text-xs text-gray-400 space-y-0.5 break-keep">
+          <div className="border-t border-gray-800 pt-4 text-sm text-gray-400 space-y-0.5 break-keep">
             <p>상호명: 주식회사 애프터액션 | 대표자: 안정식 | 사업자등록번호: 196-86-03374</p>
             <p>서울 영등포구 당산로 241 유니언타워 514호 | 070-8655-2299</p>
             <p className="mt-2">© 2026 WELLINK AI. All rights reserved.</p>
