@@ -75,7 +75,7 @@ export default function Notifications() {
       value: v,
       label: FILTER_LABELS[v],
       trailing: counts[v] > 0 ? (
-        <span className="ml-1 text-xs text-gray-500 font-normal whitespace-nowrap">{counts[v]}</span>
+        <span className="ml-1 text-sm text-gray-500 font-normal whitespace-nowrap">{counts[v]}</span>
       ) : undefined,
     }))
   }, [notifications])

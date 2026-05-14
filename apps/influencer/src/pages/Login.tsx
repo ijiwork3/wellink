@@ -131,7 +131,7 @@ export default function Login() {
           </button>
         </div>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
+        <p className="text-center text-sm text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button onClick={() => navigate('/signup')} className="text-brand-green-text rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">회원가입</button>
         </p>

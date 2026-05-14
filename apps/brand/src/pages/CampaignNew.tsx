@@ -475,7 +475,7 @@ export default function CampaignNew() {
               <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5">
                 <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
                 <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
-                <span className="@sm:hidden text-gray-500 text-xs">종료일</span>
+                <span className="@sm:hidden text-gray-500 text-sm">종료일</span>
                 <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
               </div>
             </SubField>
@@ -490,7 +490,7 @@ export default function CampaignNew() {
             <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5 max-w-md">
               <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
               <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
-              <span className="@sm:hidden text-gray-500 text-xs">종료일</span>
+              <span className="@sm:hidden text-gray-500 text-sm">종료일</span>
               <DateInput value={form.uploadEnd} min={form.uploadStart || TODAY} onChange={v => set('uploadEnd', v)} />
             </div>
           </SubField>

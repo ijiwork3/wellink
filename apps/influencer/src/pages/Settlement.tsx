@@ -120,7 +120,7 @@ export default function Settlement() {
               <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-amber-800 break-keep">계좌 정보가 없어요</p>
-                <p className="text-xs text-amber-600 mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
+                <p className="text-sm text-amber-600 mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
               </div>
             </div>
             <button onClick={() => showToast('계좌 등록 화면으로 이동할게요', 'info')} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-amber-700 border border-amber-300 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60">
@@ -131,37 +131,37 @@ export default function Settlement() {
 
         {/* 요약 카드 — 정산 가능 금액 중심 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <p className="text-xs font-medium text-gray-500 mb-1">정산 가능 금액</p>
+          <p className="text-sm font-medium text-gray-500 mb-1">정산 가능 금액</p>
           <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text mb-1 tabular-nums leading-tight">
             {availableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
           </p>
           {availableAmount > 0 && HAS_BANK_ACCOUNT && (
             <button
               onClick={() => { setRequestTarget('all'); setRequestModal(true) }}
-              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <BanknoteIcon size={14} />전체 정산 요청
             </button>
           )}
           {availableAmount > 0 && !HAS_BANK_ACCOUNT && (
-            <p className="mt-1 text-xs text-amber-600">계좌 등록 후 정산 요청이 가능해요</p>
+            <p className="mt-1 text-sm text-amber-600">계좌 등록 후 정산 요청이 가능해요</p>
           )}
 
           {/* 보조 지표 — 360px 한 셀 약 124px. 6-7자리(천만원대)까지 text-sm으로 안전, 큰 폭에서 text-base */}
           <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-50">
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
-                <TrendingUp size={12} className="text-gray-400" />
-                <p className="text-xs text-gray-500">이번 달</p>
+                <TrendingUp size={14} className="text-gray-400" />
+                <p className="text-sm text-gray-500">이번 달</p>
               </div>
-              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{thisMonthEarnings.toLocaleString('ko-KR')}<span className="text-xs font-normal text-gray-500 ml-0.5">원</span></p>
+              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{thisMonthEarnings.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
-                <Wallet size={12} className="text-gray-400" />
-                <p className="text-xs text-gray-500">누적 수익</p>
+                <Wallet size={14} className="text-gray-400" />
+                <p className="text-sm text-gray-500">누적 수익</p>
               </div>
-              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{totalEarnings.toLocaleString('ko-KR')}<span className="text-xs font-normal text-gray-500 ml-0.5">원</span></p>
+              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{totalEarnings.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function Settlement() {
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
+                    <p className="text-sm text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
                   </div>
                   <StatusBadge status={item.status} size="sm" className="shrink-0" />
                 </div>
@@ -208,7 +208,7 @@ export default function Settlement() {
                       </button>
                     )}
                     {item.status === '정산대기' && (
-                      <span className="text-xs text-gray-500 whitespace-nowrap">콘텐츠 완료 후 정산 가능</span>
+                      <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 완료 후 정산 가능</span>
                     )}
                   </div>
                 </div>
@@ -250,10 +250,10 @@ export default function Settlement() {
             </div>
             {!HAS_BANK_ACCOUNT && (
               <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
-                <p className="text-xs text-amber-700">계좌 정보가 없어요 — 먼저 계좌를 등록해 주세요</p>
+                <p className="text-sm text-amber-700">계좌 정보가 없어요 — 먼저 계좌를 등록해 주세요</p>
               </div>
             )}
-            <p className="text-xs text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
+            <p className="text-sm text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
             <div className="flex gap-2">
               <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
               <button onClick={confirmRequest} disabled={!HAS_BANK_ACCOUNT} aria-disabled={!HAS_BANK_ACCOUNT} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>

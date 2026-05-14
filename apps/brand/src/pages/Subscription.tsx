@@ -660,7 +660,7 @@ export default function Subscription() {
                       <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
                     </div>
                     {isRefunded && refundInfo && (
-                      <p className="text-xs text-amber-700 mt-1.5 whitespace-nowrap">
+                      <p className="text-sm text-amber-700 mt-1.5 whitespace-nowrap">
                         결제일 {fmtDate(p.date)} · 환불 요청일 {fmtDate(refundInfo.refundedAt)}
                       </p>
                     )}
@@ -695,7 +695,7 @@ export default function Subscription() {
                             <td className="py-3 px-5 whitespace-nowrap">
                               <div className="text-base text-gray-600">{fmtDate(p.date)}</div>
                               {isRefunded && refundInfo && (
-                                <div className="text-xs text-amber-700 mt-0.5">환불 요청일 {fmtDate(refundInfo.refundedAt)}</div>
+                                <div className="text-sm text-amber-700 mt-0.5">환불 요청일 {fmtDate(refundInfo.refundedAt)}</div>
                               )}
                             </td>
                             <td className="py-3 px-5 whitespace-nowrap">
@@ -865,7 +865,7 @@ export default function Subscription() {
           <CheckCircle2 size={18} className="text-gray-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <p className="text-sm font-medium text-gray-900">다음 결제일부터 요금이 청구되지 않습니다.</p>
-            <p className="text-xs text-gray-500 mt-1">현재 이용 중인 혜택은 만료일까지 유지됩니다.</p>
+            <p className="text-sm text-gray-500 mt-1">현재 이용 중인 혜택은 만료일까지 유지됩니다.</p>
           </div>
         </div>
 
@@ -952,11 +952,11 @@ export default function Subscription() {
           {/* 구분선 + 환불 예정 금액 */}
           <div className="border-t border-gray-200 pt-2 mt-2 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-900">
-              환불 예정 금액 <span className="text-xs font-normal text-gray-500">(vat 미포함)</span>
+              환불 예정 금액 <span className="text-sm font-normal text-gray-500">(vat 미포함)</span>
             </span>
             <span className="text-base font-bold text-brand-green-text tabular-nums">{fmtPrice(refundEstimate)}</span>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+          <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
             * 실제 환불 금액은 결제 수단 및 카드사 정책에 따라 차이가 있을 수 있습니다.
           </p>
         </div>

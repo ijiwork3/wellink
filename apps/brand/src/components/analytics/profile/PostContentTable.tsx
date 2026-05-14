@@ -13,7 +13,7 @@ import { POST_DATA, type PostItem, type PostType, type PostSortKey } from '../..
 function MetricCell({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) {
   return (
     <div className={`${color} rounded-xl p-3`}>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
+      <p className="text-sm text-gray-500 mb-1">{label}</p>
       <p className="text-base font-bold text-gray-900">{value}</p>
     </div>
   )
@@ -127,7 +127,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
                 <MetricCell label="도달" value={fmtNumber(post.reach)}       color="bg-amber-50" />
                 <MetricCell label="노출" value={fmtNumber(post.impressions)} color="bg-amber-50" />
               </div>
-              <p className="text-xs text-gray-500 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
+              <p className="text-sm text-gray-500 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
             </div>
           )}
         </div>

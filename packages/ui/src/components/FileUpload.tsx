@@ -67,7 +67,7 @@ export default function FileUpload({
       >
         <Upload size={20} className="text-gray-400" aria-hidden="true" />
         <p className="text-sm text-gray-500 text-center">{hint}</p>
-        <p className="text-xs text-gray-400">클릭하거나 파일을 드래그하세요</p>
+        <p className="text-sm text-gray-400">클릭하거나 파일을 드래그하세요</p>
         <input
           ref={inputRef}
           type="file"
@@ -89,8 +89,8 @@ export default function FileUpload({
               className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100"
             >
               <FileText size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
-              <span className="flex-1 text-xs text-gray-700 truncate">{file.name}</span>
-              <span className="text-xs text-gray-400 shrink-0">
+              <span className="flex-1 text-sm text-gray-700 truncate">{file.name}</span>
+              <span className="text-sm text-gray-400 shrink-0">
                 {(file.size / 1024).toFixed(0)}KB
               </span>
               <button

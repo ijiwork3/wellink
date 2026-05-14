@@ -192,7 +192,7 @@ export default function Profile() {
           <div className="space-y-3">
             {/* 이름 */}
             <div>
-              <label htmlFor="profile-name" className="block text-xs font-medium text-gray-500 mb-1.5">이름</label>
+              <label htmlFor="profile-name" className="block text-sm font-medium text-gray-500 mb-1.5">이름</label>
               {isEditing
                 ? <input id="profile-name" type="text" value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !isSaving) { e.preventDefault(); handleSave() } }} maxLength={20} autoComplete="name" className={inputClass} />
                 : <p className="text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl break-keep">{name}</p>
@@ -201,13 +201,13 @@ export default function Profile() {
 
             {/* 이메일 (읽기 전용) */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">이메일</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1.5">이메일</label>
               <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl break-all">{mockProfile.email}</p>
             </div>
 
             {/* 전화번호 — 320px 단말까지 대비해서 좁으면 한 줄 띄움 */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">전화번호</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1.5">전화번호</label>
               <div className="flex flex-col @[400px]:flex-row @[400px]:items-center gap-2">
                 <p className="flex-1 text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl tabular-nums">{phone}</p>
                 <button
@@ -221,7 +221,7 @@ export default function Profile() {
 
             {/* 비밀번호 */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">비밀번호</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
               <button
                 onClick={() => setPwModalOpen(true)}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -232,14 +232,14 @@ export default function Profile() {
 
             {/* 인플루언서 타입 */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">인플루언서 유형</label>
+              <label className="block text-sm font-medium text-gray-500 mb-2">인플루언서 유형</label>
               {isEditing ? (
                 <div className="grid grid-cols-2 gap-2">
                   {INFLUENCER_TYPES.map(t => (
                     <button
                       key={t.value}
                       onClick={() => setDraftType(t.value)}
-                      className={`px-3 py-2.5 rounded-xl text-xs @[480px]:text-sm font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                      className={`px-3 py-2.5 rounded-xl text-sm font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         draftType === t.value
                           ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300'
@@ -275,7 +275,7 @@ export default function Profile() {
             ))}
           </div>
           {!isEditing && (
-            <p className="text-xs text-gray-500 mt-3">편집 버튼을 눌러 활동 분야를 변경할 수 있어요</p>
+            <p className="text-sm text-gray-500 mt-3">편집 버튼을 눌러 활동 분야를 변경할 수 있어요</p>
           )}
         </div>
 
@@ -284,7 +284,7 @@ export default function Profile() {
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p id="profile-marketing-label" className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
-              <p className="text-xs text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
+              <p className="text-sm text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
             </div>
             <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} ariaLabelledBy="profile-marketing-label" />
           </div>
@@ -330,7 +330,7 @@ export default function Profile() {
       <Modal open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경" size="sm">
         <div className="space-y-3">
           <div>
-            <label htmlFor="profile-new-phone" className="text-xs text-gray-500 block mb-1.5">새 전화번호</label>
+            <label htmlFor="profile-new-phone" className="text-sm text-gray-500 block mb-1.5">새 전화번호</label>
             <div className="flex flex-col @[400px]:flex-row gap-2">
               <input
                 id="profile-new-phone"
@@ -352,7 +352,7 @@ export default function Profile() {
           </div>
           {phoneCodeSent && (
             <div>
-              <label htmlFor="profile-phone-code" className="text-xs text-gray-500 block mb-1.5">인증번호</label>
+              <label htmlFor="profile-phone-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
               <input
                 id="profile-phone-code"
                 type="text" value={phoneCode}
@@ -366,7 +366,7 @@ export default function Profile() {
             </div>
           )}
           {phoneCodeSent && (
-            <p className="text-xs text-gray-500">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
+            <p className="text-sm text-gray-500">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
           )}
         </div>
         <div className="flex gap-3 mt-5">

@@ -402,13 +402,13 @@ export default function ProfileInsight() {
         {/* 콘텐츠 유형별 성과 — 클라 #2: bar 기준을 *최상위 참여율 100% 상대 비교* 로 명시 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
           <h2 className="text-base font-semibold text-gray-900 mb-1">콘텐츠 유형별 성과</h2>
-          <p className="text-xs text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
+          <p className="text-sm text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
-            <span className="text-xs text-gray-500 w-16 shrink-0">유형</span>
+            <span className="text-sm text-gray-500 w-16 shrink-0">유형</span>
             <div className="flex-1" />
-            <span className="text-xs text-gray-500 w-14 text-right">평균 도달</span>
-            <span className="text-xs text-gray-500 w-10 text-right">참여율</span>
+            <span className="text-sm text-gray-500 w-14 text-right">평균 도달</span>
+            <span className="text-sm text-gray-500 w-10 text-right">참여율</span>
           </div>
           <div className="space-y-3">
             {(() => {

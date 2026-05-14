@@ -38,14 +38,14 @@ export default function ProfileHeader() {
               {/* 모바일 SNS 버튼 */}
               <button
                 onClick={() => setSnsOpen(true)}
-                className="@[640px]:hidden flex-shrink-0 flex items-center gap-1 text-xs text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="@[640px]:hidden flex-shrink-0 flex items-center gap-1 text-sm text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 aria-label="SNS 연결 상태 보기"
               >
-                <Link2 size={12} aria-hidden="true" />
+                <Link2 size={14} aria-hidden="true" />
                 SNS
               </button>
             </div>
-            <p className="text-xs @[640px]:text-sm mb-2 @[640px]:mb-3 text-gray-500 line-clamp-1 @[640px]:line-clamp-none">
+            <p className="text-sm mb-2 @[640px]:mb-3 text-gray-500 line-clamp-1 @[640px]:line-clamp-none">
               {mockProfile.bio}
             </p>
 
@@ -56,7 +56,7 @@ export default function ProfileHeader() {
                   <p className={`text-base @[640px]:text-xl font-bold tabular-nums truncate ${s.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>
                     {s.value}
                   </p>
-                  <p className="text-xs text-gray-500 whitespace-nowrap truncate">{s.label}</p>
+                  <p className="text-sm text-gray-500 whitespace-nowrap truncate">{s.label}</p>
                 </div>
               ))}
             </div>

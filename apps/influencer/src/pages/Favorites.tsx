@@ -76,13 +76,13 @@ export default function Favorites() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-base font-semibold text-gray-900">관심 캠페인</h1>
-            <p className="text-xs text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
+            <p className="text-sm text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
-            <Compass size={12} />
+            <Compass size={14} />
             캠페인 탐색
           </button>
         </div>
@@ -128,10 +128,10 @@ export default function Favorites() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                         <StatusBadge status={c.status} size="sm" dot={false} />
-                        <span className={`text-xs font-medium ${ddayColor}`}>{ddayLabel}</span>
+                        <span className={`text-sm font-medium ${ddayColor}`}>{ddayLabel}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
                     </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
@@ -146,21 +146,21 @@ export default function Favorites() {
                   </div>
 
                   <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                    <Gift size={12} className="text-brand-green shrink-0 mt-0.5" />
-                    <span className="text-xs font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
+                    <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
+                    <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
                   </div>
 
                   <div className="mt-2.5 flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
-                      <Users size={12} aria-hidden="true" />{c.applied}/{c.headcount}명
+                    <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
+                      <Users size={14} aria-hidden="true" />{c.applied}/{c.headcount}명
                     </span>
-                    <div className="flex-1 min-w-0 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="flex-1 min-w-0 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.deadline)}</span>
+                    <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.deadline)}</span>
                   </div>
                 </div>
               )

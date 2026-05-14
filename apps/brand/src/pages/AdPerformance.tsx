@@ -608,7 +608,7 @@ function CampaignList({
                       ))}
                     </div>
                     {/* 광고세트 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
-                    <div className="mb-2 text-xs font-semibold text-violet-700 uppercase tracking-wide">
+                    <div className="mb-2 text-sm font-semibold text-violet-700 uppercase tracking-wide">
                       광고세트 ({c.adSets.length})
                     </div>
                     <div className="space-y-2">
@@ -655,7 +655,7 @@ function CampaignList({
                                   ))}
                                 </div>
                                 {/* 소재 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
-                                <div className="mt-1 mb-1.5 text-xs font-semibold text-teal-700 uppercase tracking-wide">
+                                <div className="mt-1 mb-1.5 text-sm font-semibold text-teal-700 uppercase tracking-wide">
                                   소재 ({set.ads.length})
                                 </div>
                                 <div className="space-y-2">

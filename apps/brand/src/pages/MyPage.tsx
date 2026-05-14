@@ -388,7 +388,7 @@ export default function MyPage() {
                     <span className="block text-sm text-gray-500 mt-0.5">
                       이벤트, 프로모션 등 다양한 혜택 안내
                       {marketingConsent && (
-                        <span className="ml-2 text-xs text-gray-500">
+                        <span className="ml-2 text-sm text-gray-500">
                           (동의: {new Date(marketingConsent).toLocaleDateString('ko-KR')})
                         </span>
                       )}

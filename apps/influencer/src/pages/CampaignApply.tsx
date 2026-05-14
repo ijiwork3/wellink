@@ -139,9 +139,9 @@ export default function CampaignApply() {
             </div>
             <button
               onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
-              className="shrink-0 flex items-center gap-1 text-xs text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="shrink-0 flex items-center gap-1 text-sm text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <Pencil size={12} aria-hidden="true" />수정하기
+              <Pencil size={14} aria-hidden="true" />수정하기
             </button>
           </div>
         )}
@@ -150,21 +150,21 @@ export default function CampaignApply() {
         <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
           <div className="text-3xl flex-shrink-0" aria-hidden="true">{campaign.image}</div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-500 truncate">{campaign.brand}</p>
+            <p className="text-sm text-gray-500 truncate">{campaign.brand}</p>
             <p className="text-sm font-semibold text-gray-900 truncate">{campaign.name}</p>
             <div className="flex items-center gap-x-2 gap-y-0.5 mt-1 flex-wrap">
               {isDelivery
-                ? <span className="flex items-center gap-1 text-xs text-brand-green-text whitespace-nowrap"><Package size={12} />배송형</span>
-                : <span className="flex items-center gap-1 text-xs text-blue-700 whitespace-nowrap"><Footprints size={12} />방문형</span>
+                ? <span className="flex items-center gap-1 text-sm text-brand-green-text whitespace-nowrap"><Package size={14} />배송형</span>
+                : <span className="flex items-center gap-1 text-sm text-blue-700 whitespace-nowrap"><Footprints size={14} />방문형</span>
               }
-              {campaign.reward && <span className="text-xs text-gray-500 break-keep">· {campaign.reward}</span>}
+              {campaign.reward && <span className="text-sm text-gray-500 break-keep">· {campaign.reward}</span>}
             </div>
           </div>
         </div>
 
         {/* 신청자 정보 (읽기 전용) */}
         <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5">
-          <p className="text-xs font-semibold text-gray-500 mb-1">신청자 정보</p>
+          <p className="text-sm font-semibold text-gray-500 mb-1">신청자 정보</p>
           <div className="flex items-center gap-2.5 min-w-0">
             <User size={14} className="text-gray-400 flex-shrink-0" />
             <span className="text-sm text-gray-900 truncate">{mockProfile.name}</span>
@@ -203,7 +203,7 @@ export default function CampaignApply() {
           <Section title="배송 정보" required={!isViewMode} icon={<MapPin size={14} className="text-brand-green" />}>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">수령인 이름{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-sm text-gray-500 mb-1 block">수령인 이름{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={deliveryName} />
                 ) : (
@@ -224,7 +224,7 @@ export default function CampaignApply() {
                 )}
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">연락처{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-sm text-gray-500 mb-1 block">연락처{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={deliveryPhone} />
                 ) : (
@@ -246,7 +246,7 @@ export default function CampaignApply() {
                 )}
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">주소{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-sm text-gray-500 mb-1 block">주소{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={`(${deliveryZip}) ${deliveryAddr}${deliveryAddrDetail ? ' ' + deliveryAddrDetail : ''}`} />
                 ) : (
@@ -341,7 +341,7 @@ export default function CampaignApply() {
                         aria-invalid={!!errors[`q_${q.id}`]}
                         aria-describedby={errors[`q_${q.id}`] ? `apply-error-q-${q.id}` : undefined}
                       />
-                      <p className="text-xs text-gray-400 mt-1 text-right tabular-nums">{(answers[q.id] ?? '').length}/500</p>
+                      <p className="text-sm text-gray-400 mt-1 text-right tabular-nums">{(answers[q.id] ?? '').length}/500</p>
                     </>
                   )}
                   {errors[`q_${q.id}`] && <p id={`apply-error-q-${q.id}`} role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">필수 항목이에요</p>}
