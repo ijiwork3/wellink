@@ -407,7 +407,7 @@ export default function DashboardV2() {
         </div>
         <div className="border-t border-gray-100 pt-4">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <h3 className="text-sm font-medium text-gray-600">주간 지출 & ROAS 추이</h3>
+            <h3 className="text-sm font-medium text-gray-600">{period === '연간' ? '연간' : period === '월간' ? '월간' : period === '주간' ? '주간' : '일간'} 지출 & ROAS 추이</h3>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-violet-500 inline-block" />지출</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-orange-500 inline-block" />ROAS</span>

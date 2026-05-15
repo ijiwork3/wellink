@@ -105,10 +105,13 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
         return <line key={`grid-${r}`} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
       })}
 
-      {/* Y축 라벨 (3단) */}
+      {/* Y축 라벨 (3단) — 범위 좁을 때 소수점 2자리 만 단위로 구분 */}
       {[0, 0.5, 1].map(r => {
         const y = padT + plotH * (1 - r)
         const val = yMin + yRange * r
+        const label = yRange < 5000 && val >= 10000
+          ? `${(val / 10000).toFixed(2)}만`
+          : fmtNumber(Math.round(val))
         return (
           <text
             key={`y-${r}`}
@@ -120,7 +123,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
             className="tabular-nums"
           >
-            {fmtNumber(Math.round(val))}
+            {label}
           </text>
         )
       })}

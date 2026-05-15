@@ -287,11 +287,20 @@ export const DASHBOARD_FOLLOWER_TREND_BY_PERIOD: Record<DatePeriod, { label: str
   ],
 }
 
-/* ── 광고 지출 + ROAS — 기간별 (MixedChart 데이터, clicks 필드 = ROAS) ── */
+/* ── 광고 지출 + ROAS — 기간별 (MixedChart 데이터, clicks 필드 = ROAS) ──
+   데이터 포인트 수: 일간(14) > 주간(8) < 월간(12) — 일간이 가장 세밀한 단위 */
 type SpendRoas = { date: string; spend: number; clicks: number }
 export const DASHBOARD_SPEND_ROAS_BY_PERIOD: Record<DatePeriod, SpendRoas[]> = {
   일간: [
-    { date: '5/8',  spend: 95000,  clicks: 2.8 },
+    // 최근 14일 (5/1~5/14)
+    { date: '5/1',  spend: 78000,  clicks: 2.6 },
+    { date: '5/2',  spend: 82000,  clicks: 2.65 },
+    { date: '5/3',  spend: 87000,  clicks: 2.7 },
+    { date: '5/4',  spend: 91000,  clicks: 2.72 },
+    { date: '5/5',  spend: 88000,  clicks: 2.68 },
+    { date: '5/6',  spend: 93000,  clicks: 2.75 },
+    { date: '5/7',  spend: 95000,  clicks: 2.8 },
+    { date: '5/8',  spend: 98000,  clicks: 2.82 },
     { date: '5/9',  spend: 102000, clicks: 2.85 },
     { date: '5/10', spend: 110000, clicks: 2.9 },
     { date: '5/11', spend: 118000, clicks: 3.0 },
@@ -300,12 +309,18 @@ export const DASHBOARD_SPEND_ROAS_BY_PERIOD: Record<DatePeriod, SpendRoas[]> = {
     { date: '5/14', spend: 138000, clicks: 3.2 },
   ],
   주간: [
-    { date: '1주', spend: 580000, clicks: 2.9 },
-    { date: '2주', spend: 642000, clicks: 3.0 },
-    { date: '3주', spend: 715000, clicks: 3.15 },
-    { date: '4주', spend: 813000, clicks: 3.2 },
+    // 최근 8주
+    { date: '8주 전', spend: 510000, clicks: 2.6 },
+    { date: '7주 전', spend: 545000, clicks: 2.68 },
+    { date: '6주 전', spend: 580000, clicks: 2.75 },
+    { date: '5주 전', spend: 618000, clicks: 2.82 },
+    { date: '4주 전', spend: 652000, clicks: 2.9 },
+    { date: '3주 전', spend: 700000, clicks: 3.0 },
+    { date: '2주 전', spend: 756000, clicks: 3.1 },
+    { date: '이번 주', spend: 813000, clicks: 3.2 },
   ],
   월간: [
+    // 최근 12개월
     { date: '6월',  spend: 1850000, clicks: 2.4 },
     { date: '7월',  spend: 1980000, clicks: 2.5 },
     { date: '8월',  spend: 2120000, clicks: 2.6 },
