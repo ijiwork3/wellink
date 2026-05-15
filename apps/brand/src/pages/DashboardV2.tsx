@@ -416,7 +416,7 @@ export default function DashboardV2() {
           </div>
           {/* ChartScrollContainer로 감싸 viewBox W를 컨테이너 폭에 동기 (반응형 fluid) */}
           <ChartScrollContainer
-            chartW={700} padL={130} padR={130}
+            chartW={Math.max(700, spendRoasData.length * 65)} padL={130} padR={130}
             dataLength={spendRoasData.length}
             activeIndex={null}
           >

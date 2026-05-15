@@ -17,7 +17,7 @@
  */
 
 import { memo } from 'react'
-import { fmtNumber } from '@wellink/ui'
+import { fmtNumber, useChartScrollContext } from '@wellink/ui'
 import type { BarDataItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
   isTouch?: boolean
 }
 
-const W = 620
+const BASE_W = 620
 const H = 180
 const padT = 30
 const padB = 30
@@ -35,7 +35,10 @@ const padL = 48
 const padR = 24
 
 const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, onActiveIndex, isTouch }: Props) {
-  const minWidth = Math.max(W, data.length * 22)
+  // MixedChart와 동일 패턴: ChartScrollContext에서 컨테이너 측정 폭 수신 → fluid 반응형
+  const ctx = useChartScrollContext()
+  const W = Math.max(BASE_W, ctx?.measuredW ?? BASE_W)
+  const minWidth = Math.max(BASE_W, data.length * 22)
   const plotW = W - padL - padR
   const plotH = H - padT - padB
 
@@ -80,7 +83,6 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
       width="100%"
       height={H}
       style={{ minWidth }}
