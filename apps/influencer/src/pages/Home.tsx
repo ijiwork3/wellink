@@ -3,21 +3,24 @@ import { useNavigate } from 'react-router-dom'
 import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { useQAMode, fmtDate, StatusBadge, fmtFollowers, ErrorState, EmptyState, Skeleton } from '@wellink/ui'
-import { mockMyCampaigns, mockBookmarkedCampaigns } from '../services/mock/campaigns'
+import { mockMyCampaigns } from '../services/mock/campaigns'
 import { mockProfile, mockCampaignSummary, mockInstaStats } from '../services/mock/profile'
+import { useBookmarks } from '../services/userState'
 
 const SUMMARY_CARDS = [
   { label: '지원 완료', key: 'applied' as const,   color: 'text-gray-900' },
   { label: '참여중',    key: 'ongoing' as const,    color: 'text-brand-green-text' },
   { label: '참여 완료', key: 'completed' as const,  color: 'text-gray-900' },
-  { label: '탈락',      key: 'eliminated' as const, color: 'text-red-400' },
+  // MyCampaign 탭과 표기 통일 ('탈락' → '미선정')
+  { label: '미선정',    key: 'eliminated' as const, color: 'text-red-400' },
 ]
 
 export default function Home() {
   const navigate = useNavigate()
   const qa = useQAMode()
+  const bookmarks = useBookmarks()
 
-  // mockMyCampaigns / mockBookmarkedCampaigns 는 정적 import 라 useMemo 불필요.
+  // mockMyCampaigns 는 정적 import 라 useMemo 불필요.
   // 마감 임박 계산도 mount 시 한 번 캡처(useState 지연 초기화)해 React 19 purity 규칙을 위반하지 않는다.
   const [now] = useState(() => Date.now())
   const activeCampaigns = mockMyCampaigns.filter(c =>
@@ -29,7 +32,7 @@ export default function Home() {
     const diff = new Date(c.contentDeadline).getTime() - now
     return diff > 0 && diff < THREE_DAYS_MS
   })
-  const bookmarkCount = mockBookmarkedCampaigns.length
+  const bookmarkCount = bookmarks.size
 
   if (qa === 'loading') {
     return (
@@ -79,11 +82,20 @@ export default function Home() {
       <div className="space-y-4">
         <h1 className="sr-only">홈</h1>
 
-        {/* 인사말 배너 */}
+        {/* 인사말 배너 — 인스타 미연결이면 follower 카운트는 비공개, 연결 안내로 대체 */}
         <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
           <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
           <p className="text-lg font-bold truncate">{mockProfile.name}님</p>
-          <p className="text-sm opacity-80 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+          {mockProfile.instagramConnected ? (
+            <p className="text-sm opacity-80 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+          ) : (
+            <button
+              onClick={() => navigate('/media')}
+              className="text-sm opacity-90 mt-1 truncate underline underline-offset-2 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-md"
+            >
+              SNS를 연결하면 더 많은 캠페인을 추천받아요
+            </button>
+          )}
         </div>
 
         {/* 활동 통계 */}
@@ -191,35 +203,53 @@ export default function Home() {
           />
         </div>
 
-        {/* SNS 지표 요약 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-            <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
-            <button
-              onClick={() => navigate('/media')}
-              className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              자세히 <ChevronRight size={14} />
-            </button>
+        {/* SNS 지표 요약 — 인스타 연결된 경우만 표시. 미연결이면 연결 CTA 카드 */}
+        {mockProfile.instagramConnected ? (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+              <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
+              <button
+                onClick={() => navigate('/media')}
+                className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                자세히 <ChevronRight size={14} />
+              </button>
+            </div>
+            {/* 360px 한 셀 가용 80px. fmtFollowers가 6자(예 123.4만) 일 때 text-base는 overflow → text-sm + px 축소 */}
+            <div className="grid grid-cols-3 divide-x divide-gray-50 px-1 py-3">
+              {[
+                { label: '팔로워', value: fmtFollowers(mockInstaStats.followers) },
+                { label: '참여율', value: `${mockInstaStats.engagementRate}%`, highlight: true },
+                { label: '게시물', value: String(mockInstaStats.posts) },
+              ].map(item => (
+                <div key={item.label} className="text-center px-1.5 min-w-0">
+                  <p className={`text-sm @[480px]:text-base font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
+                  <p className="text-sm text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
+              <TrendingUp size={14} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+              <p className="text-sm text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
+            </div>
           </div>
-          {/* 360px 한 셀 가용 80px. fmtFollowers가 6자(예 123.4만) 일 때 text-base는 overflow → text-sm + px 축소 */}
-          <div className="grid grid-cols-3 divide-x divide-gray-50 px-1 py-3">
-            {[
-              { label: '팔로워', value: fmtFollowers(mockInstaStats.followers) },
-              { label: '참여율', value: `${mockInstaStats.engagementRate}%`, highlight: true },
-              { label: '게시물', value: String(mockInstaStats.posts) },
-            ].map(item => (
-              <div key={item.label} className="text-center px-1.5 min-w-0">
-                <p className={`text-sm @[480px]:text-base font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
-                <p className="text-sm text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
+        ) : (
+          <button
+            onClick={() => navigate('/media')}
+            className="w-full bg-white rounded-2xl border border-dashed border-gray-300 px-4 py-5 text-left hover:border-brand-green hover:bg-brand-green-bg/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-green-bg flex items-center justify-center shrink-0">
+                <TrendingUp size={18} className="text-brand-green-text" aria-hidden="true" />
               </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
-            <TrendingUp size={12} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-            <p className="text-sm text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
-          </div>
-        </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900">SNS를 연결해 주세요</p>
+                <p className="text-sm text-gray-500 mt-0.5 break-keep">팔로워·참여율 정보로 더 적합한 캠페인을 추천받을 수 있어요</p>
+              </div>
+              <ChevronRight size={18} className="text-gray-400 shrink-0" aria-hidden="true" />
+            </div>
+          </button>
+        )}
 
       </div>
     </Layout>

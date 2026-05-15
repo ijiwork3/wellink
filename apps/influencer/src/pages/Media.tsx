@@ -5,8 +5,8 @@ import Layout from '../components/Layout'
 import { Modal, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
-import { mockInstaStats } from '../services/mock/profile'
-import { ko주격조사 } from '../utils/format'
+import { mockInstaStats, mockProfile } from '../services/mock/profile'
+import { ko주격조사, fmtRelativeDate } from '../utils/format'
 
 interface Platform {
   id: string
@@ -54,12 +54,13 @@ export default function Media() {
     const base = PLATFORM_META.map(m => ({ ...m, connected: false }))
     if (qa === 'all-disconnected') return base
     if (qa === 'all-connected') return [
-      { ...PLATFORM_META[0], connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
+      { ...PLATFORM_META[0], connected: true, url: mockProfile.instagram, followers: mockInstaStats.followers, engagementRate: mockInstaStats.engagementRate },
       { ...PLATFORM_META[1], connected: true, url: 'myblog', followers: 3200, engagementRate: 2.8 },
       { ...PLATFORM_META[2], connected: true, url: 'chanChannel', followers: 1200, engagementRate: 3.5 },
     ]
+    // mockProfile.instagramConnected를 단일 출처로 — Home/Media 상태 sync (cold-review D4 후속)
     return [
-      { ...PLATFORM_META[0], connected: true, url: 'chanstyler', followers: 8700, engagementRate: 4.1 },
+      { ...PLATFORM_META[0], connected: mockProfile.instagramConnected, url: mockProfile.instagramConnected ? mockProfile.instagram : undefined, followers: mockProfile.instagramConnected ? mockInstaStats.followers : undefined, engagementRate: mockProfile.instagramConnected ? mockInstaStats.engagementRate : undefined },
       { ...PLATFORM_META[1], connected: false },
       { ...PLATFORM_META[2], connected: false },
     ]
@@ -210,7 +211,7 @@ export default function Media() {
                   <Clock size={14} className="text-gray-400" />
                   <p className="text-sm text-gray-500 break-keep">최근 활동</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.lastActive}</p>
+                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtRelativeDate(mockInstaStats.lastActive)}</p>
               </div>
             </div>
 

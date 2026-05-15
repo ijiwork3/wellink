@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift } from 'lucide-react'
+import { Heart, Users, Gift, CheckCircle2 } from 'lucide-react'
 import { StatusBadge, PlatformBadge, TIMER_MS, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD, SEMANTIC_COLORS } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 interface CampaignCardProps {
   campaign: Campaign
   liked?: boolean
+  applied?: boolean
   onToggleLike?: (id: number) => void
   showLike?: boolean
   onCardClick?: (campaign: Campaign) => void
 }
 
-const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onToggleLike, showLike = true, onCardClick }: CampaignCardProps) {
+const CampaignCard = memo(function CampaignCard({ campaign, liked = false, applied = false, onToggleLike, showLike = true, onCardClick }: CampaignCardProps) {
   const navigate = useNavigate()
   const [heartAnim, setHeartAnim] = useState(false)
   const heartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -53,9 +55,15 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
         </div>
       )}
 
-      {/* 이미지 영역 — 진행률 바 제거 (캐러셀 인디케이터로 오해되는 패턴 정정) */}
-      <div className="h-36 flex items-center justify-center text-5xl relative bg-gray-50">
-        <span role="img" aria-hidden="true">{campaign.image}</span>
+      {/* 이미지 영역 — Unsplash 운동 사진 풀(seed=campaign.id로 deterministic). 실패 시 SVG 그라데이션 fallback. */}
+      <div className="h-36 relative bg-gray-100 overflow-hidden">
+        <img
+          src={getThumbnailFromPool(campaign.id)}
+          alt=""
+          loading="lazy"
+          className="w-full h-full object-cover"
+          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
+        />
         {showLike && (
           <button
             className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -78,6 +86,11 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, onTog
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <StatusBadge status={campaign.status} />
           <PlatformBadge platform={campaign.channel} />
+          {applied && (
+            <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
+              <CheckCircle2 size={11} aria-hidden="true" />신청완료
+            </span>
+          )}
         </div>
 
         <p className="text-sm text-gray-500 truncate">{campaign.brand}</p>

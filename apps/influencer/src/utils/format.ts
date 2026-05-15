@@ -23,3 +23,26 @@ export function ko주격조사(word: string): '이' | '가' | '이(가)' {
   if (last < 0xac00 || last > 0xd7a3) return '이(가)'
   return (last - 0xac00) % 28 === 0 ? '가' : '이'
 }
+
+/**
+ * 상대 시간 포맷. iso datetime 입력.
+ *   < 1시간 → "방금 전"
+ *   < 24시간 → "N시간 전"
+ *   < 7일   → "N일 전"
+ *   else    → "yyyy.mm.dd"
+ *
+ * 광고주 앱 ViralContentRowCard와 동일 로직.
+ */
+export function fmtRelativeDate(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  const diffMs = Date.now() - d.getTime()
+  const hours = Math.floor(diffMs / 3600000)
+  if (hours < 1) return '방금 전'
+  if (hours < 24) return `${hours}시간 전`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days}일 전`
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}.${m}.${day}`
+}

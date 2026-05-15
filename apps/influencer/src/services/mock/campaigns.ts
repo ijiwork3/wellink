@@ -186,10 +186,15 @@ export const mockCampaigns: Campaign[] = [
   },
 ]
 
-// MyCampaign 페이지용 인플루언서 참여 캠페인
+// ────────────────────────────────────────────────────────────────────────────
+// MyCampaign — 인플루언서가 신청·진행 중인 캠페인 (별도 세션 컨텍스트 데이터)
+// mockCampaigns(탐색 가능한 모집 중 캠페인)와 ID 공간 분리 — `mc-` prefix 사용.
+// 같은 id가 다른 캠페인을 가리키지 않도록 명확히 구분.
+// ────────────────────────────────────────────────────────────────────────────
 export type MyCampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '완료' | '미선정'
 
 export interface MyCampaign {
+  /** 인플 사용자 참여 캠페인 식별자 — `mc-N` 형식. mockCampaigns(1~8)와 충돌 회피. */
   id: string
   name: string
   brand: string
@@ -210,7 +215,7 @@ export interface MyCampaign {
 
 export const mockMyCampaigns: MyCampaign[] = [
   {
-    id: '1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
+    id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
     appliedAt: '2026-04-28', deadline: '2026-05-15',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
     reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-05-15',
@@ -218,31 +223,31 @@ export const mockMyCampaigns: MyCampaign[] = [
     requiredKeywords: ['뉴트리션랩', '프로틴', '단백질챌린지', '오운완'],
   },
   {
-    id: '2', name: '필라테스 스튜디오 체험', brand: '바디앤핏', channel: '인스타그램',
+    id: 'mc-2', name: '필라테스 스튜디오 체험', brand: '바디앤핏', channel: '인스타그램',
     appliedAt: '2026-05-05', deadline: '2026-06-05',
-    status: '지원완료', progress: '브랜드 검토 중',
+    status: '검토중', progress: '브랜드에서 신청서를 검토하고 있어요',
     reward: '50,000원', rewardAmount: 50000,
   },
   {
-    id: '3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그',
+    id: 'mc-3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그',
     appliedAt: '2026-04-10', deadline: '2026-05-20',
     status: '검수중', progress: '게시 콘텐츠 확인 중',
     reward: '120,000원', rewardAmount: 120000, postUrl: 'https://blog.naver.com/chanstyler/12345',
   },
   {
-    id: '4', name: '헬스 보충제 캠페인', brand: 'SMILEATO', channel: '인스타그램',
+    id: 'mc-4', name: '헬스 보충제 캠페인', brand: 'SMILEATO', channel: '인스타그램',
     appliedAt: '2026-03-10', deadline: '2026-04-20',
     status: '완료', progress: '정산 가능',
     reward: '95,000원', rewardAmount: 95000,
   },
   {
-    id: '5', name: '요가 스트레칭 밴드', brand: '필라핏', channel: '인스타그램',
+    id: 'mc-5', name: '요가 스트레칭 밴드', brand: '필라핏', channel: '인스타그램',
     appliedAt: '2026-04-01', deadline: '2026-05-05',
     status: '미선정', progress: '미선정',
     reward: '60,000원', rewardAmount: 60000,
   },
   {
-    id: '6', name: '하이록스 챌린지 시즌 2', brand: 'enuf.sports', channel: '인스타그램',
+    id: 'mc-6', name: '하이록스 챌린지 시즌 2', brand: 'enuf.sports', channel: '인스타그램',
     appliedAt: '2026-05-08', deadline: '2026-05-22',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
     reward: '120,000원', rewardAmount: 120000, contentDeadline: '2026-05-22',
@@ -251,28 +256,11 @@ export const mockMyCampaigns: MyCampaign[] = [
   },
 ]
 
-// Home 페이지 북마크 캠페인
-export interface BookmarkedCampaign {
-  id: string
-  name: string
-  brand: string
-  category: string
-  channel: string
-  deadline: string
-  reward: string
-  rewardAmount: number
-  headcount: number
-  applied: number
-  status: '모집중' | '마감임박' | '종료'
-  thumbnailBg: string
-  thumbnailEmoji: string
-}
-
-export const mockBookmarkedCampaigns: BookmarkedCampaign[] = [
-  { id: '1', name: '비건 단백질 쉐이크 체험단 모집', brand: '그린푸드', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-05-28', reward: '제품 + 활동비 5만원', rewardAmount: 50000, headcount: 15, applied: 8, status: '모집중', thumbnailBg: '#ede9fe', thumbnailEmoji: '🥗' },
-  { id: '2', name: '크로스핏 보충제 리뷰어 모집', brand: 'SMILEATO', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-05-13', reward: '보충제 풀패키지 + 10만원', rewardAmount: 100000, headcount: 10, applied: 9, status: '마감임박', thumbnailBg: '#dcfce7', thumbnailEmoji: '💪' },
-  { id: '3', name: '프리미엄 요가매트 체험단', brand: 'ENUF', category: '피트니스·스포츠', channel: '인스타그램', deadline: '2026-05-18', reward: '요가매트 (7만원 상당)', rewardAmount: 70000, headcount: 5, applied: 3, status: '모집중', thumbnailBg: '#dbeafe', thumbnailEmoji: '🧘' },
-]
+// ────────────────────────────────────────────────────────────────────────────
+// Home / Favorites — 북마크는 더 이상 별도 mock 객체로 두지 않는다.
+// 사용자별 북마크 ID Set은 `services/userState.ts`의 useBookmarks()가 관리하고,
+// 표시할 캠페인 정보는 mockCampaigns에서 join 한다 (단일 마스터, A2 해결).
+// ────────────────────────────────────────────────────────────────────────────
 
 export const BROWSE_CATEGORIES = ['전체', '뷰티·패션', '피트니스·스포츠', '맛집·푸드', '라이프스타일', '육아·펫']
 
@@ -286,7 +274,11 @@ export interface AppliedData {
   answers: Record<string, string>
 }
 
-// campaignId → 신청 데이터 (나의캠페인 view 모드용)
+/**
+ * 신청 데이터 매핑.
+ * - Number key ('1','2','3') → mockCampaigns 마스터 id에 대한 신청 데이터 (CampaignApply view 모드)
+ * - 'mc-N' key → mockMyCampaigns 항목에 대한 사용자 신청서 (MyCampaign '신청 정보 보기')
+ */
 export const mockAppliedData: Record<string, AppliedData> = {
   '1': {
     phone: '010-1234-5678',
@@ -315,5 +307,23 @@ export const mockAppliedData: Record<string, AppliedData> = {
   '3': {
     phone: '010-1234-5678',
     answers: {},
+  },
+  // mockMyCampaigns 항목 신청 정보 (mc-1 = 지원완료/콘텐츠대기, mc-2 = 검토중)
+  'mc-1': {
+    phone: '010-1234-5678',
+    deliveryName: '김찬기',
+    deliveryPhone: '010-1234-5678',
+    deliveryZip: '06234',
+    deliveryAddr: '서울 강남구 테헤란로 123',
+    deliveryAddrDetail: '101동 202호',
+    answers: {
+      q1: '주 5회 웨이트 + 주 2회 러닝. 프로틴 섭취 일과화 중',
+    },
+  },
+  'mc-2': {
+    phone: '010-1234-5678',
+    answers: {
+      q1: '주 3회 필라테스 + 주 2회 요가',
+    },
   },
 }

@@ -1,10 +1,11 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
+import { useBookmarks } from '../services/userState'
 
 interface CampaignDetailContentProps {
   campaign: Campaign
@@ -28,7 +29,8 @@ function groupConditions(conditions: string[]) {
 export default function CampaignDetailContent({ campaign, inModal = false, forceApplied = false, forceClosed = false }: CampaignDetailContentProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const [liked, setLiked] = useState(false)
+  const bookmarks = useBookmarks()
+  const liked = bookmarks.has(campaign.id)
   const applied = forceApplied
 
   const isClosed = forceClosed || campaign.status === '종료'
@@ -36,8 +38,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
   const wrapCls = inModal ? '' : '@container'
   const imgCls = inModal
-    ? 'h-48 flex items-center justify-center text-7xl bg-brand-green-bg rounded-xl overflow-hidden mb-5'
-    : 'h-52 @[640px]:h-64 flex items-center justify-center text-8xl bg-brand-green-bg @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden'
+    ? 'h-48 bg-gray-100 rounded-xl overflow-hidden mb-5 relative'
+    : 'h-52 @[640px]:h-64 bg-gray-100 @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden relative'
 
   // inModal·페이지 모두 섹션 간 border-t 유지. 페이지일 때만 좌우 패딩 추가.
   const sectionCls = inModal ? 'py-4 border-t border-gray-100 first:border-t-0' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
@@ -52,8 +54,16 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
         </div>
       )}
 
-      {/* 이미지 배너 */}
-      <div className={imgCls} aria-hidden="true">{campaign.image}</div>
+      {/* 이미지 배너 — Unsplash 운동 사진 풀(seed=id). 외부 fetch 실패 시 SVG 그라데이션 fallback. */}
+      <div className={imgCls}>
+        <img
+          src={getThumbnailFromPool(campaign.id)}
+          alt=""
+          loading="lazy"
+          className="w-full h-full object-cover"
+          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
+        />
+      </div>
 
       <div className={inModal ? '' : '@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6'}>
         <div className={inModal ? '' : '@[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 @[640px]:overflow-hidden'}>
@@ -97,8 +107,9 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                 </button>
                 <button
                   onClick={() => {
-                    setLiked(!liked)
-                    showToast(liked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', liked ? 'info' : 'success')
+                    const wasLiked = liked
+                    bookmarks.toggle(campaign.id)
+                    showToast(wasLiked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', wasLiked ? 'info' : 'success')
                   }}
                   aria-pressed={liked}
                   aria-label={liked ? '관심등록 취소' : '관심등록'}
@@ -270,7 +281,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             ) : (
               <button
                 onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-                className={`w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${campaign.status === '마감임박' ? 'motion-safe:animate-pulse' : ''}`}
+                className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 신청하기
               </button>

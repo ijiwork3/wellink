@@ -1,13 +1,31 @@
 import { useState, useEffect } from 'react'
-import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp } from 'lucide-react'
+import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
+import { Modal, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
+import { mockMyCampaigns } from '../services/mock/campaigns'
+
+interface BankAccount {
+  bank: string
+  accountNumber: string
+  holder: string
+}
+
+const BANK_OPTIONS = [
+  { label: 'KB국민은행', value: 'KB국민은행' },
+  { label: '신한은행', value: '신한은행' },
+  { label: '우리은행', value: '우리은행' },
+  { label: '하나은행', value: '하나은행' },
+  { label: 'NH농협은행', value: 'NH농협은행' },
+  { label: 'IBK기업은행', value: 'IBK기업은행' },
+  { label: '카카오뱅크', value: '카카오뱅크' },
+  { label: '토스뱅크', value: '토스뱅크' },
+]
 
 type SettlementStatus = '정산가능' | '지급완료' | '정산대기'
 
 interface SettlementItem {
-  id: number
+  id: string
   campaign: string
   type: string
   amount: number
@@ -16,15 +34,33 @@ interface SettlementItem {
   paidAt?: string
 }
 
-const MOCK_DATA: SettlementItem[] = [
-  { id: 1, campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '정산가능', completedAt: '2026-04-18' },
-  { id: 2, campaign: '비건 신제품 론칭', type: '피드', amount: 120000, status: '지급완료', completedAt: '2026-04-10', paidAt: '2026-04-12' },
-  { id: 3, campaign: '헬스 보충제 캠페인', type: '피드', amount: 95000, status: '지급완료', completedAt: '2026-03-20', paidAt: '2026-03-22' },
-  { id: 4, campaign: '여름 캠페인', type: '스토리', amount: 80000, status: '정산대기', completedAt: '2026-05-01' },
+/**
+ * 정산 항목은 두 소스에서 derive:
+ *  1) mockMyCampaigns 의 status='완료' → 정산가능 (또는 '검수중' → 정산대기) — A2 단일 마스터
+ *  2) HISTORIC_PAYMENTS — 이미 과거에 지급된 캠페인 (mockMyCampaigns에 없는 기록 데이터)
+ */
+const HISTORIC_PAYMENTS: SettlementItem[] = [
+  { id: 'h-1', campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '지급완료', completedAt: '2026-04-18', paidAt: '2026-04-20' },
+  { id: 'h-2', campaign: '비건 신제품 론칭', type: '피드', amount: 120000, status: '지급완료', completedAt: '2026-04-10', paidAt: '2026-04-12' },
 ]
 
+function buildSettlementItems(): SettlementItem[] {
+  const fromMyCampaigns: SettlementItem[] = mockMyCampaigns
+    .filter(c => c.status === '완료' || c.status === '검수중')
+    .map(c => ({
+      id: `sl-${c.id}`,
+      campaign: c.name,
+      type: c.channel,
+      amount: c.rewardAmount,
+      status: c.status === '완료' ? '정산가능' as const : '정산대기' as const,
+      completedAt: c.status === '완료' ? c.deadline : (c.contentDeadline ?? c.deadline),
+    }))
+  return [...fromMyCampaigns, ...HISTORIC_PAYMENTS]
+}
+
+const MOCK_DATA = buildSettlementItems()
+
 const HAS_BUSINESS_REG = mockProfile.hasBusinessReg
-const HAS_BANK_ACCOUNT = mockProfile.hasBankAccount
 
 export default function Settlement() {
   const qa = useQAMode()
@@ -34,6 +70,24 @@ export default function Settlement() {
   const [requestModal, setRequestModal] = useState(qa === 'modal-request')
   // requestTarget: SettlementItem (개별) | 'all' (전체 정산 요청)
   const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
+
+  // 계좌 정보 — mockProfile 초기값 기반 + 사용자 등록 액션으로 갱신 (D1)
+  const [bankAccount, setBankAccount] = useState<BankAccount | null>(
+    mockProfile.hasBankAccount ? { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name } : null
+  )
+  const hasBankAccount = bankAccount !== null
+  const [bankModalOpen, setBankModalOpen] = useState(false)
+  const [bankDraft, setBankDraft] = useState<BankAccount>({ bank: '', accountNumber: '', holder: mockProfile.name })
+
+  const handleBankRegister = () => {
+    if (!bankDraft.bank) { showToast('은행을 선택해 주세요', 'error'); return }
+    if (!/^[0-9-]{8,20}$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
+    if (!bankDraft.holder.trim()) { showToast('예금주를 입력해 주세요', 'error'); return }
+    setBankAccount({ ...bankDraft })
+    setBankModalOpen(false)
+    setBankDraft({ bank: '', accountNumber: '', holder: mockProfile.name })
+    showToast('계좌가 등록됐어요!', 'success')
+  }
 
   // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -114,7 +168,7 @@ export default function Settlement() {
       <div className="space-y-4">
         <h1 className="sr-only">정산</h1>
         {/* 계좌 미등록 배너 */}
-        {!HAS_BANK_ACCOUNT && (
+        {!hasBankAccount && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex flex-col @[400px]:flex-row @[400px]:items-center gap-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
               <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
@@ -123,8 +177,25 @@ export default function Settlement() {
                 <p className="text-sm text-amber-600 mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
               </div>
             </div>
-            <button onClick={() => showToast('계좌 등록 화면으로 이동할게요', 'info')} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-amber-700 border border-amber-300 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60">
+            <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-amber-700 border border-amber-300 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60">
               계좌 등록
+            </button>
+          </div>
+        )}
+
+        {/* 등록된 계좌 — 표시 + 변경 (D1) */}
+        {hasBankAccount && bankAccount && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+            <CheckCircle2 size={18} className="text-brand-green shrink-0" aria-hidden="true" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-500">정산 계좌</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{bankAccount.bank} <span className="tabular-nums">{bankAccount.accountNumber}</span> ({bankAccount.holder})</p>
+            </div>
+            <button
+              onClick={() => { setBankDraft(bankAccount); setBankModalOpen(true) }}
+              className="shrink-0 text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              변경
             </button>
           </div>
         )}
@@ -135,7 +206,7 @@ export default function Settlement() {
           <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text mb-1 tabular-nums leading-tight">
             {availableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
           </p>
-          {availableAmount > 0 && HAS_BANK_ACCOUNT && (
+          {availableAmount > 0 && hasBankAccount && (
             <button
               onClick={() => { setRequestTarget('all'); setRequestModal(true) }}
               className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -143,7 +214,7 @@ export default function Settlement() {
               <BanknoteIcon size={14} />전체 정산 요청
             </button>
           )}
-          {availableAmount > 0 && !HAS_BANK_ACCOUNT && (
+          {availableAmount > 0 && !hasBankAccount && (
             <p className="mt-1 text-sm text-amber-600">계좌 등록 후 정산 요청이 가능해요</p>
           )}
 
@@ -200,8 +271,8 @@ export default function Settlement() {
                     {item.status === '정산가능' && (
                       <button
                         onClick={() => { setRequestTarget(item); setRequestModal(true) }}
-                        disabled={!HAS_BANK_ACCOUNT}
-                        aria-disabled={!HAS_BANK_ACCOUNT}
+                        disabled={!hasBankAccount}
+                        aria-disabled={!hasBankAccount}
                         className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
                         <BanknoteIcon size={14} />정산 요청
@@ -248,7 +319,7 @@ export default function Settlement() {
                 ))
               )}
             </div>
-            {!HAS_BANK_ACCOUNT && (
+            {!hasBankAccount && (
               <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
                 <p className="text-sm text-amber-700">계좌 정보가 없어요 — 먼저 계좌를 등록해 주세요</p>
               </div>
@@ -256,10 +327,73 @@ export default function Settlement() {
             <p className="text-sm text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
             <div className="flex gap-2">
               <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={confirmRequest} disabled={!HAS_BANK_ACCOUNT} aria-disabled={!HAS_BANK_ACCOUNT} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+              <button onClick={confirmRequest} disabled={!hasBankAccount} aria-disabled={!hasBankAccount} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* 계좌 등록 모달 (D1) */}
+      <Modal open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록" size="sm">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 break-keep">정산 금액을 지급받을 본인 명의 계좌를 등록해 주세요.</p>
+
+          <div>
+            <label htmlFor="bank-select" className="block text-sm font-medium text-gray-700 mb-1.5">은행 <span className="text-red-400" aria-label="필수">*</span></label>
+            <CustomSelect
+              value={bankDraft.bank}
+              onChange={v => setBankDraft(prev => ({ ...prev, bank: v }))}
+              options={BANK_OPTIONS}
+              placeholder="은행 선택"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="bank-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+            <input
+              id="bank-account"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              value={bankDraft.accountNumber}
+              onChange={e => setBankDraft(prev => ({ ...prev, accountNumber: e.target.value.replace(/[^0-9-]/g, '') }))}
+              placeholder="숫자만 입력 (예: 123-456-789012)"
+              maxLength={20}
+              className={`${INPUT_BASE} tabular-nums`}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="bank-holder" className="block text-sm font-medium text-gray-700 mb-1.5">예금주 <span className="text-red-400" aria-label="필수">*</span></label>
+            <input
+              id="bank-holder"
+              type="text"
+              autoComplete="name"
+              value={bankDraft.holder}
+              onChange={e => setBankDraft(prev => ({ ...prev, holder: e.target.value }))}
+              maxLength={20}
+              placeholder="본인 명의여야 해요"
+              className={INPUT_BASE}
+            />
+          </div>
+
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-100">
+            <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-amber-700 break-keep">본인 명의가 아닌 계좌로는 지급이 불가합니다.</p>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setBankModalOpen(false)}
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >취소</button>
+            <button
+              onClick={handleBankRegister}
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >등록하기</button>
+          </div>
+        </div>
       </Modal>
     </Layout>
   )

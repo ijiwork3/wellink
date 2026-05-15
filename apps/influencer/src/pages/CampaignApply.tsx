@@ -4,8 +4,9 @@ import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil } from 
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
-import { useToast, ErrorState } from '@wellink/ui'
+import { useToast, ErrorState, TIMER_MS } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
+import { useApplications } from '../services/userState'
 
 
 export default function CampaignApply() {
@@ -13,6 +14,7 @@ export default function CampaignApply() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { showToast } = useToast()
+  const applications = useApplications()
   const campaign = mockCampaigns.find(c => c.id === Number(id))
   const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => {
@@ -83,7 +85,9 @@ export default function CampaignApply() {
     submitTimerRef.current = setTimeout(() => {
       setIsSubmitting(false)
       setSubmitted(true)
-    }, 600)
+      // 신청 완료를 글로벌 store에 기록 — Detail 페이지의 "신청완료" 배지에 반영 (cold-review A3)
+      if (campaign) applications.add(campaign.id)
+    }, TIMER_MS.FORM_SUBMIT)
   }
 
   if (submitted) {
@@ -414,7 +418,7 @@ function Section({ title, required, icon, children }: {
       <div className="flex items-center gap-1.5 mb-3">
         {icon}
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-        {required && <span className="text-red-500 text-xs">*</span>}
+        {required && <span className="text-red-500 text-sm" aria-label="필수">*</span>}
       </div>
       {children}
     </div>

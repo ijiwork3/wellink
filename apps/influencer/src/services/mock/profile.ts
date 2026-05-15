@@ -16,6 +16,8 @@ export interface InfluencerProfile {
   name: string
   email: string
   instagram: string
+  /** 인스타그램 연결 여부. true면 mockInstaStats 노출 가능, false면 SNS 연결 유도 */
+  instagramConnected: boolean
   bio: string
   marketing: boolean
   selectedFields: string[]
@@ -36,6 +38,7 @@ export const mockProfile: InfluencerProfile = {
   name: '김찬기',
   email: 'chanki@example.com',
   instagram: 'chanstyler',
+  instagramConnected: true,
   bio: '헬스·필라테스 전문 인플루언서 | 건강한 라이프스타일을 공유합니다',
   marketing: true,
   selectedFields: ['헬스/웨이트', '필라테스'],
@@ -66,11 +69,14 @@ export interface InstaStats {
   lastActive: string
 }
 
+// 시연 시점 기준 2시간 전 — fmtRelativeDate로 동적 표기
+const TWO_HOURS_AGO_ISO = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+
 export const mockInstaStats: InstaStats = {
   followers: 8700,
   posts: 142,
   avgLikes: 312,
   avgComments: 18,
   engagementRate: 4.1,
-  lastActive: '2시간 전',
+  lastActive: TWO_HOURS_AGO_ISO,
 }

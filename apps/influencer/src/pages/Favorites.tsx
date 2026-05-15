@@ -1,29 +1,28 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Users, Gift, Bookmark, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, getDDayBadgeStyle, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { mockBookmarkedCampaigns } from '../services/mock/campaigns'
-import type { BookmarkedCampaign } from '../services/mock/campaigns'
+import { mockCampaigns } from '../services/mock/campaigns'
+import { useBookmarks } from '../services/userState'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 export default function Favorites() {
   const qa = useQAMode()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set(mockBookmarkedCampaigns.map(c => c.id)))
+  const bookmarks = useBookmarks()
 
-  const toggleBookmark = (id: string) => {
+  const toggleBookmark = (id: number) => {
     const wasBookmarked = bookmarks.has(id)
-    setBookmarks(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
-      return next
-    })
+    bookmarks.toggle(id)
     showToast(wasBookmarked ? '관심 캠페인에서 제거했어요' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
   }
 
-  const visible: BookmarkedCampaign[] = qa === 'empty' ? [] : mockBookmarkedCampaigns.filter(c => bookmarks.has(c.id))
+  // 마스터(mockCampaigns)에서 북마크 ID만 필터링 — 단일 출처 (cold-review A2 해결)
+  const visible = qa === 'empty'
+    ? []
+    : mockCampaigns.filter(c => bookmarks.has(c.id))
 
   if (qa === 'loading') {
     return (
@@ -106,7 +105,7 @@ export default function Favorites() {
         ) : (
           <div className="space-y-3">
             {visible.map(c => {
-              const { label: ddayLabel, color: ddayColor } = getDDay(c.deadline)
+              const dday = getDDay(c.applyEnd)
               const progressPct = Math.min(100, Math.round((c.applied / (c.headcount || 1)) * 100))
               return (
                 <div
@@ -118,17 +117,19 @@ export default function Favorites() {
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/campaigns/${c.id}`) } }}
                 >
                   <div className="flex items-start gap-3">
-                    <div
-                      className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                      style={{ backgroundColor: c.thumbnailBg }}
-                      aria-hidden="true"
-                    >
-                      {c.thumbnailEmoji}
+                    <div className="w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
+                      <img
+                        src={getThumbnailFromPool(c.id)}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                         <StatusBadge status={c.status} size="sm" dot={false} />
-                        <span className={`text-sm font-medium ${ddayColor}`}>{ddayLabel}</span>
+                        <span className={`${getDDayBadgeStyle(dday.color, dday.pulse)} whitespace-nowrap tabular-nums`}>{dday.label}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
                       <p className="text-sm text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
@@ -145,10 +146,12 @@ export default function Favorites() {
                     </button>
                   </div>
 
-                  <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                    <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
-                    <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
-                  </div>
+                  {c.reward && (
+                    <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
+                      <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
+                      <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
+                    </div>
+                  )}
 
                   <div className="mt-2.5 flex items-center gap-2">
                     <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
@@ -160,7 +163,7 @@ export default function Favorites() {
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.deadline)}</span>
+                    <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.applyEnd)}</span>
                   </div>
                 </div>
               )

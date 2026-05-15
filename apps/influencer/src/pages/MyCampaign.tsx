@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash } from 'lucide-react'
+import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Modal, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
-import { mockMyCampaigns } from '../services/mock/campaigns'
+import { mockMyCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import type { MyCampaign } from '../services/mock/campaigns'
 
 // 탭: 진행중(지원완료+검토중+콘텐츠대기+검수중) / 완료 / 미선정
@@ -22,17 +22,20 @@ function statusToTab(s: string): TabKey {
   return '전체'
 }
 
-const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '취소' | '콘텐츠 제출' | '상세보기'>>> = {
+// '상세보기' 액션 제거 — mockMyCampaigns id(mc-N)와 mockCampaigns id(number) 공간 분리되어
+// `/campaigns/${c.id}` 라우팅이 항상 NaN 매칭으로 깨졌었음. 카드 내부에 모든 정보가 이미 있어
+// 외부 라우팅이 불필요. (cold-review 후속 round 5 발견)
+const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정'>>> = {
   '지원완료':   ['신청 정보 보기', '취소'],
-  '검토중':     ['취소'],
+  '검토중':     ['신청 정보 보기', '취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
-  '검수중':     ['상세보기'],
-  '완료':       ['상세보기'],
-  '미선정':     ['상세보기'],
+  '검수중':     ['콘텐츠 수정'],
+  '완료':       [],
+  '미선정':     [],
 }
 
 function getActions(status: string) {
-  return ACTION_MAP[status] ?? (['상세보기'] as const)
+  return ACTION_MAP[status] ?? []
 }
 
 // 콘텐츠 제출 마감 임박 여부 (3일 이내)
@@ -52,6 +55,7 @@ export default function MyCampaign() {
   const [activeTab, setActiveTab] = useState<TabKey>('전체')
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
+  const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
   const [contentUrl, setContentUrl] = useState('')
   const [search, setSearch] = useState('')
 
@@ -91,7 +95,8 @@ export default function MyCampaign() {
     const url = contentUrl.trim()
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
     if (!/^https?:\/\/.+\..+/.test(url)) { showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return }
-    setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중' } : c))
+    // postUrl 도 함께 저장 — 검수중 상태에서 '콘텐츠 수정' 버튼 동작에 필요
+    setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중', postUrl: url } : c))
     showToast('콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
     setContentUrl('')
@@ -286,44 +291,31 @@ export default function MyCampaign() {
                         <button key={action}
                           onClick={() => setSubmitModal(c)}
                           className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <Upload size={12} />콘텐츠 제출
+                          <Upload size={14} />콘텐츠 제출
                         </button>
                       )
-                      if (action === '상세보기' && c.postUrl) return (
-                        <React.Fragment key="검수중-actions">
-                          <button
-                            onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                            className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                            <Edit2 size={12} />콘텐츠 수정
-                          </button>
-                          <button
-                            onClick={() => navigate(`/campaigns/${c.id}`)}
-                            className="flex-1 min-w-[120px] py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                            상세보기
-                          </button>
-                        </React.Fragment>
+                      if (action === '콘텐츠 수정') return (
+                        <button key={action}
+                          onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          <Edit2 size={14} />콘텐츠 수정
+                        </button>
                       )
                       if (action === '신청 정보 보기') return (
                         <button key={action}
-                          onClick={() => navigate(`/campaigns/${c.id}/apply?mode=view`)}
-                          className="flex-1 min-w-[120px] py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          신청 정보 보기
+                          onClick={() => setAppliedModal(c)}
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          <FileText size={14} />신청 정보 보기
                         </button>
                       )
                       if (action === '취소') return (
                         <button key={action}
                           onClick={() => setCancelModal(c)}
                           className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
-                          <X size={12} />신청 취소
+                          <X size={14} />신청 취소
                         </button>
                       )
-                      return (
-                        <button key={action}
-                          onClick={() => navigate(`/campaigns/${c.id}`)}
-                          className="flex-1 min-w-[120px] py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          상세보기
-                        </button>
-                      )
+                      return null
                     })}
                   </div>
                 </div>
@@ -375,6 +367,66 @@ export default function MyCampaign() {
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
           </div>
         </div>
+      </Modal>
+
+      {/* 신청 정보 보기 모달 — mc-id가 mockCampaigns(number)와 분리되어 페이지 이동 대신 inline 표시 */}
+      <Modal open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">
+        {appliedModal && (() => {
+          const applied = mockAppliedData[appliedModal.id]
+          if (!applied) {
+            return <p className="text-sm text-gray-500 py-4">신청 정보를 불러올 수 없어요</p>
+          }
+          return (
+            <div className="space-y-3">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-gray-700 mb-1">{appliedModal.name}</p>
+                <p className="text-sm text-gray-500">{appliedModal.brand} · {appliedModal.channel}</p>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2.5">
+                  <Phone size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-gray-500">연락처</p>
+                    <p className="text-sm font-medium text-gray-900 tabular-nums">{applied.phone}</p>
+                  </div>
+                </div>
+
+                {applied.deliveryAddr && (
+                  <div className="flex items-start gap-2.5">
+                    <MapPin size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-gray-500">배송지 ({applied.deliveryName})</p>
+                      <p className="text-sm font-medium text-gray-900 break-keep">
+                        {applied.deliveryZip && <span className="text-gray-500 tabular-nums">({applied.deliveryZip}) </span>}
+                        {applied.deliveryAddr}{applied.deliveryAddrDetail ? ` ${applied.deliveryAddrDetail}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {Object.entries(applied.answers).length > 0 && (
+                  <div className="flex items-start gap-2.5">
+                    <FileText size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <p className="text-sm text-gray-500">추가 답변</p>
+                      {Object.values(applied.answers).map((a, i) => (
+                        <p key={i} className="text-sm text-gray-900 break-keep leading-relaxed">{a}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setAppliedModal(null)}
+                  className="w-full py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >닫기</button>
+              </div>
+            </div>
+          )
+        })()}
       </Modal>
     </Layout>
   )

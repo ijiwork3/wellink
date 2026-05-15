@@ -107,14 +107,14 @@ export default function Signup() {
       className="min-h-dvh flex items-center justify-center p-6"
       style={{ background: 'var(--gradient-auth-bg)' }}
     >
-      {/* 도입문의 버튼 */}
+      {/* 도입문의 버튼 — mailto: 이동은 a 태그가 표준 (네이티브 컨텍스트 메뉴·long-press·복사 지원) */}
       <div className="fixed top-4 right-4 z-10">
-        <button
-          onClick={() => window.open(`mailto:${CONTACT_EMAIL}`, '_self')}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="inline-block px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           도입문의
-        </button>
+        </a>
       </div>
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">

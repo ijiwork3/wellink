@@ -3,14 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Search, X, SlidersHorizontal } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
-import CampaignDetailContent from '../components/CampaignDetailContent'
-import { mockCampaigns, mockAppliedData, BROWSE_CATEGORIES } from '../services/mock/campaigns'
+import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, TIMER_MS, CustomSelect, ChipSelect, useIsTouchDevice, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
-import { useEscToClose } from '../utils/useEscToClose'
+import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
+import { useBookmarks, useApplications } from '../services/userState'
+import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
-import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
 function CampaignSkeletonCard() {
   return (
@@ -36,7 +35,6 @@ function CampaignSkeletonCard() {
 export default function CampaignBrowse() {
   const qa = useQAMode()
   const navigate = useNavigate()
-  const isTouch = useIsTouchDevice()
   const { showToast } = useToast()
   const location = useLocation()
   // navigation key가 'default'면 탭/북마크 직접 진입 → 일반 헤더
@@ -44,28 +42,17 @@ export default function CampaignBrowse() {
   const showBack = location.key !== 'default'
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
-  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
+  const bookmarks = useBookmarks()
+  const applications = useApplications()
   const [sort, setSort] = useState<SortKey>('deadline')
-  const [loading, setLoading] = useState(true)
+  // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
+  const loading = qa === 'loading'
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
-  const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null)
 
-  // PC 상세 모달 ESC 닫기 (퀵뷰 바텀시트는 BottomSheet 내부 처리)
-  useEscToClose(detailCampaign !== null, () => setDetailCampaign(null))
-
+  // PC·모바일 모두 동일하게 페이지 이동 (cold-review C1: 분기된 UX 통일)
   const handleCardClick = (campaign: Campaign) => {
-    if (isTouch) {
-      navigate(`/campaigns/${campaign.id}`)
-    } else {
-      setDetailCampaign(campaign)
-    }
+    navigate(`/campaigns/${campaign.id}`)
   }
-
-  useEffect(() => {
-    if (qa === 'loading') return
-    const t = setTimeout(() => setLoading(false), TIMER_MS.SKELETON_LOADING)
-    return () => clearTimeout(t)
-  }, [qa])
 
   // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -75,11 +62,9 @@ export default function CampaignBrowse() {
   }, [qa])
 
   const toggleLike = (id: number) => {
-    setLikedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
-      return next
-    })
+    const wasBookmarked = bookmarks.has(id)
+    bookmarks.toggle(id)
+    showToast(wasBookmarked ? '관심 캠페인에서 제거했어요' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
   }
 
   const baseFiltered = useMemo(() => {
@@ -187,7 +172,8 @@ export default function CampaignBrowse() {
               <CampaignCard
                 key={c.id}
                 campaign={c}
-                liked={likedIds.has(c.id)}
+                liked={bookmarks.has(c.id)}
+                applied={applications.has(c.id)}
                 onToggleLike={toggleLike}
                 onCardClick={handleCardClick}
               />
@@ -245,28 +231,6 @@ export default function CampaignBrowse() {
         )
       })()}
 
-      {/* PC 캠페인 상세 모달 */}
-      {detailCampaign && (
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
-          onClick={() => setDetailCampaign(null)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${detailCampaign.brand} ${detailCampaign.name} 상세`}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
-          >
-            <CampaignDetailContent
-              campaign={detailCampaign}
-              inModal
-              forceApplied={!!mockAppliedData[String(detailCampaign.id)]}
-            />
-          </div>
-        </div>
-      )}
-
       {/* 푸터 */}
       <footer className="bg-gray-900 text-white mt-8">
         <div className="max-w-6xl mx-auto px-4 @[640px]:px-6 py-8">
@@ -276,9 +240,9 @@ export default function CampaignBrowse() {
               <p className="text-sm text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
             </div>
             <div className="flex gap-4 text-sm text-gray-300">
-              <button onClick={() => window.open(`mailto:${HELP_EMAIL}`, '_self')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</button>
-              <button onClick={() => window.open(TERMS_URL, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</button>
-              <button onClick={() => window.open(`${BRAND_URL}/#faq`, '_blank', 'noopener,noreferrer')} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</button>
+              <a href={`mailto:${HELP_EMAIL}`} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</a>
+              <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</a>
+              <a href={`${BRAND_URL}/#faq`} target="_blank" rel="noopener noreferrer" className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</a>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-4 text-sm text-gray-400 space-y-0.5 break-keep">

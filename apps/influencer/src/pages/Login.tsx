@@ -42,6 +42,10 @@ export default function Login() {
     }
   }, [qa])
 
+  // Mock 인증 — 실제 API 연동 시 교체. 시연·QA 편의를 위해 단일 계정으로 한정.
+  const MOCK_ID = 'test@wellink.co.kr'
+  const MOCK_PW = 'test1234'
+
   const handleLogin = async () => {
     if (!id.trim() || !password.trim()) return
     setLoading(true)
@@ -49,7 +53,7 @@ export default function Login() {
     await new Promise(r => setTimeout(r, TIMER_MS.MOCK_LOGIN))
     if (!isMountedRef.current) return
     setLoading(false)
-    if (id !== 'test@wellink.co.kr') {
+    if (id !== MOCK_ID || password !== MOCK_PW) {
       setError('아이디 또는 비밀번호를 다시 확인해 주세요')
       return
     }
@@ -135,6 +139,13 @@ export default function Login() {
           계정이 없으신가요?{' '}
           <button onClick={() => navigate('/signup')} className="text-brand-green-text rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">회원가입</button>
         </p>
+
+        {/* 시연 안내 (POC) — 실서비스 배포 시 제거 */}
+        <div className="mt-5 pt-4 border-t border-gray-100">
+          <p className="text-xs text-center text-gray-400 tabular-nums">
+            시연 계정: <span className="text-gray-500 font-mono">test@wellink.co.kr</span> / <span className="text-gray-500 font-mono">test1234</span>
+          </p>
+        </div>
       </div>
     </div>
   )

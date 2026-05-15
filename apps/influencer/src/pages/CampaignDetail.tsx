@@ -1,17 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { ErrorState, Skeleton } from '@wellink/ui'
-import { mockCampaigns as campaigns, mockAppliedData } from '../services/mock/campaigns'
+import { mockCampaigns as campaigns } from '../services/mock/campaigns'
 import { useQAMode } from '@wellink/ui'
 import CampaignDetailContent from '../components/CampaignDetailContent'
+import { useApplications } from '../services/userState'
 
 export default function CampaignDetail() {
   const qa = useQAMode()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const applications = useApplications()
   const campaign = campaigns.find((c) => c.id === Number(id))
-  // 이미 신청한 캠페인이면 신청 버튼 대신 '신청완료' 표시 (mockAppliedData 기반)
-  const isAlreadyApplied = id ? !!mockAppliedData[id] : false
+  // 이미 신청한 캠페인이면 신청 버튼 대신 '신청완료' 표시 (cold-review A3: 단일 store)
+  const isAlreadyApplied = campaign ? applications.has(campaign.id) : false
 
   const goBack = () => window.history.length > 1 ? navigate(-1) : navigate('/campaigns/browse')
 
