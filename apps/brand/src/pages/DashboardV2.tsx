@@ -25,8 +25,8 @@ import {
 } from 'lucide-react'
 import {
   KPICard, PageHeader, DateRangePicker, WordCloud, EmptyState,
-  ChartScrollContainer,
-  type DatePeriod, type WordCloudEntry,
+  ChartScrollContainer, useIsTouchDevice, fmtNumber,
+  type ChartScrollContainerHandle, type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
 import FollowerAreaChart from '../components/analytics/profile/FollowerAreaChart'
 import MixedChart from '../components/analytics/ads/MixedChart'
@@ -62,6 +62,7 @@ export default function DashboardV2() {
   const trendLabel = TREND_LABEL[period]
   const reduceMotion = useReducedMotion()
   const isDesktop = useDeviceMode() === 'desktop'
+  const isTouch = useIsTouchDevice()
 
   // 헤더 sticky 추적 — Dashboard v1 / 분석 페이지와 동일 패턴
   const { headerRef, isStuck } = useHeaderStuck<HTMLDivElement>()
@@ -75,6 +76,14 @@ export default function DashboardV2() {
     const min = String(lastSync.getMinutes()).padStart(2, '0')
     return `${lastSync.getFullYear()}.${m}.${d} ${h}:${min}`
   }, [lastSync])
+
+  // 차트 ScrollContainer ref — period 변경 시 scrollToStart() 호출 (CLAUDE.md § 차트 인터랙션)
+  const followerChartRef = useRef<ChartScrollContainerHandle>(null)
+  const spendRoasChartRef = useRef<ChartScrollContainerHandle>(null)
+
+  // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
+  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
+  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
   const contentScrollRef = useRef<HTMLDivElement>(null)
@@ -113,6 +122,14 @@ export default function DashboardV2() {
   const spendRoasData = useMemo(() => DASHBOARD_SPEND_ROAS_BY_PERIOD[period], [period])
   const sparks = useMemo(() => DASHBOARD_SPARKLINES_BY_PERIOD[period], [period])
   const kpiValues = useMemo(() => DASHBOARD_KPI_VALUES_BY_PERIOD[period], [period])
+
+  // period 변경 → 차트 스크롤 & 활성 인덱스 초기화 (CLAUDE.md § 차트 인터랙션 정책)
+  useEffect(() => {
+    followerChartRef.current?.scrollToStart()
+    spendRoasChartRef.current?.scrollToStart()
+    setFollowerActiveIdx(null)
+    setAdActiveIdx(null)
+  }, [period])
 
   /* ── KPI 메트릭 — period별 값/trend
    *
@@ -361,12 +378,30 @@ export default function DashboardV2() {
           <h3 className="text-sm font-medium text-gray-600 mb-3">팔로워 추이</h3>
           {/* 모바일 가로 스크롤 + 쉐브론 — 데이터 많을 때 (일간 14개·주간 13개) 막대 너비 보존 */}
           <ChartScrollContainer
+            ref={followerChartRef}
             chartW={Math.max(620, followerData.length * 22)}
             padL={48} padR={24}
             dataLength={followerData.length}
-            activeIndex={null}
+            activeIndex={followerActiveIdx}
+            tooltipContent={(i) => {
+              const d = followerData[i]
+              if (!d) return null
+              return (
+                <>
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                  <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">
+                    {fmtNumber(d.value)}명
+                  </span>
+                </>
+              )
+            }}
           >
-            <FollowerAreaChart data={followerData} isTouch={false} />
+            <FollowerAreaChart
+              data={followerData}
+              activeIndex={followerActiveIdx}
+              onActiveIndex={setFollowerActiveIdx}
+              isTouch={isTouch}
+            />
           </ChartScrollContainer>
         </div>
       </motion.section>
@@ -416,15 +451,31 @@ export default function DashboardV2() {
           </div>
           {/* ChartScrollContainer로 감싸 viewBox W를 컨테이너 폭에 동기 (반응형 fluid) */}
           <ChartScrollContainer
+            ref={spendRoasChartRef}
             chartW={Math.max(700, spendRoasData.length * 65)} padL={130} padR={130}
             dataLength={spendRoasData.length}
-            activeIndex={null}
+            activeIndex={adActiveIdx}
+            tooltipContent={(i) => {
+              const d = spendRoasData[i]
+              if (!d) return null
+              return (
+                <>
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
+                  <p className="text-xs font-semibold text-violet-600 whitespace-nowrap">
+                    지출 {d.spend.toLocaleString('ko-KR')}원
+                  </p>
+                  <p className="text-xs font-semibold text-orange-500 whitespace-nowrap">
+                    ROAS {d.clicks.toFixed(1)}x
+                  </p>
+                </>
+              )
+            }}
           >
             <MixedChart
               data={spendRoasData}
-              activeIndex={null}
-              onActiveIndex={() => {}}
-              isTouch={false}
+              activeIndex={adActiveIdx}
+              onActiveIndex={setAdActiveIdx}
+              isTouch={isTouch}
               secondaryLabel="ROAS"
               secondaryFormatter={(v) => `${v.toFixed(1)}x`}
               referenceLine={{ value: 1.0, label: '손익분기' }}
