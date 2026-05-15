@@ -258,11 +258,30 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* 활동 분야 카드 */}
+        {/* 활동 분야 카드 — 헤더에 독립 편집 버튼 (기본 정보 카드와 isEditing 상태 공유) */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity size={16} className="text-brand-green" />
-            <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Activity size={16} className="text-brand-green" />
+              <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
+            </div>
+            {!isEditing ? (
+              <button
+                onClick={() => { setDraftName(name); setDraftFields(new Set(selectedFields)); setDraftType(influencerType); setIsEditing(true) }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Pencil size={14} />편집
+              </button>
+            ) : (
+              <div className="flex gap-2">
+                <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <X size={14} />취소
+                </button>
+                <button onClick={handleSave} disabled={isSaving} aria-disabled={isSaving} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                  <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
+                </button>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
             {ACTIVITY_FIELDS.map(field => (
@@ -274,9 +293,6 @@ export default function Profile() {
               />
             ))}
           </div>
-          {!isEditing && (
-            <p className="text-sm text-gray-500 mt-3">편집 버튼을 눌러 활동 분야를 변경할 수 있어요</p>
-          )}
         </div>
 
         {/* 알림 설정 카드 */}

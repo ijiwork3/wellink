@@ -114,7 +114,13 @@ export default function DashboardV2() {
   const sparks = useMemo(() => DASHBOARD_SPARKLINES_BY_PERIOD[period], [period])
   const kpiValues = useMemo(() => DASHBOARD_KPI_VALUES_BY_PERIOD[period], [period])
 
-  /* ── KPI 메트릭 — period별 값/trend + 데이터 특성별 variant 매핑 ── */
+  /* ── KPI 메트릭 — period별 값/trend
+   *
+   * Sparkline variant 선택 원칙 (데이터 종류 우선, 시각적 변주는 결과로):
+   *   - Line  : 시점별 누적 절대값(팔로워 수, 총 도달) + 비율 메트릭(도달률·참여율·ROAS·결과당비용·바이럴계수)
+   *   - Bar   : 시점별 증분 카운트(결과·공유·저장) + 증분 금액(일 지출)
+   *   - Area  : 본 페이지에선 사용 X — 모든 KPI에 area 쓰면 변별력 손실. 메인 차트(별도 sticky chart)에서만 한정 사용.
+   * ── */
   const profileMetrics = useMemo(() => [
     {
       label: '팔로워 수',
@@ -122,7 +128,7 @@ export default function DashboardV2() {
       trend: kpiValues.profile.trends.followers,
       trendUnit: '%',
       sparkline: sparks.followers,
-      sparklineVariant: 'bar' as const,  // 누적 성장 — 막대 (max 강조)
+      sparklineVariant: 'line' as const,  // 누적 절대값 — 추세 가시화
       icon: <Users size={14} aria-hidden="true" />,
       hint: '브랜드 계정 총 팔로워',
     },
@@ -132,7 +138,7 @@ export default function DashboardV2() {
       trend: kpiValues.profile.trends.reachRate,
       trendUnit: '%p',
       sparkline: sparks.reachRate,
-      sparklineVariant: 'line' as const,  // 비율 추이 — 라인
+      sparklineVariant: 'line' as const,  // 비율
       icon: <Eye size={14} aria-hidden="true" />,
       hint: '게시물 1개당 팔로워 대비 도달 비율 평균',
     },
@@ -142,7 +148,7 @@ export default function DashboardV2() {
       trend: kpiValues.profile.trends.engagement,
       trendUnit: '%p',
       sparkline: sparks.engagement,
-      sparklineVariant: 'area' as const,  // 참여율 = 누적 면적 (성장 강조)
+      sparklineVariant: 'line' as const,  // 비율 — area는 "면적=총량"으로 오해 유발 (참여율은 비율이라 면적 의미 X)
       icon: <TrendIcon size={14} aria-hidden="true" />,
       hint: '(좋아요+댓글) / 도달 × 100',
     },
@@ -155,7 +161,7 @@ export default function DashboardV2() {
       trend: kpiValues.ad.trends.spend,
       trendUnit: '%',
       sparkline: sparks.adSpend,
-      sparklineVariant: 'area' as const,  // 누적 지출 — 면적 (총량 강조)
+      sparklineVariant: 'bar' as const,  // 일별 증분 금액 — 매일 따로 쓴 돈 (bar)
       icon: <DollarSign size={14} aria-hidden="true" />,
       hint: '선택 기간 광고 집행 총액',
     },
@@ -165,7 +171,7 @@ export default function DashboardV2() {
       trend: kpiValues.ad.trends.roas,
       trendUnit: 'x',
       sparkline: sparks.roas,
-      sparklineVariant: 'line' as const,  // 라인 + 1.0x 손익분기 기준선
+      sparklineVariant: 'line' as const,  // 비율 + 1.0x 손익분기 기준선
       sparklineReference: 1.0,
       icon: <Percent size={14} aria-hidden="true" />,
       hint: '광고 지출 대비 수익 효율 — 1.0x 이상이면 흑자',
@@ -176,7 +182,7 @@ export default function DashboardV2() {
       trend: kpiValues.ad.trends.results,
       trendUnit: '%',
       sparkline: sparks.adResults,
-      sparklineVariant: 'bar' as const,  // 카운트 — 막대
+      sparklineVariant: 'bar' as const,  // 증분 카운트
       icon: <ListChecks size={14} aria-hidden="true" />,
       hint: '캠페인 목표 달성 수',
     },
@@ -187,7 +193,7 @@ export default function DashboardV2() {
       trendUnit: '%',
       positive: false,  // 낮을수록 좋음
       sparkline: sparks.costPerResult,
-      sparklineVariant: 'line' as const,  // 감소 추세 — 라인 fill (감소 좋음을 색감으로)
+      sparklineVariant: 'line' as const,  // 비율
       icon: <Calculator size={14} aria-hidden="true" />,
       hint: '목표 1건 달성 평균 비용. 낮을수록 효율 우수.',
     },
@@ -200,7 +206,7 @@ export default function DashboardV2() {
       trend: kpiValues.viral.trends.reach,
       trendUnit: '%',
       sparkline: sparks.viralReach,
-      sparklineVariant: 'area' as const,  // 누적 도달 — 면적
+      sparklineVariant: 'line' as const,  // 누적 절대값
       icon: <Eye size={14} aria-hidden="true" />,
       hint: '캠페인 콘텐츠가 도달한 누적 사용자 수',
     },
@@ -210,7 +216,7 @@ export default function DashboardV2() {
       trend: kpiValues.viral.trends.shares,
       trendUnit: '%',
       sparkline: sparks.shares,
-      sparklineVariant: 'bar' as const,  // 카운트 — 막대
+      sparklineVariant: 'bar' as const,  // 증분 카운트
       icon: <Share2 size={14} aria-hidden="true" />,
       hint: '콘텐츠가 사용자에게 공유된 횟수',
     },
@@ -220,7 +226,9 @@ export default function DashboardV2() {
       trend: kpiValues.viral.trends.saves,
       trendUnit: '%',
       sparkline: sparks.saves,
-      sparklineVariant: 'bar' as const,
+      // 증분 카운트이긴 하나 mock 데이터 variance가 +4% 수준(820→856)으로 매우 작음.
+      // 사용자 원칙 "추이보다 차이가 큰 경우 bar" 적용 — 차이 미미할 땐 line이 추세 더 잘 보여줌.
+      sparklineVariant: 'line' as const,
       icon: <Bookmark size={14} aria-hidden="true" />,
       hint: '콘텐츠가 저장된 횟수',
     },
@@ -230,7 +238,7 @@ export default function DashboardV2() {
       trend: kpiValues.viral.trends.factor,
       trendUnit: 'x',
       sparkline: sparks.viralFactor,
-      sparklineVariant: 'line' as const,  // 비율 — 라인
+      sparklineVariant: 'line' as const,  // 비율
       icon: <Heart size={14} aria-hidden="true" />,
       hint: '콘텐츠 1개당 평균 확산 배수 — 높을수록 바이럴 효과 ↑',
     },

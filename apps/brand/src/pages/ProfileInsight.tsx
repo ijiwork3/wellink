@@ -22,7 +22,7 @@ import {
   metricColors,
   type MetricKey,
 } from '../data/analytics/profile'
-import FollowerBarChart from '../components/analytics/profile/FollowerBarChart'
+import FollowerAreaChart from '../components/analytics/profile/FollowerAreaChart'
 import MultiLineTrendChart from '../components/analytics/profile/MultiLineTrendChart'
 import ImpressReachChart from '../components/analytics/profile/ImpressReachChart'
 import PostContentTable from '../components/analytics/profile/PostContentTable'
@@ -454,11 +454,23 @@ export default function ProfileInsight() {
           </div>
           <ChartScrollContainer
             ref={followerChartScrollRef}
-            chartW={400} padL={0} padR={0}
+            chartW={620} padL={48} padR={24}
             dataLength={followerData.length}
             activeIndex={followerChartIdx}
+            tooltipContent={(i) => {
+              const d = followerData[i]
+              if (!d || d.value === null) return null
+              return (
+                <>
+                  <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
+                  <span className="text-xs text-gray-700 whitespace-nowrap font-medium tabular-nums">
+                    팔로워 {fmtNumber(d.value)}
+                  </span>
+                </>
+              )
+            }}
           >
-            <FollowerBarChart
+            <FollowerAreaChart
               data={followerData}
               activeIndex={followerChartIdx}
               onActiveIndex={setFollowerChartIdx}

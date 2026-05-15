@@ -29,6 +29,7 @@ import {
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtDate } from '../utils/fmtDate'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 /* ───── Mock Data ───── */
 
@@ -48,6 +49,10 @@ interface Content {
   engagementRate: number
   status: '승인' | '검수중' | '반려'
   thumbnailClass: string
+  /** 정상 케이스 = Unsplash 풀 사진 URL, 누락 케이스 = SVG gradient data URI */
+  thumbnailUrl: string
+  /** 누락 케이스 식별 — onError fallback 시 무한 루프 방지용 */
+  thumbnailMissing: boolean
   postUrl?: string
 }
 
@@ -114,8 +119,9 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   const monthIdx = (i * 7) % 4   // 0~3 = 1~4월
   const dayIdx = ((i * 13) % 28) + 1
   const date = `2026-${String(monthIdx + 1).padStart(2, '0')}-${String(dayIdx).padStart(2, '0')}`
+  const contentId = i + 1
   return {
-    id: i + 1,
+    id: contentId,
     creator,
     creatorUsername,
     campaign,
@@ -125,18 +131,18 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
     reach, likes, comments, saves, shareRate, engagementRate,
     status: STATUS_CYCLE[i % STATUS_CYCLE.length],
     thumbnailClass: thumbnailMissing ? '' : THUMB_POOL[i % THUMB_POOL.length],
-    postUrl: (i % 5 !== 0 && i % 7 !== 3) ? `https://www.instagram.com/p/mock_${i + 1}/` : undefined,
+    // 정상: Unsplash 운동 사진 풀(seed deterministic) / 누락: SVG 그라데이션 placeholder
+    thumbnailMissing,
+    thumbnailUrl: thumbnailMissing
+      ? getPlaceholderDataUri(contentId, creator)
+      : getThumbnailFromPool(contentId),
+    postUrl: (i % 5 !== 0 && i % 7 !== 3) ? `https://www.instagram.com/p/mock_${contentId}/` : undefined,
   }
 })
 
 /* ───── Thumbnail helpers ───── */
-
-function thumbnailIconColor(cls: string) {
-  return cls ? 'text-white/60' : 'text-gray-300'
-}
-function thumbnailBg(cls: string) {
-  return cls ? `bg-gradient-to-br ${cls}` : 'bg-gray-100'
-}
+// thumbnailBg / thumbnailIconColor 함수 삭제 — 2026-05-15. ImageOff 아이콘 표시 패턴 폐기.
+// 모든 썸네일은 Unsplash 풀(seed=id) + onError SVG fallback으로 통일 (다른 페이지와 동일).
 
 // 플랫폼별 배지 컬러 — 정책 §8.3
 const PLATFORM_BADGE_STYLE: Record<string, string> = {
@@ -862,13 +868,21 @@ export default function Library() {
                     {isSelected && <Check size={12} strokeWidth={3} className="text-white" aria-hidden="true" />}
                   </button>
 
-                  {/* Thumbnail — button으로 교체하여 iOS VoiceOver 호환성 확보 */}
+                  {/* Thumbnail — Unsplash 운동 사진 풀(seed=id) 사용, 실패/누락 시 SVG gradient fallback */}
                   <button type="button"
                     aria-label={`${c.creator} 콘텐츠 미리보기`}
-                    className={`w-full aspect-square rounded-t-xl flex items-center justify-center relative overflow-hidden ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+                    className="w-full aspect-square rounded-t-xl relative overflow-hidden bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     onClick={() => setPreviewItem(c)}
                   >
-                    <ImageOff size={36} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
+                    <img
+                      src={c.thumbnailUrl}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        if (!c.thumbnailMissing) e.currentTarget.src = getPlaceholderDataUri(c.id, c.creator)
+                      }}
+                    />
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                       <span className={`text-base px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${PLATFORM_BADGE_STYLE[c.platform] ?? 'bg-gray-500/80 text-white'}`}>{c.platform}</span>
                       {c.type && (
@@ -1012,10 +1026,18 @@ export default function Library() {
                     <td className="py-3 px-3">
                       <button type="button"
                         aria-label={`${c.creator} 콘텐츠 미리보기`}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${thumbnailBg(c.thumbnailClass)} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+                        className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                         onClick={() => setPreviewItem(c)}
                       >
-                        <ImageOff size={16} className={thumbnailIconColor(c.thumbnailClass)} aria-hidden="true" />
+                        <img
+                          src={c.thumbnailUrl}
+                          alt=""
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            if (!c.thumbnailMissing) e.currentTarget.src = getPlaceholderDataUri(c.id, c.creator)
+                          }}
+                        />
                       </button>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
@@ -1143,9 +1165,17 @@ export default function Library() {
           const hashtags   = (CAMPAIGN_KEYWORDS[previewItem.campaign] ?? []).slice(0, 5)
           return (
             <div className="space-y-5">
-              {/* 썸네일 */}
-              <div className={`relative w-full aspect-video rounded-xl flex items-center justify-center ${thumbnailBg(previewItem.thumbnailClass)}`} aria-hidden="true">
-                <ImageOff size={56} className={thumbnailIconColor(previewItem.thumbnailClass)} />
+              {/* 썸네일 — Unsplash 풀(seed=id) + onError fallback */}
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-100">
+                <img
+                  src={previewItem.thumbnailUrl}
+                  alt=""
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    if (!previewItem.thumbnailMissing) e.currentTarget.src = getPlaceholderDataUri(previewItem.id, previewItem.creator)
+                  }}
+                />
                 <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                   <span className={`text-base px-2.5 py-1 rounded-full font-medium ${PLATFORM_BADGE_STYLE[previewItem.platform] ?? 'bg-gray-500/80 text-white'}`}>{previewItem.platform}</span>
                   {previewItem.type && (

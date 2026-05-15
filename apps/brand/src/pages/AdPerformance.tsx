@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Image as ImageIcon, Info, Layers } from 'lucide-react'
+import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Info, Layers } from 'lucide-react'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, PageHeader, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -661,8 +662,14 @@ function CampaignList({
                                 <div className="space-y-2">
                                   {set.ads.map(ad => (
                                     <div key={ad.id} className="flex gap-3 rounded-lg border border-gray-100 bg-white p-2.5 shadow-sm">
-                                      <div className="h-12 w-12 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
-                                        <ImageIcon size={16} aria-hidden="true" />
+                                      <div className="h-12 w-12 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                        <img
+                                          src={ad.thumbnailUrl ?? getThumbnailFromPool(ad.id)}
+                                          alt=""
+                                          loading="lazy"
+                                          className="w-full h-full object-cover"
+                                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(ad.id, ad.adName) }}
+                                        />
                                       </div>
                                       <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-1.5 flex-wrap">
