@@ -107,8 +107,7 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   const creatorUsername = creatorEntry.username
   const campaign = CAMPAIGN_POOL[i % CAMPAIGN_POOL.length]
   const ps = LIB_PS[i % LIB_PS.length]
-  // 엣지: i % 17 == 0 썸네일 누락 (placeholder), i % 23 == 0 zero reach
-  const thumbnailMissing = i % 17 === 0
+  // i % 23 == 0 zero-reach 엣지 케이스
   const isZero = i % 23 === 0
   const reach = isZero ? 0 : 1000 + (i * 311) % 30000
   const likes = isZero ? 0 : Math.floor(reach * (0.04 + (i % 7) * 0.005))
@@ -130,12 +129,10 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
     date,
     reach, likes, comments, saves, shareRate, engagementRate,
     status: STATUS_CYCLE[i % STATUS_CYCLE.length],
-    thumbnailClass: thumbnailMissing ? '' : THUMB_POOL[i % THUMB_POOL.length],
-    // 정상: Unsplash 운동 사진 풀(seed deterministic) / 누락: SVG 그라데이션 placeholder
-    thumbnailMissing,
-    thumbnailUrl: thumbnailMissing
-      ? getPlaceholderDataUri(contentId, creator)
-      : getThumbnailFromPool(contentId),
+    thumbnailClass: THUMB_POOL[i % THUMB_POOL.length],
+    // 모든 항목 Unsplash 풀(30장) 사용 — 4컬럼 7행까지 중복 없음
+    thumbnailMissing: false,
+    thumbnailUrl: getThumbnailFromPool(contentId),
     postUrl: (i % 5 !== 0 && i % 7 !== 3) ? `https://www.instagram.com/p/mock_${contentId}/` : undefined,
   }
 })
