@@ -58,7 +58,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-bg to-white p-4">
+    <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-brand-green-bg to-white p-4">
       {/* 로고 */}
       <div className="fixed top-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-10">
         <span className="text-base font-bold tracking-tight text-brand-green-text">WELLINK AI</span>
@@ -92,7 +92,7 @@ export default function Login() {
               value={id}
               onChange={e => setId(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
             />
           </div>
 
@@ -107,7 +107,7 @@ export default function Login() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
             />
             <button
               onClick={() => setShowPassword(v => !v)}

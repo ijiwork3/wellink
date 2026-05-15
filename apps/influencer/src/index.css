@@ -21,7 +21,9 @@ body {
 
 #root {
   width: 100%;
+  /* iOS Safari 주소창 표시·숨김 시 100vh 점프 방지 — dvh(dynamic viewport) */
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Animations */

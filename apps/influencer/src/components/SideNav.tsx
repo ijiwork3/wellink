@@ -15,7 +15,7 @@ const sections = [
     title: '계정 관리',
     items: [
       { label: '내 정보 수정', path: '/profile', icon: UserCircle },
-      { label: '미디어 연결', path: '/media', icon: Link2 },
+      { label: 'SNS 관리', path: '/media', icon: Link2 },
     ],
   },
 ]

@@ -1,4 +1,5 @@
 // Mock data — replace with API calls when backend is ready
+import { mockMyCampaigns } from './campaigns'
 
 export const ACTIVITY_FIELDS = [
   '헬스/웨이트', '러닝', '요가', '필라테스', '바레', '크로스핏', '하이록스', 'F45', '파워리프팅', '기타',
@@ -44,11 +45,16 @@ export const mockProfile: InfluencerProfile = {
   hasBankAccount: false,
 }
 
+/**
+ * Home 카드 노출용 카운트.
+ * **반드시 `mockMyCampaigns`에서 derive** — 정적 객체로 두면 Home 카드와 MyCampaign
+ * 실제 카운트가 어긋난다(이전 버전의 거짓말 카운트 사례).
+ */
 export const mockCampaignSummary: CampaignSummary = {
-  applied: 2,
-  ongoing: 2,
-  completed: 1,
-  eliminated: 1,
+  applied:    mockMyCampaigns.filter(c => c.status === '지원완료').length,
+  ongoing:    mockMyCampaigns.filter(c => ['검토중', '콘텐츠대기', '검수중'].includes(c.status)).length,
+  completed:  mockMyCampaigns.filter(c => c.status === '완료').length,
+  eliminated: mockMyCampaigns.filter(c => c.status === '미선정').length,
 }
 
 export interface InstaStats {

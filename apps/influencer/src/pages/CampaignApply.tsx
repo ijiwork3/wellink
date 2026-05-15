@@ -443,7 +443,8 @@ function AgreementRow({ checked, onChange, error, text }: {
 }
 
 function fieldCls(error?: boolean) {
-  return `w-full px-3.5 py-2.5 rounded-xl border text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+  // 글자 크기 16px(text-base) 강제 — iOS Safari 인풋 focus 시 auto-zoom 방지
+  return `w-full px-3.5 py-2.5 rounded-xl border text-base transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
     error
       ? 'border-red-300 bg-red-50 focus-visible:ring-red-300/50'
       : 'border-gray-200 bg-white focus-visible:border-brand-green'

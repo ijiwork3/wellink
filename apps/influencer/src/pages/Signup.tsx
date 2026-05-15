@@ -104,7 +104,7 @@ export default function Signup() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6"
+      className="min-h-dvh flex items-center justify-center p-6"
       style={{ background: 'var(--gradient-auth-bg)' }}
     >
       {/* 도입문의 버튼 */}

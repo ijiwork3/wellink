@@ -27,11 +27,9 @@ import { useState, useEffect, useRef, useCallback, createContext, useContext, ty
 import {
   Smartphone, Tablet, Monitor,
   Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera,
-  AlertCircle, Loader2, Link2, Inbox,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
-import { useQAState, setQAState, resetQAState } from './qa-state';
 
 // ─────────────────────────────────────────────────────────────
 // 타입 & 상수
@@ -711,8 +709,6 @@ export function GlobalQAHeader<S extends string, T extends string>({
   onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
-  const qaState = useQAState();
-
   return (
     <div
       className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between gap-3 px-4 bg-slate-900 text-white border-b border-slate-700"
@@ -730,70 +726,11 @@ export function GlobalQAHeader<S extends string, T extends string>({
         </span>
       </div>
 
+      {/* 페이지 시나리오 드롭다운 — 토글 칩 4개(인스타·로딩·에러·값없음)는 어떤 페이지도 읽지 않아 죽은 코드였음. 2026-05-15 제거. */}
       <div className="flex items-center gap-1.5 flex-wrap">
         <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
-        <ToggleChip
-          active={qaState.instaConnected}
-          onClick={() => setQAState({ instaConnected: !qaState.instaConnected })}
-          icon={<Link2 size={11} />}
-          label={qaState.instaConnected ? '인스타 연결' : '인스타 미연결'}
-          accentColor={accentColor}
-        />
-        <ToggleChip
-          active={qaState.loading}
-          onClick={() => setQAState({ loading: !qaState.loading })}
-          icon={<Loader2 size={11} className={qaState.loading ? 'animate-spin' : ''} />}
-          label="로딩"
-          accentColor={accentColor}
-        />
-        <ToggleChip
-          active={qaState.error}
-          onClick={() => setQAState({ error: !qaState.error })}
-          icon={<AlertCircle size={11} />}
-          label="에러"
-          accentColor={accentColor}
-        />
-        <ToggleChip
-          active={qaState.empty}
-          onClick={() => setQAState({ empty: !qaState.empty })}
-          icon={<Inbox size={11} />}
-          label="값 없음"
-          accentColor={accentColor}
-        />
-        <button
-          onClick={() => resetQAState()}
-          className="text-[10px] text-slate-400 hover:text-white px-2 py-1 transition-colors"
-          title="QA 상태 초기화"
-        >
-          초기화
-        </button>
       </div>
     </div>
-  );
-}
-
-function ToggleChip({
-  active, onClick, icon, label, accentColor,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  accentColor: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors border"
-      style={
-        active
-          ? { background: accentColor, borderColor: accentColor, color: '#fff' }
-          : { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }
-      }
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
   );
 }
 
