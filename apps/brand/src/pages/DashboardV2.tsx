@@ -28,7 +28,7 @@ import {
   ChartScrollContainer,
   type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
-import FollowerBarChart from '../components/analytics/profile/FollowerBarChart'
+import FollowerAreaChart from '../components/analytics/profile/FollowerAreaChart'
 import MixedChart from '../components/analytics/ads/MixedChart'
 import ViralContentMiniCard from '../components/dashboard/ViralContentMiniCard'
 import CampaignPreviewRow from '../components/dashboard/CampaignPreviewRow'
@@ -361,12 +361,12 @@ export default function DashboardV2() {
           <h3 className="text-sm font-medium text-gray-600 mb-3">팔로워 추이</h3>
           {/* 모바일 가로 스크롤 + 쉐브론 — 데이터 많을 때 (일간 14개·주간 13개) 막대 너비 보존 */}
           <ChartScrollContainer
-            chartW={Math.max(600, followerData.length * 56)}
-            padL={44} padR={0}
+            chartW={Math.max(620, followerData.length * 22)}
+            padL={48} padR={24}
             dataLength={followerData.length}
             activeIndex={null}
           >
-            <FollowerBarChart data={followerData} isTouch={false} />
+            <FollowerAreaChart data={followerData} isTouch={false} />
           </ChartScrollContainer>
         </div>
       </motion.section>
