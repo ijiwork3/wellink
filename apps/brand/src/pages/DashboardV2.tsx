@@ -298,9 +298,6 @@ export default function DashboardV2() {
         <PageHeader
           title="대시보드"
           description="브랜드 운영 현황 한눈에 보기"
-          meta={
-            <span className="text-xs font-bold text-brand-green-text bg-brand-green-bg px-2 py-0.5 rounded-full">v2</span>
-          }
           actions={
             isDesktop && !isStuck ? (
               <DateRangePicker
