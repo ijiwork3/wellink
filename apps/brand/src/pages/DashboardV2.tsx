@@ -338,7 +338,7 @@ export default function DashboardV2() {
       </div>
 
       {/* ── 1+2 xl 이상: 2열 나란히 / xl 미만: 세로 쌓기 ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 items-start">
 
       {/* ── 1. 프로필 인사이트 ─────────────────────────── */}
       <motion.section
@@ -346,7 +346,7 @@ export default function DashboardV2() {
         custom={1}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5 xl:flex xl:flex-col"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5"
       >
         <SectionHeader
           icon={<Users size={16} aria-hidden="true" />}
@@ -373,7 +373,7 @@ export default function DashboardV2() {
             />
           ))}
         </div>
-        <div className="border-t border-gray-100 pt-4 xl:flex-1">
+        <div className="border-t border-gray-100 pt-4">
           <h3 className="text-sm font-medium text-gray-600 mb-3">팔로워 추이</h3>
           {/* 모바일 가로 스크롤 + 쉐브론 — 데이터 많을 때 (일간 14개·주간 13개) 막대 너비 보존 */}
           <ChartScrollContainer
