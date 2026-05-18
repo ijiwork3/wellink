@@ -85,9 +85,25 @@ export default function DashboardV2() {
   const spendRoasChartRef = useRef<ChartScrollContainerHandle>(null)
 
   // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
-  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(0)
-  const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(0)
-  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(0)
+  // null로 초기화 후 mount 후 0으로 설정 → ChartScrollContainer scrollRef 준비 보장
+  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
+  const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(null)
+  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
+
+  // 마운트 후 초기 툴팁 — null로 시작해야 scrollRef가 준비된 뒤 툴팁 위치 계산 가능
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      setFollowerActiveIdx(0)
+      setImpReachActiveIdx(0)
+      setAdActiveIdx(0)
+    })
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  // mouseleave 시 null 무시 — 마지막 인덱스 유지 (호버 이탈 후 툴팁 사라짐 방지)
+  const handleFollowerIdx = useCallback((i: number | null) => { if (i !== null) setFollowerActiveIdx(i) }, [])
+  const handleImpReachIdx = useCallback((i: number | null) => { if (i !== null) setImpReachActiveIdx(i) }, [])
+  const handleAdIdx       = useCallback((i: number | null) => { if (i !== null) setAdActiveIdx(i) }, [])
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
   const contentScrollRef = useRef<HTMLDivElement>(null)
@@ -137,9 +153,11 @@ export default function DashboardV2() {
     followerChartRef.current?.scrollToStart()
     impReachChartRef.current?.scrollToStart()
     spendRoasChartRef.current?.scrollToStart()
-    setFollowerActiveIdx(0)
-    setImpReachActiveIdx(0)
-    setAdActiveIdx(0)
+    requestAnimationFrame(() => {
+      setFollowerActiveIdx(0)
+      setImpReachActiveIdx(0)
+      setAdActiveIdx(0)
+    })
   }, [period])
 
   /* ── KPI 메트릭 — period별 값/trend
@@ -409,7 +427,7 @@ export default function DashboardV2() {
             <FollowerAreaChart
               data={followerData}
               activeIndex={followerActiveIdx}
-              onActiveIndex={setFollowerActiveIdx}
+              onActiveIndex={handleFollowerIdx}
               isTouch={isTouch}
             />
           </ChartScrollContainer>
@@ -444,7 +462,7 @@ export default function DashboardV2() {
             <ImpressReachChart
               data={impReachData}
               activeIndex={impReachActiveIdx}
-              onActiveIndex={setImpReachActiveIdx}
+              onActiveIndex={handleImpReachIdx}
               isTouch={isTouch}
               padL={48}
               padR={24}
@@ -523,7 +541,7 @@ export default function DashboardV2() {
             <MixedChart
               data={spendRoasData}
               activeIndex={adActiveIdx}
-              onActiveIndex={setAdActiveIdx}
+              onActiveIndex={handleAdIdx}
               isTouch={isTouch}
               secondaryLabel="ROAS"
               secondaryFormatter={(v) => `${v.toFixed(1)}x`}
