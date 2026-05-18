@@ -70,9 +70,9 @@ const SEVERITY_TEXT: Record<Severity, string> = {
 }
 
 const SEVERITY_STROKE: Record<Severity, string> = {
-  good:    '#527E18',  // brand-green-text
+  good:    '#10b981',  // emerald-500 (vivid blue-green)
   neutral: '#9ca3af',  // gray-400
-  bad:     '#B45309',  // amber-700
+  bad:     '#f43f5e',  // rose-500 (vivid red)
 }
 
 const KPICard = memo(function KPICard({
