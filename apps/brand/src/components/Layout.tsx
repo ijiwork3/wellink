@@ -22,7 +22,7 @@ export default function Layout() {
   }, [mobileNav])
 
   return (
-    <div className="relative flex h-full bg-gray-50 overflow-hidden">
+    <div className="relative flex h-full bg-gray-50 overflow-hidden max-w-[1920px] mx-auto">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-base focus:font-medium"
@@ -107,7 +107,7 @@ export default function Layout() {
             <Link to="/subscription" className="font-medium underline shrink-0 ml-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 보기 →</Link>
           </div>
         )}
-        <main id="main-content" className={`@container w-full max-w-[1560px] mx-auto ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`@container w-full ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>
