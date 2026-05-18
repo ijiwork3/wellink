@@ -448,6 +448,7 @@ export default function DashboardV2() {
               isTouch={isTouch}
               padL={48}
               padR={24}
+              minWidthPerItem={22}
             />
           </ChartScrollContainer>
         </div>

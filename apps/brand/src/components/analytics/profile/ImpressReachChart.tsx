@@ -14,9 +14,10 @@ interface Props {
   isTouch?: boolean
   padL?: number
   padR?: number
+  minWidthPerItem?: number
 }
 
-const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, onActiveIndex, isTouch, padL: padLProp, padR: padRProp }: Props) {
+const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, onActiveIndex, isTouch, padL: padLProp, padR: padRProp, minWidthPerItem = 44 }: Props) {
   const ctx = useChartScrollContext()
   const W = ctx?.measuredW ?? 580
   const H = 220, padL = padLProp ?? 60, padR = padRProp ?? 16, padT = 18, padB = 32
@@ -77,7 +78,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid meet"
       className="[&_*]:pointer-events-none"
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * 44), height: H }}
+      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(580, data.length * minWidthPerItem), height: H }}
       role="img"
       aria-label="노출 및 도달 추이 차트"
       onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
