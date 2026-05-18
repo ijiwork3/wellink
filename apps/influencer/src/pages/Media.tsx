@@ -153,6 +153,7 @@ export default function Media() {
   return (
     <Layout>
       <div className="space-y-4 max-w-lg">
+        <h1 className="sr-only">SNS 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
           <div className="bg-white rounded-2xl border border-brand-green-border shadow-sm p-5">
@@ -247,7 +248,7 @@ export default function Media() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link2 size={16} className="text-brand-green" />
-            <h1 className="text-base font-semibold text-gray-900">SNS 관리</h1>
+            <h2 className="text-base font-semibold text-gray-900">SNS 관리</h2>
           </div>
           <span className="text-sm text-gray-500">{connectedCount}/{platforms.length} 연결됨</span>
         </div>

@@ -55,7 +55,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
   const q = menuSearch.trim().toLowerCase()
   // 클라 #5: 사이드바 *홈* 탭 삭제. 좌상단 WELLINK 로고 클릭으로 대시보드 이동
   const showDashboard = !q || '대시보드'.includes(q)
-  const showDashboardV2 = !q || '대시보드 v2'.includes(q) || 'v2'.includes(q)
   const filteredSections = useMemo(
     () =>
       sections
@@ -141,25 +140,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
               대시보드
             </NavLink>
           )
-        )}
-        {/* 대시보드 v2 — 재설계 (피드백 반영 후) */}
-        {showDashboardV2 && (
-          <NavLink
-            to="/dashboard-v2"
-            end
-            onClick={() => onNavigate?.()}
-            className={({ isActive }) =>
-              `flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all duration-150 mb-2 ${
-                isActive
-                  ? 'bg-gray-100 text-gray-900 font-medium'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              }`
-            }
-          >
-            <LayoutDashboard size={15} />
-            <span className="flex-1">대시보드 v2</span>
-            <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded">NEW</span>
-          </NavLink>
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">

@@ -1281,9 +1281,9 @@ export default function Library() {
                 ))}
               </div>
 
-              {/* 캠페인 비교 + 해시태그 */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 rounded-xl p-3">
+              {/* 캠페인 비교 + 해시태그 — 좁은 폭에서 큰 % 값과 라벨 침범 방지 */}
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
+                <div className="bg-gray-50 rounded-xl p-3 min-w-0">
                   <p className="text-sm text-gray-500 mb-1">캠페인 평균 대비 참여율</p>
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className={`text-xl font-bold ${diffPct >= 0 ? 'text-brand-green-text' : 'text-red-500'}`}>
@@ -1294,7 +1294,7 @@ export default function Library() {
                     </span>
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3">
+                <div className="bg-gray-50 rounded-xl p-3 min-w-0">
                   <p className="text-sm text-gray-500 mb-1.5 flex items-center gap-1"><Tag size={12} />캠페인 필수 키워드</p>
                   <div className="flex flex-wrap gap-1">
                     {hashtags.map(tag => (

@@ -96,7 +96,7 @@ export default function ViralMetrics() {
           </div>
           <div className="h-9 w-64 bg-gray-100 animate-pulse rounded-xl" />
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
         <SkeletonCard height={64} />
@@ -197,7 +197,7 @@ export default function ViralMetrics() {
       )}
 
       {/* KPI 카드 4개 — @wellink/ui KPICard 사용 */}
-      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
         <KPICard
           title="총 바이럴 도달"
           value={kpi.reach}
@@ -624,7 +624,7 @@ function MentionMixDonut() {
           <circle cx="45" cy="45" r="36" fill="none" stroke="#f3f4f6" strokeWidth="14" aria-hidden="true" />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke="#9DD737" strokeWidth="14"
+            stroke="#95D135" strokeWidth="14"
             strokeDasharray={`${reelsDash} ${C - reelsDash}`}
             className="transition-opacity cursor-pointer"
             style={{ opacity: hover && hover !== 'reels' ? 0.35 : 1 }}
@@ -634,7 +634,7 @@ function MentionMixDonut() {
           />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke="#3b82f6" strokeWidth="14"
+            stroke="#527E18" strokeWidth="14"
             strokeDasharray={`${feedDash} ${C - feedDash}`}
             strokeDashoffset={-reelsDash}
             className="transition-opacity cursor-pointer"
@@ -646,7 +646,7 @@ function MentionMixDonut() {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className={`text-2xl font-bold tabular-nums transition-colors ${
-            hover === 'reels' ? 'text-brand-green-text' : hover === 'feed' ? 'text-blue-600' : 'text-gray-900'
+            hover === 'reels' ? 'text-brand-green-text' : hover === 'feed' ? 'text-brand-green-text' : 'text-gray-900'
           }`}>{center.value}</span>
           <span className="text-sm text-gray-500 mt-0.5">{center.label}</span>
         </div>
@@ -666,12 +666,12 @@ function MentionMixDonut() {
           </dd>
         </div>
         <div
-          className={`flex items-center justify-between transition-colors cursor-pointer rounded px-1 -mx-1 ${hover === 'feed' ? 'bg-blue-50' : ''}`}
+          className={`flex items-center justify-between transition-colors cursor-pointer rounded px-1 -mx-1 ${hover === 'feed' ? 'bg-brand-green-bg/50' : ''}`}
           onMouseEnter={() => setHover('feed')}
           onMouseLeave={() => setHover(null)}
         >
           <dt className="flex items-center gap-1.5 text-gray-700">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-green-text inline-block" aria-hidden="true" />
             피드
           </dt>
           <dd className="font-semibold text-gray-900 tabular-nums">

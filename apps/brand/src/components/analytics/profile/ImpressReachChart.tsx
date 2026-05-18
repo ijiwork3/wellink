@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -23,7 +23,8 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
 
   const allImpress = data.map(d => d.impressions).filter((v): v is number => v !== null)
   const allReach   = data.map(d => d.reach).filter((v): v is number => v !== null)
-  const maxVal = Math.max(1, ...allImpress, ...allReach)
+  // 노출·도달 공통 Y축 + niceCeil로 깔끔한 라운드 max (차트 위 끝 안 닿게)
+  const maxVal = niceCeil(Math.max(1, ...allImpress, ...allReach))
 
   const stepX = plotW / Math.max(data.length - 1, 1)
   const isDense = data.length > 14
@@ -118,10 +119,10 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       {reachSegs.map((seg, si) => (
         <g key={`r-${si}`}>
           <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
-            fill="none" stroke="#10b981" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+            fill="none" stroke="#95D135" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
           {seg.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#10b981" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#95D135" />
               <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
             </g>
           ))}
@@ -129,8 +130,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       ))}
       {data.map((d, i) => {
         const x = padL + i * stepX
-        const show = isDense ? (d.showLabel ?? false) : true
-        if (!show) return null
+        if (!shouldShowLabel(i, data.length, d)) return null
         return (
           <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? '#d1d5db' : '#6b7280'} fontSize={12}>
             {d.label}
@@ -149,7 +149,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
           <g key="active">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
             {impY !== null && <circle cx={x} cy={impY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />}
-            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill="#10b981" stroke="white" strokeWidth={1.5} />}
+            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill="#95D135" stroke="white" strokeWidth={1.5} />}
           </g>
         )
       })()}

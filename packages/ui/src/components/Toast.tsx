@@ -56,7 +56,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"
+        /* 모바일 — 좌우 풀폭(env safe-area 고려), 데스크탑 — 우측 하단 고정.
+         * 기존 right-5만 적용 시 모바일에서 toast가 viewport 좌측을 침범하거나 토스트 자체가 잘림. */
+        className="fixed z-[100] flex flex-col gap-2 left-3 right-3 bottom-[max(1.25rem,env(safe-area-inset-bottom))] sm:left-auto sm:right-5 sm:bottom-5 pointer-events-none"
       >
         {toasts.map(toast => (
           <ToastBubble key={toast.id} toast={toast} onRemove={removeToast} />
@@ -80,11 +82,14 @@ function ToastBubble({ toast, onRemove }: { toast: ToastItem; onRemove: (id: num
 
   return (
     <div
-      className={`flex items-center gap-3 bg-white border ${borderColor[toast.type]} rounded-xl px-4 py-3 shadow-lg`}
-      style={{ minWidth: '260px', maxWidth: '360px', animation: 'slideInRight 0.2s ease-out' }}
+      /* pointer-events-auto — 부모 컨테이너의 pointer-events-none(모바일 viewport pass-through) 복구.
+       * width: w-full @sm:w-auto + min/max 제한 — 모바일에서는 부모 좌우 마진(left-3 right-3)으로 폭 결정.
+       * 작은 화면에서 maxWidth:360px 고정 시 토스트가 우측 정렬되며 좌측 여백 깨짐 → 풀폭 처리. */
+      className={`flex items-center gap-3 bg-white border ${borderColor[toast.type]} rounded-xl px-4 py-3 shadow-lg w-full sm:w-auto sm:min-w-[260px] sm:max-w-[360px] pointer-events-auto`}
+      style={{ animation: 'slideInRight 0.2s ease-out' }}
     >
       {icons[toast.type]}
-      <span className="flex-1 text-sm text-gray-800">{toast.message}</span>
+      <span className="flex-1 text-sm text-gray-800 break-keep min-w-0">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
         aria-label="알림 닫기"

@@ -125,7 +125,7 @@ export default function Home() {
                 <button
                   key={c.id}
                   onClick={() => navigate('/campaigns/my')}
-                  className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full flex items-center justify-between text-left bg-white rounded-xl px-3 py-2.5 hover:bg-orange-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   aria-label={`${c.name} — ${fmtDate(c.contentDeadline!)}까지 콘텐츠 제출`}
                 >
                   <div className="min-w-0 flex-1">

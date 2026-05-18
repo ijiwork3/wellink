@@ -8,7 +8,7 @@ const stats = [
   { label: '지원 완료', value: mockCampaignSummary.applied },
   { label: '참여중', value: mockCampaignSummary.ongoing, highlight: true },
   { label: '참여 완료', value: mockCampaignSummary.completed },
-  { label: '탈락', value: mockCampaignSummary.eliminated },
+  { label: '미선정', value: mockCampaignSummary.eliminated },
 ]
 
 export default function ProfileHeader() {
@@ -63,11 +63,11 @@ export default function ProfileHeader() {
           </div>
         </div>
 
-        {/* SNS 패널: 데스크탑에서만 인라인 표시 */}
+        {/* SNS 패널: 데스크탑에서만 인라인 표시. mockProfile.instagramConnected 단일 출처 (Home·Media와 sync) */}
         <div className="hidden @[640px]:block w-64 flex-shrink-0">
           <SNSPanel
             platforms={[
-              { id: 'instagram', connected: true, handle: mockProfile.instagram },
+              { id: 'instagram', connected: mockProfile.instagramConnected, handle: mockProfile.instagramConnected ? mockProfile.instagram : undefined },
               { id: 'naver', connected: false },
               { id: 'youtube', connected: false },
             ]}
@@ -101,7 +101,7 @@ export default function ProfileHeader() {
             </div>
             <SNSPanel
               platforms={[
-                { id: 'instagram', connected: true, handle: mockProfile.instagram },
+                { id: 'instagram', connected: mockProfile.instagramConnected, handle: mockProfile.instagramConnected ? mockProfile.instagram : undefined },
                 { id: 'naver', connected: false },
                 { id: 'youtube', connected: false },
               ]}

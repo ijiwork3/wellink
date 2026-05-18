@@ -22,6 +22,7 @@ export default function BottomTabBar() {
         return (
           <button
             key={path}
+            type="button"
             onClick={() => navigate(path)}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}

@@ -14,7 +14,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 interface SparklineProps {
   /** 데이터 포인트 배열 — 길이 < 2면 렌더 안 함 */
   data: number[]
-  /** 라인/막대 색상 — 기본 brand-green-text (#527F1B) */
+  /** 라인/막대 색상 — 기본 brand-green-text (#527E18) */
   stroke?: string
   /** 옅은 톤 색 — bar variant 비활성 막대 (기본 brand-green-border) */
   mutedStroke?: string
@@ -39,8 +39,8 @@ interface SparklineProps {
 
 const Sparkline = memo(function Sparkline({
   data,
-  stroke = '#527F1B',
-  mutedStroke = '#C0E384',
+  stroke = '#527E18',
+  mutedStroke = '#BADE7E',
   width = 60,
   height = 24,
   fill = false,
@@ -83,13 +83,20 @@ const Sparkline = memo(function Sparkline({
   const H = responsive ? measuredH : height
   const min = Math.min(...data)
   const max = Math.max(...data)
-  const range = max - min || 1
+  const rawRange = max - min
   // 좌·우 안전 영역 — 끝점 circle r=3.5 + 약간의 여유. line/area에서 끝점 잘림 방지
   const padX = 5
   const padY = 4
   const innerH = H - padY * 2
   const innerW = W - padX * 2
-  const toY = (v: number) => padY + innerH - ((v - min) / range) * innerH
+  // Y 패딩 — 위·아래 5%씩 (총 10%). 변동이 작아도 차트 끝에 닿지 않게.
+  // 모든 값 동일 (range=0)이면 *카드 중앙*에 평탄선 (바닥 깔림 회피).
+  const Y_PAD_RATIO = 0.1  // 10% (위 5 + 아래 5)
+  const effMin = rawRange === 0 ? min - 1 : min - rawRange * (Y_PAD_RATIO / 2)
+  const effRange = rawRange === 0 ? 2 : rawRange * (1 + Y_PAD_RATIO)
+  const toY = (v: number) => rawRange === 0
+    ? padY + innerH / 2
+    : padY + innerH - ((v - effMin) / effRange) * innerH
 
   /* ── LINE / AREA ────────────────────────────────── */
   const stepX = innerW / (data.length - 1)
@@ -110,7 +117,8 @@ const Sparkline = memo(function Sparkline({
       return (
         <>
           {data.map((v, i) => {
-            const norm = (v - min) / range
+            // 모든 값 동일 시 50% 높이 평탄 막대. 변동 있으면 5% 패딩 적용.
+            const norm = rawRange === 0 ? 0.5 : (v - effMin) / effRange
             const h = Math.max(minBarH, norm * innerH)
             const x = barOffset + i * barSlot
             const y = padY + innerH - h

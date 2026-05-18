@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
@@ -20,7 +21,7 @@ function groupConditions(conditions: string[]) {
   const etc: string[] = []
   for (const c of conditions) {
     if (/팔로워|구독자|이웃/.test(c)) follower.push(c)
-    else if (/피드|게시물|스토리|영상|콘텐츠|업로드|포스팅|릴스/.test(c)) content.push(c)
+    else if (/피드|게시물|스토리|영상|콘텐츠|업로드|포스팅|릴스|사진|멘션|태그|해시태그|캡션/.test(c)) content.push(c)
     else etc.push(c)
   }
   return { follower, content, etc }
@@ -33,7 +34,15 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   const liked = bookmarks.has(campaign.id)
   const applied = forceApplied
 
-  const isClosed = forceClosed || campaign.status === '종료'
+  // applyEnd 당일 23:59:59 KST까지는 신청 가능 — 그 이후는 자동 마감 (cold-review 7차 M4).
+  // mount 시점 캡처해 React 19 purity 규칙 위반 회피 (Home.tsx와 동일 패턴)
+  const [mountedAt] = useState(() => Date.now())
+  const applyEndExpired = (() => {
+    const end = new Date(campaign.applyEnd)
+    end.setHours(23, 59, 59, 999)
+    return end.getTime() < mountedAt
+  })()
+  const isClosed = forceClosed || campaign.status === '종료' || applyEndExpired
 
   // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
   const wrapCls = inModal ? '' : '@container'

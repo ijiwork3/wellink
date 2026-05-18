@@ -60,8 +60,8 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '피트니스·스포츠',
     status: '마감임박',
-    applyEnd: '2026-05-15',
-    postEnd: '2026-05-30',
+    applyEnd: '2026-05-19',
+    postEnd: '2026-06-03',
     image: '💪',
     description: 'SMILEATO 스포츠 보충제 라인업을 직접 체험하고 크리에이티브한 콘텐츠를 제작해 주세요',
     reward: '보충제 풀패키지 + 활동비 10만원',
@@ -173,8 +173,8 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '육아·펫',
     status: '모집중',
-    applyEnd: '2026-05-15',
-    postEnd: '2026-05-30',
+    applyEnd: '2026-05-26',
+    postEnd: '2026-06-08',
     image: '🍼',
     description: '베베핏 유아 건강 이유식 제품을 직접 사용해보고 솔직한 육아 리뷰를 남겨주세요',
     reward: '이유식 1개월 패키지 (9만원 상당)',
@@ -216,9 +216,9 @@ export interface MyCampaign {
 export const mockMyCampaigns: MyCampaign[] = [
   {
     id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
-    appliedAt: '2026-04-28', deadline: '2026-05-15',
+    appliedAt: '2026-04-28', deadline: '2026-05-19',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
-    reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-05-15',
+    reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-05-19',
     missionGuide: '제품을 사용한 운동 루틴 영상 또는 일상 콘텐츠 1개 + 솔직 후기 캡션. 협찬 표기 필수(@광고). 운동 전·후 변화 사진 포함 시 가산점.',
     requiredKeywords: ['뉴트리션랩', '프로틴', '단백질챌린지', '오운완'],
   },
@@ -248,11 +248,17 @@ export const mockMyCampaigns: MyCampaign[] = [
   },
   {
     id: 'mc-6', name: '하이록스 챌린지 시즌 2', brand: 'enuf.sports', channel: '인스타그램',
-    appliedAt: '2026-05-08', deadline: '2026-05-22',
+    appliedAt: '2026-05-08', deadline: '2026-05-20',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
-    reward: '120,000원', rewardAmount: 120000, contentDeadline: '2026-05-22',
+    reward: '120,000원', rewardAmount: 120000, contentDeadline: '2026-05-20',
     missionGuide: '하이록스 종목 도전 영상 + 운동복/장비에 brand tag. 릴스 60초 이상, 본문에 운동 기록(시간·반복수) 포함.',
     requiredKeywords: ['enuf', '하이록스', 'hyrox', 'crossfit', '운동스타그램'],
+  },
+  {
+    id: 'mc-7', name: '비건 단백질 신제품 체험', brand: '그린푸드', channel: '인스타그램',
+    appliedAt: '2026-05-15', deadline: '2026-06-10',
+    status: '지원완료', progress: '신청서가 접수됐어요',
+    reward: '50,000원', rewardAmount: 50000,
   },
 ]
 

@@ -33,7 +33,7 @@ const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onTo
 
   return (
     <div
-      className={`bg-white rounded-xl border p-4 cursor-pointer transition-all ${
+      className={`@container bg-white rounded-xl border p-4 cursor-pointer transition-all ${
         selected ? 'border-brand-green shadow-md' : 'border-gray-100 shadow-sm hover:shadow-md'
       }`}
       onClick={onClick}
@@ -43,20 +43,23 @@ const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onTo
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-sm text-gray-900">{influencer.name}</span>
+          {/* 이름 + 플랫폼 배지 — 좁은 폭에서 줄바꿈 허용. break-keep으로 한글 단어 보존. */}
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+            <span className="font-semibold text-sm text-gray-900 break-keep">{influencer.name}</span>
             {influencer.platform.split('/').map(p => (
               <StatusBadge key={p} status={p.trim()} />
             ))}
           </div>
-          <div className="flex gap-3 mt-1 text-sm text-gray-500">
-            <span>팔로워 {fmtFollowers(influencer.followers)}</span>
-            <span className={getEngagementColor(influencer.engagement)}>참여율 {influencer.engagement}%</span>
-            <span>진성 {influencer.authentic}%</span>
+          {/* 통계 행 — gap-x-3 gap-y-1 flex-wrap. 각 값 whitespace-nowrap으로 중간 절단 방지.
+           * 좁은 폭에서 줄바꿈으로 내려감. 사용자 정책: 침범보다 개행. */}
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-sm text-gray-500">
+            <span className="whitespace-nowrap">팔로워 {fmtFollowers(influencer.followers)}</span>
+            <span className={`whitespace-nowrap ${getEngagementColor(influencer.engagement)}`}>참여율 {influencer.engagement}%</span>
+            <span className="whitespace-nowrap">진성 {influencer.authentic}%</span>
           </div>
           <div className="flex gap-1 mt-2 flex-wrap">
             {influencer.category.map(c => (
-              <span key={c} className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{c}</span>
+              <span key={c} className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap">{c}</span>
             ))}
           </div>
         </div>
@@ -65,7 +68,7 @@ const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onTo
             onClick={e => { e.stopPropagation(); onToggle() }}
             aria-pressed={selected}
             aria-label={selected ? '선택 해제' : '선택'}
-            className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+            className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
               selected ? 'bg-brand-green border-brand-green' : 'border-gray-300'
             }`}
           >

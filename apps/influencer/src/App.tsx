@@ -172,7 +172,13 @@ function AppRoutes() {
       '/signup':           '회원가입 — WELLINK AI',
     }
     const path = location.pathname
-    const title = titles[path] ?? (path.startsWith('/campaigns/') ? '캠페인 상세 — WELLINK AI' : 'WELLINK AI')
+    // /campaigns/:id/apply 는 신청 페이지, /campaigns/:id 는 상세 페이지 (cold-review 7차 L10)
+    const fallback = path.match(/^\/campaigns\/[^/]+\/apply$/)
+      ? '캠페인 신청 — WELLINK AI'
+      : path.startsWith('/campaigns/')
+        ? '캠페인 상세 — WELLINK AI'
+        : 'WELLINK AI'
+    const title = titles[path] ?? fallback
     document.title = title
   }, [location.pathname])
 

@@ -95,9 +95,11 @@ export default function MyCampaign() {
     const url = contentUrl.trim()
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
     if (!/^https?:\/\/.+\..+/.test(url)) { showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return }
+    // 검수중 상태에서 다시 열린 경우 = 콘텐츠 수정, 아니면 = 신규 제출 (cold-review 7차 H3)
+    const isEdit = submitModal?.status === '검수중'
     // postUrl 도 함께 저장 — 검수중 상태에서 '콘텐츠 수정' 버튼 동작에 필요
     setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중', postUrl: url } : c))
-    showToast('콘텐츠를 제출했어요!', 'success')
+    showToast(isEdit ? '콘텐츠를 수정했어요!' : '콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
     setContentUrl('')
   }
@@ -147,10 +149,11 @@ export default function MyCampaign() {
   return (
     <Layout>
       <div className="space-y-4">
+        <h1 className="sr-only">나의 캠페인</h1>
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base font-semibold text-gray-900">나의 캠페인</h1>
+            <h2 className="text-base font-semibold text-gray-900">나의 캠페인</h2>
             <p className="text-sm text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
           </div>
           <button
@@ -325,8 +328,8 @@ export default function MyCampaign() {
         )}
       </div>
 
-      {/* 콘텐츠 제출 모달 */}
-      <Modal open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title="콘텐츠 제출">
+      {/* 콘텐츠 제출/수정 모달 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
+      <Modal open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
@@ -345,14 +348,14 @@ export default function MyCampaign() {
               spellCheck={false}
               value={contentUrl}
               onChange={e => setContentUrl(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleContentSubmit()}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleContentSubmit() }}
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base outline-none focus:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="https://instagram.com/p/..."
             />
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
-            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} aria-disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제출하기</button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} aria-disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
           </div>
         </div>
       </Modal>
@@ -361,7 +364,7 @@ export default function MyCampaign() {
       <Modal open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
-          <p className="text-sm text-gray-500">취소 후 재신청이 가능하지 않을 수 있어요</p>
+          <p className="text-sm text-gray-500">취소 후에는 재신청이 어려울 수 있어요</p>
           <div className="flex gap-2">
             <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">유지하기</button>
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>

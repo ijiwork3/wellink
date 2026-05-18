@@ -1073,24 +1073,24 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* 일정 바 — 모집/콘텐츠등록/완료 3단계 (정책서 기준) */}
-        <div className="grid grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
+        {/* 일정 바 — 모집/콘텐츠등록/완료 3단계. 모바일 1열, @md(컨테이너 768px+) 3열 — 좁은 폭에서 날짜 침범 방지. */}
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
-            <span className="text-gray-600 break-words">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="text-gray-600 break-words min-w-0">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
-            <span className="text-gray-600 break-words">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="text-gray-600 break-words min-w-0">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">완료</span>
-            <span className="text-gray-600 break-words">{fmtDate(meta.announceDate)}</span>
+            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.announceDate)}</span>
           </div>
         </div>
 
-        {/* KPI — 2×2 고정 (4칸 한 줄에 모두 넣으면 말줄임 발생) */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* KPI 4칸 — 모바일 1열, 충분히 넓어지면 2열 (한 줄 4칸은 말줄임 발생하므로 4열 안 함). */}
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
           <KpiCell label="지원자" value={`${applicants.length}`} />
           <KpiCell label="모집 마감" value={(() => {
             const end = meta.recruitPeriod?.split(' ~ ')[1]
@@ -2150,8 +2150,8 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && !isGated && qa !== 'tab-report-empty' && (
         <div className="space-y-4">
-          {/* KPI 6개 — 2×3 고정 (말줄임 방지). 평균 참여율은 6번째에 통합 */}
-          <div className="grid grid-cols-2 gap-3 @sm:gap-4">
+          {/* KPI 6개 — 카드 폭 보장. 좁으면 1열, 충분히 넓어지면 2~3열로 자동 개행 (그래프-값 충돌 방지). */}
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
             {reportKPI.map(k => {
               const Icon = k.icon
               return (
@@ -2728,12 +2728,12 @@ export default function CampaignDetail() {
           >
             {!detail ? (
               <div className="space-y-3">
-                <div className="rounded-2xl border border-brand-green-border bg-brand-green-bg px-4 py-3 flex items-center justify-between">
-                  <div>
+                <div className="rounded-2xl border border-brand-green-border bg-brand-green-bg px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+                  <div className="min-w-0">
                     <p className="text-base font-semibold uppercase tracking-wider text-brand-green-text">완료율</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-0.5">{rate}%</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-0.5 tabular-nums whitespace-nowrap">{rate}%</p>
                   </div>
-                  <p className="text-base text-brand-green-text">{uploaded}/{total}명 등록</p>
+                  <p className="text-base text-brand-green-text whitespace-nowrap shrink-0">{uploaded}/{total}명 등록</p>
                 </div>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto">
                   {data.map(s => (

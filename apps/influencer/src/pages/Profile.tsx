@@ -113,7 +113,7 @@ export default function Profile() {
   const handlePhoneVerify = async () => {
     if (isPhoneSubmitting) return
     if (!phoneCodeSent) { showToast('인증번호를 먼저 받아주세요', 'error'); return }
-    if (phoneCode.length < 4) { showToast('인증번호를 입력해 주세요', 'error'); return }
+    if (phoneCode.length !== 6) { showToast('인증번호 6자리를 입력해 주세요', 'error'); return }
     setIsPhoneSubmitting(true)
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
     if (!isMountedRef.current) return

@@ -87,6 +87,8 @@ export { getDDay, getDDayBadgeStyle } from './utils/getDDay'
 export type { DayResult } from './utils/getDDay'
 export { getDateLabel } from './utils/getDateLabel'
 export type { DatePeriod } from './utils/getDateLabel'
+export { niceCeil } from './utils/niceCeil'
+export { shouldShowLabel } from './utils/shouldShowLabel'
 
 // DS 색상 토큰
 export { BRAND, AVATAR_COLORS, PLATFORM_COLORS, CHART_COLORS, SEMANTIC_COLORS, QA_ACCENT_COLOR } from './constants/colors'

@@ -81,7 +81,8 @@ export default function Settlement() {
 
   const handleBankRegister = () => {
     if (!bankDraft.bank) { showToast('은행을 선택해 주세요', 'error'); return }
-    if (!/^[0-9-]{8,20}$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
+    // 시작·끝은 숫자 + 중간에 숫자·하이픈 허용 — 하이픈만 8개로는 통과 X (cold-review 7차 M12)
+    if (!/^\d[\d-]{6,18}\d$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
     if (!bankDraft.holder.trim()) { showToast('예금주를 입력해 주세요', 'error'); return }
     setBankAccount({ ...bankDraft })
     setBankModalOpen(false)
@@ -380,7 +381,7 @@ export default function Settlement() {
 
           <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-100">
             <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-sm text-amber-700 break-keep">본인 명의가 아닌 계좌로는 지급이 불가합니다.</p>
+            <p className="text-sm text-amber-700 break-keep">본인 명의 계좌만 등록할 수 있어요</p>
           </div>
 
           <div className="flex gap-2">

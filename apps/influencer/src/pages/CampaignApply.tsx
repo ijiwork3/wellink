@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -39,6 +39,16 @@ export default function CampaignApply() {
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
+
+  // 사용자가 input 수정하면 해당 필드 에러 해소 (cold-review 7차 H6)
+  const clearError = useCallback((key: string) => {
+    setErrors(prev => {
+      if (!prev[key]) return prev
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+  }, [])
 
   if (!campaign) {
     return (
@@ -188,7 +198,7 @@ export default function CampaignApply() {
               <input
                 type="tel"
                 value={phone}
-                onChange={e => setPhone(formatPhone(e.target.value))}
+                onChange={e => { setPhone(formatPhone(e.target.value)); clearError('phone') }}
                 placeholder="010-0000-0000"
                 autoComplete="tel"
                 inputMode="tel"
@@ -215,7 +225,7 @@ export default function CampaignApply() {
                     <input
                       type="text"
                       value={deliveryName}
-                      onChange={e => setDeliveryName(e.target.value)}
+                      onChange={e => { setDeliveryName(e.target.value); clearError('deliveryName') }}
                       placeholder="배송받는 분의 이름"
                       autoComplete="name"
                       maxLength={20}
@@ -236,7 +246,7 @@ export default function CampaignApply() {
                     <input
                       type="tel"
                       value={deliveryPhone}
-                      onChange={e => setDeliveryPhone(formatPhone(e.target.value))}
+                      onChange={e => { setDeliveryPhone(formatPhone(e.target.value)); clearError('deliveryPhone') }}
                       placeholder="010-0000-0000"
                       autoComplete="tel"
                       inputMode="tel"
@@ -270,6 +280,7 @@ export default function CampaignApply() {
                         onClick={() => {
                           setDeliveryZip('06234')
                           setDeliveryAddr('서울 강남구 테헤란로 123')
+                          clearError('deliveryAddr')
                         }}
                         className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
@@ -326,28 +337,33 @@ export default function CampaignApply() {
                             name={q.id}
                             value={opt}
                             checked={answers[q.id] === opt}
-                            onChange={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
+                            onChange={() => { setAnswers(prev => ({ ...prev, [q.id]: opt })); clearError(`q_${q.id}`) }}
                             className="accent-brand-green mt-0.5 flex-shrink-0"
                           />
                           <span className="text-sm text-gray-700 break-keep min-w-0 flex-1">{opt}</span>
                         </label>
                       ))}
                     </div>
-                  ) : (
-                    <>
-                      <textarea
-                        value={answers[q.id] ?? ''}
-                        onChange={e => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                        placeholder="답변을 입력해 주세요"
-                        rows={3}
-                        maxLength={500}
-                        className={`${fieldCls(errors[`q_${q.id}`])} resize-none`}
-                        aria-invalid={!!errors[`q_${q.id}`]}
-                        aria-describedby={errors[`q_${q.id}`] ? `apply-error-q-${q.id}` : undefined}
-                      />
-                      <p className="text-sm text-gray-400 mt-1 text-right tabular-nums">{(answers[q.id] ?? '').length}/500</p>
-                    </>
-                  )}
+                  ) : (() => {
+                    const len = (answers[q.id] ?? '').length
+                    // 글자수 임박 알림 — 90% 이상 주황, 100% 빨강 (M7)
+                    const counterCls = len >= 500 ? 'text-red-500 font-medium' : len >= 450 ? 'text-orange-500' : 'text-gray-400'
+                    return (
+                      <>
+                        <textarea
+                          value={answers[q.id] ?? ''}
+                          onChange={e => { setAnswers(prev => ({ ...prev, [q.id]: e.target.value })); clearError(`q_${q.id}`) }}
+                          placeholder="답변을 입력해 주세요"
+                          rows={3}
+                          maxLength={500}
+                          className={`${fieldCls(errors[`q_${q.id}`])} resize-none`}
+                          aria-invalid={!!errors[`q_${q.id}`]}
+                          aria-describedby={errors[`q_${q.id}`] ? `apply-error-q-${q.id}` : undefined}
+                        />
+                        <p className={`text-sm mt-1 text-right tabular-nums ${counterCls}`}>{len}/500</p>
+                      </>
+                    )
+                  })()}
                   {errors[`q_${q.id}`] && <p id={`apply-error-q-${q.id}`} role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">필수 항목이에요</p>}
                 </div>
               ))}
@@ -361,13 +377,13 @@ export default function CampaignApply() {
             <div className="space-y-3">
               <AgreementRow
                 checked={agreed1}
-                onChange={setAgreed1}
+                onChange={(v) => { setAgreed1(v); clearError('agreed1') }}
                 error={errors.agreed1}
                 text="초상권 활용에 동의합니다."
               />
               <AgreementRow
                 checked={agreed2}
-                onChange={setAgreed2}
+                onChange={(v) => { setAgreed2(v); clearError('agreed2') }}
                 error={errors.agreed2}
                 text="캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다."
               />

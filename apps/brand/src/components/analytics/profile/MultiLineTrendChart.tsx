@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { CHART_COLORS, useChartScrollContext } from '@wellink/ui'
+import { CHART_COLORS, useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
 import { metricColors, type TrendItem, type MetricKey } from '../../../data/analytics/profile'
 
 interface Props {
@@ -31,19 +31,30 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
   const chartW = width - padX * 2
   const chartH = height - padY * 2
 
-  const metricRanges: Record<MetricKey, { min: number; max: number }> = {} as Record<MetricKey, { min: number; max: number }>
-  ;(Object.keys(metricColors) as MetricKey[]).forEach(metric => {
-    const vals = data.map(d => d[metric]).filter((v): v is number => v !== null)
-    metricRanges[metric] = { min: Math.min(...vals, 0), max: Math.max(...vals, 1) }
-  })
+  /* Y축 스케일 정책 — *활성 메트릭들의 공통 Y축* 사용
+   * 이유: 메트릭별 개별 정규화 시 *추세가 비슷하면 라인이 겹쳐* 절대값 차이가 안 보임.
+   * 공통 Y축: 도달(82k)·좋아요(10k)·저장(1.8k)·댓글(880) 같이 켜면
+   *           큰 값은 위쪽, 작은 값은 바닥 쪽으로 *수치 차이가 직관적*으로 표시됨.
+   * 작은 값의 변화만 보고 싶으면 *그 메트릭만 단독 활성*하면 Y축이 자동 그 범위로 줌인.
+   * Y축 max는 *nice round* (10·15·20·30·50·75·100×10^n)로 라운드업하여 깔끔한 라벨 보장.
+   */
+  const activeMetricList: MetricKey[] = activeMetrics.length > 0
+    ? activeMetrics
+    : (Object.keys(metricColors) as MetricKey[])
 
-  const getPoints = (metric: MetricKey) => {
-    const { min, max } = metricRanges[metric]
-    const range = max - min || 1
+  const allActiveVals = activeMetricList
+    .flatMap(metric => data.map(d => d[metric]).filter((v): v is number => v !== null))
+  const rawMax = Math.max(...allActiveVals, 1)
+  const sharedMin = 0
+  const sharedMax = niceCeil(rawMax)
+  const sharedRange = sharedMax - sharedMin || 1
+
+  const getPoints = (_metric: MetricKey) => {
+    const metric = _metric
     return data.map((d, i) => ({
       x: padX + (chartW / Math.max(1, data.length - 1)) * i,
       y: d[metric] !== null
-        ? padY + chartH - ((d[metric] as number - min) / range) * chartH
+        ? padY + chartH - ((d[metric] as number - sharedMin) / sharedRange) * chartH
         : null,
       value: d[metric],
     }))
@@ -79,20 +90,22 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         return <line key={ratio} x1={padX} y1={y} x2={width - padX} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
 
-      {/* Y축 라벨 — 단일 메트릭일 때만 표시 (X축과 동일 spec: axisLabel, 10pt, regular) */}
-      {activeMetrics.length === 1 && (() => {
-        const primary = activeMetrics[0]
-        const { min, max } = metricRanges[primary]
-        return [0, 0.5, 1].map(ratio => {
-          const y = padY + chartH - ratio * chartH + 3
-          const value = min + (max - min) * ratio
-          return (
-            <text key={ratio} x={padX - 6} y={y} textAnchor="end" fontSize="12" fill={CHART_COLORS.axisLabel}>
-              {value >= 1000 ? `${(value / 1000).toFixed(1)}k` : Math.round(value).toString()}
-            </text>
-          )
-        })
-      })()}
+      {/* Y축 라벨 — 공통 Y축 기준 (모든 활성 메트릭 공유)
+       * 활성 메트릭 1개면 그 메트릭 범위로 자동 줌인. 여러 개면 *전체 max 기준* 큰 스케일. */}
+      {[0, 0.5, 1].map(ratio => {
+        const y = padY + chartH - ratio * chartH + 3
+        const value = sharedMin + sharedRange * ratio
+        const formatted = value >= 10000
+          ? `${(value / 1000).toFixed(0)}k`
+          : value >= 1000
+            ? `${(value / 1000).toFixed(1)}k`
+            : Math.round(value).toString()
+        return (
+          <text key={ratio} x={padX - 6} y={y} textAnchor="end" fontSize="12" fill={CHART_COLORS.axisLabel}>
+            {formatted}
+          </text>
+        )
+      })}
 
       {/* null 구간 배경 음영 */}
       {(() => {
@@ -231,17 +244,11 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         ))
       })()}
 
-      {/* x축 라벨 — showLabel 조건 적용, null은 회색 */}
+      {/* x축 라벨 — 공통 shouldShowLabel 유틸, null은 회색 */}
       {data.map((d, i) => {
+        if (!shouldShowLabel(i, data.length, d)) return null
         const x = padX + (chartW / Math.max(1, data.length - 1)) * i
         const isNull = d.likes === null
-        const isDense = data.length > 14
-        const doShow = data.length > 20
-          ? i % 7 === 0
-          : isDense
-            ? (d.showLabel ?? false)
-            : true
-        if (!doShow) return null
         return (
           <text key={i} x={x} y={height - 4} textAnchor="middle" fill={isNull ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize="12">
             {d.label}

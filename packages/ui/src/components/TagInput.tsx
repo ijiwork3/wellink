@@ -82,9 +82,9 @@ export default function TagInput({
             <span
               key={tag}
               role="listitem"
-              className={`flex items-center gap-1 text-xs border px-2.5 py-1 rounded-full ${colorMap[tagColor]}`}
+              className={`inline-flex items-center gap-1 text-xs border px-2.5 py-1 rounded-full whitespace-nowrap max-w-full ${colorMap[tagColor]}`}
             >
-              {tag}
+              <span className="truncate">{tag}</span>
               <button
                 type="button"
                 onClick={() => removeTag(tag)}

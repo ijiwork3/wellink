@@ -7,7 +7,7 @@
  *   line + area fill 이 추세와 누적 성장을 함께 보여주는 정석.
  *
  * 디자인:
- *   - line: brand-green-text (#527F1B) 2px
+ *   - line: brand-green-text (#527E18) 2px
  *   - area: brand-green gradient (위 35% → 아래 0)
  *   - Y축: minVal·midVal·maxVal 3구간 라벨 (0에서 시작 X — base 24000에서 변동 100 단위 가시화)
  *   - X축: showLabel 정책 (>14 데이터 시 sparse)
@@ -17,7 +17,7 @@
  */
 
 import { memo } from 'react'
-import { fmtNumber, useChartScrollContext } from '@wellink/ui'
+import { fmtNumber, useChartScrollContext, shouldShowLabel } from '@wellink/ui'
 import type { BarDataItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -96,8 +96,8 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
     >
       <defs>
         <linearGradient id="follower-area-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#9DD737" stopOpacity={0.42} />
-          <stop offset="100%" stopColor="#9DD737" stopOpacity={0} />
+          <stop offset="0%" stopColor="#95D135" stopOpacity={0.42} />
+          <stop offset="100%" stopColor="#95D135" stopOpacity={0} />
         </linearGradient>
       </defs>
 
@@ -143,12 +143,11 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
       })}
 
       {/* Line stroke */}
-      <path d={linePath} fill="none" stroke="#527F1B" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      <path d={linePath} fill="none" stroke="#527E18" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
-      {/* X축 라벨 — showLabel 정책 동기 */}
+      {/* X축 라벨 — 공통 shouldShowLabel 유틸 */}
       {data.map((d, i) => {
-        const showLbl = d.showLabel ?? data.length <= 14
-        if (!showLbl) return null
+        if (!shouldShowLabel(i, data.length, d)) return null
         const x = padL + i * stepX
         const isMax = i === maxIdx
         const isActive = i === activeIndex && !isMax
@@ -159,7 +158,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
             y={H - 10}
             textAnchor="middle"
             fontSize="11"
-            fill={isMax ? '#527F1B' : (isActive ? '#374151' : '#9ca3af')}
+            fill={isMax ? '#527E18' : (isActive ? '#374151' : '#9ca3af')}
             fontWeight={isMax ? 600 : 400}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
           >
@@ -171,13 +170,13 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
       {/* Max point 강조 + 값 라벨 */}
       {maxPoint && (
         <g>
-          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="#fff" stroke="#527F1B" strokeWidth={2.5} />
+          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="#fff" stroke="#527E18" strokeWidth={2.5} />
           <text
             x={maxPoint.x}
             y={maxPoint.y - 12}
             textAnchor="middle"
             fontSize="12"
-            fill="#527F1B"
+            fill="#527E18"
             fontWeight={700}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
             className="tabular-nums"
@@ -194,7 +193,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
         return (
           <g>
             <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={p.x} cy={p.y} r={4} fill="#527F1B" stroke="#fff" strokeWidth={2} />
+            <circle cx={p.x} cy={p.y} r={4} fill="#527E18" stroke="#fff" strokeWidth={2} />
           </g>
         )
       })()}

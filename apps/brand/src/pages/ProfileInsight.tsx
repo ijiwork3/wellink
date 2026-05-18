@@ -103,7 +103,7 @@ export default function ProfileInsight() {
           </div>
           <div className="h-9 w-36 bg-gray-100 animate-pulse rounded-xl" />
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
           {[1,2,3,4].map(i => <SkeletonCard key={i} height={128} />)}
         </div>
         <SkeletonCard height={256} />
@@ -196,7 +196,7 @@ export default function ProfileInsight() {
       />
 
       {/* KPI 카드 4개 — 클라 #1: 부연 설명(sub) 제거. 라벨/값/전기간 대비만 간결하게 */}
-      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
         <KPICard
           title="팔로워 수"
           value={isZero ? '0' : fmtNumber(kpi.followers)}

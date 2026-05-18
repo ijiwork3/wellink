@@ -6,7 +6,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
 
 interface Props {
   data: { label: string; value: number }[]
@@ -24,7 +24,8 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
   const W = ctx?.measuredW ?? 400
   const H = 200, padL = 56, padR = 16, padT = 18, padB = 32
   const plotW = W - padL - padR, plotH = H - padT - padB
-  const max = Math.max(1, ...data.map(d => d.value))
+  // niceCeil로 Y축 max 라운드업 (차트 위 끝 안 닿게, 라벨 깔끔)
+  const max = niceCeil(Math.max(1, ...data.map(d => d.value)))
   const stepX = plotW / Math.max(data.length - 1, 1)
   const points = data.map((d, i) => ({
     x: padL + i * stepX,
@@ -38,7 +39,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
   const svgMinW = Math.max(400, data.length * 44)
 
   // X축 라벨 간격: data.length 기반
-  const labelInterval = data.length > 20 ? 7 : data.length > 8 ? 3 : 1
+  // X축 라벨 표시 — 공통 정책 (shouldShowLabel 유틸 사용)
 
   const idxAt = (clientX: number, rect: DOMRect) =>
     Math.max(0, Math.min(data.length - 1, Math.round(((clientX - rect.left) / rect.width * W - padL) / stepX)))
@@ -85,7 +86,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
       ))}
       {/* X축 라벨 — data.length 기반 간격 */}
       {points.map((p, i) => {
-        if (i % labelInterval !== 0 && i !== points.length - 1) return null
+        if (!shouldShowLabel(i, points.length)) return null
         return <text key={i} x={p.x} y={padT + plotH + 20} textAnchor="middle" fontSize={12} fill="#6b7280">{p.label}</text>
       })}
       {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}

@@ -13,7 +13,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
 
 interface Props {
   data: { date: string; spend: number; clicks: number; ctr?: number }[]
@@ -45,15 +45,15 @@ const MixedChart = memo(function MixedChart({
   const padL = 130
   const padR = 130
   const plotW = W - padL - padR, plotH = H - padT - padB
-  const maxSpend = Math.max(1, ...data.map(d => d.spend))
-  const maxClicks = Math.max(1, ...data.map(d => d.clicks))
+  // 좌·우 양축 모두 niceCeil 적용 (지출/클릭·ROAS 각각 깔끔한 라운드 max)
+  const maxSpend = niceCeil(Math.max(1, ...data.map(d => d.spend)))
+  const maxClicks = niceCeil(Math.max(1, ...data.map(d => d.clicks)))
   const stepX = plotW / Math.max(data.length - 1, 1)
   // 막대 너비 — stepX의 65%로 반응형, 16~100px 범위 clamp (W 커질수록 막대 ↑)
   const BAR_W = Math.max(16, Math.min(100, stepX * 0.65))
   const svgMinW = Math.max(700, data.length * 44)
 
-  // X축 라벨 간격: data.length 기반
-  const labelInterval = data.length > 20 ? 7 : data.length > 8 ? 3 : 1
+  // X축 라벨 표시 — 공통 정책 (shouldShowLabel 유틸 사용)
 
   const idxAt = (clientX: number, rect: DOMRect) =>
     Math.max(0, Math.min(data.length - 1, Math.round(((clientX - rect.left) / rect.width * W - padL) / stepX)))
@@ -100,7 +100,7 @@ const MixedChart = memo(function MixedChart({
         )
       })}
       {/* 축 단위 안내 — 컬러 유지 (어느 축이 어느 데이터인지 식별), 폰트는 X축과 동일 사이즈 */}
-      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill="#8b5cf6">지출 (원)</text>
+      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill="#95D135">지출 (원)</text>
       <text x={yLabelRightX} y={padT - 10} textAnchor="start" fontSize={14} fill={secondaryColor}>{secondaryLabel}</text>
 
       {/* 기준선 (referenceLine) — 우축 값 기준 점선 + 우측 라벨 */}
@@ -137,7 +137,7 @@ const MixedChart = memo(function MixedChart({
       {data.map((d, i) => {
         const x = padL + i * stepX - BAR_W / 2
         const h = (d.spend / maxSpend) * plotH
-        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill="#8b5cf6" />
+        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill="#95D135" />
       })}
       {/* 라인 (보조) — 보색으로 막대와 대비 강화 */}
       <path
@@ -164,7 +164,7 @@ const MixedChart = memo(function MixedChart({
       })}
       {/* X축 라벨 — data.length 기반 간격 */}
       {data.map((d, i) => {
-        if (i % labelInterval !== 0 && i !== data.length - 1) return null
+        if (!shouldShowLabel(i, data.length)) return null
         const x = padL + i * stepX
         return <text key={i} x={x} y={padT + plotH + 18} textAnchor="middle" fontSize={14} fill="#6b7280">{d.date}</text>
       })}
@@ -178,7 +178,7 @@ const MixedChart = memo(function MixedChart({
         return (
           <g key="active-indicator">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={spendY} r={4} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
+            <circle cx={x} cy={spendY} r={4} fill="#95D135" stroke="white" strokeWidth={1.5} />
             <circle cx={x} cy={clicksY} r={4} fill={secondaryColor} stroke="white" strokeWidth={1.5} />
           </g>
         )

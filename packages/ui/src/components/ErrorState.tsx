@@ -17,14 +17,16 @@ const ErrorState = memo(function ErrorState({
   showRetryIcon = true,
 }: Props) {
   return (
-    <div role="alert" className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4">
-      <XCircle size={48} className="text-red-300" aria-hidden="true" />
-      <div className="text-center">
-        <p className="text-base font-semibold text-gray-900">{message}</p>
-        <p className="text-sm text-gray-500 mt-1">{subMessage}</p>
+    /* 모바일에서 min-h-[400px]은 좁은 화면 비율을 압박 → @sm 이상에서만 적용.
+     * 텍스트 메시지는 break-keep으로 한글 단어 보존하면서 줄바꿈 허용. */
+    <div role="alert" className="@container flex flex-col items-center justify-center h-full min-h-[260px] @sm:min-h-[400px] gap-4 px-4">
+      <XCircle size={48} className="text-red-300 shrink-0" aria-hidden="true" />
+      <div className="text-center max-w-md">
+        <p className="text-base font-semibold text-gray-900 break-keep">{message}</p>
+        <p className="text-sm text-gray-500 mt-1 break-keep">{subMessage}</p>
       </div>
       {onRetry && (
-        <button type="button" onClick={onRetry} className="flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+        <button type="button" onClick={onRetry} className="inline-flex items-center gap-2 text-base bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
           {showRetryIcon && <RefreshCw size={14} aria-hidden="true" />}{retryLabel}
         </button>
       )}

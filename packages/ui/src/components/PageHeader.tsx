@@ -30,20 +30,23 @@ const PageHeader = memo(function PageHeader({
   className = '',
 }: PageHeaderProps) {
   return (
-    <header className={`flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3 @sm:gap-4 ${className}`.trim()}>
+    /* @container — 자식의 @sm/@md 컨테이너 쿼리가 헤더 폭 기준으로 동작. */
+    <header className={`@container flex flex-col @sm:flex-row @sm:items-end @sm:justify-between gap-3 @sm:gap-4 ${className}`.trim()}>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          <h1 className="text-2xl @md:text-3xl font-bold tracking-tight text-gray-900 break-keep min-w-0">
             {title}
           </h1>
           {meta}
         </div>
         {description && (
-          <p className="text-sm text-gray-500 mt-1">{description}</p>
+          <p className="text-sm text-gray-500 mt-1 break-keep">{description}</p>
         )}
       </div>
       {actions && (
-        <div className="shrink-0 flex items-center gap-2 flex-wrap">{actions}</div>
+        /* actions 그룹 — 모바일에서는 풀폭(다음 줄), @sm 이상에서 shrink-0 우측 정렬.
+         * 기존 항상 shrink-0 + 모바일에서 다음 줄로 내려가지만 actions 자체 폭이 viewport 침범. */
+        <div className="w-full @sm:w-auto @sm:shrink-0 flex items-center gap-2 flex-wrap">{actions}</div>
       )}
     </header>
   )

@@ -62,12 +62,12 @@ export default function FileUpload({
         onDragOver={e => { e.preventDefault(); setDragging(true) }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50
+        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-4 @sm:p-6 cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50
           ${dragging ? 'border-brand-green bg-brand-green/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'}`}
       >
-        <Upload size={20} className="text-gray-400" aria-hidden="true" />
-        <p className="text-sm text-gray-500 text-center">{hint}</p>
-        <p className="text-sm text-gray-400">클릭하거나 파일을 드래그하세요</p>
+        <Upload size={20} className="text-gray-400 shrink-0" aria-hidden="true" />
+        <p className="text-sm text-gray-500 text-center break-keep">{hint}</p>
+        <p className="text-sm text-gray-400 break-keep text-center">클릭하거나 파일을 드래그하세요</p>
         <input
           ref={inputRef}
           type="file"
@@ -86,11 +86,11 @@ export default function FileUpload({
             <div
               key={i}
               role="listitem"
-              className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100"
+              className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100 min-w-0"
             >
               <FileText size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
-              <span className="flex-1 text-sm text-gray-700 truncate">{file.name}</span>
-              <span className="text-sm text-gray-400 shrink-0">
+              <span className="flex-1 text-sm text-gray-700 truncate min-w-0">{file.name}</span>
+              <span className="text-sm text-gray-400 shrink-0 whitespace-nowrap tabular-nums">
                 {(file.size / 1024).toFixed(0)}KB
               </span>
               <button

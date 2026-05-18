@@ -43,7 +43,9 @@ const Card = memo(function Card({
   children,
   ...rest
 }: CardProps) {
-  const base = `bg-white border border-gray-100 ${SIZE[size]} ${PAD[padding]}`
+  // @container — 자식이 @md:* 등 컨테이너 쿼리 클래스를 쓸 때 부모가 quoting query 됨.
+  // 없으면 자식의 컨테이너 쿼리가 viewport 기반으로 잘못 동작.
+  const base = `@container bg-white border border-gray-100 ${SIZE[size]} ${PAD[padding]}`
   const hover = interactive
     ? 'hover:border-gray-200 hover:shadow-md transition-all duration-150'
     : ''
@@ -86,17 +88,18 @@ export const Section = memo(function Section({
 }: SectionProps) {
   return (
     <Card size={size} padding={padding} className={className}>
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="min-w-0">
-          <h2 className="text-base font-semibold text-gray-800 flex items-center gap-1.5">
+      {/* 좁은 폭에서 액션이 우측 침범 → flex-wrap 으로 다음 줄. 사용자 정책: 침범보다 개행. */}
+      <div className="flex flex-wrap items-start justify-between gap-2 @sm:gap-3 mb-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base font-semibold text-gray-800 flex items-center gap-1.5 min-w-0">
             {icon && <span className="text-gray-500 shrink-0">{icon}</span>}
-            <span className="min-w-0">{title}</span>
+            <span className="min-w-0 break-keep">{title}</span>
           </h2>
           {description && (
-            <p className="text-sm text-gray-500 mt-1">{description}</p>
+            <p className="text-sm text-gray-500 mt-1 break-keep">{description}</p>
           )}
         </div>
-        {action && <div className="shrink-0">{action}</div>}
+        {action && <div className="shrink-0 max-w-full">{action}</div>}
       </div>
       {children}
     </Card>

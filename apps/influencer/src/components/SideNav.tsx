@@ -38,11 +38,12 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
               return (
                 <li key={item.path}>
                   <button
+                    type="button"
                     onClick={() => { navigate(item.path); onNavigate?.() }}
                     aria-current={isActive ? 'page' : undefined}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isActive
-                        ? 'bg-gray-100 text-gray-900 font-medium'
+                        ? 'bg-brand-green-bg text-brand-green-text font-medium'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >

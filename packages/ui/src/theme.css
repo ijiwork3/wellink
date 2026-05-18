@@ -7,15 +7,16 @@
   --color-landing-lime:      #BFF264;  /* 랜딩 라임 — 포인트 컬러 */
   --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 — gray-900 */
 
-  /* 채도 정책 v2 (2026-05-10) — HSL 기준 채도 +12~16pt 상향
+  /* 채도 정책 v4.4 (2026-05-16) — v4.3에서 S 64→62 미세 조정
+   * H 83° (파란 끼) 유지, S만 64→62. 거의 미세 변화.
    * 변경 시 packages/ui/src/constants/colors.ts > BRAND 동기화 필수 */
-  --color-brand-green:       #9DD737;  /* HSL(82,67%,53%) — 메인 (was #8CC63F H82 S54 L51) */
-  --color-brand-green-text:  #527F1B;  /* HSL(82,65%,30%) — 텍스트 (was #5a8228, 대비 4.6:1 유지) */
-  --color-brand-green-hover: #88C420;  /* HSL(82,72%,45%) — hover (was #7AB535) */
-  --color-brand-green-bg:    #EEF8D9;  /* HSL(82,71%,91%) — 연한 배경 (was #f0f9e8) */
-  --color-brand-green-border:#C0E384;  /* HSL(82,57%,71%) — 연한 보더 (was #c5e39a) */
+  --color-brand-green:       #95D135;  /* HSL(83,62%,51%) — 메인 (S 64→62) */
+  --color-brand-green-text:  #527E18;  /* HSL(79,68%,29%) — 텍스트 대비 4.85:1 */
+  --color-brand-green-hover: #82B62B;  /* HSL(83,62%,44%) — hover S62 동기 */
+  --color-brand-green-bg:    #EFF9D8;  /* HSL(79,72%,92%) — 옅은 배경 */
+  --color-brand-green-border:#BADE7E;  /* HSL(83,60%,68%) — 보더 S60 */
 
-  --color-sparkline-success: #9DD737;  /* 스파크라인 상승 — 브랜드 그린 동기화 */
+  --color-sparkline-success: #95D135;  /* 스파크라인 상승 — 브랜드 그린 동기화 */
   --color-sparkline-alert:   #EF4444;  /* 스파크라인 하락 — 빨강 (red-500, 채도 충분) */
 
   --color-roas-warning:      #F59E0B;  /* ROAS ≥1.5 amber */
@@ -30,7 +31,7 @@
 
 :root {
   --gradient-auth-bg: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 15%, transparent) 0%, #ffffff 70%);
-  /* 로그인 그라디언트 — 채도 v2 동기화 (was #f0f9e8 → #c8e8a8) */
-  --gradient-login-bg: linear-gradient(135deg, #EEF8D9 0%, #E2F3C0 30%, #CFEC9A 60%, #BFE57E 100%);
+  /* 로그인 그라디언트 — v4.1 동기화 (부드러운 라임 톤) */
+  --gradient-login-bg: linear-gradient(135deg, #EFF9D8 0%, #DCEFAF 30%, #BFDC75 60%, #A2C748 100%);
   --gradient-instagram: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
 }

@@ -145,25 +145,29 @@ export default function Modal({ open, onClose, title, label, children, footer, s
         onClick={e => e.stopPropagation()}
       >
         {(title || showClose) && (
-          <div className={`flex items-center justify-between px-6 py-4 shrink-0 ${noDividers ? '' : 'border-b border-gray-100'}`}>
+          /* 좁은 폭에서 긴 타이틀이 닫기 버튼과 충돌하지 않도록 min-w-0 + truncate.
+           * px-6은 모바일에서 좌우 24px 침범 → px-4 @sm:px-6 으로 단계화. */
+          <div className={`flex items-center justify-between gap-3 px-4 @sm:px-6 py-4 shrink-0 ${noDividers ? '' : 'border-b border-gray-100'}`}>
             {title
-              ? <h3 id={titleId} className="text-base font-semibold text-gray-900">{title}</h3>
+              ? <h3 id={titleId} className="text-base font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
               : <span />
             }
             {showClose && (
               <button
                 onClick={() => onCloseRef.current()}
                 aria-label="닫기"
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 -m-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 -m-1 rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 shrink-0"
               >
                 <X size={18} aria-hidden="true" />
               </button>
             )}
           </div>
         )}
-        <div className="@container p-6 overflow-y-auto">{children}</div>
+        <div className="@container p-4 @sm:p-6 overflow-y-auto">{children}</div>
         {footer && (
-          <div className={`flex items-center justify-end gap-2 px-6 py-4 shrink-0 ${noDividers ? '' : 'border-t border-gray-100'}`}>
+          /* footer — 버튼 1~2개 기준. 좁은 폭에서 버튼이 viewport 침범하지 않도록 flex-wrap + justify-end.
+           * AlertModal 등에서 flex-1 버튼 사용 시 자연스러운 다음 줄. */
+          <div className={`flex flex-wrap items-center justify-end gap-2 px-4 @sm:px-6 py-4 shrink-0 ${noDividers ? '' : 'border-t border-gray-100'}`}>
             {footer}
           </div>
         )}

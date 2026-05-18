@@ -60,14 +60,14 @@ const EmptyState = memo(function EmptyState({
   return (
     <div
       role="status"
-      className={`flex flex-col items-center justify-center text-center ${wrap} ${className}`.trim()}
+      className={`flex flex-col items-center justify-center text-center px-4 ${wrap} ${className}`.trim()}
     >
-      <div className="text-gray-300" aria-hidden="true">
+      <div className="text-gray-300 shrink-0" aria-hidden="true">
         {icon ?? <Icon size={iconSize} />}
       </div>
-      <p className="text-base font-semibold text-gray-500">{title}</p>
+      <p className="text-base font-semibold text-gray-500 break-keep max-w-md">{title}</p>
       {description && (
-        <p className="text-sm text-gray-400 max-w-md whitespace-pre-line">{description}</p>
+        <p className="text-sm text-gray-400 max-w-md whitespace-pre-line break-keep">{description}</p>
       )}
       {action && <div className="mt-2">{action}</div>}
     </div>

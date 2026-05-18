@@ -138,7 +138,7 @@ export default function CampaignBrowse() {
           <ChipSelect
             options={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
             value={selectedCategory}
-            onChange={v => { setSelectedCategory(v); setSearch('') }}
+            onChange={v => setSelectedCategory(v)}
             className="flex-1"
             selectClassName="w-full"
           />

@@ -72,9 +72,10 @@ export default function Favorites() {
   return (
     <Layout>
       <div className="space-y-4">
+        <h1 className="sr-only">관심 캠페인</h1>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base font-semibold text-gray-900">관심 캠페인</h1>
+            <h2 className="text-base font-semibold text-gray-900">관심 캠페인</h2>
             <p className="text-sm text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
           </div>
           <button

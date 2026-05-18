@@ -15,7 +15,7 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
   const counts = { A: 0, B: 0, C: 0, D: 0, E: 0, processing: 0 } as Record<ContentGrade, number>
   for (const c of data) counts[c.grade] = (counts[c.grade] ?? 0) + 1
   const arr = [
-    { label: 'A 우수', value: counts.A, color: '#9DD737' },
+    { label: 'A 우수', value: counts.A, color: '#95D135' },
     { label: 'B', value: counts.B, color: '#f59e0b' },
     { label: 'C', value: counts.C, color: '#9ca3af' },
     { label: 'D', value: counts.D, color: '#d1d5db' },

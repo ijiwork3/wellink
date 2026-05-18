@@ -357,7 +357,8 @@ export default function DashboardV2() {
           actionLabel="더보기"
           onAction={() => navigate('/analytics/profile')}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+        {/* 프로필 인사이트 KPI 3개 — 카드 폭이 충분할 때만 3열. 좁으면 1열로 개행. */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
           {profileMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -421,7 +422,8 @@ export default function DashboardV2() {
           actionLabel="더보기"
           onAction={() => navigate('/analytics/ads')}
         />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+        {/* 광고 성과 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
           {adMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -444,7 +446,7 @@ export default function DashboardV2() {
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <h3 className="text-sm font-medium text-gray-600">{period === '연간' ? '연간' : period === '월간' ? '월간' : period === '주간' ? '주간' : '일간'} 지출 & ROAS 추이</h3>
             <div className="flex items-center gap-4 text-sm text-gray-600">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-violet-500 inline-block" />지출</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-green inline-block" />지출</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-orange-500 inline-block" />ROAS</span>
               <span className="flex items-center gap-1.5 text-orange-500/80"><span className="w-3 border-t border-dashed border-orange-500 inline-block" />1.0x 손익분기</span>
             </div>
@@ -461,7 +463,7 @@ export default function DashboardV2() {
               return (
                 <>
                   <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
-                  <p className="text-xs font-semibold text-violet-600 whitespace-nowrap">
+                  <p className="text-xs font-semibold text-brand-green-text whitespace-nowrap">
                     지출 {d.spend.toLocaleString('ko-KR')}원
                   </p>
                   <p className="text-xs font-semibold text-orange-500 whitespace-nowrap">
@@ -500,8 +502,8 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/viral')}
         />
 
-        {/* 바이럴 KPI 4개 — 정식 카드 (다른 섹션과 동일 패턴) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
+        {/* 바이럴 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-5">
           {viralMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -529,12 +531,12 @@ export default function DashboardV2() {
                 <circle cx="45" cy="45" r="36" fill="none" stroke="#f3f4f6" strokeWidth="14" />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke="#9DD737" strokeWidth="14"
+                  stroke="#95D135" strokeWidth="14"
                   strokeDasharray={`${reelsDash} ${donutCircumference - reelsDash}`}
                 />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke="#3b82f6" strokeWidth="14"
+                  stroke="#527E18" strokeWidth="14"
                   strokeDasharray={`${feedDash} ${donutCircumference - feedDash}`}
                   strokeDashoffset={-reelsDash}
                 />
@@ -556,7 +558,7 @@ export default function DashboardV2() {
               </div>
               <div className="flex items-center justify-between">
                 <dt className="flex items-center gap-1.5 text-gray-700">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" aria-hidden="true" />
+                  <span className="w-2 h-2 rounded-full bg-brand-green-text inline-block" aria-hidden="true" />
                   피드
                 </dt>
                 <dd className="font-semibold text-gray-900 tabular-nums">

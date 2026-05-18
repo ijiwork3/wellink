@@ -105,22 +105,22 @@ export default function BottomSheet({ open, onClose, title, label = '선택', ch
           <div className="w-9 h-1 rounded-full bg-gray-200" />
         </div>
 
-        {/* 헤더 */}
+        {/* 헤더 — 긴 타이틀 truncate, 닫기 버튼 shrink-0 */}
         {title && (
-          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 flex-shrink-0">
-            <h3 id={titleId} className="text-sm font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-gray-100 flex-shrink-0">
+            <h3 id={titleId} className="text-sm font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
             <button
               onClick={() => onCloseRef.current()}
               aria-label="닫기"
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors shrink-0"
             >
               <X size={16} aria-hidden="true" />
             </button>
           </div>
         )}
 
-        {/* 콘텐츠 */}
-        <div className="overflow-y-auto flex-1 pb-[env(safe-area-inset-bottom)]">
+        {/* 콘텐츠 — @container로 내부 컨테이너 쿼리 활성 */}
+        <div className="@container overflow-y-auto flex-1 pb-[env(safe-area-inset-bottom)]">
           {children}
         </div>
       </div>

@@ -49,13 +49,15 @@ export default function DateRangePicker({
   }, [open, isMobile])
 
   return (
+    /* 좁은 폭(< @sm)에서 기간 토글과 navigator 그룹이 침범 → flex-wrap으로 다음 줄.
+     * compact 모드는 단일 행 유지(테이블 셀 등 강제 압축 콘텍스트). */
     <div className={`flex items-center gap-2 ${compact ? 'flex-nowrap' : 'flex-wrap'}`}>
       <div className="flex bg-gray-100 rounded-lg p-0.5 shrink-0">
         {periods.map(p => (
           <button
             key={p}
             onClick={() => { onPeriodChange(p); onDateOffsetChange(0) }}
-            className={`${compact ? 'text-sm px-2.5 py-1' : 'text-base px-3 py-1.5'} rounded-md transition-all ${
+            className={`${compact ? 'text-sm px-2.5 py-1' : 'text-base px-3 py-1.5'} rounded-md transition-all whitespace-nowrap ${
               period === p ? 'bg-white shadow-sm font-medium text-gray-900' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -63,11 +65,13 @@ export default function DateRangePicker({
           </button>
         ))}
       </div>
-      <div ref={wrapRef} className={`relative flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg ${compact ? 'px-1 py-0.5' : 'px-2 py-1'}`}>
+      {/* navigator 그룹 — shrink-0로 침범 시 자체적으로 wrap 되도록.
+       * 라벨 버튼 min-width를 컨테이너 쿼리로 동적: 좁은 폭에서는 라벨 자체 길이로 축소. */}
+      <div ref={wrapRef} className={`relative flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg shrink-0 ${compact ? 'px-1 py-0.5' : 'px-2 py-1'}`}>
         <button
           onClick={() => onDateOffsetChange(dateOffset - 1)}
           aria-label="이전 기간"
-          className={`${compact ? 'p-1' : 'p-2'} rounded hover:bg-gray-100 transition-colors`}
+          className={`${compact ? 'p-1' : 'p-2'} rounded hover:bg-gray-100 transition-colors shrink-0`}
         >
           <ChevronLeft size={14} className="text-gray-500" aria-hidden="true" />
         </button>
@@ -75,7 +79,7 @@ export default function DateRangePicker({
           onClick={() => setOpen(o => !o)}
           aria-label="기간 선택"
           aria-expanded={open}
-          className={`inline-flex items-center gap-1 ${compact ? 'px-1 py-0.5 min-w-[88px]' : 'px-2 py-1 min-w-[110px]'} text-center justify-center text-sm font-medium rounded transition-colors ${
+          className={`inline-flex items-center gap-1 ${compact ? 'px-1 py-0.5 min-w-[72px] @sm:min-w-[88px]' : 'px-2 py-1 min-w-[88px] @sm:min-w-[110px]'} text-center justify-center text-sm font-medium rounded transition-colors ${
             open
               ? 'bg-gray-100 text-gray-900'
               : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -89,7 +93,7 @@ export default function DateRangePicker({
           onClick={() => onDateOffsetChange(Math.min(0, dateOffset + 1))}
           disabled={dateOffset >= 0}
           aria-label="다음 기간"
-          className={`${compact ? 'p-1' : 'p-2'} rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed`}
+          className={`${compact ? 'p-1' : 'p-2'} rounded hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0`}
         >
           <ChevronRight size={14} className="text-gray-500" aria-hidden="true" />
         </button>
