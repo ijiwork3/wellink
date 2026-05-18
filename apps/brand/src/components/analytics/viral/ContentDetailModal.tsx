@@ -12,7 +12,7 @@
  */
 
 import { memo, useState, useEffect, useRef, useMemo } from 'react'
-import { Megaphone, Info, Eye, Heart, MessageCircle, Bookmark, Share2, TrendingUp, ExternalLink, Play, AlertCircle, Camera } from 'lucide-react'
+import { Megaphone, Info, Eye, Heart, MessageCircle, Bookmark, Share2, TrendingUp, ExternalLink, Play, AlertCircle, Camera, X } from 'lucide-react'
 import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useChartScrollContext, useIsTouchDevice, type ChartScrollContainerHandle } from '@wellink/ui'
 import GradePill from './GradePill'
 import { CAMPAIGN_MATCH_MAP, type ViralContent } from '../../../data/analytics/viral'
@@ -124,12 +124,12 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
   ] : []
 
   return (
-    <Modal open={content !== null} onClose={onClose} size="md" label="콘텐츠 상세">
+    <Modal open={content !== null} onClose={onClose} size="lg" label="콘텐츠 상세" showClose={false}>
       {content && (
         <div className="space-y-4">
 
           {/* 썸네일 배너 — 16:9, cover crop */}
-          <div className="relative -mx-4 -mt-4 @sm:-mx-6 @sm:-mt-6 overflow-hidden rounded-t-xl" style={{ aspectRatio: '16/9' }}>
+          <div className="relative -mx-4 -mt-4 @sm:-mx-6 @sm:-mt-6 overflow-hidden rounded-t-2xl" style={{ aspectRatio: '16/9' }}>
             <img
               src={imgSrc}
               alt={`${content.influencer} ${content.type} 미리보기`}
@@ -137,6 +137,14 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
               loading="lazy"
               onError={handleImgError}
             />
+            {/* 닫기 버튼 — 우상단 */}
+            <button
+              onClick={onClose}
+              aria-label="닫기"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
             {/* 콘텐츠 타입 칩 — 좌상단 */}
             <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-black/55 backdrop-blur-sm text-white text-xs font-semibold">
               {content.type}
@@ -200,7 +208,7 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
               <Megaphone size={14} className="text-brand-green-text shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-brand-green-text">{campaignMatch.campaignName}</p>
-                <p className="text-sm text-brand-green-text/70">{campaignMatch.uploadPeriodLabel}</p>
+                <p className="text-sm text-brand-green-text/70">{fmtRelativeDate(campaignMatch.uploadPeriodLabel.replace(' 등록', ''))} 등록</p>
               </div>
             </div>
           )}
