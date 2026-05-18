@@ -32,6 +32,12 @@ interface SparklineProps {
   responsive?: boolean
   /** 시각화 종류 — line / bar / area (기본 line) */
   variant?: 'line' | 'bar' | 'area'
+  /** bar variant 강조 막대 결정 방식
+   *  - 'max'  : 가장 높은 막대 (good 트렌드 — 최고점 강조)
+   *  - 'min'  : 가장 낮은 막대 (bad 트렌드 — 현재 최저점 강조)
+   *  - 'last' : 마지막 막대 (기본값)
+   */
+  highlightMode?: 'max' | 'min' | 'last'
   /** 기준선 — bar/area 시 y축 비교선 (예: 평균, 1.0x 등) */
   referenceLine?: number
   className?: string
@@ -48,6 +54,7 @@ const Sparkline = memo(function Sparkline({
   animate = true,
   responsive = false,
   variant = 'line',
+  highlightMode = 'last',
   referenceLine,
   className,
 }: SparklineProps) {
@@ -109,7 +116,13 @@ const Sparkline = memo(function Sparkline({
   const barSlot = innerW / data.length
   const barW = barSlot * 0.62
   const barOffset = padX + (barSlot - barW) / 2
-  const lastIdx = data.length - 1  // 현재값(마지막) 강조 — 트렌드 색상이 "지금 여기" 를 나타냄
+  // bar 강조 인덱스 — highlightMode에 따라 결정
+  const maxIdx = data.reduce((mi, v, i, a) => (v > a[mi] ? i : mi), 0)
+  const minIdx = data.reduce((mi, v, i, a) => (v < a[mi] ? i : mi), 0)
+  const highlightIdx =
+    highlightMode === 'max' ? maxIdx :
+    highlightMode === 'min' ? minIdx :
+    data.length - 1  // 'last'
   const minBarH = 2  // 최소 가시 높이
 
   const svgInner = (() => {
@@ -122,7 +135,7 @@ const Sparkline = memo(function Sparkline({
             const h = Math.max(minBarH, norm * innerH)
             const x = barOffset + i * barSlot
             const y = padY + innerH - h
-            const isLast = i === lastIdx
+            const isHighlight = i === highlightIdx
             return (
               <rect
                 key={i}
@@ -131,8 +144,8 @@ const Sparkline = memo(function Sparkline({
                 width={barW}
                 height={h}
                 rx={1.5}
-                fill={isLast ? stroke : mutedStroke}
-                opacity={isLast ? 1 : 0.7}
+                fill={isHighlight ? stroke : mutedStroke}
+                opacity={isHighlight ? 1 : 0.7}
               />
             )
           })}

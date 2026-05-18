@@ -150,6 +150,7 @@ const KPICard = memo(function KPICard({
               data={sparkline!}
               stroke={sparkStroke}
               variant={sparklineVariant}
+              highlightMode={severity === 'good' ? 'max' : severity === 'bad' ? 'min' : 'last'}
               referenceLine={sparklineReference}
               fill={sparklineVariant === 'line'}
               responsive
