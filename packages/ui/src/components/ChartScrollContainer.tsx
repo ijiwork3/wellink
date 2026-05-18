@@ -63,6 +63,7 @@ import {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
   useImperativeHandle,
   useContext,
   createContext,
@@ -128,7 +129,9 @@ const ChartScrollContainer = forwardRef<ChartScrollContainerHandle, ChartScrollC
     const pR = padR ?? padL
 
     /* ── 스크롤 상태 + 측정 width 추적 ──────────────────────────── */
-    useEffect(() => {
+    // useLayoutEffect: 초기 측정을 페인트 전에 동기 실행 → measuredW가 첫 툴팁 렌더 전에 확정됨
+    // (useEffect로 하면 rAF activeIndex=0 시점에 measuredW가 아직 chartW일 수 있어 툴팁 위치 오프셋 발생)
+    useLayoutEffect(() => {
       const el = scrollRef.current
       if (!el) return
       const update = () => {

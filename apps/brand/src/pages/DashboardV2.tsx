@@ -346,7 +346,7 @@ export default function DashboardV2() {
         </p>
       </motion.div>
 
-      {/* 기간 선택기 sticky — 모바일은 항상 보임 / PC는 PageHeader 화면 밖으로 빠질 때만 (좌측 정렬) */}
+      {/* 기간 선택기 sticky — 모바일은 항상 보임 / PC는 PageHeader 화면 밖으로 빠질 때만 (우측 정렬) */}
       <div
         className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 transition-all ${
           isDesktop && !isStuck
@@ -357,13 +357,15 @@ export default function DashboardV2() {
         } ${isDesktop ? 'top-0' : 'top-12'}`}
         aria-hidden={isDesktop && !isStuck}
       >
-        <DateRangePicker
-          period={period}
-          dateOffset={dateOffset}
-          onPeriodChange={setPeriod}
-          onDateOffsetChange={setDateOffset}
-          compact={!isDesktop}
-        />
+        <div className={isStuck ? 'flex justify-end' : undefined}>
+          <DateRangePicker
+            period={period}
+            dateOffset={dateOffset}
+            onPeriodChange={setPeriod}
+            onDateOffsetChange={setDateOffset}
+            compact={!isDesktop}
+          />
+        </div>
       </div>
 
       {/* ── 1+2 xl 이상: 2열 나란히 / xl 미만: 세로 쌓기 ── */}
