@@ -85,9 +85,9 @@ export default function DashboardV2() {
   const spendRoasChartRef = useRef<ChartScrollContainerHandle>(null)
 
   // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
-  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
+  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(0)
   const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(0)
-  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
+  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(0)
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
   const contentScrollRef = useRef<HTMLDivElement>(null)
@@ -137,9 +137,9 @@ export default function DashboardV2() {
     followerChartRef.current?.scrollToStart()
     impReachChartRef.current?.scrollToStart()
     spendRoasChartRef.current?.scrollToStart()
-    setFollowerActiveIdx(null)
+    setFollowerActiveIdx(0)
     setImpReachActiveIdx(0)
-    setAdActiveIdx(null)
+    setAdActiveIdx(0)
   }, [period])
 
   /* ── KPI 메트릭 — period별 값/trend
