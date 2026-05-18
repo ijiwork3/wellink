@@ -86,7 +86,7 @@ export default function DashboardV2() {
 
   // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
   const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
-  const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(null)
+  const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(0)
   const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
@@ -138,7 +138,7 @@ export default function DashboardV2() {
     impReachChartRef.current?.scrollToStart()
     spendRoasChartRef.current?.scrollToStart()
     setFollowerActiveIdx(null)
-    setImpReachActiveIdx(null)
+    setImpReachActiveIdx(0)
     setAdActiveIdx(null)
   }, [period])
 
