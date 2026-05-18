@@ -29,6 +29,7 @@ import {
   type ChartScrollContainerHandle, type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
 import FollowerAreaChart from '../components/analytics/profile/FollowerAreaChart'
+import ImpressReachChart from '../components/analytics/profile/ImpressReachChart'
 import MixedChart from '../components/analytics/ads/MixedChart'
 import ViralContentMiniCard from '../components/dashboard/ViralContentMiniCard'
 import CampaignPreviewRow from '../components/dashboard/CampaignPreviewRow'
@@ -45,6 +46,7 @@ import {
   DASHBOARD_SPARKLINES_BY_PERIOD,
   DASHBOARD_KPI_VALUES_BY_PERIOD,
 } from '../data/analytics/dashboard'
+import { impressReachByPeriod } from '../data/analytics/profile'
 
 const TREND_LABEL: Record<DatePeriod, string> = {
   일간: '전일 대비',
@@ -79,10 +81,12 @@ export default function DashboardV2() {
 
   // 차트 ScrollContainer ref — period 변경 시 scrollToStart() 호출 (CLAUDE.md § 차트 인터랙션)
   const followerChartRef = useRef<ChartScrollContainerHandle>(null)
+  const impReachChartRef = useRef<ChartScrollContainerHandle>(null)
   const spendRoasChartRef = useRef<ChartScrollContainerHandle>(null)
 
   // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
   const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
+  const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(null)
   const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
@@ -119,6 +123,7 @@ export default function DashboardV2() {
 
   /* ── period 기반 동적 데이터 ─────────────────────────────── */
   const followerData = useMemo(() => DASHBOARD_FOLLOWER_TREND_BY_PERIOD[period], [period])
+  const impReachData = useMemo(() => impressReachByPeriod[period], [period])
   const spendRoasData = useMemo(() => DASHBOARD_SPEND_ROAS_BY_PERIOD[period], [period])
   const sparks = useMemo(() => DASHBOARD_SPARKLINES_BY_PERIOD[period], [period])
   const kpiValues = useMemo(() => DASHBOARD_KPI_VALUES_BY_PERIOD[period], [period])
@@ -126,8 +131,10 @@ export default function DashboardV2() {
   // period 변경 → 차트 스크롤 & 활성 인덱스 초기화 (CLAUDE.md § 차트 인터랙션 정책)
   useEffect(() => {
     followerChartRef.current?.scrollToStart()
+    impReachChartRef.current?.scrollToStart()
     spendRoasChartRef.current?.scrollToStart()
     setFollowerActiveIdx(null)
+    setImpReachActiveIdx(null)
     setAdActiveIdx(null)
   }, [period])
 
@@ -399,6 +406,41 @@ export default function DashboardV2() {
               data={followerData}
               activeIndex={followerActiveIdx}
               onActiveIndex={setFollowerActiveIdx}
+              isTouch={isTouch}
+            />
+          </ChartScrollContainer>
+        </div>
+
+        {/* 노출 & 도달 추이 — 프로필인사이트 ImpressReachChart 재사용 */}
+        <div className="border-t border-gray-100 pt-4 mt-4">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h3 className="text-sm font-medium text-gray-600">노출 & 도달 추이</h3>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-indigo-400 inline-block" />노출</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-brand-green inline-block" />도달</span>
+            </div>
+          </div>
+          <ChartScrollContainer
+            ref={impReachChartRef}
+            chartW={Math.max(580, impReachData.length * 40)} padL={60} padR={16}
+            dataLength={impReachData.length}
+            activeIndex={impReachActiveIdx}
+            tooltipContent={(i) => {
+              const d = impReachData[i]
+              if (!d) return null
+              return (
+                <>
+                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
+                  {d.impressions !== null && <p className="text-xs font-semibold text-indigo-600 whitespace-nowrap">노출 {fmtNumber(d.impressions)}</p>}
+                  {d.reach !== null && <p className="text-xs font-semibold text-brand-green-text whitespace-nowrap">도달 {fmtNumber(d.reach)}</p>}
+                </>
+              )
+            }}
+          >
+            <ImpressReachChart
+              data={impReachData}
+              activeIndex={impReachActiveIdx}
+              onActiveIndex={setImpReachActiveIdx}
               isTouch={isTouch}
             />
           </ChartScrollContainer>

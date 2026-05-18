@@ -22,7 +22,7 @@ export default function Layout() {
   }, [mobileNav])
 
   return (
-    <div className="relative flex h-full bg-gray-50 overflow-hidden max-w-[1920px] mx-auto">
+    <div className="relative flex h-full bg-gray-50 overflow-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-base focus:font-medium"
