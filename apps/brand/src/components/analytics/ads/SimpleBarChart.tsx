@@ -96,9 +96,7 @@ const SimpleBarChart = memo(function SimpleBarChart({ data, stroke, ariaLabel, y
       {activeIndex != null && (() => {
         const d = data[activeIndex]
         if (!d) return null
-        const h = Math.max(2, (d.value / max) * plotH)
         const cx = barX(activeIndex)
-        const cy = padT + plotH - h
         return (
           <line x1={cx} y1={padT} x2={cx} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
         )
