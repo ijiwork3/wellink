@@ -25,6 +25,7 @@ import {
 import RoasBar from '../components/analytics/ads/RoasBar'
 import MixedChart from '../components/analytics/ads/MixedChart'
 import SimpleLineChart from '../components/analytics/ads/SimpleLineChart'
+import SimpleBarChart from '../components/analytics/ads/SimpleBarChart'
 import DonutChartSimple from '../components/analytics/ads/DonutChartSimple'
 
 export default function AdPerformance() {
@@ -395,10 +396,10 @@ export default function AdPerformance() {
               )
             }}
           >
-            <SimpleLineChart
+            <SimpleBarChart
               data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
               stroke="#3b82f6"
-              ariaLabel="기간별 클릭 수 추이 차트"
+              ariaLabel="기간별 클릭 수 차트"
               yLabelFormatter={(n) => fmtNumber(Math.round(n))}
               activeIndex={clicksChartIdx}
               onActiveIndex={setClicksChartIdx}
