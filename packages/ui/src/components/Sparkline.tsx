@@ -45,8 +45,8 @@ interface SparklineProps {
 
 const Sparkline = memo(function Sparkline({
   data,
-  stroke = '#10b981',
-  mutedStroke = '#6ee7b7',
+  stroke = '#95D135',
+  mutedStroke = '#BADE7E',
   width = 60,
   height = 24,
   fill = false,

@@ -60,19 +60,26 @@ function severityFromTrend(trend: number | undefined, positive: boolean | undefi
 const SEVERITY_BG: Record<Severity, string> = {
   good:    'bg-brand-green-bg/40 border-brand-green-border',
   neutral: 'bg-gray-50 border-gray-100',
-  bad:     'bg-amber-50/70 border-amber-200',  // 노란색 (사용자 정책)
+  bad:     'bg-rose-50/70 border-rose-200',  // 스파크라인 rose-500 동기화
 }
 
 const SEVERITY_TEXT: Record<Severity, string> = {
   good:    'text-brand-green-text',
   neutral: 'text-gray-500',
-  bad:     'text-amber-700',
+  bad:     'text-rose-600',
 }
 
 const SEVERITY_STROKE: Record<Severity, string> = {
-  good:    '#10b981',  // emerald-500 (vivid blue-green)
+  good:    '#95D135',  // brand-green (광고주 배지 동기화)
   neutral: '#9ca3af',  // gray-400
   bad:     '#f43f5e',  // rose-500 (vivid red)
+}
+
+// bar variant 비활성 막대 색 — bad는 회색 (초록 bar가 빨간 카드 안에 있으면 어색)
+const SEVERITY_MUTED: Record<Severity, string> = {
+  good:    '#BADE7E',  // brand-green-border
+  neutral: '#d1d5db',  // gray-300
+  bad:     '#fda4af',  // rose-300 (세컨더리)
 }
 
 const KPICard = memo(function KPICard({
@@ -87,6 +94,7 @@ const KPICard = memo(function KPICard({
   const tonedBg = tonedBackground && trend !== undefined ? SEVERITY_BG[severity] : 'bg-white border-gray-100'
   const trendColor = trend === undefined ? 'text-gray-500' : SEVERITY_TEXT[severity]
   const sparkStroke = trend === undefined ? '#9ca3af' : SEVERITY_STROKE[severity]
+  const sparkMuted  = SEVERITY_MUTED[severity]
 
   const ariaLabel = trend !== undefined
     ? `${title} ${value}, ${trendLabel ?? ''} ${isZero ? '변동 없음' : isPositive ? '증가' : '감소'} ${Math.abs(trend)}${trendUnit ?? '%'}`
@@ -149,6 +157,7 @@ const KPICard = memo(function KPICard({
             <Sparkline
               data={sparkline!}
               stroke={sparkStroke}
+              mutedStroke={sparkMuted}
               variant={sparklineVariant}
               highlightMode={severity === 'good' ? 'max' : severity === 'bad' ? 'min' : 'last'}
               referenceLine={sparklineReference}
