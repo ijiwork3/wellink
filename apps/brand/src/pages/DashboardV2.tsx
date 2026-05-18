@@ -426,7 +426,7 @@ export default function DashboardV2() {
           </div>
           <ChartScrollContainer
             ref={impReachChartRef}
-            chartW={Math.max(620, impReachData.length * 22)} padL={60} padR={24}
+            chartW={Math.max(620, impReachData.length * 22)} padL={48} padR={24}
             dataLength={impReachData.length}
             activeIndex={impReachActiveIdx}
             tooltipContent={(i) => {
@@ -446,6 +446,8 @@ export default function DashboardV2() {
               activeIndex={impReachActiveIdx}
               onActiveIndex={setImpReachActiveIdx}
               isTouch={isTouch}
+              padL={48}
+              padR={24}
             />
           </ChartScrollContainer>
         </div>

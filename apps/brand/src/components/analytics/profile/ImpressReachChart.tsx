@@ -12,12 +12,14 @@ interface Props {
   activeIndex?: number | null
   onActiveIndex?: (i: number | null) => void
   isTouch?: boolean
+  padL?: number
+  padR?: number
 }
 
-const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, onActiveIndex, isTouch }: Props) {
+const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, onActiveIndex, isTouch, padL: padLProp, padR: padRProp }: Props) {
   const ctx = useChartScrollContext()
   const W = ctx?.measuredW ?? 580
-  const H = 220, padL = 60, padR = 16, padT = 18, padB = 32
+  const H = 220, padL = padLProp ?? 60, padR = padRProp ?? 16, padT = 18, padB = 32
   const plotW = W - padL - padR
   const plotH = H - padT - padB
 
