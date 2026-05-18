@@ -197,7 +197,7 @@ export default function AdPerformance() {
       />
 
       {/* KPI 카드 8개 — 원본 KPI_LABELS 동등 (지출/ROAS/결과/결과당비용/도달/클릭/CTR/CPC) */}
-      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="광고 지출"
           value={isZero ? '₩0' : fmtPrice(kpi.spend)}

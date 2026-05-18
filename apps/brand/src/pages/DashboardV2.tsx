@@ -503,7 +503,7 @@ export default function DashboardV2() {
         />
 
         {/* 바이럴 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-5">
           {viralMetrics.map(m => (
             <KPICard
               key={m.label}

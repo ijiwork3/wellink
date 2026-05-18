@@ -197,7 +197,7 @@ export default function ViralMetrics() {
       )}
 
       {/* KPI 카드 4개 — @wellink/ui KPICard 사용 */}
-      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="총 바이럴 도달"
           value={kpi.reach}
