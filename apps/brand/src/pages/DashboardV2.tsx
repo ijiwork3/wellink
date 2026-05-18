@@ -123,7 +123,11 @@ export default function DashboardV2() {
 
   /* ── period 기반 동적 데이터 ─────────────────────────────── */
   const followerData = useMemo(() => DASHBOARD_FOLLOWER_TREND_BY_PERIOD[period], [period])
-  const impReachData = useMemo(() => impressReachByPeriod[period], [period])
+  // 대시보드 요약: null 구간 제거 → "데이터 없음" 오버레이 없이 깔끔하게
+  const impReachData = useMemo(
+    () => impressReachByPeriod[period].filter(d => d.impressions !== null && d.reach !== null),
+    [period]
+  )
   const spendRoasData = useMemo(() => DASHBOARD_SPEND_ROAS_BY_PERIOD[period], [period])
   const sparks = useMemo(() => DASHBOARD_SPARKLINES_BY_PERIOD[period], [period])
   const kpiValues = useMemo(() => DASHBOARD_KPI_VALUES_BY_PERIOD[period], [period])
@@ -422,7 +426,7 @@ export default function DashboardV2() {
           </div>
           <ChartScrollContainer
             ref={impReachChartRef}
-            chartW={Math.max(580, impReachData.length * 40)} padL={60} padR={16}
+            chartW={Math.max(620, impReachData.length * 22)} padL={60} padR={24}
             dataLength={impReachData.length}
             activeIndex={impReachActiveIdx}
             tooltipContent={(i) => {
