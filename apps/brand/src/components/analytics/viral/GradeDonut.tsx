@@ -20,7 +20,7 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
     { label: 'C', value: counts.C, color: '#9ca3af' },
     { label: 'D', value: counts.D, color: '#d1d5db' },
     { label: 'E', value: counts.E, color: '#e5e7eb' },
-    { label: '산정중', value: counts.processing, color: '#3b82f6' },
+    { label: '산정중', value: counts.processing, color: '#BADE7E' },
   ].filter(a => a.value > 0)
   const total = arr.reduce((s, a) => s + a.value, 0)
   if (total === 0) return <p className="text-base text-gray-500 text-center py-8">데이터가 없습니다.</p>

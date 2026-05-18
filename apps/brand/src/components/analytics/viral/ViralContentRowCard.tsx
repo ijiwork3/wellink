@@ -106,7 +106,7 @@ const GRADE_BG: Record<ViralContentRowCardProps['grade'], string> = {
   C: 'bg-gray-500 text-white',
   D: 'bg-gray-400 text-white',
   E: 'bg-gray-300 text-gray-700',
-  processing: 'bg-blue-500 text-white',
+  processing: 'bg-brand-green-bg text-brand-green-text border border-brand-green-border',
 }
 const GRADE_LABEL: Record<ViralContentRowCardProps['grade'], string> = {
   A: 'A 우수', B: 'B', C: 'C', D: 'D', E: 'E', processing: '점수 산정중',
