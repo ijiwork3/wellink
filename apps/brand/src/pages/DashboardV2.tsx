@@ -243,9 +243,7 @@ export default function DashboardV2() {
       trend: kpiValues.viral.trends.saves,
       trendUnit: '%',
       sparkline: sparks.saves,
-      // 증분 카운트이긴 하나 mock 데이터 variance가 +4% 수준(820→856)으로 매우 작음.
-      // 사용자 원칙 "추이보다 차이가 큰 경우 bar" 적용 — 차이 미미할 땐 line이 추세 더 잘 보여줌.
-      sparklineVariant: 'line' as const,
+      sparklineVariant: 'bar' as const,  // 증분 카운트 — 공유와 동일하게 기간 내 발생 건수. 리셋됨.
       icon: <Bookmark size={14} aria-hidden="true" />,
       hint: '콘텐츠가 저장된 횟수',
     },
