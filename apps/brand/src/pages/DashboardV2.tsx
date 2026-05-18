@@ -357,8 +357,8 @@ export default function DashboardV2() {
           actionLabel="더보기"
           onAction={() => navigate('/analytics/profile')}
         />
-        {/* 프로필 인사이트 KPI 3개 — 카드 폭이 충분할 때만 3열. 좁으면 1열로 개행. */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
+        {/* 프로필 인사이트 KPI 3개 — 모바일 1열 → sm 2+1열 → lg 3열 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
           {profileMetrics.map(m => (
             <KPICard
               key={m.label}

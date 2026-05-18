@@ -109,7 +109,7 @@ const Sparkline = memo(function Sparkline({
   const barSlot = innerW / data.length
   const barW = barSlot * 0.62
   const barOffset = padX + (barSlot - barW) / 2
-  const maxIdx = data.reduce((mi, v, i, a) => (v > a[mi] ? i : mi), 0)
+  const lastIdx = data.length - 1  // 현재값(마지막) 강조 — 트렌드 색상이 "지금 여기" 를 나타냄
   const minBarH = 2  // 최소 가시 높이
 
   const svgInner = (() => {
@@ -122,7 +122,7 @@ const Sparkline = memo(function Sparkline({
             const h = Math.max(minBarH, norm * innerH)
             const x = barOffset + i * barSlot
             const y = padY + innerH - h
-            const isMax = i === maxIdx
+            const isLast = i === lastIdx
             return (
               <rect
                 key={i}
@@ -131,8 +131,8 @@ const Sparkline = memo(function Sparkline({
                 width={barW}
                 height={h}
                 rx={1.5}
-                fill={isMax ? stroke : mutedStroke}
-                opacity={isMax ? 1 : 0.7}
+                fill={isLast ? stroke : mutedStroke}
+                opacity={isLast ? 1 : 0.7}
               />
             )
           })}
