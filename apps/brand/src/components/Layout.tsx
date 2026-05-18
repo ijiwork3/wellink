@@ -107,7 +107,7 @@ export default function Layout() {
             <Link to="/subscription" className="font-medium underline shrink-0 ml-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 보기 →</Link>
           </div>
         )}
-        <main id="main-content" className={`@container w-full max-w-screen-2xl mx-auto ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
+        <main id="main-content" className={`@container w-full ${device === 'phone' ? 'px-4 py-4' : device === 'tablet' ? 'px-6 py-5' : 'px-8 py-7'}`}>
           <Outlet />
         </main>
       </div>

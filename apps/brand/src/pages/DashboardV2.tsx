@@ -337,6 +337,9 @@ export default function DashboardV2() {
         />
       </div>
 
+      {/* ── 1+2 xl 이상: 2열 나란히 / xl 미만: 세로 쌓기 ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 items-start">
+
       {/* ── 1. 프로필 인사이트 ─────────────────────────── */}
       <motion.section
         variants={sectionVariants}
@@ -480,6 +483,8 @@ export default function DashboardV2() {
           </ChartScrollContainer>
         </div>
       </motion.section>
+
+      </div>{/* /grid 1+2 */}
 
       {/* ── 3. ★ 바이럴 지표 ─────────────────────────── */}
       <motion.section
