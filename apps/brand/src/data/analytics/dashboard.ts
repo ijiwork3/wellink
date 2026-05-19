@@ -69,6 +69,7 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   {
     id: 'sandfox_1',
     thumbnail: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=360&h=640&fit=crop&q=70',
+    contentType: 'reels',
     caption: 'crossfit open 14.2 진행! 오버헤드 스내치 80kg 도전 — 다음 라운드 hyrox 준비 중',
     influencer: { username: 'sandfox', platform: 'instagram' },
     metrics: { likes: 5485, reach: 12300, comments: 88, viralScore: 92 },
@@ -77,7 +78,8 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   },
   {
     id: 'njang_workout',
-    thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=360&h=640&fit=crop&q=70',
+    thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&q=70',
+    contentType: 'feed',
     caption: '아침 wod — 박스점프 100회 + 머슬업 + 데드리프트. enuf 팀 함께 운동했어요',
     influencer: { username: 'njang_workout', platform: 'instagram' },
     metrics: { likes: 3812, reach: 8940, comments: 124, viralScore: 86 },
@@ -87,6 +89,7 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   {
     id: 'zzangha_0707',
     thumbnail: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=360&h=640&fit=crop&q=70',
+    contentType: 'reels',
     caption: '하이록스 시즌 5 준비 — 스키 + 썰드 백 + 런 3km. 라인벨라 챌린지 참여',
     influencer: { username: 'zzangha_0707', platform: 'instagram' },
     metrics: { likes: 2940, reach: 6820, comments: 67, viralScore: 78 },
@@ -95,7 +98,8 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   },
   {
     id: 'b_wisdom_fit',
-    thumbnail: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=360&h=640&fit=crop&q=70',
+    thumbnail: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=400&fit=crop&q=70',
+    contentType: 'feed',
     caption: 'crossfit 입문 6개월. 처음엔 못했던 키핑풀업 5개 성공 — 감사합니다',
     influencer: { username: 'b_wisdom_fit', platform: 'instagram' },
     metrics: { likes: 4120, reach: 9450, comments: 92, viralScore: 84 },
@@ -105,6 +109,7 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   {
     id: 'rosh_youngdyun',
     thumbnail: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=360&h=640&fit=crop&q=70',
+    contentType: 'reels',
     caption: 'fareastthrowdown 2026 출전 확정! 팀 enuf 응원해주세요 🙏 #sports',
     influencer: { username: 'rosh_youngdyun', platform: 'instagram' },
     metrics: { likes: 6280, reach: 14800, comments: 156, viralScore: 91 },
@@ -114,6 +119,7 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   {
     id: 'lemo_fit',
     thumbnail: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=360&h=640&fit=crop&q=70',
+    contentType: 'reels',
     caption: '주말 wod 끝 — 2min sprint × 8세트. 다리 풀려요... outdo myself',
     influencer: { username: 'lemo_fit', platform: 'instagram' },
     metrics: { likes: 1840, reach: 4320, comments: 38, viralScore: 64 },
@@ -122,7 +128,8 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   },
   {
     id: 'ionim_fit',
-    thumbnail: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=360&h=640&fit=crop&q=70',
+    thumbnail: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop&q=70',
+    contentType: 'feed',
     caption: 'enuf 영양제 한 달 후기 — 회복 빠르고 컨디션 좋음. running 페이스 올랐어요',
     influencer: { username: 'ionim_fit', platform: 'instagram' },
     metrics: { likes: 2150, reach: 5680, comments: 45, viralScore: 71 },
@@ -132,6 +139,7 @@ export const DASHBOARD_VIRAL_CONTENTS: ViralContent[] = [
   {
     id: 'ut_hyou',
     thumbnail: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=360&h=640&fit=crop&q=70',
+    contentType: 'reels',
     caption: '오늘의 gym 인증 — 데드리프트 PR 갱신 (140kg) 🔥 enuf protein 도움 큼',
     influencer: { username: 'ut_hyou', platform: 'instagram' },
     metrics: { likes: 3580, reach: 7920, comments: 71, viralScore: 79 },

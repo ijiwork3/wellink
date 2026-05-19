@@ -160,8 +160,8 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
       }`}
       aria-label={`${influencer.username} ${contentType}, ${metrics.likes.toLocaleString()}회 좋아요, 등급 ${GRADE_LABEL[grade]}`}
     >
-      {/* 좌측 — 9:16 비디오 썸네일 (큼, 재생 오버레이) */}
-      <div className="relative shrink-0 w-[130px] sm:w-[160px] aspect-[9/16] rounded-lg bg-gray-100 overflow-hidden">
+      {/* 좌측 — 썸네일: 피드=1:1, 그 외(릴스/영상/쇼츠/스토리)=9:16 */}
+      <div className={`relative shrink-0 rounded-lg bg-gray-100 overflow-hidden ${contentType === '피드' ? 'w-[130px] sm:w-[160px] aspect-square' : 'w-[130px] sm:w-[160px] aspect-[9/16]'}`}>
         <img
           src={imgSrc}
           alt={`@${influencer.username}의 ${contentType} 미리보기`}

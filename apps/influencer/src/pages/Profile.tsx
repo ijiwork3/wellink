@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut } from 'lucide-react'
+import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
-import { Toggle, Modal, AlertModal } from '@wellink/ui'
+import { Toggle, BottomSheet, AlertModal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { ACTIVITY_FIELDS, INFLUENCER_TYPES, mockProfile } from '../services/mock/profile'
@@ -295,6 +295,21 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* SNS 관리 바로가기 */}
+        <button
+          onClick={() => navigate('/media')}
+          className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 text-left"
+        >
+          <div className="w-9 h-9 rounded-xl bg-brand-green-bg flex items-center justify-center shrink-0">
+            <Link2 size={16} className="text-brand-green-text" aria-hidden="true" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900">SNS 관리</p>
+            <p className="text-sm text-gray-500 mt-0.5">인스타그램, 유튜브 등 채널 연결</p>
+          </div>
+          <ChevronRight size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
+        </button>
+
         {/* 알림 설정 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between gap-3">
@@ -320,8 +335,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* 비밀번호 변경 모달 */}
-      <Modal open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw('') }} title="비밀번호 변경" size="sm">
+      {/* 비밀번호 변경 바텀시트 */}
+      <BottomSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw('') }} title="비밀번호 변경">
         <div className="space-y-3">
           {([
             { ph: '현재 비밀번호', val: currentPw, setter: setCurrentPw, auto: 'current-password' as const },
@@ -337,13 +352,13 @@ export default function Profile() {
           ))}
         </div>
         <div className="flex gap-3 mt-5">
-          <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-          <button onClick={handlePwChange} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
+          <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+          <button onClick={handlePwChange} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
         </div>
-      </Modal>
+      </BottomSheet>
 
-      {/* 전화번호 변경 모달 */}
-      <Modal open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경" size="sm">
+      {/* 전화번호 변경 바텀시트 */}
+      <BottomSheet open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경">
         <div className="space-y-3">
           <div>
             <label htmlFor="profile-new-phone" className="text-sm text-gray-500 block mb-1.5">새 전화번호</label>
@@ -386,10 +401,10 @@ export default function Profile() {
           )}
         </div>
         <div className="flex gap-3 mt-5">
-          <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-          <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
+          <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+          <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
         </div>
-      </Modal>
+      </BottomSheet>
 
       {/* 회원탈퇴 모달 — 광고주 패턴과 통일 (AlertModal variant="danger") */}
       <AlertModal

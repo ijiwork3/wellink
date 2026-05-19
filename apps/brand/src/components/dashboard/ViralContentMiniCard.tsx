@@ -17,6 +17,7 @@ import { getPlaceholderDataUri, getThumbnailFromPool } from '../../utils/thumbna
 export interface ViralContentMiniCardProps {
   thumbnail?: string  // URL — 없으면 placeholder 자동
   caption: string
+  contentType?: 'reels' | 'feed'  // 릴스=9:16, 피드 이미지=1:1 (default: 'reels')
   influencer: {
     username: string
     platform: 'instagram' | 'youtube'
@@ -43,7 +44,7 @@ const GRADE_LABEL: Record<ViralContentMiniCardProps['grade'], string> = {
 }
 
 const ViralContentMiniCard = memo(function ViralContentMiniCard({
-  thumbnail, caption, influencer, metrics, grade, onClick,
+  thumbnail, caption, contentType = 'reels', influencer, metrics, grade, onClick,
 }: ViralContentMiniCardProps) {
   // thumbnail 없으면 Unsplash 운동 사진 풀 자동 선택. 외부 fetch 실패 시 SVG placeholder
   const [imgSrc, setImgSrc] = useState(thumbnail ?? getThumbnailFromPool(influencer.username))
@@ -64,8 +65,8 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
       }`}
       aria-label={`${influencer.username} 콘텐츠, ${metrics.likes.toLocaleString()} 좋아요`}
     >
-      {/* 썸네일 — 세로 9:16 비디오 비율 (영상 매칭) */}
-      <div className="relative aspect-[9/16] bg-gray-100 overflow-hidden">
+      {/* 썸네일 — 콘텐츠 타입 무관 9:16 통일, object-cover 크롭 */}
+      <div className="relative bg-gray-100 overflow-hidden aspect-[9/16]">
         <img
           src={imgSrc}
           alt={`@${influencer.username}의 콘텐츠 미리보기`}
@@ -73,17 +74,17 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
           loading="lazy"
           onError={handleError}
         />
-        {/* 등급 칩 — 우상단 (영상 매칭) */}
+        {/* 등급 칩 — 우상단 */}
         <span
           className={`absolute top-2 right-2 px-2 py-0.5 rounded-md text-xs font-bold tabular-nums shadow-sm ${GRADE_BG[grade]}`}
           aria-label={`등급 ${GRADE_LABEL[grade]}`}
         >
           {GRADE_LABEL[grade]}
         </span>
-        {/* 좌하단 플랫폼 표시 */}
+        {/* 좌하단 콘텐츠 타입 배지 */}
         <span className="absolute bottom-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 backdrop-blur-sm text-white text-xs font-medium">
           <Camera size={11} aria-hidden="true" />
-          IG
+          {contentType === 'feed' ? '피드' : '릴스'}
         </span>
       </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
+import { BottomSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
 
@@ -290,8 +290,8 @@ export default function Settlement() {
         )}
       </div>
 
-      {/* 정산 요청 모달 */}
-      <Modal open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'}>
+      {/* 정산 요청 바텀시트 */}
+      <BottomSheet open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'}>
         {requestTarget && (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
@@ -327,15 +327,15 @@ export default function Settlement() {
             )}
             <p className="text-sm text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
             <div className="flex gap-2">
-              <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={confirmRequest} disabled={!hasBankAccount} aria-disabled={!hasBankAccount} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+              <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={confirmRequest} disabled={!hasBankAccount} aria-disabled={!hasBankAccount} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
             </div>
           </div>
         )}
-      </Modal>
+      </BottomSheet>
 
-      {/* 계좌 등록 모달 (D1) */}
-      <Modal open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록" size="sm">
+      {/* 계좌 등록 바텀시트 (D1) */}
+      <BottomSheet open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록">
         <div className="space-y-4">
           <p className="text-sm text-gray-600 break-keep">정산 금액을 지급받을 본인 명의 계좌를 등록해 주세요.</p>
 
@@ -387,15 +387,15 @@ export default function Settlement() {
           <div className="flex gap-2">
             <button
               onClick={() => setBankModalOpen(false)}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >취소</button>
             <button
               onClick={handleBankRegister}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >등록하기</button>
           </div>
         </div>
-      </Modal>
+      </BottomSheet>
     </Layout>
   )
 }

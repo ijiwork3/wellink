@@ -3,8 +3,8 @@
  *
  * 핵심 원칙: "눈으로 먼저 보이고, 텍스트로 보강"
  *  - 모든 KPI 카드: 스파크라인 + trend 톤 배경
- *  - 프로필 인사이트: 팔로워 추이 mini 막대 차트
- *  - 광고 성과: 지출+ROAS Mixed 차트 + 1.0x 기준선
+ *  - 프로필 인사이트: 콘텐츠 유형별 성과 (참여율 비교 bar)
+ *  - 광고 성과: CTR 추이 + 기간별 클릭 2열
  *  - 바이럴 지표 ★: 멘션 구성 도넛 + 워드클라우드 + 멘션 콘텐츠 카드 (영상 패턴)
  *  - 캠페인: 서브타이틀 + 진행률 + D-day + 인라인 지표 (종료 임박 카드 강조)
  *  - 빠른 실행: 삭제
@@ -25,12 +25,10 @@ import {
 } from 'lucide-react'
 import {
   KPICard, PageHeader, DateRangePicker, WordCloud, EmptyState,
-  ChartScrollContainer, useIsTouchDevice, fmtNumber,
+  ChartScrollContainer, useIsTouchDevice, fmtNumber, BRAND, CHART_COLORS,
   type ChartScrollContainerHandle, type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
-import FollowerAreaChart from '../components/analytics/profile/FollowerAreaChart'
 import ImpressReachChart from '../components/analytics/profile/ImpressReachChart'
-import MixedChart from '../components/analytics/ads/MixedChart'
 import ViralContentMiniCard from '../components/dashboard/ViralContentMiniCard'
 import CampaignPreviewRow from '../components/dashboard/CampaignPreviewRow'
 import useHeaderStuck from '../hooks/useHeaderStuck'
@@ -41,8 +39,6 @@ import {
   DASHBOARD_VIRAL_CONTENTS,
   DASHBOARD_CAMPAIGN_PREVIEWS,
   DASHBOARD_CAMPAIGN_COUNTS,
-  DASHBOARD_FOLLOWER_TREND_BY_PERIOD,
-  DASHBOARD_SPEND_ROAS_BY_PERIOD,
   DASHBOARD_SPARKLINES_BY_PERIOD,
   DASHBOARD_KPI_VALUES_BY_PERIOD,
 } from '../data/analytics/dashboard'
@@ -80,30 +76,22 @@ export default function DashboardV2() {
   }, [lastSync])
 
   // 차트 ScrollContainer ref — period 변경 시 scrollToStart() 호출 (CLAUDE.md § 차트 인터랙션)
-  const followerChartRef = useRef<ChartScrollContainerHandle>(null)
   const impReachChartRef = useRef<ChartScrollContainerHandle>(null)
-  const spendRoasChartRef = useRef<ChartScrollContainerHandle>(null)
 
   // 차트 활성 인덱스 — hover/touch 인터랙션 (ChartScrollContainer 툴팁 연동)
   // null로 초기화 후 mount 후 0으로 설정 → ChartScrollContainer scrollRef 준비 보장
-  const [followerActiveIdx, setFollowerActiveIdx] = useState<number | null>(null)
   const [impReachActiveIdx, setImpReachActiveIdx] = useState<number | null>(null)
-  const [adActiveIdx, setAdActiveIdx] = useState<number | null>(null)
 
   // 마운트 후 초기 툴팁 — null로 시작해야 scrollRef가 준비된 뒤 툴팁 위치 계산 가능
   useEffect(() => {
     const id = requestAnimationFrame(() => {
-      setFollowerActiveIdx(0)
       setImpReachActiveIdx(0)
-      setAdActiveIdx(0)
     })
     return () => cancelAnimationFrame(id)
   }, [])
 
   // mouseleave 시 null 무시 — 마지막 인덱스 유지 (호버 이탈 후 툴팁 사라짐 방지)
-  const handleFollowerIdx = useCallback((i: number | null) => { if (i !== null) setFollowerActiveIdx(i) }, [])
   const handleImpReachIdx = useCallback((i: number | null) => { if (i !== null) setImpReachActiveIdx(i) }, [])
-  const handleAdIdx       = useCallback((i: number | null) => { if (i !== null) setAdActiveIdx(i) }, [])
 
   // 콘텐츠 카드 캐로셀 스크롤 추적
   const contentScrollRef = useRef<HTMLDivElement>(null)
@@ -138,25 +126,19 @@ export default function DashboardV2() {
   const viralKeywords = useMemo<WordCloudEntry[]>(() => DASHBOARD_VIRAL_KEYWORDS, [])
 
   /* ── period 기반 동적 데이터 ─────────────────────────────── */
-  const followerData = useMemo(() => DASHBOARD_FOLLOWER_TREND_BY_PERIOD[period], [period])
   // 대시보드 요약: null 구간 제거 → "데이터 없음" 오버레이 없이 깔끔하게
   const impReachData = useMemo(
     () => impressReachByPeriod[period].filter(d => d.impressions !== null && d.reach !== null),
     [period]
   )
-  const spendRoasData = useMemo(() => DASHBOARD_SPEND_ROAS_BY_PERIOD[period], [period])
   const sparks = useMemo(() => DASHBOARD_SPARKLINES_BY_PERIOD[period], [period])
   const kpiValues = useMemo(() => DASHBOARD_KPI_VALUES_BY_PERIOD[period], [period])
 
   // period 변경 → 차트 스크롤 & 활성 인덱스 초기화 (CLAUDE.md § 차트 인터랙션 정책)
   useEffect(() => {
-    followerChartRef.current?.scrollToStart()
     impReachChartRef.current?.scrollToStart()
-    spendRoasChartRef.current?.scrollToStart()
     requestAnimationFrame(() => {
-      setFollowerActiveIdx(0)
       setImpReachActiveIdx(0)
-      setAdActiveIdx(0)
     })
   }, [period])
 
@@ -292,10 +274,14 @@ export default function DashboardV2() {
   // (Date.now()는 useState lazy initializer로 mount 1회만 호출 → react-hooks/purity 회피)
   const [mountedAt] = useState(() => Date.now())
   const campaignsWithClosing = useMemo(() => {
-    return DASHBOARD_CAMPAIGN_PREVIEWS.map(c => {
-      const dday = c.status === 'active' ? Math.ceil((new Date(c.endDate).getTime() - mountedAt) / 86400000) : 99
-      return { ...c, isClosing: c.status === 'active' && dday >= 0 && dday <= 7 }
-    })
+    return DASHBOARD_CAMPAIGN_PREVIEWS
+      .slice()
+      .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+      .slice(0, 3)
+      .map(c => {
+        const dday = c.status === 'active' ? Math.ceil((new Date(c.endDate).getTime() - mountedAt) / 86400000) : 99
+        return { ...c, isClosing: c.status === 'active' && dday >= 0 && dday <= 7 }
+      })
   }, [mountedAt])
 
   const handleWordClick = useCallback((entry: WordCloudEntry) => {
@@ -369,7 +355,7 @@ export default function DashboardV2() {
       </div>
 
       {/* ── 1+2 xl 이상: 2열 나란히 / xl 미만: 세로 쌓기 ── */}
-      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 items-start">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 items-stretch">
 
       {/* ── 1. 프로필 인사이트 ─────────────────────────── */}
       <motion.section
@@ -404,37 +390,6 @@ export default function DashboardV2() {
             />
           ))}
         </div>
-        <div className="border-t border-gray-100 pt-4">
-          <h3 className="text-sm font-medium text-gray-600 mb-3">팔로워 추이</h3>
-          {/* 모바일 가로 스크롤 + 쉐브론 — 데이터 많을 때 (일간 14개·주간 13개) 막대 너비 보존 */}
-          <ChartScrollContainer
-            ref={followerChartRef}
-            chartW={Math.max(620, followerData.length * 22)}
-            padL={48} padR={24}
-            dataLength={followerData.length}
-            activeIndex={followerActiveIdx}
-            tooltipContent={(i) => {
-              const d = followerData[i]
-              if (!d) return null
-              return (
-                <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.label}</p>
-                  <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    {fmtNumber(d.value)}명
-                  </span>
-                </>
-              )
-            }}
-          >
-            <FollowerAreaChart
-              data={followerData}
-              activeIndex={followerActiveIdx}
-              onActiveIndex={handleFollowerIdx}
-              isTouch={isTouch}
-            />
-          </ChartScrollContainer>
-        </div>
-
         {/* 노출 & 도달 추이 — 프로필인사이트 ImpressReachChart 재사용 */}
         <div className="border-t border-gray-100 pt-4 mt-4">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -480,7 +435,7 @@ export default function DashboardV2() {
         custom={2}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5 flex flex-col"
       >
         <SectionHeader
           icon={<TrendIcon size={16} aria-hidden="true" />}
@@ -490,7 +445,7 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/ads')}
         />
         {/* 광고 성과 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 flex-1 content-start">
           {adMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -508,48 +463,6 @@ export default function DashboardV2() {
               tooltip={m.hint}
             />
           ))}
-        </div>
-        <div className="border-t border-gray-100 pt-4">
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <h3 className="text-sm font-medium text-gray-600">{period === '연간' ? '연간' : period === '월간' ? '월간' : period === '주간' ? '주간' : '일간'} 지출 & ROAS 추이</h3>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-green inline-block" />지출</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-orange-500 inline-block" />ROAS</span>
-              <span className="flex items-center gap-1.5 text-orange-500/80"><span className="w-3 border-t border-dashed border-orange-500 inline-block" />1.0x 손익분기</span>
-            </div>
-          </div>
-          {/* ChartScrollContainer로 감싸 viewBox W를 컨테이너 폭에 동기 (반응형 fluid) */}
-          <ChartScrollContainer
-            ref={spendRoasChartRef}
-            chartW={Math.max(700, spendRoasData.length * 65)} padL={130} padR={130}
-            dataLength={spendRoasData.length}
-            activeIndex={adActiveIdx}
-            tooltipContent={(i) => {
-              const d = spendRoasData[i]
-              if (!d) return null
-              return (
-                <>
-                  <p className="text-xs text-gray-400 mb-1.5 whitespace-nowrap">{d.date}</p>
-                  <p className="text-xs font-semibold text-brand-green-text whitespace-nowrap">
-                    지출 {d.spend.toLocaleString('ko-KR')}원
-                  </p>
-                  <p className="text-xs font-semibold text-orange-500 whitespace-nowrap">
-                    ROAS {d.clicks.toFixed(1)}x
-                  </p>
-                </>
-              )
-            }}
-          >
-            <MixedChart
-              data={spendRoasData}
-              activeIndex={adActiveIdx}
-              onActiveIndex={handleAdIdx}
-              isTouch={isTouch}
-              secondaryLabel="ROAS"
-              secondaryFormatter={(v) => `${v.toFixed(1)}x`}
-              referenceLine={{ value: 1.0, label: '손익분기' }}
-            />
-          </ChartScrollContainer>
         </div>
       </motion.section>
 
@@ -597,15 +510,15 @@ export default function DashboardV2() {
             <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 self-start">멘션 구성</h3>
             <div className="relative w-32 h-32 mb-3" role="img" aria-label={`총 멘션 ${DASHBOARD_VIRAL_MIX.total}건, 릴스 ${DASHBOARD_VIRAL_MIX.reels.percent}%, 피드 ${DASHBOARD_VIRAL_MIX.feed.percent}%`}>
               <svg viewBox="0 0 90 90" className="w-full h-full -rotate-90" aria-hidden="true">
-                <circle cx="45" cy="45" r="36" fill="none" stroke="#f3f4f6" strokeWidth="14" />
+                <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke="#95D135" strokeWidth="14"
+                  stroke={BRAND.green} strokeWidth="14"
                   strokeDasharray={`${reelsDash} ${donutCircumference - reelsDash}`}
                 />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke="#527E18" strokeWidth="14"
+                  stroke={BRAND.greenText} strokeWidth="14"
                   strokeDasharray={`${feedDash} ${donutCircumference - feedDash}`}
                   strokeDashoffset={-reelsDash}
                 />
@@ -704,6 +617,7 @@ export default function DashboardV2() {
                     <ViralContentMiniCard
                       key={content.id}
                       thumbnail={content.thumbnail}
+                      contentType={content.contentType}
                       caption={content.caption}
                       influencer={content.influencer}
                       metrics={content.metrics}

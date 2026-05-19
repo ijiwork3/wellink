@@ -141,7 +141,31 @@ export default function CampaignApply() {
 
   return (
     <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)}>
-      <div className="max-w-lg mx-auto px-4 py-6 pb-10 space-y-6">
+      {/* 하단 fixed CTA — safe-area 포함 */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        {isViewMode ? (
+          <button
+            onClick={() => navigate('/campaigns/my')}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            돌아가기
+          </button>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            aria-disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            {isSubmitting ? '제출 중...' : isEditMode ? '수정 완료' : '신청하기'}
+          </button>
+        )}
+      </div>
+      <div className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
         <h1 className="sr-only">{pageTitle}</h1>
 
         {/* view 모드 배너 */}
@@ -391,25 +415,6 @@ export default function CampaignApply() {
           </Section>
         )}
 
-        {/* 제출 / 닫기 버튼 */}
-        {isViewMode ? (
-          <button
-            onClick={() => navigate('/campaigns/my')}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            돌아가기
-          </button>
-        ) : (
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            aria-disabled={isSubmitting}
-            aria-busy={isSubmitting}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            {isSubmitting ? '제출 중...' : '신청하기'}
-          </button>
-        )}
       </div>
     </Layout>
   )

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
+import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
@@ -303,18 +303,18 @@ export default function Media() {
                 </div>
               </div>
 
-              {/* 액션 버튼 */}
+              {/* 액션 버튼 — 최소 40px 터치 타깃 */}
               {p.connected ? (
                 <button
                   onClick={() => setDisconnectModal(p)}
-                  className="shrink-0 text-sm px-3 py-1.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="shrink-0 text-sm px-3 py-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   관리
                 </button>
               ) : (
                 <button
                   onClick={() => { setUrlInput(''); setConnectModal(p) }}
-                  className="shrink-0 text-sm px-3.5 py-1.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="shrink-0 text-sm px-3.5 py-2.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   연결하기
                 </button>
@@ -328,8 +328,8 @@ export default function Media() {
         </div>
       </div>
 
-      {/* 연결 모달 */}
-      <Modal open={!!connectModal} onClose={() => { setConnectModal(null); setUrlInput('') }} title={`${connectModal?.name ?? ''} 연결`} size="sm">
+      {/* 연결 바텀시트 */}
+      <BottomSheet open={!!connectModal} onClose={() => { setConnectModal(null); setUrlInput('') }} title={`${connectModal?.name ?? ''} 연결`}>
         {connectModal && (
           <>
             <p className="text-sm text-gray-500 mb-3">{connectModal.description}</p>
@@ -348,12 +348,12 @@ export default function Media() {
               onKeyDown={e => e.key === 'Enter' && handleConnect()}
             />
             <div className="flex gap-3">
-              <button onClick={() => setConnectModal(null)} className="flex-1 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={handleConnect} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">연결</button>
+              <button onClick={() => setConnectModal(null)} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={handleConnect} className="flex-1 py-3 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">연결</button>
             </div>
           </>
         )}
-      </Modal>
+      </BottomSheet>
 
       {/* 연결 해제 모달 */}
       <AlertModal

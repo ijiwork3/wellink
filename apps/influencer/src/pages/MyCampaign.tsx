@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin } from 'lucide-react'
 import Layout from '../components/Layout'
-import { Modal, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
+import { BottomSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
@@ -328,8 +328,8 @@ export default function MyCampaign() {
         )}
       </div>
 
-      {/* 콘텐츠 제출/수정 모달 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
-      <Modal open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
+      {/* 콘텐츠 제출/수정 바텀시트 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
+      <BottomSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
@@ -354,26 +354,26 @@ export default function MyCampaign() {
             />
           </div>
           <div className="flex gap-2">
-            <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
-            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} aria-disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
+            <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} aria-disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
           </div>
         </div>
-      </Modal>
+      </BottomSheet>
 
-      {/* 신청 취소 모달 */}
-      <Modal open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
+      {/* 신청 취소 바텀시트 */}
+      <BottomSheet open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
           <p className="text-sm text-gray-500">취소 후에는 재신청이 어려울 수 있어요</p>
           <div className="flex gap-2">
-            <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">유지하기</button>
-            <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
+            <button onClick={() => setCancelModal(null)} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">유지하기</button>
+            <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
           </div>
         </div>
-      </Modal>
+      </BottomSheet>
 
-      {/* 신청 정보 보기 모달 — mc-id가 mockCampaigns(number)와 분리되어 페이지 이동 대신 inline 표시 */}
-      <Modal open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">
+      {/* 신청 정보 보기 바텀시트 — mc-id가 mockCampaigns(number)와 분리되어 페이지 이동 대신 inline 표시 */}
+      <BottomSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">
         {appliedModal && (() => {
           const applied = mockAppliedData[appliedModal.id]
           if (!applied) {
@@ -424,13 +424,13 @@ export default function MyCampaign() {
               <div className="pt-2">
                 <button
                   onClick={() => setAppliedModal(null)}
-                  className="w-full py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >닫기</button>
               </div>
             </div>
           )
         })()}
-      </Modal>
+      </BottomSheet>
     </Layout>
   )
 }

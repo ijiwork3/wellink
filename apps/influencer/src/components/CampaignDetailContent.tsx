@@ -55,7 +55,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @[640px]:p-6'
 
   return (
-    <div className={wrapCls}>
+    <>
+    <div className={wrapCls} style={!inModal ? { paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' } : undefined}>
       {/* 마감임박 띠 */}
       {campaign.status === '마감임박' && (
         <div className="bg-orange-500 text-white text-xs font-semibold text-center py-1.5 tracking-wide">
@@ -277,28 +278,57 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             )
           })()}
 
-          {/* 신청 버튼 */}
-          <div className={sectionCls}>
-            {isClosed ? (
-              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
-                마감된 캠페인이에요
-              </div>
-            ) : applied ? (
-              <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
-                <CheckCircle2 size={16} aria-hidden="true" />신청완료
-              </div>
-            ) : (
-              <button
-                onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-                className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                신청하기
-              </button>
-            )}
-          </div>
+          {/* 신청 버튼 — 모달 내부일 때는 인라인, 페이지(전체화면)일 때는 fixed 하단 */}
+          {inModal ? (
+            <div className={sectionCls}>
+              {isClosed ? (
+                <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+                  마감된 캠페인이에요
+                </div>
+              ) : applied ? (
+                <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
+                  <CheckCircle2 size={16} aria-hidden="true" />신청완료
+                </div>
+              ) : (
+                <button
+                  onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
+                  className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  신청하기
+                </button>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
 
     </div>
+
+    {/* 페이지 모드일 때만 — fixed 하단 신청 CTA */}
+
+    {!inModal && (
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        {isClosed ? (
+          <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+            마감된 캠페인이에요
+          </div>
+        ) : applied ? (
+          <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
+            <CheckCircle2 size={16} aria-hidden="true" />신청완료
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
+            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            신청하기
+          </button>
+        )}
+      </div>
+    )}
+    </>
   )
 }

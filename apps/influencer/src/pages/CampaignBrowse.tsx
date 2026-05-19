@@ -119,7 +119,7 @@ export default function CampaignBrowse() {
               className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-base shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
             />
             {search && (
-              <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={16} />
               </button>
             )}

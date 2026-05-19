@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Search, ClipboardList, Heart, User } from 'lucide-react'
+import { Search, ClipboardList, Heart, User, Wallet } from 'lucide-react'
 
 const tabs = [
-  { label: '탐색',    path: '/campaigns/browse', icon: Search },
-  { label: '내 캠페인', path: '/campaigns/my',     icon: ClipboardList },
-  { label: '관심',    path: '/campaigns/favorites', icon: Heart },
-  { label: '마이페이지', path: '/profile',          icon: User },
+  { label: '탐색',     path: '/campaigns/browse',   icon: Search },
+  { label: '내 캠페인', path: '/campaigns/my',        icon: ClipboardList },
+  { label: '관심',     path: '/campaigns/favorites', icon: Heart },
+  { label: '정산',     path: '/settlement',          icon: Wallet },
+  { label: '마이페이지', path: '/profile',            icon: User },
 ]
 
 export default function BottomTabBar() {
@@ -30,7 +31,7 @@ export default function BottomTabBar() {
               isActive ? 'text-brand-green-text' : 'text-gray-500'
             }`}
           >
-            <Icon size={22} strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" />
+            <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} aria-hidden="true" />
             <span className="text-xs font-medium leading-none whitespace-nowrap">{label}</span>
           </button>
         )

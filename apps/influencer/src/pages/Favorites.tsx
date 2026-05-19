@@ -138,7 +138,7 @@ export default function Favorites() {
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
                       aria-label={bookmarks.has(c.id) ? '북마크 해제' : '북마크'}
-                      className="shrink-0 p-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      className="shrink-0 p-3 -m-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
                       <Bookmark
                         size={16}

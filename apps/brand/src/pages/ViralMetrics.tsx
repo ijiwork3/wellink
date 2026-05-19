@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Image, Info, Award, Megaphone, Zap, Share2, Bookmark, Eye } from 'lucide-react'
-import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
+import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, BRAND, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -621,10 +621,10 @@ function MentionMixDonut() {
     <div className="flex flex-col items-center">
       <div className="relative w-36 h-36 mb-4" role="img" aria-label={`총 멘션 ${mix.total}건, 릴스 ${mix.reels.percent}%, 피드 ${mix.feed.percent}%`}>
         <svg viewBox="0 0 90 90" className="w-full h-full -rotate-90">
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#f3f4f6" strokeWidth="14" aria-hidden="true" />
+          <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" aria-hidden="true" />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke="#95D135" strokeWidth="14"
+            stroke={BRAND.green} strokeWidth="14"
             strokeDasharray={`${reelsDash} ${C - reelsDash}`}
             className="transition-opacity cursor-pointer"
             style={{ opacity: hover && hover !== 'reels' ? 0.35 : 1 }}
@@ -634,7 +634,7 @@ function MentionMixDonut() {
           />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke="#527E18" strokeWidth="14"
+            stroke={BRAND.greenText} strokeWidth="14"
             strokeDasharray={`${feedDash} ${C - feedDash}`}
             strokeDashoffset={-reelsDash}
             className="transition-opacity cursor-pointer"

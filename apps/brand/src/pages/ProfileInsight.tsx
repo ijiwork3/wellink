@@ -50,8 +50,7 @@ export default function ProfileInsight() {
   // AI 분석 새로고침 — 공통 훅(useAiRefresh)으로 추출
   const { refreshing: aiRefreshing, refresh: handleAiRefresh, generatedAt: aiGeneratedAt } = useAiRefresh()
 
-  // 차트 인터랙티브 인덱스 — 모바일/태블릿은 호버 불가능하므로 마지막 포인트를 기본 노출 (정책)
-  // 초기값 0 — 맨 왼쪽 데이터 포인트에 툴팁 자동 노출
+  // 차트 인터랙티브 인덱스 — 초기값 0 (맨 왼쪽 데이터 포인트 기본 노출)
   const [followerChartIdx, setFollowerChartIdx] = useState<number | null>(0)
   const [trendChartIdx, setTrendChartIdx] = useState<number | null>(0)
   const [impReachChartIdx, setImpReachChartIdx] = useState<number | null>(0)
@@ -275,7 +274,6 @@ export default function ProfileInsight() {
               <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
-                {nullCount > 0 && <span className="ml-1.5 text-gray-500">· 회색 구간은 데이터 없음</span>}
               </p>
             </div>
             <div className="flex gap-1.5 flex-wrap" role="group" aria-label="표시할 지표 선택 (복수 선택 가능)">

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Info, Layers } from 'lucide-react'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
-import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, PageHeader, type ChartScrollContainerHandle } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, PageHeader, CHART_COLORS, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -398,7 +398,7 @@ export default function AdPerformance() {
           >
             <SimpleBarChart
               data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
-              stroke="#3b82f6"
+              stroke={CHART_COLORS.reach}
               ariaLabel="기간별 클릭 수 차트"
               yLabelFormatter={(n) => fmtNumber(Math.round(n))}
               activeIndex={clicksChartIdx}
@@ -420,7 +420,7 @@ export default function AdPerformance() {
             ariaLabel="광고 도달과 유기적 도달 비율 도넛 차트"
             data={[
               { label: '광고 도달', value: kpi.reach, color: '#f97316' },
-              { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: '#8b5cf6' },
+              { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: CHART_COLORS.saves },
             ]}
           />
         </div>
@@ -433,7 +433,7 @@ export default function AdPerformance() {
             ariaLabel="광고 참여와 유기적 참여 비율 도넛 차트"
             data={[
               { label: '광고 참여', value: kpi.clicks, color: '#f97316' },
-              { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: '#8b5cf6' },
+              { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: CHART_COLORS.saves },
             ]}
           />
         </div>
@@ -478,7 +478,7 @@ export default function AdPerformance() {
               </div>
               <div className="w-14 @sm:w-20 text-right shrink-0">
                 <span className="text-sm text-gray-500">클릭 </span>
-                <span className="text-sm font-bold text-gray-800">{fmtNumber(f.clicks)}</span>
+                <span className="text-sm font-bold text-gray-900">{fmtNumber(f.clicks)}</span>
               </div>
             </div>
             )
