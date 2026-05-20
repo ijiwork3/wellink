@@ -140,7 +140,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             {(() => {
               const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
               return (
-                <div className="mb-5 p-4 rounded-xl bg-gray-50">
+                <div className="mb-5 p-4 rounded-xl bg-gray-50 border border-gray-100">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
                       <Users size={13} className="text-brand-green" aria-hidden="true" />모집 현황
@@ -160,14 +160,14 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
 
           {/* 기간/채널 */}
           <div className={`${sectionCls} grid grid-cols-1 @[640px]:grid-cols-2 gap-3`}>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
               <Calendar size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-sm text-gray-500">신청 마감</p>
                 <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.applyEnd}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
               <Clock size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-sm text-gray-500">게시 마감</p>

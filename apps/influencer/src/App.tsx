@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Settings, X } from 'lucide-react'
 import Login from './pages/Login'
-import Home from './pages/Home'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
 import CampaignDetail from './pages/CampaignDetail'
@@ -28,17 +27,6 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '회원가입 — 입력 완료', path: '/signup?qa=filled' },
       { label: '회원가입 — 인증 완료', path: '/signup?qa=verified' },
       { label: '회원가입 — 유효성 에러', path: '/signup?qa=error' },
-    ],
-  },
-
-  /* ────────────────── 홈 ────────────────── */
-  {
-    label: '홈 (대시보드)',
-    children: [
-      { label: '기본', path: '/home' },
-      { label: '로딩 스켈레톤', path: '/home?qa=loading' },
-      { label: '빈 상태 — 활동 없음', path: '/home?qa=empty' },
-      { label: '에러', path: '/home?qa=error' },
     ],
   },
 
@@ -161,7 +149,6 @@ function AppRoutes() {
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/home':             '홈 — WELLINK AI',
       '/campaigns/browse':    '캠페인 탐색 — WELLINK AI',
       '/campaigns/favorites': '관심 캠페인 — WELLINK AI',
       '/campaigns/my':        '나의 캠페인 — WELLINK AI',
@@ -185,10 +172,9 @@ function AppRoutes() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/campaigns/browse" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
         <Route path="/campaigns/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
@@ -197,7 +183,7 @@ function AppRoutes() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
         <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 
       <button

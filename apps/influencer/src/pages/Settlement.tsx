@@ -207,16 +207,13 @@ export default function Settlement() {
           <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text mb-1 tabular-nums leading-tight">
             {availableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
           </p>
-          {availableAmount > 0 && hasBankAccount && (
+          {availableAmount > 0 && (
             <button
-              onClick={() => { setRequestTarget('all'); setRequestModal(true) }}
+              onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget('all'); setRequestModal(true) }}
               className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <BanknoteIcon size={14} />전체 정산 요청
             </button>
-          )}
-          {availableAmount > 0 && !hasBankAccount && (
-            <p className="mt-1 text-sm text-amber-600">계좌 등록 후 정산 요청이 가능해요</p>
           )}
 
           {/* 보조 지표 — 360px 한 셀 약 124px. 6-7자리(천만원대)까지 text-sm으로 안전, 큰 폭에서 text-base */}
@@ -271,10 +268,8 @@ export default function Settlement() {
                     )}
                     {item.status === '정산가능' && (
                       <button
-                        onClick={() => { setRequestTarget(item); setRequestModal(true) }}
-                        disabled={!hasBankAccount}
-                        aria-disabled={!hasBankAccount}
-                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget(item); setRequestModal(true) }}
+                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
                         <BanknoteIcon size={14} />정산 요청
                       </button>

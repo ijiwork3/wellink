@@ -256,37 +256,6 @@ export default function MyCampaign() {
                     <span className="text-sm text-gray-600 font-medium">{c.progress}</span>
                   </div>
 
-                  {/* ★ 콘텐츠대기 — 미션 가이드 + 필수 키워드 (인플루언서 피드백 매칭) */}
-                  {c.status === '콘텐츠대기' && (c.missionGuide || c.requiredKeywords) && (
-                    <div className="mb-3 rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-3">
-                      {c.missionGuide && (
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <Sparkles size={13} className="text-brand-green-text" aria-hidden="true" />
-                            <span className="text-sm font-bold text-gray-700">미션 가이드</span>
-                          </div>
-                          <p className="text-sm text-gray-700 leading-relaxed break-keep">{c.missionGuide}</p>
-                        </div>
-                      )}
-                      {c.requiredKeywords && c.requiredKeywords.length > 0 && (
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <Hash size={13} className="text-brand-green-text" aria-hidden="true" />
-                            <span className="text-sm font-bold text-gray-700">필수 키워드</span>
-                            <span className="text-sm text-gray-400">(캡션에 모두 포함)</span>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {c.requiredKeywords.map(k => (
-                              <span key={k} className="text-sm font-medium text-brand-green-text bg-brand-green-bg border border-brand-green-border px-2 py-0.5 rounded-md tabular-nums">
-                                #{k}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
                   {/* 액션 버튼 — flex-wrap + min-w로 좁은 모바일(360px)에서 자연 줄바꿈 */}
                   <div className="flex flex-wrap gap-2">
                     {actions.map(action => {
@@ -332,6 +301,36 @@ export default function MyCampaign() {
       <BottomSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
+          {/* 미션 가이드 + 필수 키워드 — 카드 대신 제출 모달에서 표시 */}
+          {(submitModal?.missionGuide || (submitModal?.requiredKeywords && submitModal.requiredKeywords.length > 0)) && (
+            <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-2.5">
+              {submitModal?.missionGuide && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Sparkles size={12} className="text-brand-green-text" aria-hidden="true" />
+                    <span className="text-xs font-bold text-gray-700">미션 가이드</span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed break-keep">{submitModal.missionGuide}</p>
+                </div>
+              )}
+              {submitModal?.requiredKeywords && submitModal.requiredKeywords.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Hash size={12} className="text-brand-green-text" aria-hidden="true" />
+                    <span className="text-xs font-bold text-gray-700">필수 키워드</span>
+                    <span className="text-xs text-gray-400">(캡션에 모두 포함)</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {submitModal.requiredKeywords.map(k => (
+                      <span key={k} className="text-xs font-medium text-brand-green-text bg-brand-green-bg border border-brand-green-border px-2 py-0.5 rounded-md">
+                        #{k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
             <Upload size={22} className="text-gray-300 mx-auto mb-2" />
             <p className="text-sm text-gray-500">인스타그램, 블로그, 유튜브 등 게시 링크</p>

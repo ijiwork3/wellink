@@ -97,7 +97,7 @@ export default function CampaignBrowse() {
   return (
     <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-4 @[640px]:px-6 py-10 bg-gradient-to-br from-brand-green-bg to-white">
+      <div className="px-4 @[640px]:px-6 py-10 bg-gradient-to-b from-brand-green-bg to-white">
         <div className="max-w-screen-xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 캠페인</h1>
           <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
@@ -206,7 +206,7 @@ export default function CampaignBrowse() {
             label="캠페인 퀵뷰"
           >
             {c && (
-              <div className="p-6 pb-8">
+              <div className="pb-4">
                 <p className="text-sm text-gray-500 mb-1">{c.brand}</p>
                 <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
                 {c.reward && (

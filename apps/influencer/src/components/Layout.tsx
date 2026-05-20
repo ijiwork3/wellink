@@ -62,7 +62,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
                 </button>
               )}
               <button
-                onClick={() => navigate('/home')}
+                onClick={() => navigate('/campaigns/browse')}
                 aria-label="WELLINK AI 홈으로"
                 className="flex items-center gap-1.5 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >

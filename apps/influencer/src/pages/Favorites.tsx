@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift, Bookmark, Compass } from 'lucide-react'
+import { Heart, Users, Gift, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay, getDDayBadgeStyle, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge } from '@wellink/ui'
+import { useQAMode, fmtDate, getDDay, getDDayBadgeStyle, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge, SEMANTIC_COLORS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockCampaigns } from '../services/mock/campaigns'
 import { useBookmarks } from '../services/userState'
@@ -137,12 +137,13 @@ export default function Favorites() {
                     </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                      aria-label={bookmarks.has(c.id) ? '북마크 해제' : '북마크'}
+                      aria-label={bookmarks.has(c.id) ? '관심 해제' : '관심'}
                       className="shrink-0 p-3 -m-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >
-                      <Bookmark
+                      <Heart
                         size={16}
-                        className={bookmarks.has(c.id) ? 'text-brand-green fill-brand-green' : 'text-gray-300'}
+                        fill={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : 'none'}
+                        color={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
                       />
                     </button>
                   </div>

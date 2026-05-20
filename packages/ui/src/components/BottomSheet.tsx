@@ -120,7 +120,7 @@ export default function BottomSheet({ open, onClose, title, label = '선택', ch
         )}
 
         {/* 콘텐츠 — @container로 내부 컨테이너 쿼리 활성 */}
-        <div className="@container overflow-y-auto flex-1 pb-[env(safe-area-inset-bottom)]">
+        <div className="@container overflow-y-auto flex-1 px-5 pt-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
           {children}
         </div>
       </div>
