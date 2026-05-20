@@ -207,7 +207,7 @@ export default function CampaignNew() {
   }
 
   return (
-    <div className="space-y-5 pb-24">
+    <div className="space-y-5 pb-24 max-w-3xl mx-auto">
       {/* 뒤로가기 */}
       <button type="button"
         onClick={() => navigate('/campaigns')}
