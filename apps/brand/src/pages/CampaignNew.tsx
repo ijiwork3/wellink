@@ -469,14 +469,15 @@ export default function CampaignNew() {
       <Section title="일정 및 모집 인원">
         <Field label={<span className="flex items-center gap-1"><Calendar size={14} /> 모집 일정</span>}>
           <div className="grid grid-cols-1 @md:grid-cols-3 gap-3">
-            <SubField label="모집 기간">
-              <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5">
-                <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
-                <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
-                <span className="@sm:hidden text-gray-500 text-sm">종료일</span>
-                <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
-              </div>
-            </SubField>
+            <div className="@md:col-span-2">
+              <SubField label="모집 기간">
+                <div className="flex items-center gap-1.5">
+                  <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
+                  <span className="text-gray-500 text-sm shrink-0" aria-hidden="true">~</span>
+                  <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
+                </div>
+              </SubField>
+            </div>
             <SubField label="인플루언서 발표일">
               <DateInput value={form.announceDate} min={form.recruitEnd || TODAY} onChange={v => set('announceDate', v)} />
             </SubField>
