@@ -315,15 +315,10 @@ export default function Settlement() {
                 ))
               )}
             </div>
-            {!hasBankAccount && (
-              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
-                <p className="text-sm text-amber-700">계좌 정보가 없어요 — 먼저 계좌를 등록해 주세요</p>
-              </div>
-            )}
             <p className="text-sm text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
             <div className="flex gap-2">
               <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={confirmRequest} disabled={!hasBankAccount} aria-disabled={!hasBankAccount} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+              <button onClick={confirmRequest} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
             </div>
           </div>
         )}
