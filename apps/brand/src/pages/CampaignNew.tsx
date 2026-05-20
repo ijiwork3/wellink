@@ -422,7 +422,7 @@ export default function CampaignNew() {
           <MockRichEditor
             value={form.guideText}
             onChange={v => set('guideText', v)}
-            placeholder="구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요."
+            placeholder={'구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.\n\n예시: 1. 고기 굽는 소리가 잘 들리게 영상 촬영\n      2. 보자기 포장 상태 언박싱 컷 필수'}
             minHeight={130}
           />
         </Field>
@@ -726,7 +726,7 @@ function MockRichEditor({
       {/* 편집 영역 */}
       <div className="relative">
         {showPlaceholder && placeholder && (
-          <p className="absolute top-3 left-3 right-3 text-base text-gray-400 pointer-events-none select-none leading-relaxed" aria-hidden="true">
+          <p className="absolute top-3 left-3 right-3 text-base text-gray-400 pointer-events-none select-none leading-relaxed whitespace-pre-line" aria-hidden="true">
             {placeholder}
           </p>
         )}
