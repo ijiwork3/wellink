@@ -533,7 +533,7 @@ export default function CampaignNew() {
       <div className="flex items-center justify-end gap-2">
         <button type="button"
           onClick={() => navigate('/campaigns')}
-          className="px-4 py-2.5 text-base text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          className="px-4 py-2.5 text-base text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
         >취소하기</button>
         <button type="button"
           onClick={handleSubmit}
