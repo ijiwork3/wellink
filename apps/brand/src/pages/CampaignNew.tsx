@@ -182,9 +182,9 @@ export default function CampaignNew() {
     }
     if (!form.productName || !form.productPrice) { showToast('제공 상품 정보를 입력해주세요', 'error'); return }
     if (!form.productDetail.trim()) { showToast('제공 상품 상세 내역을 입력해주세요', 'error'); return }
-    if (!form.description.trim()) { showToast('캠페인 설명을 입력해주세요', 'error'); return }
+    if (!form.description.replace(/<[^>]*>/g, '').trim()) { showToast('캠페인 설명을 입력해주세요', 'error'); return }
     if (form.keywords.length < 1) { showToast('필수 키워드를 1개 이상 추가해주세요', 'error'); return }
-    if (!form.guideText.trim()) { showToast('미션 가이드를 입력해주세요', 'error'); return }
+    if (!form.guideText.replace(/<[^>]*>/g, '').trim()) { showToast('미션 가이드를 입력해주세요', 'error'); return }
     // 추가한 질문이 있으면 제목 필수
     const emptyQuestionIdx = questions.findIndex(q => !q.title.trim())
     if (emptyQuestionIdx >= 0) { showToast(`질문 ${emptyQuestionIdx + 1}의 제목을 입력해주세요`, 'error'); return }
@@ -316,12 +316,11 @@ export default function CampaignNew() {
         </Field>
 
         <Field label="캠페인 설명">
-          <textarea
+          <MockRichEditor
             value={form.description}
-            onChange={e => set('description', e.target.value)}
-            rows={6}
+            onChange={v => set('description', v)}
             placeholder="캠페인 소개 / 제공 내역 / 참여 방법을 작성해주세요."
-            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
+            minHeight={160}
           />
         </Field>
       </Section>
@@ -420,12 +419,11 @@ export default function CampaignNew() {
               <Select value={form.videoCount} onChange={v => set('videoCount', v)} options={VIDEO_COUNTS} />
             </SubField>
           </div>
-          <textarea
+          <MockRichEditor
             value={form.guideText}
-            onChange={e => set('guideText', e.target.value)}
-            rows={5}
-            placeholder={'구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.\n\n예시) 1. 고기 굽는 소리가 들리게 영상 촬영\n      2. 보지기 포장 상태 언박싱 컷 필수'}
-            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            onChange={v => set('guideText', v)}
+            placeholder="구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요."
+            minHeight={130}
           />
         </Field>
 
@@ -632,6 +630,117 @@ function DateInput({ value, min, onChange }: { value: string; min?: string; onCh
       onChange={e => onChange(e.target.value)}
       className="flex-1 text-base border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
     />
+  )
+}
+
+function MockRichEditor({
+  value,
+  onChange,
+  placeholder,
+  minHeight = 150,
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  minHeight?: number
+}) {
+  const editorRef = useRef<HTMLDivElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [showPlaceholder, setShowPlaceholder] = useState(!value)
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = value || ''
+      setShowPlaceholder(!value)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const exec = (cmd: string, arg?: string) => {
+    editorRef.current?.focus()
+    document.execCommand(cmd, false, arg)
+    if (editorRef.current) onChange(editorRef.current.innerHTML)
+  }
+
+  const handleInput = () => {
+    if (!editorRef.current) return
+    const text = editorRef.current.innerText.trim()
+    setShowPlaceholder(!text)
+    onChange(editorRef.current.innerHTML)
+  }
+
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      editorRef.current?.focus()
+      document.execCommand('insertImage', false, ev.target?.result as string)
+      if (editorRef.current) onChange(editorRef.current.innerHTML)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const tbBtn = (label: React.ReactNode, title: string, action: () => void) => (
+    <button
+      type="button"
+      title={title}
+      aria-label={title}
+      onMouseDown={ev => { ev.preventDefault(); action() }}
+      className="px-2 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50"
+    >
+      {label}
+    </button>
+  )
+
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-brand-green/50 focus-within:border-brand-green transition-all">
+      {/* 툴바 */}
+      <div className="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+        {tbBtn(<span className="font-bold">B</span>, '굵게', () => exec('bold'))}
+        {tbBtn(<span className="italic font-serif">I</span>, '기울임', () => exec('italic'))}
+        {tbBtn(<span className="underline">U</span>, '밑줄', () => exec('underline'))}
+        {tbBtn(<span className="line-through">S</span>, '취소선', () => exec('strikeThrough'))}
+        <div className="w-px h-4 bg-gray-200 mx-1 shrink-0" aria-hidden="true" />
+        {tbBtn(<span className="text-xs font-semibold">H1</span>, '제목 1', () => exec('formatBlock', '<h1>'))}
+        {tbBtn(<span className="text-xs font-semibold">H2</span>, '제목 2', () => exec('formatBlock', '<h2>'))}
+        {tbBtn(<span className="text-xs font-semibold">H3</span>, '제목 3', () => exec('formatBlock', '<h3>'))}
+        <div className="w-px h-4 bg-gray-200 mx-1 shrink-0" aria-hidden="true" />
+        {tbBtn(<span className="text-xs">• 목록</span>, '글머리 기호', () => exec('insertUnorderedList'))}
+        {tbBtn(<span className="text-xs">1. 목록</span>, '번호 목록', () => exec('insertOrderedList'))}
+        {tbBtn(<span className="text-xs">&ldquo; 인용</span>, '인용구', () => exec('formatBlock', '<blockquote>'))}
+        <div className="w-px h-4 bg-gray-200 mx-1 shrink-0" aria-hidden="true" />
+        <button
+          type="button"
+          title="이미지 삽입"
+          aria-label="이미지 삽입"
+          onMouseDown={ev => { ev.preventDefault(); fileRef.current?.click() }}
+          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50"
+        >
+          <ImageIcon size={12} aria-hidden="true" />이미지
+        </button>
+        <input ref={fileRef} type="file" accept="image/*" className="sr-only" onChange={handleImage} />
+      </div>
+      {/* 편집 영역 */}
+      <div className="relative">
+        {showPlaceholder && placeholder && (
+          <p className="absolute top-3 left-3 right-3 text-base text-gray-400 pointer-events-none select-none leading-relaxed" aria-hidden="true">
+            {placeholder}
+          </p>
+        )}
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={handleInput}
+          onFocus={() => setShowPlaceholder(false)}
+          onBlur={() => setShowPlaceholder(!(editorRef.current?.innerText.trim()))}
+          style={{ minHeight }}
+          className="px-3 py-3 text-base text-gray-900 outline-none leading-relaxed [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
+        />
+      </div>
+    </div>
   )
 }
 
