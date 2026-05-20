@@ -174,7 +174,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                 <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.postEnd}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 col-span-full">
               <Users size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-sm text-gray-500">모집 채널</p>
@@ -182,7 +182,7 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               </div>
             </div>
             {campaign.type && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 col-span-full">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 col-span-full">
                 {campaign.type === 'delivery'
                   ? <Package size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
                   : <Footprints size={17} className="text-blue-500 flex-shrink-0" aria-hidden="true" />
