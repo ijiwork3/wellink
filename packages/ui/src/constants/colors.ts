@@ -18,10 +18,10 @@ export const AVATAR_COLORS = [
 export const CHART_COLORS = {
   /** 비활성/비교 데이터 막대 (Recharts fill prop) */
   inactive: '#D1D5DB',
-  /** 격자선 (CartesianGrid stroke prop) */
-  grid: '#f1f5f9',
-  /** 축 레이블 (tick fill prop) */
-  axisLabel: '#94A3B8',
+  /** 격자선 (CartesianGrid stroke prop) — gray-100 */
+  grid: '#f3f4f6',
+  /** 축 레이블 (tick fill prop) — gray-500 */
+  axisLabel: '#6b7280',
   /** 도달(reach) 라인 — 파랑 */
   reach: '#3B82F6',
   /** 저장(saves) 라인 — 보라 */
@@ -32,6 +32,8 @@ export const CHART_COLORS = {
   nullBg: '#f9fafb',
   /** 차트 null 텍스트/라벨 */
   nullText: '#d1d5db',
+  /** 공유(shares) 라인 — 에메랄드 그린 */
+  shares: '#10b981',
 } as const
 
 /** SVG stroke/fill prop에서 Tailwind 클래스 불가한 경우에만 사용 */
@@ -44,6 +46,17 @@ export const SEMANTIC_COLORS = {
   error: '#EF4444',
   /** 성공/완료 아이콘 (SVG stroke) */
   success: '#22c55e',
+} as const
+
+/** 바이럴 콘텐츠 등급 도넛 전용 색상
+ *  GradeDonut 등 SVG prop에서 BRAND·CHART_COLORS 대신 이 상수 사용 */
+export const GRADE_COLORS = {
+  A:          '#95D135',  // BRAND.green
+  B:          '#F59E0B',  // CHART_COLORS.warn (amber)
+  C:          '#9CA3AF',  // gray-400
+  D:          '#D1D5DB',  // gray-300
+  E:          '#E5E7EB',  // gray-200
+  processing: '#BADE7E',  // BRAND.greenBorder
 } as const
 
 /** QA 목업킷 전용 강조색 */

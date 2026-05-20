@@ -6,7 +6,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS } from '@wellink/ui'
 
 interface Props {
   data: { label: string; value: number }[]
@@ -50,7 +50,7 @@ const SimpleBarChart = memo(function SimpleBarChart({ data, stroke, ariaLabel, y
       {/* 그리드 */}
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
-        return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+        return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
 
       {/* Y축 라벨 */}
@@ -58,7 +58,7 @@ const SimpleBarChart = memo(function SimpleBarChart({ data, stroke, ariaLabel, y
         const labelValue = r * max
         const formatted = yLabelFormatter ? yLabelFormatter(labelValue) : Math.round(labelValue).toLocaleString()
         return (
-          <text key={r} x={padL - 8} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill="#6b7280">
+          <text key={r} x={padL - 8} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill={CHART_COLORS.axisLabel}>
             {formatted}
           </text>
         )
@@ -86,7 +86,7 @@ const SimpleBarChart = memo(function SimpleBarChart({ data, stroke, ariaLabel, y
       {data.map((d, i) => {
         if (!shouldShowLabel(i, data.length)) return null
         return (
-          <text key={i} x={barX(i)} y={padT + plotH + 20} textAnchor="middle" fontSize={12} fill="#6b7280">
+          <text key={i} x={barX(i)} y={padT + plotH + 20} textAnchor="middle" fontSize={12} fill={CHART_COLORS.axisLabel}>
             {d.label}
           </text>
         )
@@ -98,7 +98,7 @@ const SimpleBarChart = memo(function SimpleBarChart({ data, stroke, ariaLabel, y
         if (!d) return null
         const cx = barX(activeIndex)
         return (
-          <line x1={cx} y1={padT} x2={cx} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+          <line x1={cx} y1={padT} x2={cx} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
         )
       })()}
     </svg>

@@ -17,7 +17,7 @@
  */
 
 import { memo } from 'react'
-import { fmtNumber, useChartScrollContext, shouldShowLabel } from '@wellink/ui'
+import { fmtNumber, useChartScrollContext, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
 import type { BarDataItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -96,15 +96,15 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
     >
       <defs>
         <linearGradient id="follower-area-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#95D135" stopOpacity={0.42} />
-          <stop offset="100%" stopColor="#95D135" stopOpacity={0} />
+          <stop offset="0%" stopColor={BRAND.green} stopOpacity={0.42} />
+          <stop offset="100%" stopColor={BRAND.green} stopOpacity={0} />
         </linearGradient>
       </defs>
 
       {/* 그리드 — 0, mid, max */}
       {[0, 0.5, 1].map(r => {
         const y = padT + plotH * (1 - r)
-        return <line key={`grid-${r}`} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+        return <line key={`grid-${r}`} x1={padL} y1={y} x2={W - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
 
       {/* Y축 라벨 (3단) — 범위 좁을 때 소수점 2자리 만 단위로 구분 */}
@@ -138,12 +138,12 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
         if (d.value !== null) return null
         const x = padL + i * stepX
         return (
-          <line key={`null-${i}`} x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#d1d5db" strokeDasharray="3 2" strokeWidth={1} />
+          <line key={`null-${i}`} x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.nullText} strokeDasharray="3 2" strokeWidth={1} />
         )
       })}
 
       {/* Line stroke */}
-      <path d={linePath} fill="none" stroke="#95D135" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      <path d={linePath} fill="none" stroke={BRAND.green} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
       {/* X축 라벨 — 공통 shouldShowLabel 유틸 */}
       {data.map((d, i) => {
@@ -158,7 +158,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
             y={H - 10}
             textAnchor="middle"
             fontSize="11"
-            fill={isMax ? '#95D135' : (isActive ? '#374151' : '#9ca3af')}
+            fill={isMax ? BRAND.green : (isActive ? '#374151' : '#9ca3af')}
             fontWeight={isMax ? 600 : 400}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
           >
@@ -170,13 +170,13 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
       {/* Max point 강조 + 값 라벨 */}
       {maxPoint && (
         <g>
-          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="#fff" stroke="#95D135" strokeWidth={2.5} />
+          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="#fff" stroke={BRAND.green} strokeWidth={2.5} />
           <text
             x={maxPoint.x}
             y={maxPoint.y - 12}
             textAnchor="middle"
             fontSize="12"
-            fill="#95D135"
+            fill={BRAND.green}
             fontWeight={700}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
             className="tabular-nums"
@@ -192,8 +192,8 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
         if (!p) return null
         return (
           <g>
-            <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={p.x} cy={p.y} r={4} fill="#95D135" stroke="#fff" strokeWidth={2} />
+            <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <circle cx={p.x} cy={p.y} r={4} fill={BRAND.green} stroke="#fff" strokeWidth={2} />
           </g>
         )
       })()}

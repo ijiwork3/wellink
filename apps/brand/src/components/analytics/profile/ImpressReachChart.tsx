@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -89,31 +89,31 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
     >
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
-        return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+        return <line key={r} x1={padL} y1={y} x2={W - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
       {[0, 0.5, 1].map(r => (
-        <text key={r} x={padL - 6} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill="#6b7280">
+        <text key={r} x={padL - 6} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={12} fill={CHART_COLORS.axisLabel}>
           {fmtAxis(Math.round(r * maxVal))}
         </text>
       ))}
       {nullGroups.map((group, gi) => {
         const xS = padL + group[0] * stepX - (group[0] === 0 ? 0 : stepX / 2)
         const xE = padL + group[group.length - 1] * stepX + (group[group.length - 1] === data.length - 1 ? 0 : stepX / 2)
-        return <rect key={gi} x={xS} y={padT} width={Math.max(0, xE - xS)} height={plotH} fill="#f9fafb" rx={3} />
+        return <rect key={gi} x={xS} y={padT} width={Math.max(0, xE - xS)} height={plotH} fill={CHART_COLORS.nullBg} rx={3} />
       })}
       {nullGroups.length > 0 && (() => {
         const firstEnd = data.findIndex(d => d.impressions !== null) - 1
         if (firstEnd < 0) return null
         const cx = padL + (firstEnd / 2) * stepX
-        return <text x={cx} y={padT + plotH / 2 + 4} textAnchor="middle" fill="#d1d5db" fontSize={10}>데이터 없음</text>
+        return <text x={cx} y={padT + plotH / 2 + 4} textAnchor="middle" fill={CHART_COLORS.nullText} fontSize={10}>데이터 없음</text>
       })()}
       {impressSegs.map((seg, si) => (
         <g key={`i-${si}`}>
           <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
-            fill="none" stroke="#8b5cf6" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+            fill="none" stroke={CHART_COLORS.saves} strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
           {seg.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#8b5cf6" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={CHART_COLORS.saves} />
               <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
             </g>
           ))}
@@ -122,10 +122,10 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       {reachSegs.map((seg, si) => (
         <g key={`r-${si}`}>
           <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
-            fill="none" stroke="#95D135" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+            fill="none" stroke={BRAND.green} strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
           {seg.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="#95D135" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={BRAND.green} />
               <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
             </g>
           ))}
@@ -135,7 +135,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         const x = padL + i * stepX
         if (!shouldShowLabel(i, data.length, d)) return null
         return (
-          <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? '#d1d5db' : '#6b7280'} fontSize={12}>
+          <text key={i} x={x} y={H - 4} textAnchor="middle" fill={d.impressions === null ? CHART_COLORS.nullText : CHART_COLORS.axisLabel} fontSize={12}>
             {d.label}
           </text>
         )
@@ -150,9 +150,9 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         const reachY = d.reach !== null ? toY(d.reach) : null
         return (
           <g key="active">
-            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />}
-            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill="#95D135" stroke="white" strokeWidth={1.5} />}
+            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill={CHART_COLORS.saves} stroke="white" strokeWidth={1.5} />}
+            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill={BRAND.green} stroke="white" strokeWidth={1.5} />}
           </g>
         )
       })()}

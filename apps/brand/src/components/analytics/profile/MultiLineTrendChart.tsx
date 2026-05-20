@@ -264,7 +264,7 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
         const x = padX + activeIndex * stepX
         return (
           <g key="active">
-            <line x1={x} y1={padY} x2={x} y2={padY + chartH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <line x1={x} y1={padY} x2={x} y2={padY + chartH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
           </g>
         )
       })()}

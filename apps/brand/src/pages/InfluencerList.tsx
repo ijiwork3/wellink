@@ -7,6 +7,7 @@ import {
   fmtFollowers as formatFollowers, AVATAR_COLORS,
   getEngagementColor, getAuthenticColor, ENGAGEMENT_THRESHOLD,
   INFLUENCER_SORT_OPTIONS, DEFAULT_INFLUENCER_SORT, sortInfluencers,
+  CHART_COLORS, SEMANTIC_COLORS,
   type InfluencerSortKey,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -931,8 +932,8 @@ export default function InfluencerList() {
                           {(() => {
                             const items = [
                               { pct: feedCount / totalContent, color: '#f97316' },
-                              { pct: reelsCount / totalContent, color: '#8b5cf6' },
-                              { pct: imgCount / totalContent, color: '#22c55e' },
+                              { pct: reelsCount / totalContent, color: CHART_COLORS.saves },
+                              { pct: imgCount / totalContent, color: SEMANTIC_COLORS.success },
                             ]
                             let offset = 0
                             const r = 24, cx = 32, cy = 32, stroke = 10

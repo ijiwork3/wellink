@@ -6,6 +6,7 @@
  */
 
 import { memo, useRef, useState } from 'react'
+import { GRADE_COLORS } from '@wellink/ui'
 import type { ViralContent, ContentGrade } from '../../../data/analytics/viral'
 
 const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) {
@@ -15,12 +16,12 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
   const counts = { A: 0, B: 0, C: 0, D: 0, E: 0, processing: 0 } as Record<ContentGrade, number>
   for (const c of data) counts[c.grade] = (counts[c.grade] ?? 0) + 1
   const arr = [
-    { label: 'A 우수', value: counts.A, color: '#95D135' },
-    { label: 'B', value: counts.B, color: '#f59e0b' },
-    { label: 'C', value: counts.C, color: '#9ca3af' },
-    { label: 'D', value: counts.D, color: '#d1d5db' },
-    { label: 'E', value: counts.E, color: '#e5e7eb' },
-    { label: '산정중', value: counts.processing, color: '#BADE7E' },
+    { label: 'A 우수',  value: counts.A,          color: GRADE_COLORS.A },
+    { label: 'B',       value: counts.B,          color: GRADE_COLORS.B },
+    { label: 'C',       value: counts.C,          color: GRADE_COLORS.C },
+    { label: 'D',       value: counts.D,          color: GRADE_COLORS.D },
+    { label: 'E',       value: counts.E,          color: GRADE_COLORS.E },
+    { label: '산정중',  value: counts.processing, color: GRADE_COLORS.processing },
   ].filter(a => a.value > 0)
   const total = arr.reduce((s, a) => s + a.value, 0)
   if (total === 0) return <p className="text-base text-gray-500 text-center py-8">데이터가 없습니다.</p>

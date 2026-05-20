@@ -13,7 +13,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
 
 interface Props {
   data: { date: string; spend: number; clicks: number; ctr?: number }[]
@@ -81,11 +81,11 @@ const MixedChart = memo(function MixedChart({
       {/* 그리드 — plot 영역 내부만 */}
       {[0, 0.25, 0.5, 0.75, 1].map(r => {
         const y = padT + plotH - r * plotH
-        return <line key={r} x1={padL - BAR_W / 2} y1={y} x2={(W - padR) + BAR_W / 2} y2={y} stroke="#f3f4f6" strokeWidth={1} />
+        return <line key={r} x1={padL - BAR_W / 2} y1={y} x2={(W - padR) + BAR_W / 2} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
       })}
-      {/* 좌축 (지출) — Y축 숫자값: X축과 동일 spec (#6b7280, 9pt, regular) */}
+      {/* 좌축 (지출) — Y축 숫자값 */}
       {[0, 0.5, 1].map(r => (
-        <text key={r} x={yLabelLeftX} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={14} fill="#6b7280">
+        <text key={r} x={yLabelLeftX} y={padT + plotH - r * plotH + 4} textAnchor="end" fontSize={14} fill={CHART_COLORS.axisLabel}>
           {Math.round(r * maxSpend / 1000).toLocaleString()}k
         </text>
       ))}
@@ -94,13 +94,13 @@ const MixedChart = memo(function MixedChart({
         const val = r * maxClicks
         const text = secondaryFormatter ? secondaryFormatter(val) : Math.round(val).toLocaleString()
         return (
-          <text key={r} x={yLabelRightX} y={padT + plotH - r * plotH + 4} textAnchor="start" fontSize={14} fill="#6b7280">
+          <text key={r} x={yLabelRightX} y={padT + plotH - r * plotH + 4} textAnchor="start" fontSize={14} fill={CHART_COLORS.axisLabel}>
             {text}
           </text>
         )
       })}
       {/* 축 단위 안내 — 컬러 유지 (어느 축이 어느 데이터인지 식별), 폰트는 X축과 동일 사이즈 */}
-      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill="#95D135">지출 (원)</text>
+      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill={BRAND.green}>지출 (원)</text>
       <text x={yLabelRightX} y={padT - 10} textAnchor="start" fontSize={14} fill={secondaryColor}>{secondaryLabel}</text>
 
       {/* 기준선 (referenceLine) — 우축 값 기준 점선 + 우측 라벨 */}
@@ -137,7 +137,7 @@ const MixedChart = memo(function MixedChart({
       {data.map((d, i) => {
         const x = padL + i * stepX - BAR_W / 2
         const h = (d.spend / maxSpend) * plotH
-        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill="#95D135" />
+        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill={BRAND.green} />
       })}
       {/* 라인 (보조) — 보색으로 막대와 대비 강화 */}
       <path
@@ -166,7 +166,7 @@ const MixedChart = memo(function MixedChart({
       {data.map((d, i) => {
         if (!shouldShowLabel(i, data.length)) return null
         const x = padL + i * stepX
-        return <text key={i} x={x} y={padT + plotH + 18} textAnchor="middle" fontSize={14} fill="#6b7280">{d.date}</text>
+        return <text key={i} x={x} y={padT + plotH + 18} textAnchor="middle" fontSize={14} fill={CHART_COLORS.axisLabel}>{d.date}</text>
       })}
       {/* 인터랙티브 crosshair + 활성 도트 — 툴팁은 HTML 오버레이로 처리 */}
       {activeIndex !== null && (() => {
@@ -177,8 +177,8 @@ const MixedChart = memo(function MixedChart({
         const clicksY = padT + plotH - (d.clicks / maxClicks) * plotH
         return (
           <g key="active-indicator">
-            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={spendY} r={4} fill="#95D135" stroke="white" strokeWidth={1.5} />
+            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <circle cx={x} cy={spendY} r={4} fill={BRAND.green} stroke="white" strokeWidth={1.5} />
             <circle cx={x} cy={clicksY} r={4} fill={secondaryColor} stroke="white" strokeWidth={1.5} />
           </g>
         )

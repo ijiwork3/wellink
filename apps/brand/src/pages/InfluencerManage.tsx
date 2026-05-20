@@ -22,6 +22,7 @@ import {
   Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip,
   ErrorState, EmptyState, SkeletonCard,
   useToast, fmtFollowers as formatFollowers, TIMER_MS, AVATAR_COLORS,
+  CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
@@ -674,7 +675,7 @@ export default function InfluencerManage() {
                   <li key={g}>
                     <button type="button"
                       onClick={() => addToGroup(targetInfluencer.id, g)}
-                      className="w-full text-left px-5 py-3.5 text-base text-gray-800 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-5 py-3.5 text-base text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2"
                     >
                       <span className="w-2 h-2 rounded-full bg-brand-green shrink-0" />
                       {g}
@@ -898,8 +899,8 @@ export default function InfluencerManage() {
                         {(() => {
                           const items = [
                             { pct: feedCount / totalContent, color: '#f97316' },
-                            { pct: reelsCount / totalContent, color: '#8b5cf6' },
-                            { pct: imgCount / totalContent, color: '#22c55e' },
+                            { pct: reelsCount / totalContent, color: CHART_COLORS.saves },
+                            { pct: imgCount / totalContent, color: SEMANTIC_COLORS.success },
                           ]
                           let offset = 0
                           const r = 24, cx = 32, cy = 32, stroke = 10

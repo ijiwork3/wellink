@@ -91,7 +91,7 @@ export { niceCeil } from './utils/niceCeil'
 export { shouldShowLabel } from './utils/shouldShowLabel'
 
 // DS 색상 토큰
-export { BRAND, AVATAR_COLORS, PLATFORM_COLORS, CHART_COLORS, SEMANTIC_COLORS, QA_ACCENT_COLOR } from './constants/colors'
+export { BRAND, AVATAR_COLORS, PLATFORM_COLORS, CHART_COLORS, GRADE_COLORS, SEMANTIC_COLORS, QA_ACCENT_COLOR } from './constants/colors'
 // 공용 스타일 상수
 export { INPUT_BASE } from './constants/styles'
 // 타이머 상수

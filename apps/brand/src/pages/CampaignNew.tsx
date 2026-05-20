@@ -523,7 +523,7 @@ export default function CampaignNew() {
 
       {/* 총 결제 예정 금액 */}
       <div className="bg-blue-50/50 border border-blue-100 rounded-2xl px-4 py-3.5 flex items-center justify-between gap-3">
-        <span className="text-base font-semibold text-gray-800">총 결제 예정 금액</span>
+        <span className="text-base font-semibold text-gray-900">총 결제 예정 금액</span>
         <div className="text-right">
           <p className="text-xl @md:text-2xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
           <p className="text-sm text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
@@ -582,7 +582,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, hint, children, required, optional }: { label: React.ReactNode; hint?: string; children: React.ReactNode; required?: boolean; optional?: boolean }) {
   return (
     <div>
-      <label className="text-base font-semibold text-gray-800 block mb-2">
+      <label className="text-base font-semibold text-gray-900 block mb-2">
         {label}
         {required && <span className="ml-1 text-red-500" aria-label="필수 입력">*</span>}
         {optional && <span className="ml-1 text-sm font-normal text-gray-500">(선택)</span>}

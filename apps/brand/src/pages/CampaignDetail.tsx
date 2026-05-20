@@ -4,6 +4,7 @@ import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, File
 import {
   Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination,
   ErrorState, EmptyState, SkeletonCard, Skeleton, useToast, FloatingScrollChevrons,
+  CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
@@ -1496,7 +1497,7 @@ export default function CampaignDetail() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-base font-medium text-gray-800 text-right whitespace-nowrap">{a.engagement}%</td>
+                    <td className="py-3 px-4 text-base font-medium text-gray-900 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
                       <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-brand-green-text">
                         {a.fitScore}
@@ -2054,7 +2055,7 @@ export default function CampaignDetail() {
                           ].map(m => (
                             <div key={m.label}>
                               <p className="text-base text-gray-500 mb-0.5">{m.label}</p>
-                              <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-800'}`}>{m.value}</p>
+                              <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{m.value}</p>
                             </div>
                           ))}
                         </div>
@@ -2206,11 +2207,11 @@ export default function CampaignDetail() {
           {/* 시계열 차트 3종 — 좁은 폭은 1열, 충분히 넓은 폭(@xl ≈ 1280px+)은 2열 */}
           {trendData.length > 0 && (
             <div className="grid grid-cols-1 @xl:grid-cols-2 gap-4">
-              <TrendChart title="좋아요 추이" data={trendData} dataKey="likes" stroke="#ef4444" />
-              <TrendChart title="비디오 재생수 추이" data={trendData} dataKey="views" stroke="#3b82f6" />
+              <TrendChart title="좋아요 추이" data={trendData} dataKey="likes" stroke={SEMANTIC_COLORS.heart} />
+              <TrendChart title="비디오 재생수 추이" data={trendData} dataKey="views" stroke={CHART_COLORS.reach} />
               <TrendChart title="공유·댓글 추이" data={trendData} multi={[
-                { dataKey: 'shares', label: '공유', stroke: '#10b981' },
-                { dataKey: 'comments', label: '댓글', stroke: '#f59e0b' },
+                { dataKey: 'shares', label: '공유', stroke: CHART_COLORS.shares },
+                { dataKey: 'comments', label: '댓글', stroke: CHART_COLORS.warn },
               ]} />
             </div>
           )}
@@ -2259,11 +2260,11 @@ export default function CampaignDetail() {
                       <div className="flex flex-col gap-1 pt-2 border-t border-gray-50">
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">도달</p>
-                          <p className="text-base font-bold text-gray-800">{fmtNumber(c.reach)}</p>
+                          <p className="text-base font-bold text-gray-900">{fmtNumber(c.reach)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">좋아요</p>
-                          <p className="text-base font-bold text-gray-800">{fmtNumber(c.likes)}</p>
+                          <p className="text-base font-bold text-gray-900">{fmtNumber(c.likes)}</p>
                         </div>
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-base text-gray-500 shrink-0">참여율</p>
@@ -2483,7 +2484,7 @@ export default function CampaignDetail() {
                 ].map(m => (
                   <div key={m.label}>
                     <p className="text-sm text-gray-500 mb-0.5">{m.label}</p>
-                    <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-800'}`}>{m.value}</p>
+                    <p className={`text-base font-bold ${m.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{m.value}</p>
                   </div>
                 ))}
               </div>
@@ -2685,7 +2686,7 @@ export default function CampaignDetail() {
                   {target.allAnswers.map(a => (
                     <div key={a.orderNumber} className="space-y-1">
                       <p className="text-base font-medium text-gray-500">{a.question}</p>
-                      <p className="text-base text-gray-800 bg-gray-50 rounded-xl p-3 leading-relaxed">{a.answer || '-'}</p>
+                      <p className="text-base text-gray-900 bg-gray-50 rounded-xl p-3 leading-relaxed">{a.answer || '-'}</p>
                     </div>
                   ))}
                 </div>
@@ -3075,7 +3076,7 @@ function KpiCell({ label, value, small }: { label: string; value: string; small?
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 @md:p-5">
-      <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+      <h2 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
         <span className="text-gray-500">{icon}</span>
         {title}
       </h2>
@@ -3143,7 +3144,7 @@ function MarkdownView({ text, className = '' }: { text: string; className?: stri
       blocks.push(<h4 key={idx} className="text-base font-bold text-gray-900 mt-3 mb-1.5" dangerouslySetInnerHTML={{ __html: inlineFormat(h2[1]) }} />)
     } else if (h3) {
       flushList(String(idx))
-      blocks.push(<h5 key={idx} className="text-base font-semibold text-gray-800 mt-2 mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(h3[1]) }} />)
+      blocks.push(<h5 key={idx} className="text-base font-semibold text-gray-900 mt-2 mb-1" dangerouslySetInnerHTML={{ __html: inlineFormat(h3[1]) }} />)
     } else if (li) {
       listBuf.push(li[1])
     } else {

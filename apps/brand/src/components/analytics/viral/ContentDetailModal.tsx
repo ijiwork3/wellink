@@ -13,7 +13,7 @@
 
 import { memo, useState, useEffect, useRef, useMemo } from 'react'
 import { Megaphone, Info, Eye, Heart, MessageCircle, Bookmark, Share2, TrendingUp, ExternalLink, Play, AlertCircle, Camera, X } from 'lucide-react'
-import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useChartScrollContext, useIsTouchDevice, type ChartScrollContainerHandle } from '@wellink/ui'
+import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useChartScrollContext, useIsTouchDevice, CHART_COLORS, type ChartScrollContainerHandle } from '@wellink/ui'
 import GradePill from './GradePill'
 import { CAMPAIGN_MATCH_MAP, type ViralContent } from '../../../data/analytics/viral'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../../../utils/thumbnailPlaceholder'
@@ -350,12 +350,12 @@ const ScoreHistoryChart = memo(function ScoreHistoryChart({
       onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
     >
       {[0, 0.5, 1].map(r => (
-        <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke="#e5e7eb" strokeWidth={1} />
+        <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke={CHART_COLORS.grid} strokeWidth={1} />
       ))}
-      <path d={line('performance')} fill="none" stroke="#8b5cf6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <path d={line('momentum')} fill="none" stroke="#f59e0b" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={line('performance')} fill="none" stroke={CHART_COLORS.saves} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={line('momentum')} fill="none" stroke={CHART_COLORS.warn} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
       {data.map((d, i) => (
-        <text key={i} x={padL + i * stepX} y={H - 4} textAnchor="middle" fontSize={11} fill="#9ca3af">{d.label}</text>
+        <text key={i} x={padL + i * stepX} y={H - 4} textAnchor="middle" fontSize={11} fill={CHART_COLORS.axisLabel}>{d.label}</text>
       ))}
       {activeIndex != null && (() => {
         const d = data[activeIndex]
@@ -363,9 +363,9 @@ const ScoreHistoryChart = memo(function ScoreHistoryChart({
         const x = padL + activeIndex * stepX
         return (
           <g key="active">
-            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke="#6b7280" strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={toY(d.performance)} r={3.5} fill="#8b5cf6" stroke="white" strokeWidth={1.5} />
-            <circle cx={x} cy={toY(d.momentum)} r={3.5} fill="#f59e0b" stroke="white" strokeWidth={1.5} />
+            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <circle cx={x} cy={toY(d.performance)} r={3.5} fill={CHART_COLORS.saves} stroke="white" strokeWidth={1.5} />
+            <circle cx={x} cy={toY(d.momentum)} r={3.5} fill={CHART_COLORS.warn} stroke="white" strokeWidth={1.5} />
           </g>
         )
       })()}
