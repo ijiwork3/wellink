@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react'
+import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -176,11 +176,23 @@ export default function Media() {
                   <p className="text-xs text-gray-500">인스타그램</p>
                 </div>
               </div>
-              {/* 업데이트 시간 + 새로고침 — 원본 mypage L1326-1330, L1450-1462 */}
+              {/* 업데이트 시간 + 새로고침 + 인스타 프로필 링크 — 원본 mypage L1326-1330, L1435-1462 */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-xs text-gray-400 tabular-nums whitespace-nowrap">
                   {fmtRelativeDate(mockInstaStats.lastUpdated)}
                 </span>
+                {/* 인스타 프로필 외부 링크 — 원본 mypage L1436-1446 */}
+                {instaPlatform?.url && (
+                  <a
+                    href={`https://www.instagram.com/${instaPlatform.url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="인스타 프로필로 이동"
+                    className="flex items-center justify-center w-6 h-6 rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                  >
+                    <ExternalLink size={12} aria-hidden="true" />
+                  </a>
+                )}
                 <button
                   aria-label="인스타 통계 새로고침"
                   onClick={() => showToast('통계를 업데이트했어요', 'success')}
