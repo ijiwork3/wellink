@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin } from 'lucide-react'
+import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { BottomSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -27,12 +27,13 @@ function statusToTab(s: string): TabKey {
 // `/campaigns/${c.id}` 라우팅이 항상 NaN 매칭으로 깨졌었음. 카드 내부에 모든 정보가 이미 있어
 // 외부 라우팅이 불필요. (cold-review 후속 round 5 발견)
 // '수정하기' — 원본 mypage/page.tsx L832-865: WAIT 상태 → campaignRef 있을 때만 표시
-const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정'>>> = {
+// '본인이 제출한 컨텐츠' — 원본 mypage/page.tsx L871-903: 완료 캠페인에서 제출 URL 확인
+const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '본인이 제출한 컨텐츠'>>> = {
   '지원완료':   ['신청 정보 보기', '수정하기', '취소'],
   '검토중':     ['신청 정보 보기', '취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
   '검수중':     ['콘텐츠 수정'],
-  '완료':       [],
+  '완료':       ['본인이 제출한 컨텐츠'],
   '미선정':     [],
 }
 
@@ -58,6 +59,7 @@ export default function MyCampaign() {
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
+  const [postViewModal, setPostViewModal] = useState<MyCampaign | null>(null)
   const [contentUrl, setContentUrl] = useState('')
   const [guideAgreed, setGuideAgreed] = useState(false)
   const [search, setSearch] = useState('')
@@ -328,6 +330,13 @@ export default function MyCampaign() {
                           <FileText size={14} />신청 정보 보기
                         </button>
                       )
+                      if (action === '본인이 제출한 컨텐츠') return (
+                        <button key={action}
+                          onClick={() => setPostViewModal(c)}
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          <FileText size={14} />본인이 제출한 컨텐츠
+                        </button>
+                      )
                       if (action === '취소') return (
                         <button key={action}
                           onClick={() => setCancelModal(c)}
@@ -430,6 +439,37 @@ export default function MyCampaign() {
       </BottomSheet>
 
       {/* 신청 정보 보기 바텀시트 — mc-id가 mockCampaigns(number)와 분리되어 페이지 이동 대신 inline 표시 */}
+      {/* 본인이 제출한 컨텐츠 — 원본 mypage/page.tsx L871-903: 완료 캠페인 postUrl 확인 */}
+      <BottomSheet open={!!postViewModal} onClose={() => setPostViewModal(null)} title="본인이 제출한 컨텐츠">
+        {postViewModal && (
+          <div className="space-y-3">
+            <div className="bg-gray-50 rounded-xl p-4 space-y-1">
+              <p className="text-sm font-semibold text-gray-700">{postViewModal.name}</p>
+              <p className="text-sm text-gray-500">{postViewModal.brand} · {postViewModal.channel}</p>
+            </div>
+            {postViewModal.postUrl ? (
+              <div className="flex items-start gap-2.5 p-4 rounded-xl border border-gray-100">
+                <ExternalLink size={14} className="text-brand-green mt-0.5 shrink-0" aria-hidden="true" />
+                <a
+                  href={postViewModal.postUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-brand-green-text hover:underline break-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                >
+                  {postViewModal.postUrl}
+                </a>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4">제출된 콘텐츠가 없어요</p>
+            )}
+            <button
+              onClick={() => setPostViewModal(null)}
+              className="w-full py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >닫기</button>
+          </div>
+        )}
+      </BottomSheet>
+
       <BottomSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">
         {appliedModal && (() => {
           const applied = mockAppliedData[appliedModal.id]

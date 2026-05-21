@@ -279,6 +279,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     appliedAt: '2026-03-10', deadline: '2026-04-20',
     status: '완료', progress: '정산 가능',
     reward: '95,000원', rewardAmount: 95000,
+    postUrl: 'https://www.instagram.com/p/smileato_review_chanstyler',
   },
   {
     id: 'mc-5', name: '요가 스트레칭 밴드', brand: '필라핏', channel: '인스타그램',
