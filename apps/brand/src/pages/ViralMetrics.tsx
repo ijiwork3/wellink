@@ -452,7 +452,7 @@ export default function ViralMetrics() {
               <div className="grid grid-cols-1 @2xl:grid-cols-2 gap-3">
                 {paginated.map((item, idx) => {
                   // seed 기반 증감률 mock (전월 대비 %) — 실 API 연동 전 임시
-                  const s = (Number(item.id) * 7 + idx * 3) % 100
+                  const s = (parseInt(item.id.replace(/\D/g, '') || '0', 10) * 7 + idx * 3) % 100
                   const growth = item.grade === 'processing' ? undefined : {
                     likes:    parseFloat((((s * 11) % 41) - 15).toFixed(1)),
                     comments: parseFloat((((s * 13) % 31) - 10).toFixed(1)),
