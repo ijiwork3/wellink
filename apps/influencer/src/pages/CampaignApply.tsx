@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
 import { useToast, ErrorState, TIMER_MS } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
 import { useApplications } from '../services/userState'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 
 export default function CampaignApply() {
@@ -123,7 +124,7 @@ export default function CampaignApply() {
               onClick={() => navigate('/campaigns/my')}
               className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              나의 캠페인 확인
+              내 캠페인 확인
             </button>
           )}
           <button
@@ -184,20 +185,51 @@ export default function CampaignApply() {
           </div>
         )}
 
-        {/* 캠페인 요약 */}
-        <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-          <div className="text-3xl flex-shrink-0" aria-hidden="true">{campaign.image}</div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm text-gray-500 truncate">{campaign.brand}</p>
-            <p className="text-sm font-semibold text-gray-900 truncate">{campaign.name}</p>
-            <div className="flex items-center gap-x-2 gap-y-0.5 mt-1 flex-wrap">
-              {isDelivery
-                ? <span className="flex items-center gap-1 text-sm text-brand-green-text whitespace-nowrap"><Package size={14} />배송형</span>
-                : <span className="flex items-center gap-1 text-sm text-blue-700 whitespace-nowrap"><Footprints size={14} />방문형</span>
-              }
-              {campaign.reward && <span className="text-sm text-gray-500 break-keep">· {campaign.reward}</span>}
+        {/* 캠페인 요약 — 원본 CampaignApplyForm.tsx:439-459: 썸네일 + 제품 정보 */}
+        <div className="rounded-2xl border border-gray-100 overflow-hidden">
+          {/* 썸네일 + 기본 정보 */}
+          <div className="flex items-center gap-3 p-4 bg-gray-50">
+            <div className="w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
+              <img
+                src={getThumbnailFromPool(campaign.id)}
+                alt=""
+                loading="lazy"
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-500 truncate">{campaign.brand}</p>
+              <p className="text-sm font-semibold text-gray-900 line-clamp-2 break-keep">{campaign.name}</p>
+              <div className="flex items-center gap-x-2 gap-y-0.5 mt-1 flex-wrap">
+                {isDelivery
+                  ? <span className="flex items-center gap-1 text-xs text-brand-green-text whitespace-nowrap"><Package size={12} />배송형</span>
+                  : <span className="flex items-center gap-1 text-xs text-blue-700 whitespace-nowrap"><Footprints size={12} />방문형</span>
+                }
+                {campaign.reward && <span className="text-xs text-gray-500 break-keep">· {campaign.reward}</span>}
+              </div>
             </div>
           </div>
+
+          {/* 제공 내역 — 원본 CampaignApplyForm.tsx:444-450 */}
+          {campaign.productDetail && (
+            <div className="border-t border-gray-100 px-4 py-3">
+              <p className="text-xs font-semibold text-gray-500 flex items-center gap-1 mb-1.5">
+                <Gift size={11} className="text-brand-green" aria-hidden="true" />제공 내역
+              </p>
+              <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.productDetail}</p>
+            </div>
+          )}
+
+          {/* 필수 가이드 — 원본 CampaignApplyForm.tsx:452-458 */}
+          {campaign.detailMissionDescription && (
+            <div className="border-t border-gray-100 px-4 py-3">
+              <p className="text-xs font-semibold text-gray-500 flex items-center gap-1 mb-1.5">
+                <BookOpen size={11} className="text-brand-green" aria-hidden="true" />필수 가이드
+              </p>
+              <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.detailMissionDescription}</p>
+            </div>
+          )}
         </div>
 
         {/* 신청자 정보 (읽기 전용) */}
