@@ -3,6 +3,8 @@
 export interface CampaignQuestion {
   id: string
   question: string
+  /** 질문 서브 설명 — 원본 CampaignApplyForm.tsx L551-552: q.description?.trim() && <p> */
+  description?: string
   required: boolean
   type: 'text' | 'radio'
   options?: string[]

@@ -8,6 +8,7 @@ import { useToast, ErrorState, TIMER_MS } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
 import { useApplications } from '../services/userState'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
+import { TERMS_URL } from '../config/urls'
 
 
 export default function CampaignApply() {
@@ -405,10 +406,14 @@ export default function CampaignApply() {
             <div className="space-y-4">
               {campaign.questions!.map(q => (
                 <div key={q.id}>
-                  <label className="text-sm font-medium text-gray-800 block mb-2">
+                  <label className="text-sm font-medium text-gray-800 block mb-1">
                     {q.question}
                     {q.required && !isViewMode && <span className="text-red-500 ml-0.5">*</span>}
                   </label>
+                  {/* 질문 서브 설명 — 원본 CampaignApplyForm.tsx L551-552 */}
+                  {q.description?.trim() && (
+                    <p className="text-xs text-gray-500 mb-2">{q.description}</p>
+                  )}
                   {isViewMode ? (
                     <ViewField value={answers[q.id] ?? '—'} />
                   ) : q.type === 'radio' && q.options ? (
@@ -470,6 +475,19 @@ export default function CampaignApply() {
                 error={errors.agreed2}
                 text="캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다."
               />
+              {/* 공통 안내사항 자세히보기 — 원본 CampaignApplyForm.tsx L859-872 */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <p className="text-sm font-medium text-gray-700">공통 안내사항 <span className="text-red-500">*</span></p>
+                <a
+                  href={TERMS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                >
+                  자세히보기
+                  <ExternalLink size={10} aria-hidden="true" />
+                </a>
+              </div>
             </div>
           </Section>
         )}
