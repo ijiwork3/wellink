@@ -71,8 +71,8 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
       }`}
       aria-label={`${influencer.username} 콘텐츠, ${metrics.likes.toLocaleString()} 좋아요`}
     >
-      {/* 썸네일 — 콘텐츠 타입 무관 9:16 통일, object-cover 크롭 */}
-      <div className="relative bg-gray-100 overflow-hidden aspect-[9/16]">
+      {/* 썸네일 — 9:16보다 짧은 3:4 비율, object-cover 크롭 */}
+      <div className="relative bg-gray-100 overflow-hidden aspect-[3/4]">
         <img
           src={imgSrc}
           alt={`@${influencer.username}의 콘텐츠 미리보기`}
