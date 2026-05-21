@@ -59,6 +59,7 @@ export default function MyCampaign() {
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
   const [contentUrl, setContentUrl] = useState('')
+  const [guideAgreed, setGuideAgreed] = useState(false)
   const [search, setSearch] = useState('')
 
   // QA 파라미터 외부 동기화 (정책 §외부동기화)
@@ -104,6 +105,7 @@ export default function MyCampaign() {
     showToast(isEdit ? '콘텐츠를 수정했어요!' : '콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
     setContentUrl('')
+    setGuideAgreed(false)
   }
 
   const handleCancel = (id: string) => {
@@ -344,7 +346,7 @@ export default function MyCampaign() {
       </div>
 
       {/* 콘텐츠 제출/수정 바텀시트 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
-      <BottomSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl('') }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
+      <BottomSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
           {/* 미션 가이드 + 필수 키워드 — 카드 대신 제출 모달에서 표시 */}
@@ -398,9 +400,19 @@ export default function MyCampaign() {
               placeholder="https://instagram.com/p/..."
             />
           </div>
+          {/* 가이드 준수 동의 — 원본 CampaignApplyForm.tsx L977-997: contentLinkGuideAgreed 체크 필수 */}
+          <label className="flex items-start gap-2.5 cursor-pointer p-3 rounded-xl border transition-colors border-gray-100 bg-gray-50">
+            <input
+              type="checkbox"
+              checked={guideAgreed}
+              onChange={e => setGuideAgreed(e.target.checked)}
+              className="mt-0.5 accent-brand-green"
+            />
+            <span className="text-sm text-gray-700 leading-snug break-keep">캠페인 가이드라인을 확인하였으며, 준수할 것에 동의합니다. <span className="text-red-500">*</span></span>
+          </label>
           <div className="flex gap-2">
-            <button onClick={() => { setSubmitModal(null); setContentUrl('') }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
-            <button onClick={handleContentSubmit} disabled={!contentUrl.trim()} aria-disabled={!contentUrl.trim()} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
+            <button onClick={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim() || !guideAgreed} aria-disabled={!contentUrl.trim() || !guideAgreed} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
           </div>
         </div>
       </BottomSheet>
