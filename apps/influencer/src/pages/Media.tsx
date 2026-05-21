@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3 } from 'lucide-react'
+import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react'
 import Layout from '../components/Layout'
 import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -73,6 +73,11 @@ export default function Media() {
   const [disconnectModal, setDisconnectModal] = useState<Platform | null>(null)
   const [urlInput, setUrlInput] = useState('')
   const { showToast } = useToast()
+  // 데이터 수집 상태 — 원본 mypage L1357-1364 isMentionsUpdating/isMentionsFailed
+  const isUpdating = qa === 'updating'
+  const isFailed   = qa === 'update-failed'
+  // posts=0 경고 — 원본 mypage L1373-1406
+  const mockPosts  = qa === 'no-posts' ? 0 : mockInstaStats.posts
 
   // URL search params + QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -87,7 +92,7 @@ export default function Media() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
           <Skeleton shape="text" height={16} width="7rem" className="mb-5" />
           {[1,2,3].map(i => (
@@ -109,7 +114,7 @@ export default function Media() {
 
   if (qa === 'error') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="SNS 연결 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -151,24 +156,59 @@ export default function Media() {
   const instaPlatform = platforms.find(p => p.id === 'instagram')
 
   return (
-    <Layout>
+    <Layout showProfileHeader={false}>
       <div className="space-y-4 max-w-lg">
         <h1 className="sr-only">SNS 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
           <div className="bg-white rounded-2xl border border-brand-green-border shadow-sm p-5">
-            <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span className="text-base flex-shrink-0" aria-hidden="true">📷</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-900 truncate">@{instaPlatform.url}</p>
-                  <p className="text-sm text-gray-500">인스타그램</p>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    {/* posts=0 경고 아이콘 — 원본 mypage L1373-1406 */}
+                    {mockPosts === 0 && (
+                      <AlertTriangle size={14} className="text-red-500 shrink-0" aria-label="게시물 수 0개 안내" />
+                    )}
+                    <p className={`text-sm font-semibold truncate ${mockPosts === 0 ? 'text-red-600' : 'text-gray-900'}`}>@{instaPlatform.url}</p>
+                  </div>
+                  <p className="text-xs text-gray-500">인스타그램</p>
                 </div>
               </div>
-              <span className="shrink-0 text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1 whitespace-nowrap">
-                <CheckCircle2 size={12} />연결됨
-              </span>
+              {/* 업데이트 시간 + 새로고침 — 원본 mypage L1326-1330, L1450-1462 */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-xs text-gray-400 tabular-nums whitespace-nowrap">
+                  {fmtRelativeDate(mockInstaStats.lastUpdated)}
+                </span>
+                <button
+                  aria-label="인스타 통계 새로고침"
+                  onClick={() => showToast('통계를 업데이트했어요', 'success')}
+                  className="flex items-center justify-center w-6 h-6 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <RefreshCw size={13} aria-hidden="true" />
+                </button>
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1 whitespace-nowrap">
+                  <CheckCircle2 size={12} />연결됨
+                </span>
+              </div>
             </div>
+
+            {/* 데이터 수집/오류 상태 배너 — 원본 mypage L1357-1364, L1519-1524 */}
+            {isFailed ? (
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                올바르지 않은 사용자 이름이에요. 다시 확인해보세요.
+              </div>
+            ) : isUpdating ? (
+              <div className="mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
+                <Loader2 size={13} className="animate-spin shrink-0" aria-hidden="true" />
+                <span>데이터를 수집 중이에요. 잠시만 기다려주세요.</span>
+              </div>
+            ) : mockPosts === 0 ? (
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                게시물 수가 0개예요. 연결한 계정 정보가 정확한지 확인해주세요.
+              </div>
+            ) : null}
 
             {/* 6개 통계 그리드 — 360px 카드 p-5 → 가용 248px → 셀 (248-16)/3 = 77px. text-sm + tabular-nums + truncate 일관 적용 */}
             <div className="grid grid-cols-3 gap-2 mb-4">
@@ -184,7 +224,7 @@ export default function Media() {
                   <Image size={14} className="text-gray-400" />
                   <p className="text-sm text-gray-500 break-keep">게시물</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.posts.toLocaleString('ko-KR')}</p>
+                <p className={`text-sm font-bold tabular-nums truncate ${mockPosts === 0 ? 'text-red-500' : 'text-gray-900'}`}>{mockPosts.toLocaleString('ko-KR')}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">

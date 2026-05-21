@@ -67,10 +67,13 @@ export interface InstaStats {
   avgComments: number
   engagementRate: number
   lastActive: string
+  /** 마지막 데이터 업데이트 시각 — 원본 mypage L1326-1330 lastUpdatedTime */
+  lastUpdated: string
 }
 
 // 시연 시점 기준 2시간 전 — fmtRelativeDate로 동적 표기
 const TWO_HOURS_AGO_ISO = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+const FIFTEEN_MIN_AGO_ISO = new Date(Date.now() - 15 * 60 * 1000).toISOString()
 
 export const mockInstaStats: InstaStats = {
   followers: 8700,
@@ -79,4 +82,5 @@ export const mockInstaStats: InstaStats = {
   avgComments: 18,
   engagementRate: 4.1,
   lastActive: TWO_HOURS_AGO_ISO,
+  lastUpdated: FIFTEEN_MIN_AGO_ISO,
 }

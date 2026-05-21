@@ -31,6 +31,10 @@ export interface Campaign {
   postType?: string
   /** 우대사항 — 원본 CampaignDetail priorityType 대응 (예: '운동 관련 계정 우대', '체험단 경험자 우대') */
   priorityType?: string
+  /** 제공 내역 — 원본 CampaignDetail productDetail 대응 (제품 설명·혜택 상세) */
+  productDetail?: string
+  /** 필수 가이드 — 원본 CampaignDetail detailMissionDescription 대응 (콘텐츠 작성 상세 가이드) */
+  detailMissionDescription?: string
   keywords?: string[]
   questions?: CampaignQuestion[]
 }
@@ -56,6 +60,8 @@ export const mockCampaigns: Campaign[] = [
     type: 'delivery',
     postType: '인스타그램 피드 + 스토리',
     priorityType: '비건·채식 라이프스타일 계정 우대',
+    productDetail: '비건 단백질 쉐이크 1개월분 (30포 × 25g) + 쉐이커 컵 + 활동비 50,000원\n\n· 제품은 냉암소에 보관해 주세요.\n· 개봉 후 1개월 이내 섭취를 권장합니다.\n· 상세 영양 정보는 제품 라벨을 확인해 주세요.',
+    detailMissionDescription: '1. 제품 수령 후 7일 이내 첫 섭취 사진 스토리 업로드\n2. 2주 사용 후 솔직한 후기 피드 게시물 작성\n3. 캡션에 #그린푸드 #비건프로틴 필수 포함\n4. 협찬 표기 (AD 또는 유료광고) 반드시 기재\n5. 게시 후 24시간 이내 URL을 마이페이지에서 제출',
     keywords: ['그린푸드', '비건프로틴', '식물성단백질', '웰니스'],
     questions: [
       { id: 'q1', question: '현재 운동 루틴을 간략히 알려주세요', required: true, type: 'text' },
@@ -82,6 +88,8 @@ export const mockCampaigns: Campaign[] = [
     type: 'delivery',
     postType: '인스타그램 릴스 또는 피드',
     priorityType: '크로스핏·헬스 관련 계정 우대, 팔로워 3,000명 이상 우대',
+    productDetail: 'SMILEATO 스포츠 보충제 풀패키지 (단백질 파우더 1kg + 프리워크아웃 300g + 아미노산 250g) + 활동비 100,000원\n\n· 각 제품의 권장 복용법은 동봉된 설명서를 참고해 주세요.\n· 냉암소 또는 냉장 보관을 권장합니다.',
+    detailMissionDescription: '1. 제품 수령 후 언박싱 스토리 업로드 (필수)\n2. 실제 운동 중 또는 운동 후 섭취 장면 포함\n3. 릴스 최소 30초, 피드 최소 3장 이상\n4. #SMILEATO #크로스핏 태그 필수\n5. 유료 광고 표기 필수 (광고, AD, 유료광고 중 택 1)',
     keywords: ['SMILEATO', '크로스핏', '보충제', '스포츠영양'],
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요?', required: true, type: 'text' },
@@ -107,6 +115,8 @@ export const mockCampaigns: Campaign[] = [
     type: 'delivery',
     postType: '인스타그램 피드',
     priorityType: '요가·필라테스 강사 또는 전문 수련생 우대',
+    productDetail: 'ENUF 프리미엄 요가매트 1개 (7만원 상당, 컬러 랜덤 제공)\n\n· 6mm 두께의 천연 고무 소재로 미끄럼 방지 기능이 탁월합니다.\n· 세탁은 미온수 + 중성세제로 손세탁해 주세요.\n· 보관 시 그늘진 곳에 말아서 보관해 주세요.',
+    detailMissionDescription: '1. 매트 위에서 요가 또는 필라테스 동작 수행 장면 포함\n2. 매트 질감·그립감에 대한 솔직한 후기 캡션 작성\n3. 제품 태그 (@enuf.official) 필수\n4. #ENUF #요가매트 해시태그 포함\n5. 게시 후 72시간 이내 URL 제출',
     keywords: ['ENUF', '요가매트', '필라테스', '홈트'],
   },
   {

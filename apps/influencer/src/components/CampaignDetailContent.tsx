@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star } from 'lucide-react'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star, BookOpen } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -255,6 +255,18 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             </div>
           )}
 
+          {/* 제공 내역 — 원본 CampaignDetail.tsx L249-265 */}
+          {campaign.productDetail && (
+            <div className={sectionCls}>
+              <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+                <Gift size={14} className="text-brand-green" aria-hidden="true" />제공 내역
+              </p>
+              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.productDetail}</p>
+              </div>
+            </div>
+          )}
+
           {/* 참여 조건 */}
           {campaign.conditions && (() => {
             const { follower, content, etc } = groupConditions(campaign.conditions!)
@@ -286,6 +298,18 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               </div>
             )
           })()}
+
+          {/* 필수 가이드 — 원본 CampaignDetail.tsx L301-308 */}
+          {campaign.detailMissionDescription && (
+            <div className={sectionCls}>
+              <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+                <BookOpen size={14} className="text-brand-green" aria-hidden="true" />필수 가이드
+              </p>
+              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.detailMissionDescription}</p>
+              </div>
+            </div>
+          )}
 
           {/* 게시 유형 + 우대사항 — 원본 CampaignDetail.tsx L282-298 */}
           {(campaign.postType || campaign.priorityType) && (

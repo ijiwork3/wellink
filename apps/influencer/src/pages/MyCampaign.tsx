@@ -8,6 +8,7 @@ import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
 import { mockMyCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import type { MyCampaign } from '../services/mock/campaigns'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 // 탭: 진행중(지원완료+검토중+콘텐츠대기+검수중) / 완료 / 미선정
 type TabKey = '전체' | '진행중' | '완료' | '미선정'
@@ -259,18 +260,28 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                        <StatusBadge status={c.status} size="sm" />
-                        <span className="text-sm text-gray-500">{c.channel}</span>
+                  <div className="flex items-start gap-3 mb-2">
+                    {/* 캠페인 썸네일 — 원본 mypage/page.tsx L704-732 */}
+                    <img
+                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                      alt=""
+                      loading="lazy"
+                      className="w-14 h-14 rounded-xl object-cover shrink-0"
+                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                    />
+                    <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <StatusBadge status={c.status} size="sm" />
+                          <span className="text-sm text-gray-500">{c.channel}</span>
+                        </div>
+                        <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                        <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
                       </div>
-                      <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                      <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm text-gray-500">리워드</p>
-                      <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm text-gray-500">리워드</p>
+                        <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                      </div>
                     </div>
                   </div>
 
