@@ -16,6 +16,8 @@ export interface Campaign {
   category: string
   status: string
   applyEnd: string
+  /** 인플루언서 선정 발표일 — 원본 CampaignSidebar resultAnnounceDate 대응 */
+  announceDate?: string
   postEnd: string
   image: string
   description?: string
@@ -38,6 +40,7 @@ export const mockCampaigns: Campaign[] = [
     category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-05-28',
+    announceDate: '2026-06-01',
     postEnd: '2026-06-10',
     image: '🥗',
     description: '그린푸드의 신제품 비건 단백질 쉐이크를 체험하고 솔직한 리뷰를 작성해 주세요',
@@ -61,6 +64,7 @@ export const mockCampaigns: Campaign[] = [
     category: '피트니스·스포츠',
     status: '마감임박',
     applyEnd: '2026-05-19',
+    announceDate: '2026-05-23',
     postEnd: '2026-06-03',
     image: '💪',
     description: 'SMILEATO 스포츠 보충제 라인업을 직접 체험하고 크리에이티브한 콘텐츠를 제작해 주세요',
@@ -83,6 +87,7 @@ export const mockCampaigns: Campaign[] = [
     category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-05-18',
+    announceDate: '2026-05-21',
     postEnd: '2026-05-28',
     image: '🧘',
     description: 'ENUF 프리미엄 요가매트의 편안한 그립감과 내구성을 직접 체험해 보세요',
@@ -102,6 +107,7 @@ export const mockCampaigns: Campaign[] = [
     category: '뷰티·패션',
     status: '모집중',
     applyEnd: '2026-05-22',
+    announceDate: '2026-05-26',
     postEnd: '2026-06-05',
     image: '✨',
     description: '웰링크뷰티의 신규 웰니스 스킨케어 라인을 체험하고 진솔한 리뷰를 남겨주세요',
@@ -120,6 +126,7 @@ export const mockCampaigns: Campaign[] = [
     category: '맛집·푸드',
     status: '모집중',
     applyEnd: '2026-05-25',
+    announceDate: '2026-05-29',
     postEnd: '2026-06-08',
     image: '🥬',
     description: '프리코의 신선한 유기농 샐러드 키트를 매일 즐기고 블로그에 체험기를 남겨주세요',
@@ -138,6 +145,7 @@ export const mockCampaigns: Campaign[] = [
     category: '피트니스·스포츠',
     status: '모집중',
     applyEnd: '2026-05-20',
+    announceDate: '2026-05-24',
     postEnd: '2026-06-05',
     image: '🏋️',
     description: '필라핏 홈트 스트레칭 밴드 세트를 활용한 운동 영상을 제작해 주세요',
@@ -156,6 +164,7 @@ export const mockCampaigns: Campaign[] = [
     category: '라이프스타일',
     status: '모집중',
     applyEnd: '2026-05-30',
+    announceDate: '2026-06-04',
     postEnd: '2026-06-15',
     image: '☀️',
     description: '모닝핏의 아침 루틴 제품군을 체험하고 건강한 아침 라이프를 공유해 주세요',
@@ -174,6 +183,7 @@ export const mockCampaigns: Campaign[] = [
     category: '육아·펫',
     status: '모집중',
     applyEnd: '2026-05-26',
+    announceDate: '2026-05-30',
     postEnd: '2026-06-08',
     image: '🍼',
     description: '베베핏 유아 건강 이유식 제품을 직접 사용해보고 솔직한 육아 리뷰를 남겨주세요',

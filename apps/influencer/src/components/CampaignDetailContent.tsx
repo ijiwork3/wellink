@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2 } from 'lucide-react'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -174,6 +174,15 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
                 <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.postEnd}</p>
               </div>
             </div>
+            {campaign.announceDate && (
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 col-span-full">
+                <Bell size={17} className="text-amber-600 flex-shrink-0" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="text-sm text-amber-700">인플루언서 발표일</p>
+                  <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.announceDate}</p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 col-span-full">
               <Users size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
               <div className="min-w-0">

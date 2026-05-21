@@ -13,6 +13,7 @@ import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
+import PhoneVerificationGate from './components/PhoneVerificationGate'
 
 const STATUS_ITEMS: StatusItem[] = [
   /* ────────────────── 온보딩 ────────────────── */
@@ -54,9 +55,9 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── 나의 캠페인 ────────────────── */
+  /* ────────────────── 내 캠페인 ────────────────── */
   {
-    label: '나의 캠페인',
+    label: '내 캠페인',
     children: [
       { label: '기본 (전체 탭)', path: '/campaigns/my' },
       { label: '로딩 스켈레톤', path: '/campaigns/my?qa=loading' },
@@ -151,7 +152,7 @@ function AppRoutes() {
     const titles: Record<string, string> = {
       '/campaigns/browse':    '캠페인 탐색 — WELLINK AI',
       '/campaigns/favorites': '관심 캠페인 — WELLINK AI',
-      '/campaigns/my':        '나의 캠페인 — WELLINK AI',
+      '/campaigns/my':        '내 캠페인 — WELLINK AI',
       '/profile':          '프로필 — WELLINK AI',
       '/media':            'SNS 관리 — WELLINK AI',
       '/settlement':       '정산 — WELLINK AI',
@@ -209,7 +210,11 @@ function AppRoutes() {
 }
 
 function AppShell() {
-  return <AppRoutes />
+  return (
+    <PhoneVerificationGate>
+      <AppRoutes />
+    </PhoneVerificationGate>
+  )
 }
 
 export default function App() {
