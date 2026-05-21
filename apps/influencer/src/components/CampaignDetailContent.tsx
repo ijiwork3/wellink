@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell } from 'lucide-react'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -286,6 +286,33 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               </div>
             )
           })()}
+
+          {/* 게시 유형 + 우대사항 — 원본 CampaignDetail.tsx L282-298 */}
+          {(campaign.postType || campaign.priorityType) && (
+            <div className={sectionCls}>
+              <p className="text-sm font-semibold text-gray-900 mb-3">미션 정보</p>
+              <div className="space-y-2.5">
+                {campaign.postType && (
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                    <Layers size={15} className="text-brand-green flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-gray-500 mb-0.5">게시 유형</p>
+                      <p className="text-sm font-medium text-gray-900 break-keep">{campaign.postType}</p>
+                    </div>
+                  </div>
+                )}
+                {campaign.priorityType && (
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
+                    <Star size={15} className="text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-amber-600 mb-0.5">우대사항</p>
+                      <p className="text-sm font-medium text-gray-900 break-keep">{campaign.priorityType}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* 신청 버튼 — 모달 내부일 때는 인라인, 페이지(전체화면)일 때는 fixed 하단 */}
           {inModal ? (

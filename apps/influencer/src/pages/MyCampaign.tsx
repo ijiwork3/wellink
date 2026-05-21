@@ -25,8 +25,9 @@ function statusToTab(s: string): TabKey {
 // '상세보기' 액션 제거 — mockMyCampaigns id(mc-N)와 mockCampaigns id(number) 공간 분리되어
 // `/campaigns/${c.id}` 라우팅이 항상 NaN 매칭으로 깨졌었음. 카드 내부에 모든 정보가 이미 있어
 // 외부 라우팅이 불필요. (cold-review 후속 round 5 발견)
-const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정'>>> = {
-  '지원완료':   ['신청 정보 보기', '취소'],
+// '수정하기' — 원본 mypage/page.tsx L832-865: WAIT 상태 → campaignRef 있을 때만 표시
+const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정'>>> = {
+  '지원완료':   ['신청 정보 보기', '수정하기', '취소'],
   '검토중':     ['신청 정보 보기', '취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
   '검수중':     ['콘텐츠 수정'],
@@ -140,7 +141,7 @@ export default function MyCampaign() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
-          <ErrorState message="나의 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
+          <ErrorState message="내 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
       </Layout>
     )
@@ -149,11 +150,11 @@ export default function MyCampaign() {
   return (
     <Layout>
       <div className="space-y-4">
-        <h1 className="sr-only">나의 캠페인</h1>
+        <h1 className="sr-only">내 캠페인</h1>
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">나의 캠페인</h2>
+            <h2 className="text-base font-semibold text-gray-900">내 캠페인</h2>
             <p className="text-sm text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
           </div>
           <button
@@ -164,6 +165,29 @@ export default function MyCampaign() {
             캠페인 찾기
           </button>
         </div>
+
+        {/* 활동 요약 — 원본 mypage/page.tsx L384-415: summaryCounts(지원완료·참여중·완료·탈락) */}
+        {campaigns.length > 0 && (() => {
+          const applied   = campaigns.filter(c => c.status === '지원완료').length
+          const ongoing   = campaigns.filter(c => ['검토중', '콘텐츠대기', '검수중'].includes(c.status)).length
+          const completed = campaigns.filter(c => c.status === '완료').length
+          const eliminated = campaigns.filter(c => c.status === '미선정').length
+          return (
+            <div className="grid grid-cols-4 gap-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
+              {([
+                { label: '지원완료', value: applied,    color: 'text-brand-green-text' },
+                { label: '참여중',   value: ongoing,    color: 'text-blue-600' },
+                { label: '완료',     value: completed,  color: 'text-gray-500' },
+                { label: '미선정',   value: eliminated, color: 'text-red-400' },
+              ] as const).map(({ label, value, color }) => (
+                <div key={label} className="flex flex-col items-center gap-0.5">
+                  <span className={`text-lg font-bold tabular-nums ${color}`}>{value}</span>
+                  <span className="text-xs text-gray-500 whitespace-nowrap">{label}</span>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
 
         {/* 검색 */}
         <div className="relative">
@@ -259,6 +283,17 @@ export default function MyCampaign() {
                   {/* 액션 버튼 — flex-wrap + min-w로 좁은 모바일(360px)에서 자연 줄바꿈 */}
                   <div className="flex flex-wrap gap-2">
                     {actions.map(action => {
+                      // '수정하기' — campaignRef 없으면 버튼 숨김 (원본 조건 동일)
+                      if (action === '수정하기') {
+                        if (!c.campaignRef) return null
+                        return (
+                          <button key={action}
+                            onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
+                            className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                            <Edit2 size={14} />수정하기
+                          </button>
+                        )
+                      }
                       if (action === '콘텐츠 제출') return (
                         <button key={action}
                           onClick={() => setSubmitModal(c)}

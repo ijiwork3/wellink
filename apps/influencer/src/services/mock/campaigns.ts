@@ -27,6 +27,10 @@ export interface Campaign {
   applied: number
   conditions?: string[]
   type?: 'delivery' | 'visit'
+  /** 게시 유형 — 원본 CampaignDetail postType 대응 (예: '인스타그램 피드', '릴스', '블로그 포스팅') */
+  postType?: string
+  /** 우대사항 — 원본 CampaignDetail priorityType 대응 (예: '운동 관련 계정 우대', '체험단 경험자 우대') */
+  priorityType?: string
   keywords?: string[]
   questions?: CampaignQuestion[]
 }
@@ -50,6 +54,8 @@ export const mockCampaigns: Campaign[] = [
     applied: 8,
     conditions: ['인스타그램 팔로워 1,000명 이상', '피드 게시물 1개 필수', '스토리 2개 이상'],
     type: 'delivery',
+    postType: '인스타그램 피드 + 스토리',
+    priorityType: '비건·채식 라이프스타일 계정 우대',
     keywords: ['그린푸드', '비건프로틴', '식물성단백질', '웰니스'],
     questions: [
       { id: 'q1', question: '현재 운동 루틴을 간략히 알려주세요', required: true, type: 'text' },
@@ -74,6 +80,8 @@ export const mockCampaigns: Campaign[] = [
     applied: 9,
     conditions: ['운동 관련 콘텐츠 계정', '인스타그램 또는 유튜브 채널 보유', '피드 또는 릴스 1개 이상'],
     type: 'delivery',
+    postType: '인스타그램 릴스 또는 피드',
+    priorityType: '크로스핏·헬스 관련 계정 우대, 팔로워 3,000명 이상 우대',
     keywords: ['SMILEATO', '크로스핏', '보충제', '스포츠영양'],
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요?', required: true, type: 'text' },
@@ -97,6 +105,8 @@ export const mockCampaigns: Campaign[] = [
     applied: 3,
     conditions: ['요가 또는 필라테스 관련 계정', '피드 게시물 1개 이상', '제품 태그 필수'],
     type: 'delivery',
+    postType: '인스타그램 피드',
+    priorityType: '요가·필라테스 강사 또는 전문 수련생 우대',
     keywords: ['ENUF', '요가매트', '필라테스', '홈트'],
   },
   {
@@ -221,6 +231,12 @@ export interface MyCampaign {
   missionGuide?: string
   /** 필수 키워드 — 콘텐츠 캡션에 반드시 포함해야 하는 해시태그 (광고주 피드백) */
   requiredKeywords?: string[]
+  /**
+   * mockCampaigns(1~8) 중 이 참여 캠페인에 대응하는 ID.
+   * '지원완료' 상태에서 "수정하기" 버튼이 해당 신청 폼으로 이동할 때 사용.
+   * 원본: mypage/page.tsx L860 → /campaigns/:dashCampaignId/apply?mode=edit
+   */
+  campaignRef?: number
 }
 
 export const mockMyCampaigns: MyCampaign[] = [
@@ -269,6 +285,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     appliedAt: '2026-05-15', deadline: '2026-06-10',
     status: '지원완료', progress: '신청서가 접수됐어요',
     reward: '50,000원', rewardAmount: 50000,
+    campaignRef: 1,
   },
 ]
 
