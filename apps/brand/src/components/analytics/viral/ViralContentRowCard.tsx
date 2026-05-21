@@ -17,7 +17,7 @@ import { getPlaceholderDataUri, getThumbnailFromPool } from '../../../utils/thum
 function MetricItem({ icon, value, label }: { icon: React.ReactNode; value: number | undefined | null; label: string }) {
   const display = fmtMetric(value)
   return (
-    <span className="flex items-center gap-1.5" title={label}>
+    <span className="flex items-center gap-1.5 whitespace-nowrap" title={label}>
       {icon}
       {display !== null ? (
         <strong className="text-gray-900 font-semibold">{display}</strong>
