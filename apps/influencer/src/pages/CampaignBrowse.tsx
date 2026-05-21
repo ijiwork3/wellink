@@ -97,7 +97,7 @@ export default function CampaignBrowse() {
   return (
     <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-4 @[640px]:px-6 py-10 bg-gradient-to-b from-brand-green-bg to-white">
+      <div className="px-4 @[640px]:px-6 pt-8 pb-5 bg-white">
         <div className="max-w-screen-xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 캠페인</h1>
           <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
@@ -106,7 +106,7 @@ export default function CampaignBrowse() {
 
       <div className="max-w-screen-xl mx-auto px-4 @[640px]:px-6 pb-12">
         {/* 검색 + 필터 */}
-        <div className="-mt-4 mb-5 flex gap-2">
+        <div className="mb-5 flex gap-2">
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
@@ -138,7 +138,7 @@ export default function CampaignBrowse() {
           <ChipSelect
             options={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
             value={selectedCategory}
-            onChange={v => setSelectedCategory(v)}
+            onChange={v => { setSelectedCategory(v); setSearch('') }}
             className="flex-1"
             selectClassName="w-full"
           />
