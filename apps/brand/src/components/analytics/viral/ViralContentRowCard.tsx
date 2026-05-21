@@ -239,12 +239,12 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
           )}
         </p>
 
-        {/* 4행 — 4지표 인라인 (값 0/음수면 "알 수 없음" 영상 매칭) */}
-        <div className="flex items-center gap-4 sm:gap-5 text-sm sm:text-base text-gray-700 tabular-nums pt-3 mt-3 border-t border-gray-100 flex-wrap">
-          <MetricItem icon={<Heart size={15} className="text-rose-400" />} value={metrics.likes} label="좋아요" />
-          <MetricItem icon={<MessageCircle size={15} className="text-blue-400" />} value={metrics.comments} label="댓글" />
-          <MetricItem icon={<Share2 size={15} className="text-violet-400" />} value={metrics.shares} label="공유" />
-          <MetricItem icon={<Eye size={15} className="text-gray-400" />} value={metrics.reach} label="도달" />
+        {/* 4행 — 4지표 2×2 그리드 (좁은 모바일에서도 고정 배치) */}
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm text-gray-700 tabular-nums pt-3 mt-3 border-t border-gray-100">
+          <MetricItem icon={<Heart size={14} className="text-rose-400" />} value={metrics.likes} label="좋아요" />
+          <MetricItem icon={<MessageCircle size={14} className="text-blue-400" />} value={metrics.comments} label="댓글" />
+          <MetricItem icon={<Share2 size={14} className="text-violet-400" />} value={metrics.shares} label="공유" />
+          <MetricItem icon={<Eye size={14} className="text-gray-400" />} value={metrics.reach} label="도달" />
         </div>
 
         {/* 5행 — 평가중 안내 박스 (grade='processing' 시 영상 매칭) */}
