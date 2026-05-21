@@ -98,18 +98,18 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
       <div className="p-3 flex flex-col gap-2">
         <div className="text-base font-bold text-gray-900 truncate">@{influencer.username}</div>
         <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed min-h-[2.6em]">{caption}</p>
-        <div className="flex items-center justify-between text-sm text-gray-700 tabular-nums pt-2 border-t border-gray-100">
-          <span className="flex items-center gap-1 whitespace-nowrap" title="좋아요">
+        <div className="flex items-center justify-between text-sm text-gray-700 tabular-nums pt-2 border-t border-gray-100 break-keep">
+          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap" title="좋아요">
             <Heart size={13} className="text-rose-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.likes)}</strong>
+            <strong className="text-gray-900 font-semibold whitespace-nowrap">{fmtCompact(metrics.likes)}</strong>
           </span>
-          <span className="flex items-center gap-1 whitespace-nowrap" title="댓글">
+          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap" title="댓글">
             <MessageCircle size={13} className="text-blue-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.comments ?? 0)}</strong>
+            <strong className="text-gray-900 font-semibold whitespace-nowrap">{fmtCompact(metrics.comments ?? 0)}</strong>
           </span>
-          <span className="flex items-center gap-1 whitespace-nowrap" title="도달">
+          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap" title="도달">
             <Eye size={13} className="text-gray-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.reach)}</strong>
+            <strong className="text-gray-900 font-semibold whitespace-nowrap">{fmtCompact(metrics.reach)}</strong>
           </span>
         </div>
       </div>

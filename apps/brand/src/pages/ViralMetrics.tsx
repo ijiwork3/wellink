@@ -450,7 +450,16 @@ export default function ViralMetrics() {
               <div className="py-12 text-center text-sm text-gray-500">조건에 맞는 콘텐츠가 없습니다.</div>
             ) : (
               <div className="grid grid-cols-1 @2xl:grid-cols-2 gap-3">
-                {paginated.map(item => (
+                {paginated.map((item, idx) => {
+                  // seed 기반 증감률 mock (전월 대비 %) — 실 API 연동 전 임시
+                  const s = (item.id * 7 + idx * 3) % 100
+                  const growth = item.grade === 'processing' ? undefined : {
+                    likes:    parseFloat((((s * 11) % 41) - 15).toFixed(1)),
+                    comments: parseFloat((((s * 13) % 31) - 10).toFixed(1)),
+                    shares:   parseFloat((((s * 7)  % 37) - 12).toFixed(1)),
+                    reach:    parseFloat((((s * 17) % 43) - 14).toFixed(1)),
+                  }
+                  return (
                   <ViralContentRowCard
                     key={item.id}
                     caption={item.title}
@@ -466,10 +475,14 @@ export default function ViralMetrics() {
                       shares: item.shares,
                       reach: item.reach,
                     }}
+                    metricsGrowth={growth}
                     grade={item.grade as 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'}
                     campaignMatched={!!CAMPAIGN_MATCH_MAP[item.id]}
                     onClick={() => setSelectedContent(item)}
+                    onDetailClick={() => setSelectedContent(item)}
                   />
+                  )
+                })
                 ))}
               </div>
             )}

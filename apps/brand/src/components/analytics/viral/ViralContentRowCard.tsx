@@ -1,34 +1,54 @@
 /**
- * ViralContentRowCard — 바이럴 지표 페이지 *콘텐츠 가로 행 카드*
+ * ViralContentRowCard — 바이럴 지표 페이지 콘텐츠 행 카드
  *
- * 영상(2026-05-14 09.39.47) 매칭:
- *  - 좌측: 큰 세로 9:16 비디오 썸네일 (재생 버튼 오버레이)
- *  - 우상단: 등급 칩 + @핸들 + 외부 링크 아이콘
- *  - 우측 본문: 캡션 (3줄까지) + 게시일 + "캠페인 매칭 정보 X" 안내
- *  - 우측 하단: 좋아요 / 댓글 / 공유 / 도달 4개 지표 인라인 + 우측 메뉴
- *
- * onError → SVG placeholder fallback (빈썸네일 0 보장)
+ * 레이아웃:
+ *  - 모바일: flex-col (썸네일 상단 16:9 전체 너비)
+ *  - sm+: flex-row (썸네일 좌측 9:16 고정 너비)
+ * 지표: 좋아요·댓글·공유·도달 + 증감률 배지
+ * 액션: 릴스/영상/쇼츠 → 상세 분석 버튼
  */
 import { memo, useState, useMemo } from 'react'
-import { Heart, MessageCircle, Share2, Eye, Play, ExternalLink, Camera, AlertCircle } from 'lucide-react'
+import { Heart, MessageCircle, Share2, Eye, Play, ExternalLink, Camera, AlertCircle, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react'
 import { getPlaceholderDataUri, getThumbnailFromPool } from '../../../utils/thumbnailPlaceholder'
 
-/** 지표 아이템 — 값 있으면 숫자, 0/음수/null이면 "알 수 없음" 회색 처리 */
-function MetricItem({ icon, value, label }: { icon: React.ReactNode; value: number | undefined | null; label: string }) {
-  const display = fmtMetric(value)
+/* ── 증감률 배지 ── */
+function GrowthBadge({ value }: { value: number | null | undefined }) {
+  if (value == null) return null
+  const pos = value >= 0
   return (
-    <span className="flex items-center gap-1.5 whitespace-nowrap" title={label}>
-      {icon}
-      {display !== null ? (
-        <strong className="text-gray-900 font-semibold">{display}</strong>
-      ) : (
-        <span className="text-gray-400 text-sm font-normal">알 수 없음</span>
-      )}
+    <span className={`text-xs font-medium whitespace-nowrap flex items-center gap-0.5 ${pos ? 'text-brand-green-text' : 'text-red-500'}`}>
+      {pos ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+      {pos ? '+' : ''}{value.toFixed(1)}%
     </span>
   )
 }
 
-/* ── caption 자동 보강 + 해시태그 헬퍼 (영상 매칭, seed 기반 deterministic) ── */
+/* ── 지표 아이템 (아이콘 + 값 + 증감) ── */
+function MetricItem({
+  icon, value, label, growth,
+}: {
+  icon: React.ReactNode
+  value: number | undefined | null
+  label: string
+  growth?: number | null
+}) {
+  const display = fmtMetric(value)
+  return (
+    <div className="flex flex-col gap-0.5" title={label}>
+      <span className="flex items-center gap-1 whitespace-nowrap">
+        {icon}
+        {display !== null ? (
+          <strong className="text-gray-900 font-semibold text-sm">{display}</strong>
+        ) : (
+          <span className="text-gray-400 text-xs font-normal">알 수 없음</span>
+        )}
+      </span>
+      <GrowthBadge value={growth} />
+    </div>
+  )
+}
+
+/* ── caption 자동 보강 + 해시태그 헬퍼 ── */
 const CAPTION_DETAILS = [
   '평소보다 댓글 반응이 뜨겁고, 저장 수도 +30% 상승해서 후속 캠페인 매칭을 적극 검토하면 좋을 콘텐츠예요.',
   '인플루언서 톤이 자연스럽게 녹아들어 광고스럽지 않고, 팔로워들이 진심으로 반응하고 있어요.',
@@ -66,10 +86,8 @@ function useEnrichedCaption(caption: string, username: string, type: string): st
 function useHashtags(username: string, type: string, caption: string): string[] {
   return useMemo(() => {
     const pool = HASHTAG_POOLS[type] ?? HASHTAG_POOLS['피드']
-    // caption에 이미 # 있으면 추출, 아니면 pool에서 4개 추출
     const inCaption = (caption.match(/#[\w가-힣]+/g) ?? []).map(t => t.slice(1))
     if (inCaption.length >= 3) return inCaption.slice(0, 4)
-    // seed 기반 4개 선택 (deterministic)
     const seed = hashSeed(username)
     const picked: string[] = []
     for (let i = 0; i < 4; i++) {
@@ -82,7 +100,7 @@ function useHashtags(username: string, type: string, caption: string): string[] 
 export interface ViralContentRowCardProps {
   thumbnail?: string
   caption: string
-  postedAt: string  // ISO date
+  postedAt: string
   influencer: {
     username: string
     platform: 'instagram' | 'youtube'
@@ -95,9 +113,18 @@ export interface ViralContentRowCardProps {
     shares: number
     reach: number
   }
+  /** 전주/전월 대비 증감률 (%) — 없으면 배지 미표시 */
+  metricsGrowth?: {
+    likes?: number | null
+    comments?: number | null
+    shares?: number | null
+    reach?: number | null
+  }
   grade: 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'
   campaignMatched?: boolean
   onClick?: () => void
+  /** 릴스/영상/쇼츠 전용 상세 분석 버튼 클릭 */
+  onDetailClick?: (e: React.MouseEvent) => void
 }
 
 const GRADE_BG: Record<ViralContentRowCardProps['grade'], string> = {
@@ -115,7 +142,6 @@ const GRADE_LABEL: Record<ViralContentRowCardProps['grade'], string> = {
 function fmtRelativeDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
-  // "N시간 전" / "N일 전" / 1주 이상은 절대 (yyyy.mm.dd) — 영상 매칭
   const diffMs = Date.now() - d.getTime()
   const hours = Math.floor(diffMs / 3600000)
   if (hours < 1) return '방금 전'
@@ -127,23 +153,21 @@ function fmtRelativeDate(iso: string): string {
   return `${d.getFullYear()}.${m}.${day}`
 }
 
-/** 지표 값 → 표시 — 0/음수면 "알 수 없음" (피드 조회수 등 데이터 부재 케이스 영상 매칭) */
 function fmtMetric(v: number | undefined | null): string | null {
   if (v === undefined || v === null || v < 0) return null
   return v === 0 ? null : v >= 10000 ? `${(v / 10000).toFixed(1)}만` : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v)
 }
 
+const VIDEO_TYPES: ViralContentRowCardProps['contentType'][] = ['릴스', '영상', '쇼츠']
+
 const ViralContentRowCard = memo(function ViralContentRowCard({
-  thumbnail, caption, postedAt, influencer, contentType, metrics, grade, campaignMatched, onClick,
+  thumbnail, caption, postedAt, influencer, contentType, metrics, metricsGrowth, grade, campaignMatched, onClick, onDetailClick,
 }: ViralContentRowCardProps) {
-  // thumbnail 없으면 Unsplash 운동 사진 풀에서 username 해시로 deterministic 선택 (실제 사진)
-  // 외부 fetch 실패 시 onError → SVG gradient placeholder fallback
   const [imgSrc, setImgSrc] = useState(thumbnail ?? getThumbnailFromPool(influencer.username))
   const handleError = () => setImgSrc(getPlaceholderDataUri(influencer.username, `@${influencer.username}`))
   const isClickable = !!onClick
+  const isVideo = VIDEO_TYPES.includes(contentType)
 
-  // 짧은 캡션 자동 보강 — 영상 원본 매칭 (인스타 캡션 풍부함)
-  // seed 기반 다양한 디테일 + 해시태그 → 같은 인플루언서는 항상 같은 보강
   const enrichedCaption = useEnrichedCaption(caption, influencer.username, contentType)
   const hashtags = useHashtags(influencer.username, contentType, caption)
 
@@ -155,13 +179,17 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
       onKeyDown={isClickable ? (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.() }
       } : undefined}
-      className={`flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-gray-100 bg-white shadow-sm transition-all ${
+      className={`flex flex-col sm:flex-row gap-0 sm:gap-4 sm:p-4 rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden transition-all ${
         isClickable ? 'hover:shadow-md hover:border-gray-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50' : ''
       }`}
       aria-label={`${influencer.username} ${contentType}, ${metrics.likes.toLocaleString()}회 좋아요, 등급 ${GRADE_LABEL[grade]}`}
     >
-      {/* 좌측 — 썸네일: 피드=1:1, 그 외(릴스/영상/쇼츠/스토리)=9:16 */}
-      <div className={`relative shrink-0 rounded-lg bg-gray-100 overflow-hidden ${contentType === '피드' ? 'w-[130px] sm:w-[160px] aspect-square' : 'w-[130px] sm:w-[160px] aspect-[9/16]'}`}>
+      {/* 썸네일 — 모바일: 전체 너비 16:9 / sm+: 좌측 고정 폭 9:16(영상) or 1:1(피드) */}
+      <div className={`relative shrink-0 bg-gray-100 overflow-hidden
+        ${contentType === '피드'
+          ? 'w-full aspect-[4/3] sm:w-[130px] sm:rounded-lg sm:aspect-square'
+          : 'w-full aspect-video sm:w-[130px] sm:rounded-lg sm:aspect-[9/16]'}`}
+      >
         <img
           src={imgSrc}
           alt={`@${influencer.username}의 ${contentType} 미리보기`}
@@ -169,27 +197,27 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
           loading="lazy"
           onError={handleError}
         />
-        {/* 좌상단 콘텐츠 유형 칩 */}
+        {/* 콘텐츠 유형 칩 */}
         <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-xs font-semibold">
           {contentType}
         </span>
-        {/* 중앙 재생 버튼 (릴스/영상/쇼츠 한정) */}
-        {(contentType === '릴스' || contentType === '영상' || contentType === '쇼츠') && (
+        {/* 재생 버튼 */}
+        {isVideo && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-11 h-11 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/50">
               <Play size={18} className="text-white fill-white ml-0.5" aria-hidden="true" />
             </div>
           </div>
         )}
-        {/* 좌하단 플랫폼 표시 */}
+        {/* 플랫폼 배지 */}
         <span className="absolute bottom-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-xs font-medium">
           <Camera size={11} aria-hidden="true" /> IG
         </span>
       </div>
 
-      {/* 우측 — 정보 영역 */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* 1행 — @핸들 + 외부 링크 / 등급 칩 우측 */}
+      {/* 본문 영역 */}
+      <div className="flex-1 min-w-0 flex flex-col p-3 sm:p-0">
+        {/* @핸들 + 등급 칩 */}
         <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="text-base sm:text-lg font-bold text-gray-900 truncate">@{influencer.username}</span>
@@ -206,30 +234,42 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
               </a>
             )}
           </div>
-          <span
-            className={`px-2.5 py-1 rounded-md text-xs sm:text-sm font-bold tabular-nums shrink-0 ${GRADE_BG[grade]}`}
-            aria-label={`등급 ${GRADE_LABEL[grade]}`}
-          >
-            {GRADE_LABEL[grade]}
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* 상세 분석 버튼 — 영상 콘텐츠 + onDetailClick 있을 때만 */}
+            {isVideo && onDetailClick && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onDetailClick(e) }}
+                className="inline-flex items-center gap-0.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-900 text-white hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+              >
+                상세 분석 <ChevronRight size={11} />
+              </button>
+            )}
+            <span
+              className={`px-2.5 py-1 rounded-md text-xs font-bold tabular-nums ${GRADE_BG[grade]}`}
+              aria-label={`등급 ${GRADE_LABEL[grade]}`}
+            >
+              {GRADE_LABEL[grade]}
+            </span>
+          </div>
         </div>
 
-        {/* 2행 — 캡션 (3줄 truncate, 자동 보강) */}
-        <p className="text-sm sm:text-base text-gray-700 line-clamp-3 leading-relaxed">
+        {/* 캡션 */}
+        <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">
           {enrichedCaption}
         </p>
 
-        {/* 3행 — 해시태그 칩 (seed 기반 자동 생성, 4개) */}
+        {/* 해시태그 */}
         {hashtags.length > 0 && (
           <div className="flex items-center gap-1.5 flex-wrap mt-2">
             {hashtags.map(t => (
-              <span key={t} className="text-sm text-brand-green-text font-medium">#{t}</span>
+              <span key={t} className="text-xs text-brand-green-text font-medium whitespace-nowrap">#{t}</span>
             ))}
           </div>
         )}
 
-        {/* 4행 — 게시일 + 캠페인 매칭 안내 */}
-        <p className="text-sm text-gray-500 mt-auto pt-2 flex items-center gap-2 flex-wrap">
+        {/* 게시일 + 캠페인 매칭 */}
+        <p className="text-xs text-gray-500 mt-auto pt-2 flex items-center gap-2 flex-wrap">
           <span>게시일 {fmtRelativeDate(postedAt)}</span>
           {campaignMatched === false && (
             <>
@@ -239,19 +279,35 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
           )}
         </p>
 
-        {/* 4행 — 4지표 2×2 그리드 (좁은 모바일에서도 고정 배치) */}
-        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm text-gray-700 tabular-nums pt-3 mt-3 border-t border-gray-100">
-          <MetricItem icon={<Heart size={14} className="text-rose-400" />} value={metrics.likes} label="좋아요" />
-          <MetricItem icon={<MessageCircle size={14} className="text-blue-400" />} value={metrics.comments} label="댓글" />
-          <MetricItem icon={<Share2 size={14} className="text-violet-400" />} value={metrics.shares} label="공유" />
-          <MetricItem icon={<Eye size={14} className="text-gray-400" />} value={metrics.reach} label="도달" />
+        {/* 4지표 2×2 그리드 + 증감률 */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 mt-2 border-t border-gray-100">
+          <MetricItem
+            icon={<Heart size={13} className="text-rose-400" />}
+            value={metrics.likes} label="좋아요"
+            growth={metricsGrowth?.likes}
+          />
+          <MetricItem
+            icon={<MessageCircle size={13} className="text-blue-400" />}
+            value={metrics.comments} label="댓글"
+            growth={metricsGrowth?.comments}
+          />
+          <MetricItem
+            icon={<Share2 size={13} className="text-violet-400" />}
+            value={metrics.shares} label="공유"
+            growth={metricsGrowth?.shares}
+          />
+          <MetricItem
+            icon={<Eye size={13} className="text-gray-400" />}
+            value={metrics.reach} label="도달"
+            growth={metricsGrowth?.reach}
+          />
         </div>
 
-        {/* 5행 — 평가중 안내 박스 (grade='processing' 시 영상 매칭) */}
+        {/* 평가중 안내 */}
         {grade === 'processing' && (
           <div className="mt-3 rounded-lg bg-amber-50/70 border border-amber-200 px-3 py-2 flex items-start gap-2">
-            <AlertCircle size={15} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-            <div className="text-sm text-amber-800 leading-relaxed">
+            <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="text-xs text-amber-800 leading-relaxed">
               <strong className="font-semibold">아직 데이터가 충분하지 않아 평가중입니다.</strong>
               <span className="block text-amber-700">데이터가 더 쌓이면 점수와 등급이 표시됩니다.</span>
             </div>
