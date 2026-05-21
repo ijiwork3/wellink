@@ -37,6 +37,8 @@ export interface Campaign {
   detailMissionDescription?: string
   keywords?: string[]
   questions?: CampaignQuestion[]
+  /** 바로가기 링크 — 원본 CampaignApplyForm.tsx L417-437: campaign.link 존재 시 신청폼에 노출 */
+  link?: string
 }
 
 export const mockCampaigns: Campaign[] = [

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
@@ -182,6 +182,22 @@ export default function CampaignApply() {
             >
               <Pencil size={14} aria-hidden="true" />수정하기
             </button>
+          </div>
+        )}
+
+        {/* 바로가기 링크 — 원본 CampaignApplyForm.tsx L417-437: campaign.link 존재 시 노출 */}
+        {campaign.link && (
+          <div className="rounded-2xl border border-gray-100 p-4">
+            <p className="text-sm font-semibold text-gray-500 mb-2">바로가기 링크</p>
+            <a
+              href={campaign.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-brand-green-text hover:underline flex items-center gap-1 break-all"
+            >
+              {campaign.link}
+              <ExternalLink size={13} className="shrink-0" aria-hidden="true" />
+            </a>
           </div>
         )}
 
