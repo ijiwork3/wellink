@@ -11,8 +11,14 @@
  */
 import { memo, useState } from 'react'
 import { Heart, Eye, MessageCircle, Camera } from 'lucide-react'
-import { fmtNumber } from '@wellink/ui'
 import { getPlaceholderDataUri, getThumbnailFromPool } from '../../utils/thumbnailPlaceholder'
+
+/** 미니 카드 전용 압축 포맷 — 160px 너비 3개 지표 동시 표기 */
+function fmtCompact(n: number): string {
+  if (n >= 10_000) return `${(n / 10_000).toFixed(1).replace(/\.0$/, '')}만`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}k`
+  return String(n)
+}
 
 export interface ViralContentMiniCardProps {
   thumbnail?: string  // URL — 없으면 placeholder 자동
@@ -95,15 +101,15 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
         <div className="flex items-center justify-between text-sm text-gray-700 tabular-nums pt-2 border-t border-gray-100">
           <span className="flex items-center gap-1 whitespace-nowrap" title="좋아요">
             <Heart size={13} className="text-rose-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtNumber(metrics.likes)}</strong>
+            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.likes)}</strong>
           </span>
           <span className="flex items-center gap-1 whitespace-nowrap" title="댓글">
             <MessageCircle size={13} className="text-blue-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtNumber(metrics.comments ?? 0)}</strong>
+            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.comments ?? 0)}</strong>
           </span>
           <span className="flex items-center gap-1 whitespace-nowrap" title="도달">
             <Eye size={13} className="text-gray-400" aria-hidden="true" />
-            <strong className="text-gray-900 font-semibold">{fmtNumber(metrics.reach)}</strong>
+            <strong className="text-gray-900 font-semibold">{fmtCompact(metrics.reach)}</strong>
           </span>
         </div>
       </div>
