@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight } from 'lucide-react'
+import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
 import { Toggle, BottomSheet, AlertModal } from '@wellink/ui'
@@ -41,6 +41,8 @@ export default function Profile() {
   const [phoneCodeSent, setPhoneCodeSent] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isPwSubmitting, setIsPwSubmitting] = useState(false)
+  const [showNewPw, setShowNewPw] = useState(false)
+  const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
 
   // URL search param 외부 동기화 (정책 §외부동기화)
@@ -126,7 +128,7 @@ export default function Profile() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-3 mb-4">
@@ -150,7 +152,7 @@ export default function Profile() {
 
   if (qa === 'error') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="프로필을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -159,7 +161,7 @@ export default function Profile() {
   }
 
   return (
-    <Layout>
+    <Layout showProfileHeader={false}>
       <div className="space-y-4 max-w-xl">
         <h1 className="sr-only">내 정보</h1>
 
@@ -336,20 +338,43 @@ export default function Profile() {
       </div>
 
       {/* 비밀번호 변경 바텀시트 */}
-      <BottomSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw('') }} title="비밀번호 변경">
+      <BottomSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setShowNewPw(false); setShowConfirmPw(false) }} title="비밀번호 변경">
         <div className="space-y-3">
-          {([
-            { ph: '현재 비밀번호', val: currentPw, setter: setCurrentPw, auto: 'current-password' as const },
-            { ph: '새 비밀번호 (8자 이상)', val: newPw, setter: setNewPw, auto: 'new-password' as const },
-            { ph: '새 비밀번호 확인', val: confirmPw, setter: setConfirmPw, auto: 'new-password' as const },
-          ] as const).map(({ ph, val, setter, auto }) => (
-            <input key={ph} type="password" placeholder={ph} value={val}
-              autoComplete={auto}
+          {/* 현재 비밀번호 — 원본에 없음, 추가 필드 */}
+          <input type="password" placeholder="현재 비밀번호" value={currentPw}
+            autoComplete="current-password"
+            maxLength={50}
+            onChange={e => setCurrentPw(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handlePwChange()}
+            className={inputClass} />
+          {/* 새 비밀번호 — 원본 mypage L1990-2007: Eye/EyeOff 토글 */}
+          <div className="relative">
+            <input type={showNewPw ? 'text' : 'password'} placeholder="새 비밀번호 (8자 이상)" value={newPw}
+              autoComplete="new-password"
               maxLength={50}
-              onChange={e => setter(e.target.value)}
+              onChange={e => setNewPw(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handlePwChange()}
               className={inputClass} />
-          ))}
+            <button type="button" onClick={() => setShowNewPw(v => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
+              aria-label={showNewPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
+              {showNewPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {/* 새 비밀번호 확인 — 원본 mypage L2022-2036: Eye/EyeOff 토글 */}
+          <div className="relative">
+            <input type={showConfirmPw ? 'text' : 'password'} placeholder="새 비밀번호 확인" value={confirmPw}
+              autoComplete="new-password"
+              maxLength={50}
+              onChange={e => setConfirmPw(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handlePwChange()}
+              className={inputClass} />
+            <button type="button" onClick={() => setShowConfirmPw(v => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
+              aria-label={showConfirmPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
+              {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
         <div className="flex gap-3 mt-5">
           <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>

@@ -2,7 +2,7 @@
 import { mockMyCampaigns } from './campaigns'
 
 export const ACTIVITY_FIELDS = [
-  '헬스/웨이트', '러닝', '요가', '필라테스', '바레', '크로스핏', '하이록스', 'F45', '파워리프팅', '기타',
+  '헬스/웨이트', '러닝', '요가', '필라테스', '바레', '크로스핏', '하이록스(하이브리드 트레이닝)', 'F45', '파워리프팅', '기타',
 ]
 
 export const INFLUENCER_TYPES = [
