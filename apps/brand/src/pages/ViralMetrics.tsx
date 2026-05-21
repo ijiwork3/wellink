@@ -482,8 +482,7 @@ export default function ViralMetrics() {
                     onDetailClick={() => setSelectedContent(item)}
                   />
                   )
-                })
-                ))}
+                })}
               </div>
             )}
           </div>
