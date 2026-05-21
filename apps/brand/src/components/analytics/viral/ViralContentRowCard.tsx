@@ -188,7 +188,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
       <div className={`relative shrink-0 bg-gray-100 overflow-hidden
         ${contentType === '피드'
           ? 'w-full aspect-[4/3] sm:w-[130px] sm:rounded-lg sm:aspect-square'
-          : 'w-full aspect-video sm:w-[130px] sm:rounded-lg sm:aspect-[9/16]'}`}
+          : 'w-full aspect-video sm:w-[130px] sm:rounded-lg sm:aspect-[2/3]'}`}
       >
         <img
           src={imgSrc}
