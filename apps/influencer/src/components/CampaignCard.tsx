@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift, CheckCircle2 } from 'lucide-react'
+import { Heart, Users, Gift, CheckCircle2, Package, Footprints } from 'lucide-react'
 import { StatusBadge, PlatformBadge, TIMER_MS, getDDay, getDDayBadgeStyle, PROGRESS_THRESHOLD, SEMANTIC_COLORS } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
@@ -86,6 +86,12 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <StatusBadge status={campaign.status} />
           <PlatformBadge platform={campaign.channel} />
+          {/* 배송형/방문형 배지 — 원본 CampaignList.tsx L285-291 */}
+          {campaign.type && (
+            campaign.type === 'delivery'
+              ? <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap"><Package size={10} aria-hidden="true" />배송형</span>
+              : <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap"><Footprints size={10} aria-hidden="true" />방문형</span>
+          )}
           {applied && (
             <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
               <CheckCircle2 size={11} aria-hidden="true" />신청완료

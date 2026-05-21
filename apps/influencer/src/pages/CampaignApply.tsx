@@ -239,10 +239,21 @@ export default function CampaignApply() {
             <User size={14} className="text-gray-400 flex-shrink-0" />
             <span className="text-sm text-gray-900 truncate">{mockProfile.name}</span>
           </div>
-          <div className="flex items-center gap-2.5 min-w-0">
-            <AtSign size={14} className="text-gray-400 flex-shrink-0" />
-            <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
-          </div>
+          {/* SNS 연결 정보 — 원본 CampaignApplyForm.tsx L479-518: 선정 후 변경 불가 안내 */}
+          {mockProfile.instagramConnected && (
+            <div className="flex items-start gap-2.5 min-w-0">
+              <AtSign size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">인스타그램</span>
+                </div>
+                {!isViewMode && (
+                  <p className="text-xs text-gray-400 mt-0.5 break-keep">등록한 SNS는 선정 후 변경할 수 없습니다.</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 연락처 */}
