@@ -210,8 +210,8 @@ export default function Media() {
               </div>
             ) : null}
 
-            {/* 6개 통계 그리드 — 360px 카드 p-5 → 가용 248px → 셀 (248-16)/3 = 77px. text-sm + tabular-nums + truncate 일관 적용 */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            {/* 6개 통계 그리드 — 원본 mypage L1523: xl:grid-cols-6 (데스크탑 1행) */}
+            <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />
@@ -262,7 +262,8 @@ export default function Media() {
                 <BarChart3 size={14} className="text-brand-green" />
                 <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
               </div>
-              <div className="grid grid-cols-3 gap-1.5">
+              {/* 원본 mypage L1583: md:grid-cols-6 (태블릿+ 1행) */}
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
                 {MOCK_CONTENT.map(post => (
                   <div key={post.id} className="aspect-square bg-brand-green-bg rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group">
                     <span className="text-2xl" aria-hidden="true">{post.emoji}</span>
