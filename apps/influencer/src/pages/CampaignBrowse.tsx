@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, X, SlidersHorizontal } from 'lucide-react'
+import { Search, X, SlidersHorizontal, Instagram, PenTool, Youtube, LayoutGrid } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
@@ -10,6 +10,13 @@ import { useBookmarks, useApplications } from '../services/userState'
 import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
+
+const CHANNELS = [
+  { id: '전체',       label: '전체',        Icon: LayoutGrid },
+  { id: '인스타그램', label: '인스타그램',   Icon: Instagram },
+  { id: '네이버 블로그', label: '블로그',    Icon: PenTool },
+  { id: '유튜브',     label: '유튜브',       Icon: Youtube },
+]
 
 function CampaignSkeletonCard() {
   return (
@@ -45,6 +52,7 @@ export default function CampaignBrowse() {
   const bookmarks = useBookmarks()
   const applications = useApplications()
   const [sort, setSort] = useState<SortKey>('deadline')
+  const [selectedChannel, setSelectedChannel] = useState('전체')
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
   const loading = qa === 'loading'
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
@@ -70,9 +78,10 @@ export default function CampaignBrowse() {
   const baseFiltered = useMemo(() => {
     const filtered = mockCampaigns.filter(c => {
       const matchCat = selectedCategory === '전체' || c.category === selectedCategory
+      const matchChannel = selectedChannel === '전체' || c.channel === selectedChannel
       const q = search.trim().toLowerCase()
       const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
-      return matchCat && matchSearch
+      return matchCat && matchChannel && matchSearch
     })
     return [...filtered].sort((a, b) => {
       if (sort === 'reward') return (b.rewardAmount ?? 0) - (a.rewardAmount ?? 0)
@@ -80,7 +89,7 @@ export default function CampaignBrowse() {
       // deadline: 마감 임박순
       return new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
     })
-  }, [selectedCategory, search, sort])
+  }, [selectedCategory, selectedChannel, search, sort])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
 
@@ -152,6 +161,24 @@ export default function CampaignBrowse() {
             ]}
             className="shrink-0 w-32"
           />
+        </div>
+
+        {/* 채널 필터 */}
+        <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+          {CHANNELS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              onClick={() => setSelectedChannel(id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                selectedChannel === id
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Icon size={13} aria-hidden="true" />
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* 결과 수 */}

@@ -264,30 +264,61 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  <div className="flex items-start gap-3 mb-2">
-                    {/* 캠페인 썸네일 — 원본 mypage/page.tsx L704-732 */}
-                    <img
-                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
-                      alt=""
-                      loading="lazy"
-                      className="w-14 h-14 rounded-xl object-cover shrink-0"
-                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
-                    />
-                    <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                          <StatusBadge status={c.status} size="sm" />
-                          <span className="text-sm text-gray-500">{c.channel}</span>
+                  {/* 카드 상단 — campaignRef 있으면 클릭 시 캠페인 상세로 이동 (원본 mypage L811) */}
+                  {c.campaignRef ? (
+                    <button
+                      onClick={() => navigate(`/campaigns/${c.campaignRef}`)}
+                      className="w-full flex items-start gap-3 mb-2 text-left hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
+                      aria-label={`${c.name} 캠페인 상세 보기`}
+                    >
+                      <img
+                        src={getThumbnailFromPool(c.campaignRef)}
+                        alt=""
+                        loading="lazy"
+                        className="w-14 h-14 rounded-xl object-cover shrink-0"
+                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
+                      />
+                      <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <StatusBadge status={c.status} size="sm" />
+                            <span className="text-sm text-gray-500">{c.channel}</span>
+                          </div>
+                          <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                          <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
                         </div>
-                        <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                        <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                        <div className="text-right shrink-0">
+                          <p className="text-sm text-gray-500">리워드</p>
+                          <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                        </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-sm text-gray-500">리워드</p>
-                        <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                    </button>
+                  ) : (
+                    <div className="flex items-start gap-3 mb-2">
+                      {/* 캠페인 썸네일 — 원본 mypage/page.tsx L704-732 */}
+                      <img
+                        src={getThumbnailFromPool(c.id)}
+                        alt=""
+                        loading="lazy"
+                        className="w-14 h-14 rounded-xl object-cover shrink-0"
+                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                      />
+                      <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <StatusBadge status={c.status} size="sm" />
+                            <span className="text-sm text-gray-500">{c.channel}</span>
+                          </div>
+                          <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                          <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-sm text-gray-500">리워드</p>
+                          <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* 진행 상황 */}
                   <div className="flex items-center gap-2 mb-3">
