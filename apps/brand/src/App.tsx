@@ -96,6 +96,7 @@ const STATUS_ITEMS: StatusItem[] = [
     children: [
       { label: '기본 (인스타 연결됨)', path: '/analytics/viral' },
       { label: '로딩 스켈레톤', path: '/analytics/viral?qa=loading' },
+      { label: '데이터 수집 중 (Processing)', path: '/analytics/viral?qa=updating' },
       { label: '지표 전부 0 (엣지케이스)', path: '/analytics/viral?qa=zero' },
       { label: '빈 상태 — 바이럴 콘텐츠 없음', path: '/analytics/viral?qa=empty' },
       { label: '에러', path: '/analytics/viral?qa=error' },

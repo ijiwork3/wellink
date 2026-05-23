@@ -36,48 +36,68 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
     setHover({ idx, x: clientX - rect.left, y: clientY - rect.top })
   }
 
+  // 정렬 — 값 내림차순(주요 등급 위로)
+  const sortedArcs = [...arcsWithPct].sort((a, b) => b.value - a.value)
+  const maxVal = Math.max(...arcsWithPct.map(a => a.value), 1)
+
   return (
-    <div ref={containerRef} className="relative flex items-center gap-4 flex-wrap">
-      <svg viewBox="0 0 120 120" className="w-[120px] h-[120px] @sm:w-[140px] @sm:h-[140px] shrink-0" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
-        {arr.map((a, i) => {
-          const startAcc = i === 0 ? 0 : cumulative[i - 1]
-          const endAcc = cumulative[i]
-          const start = (startAcc / total) * Math.PI * 2 - Math.PI / 2
-          const end = (endAcc / total) * Math.PI * 2 - Math.PI / 2
-          const large = end - start > Math.PI ? 1 : 0
-          const sx = cx + r * Math.cos(start), sy = cy + r * Math.sin(start)
-          const ex = cx + r * Math.cos(end), ey = cy + r * Math.sin(end)
-          const isx = cx + ir * Math.cos(end), isy = cy + ir * Math.sin(end)
-          const iex = cx + ir * Math.cos(start), iey = cy + ir * Math.sin(start)
-          const d = `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 ${large} 0 ${iex} ${iey} Z`
+    <div ref={containerRef} className="relative flex items-center gap-5 flex-wrap">
+      <div className="relative shrink-0">
+        <svg viewBox="0 0 120 120" className="w-[120px] h-[120px] @sm:w-[140px] @sm:h-[140px]" role="img" aria-label="콘텐츠 등급 분포 도넛 차트">
+          {arr.map((a, i) => {
+            const startAcc = i === 0 ? 0 : cumulative[i - 1]
+            const endAcc = cumulative[i]
+            const start = (startAcc / total) * Math.PI * 2 - Math.PI / 2
+            const end = (endAcc / total) * Math.PI * 2 - Math.PI / 2
+            const large = end - start > Math.PI ? 1 : 0
+            const sx = cx + r * Math.cos(start), sy = cy + r * Math.sin(start)
+            const ex = cx + r * Math.cos(end), ey = cy + r * Math.sin(end)
+            const isx = cx + ir * Math.cos(end), isy = cy + ir * Math.sin(end)
+            const iex = cx + ir * Math.cos(start), iey = cy + ir * Math.sin(start)
+            const d = `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${isx} ${isy} A ${ir} ${ir} 0 ${large} 0 ${iex} ${iey} Z`
+            return (
+              <path
+                key={a.label}
+                d={d}
+                fill={a.color}
+                className="cursor-pointer transition-opacity"
+                style={{ opacity: hover && hover.idx !== i ? 0.4 : 1 }}
+                onMouseMove={(e) => handleMove(i, e.clientX, e.clientY)}
+                onMouseLeave={() => setHover(null)}
+              />
+            )
+          })}
+        </svg>
+        {/* 도넛 중앙 — 총합 + 라벨 */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-xl @sm:text-2xl font-bold text-gray-900 tabular-nums leading-none">{total}</span>
+          <span className="text-xs text-gray-500 mt-0.5">총 콘텐츠</span>
+        </div>
+      </div>
+
+      {/* 단일 컬럼 리스트 + 미니 막대 (값 내림차순) */}
+      <ul className="flex-1 min-w-[200px] flex flex-col gap-2">
+        {sortedArcs.map((a) => {
+          const realIdx = arcsWithPct.findIndex(x => x.label === a.label)
           return (
-            <path
+            <li
               key={a.label}
-              d={d}
-              fill={a.color}
-              className="cursor-pointer transition-opacity"
-              style={{ opacity: hover && hover.idx !== i ? 0.4 : 1 }}
-              onMouseMove={(e) => handleMove(i, e.clientX, e.clientY)}
+              className="grid grid-cols-[14px_64px_1fr_auto_44px] items-center gap-2.5 text-sm cursor-pointer hover:bg-gray-50/60 -mx-1 px-1 py-0.5 rounded transition-colors"
+              onMouseEnter={(e) => handleMove(realIdx, e.clientX, e.clientY)}
               onMouseLeave={() => setHover(null)}
-            />
+            >
+              <span className="w-3 h-3 rounded-sm shrink-0" style={{ background: a.color }} aria-hidden="true" />
+              <span className="text-gray-600 whitespace-nowrap">{a.label}</span>
+              {/* 미니 막대 — 최대값 대비 비율 */}
+              <span className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <span className="block h-full rounded-full" style={{ width: `${(a.value / maxVal) * 100}%`, background: a.color }} aria-hidden="true" />
+              </span>
+              <span className="font-bold text-gray-900 tabular-nums text-right whitespace-nowrap">{a.value}</span>
+              <span className="text-xs text-gray-400 tabular-nums text-right whitespace-nowrap">{a.pct}%</span>
+            </li>
           )
         })}
-      </svg>
-      <div className="grid grid-cols-1 @md:grid-cols-2 gap-x-10 gap-y-1.5">
-        {arcsWithPct.map((a, i) => (
-          <div
-            key={a.label}
-            className="flex items-center gap-2 text-sm whitespace-nowrap cursor-pointer"
-            onMouseEnter={(e) => handleMove(i, e.clientX, e.clientY)}
-            onMouseLeave={() => setHover(null)}
-          >
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: a.color }} aria-hidden="true" />
-            {/* 라벨 폭 고정 — 가장 긴 "산정중"·"A 우수" 기준으로 값 시작 X 정렬 (44px) */}
-            <span className="text-gray-700" style={{ minWidth: 44 }}>{a.label}</span>
-            <span className="font-semibold text-gray-900 tabular-nums">{a.value}</span>
-          </div>
-        ))}
-      </div>
+      </ul>
 
       {/* 호버 툴팁 — 마우스 좌표 따라감 */}
       {hover && (

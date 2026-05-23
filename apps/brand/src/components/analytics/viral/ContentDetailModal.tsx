@@ -11,9 +11,10 @@
  */
 
 import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { X, ExternalLink } from 'lucide-react'
+import { X, ExternalLink, Link2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { fmtNumber, CHART_COLORS } from '@wellink/ui'
-import { type ViralContent } from '../../../data/analytics/viral'
+import { type ViralContent, CAMPAIGN_MATCH_MAP } from '../../../data/analytics/viral'
 
 /* ── 시리즈 데이터 생성 ───────────────────────────────────────────── */
 
@@ -152,10 +153,10 @@ const LineChart = memo(function LineChart({
   }, [n, plotW])
 
   return (
-    <div className="bg-white">
-      <h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+    <div className="rounded-xl border border-gray-100 bg-gray-50/40 p-4">
+      <h3 className="text-base font-semibold text-gray-900 mb-3">{title}</h3>
       {/* 범례 */}
-      <div className="flex items-center gap-4 mb-1.5">
+      <div className="flex items-center gap-4 mb-2">
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
           <svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3" stroke={myColor} strokeWidth="2" strokeLinecap="round" /></svg>
           {myLabel}
@@ -368,8 +369,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
             <p className="text-xs text-gray-500">{todayStr()} 기준 데이터입니다.</p>
           </div>
 
-          {/* 4개 점수 카드 */}
-          <div className="grid grid-cols-4 gap-2">
+          {/* 4개 점수 카드 — 2x2 그리드 (드로어 폭에서 4열 시 값 큰 경우 깨짐 방지) */}
+          <div className="grid grid-cols-2 gap-2">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
               <p className="text-xs text-blue-500 mb-1">최종 점수</p>
               <p className="text-xl font-bold text-blue-900 tabular-nums">{finalScore}</p>
@@ -395,6 +396,26 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
 
         {/* 스크롤 영역 */}
         <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+
+          {/* 연결된 캠페인 — 원본 ViralMetricsSection L1078-1095 보강 */}
+          {(() => {
+            const match = CAMPAIGN_MATCH_MAP[content.id]
+            if (!match) return null
+            return (
+              <Link
+                to={`/campaigns/${match.campaignId}`}
+                onClick={handleClose}
+                className="block rounded-xl border border-brand-green-border bg-brand-green-bg/40 p-4 hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <div className="flex items-center gap-1.5 text-xs font-medium text-brand-green-text mb-1.5">
+                  <Link2 size={12} aria-hidden="true" />
+                  연결된 캠페인
+                </div>
+                <p className="text-base font-bold text-gray-900 mb-1 break-words">{match.campaignName}</p>
+                <p className="text-xs text-gray-500">업로드 기간 · {match.uploadPeriodLabel}</p>
+              </Link>
+            )
+          })()}
 
           {content.grade === 'processing' ? (
             <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">

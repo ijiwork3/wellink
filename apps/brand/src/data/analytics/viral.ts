@@ -73,8 +73,8 @@ const RECENT_HOURS_AGO = [3, 7, 11, 14, 18, 22, 28, 36, 48, 72, 120, 168]  // 12
 
 export const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, i) => {
   const isRecent = i < 12
-  // 최신 12개 중 첫 8개 평가중 (영상 패턴: 갓 게시된 콘텐츠는 평가 대기) + 정기 평가중 5%
-  const isProcessing = isRecent ? i < 8 : (i % 19 === 18)
+  // 데모 노이즈 축소 — 첫 2개만 평가중, 나머지는 모두 등급 산출됨 (이전: 첫 8개 + 5%)
+  const isProcessing = i < 2
   const viralScore = isProcessing ? 0 : Math.max(8, Math.min(98, 30 + (i * 7) % 70))
   const performanceScore = isProcessing ? 0 : Math.max(0, viralScore - 5 + (i % 9))
   const momentumScore = isProcessing ? 0 : Math.max(0, viralScore - 8 + (i % 13))
