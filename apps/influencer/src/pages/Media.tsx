@@ -142,7 +142,7 @@ export default function Media() {
         <h1 className="sr-only">인스타 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
-          <div className="bg-white rounded-2xl border border-brand-green-border shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             {/* 패널 헤더 */}
             <div className="flex items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-1.5 min-w-0">
