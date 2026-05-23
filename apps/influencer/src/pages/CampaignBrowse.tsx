@@ -106,7 +106,7 @@ export default function CampaignBrowse() {
   }
 
   return (
-    <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
+    <Layout>
       {/* 헤더 */}
       <div className="mb-5">
         <h1 className="text-xl font-bold text-gray-900">진행 중인 캠페인</h1>
