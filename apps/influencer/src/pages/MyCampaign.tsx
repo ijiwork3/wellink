@@ -308,7 +308,7 @@ export default function MyCampaign() {
                         </div>
                         <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                        {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
+                        {c.rewardAmount > 0 && <p className="text-xs text-gray-500 mt-1 truncate">{c.rewardAmount.toLocaleString('ko-KR')} 상당 혜택</p>}
                       </button>
                     ) : (
                       <div className="flex-1 min-w-0">
@@ -325,7 +325,7 @@ export default function MyCampaign() {
                         </div>
                         <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                        {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
+                        {c.rewardAmount > 0 && <p className="text-xs text-gray-500 mt-1 truncate">{c.rewardAmount.toLocaleString('ko-KR')} 상당 혜택</p>}
                       </div>
                     )}
 
