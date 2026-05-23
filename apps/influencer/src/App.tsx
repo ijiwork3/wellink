@@ -128,6 +128,80 @@ const STATUS_ITEMS: StatusItem[] = [
   },
 ]
 
+function getQuickItems(pathname: string): StatusItem[] {
+  const err = (base: string) => ({ label: '네트워크 오류', path: `${base}?qa=error` })
+
+  if (pathname === '/login') return [
+    { label: '기본',    path: '/login' },
+    { label: '입력완료', path: '/login?qa=filled' },
+    { label: '로딩',    path: '/login?qa=loading' },
+    err('/login'),
+  ]
+  if (pathname === '/signup') return [
+    { label: '기본',    path: '/signup' },
+    { label: '입력완료', path: '/signup?qa=filled' },
+    { label: '인증완료', path: '/signup?qa=verified' },
+    err('/signup'),
+  ]
+  if (pathname === '/campaigns/browse') return [
+    { label: '기본',    path: '/campaigns/browse' },
+    { label: '로딩',    path: '/campaigns/browse?qa=loading' },
+    { label: '검색없음', path: '/campaigns/browse?qa=empty-search' },
+    { label: '빈목록',  path: '/campaigns/browse?qa=empty' },
+    err('/campaigns/browse'),
+  ]
+  if (pathname === '/campaigns/favorites') return [
+    { label: '기본',   path: '/campaigns/favorites' },
+    { label: '로딩',   path: '/campaigns/favorites?qa=loading' },
+    { label: '빈목록', path: '/campaigns/favorites?qa=empty' },
+    err('/campaigns/favorites'),
+  ]
+  if (pathname === '/campaigns/my') return [
+    { label: '기본',        path: '/campaigns/my' },
+    { label: '로딩',        path: '/campaigns/my?qa=loading' },
+    { label: '빈목록',      path: '/campaigns/my?qa=empty' },
+    { label: '콘텐츠제출',  path: '/campaigns/my?qa=modal-submit' },
+    { label: '취소확인',    path: '/campaigns/my?qa=modal-cancel' },
+    err('/campaigns/my'),
+  ]
+  if (pathname === '/profile') return [
+    { label: '기본',    path: '/profile' },
+    { label: '로딩',    path: '/profile?qa=loading' },
+    { label: '수정모드', path: '/profile?qa=edit' },
+    { label: '비번변경', path: '/profile?qa=modal-password' },
+    err('/profile'),
+  ]
+  if (pathname === '/media') return [
+    { label: '기본',      path: '/media' },
+    { label: '미연결',    path: '/media?qa=all-disconnected' },
+    { label: '로딩',      path: '/media?qa=loading' },
+    { label: '수집중',    path: '/media?qa=updating' },
+    { label: '게시물 0', path: '/media?qa=no-posts' },
+    err('/media'),
+  ]
+  // 캠페인 신청 (/campaigns/:id/apply)
+  if (pathname.endsWith('/apply')) {
+    const base = pathname.replace('/apply', '')
+    return [
+      { label: '신청폼',   path: pathname },
+      { label: 'view모드', path: `${pathname}?mode=view` },
+      { label: '수정모드', path: `${pathname}?mode=edit` },
+      err(base),
+    ]
+  }
+  // 캠페인 상세 (/campaigns/:id)
+  if (pathname.startsWith('/campaigns/')) {
+    return [
+      { label: '기본',   path: pathname },
+      { label: '로딩',   path: `${pathname}?qa=loading` },
+      { label: '신청완료', path: `${pathname}?qa=applied` },
+      { label: '마감',   path: `${pathname}?qa=closed` },
+      err(pathname),
+    ]
+  }
+  return []
+}
+
 function AppRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -188,14 +262,7 @@ function AppRoutes() {
         <GlobalQAHeader
           title="웰링크 인플루언서 POC"
           pathItems={STATUS_ITEMS}
-          quickItems={
-            location.pathname === '/media' ? [
-              { label: '기본',   path: '/media' },
-              { label: '미연결', path: '/media?qa=all-disconnected' },
-              { label: '로딩',   path: '/media?qa=loading' },
-              { label: '에러',   path: '/media?qa=error' },
-            ] : []
-          }
+          quickItems={getQuickItems(location.pathname)}
           onNavigate={handleNavigate}
           accentColor="var(--color-brand-green)"
         />

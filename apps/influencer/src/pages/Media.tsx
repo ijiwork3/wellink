@@ -249,10 +249,10 @@ export default function Media() {
               <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
             </div>
 
-            {/* 이미지 그리드 — 모바일 엣지투엣지, 데스크탑 내부 패딩 */}
-            <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-0.5 @[640px]:gap-1.5 @[640px]:px-5">
+            {/* 이미지 그리드 */}
+            <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 @[640px]:gap-1.5 @[640px]:px-5">
               {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
-                <div key={post.id} className="aspect-[2/3] overflow-hidden bg-gray-100 @[640px]:rounded-xl">
+                <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
                   <img
                     src={post.src}
                     alt=""
