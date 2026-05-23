@@ -87,7 +87,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           <div className="hidden @[640px]:block"><ProfileHeader /></div>
         )}
         {showSidebar ? (
-          <div className={`flex-1 max-w-screen-xl mx-auto w-full ${mobileFull ? 'px-0' : 'px-4'} py-4 @[640px]:px-6 @[640px]:py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-6`}>
+          <div className={`flex-1 max-w-screen-xl mx-auto w-full ${mobileFull ? 'px-0 py-0' : 'px-4 py-4'} @[640px]:px-6 @[640px]:py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-6`}>
             <div className="flex gap-6">
               {/* SideNav: 컨테이너 lg 이상에서만 표시 */}
               <div className="hidden @[640px]:block">

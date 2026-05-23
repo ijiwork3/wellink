@@ -158,10 +158,16 @@ export default function Media() {
                   aria-label="인스타 프로필로 이동"
                 >
                   @{instaPlatform.url}
-                  <ExternalLink size={11} className="text-gray-400 flex-shrink-0" aria-hidden="true" />
+                  <ExternalLink size={15} className="text-gray-400 flex-shrink-0" aria-hidden="true" />
                 </a>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => { setUrlInput(instaPlatform?.url ?? ''); setConnectModal(instaPlatform ?? null) }}
+                  className="text-xs text-gray-500 hover:text-brand-green-text transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                >
+                  계정 변경
+                </button>
                 <button
                   aria-label="인스타 통계 새로고침"
                   onClick={() => showToast('통계를 업데이트했어요', 'success')}
@@ -265,15 +271,6 @@ export default function Media() {
                 showSummary={false}
                 className="mt-3"
               />
-            </div>
-            {/* 카드 하단: 계정 변경 — 원본 mypage L1436: 연결된 상태에서 아이디 변경 */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end">
-              <button
-                onClick={() => { setUrlInput(instaPlatform?.url ?? ''); setConnectModal(instaPlatform ?? null) }}
-                className="text-xs text-gray-500 hover:text-brand-green-text transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-              >
-                계정 변경
-              </button>
             </div>
           </div>
         )}
