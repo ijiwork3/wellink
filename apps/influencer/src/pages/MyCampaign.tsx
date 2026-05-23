@@ -10,15 +10,16 @@ import { mockMyCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import type { MyCampaign } from '../services/mock/campaigns'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
-// 탭: 진행중(지원완료+검토중+콘텐츠대기+검수중) / 완료 / 미선정
-type TabKey = '전체' | '진행중' | '완료' | '미선정'
-const STATUS_TABS: TabKey[] = ['전체', '진행중', '완료', '미선정']
+// 탭: 지원완료(WAIT) / 참여중(ACTIVE·CONFIRMED) / 완료 / 미선정
+type TabKey = '전체' | '지원완료' | '참여중' | '완료' | '미선정'
+const STATUS_TABS: TabKey[] = ['전체', '지원완료', '참여중', '완료', '미선정']
 
-const ACTIVE_STATUSES: Set<string> = new Set(['지원완료', '검토중', '콘텐츠대기', '검수중'])
-
+const WAIT_STATUSES: Set<string> = new Set(['지원완료'])
+const ACTIVE_STATUSES: Set<string> = new Set(['검토중', '콘텐츠대기', '검수중'])
 
 function statusToTab(s: string): TabKey {
-  if (ACTIVE_STATUSES.has(s)) return '진행중'
+  if (WAIT_STATUSES.has(s)) return '지원완료'
+  if (ACTIVE_STATUSES.has(s)) return '참여중'
   if (s === '완료') return '완료'
   if (s === '미선정') return '미선정'
   return '전체'
@@ -56,11 +57,8 @@ export default function MyCampaign() {
 
   // URL ?tab= 파라미터로 초기 탭 설정 (ProfileHeader 스탯 카드 클릭 시 진입)
   const urlTab = searchParams.get('tab') as TabKey | null
-  const validTabs: TabKey[] = ['전체', '진행중', '완료', '미선정']
+  const validTabs: TabKey[] = ['전체', '지원완료', '참여중', '완료', '미선정']
   const initialTab: TabKey = urlTab && validTabs.includes(urlTab) ? urlTab : '전체'
-  // URL ?status= 파라미터: 진행중 탭 내 sub-filter
-  // '지원완료' → status === '지원완료' / '참여중' → 검토중|콘텐츠대기|검수중
-  const urlStatus = searchParams.get('status')
 
   // 초기값은 useEffect에서 qa에 따라 동기화한다. lazy init과 useEffect의 분기 중복을 막기 위해 mockMyCampaigns를 시작값으로 둠.
   const [campaigns, setCampaigns] = useState<MyCampaign[]>(mockMyCampaigns)
@@ -80,29 +78,24 @@ export default function MyCampaign() {
     if (qa === 'modal-cancel') { setCancelModal(mockMyCampaigns[0]); return }
     if (qa === 'modal-submit') { setSubmitModal(mockMyCampaigns[0]); return }
     const tabMap: Record<string, TabKey> = {
-      'tab-신청완료': '진행중', 'tab-진행중': '진행중',
+      'tab-신청완료': '지원완료', 'tab-진행중': '참여중',
       'tab-게시완료': '완료', 'tab-포인트지급': '완료',
-      'tab-검수중':   '진행중',
+      'tab-검수중':   '참여중',
       'tab-미선정':   '미선정',
-      'tab-신청완료-empty': '진행중', 'tab-진행중-empty': '진행중',
-      'tab-게시완료-empty': '완료',   'tab-포인트지급-empty': '완료',
+      'tab-신청완료-empty': '지원완료', 'tab-진행중-empty': '참여중',
+      'tab-게시완료-empty': '완료',     'tab-포인트지급-empty': '완료',
     }
     if (qa && tabMap[qa]) setActiveTab(tabMap[qa])
     setCampaigns(qa?.endsWith('-empty') ? [] : mockMyCampaigns)
   }, [qa])
 
-  const PARTICIPATING_STATUSES = ['검토중', '콘텐츠대기', '검수중']
-
   const filtered = useMemo(() => {
     let list = campaigns
     if (activeTab !== '전체') list = list.filter(c => statusToTab(c.status) === activeTab)
-    // sub-filter: ProfileHeader 스탯 카드 '지원 완료' / '참여중' 클릭 시 적용
-    if (urlStatus === '지원완료') list = list.filter(c => c.status === '지원완료')
-    else if (urlStatus === '참여중') list = list.filter(c => PARTICIPATING_STATUSES.includes(c.status))
     const q = search.trim().toLowerCase()
     if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q))
     return list
-  }, [campaigns, activeTab, urlStatus, search])
+  }, [campaigns, activeTab, search])
 
   const countByTab = (tab: TabKey) => {
     if (tab === '전체') return campaigns.length
