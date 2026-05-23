@@ -169,29 +169,6 @@ export default function MyCampaign() {
           </button>
         </div>
 
-        {/* 활동 요약 — 원본 mypage/page.tsx L384-415: summaryCounts(지원완료·참여중·완료·탈락) */}
-        {campaigns.length > 0 && (() => {
-          const applied   = campaigns.filter(c => c.status === '지원완료').length
-          const ongoing   = campaigns.filter(c => ['검토중', '콘텐츠대기', '검수중'].includes(c.status)).length
-          const completed = campaigns.filter(c => c.status === '완료').length
-          const eliminated = campaigns.filter(c => c.status === '미선정').length
-          return (
-            <div className="grid grid-cols-4 gap-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
-              {([
-                { label: '지원완료', value: applied,    color: 'text-brand-green-text' },
-                { label: '참여중',   value: ongoing,    color: 'text-blue-600' },
-                { label: '완료',     value: completed,  color: 'text-gray-500' },
-                { label: '미선정',   value: eliminated, color: 'text-red-400' },
-              ] as const).map(({ label, value, color }) => (
-                <div key={label} className="flex flex-col items-center gap-0.5">
-                  <span className={`text-lg font-bold tabular-nums ${color}`}>{value}</span>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">{label}</span>
-                </div>
-              ))}
-            </div>
-          )
-        })()}
-
         {/* 검색 */}
         <div className="relative">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
@@ -275,7 +252,7 @@ export default function MyCampaign() {
                         src={getThumbnailFromPool(c.campaignRef)}
                         alt=""
                         loading="lazy"
-                        className="w-16 h-16 rounded-xl object-cover shrink-0"
+                        className="w-20 h-20 rounded-xl object-cover shrink-0"
                         onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
                       />
                       <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
@@ -310,7 +287,7 @@ export default function MyCampaign() {
                         src={getThumbnailFromPool(c.id)}
                         alt=""
                         loading="lazy"
-                        className="w-16 h-16 rounded-xl object-cover shrink-0"
+                        className="w-20 h-20 rounded-xl object-cover shrink-0"
                         onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
                       />
                       <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
