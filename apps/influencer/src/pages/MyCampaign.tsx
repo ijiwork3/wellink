@@ -58,6 +58,9 @@ export default function MyCampaign() {
   const urlTab = searchParams.get('tab') as TabKey | null
   const validTabs: TabKey[] = ['전체', '진행중', '완료', '미선정']
   const initialTab: TabKey = urlTab && validTabs.includes(urlTab) ? urlTab : '전체'
+  // URL ?status= 파라미터: 진행중 탭 내 sub-filter
+  // '지원완료' → status === '지원완료' / '참여중' → 검토중|콘텐츠대기|검수중
+  const urlStatus = searchParams.get('status')
 
   // 초기값은 useEffect에서 qa에 따라 동기화한다. lazy init과 useEffect의 분기 중복을 막기 위해 mockMyCampaigns를 시작값으로 둠.
   const [campaigns, setCampaigns] = useState<MyCampaign[]>(mockMyCampaigns)
@@ -88,13 +91,18 @@ export default function MyCampaign() {
     setCampaigns(qa?.endsWith('-empty') ? [] : mockMyCampaigns)
   }, [qa])
 
+  const PARTICIPATING_STATUSES = ['검토중', '콘텐츠대기', '검수중']
+
   const filtered = useMemo(() => {
     let list = campaigns
     if (activeTab !== '전체') list = list.filter(c => statusToTab(c.status) === activeTab)
+    // sub-filter: ProfileHeader 스탯 카드 '지원 완료' / '참여중' 클릭 시 적용
+    if (urlStatus === '지원완료') list = list.filter(c => c.status === '지원완료')
+    else if (urlStatus === '참여중') list = list.filter(c => PARTICIPATING_STATUSES.includes(c.status))
     const q = search.trim().toLowerCase()
     if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q))
     return list
-  }, [campaigns, activeTab, search])
+  }, [campaigns, activeTab, urlStatus, search])
 
   const countByTab = (tab: TabKey) => {
     if (tab === '전체') return campaigns.length

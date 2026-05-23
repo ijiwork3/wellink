@@ -5,8 +5,8 @@ import { mockProfile, mockCampaignSummary, INFLUENCER_TYPES } from '../services/
 import { useEscToClose } from '../utils/useEscToClose'
 
 const stats = [
-  { label: '지원 완료', value: mockCampaignSummary.applied,    tab: '진행중' },
-  { label: '참여중',   value: mockCampaignSummary.ongoing,    tab: '진행중', highlight: true },
+  { label: '지원 완료', value: mockCampaignSummary.applied,    tab: '진행중', status: '지원완료' },
+  { label: '참여중',   value: mockCampaignSummary.ongoing,    tab: '진행중', status: '참여중', highlight: true },
   { label: '참여 완료', value: mockCampaignSummary.completed,  tab: '완료' },
   { label: '미선정',   value: mockCampaignSummary.eliminated, tab: '미선정' },
 ]
@@ -52,7 +52,7 @@ export default function ProfileHeader() {
           {stats.map(s => (
             <button
               key={s.label}
-              onClick={() => navigate(`/campaigns/my?tab=${s.tab}`)}
+              onClick={() => navigate(`/campaigns/my?tab=${s.tab}${'status' in s && s.status ? `&status=${s.status}` : ''}`)}
               className="bg-gray-50 hover:bg-gray-100 rounded-xl py-2.5 px-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               aria-label={`${s.label} ${s.value}건 보기`}
             >
