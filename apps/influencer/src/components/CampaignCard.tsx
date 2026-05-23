@@ -56,7 +56,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
           src={getThumbnailFromPool(campaign.id)}
           alt=""
           loading="lazy"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           onError={e => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
         />
         {showLike && (
