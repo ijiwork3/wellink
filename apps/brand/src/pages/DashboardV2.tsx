@@ -26,6 +26,7 @@ import {
 import {
   KPICard, PageHeader, DateRangePicker, WordCloud, EmptyState,
   ChartScrollContainer, useIsTouchDevice, fmtNumber, BRAND, CHART_COLORS,
+  ErrorState, SkeletonCard, Skeleton,
   type ChartScrollContainerHandle, type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
 import ImpressReachChart from '../components/analytics/profile/ImpressReachChart'
@@ -33,6 +34,8 @@ import ViralContentMiniCard from '../components/dashboard/ViralContentMiniCard'
 import CampaignPreviewRow from '../components/dashboard/CampaignPreviewRow'
 import useHeaderStuck from '../hooks/useHeaderStuck'
 import { useDeviceMode } from '../qa-mockup-kit'
+import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
+import { usePlanAccess } from '../hooks/usePlanAccess'
 import {
   DASHBOARD_VIRAL_KEYWORDS,
   DASHBOARD_VIRAL_MIX,
@@ -55,6 +58,8 @@ const TREND_LABEL: Record<DatePeriod, string> = {
 
 export default function DashboardV2() {
   const navigate = useNavigate()
+  const qa = useQAMode()
+  const { isGated, planLabel, isTrial } = usePlanAccess()
   const [period, setPeriod] = useState<DatePeriod>('일간')
   const [dateOffset, setDateOffset] = useState<number>(0)
   const trendLabel = TREND_LABEL[period]
@@ -299,6 +304,98 @@ export default function DashboardV2() {
           transition: { delay: i * 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] as const },
         }),
       }
+
+  if (qa === 'loading') {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div>
+          <Skeleton shape="text" className="h-7 w-40 mb-2" />
+          <Skeleton shape="text" className="h-4 w-56" />
+        </div>
+        {/* KPI 카드 그리드 — 2x3 */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+        </div>
+        {/* 차트 섹션 */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <Skeleton shape="text" className="h-4 w-28 mb-4" />
+          <Skeleton shape="rect" className="h-48 w-full rounded-xl" />
+        </div>
+        {/* 바이럴 섹션 */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <Skeleton shape="text" className="h-4 w-32 mb-4" />
+          <div className="grid grid-cols-2 gap-3">
+            <Skeleton shape="rect" className="h-32 rounded-xl" />
+            <Skeleton shape="rect" className="h-32 rounded-xl" />
+          </div>
+        </div>
+        {/* 캠페인 섹션 */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+          <Skeleton shape="text" className="h-4 w-24 mb-2" />
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} shape="text" className="h-14 rounded-xl" />)}
+        </div>
+      </div>
+    )
+  }
+
+  if (qa === 'error') {
+    return <ErrorState message="대시보드를 불러올 수 없습니다" subMessage="잠시 후 다시 시도해 주세요." onRetry={() => window.location.reload()} />
+  }
+
+  if (qa === 'empty' || qa === 'new-user') {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
+          <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            title={qa === 'new-user' ? '첫 캠페인을 시작해 보세요' : '캠페인이 없습니다'}
+            description={qa === 'new-user'
+              ? '캠페인을 등록하면 대시보드에서 성과를 실시간으로 확인할 수 있습니다.'
+              : '진행 중인 캠페인이 없어 표시할 데이터가 없습니다.'
+            }
+            action={
+              <button
+                onClick={() => navigate('/campaigns/new')}
+                className="mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                캠페인 만들기
+              </button>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
+
+  if (qa === 'plan-locked' || isGated) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
+          <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            title={`${planLabel} 플랜에서는 이용할 수 없습니다`}
+            description="더 높은 플랜으로 업그레이드하면 대시보드 전체 기능을 이용할 수 있습니다."
+            action={
+              <button
+                onClick={() => navigate('/subscription')}
+                className="mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                플랜 업그레이드
+              </button>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Image as ImageIcon, Plus, X, Trash2, GripVertical, CheckCircle, Calendar, Upload, Users, AlertCircle } from 'lucide-react'
-import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect, CustomCheckbox, PageHeader } from '@wellink/ui'
+import { AlertModal, useToast, useQAMode, TIMER_MS, CustomSelect, CustomCheckbox, PageHeader, ErrorState } from '@wellink/ui'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -204,6 +204,16 @@ export default function CampaignNew() {
       setCompletedModal(true)
       submitTimerRef.current = null
     }, TIMER_MS.FORM_SUBMIT)
+  }
+
+  if (qa === 'error') {
+    return (
+      <ErrorState
+        message="캠페인 등록 폼을 불러올 수 없습니다"
+        subMessage="잠시 후 다시 시도해 주세요."
+        onRetry={() => window.location.reload()}
+      />
+    )
   }
 
   return (
