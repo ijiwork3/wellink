@@ -220,7 +220,10 @@ export default function CampaignBrowse() {
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}
-                  onPageChange={p => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  onPageChange={p => {
+                setPage(p)
+                document.getElementById('main-content')?.closest('.overflow-y-auto')?.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
                 />
               </div>
             )}
