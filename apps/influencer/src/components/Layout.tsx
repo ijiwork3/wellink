@@ -10,14 +10,12 @@ import { ArrowLeft, Menu, X } from 'lucide-react'
 interface LayoutProps {
   children: React.ReactNode
   showSidebar?: boolean
-  showProfileHeader?: boolean
   showBottomTab?: boolean
   pageTitle?: string
   onBack?: () => void
 }
 
-export default function Layout({ children, showSidebar = true, showProfileHeader, showBottomTab, pageTitle, onBack }: LayoutProps) {
-  const profileHeader = showProfileHeader ?? showSidebar
+export default function Layout({ children, showSidebar = true, showBottomTab, pageTitle, onBack }: LayoutProps) {
   const bottomTab = showBottomTab ?? showSidebar
   const [drawerOpen, setDrawerOpen] = useState(false)
   const navigate = useNavigate()
@@ -84,7 +82,9 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
 
       {/* 본문 스크롤 영역 */}
       <div className="flex-1 overflow-y-auto flex flex-col bg-gray-50">
-        {profileHeader && <ProfileHeader />}
+        {showSidebar && (
+          <div className="hidden @[640px]:block"><ProfileHeader /></div>
+        )}
         {showSidebar ? (
           <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @[640px]:px-6 @[640px]:py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-6">
             <div className="flex gap-6">

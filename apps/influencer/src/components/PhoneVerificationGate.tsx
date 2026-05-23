@@ -24,7 +24,8 @@ export default function PhoneVerificationGate({ children }: { children: React.Re
 
   return (
     <>
-      {/* 콘텐츠는 숨기고 배경만 흐리게 */}
+      {/* 뒤에 콘텐츠 렌더 (원본과 동일: children 항상 표시 + 위에 오버레이) */}
+      {children}
       <div className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
         <PhoneVerifyModal onVerified={() => {
           localStorage.setItem(STORAGE_KEY, '1')
