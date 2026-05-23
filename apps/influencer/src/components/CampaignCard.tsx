@@ -80,7 +80,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
       <div className="p-4">
         {/* D-day + 타입 배지 — 원본 CampaignList.tsx L271-292 */}
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <span className={`flex items-center gap-1 text-xs font-bold whitespace-nowrap ${dday.color === 'red' ? 'text-red-500' : dday.color === 'orange' ? 'text-orange-500' : 'text-gray-400'}`}>
+          <span className={`flex items-center gap-1 text-xs font-bold whitespace-nowrap ${dday.color}`}>
             <Video size={12} aria-hidden="true" />
             {dday.label}
           </span>
