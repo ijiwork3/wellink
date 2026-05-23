@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -85,6 +85,18 @@ export default function Profile() {
     setDraftType(influencerType)
     setIsEditing(false)
   }
+
+  // A-1: 원본 mypage/page.tsx ProfileSettings L1711-1731 — hasProfileChanges
+  // 저장 버튼은 실제로 변경된 항목이 있을 때만 활성화
+  const hasProfileChanges = useMemo(() => {
+    if (!isEditing) return false
+    if (draftName.trim() !== name.trim()) return true
+    if (draftType !== influencerType) return true
+    const a = [...draftFields].sort()
+    const b = [...selectedFields].sort()
+    if (a.length !== b.length) return true
+    return a.some((v, i) => v !== b[i])
+  }, [isEditing, draftName, name, draftType, influencerType, draftFields, selectedFields])
 
   const handlePwChange = async () => {
     if (isPwSubmitting) return
@@ -184,7 +196,7 @@ export default function Profile() {
                 <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   <X size={14} />취소
                 </button>
-                <button onClick={handleSave} disabled={isSaving} aria-disabled={isSaving} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <button onClick={handleSave} disabled={isSaving || !hasProfileChanges} aria-disabled={isSaving || !hasProfileChanges} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
                 </button>
               </div>
@@ -279,7 +291,7 @@ export default function Profile() {
                 <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   <X size={14} />취소
                 </button>
-                <button onClick={handleSave} disabled={isSaving} aria-disabled={isSaving} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                <button onClick={handleSave} disabled={isSaving || !hasProfileChanges} aria-disabled={isSaving || !hasProfileChanges} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                   <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
                 </button>
               </div>

@@ -83,7 +83,7 @@ export default function Layout({ children, showSidebar = true, showProfileHeader
       </header>
 
       {/* 본문 스크롤 영역 */}
-      <div className="flex-1 overflow-y-auto flex flex-col">
+      <div className="flex-1 overflow-y-auto flex flex-col bg-gray-50">
         {profileHeader && <ProfileHeader />}
         {showSidebar ? (
           <div className="flex-1 max-w-screen-xl mx-auto w-full px-4 py-4 @[640px]:px-6 @[640px]:py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] @[640px]:pb-6">

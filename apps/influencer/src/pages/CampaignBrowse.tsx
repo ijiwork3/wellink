@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, X, SlidersHorizontal, Instagram, PenTool, Youtube, LayoutGrid } from 'lucide-react'
+import { Search, X, SlidersHorizontal, Camera, PenTool, PlaySquare, LayoutGrid } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
@@ -13,9 +13,9 @@ type SortKey = 'deadline' | 'reward' | 'recent'
 
 const CHANNELS = [
   { id: '전체',       label: '전체',        Icon: LayoutGrid },
-  { id: '인스타그램', label: '인스타그램',   Icon: Instagram },
+  { id: '인스타그램', label: '인스타그램',   Icon: Camera },
   { id: '네이버 블로그', label: '블로그',    Icon: PenTool },
-  { id: '유튜브',     label: '유튜브',       Icon: Youtube },
+  { id: '유튜브',     label: '유튜브',       Icon: PlaySquare },
 ]
 
 function CampaignSkeletonCard() {
@@ -80,7 +80,13 @@ export default function CampaignBrowse() {
       const matchCat = selectedCategory === '전체' || c.category === selectedCategory
       const matchChannel = selectedChannel === '전체' || c.channel === selectedChannel
       const q = search.trim().toLowerCase()
-      const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q)
+      // A: 검색 범위 확대 — 원본 CampaignList.tsx L100-116 (name/brand/title/storeName/region/category/tags 7개)
+      const matchSearch = !q || c.name.toLowerCase().includes(q)
+        || c.brand.toLowerCase().includes(q)
+        || (c.storeName ?? '').toLowerCase().includes(q)
+        || (c.region ?? '').toLowerCase().includes(q)
+        || c.category.toLowerCase().includes(q)
+        || (c.tags ?? []).some(t => t.toLowerCase().includes(q))
       return matchCat && matchChannel && matchSearch
     })
     return [...filtered].sort((a, b) => {

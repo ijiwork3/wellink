@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Markdown from 'react-markdown'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star, BookOpen } from 'lucide-react'
+import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star, BookOpen, Search } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -317,27 +317,35 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             </div>
           )}
 
-          {/* 게시 유형 + 우대사항 — 원본 CampaignDetail.tsx L282-298 */}
-          {(campaign.postType || campaign.priorityType) && (
+          {/* 게시 유형 + 우대사항 — 원본 CampaignDetail.tsx L273-299 grid-cols-3 미션 카드 */}
+          {(campaign.postType || campaign.priorityType || (campaign.keywords?.length ?? 0) > 0) && (
             <div className={sectionCls}>
               <p className="text-sm font-semibold text-gray-900 mb-3">미션 정보</p>
-              <div className="space-y-2.5">
+              {/* A: 원본 3열 카드 — grid-cols-3으로 키워드/게시유형/우대 */}
+              <div className={`grid gap-2 ${
+                [campaign.keywords?.length, campaign.postType, campaign.priorityType].filter(Boolean).length >= 3
+                  ? 'grid-cols-3'
+                  : 'grid-cols-2'
+              }`}>
+                {(campaign.keywords?.length ?? 0) > 0 && (
+                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-gray-100 bg-gray-50">
+                    <Search size={16} className="text-brand-green mb-1.5" aria-hidden="true" />
+                    <p className="text-xs text-gray-500 mb-1">키워드</p>
+                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.keywords!.slice(0, 2).join(', ')}{(campaign.keywords!.length > 2) ? ' …' : ''}</p>
+                  </div>
+                )}
                 {campaign.postType && (
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                    <Layers size={15} className="text-brand-green flex-shrink-0 mt-0.5" aria-hidden="true" />
-                    <div className="min-w-0">
-                      <p className="text-xs text-gray-500 mb-0.5">게시 유형</p>
-                      <p className="text-sm font-medium text-gray-900 break-keep">{campaign.postType}</p>
-                    </div>
+                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-gray-100 bg-gray-50">
+                    <Layers size={16} className="text-brand-green mb-1.5" aria-hidden="true" />
+                    <p className="text-xs text-gray-500 mb-1">게시 유형</p>
+                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.postType}</p>
                   </div>
                 )}
                 {campaign.priorityType && (
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
-                    <Star size={15} className="text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-                    <div className="min-w-0">
-                      <p className="text-xs text-amber-600 mb-0.5">우대사항</p>
-                      <p className="text-sm font-medium text-gray-900 break-keep">{campaign.priorityType}</p>
-                    </div>
+                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-amber-100 bg-amber-50">
+                    <Star size={16} className="text-amber-500 mb-1.5" aria-hidden="true" />
+                    <p className="text-xs text-amber-600 mb-1">우대사항</p>
+                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.priorityType}</p>
                   </div>
                 )}
               </div>

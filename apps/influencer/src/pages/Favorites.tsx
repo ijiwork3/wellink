@@ -26,7 +26,7 @@ export default function Favorites() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Skeleton shape="text" height={20} width="7rem" />
@@ -61,7 +61,7 @@ export default function Favorites() {
 
   if (qa === 'error') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="관심 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -70,7 +70,7 @@ export default function Favorites() {
   }
 
   return (
-    <Layout>
+    <Layout showProfileHeader={false}>
       <div className="space-y-4">
         <h1 className="sr-only">관심 캠페인</h1>
         <div className="flex items-center justify-between">

@@ -442,6 +442,9 @@ export default function CampaignDetail() {
   const [selectedUploadFilter, setSelectedUploadFilter] = useState<UploadFilter>('all')
   const [uploadOverviewOpen, setUploadOverviewOpen] = useState(false)
   const [uploadOverviewDetailId, setUploadOverviewDetailId] = useState<number | null>(null)
+  // A: 인플루언서 프로필 모달 — 원본 page.tsx L274-310 ProfileModal + savedInfluencers 패턴
+  const [profileModalId, setProfileModalId] = useState<number | null>(null)
+  const [savedProfileIds, setSavedProfileIds] = useState<Set<number>>(new Set())
 
   const handleShareCampaign = () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -1487,15 +1490,17 @@ export default function CampaignDetail() {
                       />
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
+                      {/* A: 이름 클릭 → 프로필 모달 — 원본 page.tsx L285-310 openProfile() */}
+                      <button type="button" onClick={() => setProfileModalId(a.id)}
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity text-left group">
                         <div className={`w-10 h-10 rounded-full ${a.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                           {a.name[0]}
                         </div>
                         <div className="leading-tight">
-                          <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{a.instagramId}</span>
+                          <span className="block text-base font-bold text-gray-900 whitespace-nowrap group-hover:underline">@{a.instagramId}</span>
                           <span className="block text-base text-gray-500 whitespace-nowrap mt-0.5">본명 · {a.name}</span>
                         </div>
-                      </div>
+                      </button>
                     </td>
                     <td className="py-3 px-4 text-base font-medium text-gray-900 text-right whitespace-nowrap">{a.engagement}%</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
@@ -1736,15 +1741,17 @@ export default function CampaignDetail() {
                     {pagedSelected.map(i => (
                       <tr key={i.id} className="hover:bg-gray-50 transition-colors duration-150">
                         <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
+                          {/* A: 이름 클릭 → 프로필 모달 — 원본 page.tsx L285-310 openProfile() */}
+                          <button type="button" onClick={() => setProfileModalId(i.id)}
+                            className="flex items-center gap-3 hover:opacity-80 transition-opacity text-left group">
                             <div className={`w-10 h-10 rounded-full ${i.avatar} flex items-center justify-center text-gray-700 font-semibold text-base shrink-0`}>
                               {i.name[0]}
                             </div>
                             <div className="leading-tight">
-                              <span className="block text-base font-bold text-gray-900 whitespace-nowrap">@{i.instagramId}</span>
+                              <span className="block text-base font-bold text-gray-900 whitespace-nowrap group-hover:underline">@{i.instagramId}</span>
                               <span className="block text-base text-gray-500 whitespace-nowrap mt-0.5">본명 · {i.name}</span>
                             </div>
-                          </div>
+                          </button>
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
@@ -3069,6 +3076,111 @@ export default function CampaignDetail() {
           <div className="text-right text-base text-gray-500">{feedback.length}/500</div>
         </div>
       </Modal>
+
+      {/* A: 인플루언서 프로필 모달 — 원본 page.tsx L274-310 ProfileModal 대응 */}
+      {(() => {
+        if (profileModalId === null) return null
+        // 지원자 + 선정자 통합 탐색
+        const allPeople = [...applicants, ...(selectedInfluencers as typeof applicantsData)]
+        const person = allPeople.find(p => p.id === profileModalId)
+        if (!person) return null
+        const isSaved = savedProfileIds.has(person.id)
+        return (
+          <Modal
+            open
+            onClose={() => setProfileModalId(null)}
+            title="인플루언서 프로필"
+            size="lg"
+            footer={
+              <div className="flex gap-2 w-full">
+                <button type="button"
+                  onClick={() => setSavedProfileIds(prev => {
+                    const next = new Set(prev)
+                    if (isSaved) next.delete(person.id)
+                    else next.add(person.id)
+                    showToast(isSaved ? '저장을 취소했습니다.' : '인플루언서 목록에 저장되었습니다.', 'success')
+                    return next
+                  })}
+                  className={`flex-1 flex items-center justify-center gap-2 border py-2.5 rounded-xl text-base font-medium transition-colors ${
+                    isSaved
+                      ? 'bg-brand-green-bg border-brand-green-border text-brand-green-text'
+                      : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Heart size={16} className={isSaved ? 'fill-current' : ''} />
+                  {isSaved ? '저장됨' : '저장'}
+                </button>
+                <button type="button"
+                  onClick={() => setProfileModalId(null)}
+                  className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-base font-medium hover:bg-gray-800 transition-colors"
+                >닫기</button>
+              </div>
+            }
+          >
+            <div className="space-y-4">
+              {/* 헤더 */}
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                <div className={`w-16 h-16 rounded-full ${person.avatar} flex items-center justify-center text-gray-700 font-bold text-xl shrink-0`}>
+                  {person.name[0]}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xl font-bold text-gray-900">@{person.instagramId}</p>
+                  <p className="text-base text-gray-500 mt-0.5">본명 · {person.name}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {person.activityFields.map(f => (
+                      <span key={f} className="text-base px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-700 whitespace-nowrap">{f}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              {/* KPI 4칸 */}
+              <div className="grid grid-cols-2 @sm:grid-cols-4 gap-2">
+                <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
+                  <p className="text-base text-gray-500 mb-0.5">팔로워</p>
+                  <p className="text-lg font-bold text-gray-900">{person.followers}</p>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
+                  <p className="text-base text-gray-500 mb-0.5">참여율</p>
+                  <p className="text-lg font-bold text-gray-900">{person.engagement}%</p>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
+                  <p className="text-base text-gray-500 mb-0.5">게시물</p>
+                  <p className="text-lg font-bold text-gray-900">{fmtNumber(person.postsCount)}</p>
+                </div>
+                <div className="bg-brand-green-bg border border-brand-green-border rounded-xl p-3 text-center">
+                  <p className="text-base text-brand-green-text mb-0.5 flex items-center justify-center gap-1">
+                    <Sparkles size={12} />Fit Score
+                  </p>
+                  <p className="text-lg font-bold text-brand-green-text">{person.fitScore}</p>
+                </div>
+              </div>
+              {/* 연락처 */}
+              <div className="grid grid-cols-1 @sm:grid-cols-2 gap-2">
+                <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+                  <p className="text-base text-gray-500 mb-0.5">연락처</p>
+                  <p className="text-base font-medium text-gray-900">{person.phoneNumber}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+                  <p className="text-base text-gray-500 mb-0.5">이메일</p>
+                  <p className="text-base font-medium text-gray-900 truncate">{person.email}</p>
+                </div>
+              </div>
+              {/* 신청 답변 */}
+              {(person.allAnswers?.length ?? 0) > 0 && (
+                <div className="space-y-2">
+                  <p className="text-base font-semibold text-gray-900">신청 답변</p>
+                  {person.allAnswers?.map((ans, idx) => (
+                    <div key={idx} className="bg-gray-50 rounded-xl px-3 py-2.5">
+                      <p className="text-base text-gray-500 mb-0.5">{ans.question}</p>
+                      <p className="text-base font-medium text-gray-900">{ans.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Modal>
+        )
+      })()}
     </div>
   )
 }

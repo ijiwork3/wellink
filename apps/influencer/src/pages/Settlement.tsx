@@ -100,7 +100,7 @@ export default function Settlement() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
             <Skeleton shape="text" height={16} width="7rem" />
@@ -126,7 +126,7 @@ export default function Settlement() {
 
   if (qa === 'error') {
     return (
-      <Layout>
+      <Layout showProfileHeader={false}>
         <ErrorState message="정산 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
       </Layout>
     )
@@ -165,20 +165,20 @@ export default function Settlement() {
   }
 
   return (
-    <Layout>
+    <Layout showProfileHeader={false}>
       <div className="space-y-4">
         <h1 className="sr-only">정산</h1>
         {/* 계좌 미등록 배너 */}
         {!hasBankAccount && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex flex-col @[400px]:flex-row @[400px]:items-center gap-3">
+          <div className="bg-brand-green-bg border border-brand-green-border rounded-2xl px-4 py-3 flex flex-col @[400px]:flex-row @[400px]:items-center gap-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+              <AlertCircle size={16} className="text-brand-green shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-amber-800 break-keep">계좌 정보가 없어요</p>
-                <p className="text-sm text-amber-600 mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
+                <p className="text-sm font-semibold text-gray-900 break-keep">계좌 정보가 없어요</p>
+                <p className="text-sm text-brand-green-text mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
               </div>
             </div>
-            <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-amber-700 border border-amber-300 px-3 py-2.5 rounded-lg hover:bg-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60">
+            <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-white bg-brand-green px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               계좌 등록
             </button>
           </div>
@@ -369,9 +369,9 @@ export default function Settlement() {
             />
           </div>
 
-          <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-100">
-            <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-sm text-amber-700 break-keep">본인 명의 계좌만 등록할 수 있어요</p>
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
+            <AlertCircle size={14} className="text-brand-green shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-brand-green-text break-keep">본인 명의 계좌만 등록할 수 있어요</p>
           </div>
 
           <div className="flex gap-2">

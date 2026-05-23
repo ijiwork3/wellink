@@ -41,6 +41,12 @@ export interface Campaign {
   questions?: CampaignQuestion[]
   /** 바로가기 링크 — 원본 CampaignApplyForm.tsx L417-437: campaign.link 존재 시 신청폼에 노출 */
   link?: string
+  /** 매장명 — 원본 CampaignList.tsx L102 storeName 검색 필드 대응 */
+  storeName?: string
+  /** 지역 — 원본 CampaignList.tsx L103 region 검색 필드 대응 */
+  region?: string
+  /** 태그 — 원본 CampaignList.tsx L104 tags 검색 필드 대응 */
+  tags?: string[]
 }
 
 export const mockCampaigns: Campaign[] = [
