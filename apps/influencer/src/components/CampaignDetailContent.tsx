@@ -509,16 +509,6 @@ export default function CampaignDetailContent({
                     </div>
                   </div>
 
-                  {/* 모집 채널 */}
-                  {campaign.channel && (
-                    <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center gap-3">
-                      <PlatformBadge platform={campaign.channel} />
-                      <div className="min-w-0">
-                        <p className="text-xs text-gray-500">모집 채널</p>
-                        <p className="text-sm font-semibold text-gray-900 break-keep">{campaign.channel}</p>
-                      </div>
-                    </div>
-                  )}
 
                 </div>
               </div>
