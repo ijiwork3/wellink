@@ -74,7 +74,7 @@ export default function CampaignDetail() {
   }
 
   return (
-    <Layout showSidebar={false} pageTitle={campaign.name} onBack={goBack}>
+    <Layout showSidebar={false}>
       <CampaignDetailContent
         campaign={campaign}
         forceApplied={qa === 'applied' || isAlreadyApplied}

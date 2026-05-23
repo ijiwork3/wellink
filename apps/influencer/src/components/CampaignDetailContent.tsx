@@ -228,7 +228,7 @@ export default function CampaignDetailContent({
 
   return (
     <>
-      <div className="pb-28 lg:pb-12">
+      <div className="pt-8 pb-28 lg:pb-12">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">

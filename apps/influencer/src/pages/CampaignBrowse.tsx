@@ -7,7 +7,6 @@ import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
 import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
-import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
 
@@ -258,27 +257,6 @@ export default function CampaignBrowse() {
         )
       })()}
 
-      {/* 푸터 */}
-      <footer className="bg-gray-900 text-white mt-8">
-        <div className="max-w-6xl mx-auto px-4 @[640px]:px-6 py-8">
-          <div className="flex flex-col @[640px]:flex-row @[640px]:items-center justify-between gap-4 mb-6">
-            <div>
-              <span className="text-base font-bold text-brand-green">WELLINK AI</span>
-              <p className="text-sm text-gray-300 mt-1">웰니스 인플루언서를 위한 캠페인 플랫폼</p>
-            </div>
-            <div className="flex gap-4 text-sm text-gray-300">
-              <a href={`mailto:${HELP_EMAIL}`} className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">문의하기</a>
-              <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">이용약관</a>
-              <a href={`${BRAND_URL}/#faq`} target="_blank" rel="noopener noreferrer" className="px-3 py-2.5 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">FAQ</a>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-4 text-sm text-gray-400 space-y-0.5 break-keep">
-            <p>상호명: 주식회사 애프터액션 | 대표자: 안정식 | 사업자등록번호: 196-86-03374</p>
-            <p>서울 영등포구 당산로 241 유니언타워 514호 | 070-8655-2299</p>
-            <p className="mt-2">© 2026 WELLINK AI. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </Layout>
   )
 }
