@@ -225,7 +225,7 @@ export default function Subscription() {
           </div>
           <Skeleton shape="rect" width={96} height={28} />
         </div>
-        <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-4 @sm:gap-5">
+        <div className="grid grid-cols-1 @[560px]:grid-cols-2 @[920px]:grid-cols-3 gap-4 @sm:gap-5">
           {[1, 2, 3].map(i => <SkeletonCard key={i} height={280} />)}
         </div>
         <SkeletonCard height={160} />
@@ -405,7 +405,7 @@ export default function Subscription() {
                 이번 달 사용량 현황
                 <span className="text-sm font-normal text-gray-500">(매월 결제일 초기화)</span>
               </h3>
-              <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 @[480px]:grid-cols-2 @[760px]:grid-cols-3 gap-3">
                 {usage.map(f => {
                   const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
                   const isOver = f.used >= f.limit
@@ -442,7 +442,7 @@ export default function Subscription() {
       })()}
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-4 @sm:gap-5">
+      <div className="grid grid-cols-1 @[560px]:grid-cols-2 @[920px]:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰 배경 + 검정 테두리 */}
         {plans.filter(p => p.style === 'white').map(plan => (
           <div

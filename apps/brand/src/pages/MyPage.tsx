@@ -20,10 +20,10 @@ import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 
 // 탭 라벨 = TabItem.value (한국어 식별자, 단일 출처)
-type TabName = '브랜드 프로필' | '구독 관리'
+type TabName = '광고주 정보' | '구독 관리'
 const TAB_ITEMS: readonly TabItem<TabName>[] = [
-  { value: '브랜드 프로필', label: '브랜드 프로필', icon: <User size={14} aria-hidden="true" /> },
-  { value: '구독 관리',      label: '구독 관리',      icon: <Hash size={14} aria-hidden="true" />, trailing: <ExternalLink size={12} className="ml-0.5 opacity-70" aria-hidden="true" /> },
+  { value: '광고주 정보', label: '광고주 정보', icon: <Building2 size={14} aria-hidden="true" /> },
+  { value: '구독 관리',   label: '구독 관리',   icon: <Hash size={14} aria-hidden="true" />, trailing: <ExternalLink size={12} className="ml-0.5 opacity-70" aria-hidden="true" /> },
 ]
 
 export default function MyPage() {
@@ -32,9 +32,7 @@ export default function MyPage() {
   const qa = useQAMode()
   const { planLabel, isSubscribed } = usePlanAccess()
 
-  const [activeTab, setActiveTab] = useState<TabName>(
-    qa === 'tab-settings' ? '구독 관리' : '브랜드 프로필'
-  )
+  const [activeTab, setActiveTab] = useState<TabName>('광고주 정보')
 
   // 계정 정보
   const [name, setName] = useState('이지훈')
@@ -200,13 +198,14 @@ export default function MyPage() {
       />
 
       {/* 탭 — 공통 Tabs (variant='pill', scrollable=false → wrap) */}
+      {/* 구독 관리 클릭 시 즉시 /subscription 이동 (원본 mypage: Link href=ROUTE.COMPANY.DASHBOARD.SUBSCRIPTIONS) */}
       <Tabs<TabName>
         variant="pill"
         scrollable={false}
         gap={1}
         items={TAB_ITEMS}
         value={activeTab}
-        onChange={setActiveTab}
+        onChange={(v) => { if (v === '구독 관리') { navigate('/subscription') } else { setActiveTab(v) } }}
         ariaLabel="마이페이지 섹션"
       />
 
@@ -237,12 +236,12 @@ export default function MyPage() {
         </div>
       )}
 
-      {/* ── 브랜드 프로필 탭 ── */}
-      {activeTab === '브랜드 프로필' && (
+      {/* ── 광고주 정보 탭 ── */}
+      {activeTab === '광고주 정보' && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 gap-3 flex-wrap">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">브랜드 프로필 설정</h2>
+              <h2 className="text-lg font-bold text-gray-900">광고주 정보 설정</h2>
               <p className="text-sm text-gray-500 mt-0.5">서비스 이용에 필요한 기본 정보를 관리합니다.</p>
             </div>
             {editing ? (
