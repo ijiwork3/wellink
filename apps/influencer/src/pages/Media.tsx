@@ -74,21 +74,31 @@ export default function Media() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-          <Skeleton shape="text" height={16} width="7rem" className="mb-5" />
-          {[1,2,3].map(i => (
-            <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-gray-100">
-              <div className="flex items-center gap-3">
-                <Skeleton shape="circle" height={40} width={40} />
-                <div className="space-y-1.5">
-                  <Skeleton shape="text" height={16} width="6rem" />
-                  <Skeleton shape="text" height={12} width="8rem" />
-                </div>
+      <Layout mobileFull>
+        <div className="bg-white @[640px]:rounded-2xl @[640px]:border @[640px]:border-gray-100 @[640px]:shadow-sm">
+          {/* 헤더 스켈레톤 */}
+          <div className="flex items-center justify-between gap-3 px-4 pt-4 @[640px]:px-5 @[640px]:pt-5 mb-4">
+            <Skeleton shape="text" height={16} width="9rem" />
+            <Skeleton shape="card" height={28} width="5rem" />
+          </div>
+          {/* 통계 그리드 스켈레톤 */}
+          <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-1.5">
+                <Skeleton shape="text" height={12} width="3.5rem" />
+                <Skeleton shape="text" height={16} width="2.5rem" />
               </div>
-              <Skeleton shape="card" height={32} width="4rem" />
-            </div>
-          ))}
+            ))}
+          </div>
+          {/* 이미지 그리드 스켈레톤 */}
+          <div className="flex items-center gap-1.5 mb-2 px-4 @[640px]:px-5">
+            <Skeleton shape="text" height={14} width="5rem" />
+          </div>
+          <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 pb-4 @[640px]:px-5 @[640px]:pb-5">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="aspect-[2/3] rounded-xl bg-gray-100 animate-pulse" />
+            ))}
+          </div>
         </div>
       </Layout>
     )
@@ -96,9 +106,11 @@ export default function Media() {
 
   if (qa === 'error') {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[350px]">
-          <ErrorState message="SNS 연결 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
+      <Layout mobileFull>
+        <div className="bg-white @[640px]:rounded-2xl @[640px]:border @[640px]:border-gray-100 @[640px]:shadow-sm">
+          <div className="flex items-center justify-center min-h-[350px]">
+            <ErrorState message="SNS 연결 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
+          </div>
         </div>
       </Layout>
     )
@@ -249,31 +261,38 @@ export default function Media() {
               <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
             </div>
 
-            {/* 이미지 그리드 */}
-            <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 @[640px]:gap-1.5 @[640px]:px-5">
-              {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
-                <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
-                  <img
-                    src={post.src}
-                    alt=""
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                    onError={e => { e.currentTarget.src = getPlaceholderDataUri(post.id) }}
+            {/* 이미지 그리드 — no-posts 시 0개 */}
+            {mockPosts > 0 ? (
+              <>
+                <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 @[640px]:gap-1.5 @[640px]:px-5">
+                  {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
+                    <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
+                      <img
+                        src={post.src}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={e => { e.currentTarget.src = getPlaceholderDataUri(post.id) }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 @[640px]:px-5 pb-4 @[640px]:pb-5">
+                  <Pagination
+                    total={MOCK_CONTENT.length}
+                    page={contentPage}
+                    pageSize={CONTENT_PAGE_SIZE}
+                    onChange={setContentPage}
+                    showSummary={false}
+                    className="mt-3"
                   />
                 </div>
-              ))}
-            </div>
-
-            <div className="px-4 @[640px]:px-5 pb-4 @[640px]:pb-5">
-              <Pagination
-                total={MOCK_CONTENT.length}
-                page={contentPage}
-                pageSize={CONTENT_PAGE_SIZE}
-                onChange={setContentPage}
-                showSummary={false}
-                className="mt-3"
-              />
-            </div>
+              </>
+            ) : (
+              <div className="px-4 @[640px]:px-5 pb-6 text-sm text-gray-400 text-center">
+                게시물이 없어요
+              </div>
+            )}
           </div>
         )}
 
