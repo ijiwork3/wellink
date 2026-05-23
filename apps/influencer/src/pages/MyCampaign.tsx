@@ -195,7 +195,7 @@ export default function MyCampaign() {
             placeholder="캠페인 또는 브랜드 검색"
             aria-label="캠페인 검색"
             autoComplete="off"
-            className="w-full pl-10 pr-9 py-2.5 text-base border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green focus:bg-white transition-colors"
+            className="w-full pl-10 pr-9 py-2.5 text-base border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:bg-white transition-colors"
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
@@ -415,7 +415,7 @@ export default function MyCampaign() {
               value={contentUrl}
               onChange={e => setContentUrl(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleContentSubmit() }}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base outline-none focus:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               placeholder="https://instagram.com/p/..."
             />
           </div>

@@ -137,7 +137,7 @@ export default function Media() {
   const instaPlatform = platforms[0]
 
   return (
-    <Layout>
+    <Layout mobileFull>
       <div className="space-y-4">
         <h1 className="sr-only">인스타 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
@@ -340,7 +340,7 @@ export default function Media() {
               autoCorrect="off"
               spellCheck={false}
               maxLength={200}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all mb-4"
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all mb-4"
               onKeyDown={e => e.key === 'Enter' && handleConnect()}
             />
             <div className="flex gap-3">

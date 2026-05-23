@@ -532,7 +532,7 @@ export default function CampaignApply() {
                 onChange={e => setAddrQuery(e.target.value)}
                 placeholder="도로명, 건물명, 지번 검색"
                 autoFocus
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               />
             </div>
             <div className="overflow-y-auto max-h-64 px-2 pb-3">
