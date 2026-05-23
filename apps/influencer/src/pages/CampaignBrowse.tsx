@@ -1,14 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, X, SlidersHorizontal } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
+import { useQAMode, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
-
-type SortKey = 'deadline' | 'reward' | 'recent'
 
 function CampaignSkeletonCard() {
   return (
@@ -38,7 +36,6 @@ export default function CampaignBrowse() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const bookmarks = useBookmarks()
   const applications = useApplications()
-  const [sort, setSort] = useState<SortKey>('deadline')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 30
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
@@ -76,17 +73,15 @@ export default function CampaignBrowse() {
         || (c.tags ?? []).some(t => t.toLowerCase().includes(q))
       return matchCat && matchSearch
     })
-    return [...filtered].sort((a, b) => {
-      if (sort === 'reward') return (b.rewardAmount ?? 0) - (a.rewardAmount ?? 0)
-      if (sort === 'recent') return b.id - a.id
-      return new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
-    })
-  }, [selectedCategory, search, sort])
+    return [...filtered].sort((a, b) =>
+      new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
+    )
+  }, [selectedCategory, search])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
 
   // 필터·검색 변경 시 첫 페이지로 리셋
-  useEffect(() => { setPage(1) }, [selectedCategory, search, sort])
+  useEffect(() => { setPage(1) }, [selectedCategory, search])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -110,52 +105,32 @@ export default function CampaignBrowse() {
       </div>
 
       <div className="pb-12">
-        {/* 검색 + 필터 */}
-        <div className="mb-5 flex gap-2">
-          <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
-            <input
-              type="search"
-              placeholder="캠페인 또는 브랜드 검색"
-              aria-label="캠페인 검색"
-              autoComplete="off"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-base shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
-            />
-            {search && (
-              <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                <X size={16} />
-              </button>
-            )}
-          </div>
-          <button
-            onClick={() => showToast('상세 필터 기능은 준비 중이에요', 'info')}
-            className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            aria-label="상세 필터"
-          >
-            <SlidersHorizontal size={16} />
-          </button>
+        {/* 검색 */}
+        <div className="mb-4 relative">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+          <input
+            type="search"
+            placeholder="관심있는 브랜드나 키워드를 검색하세요"
+            aria-label="캠페인 검색"
+            autoComplete="off"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-base shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-all"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        {/* 카테고리 탭 + 정렬 */}
-        <div className="mb-5 flex items-start gap-2">
+        {/* 카테고리 탭 */}
+        <div className="mb-5">
           <ChipSelect
             options={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
             value={selectedCategory}
             onChange={v => { setSelectedCategory(v); setSearch('') }}
-            className="flex-1"
             selectClassName="w-full"
-          />
-          <CustomSelect
-            value={sort}
-            onChange={v => setSort(v as SortKey)}
-            options={[
-              { label: '마감 임박순', value: 'deadline' },
-              { label: '리워드 높은순', value: 'reward' },
-              { label: '최신 등록순', value: 'recent' },
-            ]}
-            className="shrink-0 w-32"
           />
         </div>
 
