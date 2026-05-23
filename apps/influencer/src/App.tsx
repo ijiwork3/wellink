@@ -188,6 +188,14 @@ function AppRoutes() {
         <GlobalQAHeader
           title="웰링크 인플루언서 POC"
           pathItems={STATUS_ITEMS}
+          quickItems={
+            location.pathname === '/media' ? [
+              { label: '기본',   path: '/media' },
+              { label: '미연결', path: '/media?qa=all-disconnected' },
+              { label: '로딩',   path: '/media?qa=loading' },
+              { label: '에러',   path: '/media?qa=error' },
+            ] : []
+          }
           onNavigate={handleNavigate}
           accentColor="var(--color-brand-green)"
         />

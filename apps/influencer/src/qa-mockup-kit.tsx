@@ -701,11 +701,14 @@ export const GLOBAL_QA_HEADER_HEIGHT = 44;
 export function GlobalQAHeader<S extends string, T extends string>({
   title = '웰링크 인플루언서 POC',
   pathItems,
+  quickItems = [],
   onNavigate,
   accentColor = QA_ACCENT_COLOR,
 }: {
   title?: string;
   pathItems: StatusItem[];
+  /** 현재 페이지 전용 빠른 이동 버튼 (경로 드롭다운 좌측에 칩으로 표시) */
+  quickItems?: StatusItem[];
   onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
@@ -726,8 +729,18 @@ export function GlobalQAHeader<S extends string, T extends string>({
         </span>
       </div>
 
-      {/* 페이지 시나리오 드롭다운 — 토글 칩 4개(인스타·로딩·에러·값없음)는 어떤 페이지도 읽지 않아 죽은 코드였음. 2026-05-15 제거. */}
       <div className="flex items-center gap-1.5 flex-wrap">
+        {/* 현재 페이지 빠른 버튼 */}
+        {quickItems.map((item, i) => (
+          <button
+            key={i}
+            onClick={() => { if (item.path) onNavigate({ path: item.path }); item.onSelect?.(); }}
+            className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-700 hover:bg-slate-600 border border-slate-600 transition-colors whitespace-nowrap"
+          >
+            {item.label}
+          </button>
+        ))}
+        {quickItems.length > 0 && <div className="w-px h-4 bg-slate-600" />}
         <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
       </div>
     </div>
