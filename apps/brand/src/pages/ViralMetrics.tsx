@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Image, Info, Award, Megaphone, Zap, Eye, RotateCw, Clock, ThumbsUp, MessageCircle, Activity, Clapperboard, ChevronRight } from 'lucide-react'
-import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, BRAND, CONTENT_TYPE_STYLE, CustomSelect, PlatformBadge, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
+import { Image, Info, Award, Megaphone, Zap, Eye, RotateCw, Clock, ThumbsUp, MessageCircle, Activity, Clapperboard } from 'lucide-react'
+import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, BRAND, CustomSelect, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -9,17 +9,14 @@ import useHeaderStuck from '../hooks/useHeaderStuck'
 import useTableScroll from '../hooks/useTableScroll'
 import { useDeviceMode } from '../qa-mockup-kit'
 import {
-  kpiByMode,
   viralContentData,
   CAMPAIGN_MATCH_MAP,
   type ViralContent,
 } from '../data/analytics/viral'
 import BetaBadge from '../components/analytics/viral/BetaBadge'
-import GradePill from '../components/analytics/viral/GradePill'
 import GradeDonut from '../components/analytics/viral/GradeDonut'
 import ContentDetailModal from '../components/analytics/viral/ContentDetailModal'
 import ViralContentRowCard from '../components/analytics/viral/ViralContentRowCard'
-import { LayoutGrid, Table as TableIcon } from 'lucide-react'
 import {
   DASHBOARD_VIRAL_KEYWORDS,
   DASHBOARD_VIRAL_MIX,
@@ -48,8 +45,7 @@ export default function ViralMetrics() {
   const VC_PAGE_SIZE = 10
 
   // 테이블 가로 스크롤 — 공통 훅(useTableScroll)으로 추출 (쉐브론은 FloatingScrollChevrons에서 처리)
-  const { scrollRef: tableScrollRef, canScrollLeft: canTableScrollLeft, canScrollRight: canTableScrollRight } = useTableScroll<HTMLDivElement>()
-  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const { scrollRef: tableScrollRef } = useTableScroll<HTMLDivElement>()
   const tableRef = useRef<HTMLTableElement>(null)
 
   // 기간/날짜 변경 시 페이지 1 리셋 — 외부 prop sync (정책 §외부동기화)

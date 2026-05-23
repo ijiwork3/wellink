@@ -3155,7 +3155,7 @@ export default function CampaignDetail() {
       {(() => {
         if (profileModalId === null) return null
         // 지원자 + 선정자 통합 탐색
-        const allPeople = [...applicants, ...(selectedInfluencers as typeof applicantsData)]
+        const allPeople = [...applicants, ...(selectedInfluencers as unknown as typeof applicantsData)]
         const person = allPeople.find(p => p.id === profileModalId)
         if (!person) return null
         const isSaved = savedProfileIds.has(person.id)
