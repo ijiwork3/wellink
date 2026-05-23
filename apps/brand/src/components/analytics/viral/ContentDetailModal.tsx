@@ -92,8 +92,14 @@ function buildSeries(content: ViralContent, days = 28) {
 
 /* ── 시계열 라인 차트 ────────────────────────────────────────────── */
 
-const MY_COLOR  = '#16a34a'  // green-600
-const AVG_COLOR = '#f59e0b'  // amber-400
+// 차트 per-metric 색상 (원본 서비스 기준)
+const COLORS = {
+  views:    { my: '#16a34a', avg: '#4ade80' },  // 조회수:      초록 solid / 초록 연한 dashed
+  viewsInc: { my: '#f97316', avg: '#fbbf24' },  // 증가 조회수: 오렌지 / 앰버 dashed
+  likes:    { my: '#ec4899', avg: '#f9a8d4' },  // 좋아요:      핑크 / 연핑크 dashed
+  comments: { my: '#7c3aed', avg: '#a78bfa' },  // 댓글:        보라 / 연보라 dashed
+  engage:   { my: '#0891b2', avg: '#67e8f9' },  // 참여율:      시안 / 연시안 dashed
+}
 
 interface LineChartProps {
   title: string
@@ -101,14 +107,14 @@ interface LineChartProps {
   myLabel: string
   avgLabel: string
   formatValue?: (v: number) => string
-  myColor?: string
-  avgColor?: string
+  myColor: string
+  avgColor: string
 }
 
 const LineChart = memo(function LineChart({
   title, series, myLabel, avgLabel,
   formatValue = (v) => fmtNumber(v),
-  myColor = MY_COLOR, avgColor = AVG_COLOR,
+  myColor, avgColor,
 }: LineChartProps) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
@@ -357,11 +363,16 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
             </button>
           </div>
 
+          {/* 날짜 기준 notice */}
+          <div className="mb-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100">
+            <p className="text-xs text-gray-500">{todayStr()} 기준 데이터입니다.</p>
+          </div>
+
           {/* 4개 점수 카드 */}
           <div className="grid grid-cols-4 gap-2">
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-              <p className="text-xs text-gray-500 mb-1">최종 점수</p>
-              <p className="text-xl font-bold text-gray-900 tabular-nums">{finalScore}</p>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+              <p className="text-xs text-blue-500 mb-1">최종 점수</p>
+              <p className="text-xl font-bold text-blue-900 tabular-nums">{finalScore}</p>
             </div>
             <div className={`border rounded-xl p-3 ${gradeCardClass(content.grade)}`}>
               <p className="text-xs opacity-70 mb-1">등급</p>
@@ -374,7 +385,7 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
               </p>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-              <p className="text-xs text-gray-500 mb-1">오멘팅</p>
+              <p className="text-xs text-gray-500 mb-1">모멘텀</p>
               <p className="text-xl font-bold text-gray-900 tabular-nums">
                 {content.grade !== 'processing' ? `${content.momentumScore}/100` : '—'}
               </p>
@@ -408,8 +419,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                 series={series.views}
                 myLabel="내 조회수"
                 avgLabel="평균 조회수"
-                myColor={MY_COLOR}
-                avgColor={AVG_COLOR}
+                myColor={COLORS.views.my}
+                avgColor={COLORS.views.avg}
               />
 
               <LineChart
@@ -417,8 +428,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                 series={series.viewsInc}
                 myLabel="내 증가 조회수"
                 avgLabel="평균 증가 조회수"
-                myColor={MY_COLOR}
-                avgColor={AVG_COLOR}
+                myColor={COLORS.viewsInc.my}
+                avgColor={COLORS.viewsInc.avg}
               />
 
               <LineChart
@@ -426,8 +437,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                 series={series.likes}
                 myLabel="내 좋아요 수"
                 avgLabel="평균 좋아요 수"
-                myColor="#ec4899"
-                avgColor="#f43f5e"
+                myColor={COLORS.likes.my}
+                avgColor={COLORS.likes.avg}
               />
 
               <LineChart
@@ -435,8 +446,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                 series={series.comments}
                 myLabel="내 댓글 수"
                 avgLabel="평균 댓글 수"
-                myColor="#7c3aed"
-                avgColor="#a78bfa"
+                myColor={COLORS.comments.my}
+                avgColor={COLORS.comments.avg}
               />
 
               <LineChart
@@ -445,8 +456,8 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                 myLabel="내 참여율"
                 avgLabel="평균 참여율"
                 formatValue={(v) => `${v.toFixed(1)}%`}
-                myColor="#0891b2"
-                avgColor="#38bdf8"
+                myColor={COLORS.engage.my}
+                avgColor={COLORS.engage.avg}
               />
             </>
           ) : null}
