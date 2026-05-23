@@ -2,14 +2,12 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Settings, X } from 'lucide-react'
 import Login from './pages/Login'
-import Home from './pages/Home'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
 import CampaignDetail from './pages/CampaignDetail'
 import CampaignApply from './pages/CampaignApply'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
-import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
@@ -17,17 +15,6 @@ import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 import PhoneVerificationGate from './components/PhoneVerificationGate'
 
 const STATUS_ITEMS: StatusItem[] = [
-  /* ────────────────── 홈 ────────────────── */
-  {
-    label: '홈',
-    children: [
-      { label: '기본', path: '/home' },
-      { label: '로딩 스켈레톤', path: '/home?qa=loading' },
-      { label: '빈 상태', path: '/home?qa=empty' },
-      { label: '에러', path: '/home?qa=error' },
-    ],
-  },
-
   /* ────────────────── 온보딩 ────────────────── */
   {
     label: '온보딩',
@@ -124,18 +111,6 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-/* ────────────────── 정산 ────────────────── */
-  {
-    label: '정산',
-    children: [
-      { label: '기본 (계좌 등록됨)', path: '/settlement' },
-      { label: '로딩 스켈레톤', path: '/settlement?qa=loading' },
-      { label: '내역 없음', path: '/settlement?qa=empty' },
-      { label: '모달 — 정산 요청', path: '/settlement?qa=modal-request' },
-      { label: '에러', path: '/settlement?qa=error' },
-    ],
-  },
-
   /* ────────────────── SNS 관리 ────────────────── */
   {
     label: 'SNS 관리',
@@ -164,13 +139,11 @@ function AppRoutes() {
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/home':                '홈 — WELLINK AI',
       '/campaigns/browse':    '캠페인 탐색 — WELLINK AI',
       '/campaigns/favorites': '관심 캠페인 — WELLINK AI',
       '/campaigns/my':        '내 캠페인 — WELLINK AI',
       '/profile':             '프로필 — WELLINK AI',
       '/media':               '인스타 관리 — WELLINK AI',
-      '/settlement':          '정산 — WELLINK AI',
       '/login':               '로그인 — WELLINK AI',
       '/signup':              '회원가입 — WELLINK AI',
     }
@@ -191,7 +164,6 @@ function AppRoutes() {
         <Route path="/" element={<Navigate to="/campaigns/browse" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
         <Route path="/campaigns/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />
@@ -199,7 +171,6 @@ function AppRoutes() {
         <Route path="/campaigns/:id/apply" element={<ProtectedRoute><CampaignApply /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
-        <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 
