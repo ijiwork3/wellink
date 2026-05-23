@@ -216,14 +216,15 @@ export default function CampaignBrowse() {
               ))}
             </div>
             {totalPages > 1 && (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8">
                 <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={p => {
-                setPage(p)
-                document.getElementById('main-content')?.closest('.overflow-y-auto')?.scrollTo({ top: 0, behavior: 'smooth' })
-              }}
+                  total={filtered.length}
+                  page={page}
+                  pageSize={PAGE_SIZE}
+                  onChange={p => {
+                    setPage(p)
+                    document.getElementById('main-content')?.closest('.overflow-y-auto')?.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
                 />
               </div>
             )}
