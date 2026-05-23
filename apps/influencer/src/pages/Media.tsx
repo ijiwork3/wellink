@@ -142,14 +142,14 @@ export default function Media() {
         <h1 className="sr-only">인스타 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          /* 모바일: 카드 경계 없음(flat) / 데스크탑: 카드 */
+          <div className="bg-white @[640px]:rounded-2xl @[640px]:border @[640px]:border-gray-100 @[640px]:shadow-sm">
             {/* 패널 헤더 */}
-            <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center justify-between gap-3 px-4 pt-4 @[640px]:px-5 @[640px]:pt-5 mb-4">
               <div className="flex items-center gap-1.5 min-w-0">
                 {mockPosts === 0 && (
                   <AlertTriangle size={13} className="text-red-500 shrink-0" />
                 )}
-                {/* 원본 mypage L1436-1446: 핸들 + 외부링크 아이콘 함께 <a> 안에 */}
                 <a
                   href={`https://www.instagram.com/${instaPlatform.url}`}
                   target="_blank"
@@ -181,24 +181,24 @@ export default function Media() {
               </div>
             </div>
 
-            {/* 데이터 수집/오류 상태 배너 — 원본 mypage L1357-1364, L1519-1524 */}
+            {/* 상태 배너 */}
             {isFailed ? (
-              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <div className="mx-4 @[640px]:mx-5 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
                 올바르지 않은 사용자 이름이에요. 다시 확인해보세요.
               </div>
             ) : isUpdating ? (
-              <div className="mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
+              <div className="mx-4 @[640px]:mx-5 mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
                 <Loader2 size={13} className="animate-spin shrink-0" aria-hidden="true" />
                 <span>데이터를 수집 중이에요. 잠시만 기다려주세요.</span>
               </div>
             ) : mockPosts === 0 ? (
-              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <div className="mx-4 @[640px]:mx-5 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
                 게시물 수가 0개예요. 연결한 계정 정보가 정확한지 확인해주세요.
               </div>
             ) : null}
 
-            {/* 6개 통계 그리드 — 원본 mypage L1523: xl:grid-cols-6 (데스크탑 1행) */}
-            <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4">
+            {/* 통계 그리드 */}
+            <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />
@@ -243,26 +243,28 @@ export default function Media() {
               </div>
             </div>
 
-            {/* 콘텐츠 썸네일 그리드 */}
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <BarChart3 size={14} className="text-brand-green" />
-                <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
-              </div>
-              {/* 5열 × 4행 = 20개/페이지 */}
-              <div className="grid grid-cols-2 @[400px]:grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5">
-                {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
-                  <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
-                    <img
-                      src={post.src}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                      onError={e => { e.currentTarget.src = getPlaceholderDataUri(post.id) }}
-                    />
-                  </div>
-                ))}
-              </div>
+            {/* 최근 콘텐츠 헤더 */}
+            <div className="flex items-center gap-1.5 mb-2 px-4 @[640px]:px-5">
+              <BarChart3 size={14} className="text-brand-green" />
+              <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
+            </div>
+
+            {/* 이미지 그리드 — 모바일 엣지투엣지, 데스크탑 내부 패딩 */}
+            <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-0.5 @[640px]:gap-1.5 @[640px]:px-5">
+              {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
+                <div key={post.id} className="aspect-[2/3] overflow-hidden bg-gray-100 @[640px]:rounded-xl">
+                  <img
+                    src={post.src}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    onError={e => { e.currentTarget.src = getPlaceholderDataUri(post.id) }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="px-4 @[640px]:px-5 pb-4 @[640px]:pb-5">
               <Pagination
                 total={MOCK_CONTENT.length}
                 page={contentPage}
