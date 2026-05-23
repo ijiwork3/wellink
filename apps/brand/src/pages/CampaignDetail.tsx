@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Sparkles, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Check, X, Download, Image, BarChart3, Users, UserCheck, FileText, TrendingUp, Eye, Heart, Info, Crown, Share2, Edit2, Trash2, Search, Camera, Copy, ChevronDown, FolderOpen, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Modal, AlertModal, CustomSelect, PlatformBadge, Tooltip, Pagination,
   ErrorState, EmptyState, SkeletonCard, Skeleton, useToast, FloatingScrollChevrons,
@@ -166,7 +166,6 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
   const followersN = 5000 + (i * 317 % 40000)
   const followers = followersN >= 10000 ? `${(followersN / 1000).toFixed(1)}K` : `${followersN.toLocaleString()}`
   const engagement = +(2.5 + (i * 7 % 50) / 10).toFixed(1)
-  const fitScore = 60 + (i * 13 % 40)
   const month = String(((i * 3) % 30 < 15 ? 3 : 4)).padStart(2, '0')
   const day = String(((i * 7) % 28) + 1).padStart(2, '0')
   // 추가 필드 — 원본 ApplicantList 컬럼 보강
@@ -194,7 +193,6 @@ const applicantsData = Array.from({ length: 100 }, (_, i) => {
     followers,
     followerCount: followersN,
     engagement,
-    fitScore,
     appliedAt: `2026-${month}-${day}`,
     avatar: AVATAR_POOL[i % AVATAR_POOL.length],
     // 신규 필드 — 원본 ApplicantList 보강
@@ -227,7 +225,6 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
   const followersN = 6000 + (i * 411 % 50000)
   const followers = followersN >= 10000 ? `${(followersN / 1000).toFixed(1)}K` : `${followersN.toLocaleString()}`
   const engagement = +(3.0 + (i * 9 % 40) / 10).toFixed(1)
-  const fitScore = 70 + (i * 11 % 30)
   const month = String(((i * 5) % 30 < 20 ? 4 : 5)).padStart(2, '0')
   const day = String(((i * 3) % 28) + 1).padStart(2, '0')
   // 신규 필드 — 원본 SELECTED 타입 보강 (업로드 상태·주소·연락처·답변)
@@ -257,7 +254,6 @@ const selectedApplicantsData = Array.from({ length: 100 }, (_, i) => {
     followers,
     followerCount: followersN,
     engagement,
-    fitScore,
     selectedAt: `2026-${month}-${day}`,
     avatar: AVATAR_POOL[i % AVATAR_POOL.length],
     postsCount,
@@ -411,7 +407,7 @@ export default function CampaignDetail() {
   const [applicantsPage, setApplicantsPage] = useState(1)
   // 신규 — 검색·정렬·답변 모달 (원본 ApplicantList 보강)
   const [applicantsSearch, setApplicantsSearch] = useState('')
-  type ApplicantSortKey = 'followerCount' | 'postsCount' | 'avgLikes' | 'avgComments' | 'engagement' | 'fitScore' | 'recentActivity'
+  type ApplicantSortKey = 'followerCount' | 'postsCount' | 'avgLikes' | 'avgComments' | 'engagement' | 'recentActivity'
   const [applicantsSortKey, setApplicantsSortKey] = useState<ApplicantSortKey>('followerCount')
   const [applicantsSortDesc, setApplicantsSortDesc] = useState(true)
   const [answersModalId, setAnswersModalId] = useState<number | null>(null)
@@ -482,7 +478,7 @@ export default function CampaignDetail() {
     const questionCount = applicants.reduce((max, a) => Math.max(max, a.allAnswers?.length ?? 0), 0)
     const headers = [
       '이름', '연락처', '이메일', '팔로워', '게시물수', '평균좋아요', '평균댓글',
-      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '지원일',
+      '참여율(%)', '활동분야', '주소', '상세주소', '지원일',
       ...Array.from({ length: questionCount }, (_, idx) => [`질문${idx + 1}`, `답변${idx + 1}`]).flat(),
     ]
     const rows = applicants.map(a => {
@@ -492,7 +488,7 @@ export default function CampaignDetail() {
       }).flat()
       return [
         a.name, a.phoneNumber, a.email, a.followers, a.postsCount, a.avgLikes, a.avgComments,
-        a.engagement, a.fitScore, a.activityFields.join(', '), a.address, a.addressDetail, a.appliedAt,
+        a.engagement, a.activityFields.join(', '), a.address, a.addressDetail, a.appliedAt,
         ...answerCells,
       ]
     })
@@ -507,7 +503,7 @@ export default function CampaignDetail() {
     const questionCount = selectedInfluencers.reduce((max, s) => Math.max(max, (s as { allAnswers?: unknown[] }).allAnswers?.length ?? 0), 0)
     const headers = [
       '이름', '연락처', '이메일', '팔로워', '게시물수', '평균좋아요', '평균댓글',
-      '참여율(%)', '적합도', '활동분야', '주소', '상세주소', '업로드상태', '등록게시글수', '최초등록일', '게시글URL', '선정일',
+      '참여율(%)', '활동분야', '주소', '상세주소', '업로드상태', '등록게시글수', '최초등록일', '게시글URL', '선정일',
       ...Array.from({ length: questionCount }, (_, idx) => [`질문${idx + 1}`, `답변${idx + 1}`]).flat(),
     ]
     const rows = selectedInfluencers.map(s => {
@@ -518,7 +514,7 @@ export default function CampaignDetail() {
       }).flat()
       return [
         sx.name, sx.phoneNumber ?? '-', sx.email ?? '-', sx.followers, sx.postsCount ?? '-', sx.avgLikes ?? '-', sx.avgComments ?? '-',
-        sx.engagement, sx.fitScore, sx.activityFields?.join(', ') ?? '-', sx.address ?? '-', sx.addressDetail ?? '-',
+        sx.engagement, sx.activityFields?.join(', ') ?? '-', sx.address ?? '-', sx.addressDetail ?? '-',
         (sx.uploadedPostCount ?? 0) > 0 ? '등록 완료' : '미등록', sx.uploadedPostCount ?? 0, sx.firstUploadedAt ?? '-', sx.latestPostUrl ?? '-',
         sx.selectedAt,
         ...answerCells,
@@ -714,7 +710,6 @@ export default function CampaignDetail() {
     followers: a.followers,
     followerCount: a.followerCount,
     engagement: a.engagement,
-    fitScore: a.fitScore,
     selectedAt: new Date().toISOString().slice(0, 10),
     avatar: a.avatar,
     postsCount: a.postsCount,
@@ -1278,7 +1273,6 @@ export default function CampaignDetail() {
             case 'avgLikes': av = a.avgLikes; bv = b.avgLikes; break
             case 'avgComments': av = a.avgComments; bv = b.avgComments; break
             case 'engagement': av = a.engagement; bv = b.engagement; break
-            case 'fitScore': av = a.fitScore; bv = b.fitScore; break
             case 'recentActivity': av = -a.recentActivityDays; bv = -b.recentActivityDays; break  // 일수 작을수록 최근
           }
           return applicantsSortDesc ? bv - av : av - bv
@@ -1455,16 +1449,6 @@ export default function CampaignDetail() {
                       {sortIcon('engagement')}
                     </span>
                   </th>
-                  <th scope="col" onClick={() => toggleSort('fitScore')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1">
-                      <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
-                      Fit Score
-                      <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
-                        <Info size={12} className="text-gray-400 cursor-help" />
-                      </Tooltip>
-                      {sortIcon('fitScore')}
-                    </span>
-                  </th>
                   <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">콘텐츠</th>
                   <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">활동분야</th>
                   <th scope="col" onClick={() => toggleSort('followerCount')} className="text-right text-base font-medium text-gray-500 py-3 px-4 cursor-pointer hover:bg-gray-100 select-none whitespace-nowrap">팔로워 {sortIcon('followerCount')}</th>
@@ -1503,11 +1487,6 @@ export default function CampaignDetail() {
                       </button>
                     </td>
                     <td className="py-3 px-4 text-base font-medium text-gray-900 text-right whitespace-nowrap">{a.engagement}%</td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-brand-green-text">
-                        {a.fitScore}
-                      </span>
-                    </td>
                     {/* 콘텐츠 미리보기 (피드 1 + 릴스 1) — 정책서 § 6-3-1 */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       {a.isPrivate ? (
@@ -1718,15 +1697,6 @@ export default function CampaignDetail() {
                           </Tooltip>
                         </span>
                       </th>
-                      <th scope="col" className="text-right text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1">
-                          <Sparkles size={12} className="text-brand-green" aria-hidden="true" />
-                          Fit Score
-                          <Tooltip content="AI가 캠페인과 인플루언서의 카테고리·콘텐츠 톤·참여 시그널을 분석해 산출한 매칭 점수입니다. (검증 단계)" multiline>
-                            <Info size={12} className="text-gray-400 cursor-help" />
-                          </Tooltip>
-                        </span>
-                      </th>
                       <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">연락처</th>
                       <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">주소</th>
                       <th scope="col" className="text-left text-base font-medium text-gray-500 py-3 px-4 whitespace-nowrap">업로드 상태</th>
@@ -1762,11 +1732,6 @@ export default function CampaignDetail() {
                         </td>
                         <td className="py-3 px-4 text-base text-gray-700 text-right whitespace-nowrap">{i.followers}</td>
                         <td className="py-3 px-4 text-base text-gray-600 text-right whitespace-nowrap">{i.engagement}%</td>
-                        <td className="py-3 px-4 text-right whitespace-nowrap">
-                          <span className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-base font-semibold bg-brand-green-bg text-gray-900">
-                            {i.fitScore}
-                          </span>
-                        </td>
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.phoneNumber ?? '-'}</td>
                         <td className="py-3 px-4 text-base text-gray-600 whitespace-nowrap">{i.address ?? '-'} {i.addressDetail ?? ''}</td>
                         <td className="py-3 px-4 whitespace-nowrap">
@@ -2793,7 +2758,7 @@ export default function CampaignDetail() {
                     </div>
                     <div>
                       <p className="text-lg font-bold text-gray-900">{detail.name}</p>
-                      <p className="text-base text-gray-500">팔로워 {detail.followers} · Fit Score {detail.fitScore}점</p>
+                      <p className="text-base text-gray-500">팔로워 {detail.followers}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2">
@@ -3146,12 +3111,6 @@ export default function CampaignDetail() {
                 <div className="bg-white border border-gray-100 rounded-xl p-3 text-center">
                   <p className="text-base text-gray-500 mb-0.5">게시물</p>
                   <p className="text-lg font-bold text-gray-900">{fmtNumber(person.postsCount)}</p>
-                </div>
-                <div className="bg-brand-green-bg border border-brand-green-border rounded-xl p-3 text-center">
-                  <p className="text-base text-brand-green-text mb-0.5 flex items-center justify-center gap-1">
-                    <Sparkles size={12} />Fit Score
-                  </p>
-                  <p className="text-lg font-bold text-brand-green-text">{person.fitScore}</p>
                 </div>
               </div>
               {/* 연락처 */}

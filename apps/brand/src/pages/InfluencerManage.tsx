@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
+import { Heart, Plus, X, Image, MessageCircle, Sparkles, TrendingUp, Lightbulb, ExternalLink, Users, Lock } from 'lucide-react'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 /* ── 인플루언서 카드 — 최근 피드 썸네일 (3그리드) ───── */
@@ -21,7 +21,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import {
   Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip,
   ErrorState, EmptyState, SkeletonCard,
-  useToast, fmtFollowers as formatFollowers, TIMER_MS, AVATAR_COLORS,
+  useToast, fmtFollowers as formatFollowers, AVATAR_COLORS,
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -56,43 +56,6 @@ interface Influencer {
   scrapingStatus?: 'in_progress' | 'completed' // 회원가입 후 인스타 스크래핑 진행 상태. 정책서 § 11-1
 }
 
-// 캠페인 컨텍스트 — 제안 시 자동 첨부 (§17.6)
-// status가 '대기중' | '모집중' | '진행중' 인 캠페인만 제안 가능 (정책서 § 12-1)
-type CampaignProposalStatus = '대기중' | '모집중' | '진행중' | '종료' | '완료'
-interface ProposalCampaign {
-  id: number
-  name: string
-  summary: string
-  period: string
-  reward: string
-  status: CampaignProposalStatus
-}
-const campaigns: ProposalCampaign[] = [
-  {
-    id: 1,
-    name: '봄 요가 프로모션',
-    summary: '봄맞이 요가복 신상 라인 협찬 및 콘텐츠 1건. 봄 시즌에 어울리는 라이트 톤 스타일링과 일상 속 요가 루틴을 자연스럽게 녹여낸 피드/릴스를 함께 제작해주세요.',
-    period: '2026-04-15 ~ 2026-05-15',
-    reward: '제품 협찬 + 콘텐츠 비 30만원',
-    status: '모집중',
-  },
-  {
-    id: 2,
-    name: '비건 신제품 론칭',
-    summary: '신규 비건 단백질 바 시식 후기 콘텐츠 1건. 운동 전후 간편 영양 보충 시나리오로 자연스럽게 노출 부탁드립니다.',
-    period: '2026-05-01 ~ 2026-05-31',
-    reward: '제품 협찬 + 콘텐츠 비 25만원',
-    status: '진행중',
-  },
-]
-// "진행 중인 캠페인" — 제안 가능 대상
-const PROPOSABLE_STATUSES: CampaignProposalStatus[] = ['대기중', '모집중', '진행중']
-const proposableCampaigns = campaigns.filter(c => PROPOSABLE_STATUSES.includes(c.status))
-// 이미 인플루언서가 신청/제안받은 캠페인 (mock). 실제로는 BE의 인플루언서 객체에 appliedCampaignIds 배열로 내려옴
-const getAppliedCampaignIds = (influencerId: number): number[] => {
-  // mock: 인플루언서 id % 3 === 0 일 때 첫 번째 캠페인을 이미 신청함
-  return influencerId % 3 === 0 ? [campaigns[0]?.id].filter((id): id is number => typeof id === 'number') : []
-}
 
 interface ConfirmState {
   open: boolean
@@ -192,20 +155,6 @@ export default function InfluencerManage() {
     type: 'feed' | 'reels'
     index: number
   } | null>(null)
-  const [proposalModal, setProposalModal] = useState(false)
-  const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null)
-  const [proposalSent, setProposalSent] = useState(false)
-  const [proposalExpandedId, setProposalExpandedId] = useState<number | null>(null)
-  const [proposedSet, setProposedSet] = useState<Set<number>>(() => {
-    try {
-      const raw = sessionStorage.getItem('wl_proposed')
-      if (raw) return new Set<number>(JSON.parse(raw) as number[])
-    } catch (e) {
-      if (import.meta.env.DEV) console.warn('[sessionStorage]', e)
-    }
-    return new Set<number>()
-  })
-
   const GROUP_NAME_MAX = 30
 
   // ── 드롭다운 바깥 클릭 닫기 (데스크톱) ───────────────────
@@ -221,7 +170,7 @@ export default function InfluencerManage() {
   }, [addToGroupTarget, isMobile])
 
   // ── 상세 overlay ESC 닫기 + 배경 스크롤 잠금 ──────────────
-  const isDetailOpen = !!detailInfluencer && !proposalModal
+  const isDetailOpen = !!detailInfluencer
   useEffect(() => {
     if (!isDetailOpen) return
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') { setDetailInfluencer(null); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) } }
@@ -283,30 +232,6 @@ export default function InfluencerManage() {
         if (activeTab === group) setActiveTab('전체')
       }
     )
-
-  const handleProposal = () => {
-    if (!selectedCampaign) { showToast('캠페인을 선택해주세요.', 'error'); return }
-    const influencerName = detailInfluencer?.name
-    const influencerId = detailInfluencer?.id
-    setProposalSent(true)
-    setTimeout(() => {
-      setProposalModal(false)
-      setProposalSent(false)
-      setSelectedCampaign(null)
-      if (influencerId !== undefined) {
-        setProposedSet(prev => {
-          const next = new Set(prev).add(influencerId)
-          try { sessionStorage.setItem('wl_proposed', JSON.stringify(Array.from(next))) } catch (e) { if (import.meta.env.DEV) console.warn('[sessionStorage]', e) }
-          return next
-        })
-      }
-      setDetailInfluencer(null)
-      setContentSubTab('feed')
-      setContentSort('latest')
-      setContentDetail(null)
-      showToast(`${influencerName}님에게 제안을 전송했습니다.`, 'success')
-    }, TIMER_MS.MOCK_SEND)
-  }
 
   const validateGroupName = (name: string): string => {
     const trimmed = name.trim()
@@ -1087,41 +1012,6 @@ export default function InfluencerManage() {
             </div>
               </div>
 
-              <div className="border-t border-gray-100 px-6 py-4 shrink-0">
-                {proposedSet.has(inf.id) ? (
-                  <div className="w-full flex items-center justify-center gap-2 py-1.5">
-                    <CheckCircle size={16} className="text-green-500" aria-hidden="true" />
-                    <span className="text-base text-gray-500">이미 제안을 보냈습니다</span>
-                  </div>
-                ) : proposableCampaigns.length === 0 ? (
-                  <div className="space-y-2">
-                    <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
-                      <button type="button"
-                        disabled
-                        className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
-                      >
-                        캠페인 제안보내기
-                      </button>
-                    </Tooltip>
-                    <p className="text-sm text-gray-500 text-center">
-                      진행 중인 캠페인이 없습니다.{' '}
-                      <button type="button"
-                        onClick={() => navigate('/campaigns/new')}
-                        className="text-brand-green underline underline-offset-2 hover:text-brand-green-hover"
-                      >
-                        캠페인 등록
-                      </button>
-                    </p>
-                  </div>
-                ) : (
-                  <button type="button"
-                    onClick={() => setProposalModal(true)}
-                    className="w-full bg-brand-green text-white text-base py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
-                  >
-                    캠페인 제안보내기
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         )
@@ -1174,95 +1064,6 @@ export default function InfluencerManage() {
         )}
       </Modal>
 
-      {/* 제안 모달 — 아코디언 UI (정책서 § 12-3) */}
-      <Modal
-        open={proposalModal}
-        onClose={() => { setProposalModal(false); setSelectedCampaign(null); setProposalSent(false); setProposalExpandedId(null) }}
-        title="캠페인 제안보내기"
-        size="md"
-        footer={!proposalSent ? (
-          <>
-            <button type="button" onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button type="button" onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제안 보내기</button>
-          </>
-        ) : undefined}
-      >
-        {proposalSent ? (
-          <div className="text-center py-6">
-            <p className="text-base font-semibold text-gray-900">제안이 전송되었습니다!</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-base text-gray-600"><strong>{detailInfluencer?.name}</strong>님에게 제안을 보낼 캠페인을 선택하세요.</p>
-            <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-              {proposableCampaigns.map(c => {
-                const appliedIds = detailInfluencer ? getAppliedCampaignIds(detailInfluencer.id) : []
-                const hasApplied = appliedIds.includes(c.id)
-                const isSelected = selectedCampaign === c.id
-                const isExpanded = proposalExpandedId === c.id
-                return (
-                  <div
-                    key={c.id}
-                    className={`border rounded-xl transition-all duration-150 ${
-                      isSelected
-                        ? 'border-gray-900 bg-gray-50'
-                        : hasApplied
-                          ? 'border-gray-200 bg-gray-50/50'
-                          : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    {/* 헤더 행 — 카드 전체 클릭으로 선택·펼치기 동시 처리 */}
-                    <button type="button"
-                      onClick={() => {
-                        if (!hasApplied) setSelectedCampaign(c.id)
-                        setProposalExpandedId(isExpanded ? null : c.id)
-                      }}
-                      className="w-full flex items-center gap-3 p-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
-                      aria-expanded={isExpanded}
-                    >
-                      {/* 라디오는 visual cue — 클릭은 부모 button이 처리 */}
-                      <input
-                        type="radio"
-                        name="campaign"
-                        value={c.id}
-                        checked={isSelected}
-                        disabled={hasApplied}
-                        readOnly
-                        tabIndex={-1}
-                        className="accent-gray-900 disabled:cursor-not-allowed pointer-events-none"
-                      />
-                      <span className={`text-base flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
-                      {hasApplied && (
-                        <span className="shrink-0 text-sm px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
-                      )}
-                      {isExpanded ? <ChevronUp size={16} className="text-gray-400 shrink-0" /> : <ChevronDown size={16} className="text-gray-400 shrink-0" />}
-                    </button>
-                    {/* 펼침 본문 — 개요 / 기간 / 리워드 */}
-                    {isExpanded && (
-                      <div className="border-t border-gray-100 px-3 py-3 text-sm">
-                        <dl className="flex flex-col gap-y-3">
-                          <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-500">개요</dt>
-                            <dd className="flex-1 min-w-0 text-gray-700 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-line break-words">{c.summary}</dd>
-                          </div>
-                          <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-500">기간</dt>
-                            <dd className="flex-1 min-w-0 text-gray-700">{c.period}</dd>
-                          </div>
-                          <div className="flex gap-3">
-                            <dt className="w-16 shrink-0 text-gray-500">리워드</dt>
-                            <dd className="flex-1 min-w-0 text-gray-700">{c.reward}</dd>
-                          </div>
-                        </dl>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   )
 }

@@ -2,11 +2,11 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronLeft, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
-  MoreVertical, Copy, Share2,
+  Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import {
-  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
+  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, AlertModal, Pagination,
   Skeleton, SkeletonRow, PageHeader,
   getDDay, getDDayBadgeStyle, useToast,
 } from '@wellink/ui'
@@ -237,35 +237,6 @@ export default function Campaigns() {
     const v = searchParams.get('sort'); return isSort(v) ? v : 'deadline'
   })
 
-  // AI 캠페인 생성 (정책서 § 16) — input → loading → result
-  const [aiModalStep, setAiModalStep] = useState<null | 'input' | 'loading' | 'result'>(null)
-  const [aiProgress, setAiProgress] = useState(0)
-  const [aiPhase, setAiPhase] = useState<1 | 2 | 3 | 4>(1)
-  const [aiInput, setAiInput] = useState({ brand: '', category: '피트니스', headcount: 5, requirement: '' })
-  // AI 추천 모달 진행률 — setInterval 기반 외부 sync (정당한 useEffect)
-  useEffect(() => {
-    if (aiModalStep !== 'loading') return
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setAiProgress(0); setAiPhase(1)
-    const start = Date.now()
-    const total = 90_000
-    const tick = setInterval(() => {
-      const elapsed = Date.now() - start
-      const ratio = Math.min(0.99, elapsed / total)
-      const pct = Math.round(ratio * 100)
-      setAiProgress(pct)
-      if (pct < 22) setAiPhase(1)
-      else if (pct < 50) setAiPhase(2)
-      else if (pct < 83) setAiPhase(3)
-      else setAiPhase(4)
-      if (elapsed >= total) {
-        clearInterval(tick)
-        setAiProgress(100)
-        setAiModalStep('result')
-      }
-    }, 250)
-    return () => clearInterval(tick)
-  }, [aiModalStep])
   const PAGE_SIZE = 10
 
   // 캠페인 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 번거롭게)
@@ -325,9 +296,6 @@ export default function Campaigns() {
     setPage(1)
   }
 
-  const handleDuplicate = (c: Campaign) => {
-    showToast(`'${c.name}' 복제 (mock)`, 'info')
-  }
   const handleShare = async (c: Campaign) => {
     const url = `${window.location.origin}/campaigns/${c.id}`
     try {
@@ -409,26 +377,15 @@ export default function Campaigns() {
       <PageHeader
         title="캠페인 목록"
         actions={
-          <>
-            <button type="button"
-              onClick={() => !isGated && setAiModalStep('input')}
-              disabled={isGated}
-              aria-label={isGated ? 'AI로 만들기 (구독 만료)' : 'AI로 만들기'}
-              className="flex items-center gap-1.5 border border-brand-green text-brand-green-text px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <Sparkles size={14} aria-hidden="true" />
-              AI로 만들기
-            </button>
-            <button type="button"
-              onClick={() => !isGated && navigate('/campaigns/new')}
-              disabled={isGated}
-              aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
-              className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <Plus size={14} aria-hidden="true" />
-              새 캠페인 등록
-            </button>
-          </>
+          <button type="button"
+            onClick={() => !isGated && navigate('/campaigns/new')}
+            disabled={isGated}
+            aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            <Plus size={14} aria-hidden="true" />
+            새 캠페인 등록
+          </button>
         }
       />
 
@@ -652,28 +609,14 @@ export default function Campaigns() {
                     </div>
                   </div>
                 </div>
-                <div className="shrink-0" onClick={e => e.stopPropagation()}>
-                  <Dropdown
-                    trigger={
-                      <span
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                        aria-label="캠페인 액션"
-                      >
-                        <MoreVertical size={16} aria-hidden="true" />
-                      </span>
-                    }
-                  >
-                    <div className="py-1 min-w-[140px]">
-                      <button type="button" onClick={() => handleDuplicate(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
-                        <Copy size={12} aria-hidden="true" /> 복제
-                      </button>
-                      <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
-                        <Share2 size={12} aria-hidden="true" /> 링크 복사
-                      </button>
-                      {/* 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 삭제를 번거롭게) */}
-                    </div>
-                  </Dropdown>
-                </div>
+                <button
+                  type="button"
+                  onClick={e => { e.stopPropagation(); handleShare(c) }}
+                  className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  aria-label="링크 복사"
+                >
+                  <Share2 size={16} aria-hidden="true" />
+                </button>
               </li>
               )
             })}
@@ -701,134 +644,6 @@ export default function Campaigns() {
         onConfirm={handleConfirmAction}
       />
 
-      {/* AI 캠페인 생성 모달 (정책서 § 16) */}
-      <Modal
-        open={aiModalStep !== null}
-        onClose={() => { if (aiModalStep !== 'loading') setAiModalStep(null) }}
-        title={aiModalStep === 'input' ? 'AI 캠페인 생성' : aiModalStep === 'loading' ? 'AI가 캠페인을 만들고 있어요' : 'AI 생성 결과 검토'}
-        size="lg"
-      >
-        {aiModalStep === 'input' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">브랜드/제품 한 줄 소개</label>
-              <textarea
-                value={aiInput.brand}
-                onChange={e => setAiInput(v => ({ ...v, brand: e.target.value }))}
-                rows={3}
-                placeholder="예: 자연 유래 성분으로 만든 비건 단백질 바, 운동 후 간편 영양 보충"
-                className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">카테고리</label>
-                <CustomSelect
-                  value={aiInput.category}
-                  onChange={v => setAiInput(av => ({ ...av, category: v }))}
-                  options={['피트니스', '뷰티/패션', '맛집/푸드', '여행', '라이프스타일', '육아'].map(c => ({ label: c, value: c }))}
-                />
-              </div>
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">모집 인원</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={aiInput.headcount}
-                  onChange={e => setAiInput(v => ({ ...v, headcount: Number(e.target.value) || 0 }))}
-                  className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">추가 요청사항 (선택)</label>
-              <textarea
-                value={aiInput.requirement}
-                onChange={e => setAiInput(v => ({ ...v, requirement: e.target.value }))}
-                rows={2}
-                placeholder="예: 봄 시즌 톤, 운동 전후 시나리오 자연스럽게 노출"
-                className="w-full text-base border border-gray-200 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              />
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <button type="button"
-                onClick={() => setAiModalStep(null)}
-                className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >취소</button>
-              <button type="button"
-                onClick={() => setAiModalStep('loading')}
-                disabled={!aiInput.brand.trim()}
-                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <Sparkles size={14} aria-hidden="true" />
-                AI로 캠페인 생성하기
-              </button>
-            </div>
-          </div>
-        )}
-
-        {aiModalStep === 'loading' && (
-          <div className="py-6 text-center space-y-5 bg-gradient-to-br from-brand-green/5 to-blue-50 rounded-xl px-4">
-            <div className="flex justify-center">
-              <div className="relative w-16 h-16">
-                <Sparkles size={32} className="text-brand-green animate-pulse absolute inset-0 m-auto" aria-hidden="true" />
-                <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="28" stroke="rgba(0,0,0,0.06)" strokeWidth="4" fill="none" />
-                  <circle cx="32" cy="32" r="28" stroke="currentColor" className="text-brand-green" strokeWidth="4" fill="none"
-                    strokeDasharray={`${aiProgress * 1.76} 176`} strokeLinecap="round" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <p className="text-base font-semibold text-gray-900">
-                {aiPhase === 1 ? '캠페인 컨셉 분석 중...' : aiPhase === 2 ? '추천 인플루언서 매칭 검토 중...' : aiPhase === 3 ? '캠페인 가이드 작성 중...' : '마무리 중...'}
-              </p>
-              <p className="text-base text-gray-500 mt-1">최대 1분 30초 정도 소요됩니다.</p>
-            </div>
-            <div className="max-w-xs mx-auto">
-              <div className="h-1.5 bg-white rounded-full overflow-hidden">
-                <div className="h-full bg-brand-green transition-all duration-300" style={{ width: `${aiProgress}%` }} />
-              </div>
-              <p className="text-sm text-gray-500 mt-1.5">{aiProgress}%</p>
-            </div>
-          </div>
-        )}
-
-        {aiModalStep === 'result' && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 bg-brand-green-bg border border-brand-green-border rounded-xl px-3 py-2">
-              <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
-              <span className="text-base text-gray-700">AI가 캠페인 초안을 만들었어요. 등록 화면에서 검토 후 저장하세요.</span>
-            </div>
-            <div className="space-y-3 text-base">
-              <div>
-                <p className="text-base font-medium text-gray-500 mb-1">캠페인명</p>
-                <p className="font-semibold text-gray-900">{aiInput.brand.split(',')[0].slice(0, 30) || '신규 캠페인'} 체험단 모집</p>
-              </div>
-              <div>
-                <p className="text-base font-medium text-gray-500 mb-1">기간 (추천)</p>
-                <p className="text-gray-700">모집 2주 · 콘텐츠 등록 3주</p>
-              </div>
-              <div>
-                <p className="text-base font-medium text-gray-500 mb-1">캠페인 설명</p>
-                <p className="text-gray-700 whitespace-pre-line bg-gray-50 rounded-lg p-3 text-base leading-relaxed">{aiInput.brand}{aiInput.requirement ? `\n\n요청: ${aiInput.requirement}` : ''}</p>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <button type="button"
-                onClick={() => setAiModalStep('loading')}
-                className="text-base text-gray-600 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >다시 생성</button>
-              <button type="button"
-                onClick={() => { setAiModalStep(null); navigate('/campaigns/new') }}
-                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                이대로 등록 화면으로
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   )
 }
