@@ -138,7 +138,7 @@ export default function Media() {
 
   return (
     <Layout>
-      <div className="space-y-4 max-w-lg">
+      <div className="space-y-4">
         <h1 className="sr-only">인스타 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (

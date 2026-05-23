@@ -141,7 +141,7 @@ export default function Profile() {
   if (qa === 'loading') {
     return (
       <Layout>
-        <div className="space-y-4">
+        <div className="space-y-4 max-w-xl mx-auto">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-3 mb-4">
               <Skeleton shape="circle" height={20} width={20} />
@@ -174,7 +174,7 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="space-y-4 max-w-xl">
+      <div className="space-y-4 max-w-xl mx-auto">
         <h1 className="sr-only">내 정보</h1>
 
         {/* 기본 정보 카드 */}
