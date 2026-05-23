@@ -246,7 +246,7 @@ export default function Media() {
               {/* 5열 × 4행 = 20개/페이지 */}
               <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[720px]:grid-cols-5 gap-1.5">
                 {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
-                  <div key={post.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100">
+                  <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
                     <img
                       src={post.src}
                       alt=""
