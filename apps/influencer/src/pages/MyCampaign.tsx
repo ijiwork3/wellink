@@ -293,147 +293,132 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  {/* 카드 상단 — campaignRef 있으면 클릭 시 캠페인 상세로 이동 (원본 mypage L811) */}
-                  {c.campaignRef ? (
-                    <button
-                      onClick={() => navigate(`/campaigns/${c.campaignRef}`)}
-                      className="w-full flex items-start gap-3 mb-2 text-left hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
-                      aria-label={`${c.name} 캠페인 상세 보기`}
-                    >
-                      <img
-                        src={getThumbnailFromPool(c.campaignRef)}
-                        alt=""
-                        loading="lazy"
-                        className="w-20 h-20 rounded-xl object-cover shrink-0"
-                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
-                      />
-                      <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                  {/* 카드 본문: [썸네일+정보] | [버튼 우측] — PC에서 row, 모바일에서 col */}
+                  <div className="flex flex-col @[480px]:flex-row @[480px]:items-start gap-3">
+
+                    {/* 좌측: 썸네일 + 캠페인 정보 */}
+                    {c.campaignRef ? (
+                      <button
+                        onClick={() => navigate(`/campaigns/${c.campaignRef}`)}
+                        className="flex items-start gap-3 flex-1 min-w-0 text-left hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
+                        aria-label={`${c.name} 캠페인 상세 보기`}
+                      >
+                        <img
+                          src={getThumbnailFromPool(c.campaignRef)}
+                          alt=""
+                          loading="lazy"
+                          className="w-16 h-16 rounded-xl object-cover shrink-0"
+                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
+                        />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <StatusBadge status={c.status} size="sm" />
-                            {/* 원본 mypage L122-124 getDDayLabel() — 콘텐츠 마감 D-day */}
                             {c.contentDeadline && (() => {
                               const dd = getDDay(c.contentDeadline)
                               if (!dd) return null
                               return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
-                                  {dd.label}
-                                </span>
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
                               )
                             })()}
-                            <span className="text-sm text-gray-500">{c.channel}</span>
+                            <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
                           </div>
-                          <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                          <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                          <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                          <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                          {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-sm text-gray-500">리워드</p>
-                          <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
-                        </div>
-                      </div>
-                    </button>
-                  ) : (
-                    <div className="flex items-start gap-3 mb-2">
-                      {/* 캠페인 썸네일 — 원본 mypage/page.tsx L704-732 */}
-                      <img
-                        src={getThumbnailFromPool(c.id)}
-                        alt=""
-                        loading="lazy"
-                        className="w-20 h-20 rounded-xl object-cover shrink-0"
-                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
-                      />
-                      <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                      </button>
+                    ) : (
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <img
+                          src={getThumbnailFromPool(c.id)}
+                          alt=""
+                          loading="lazy"
+                          className="w-16 h-16 rounded-xl object-cover shrink-0"
+                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                        />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <StatusBadge status={c.status} size="sm" />
-                            {/* 원본 mypage L122-124 getDDayLabel() — 콘텐츠 마감 D-day */}
                             {c.contentDeadline && (() => {
                               const dd = getDDay(c.contentDeadline)
                               if (!dd) return null
                               return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
-                                  {dd.label}
-                                </span>
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
                               )
                             })()}
-                            <span className="text-sm text-gray-500">{c.channel}</span>
+                            <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
                           </div>
-                          <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                          <p className="text-sm text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-sm text-gray-500">리워드</p>
-                          <p className="text-base font-bold text-gray-900 tabular-nums whitespace-nowrap">{c.reward}</p>
+                          <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                          <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                          {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-
-                  {/* 액션 버튼 — flex-wrap + min-w로 좁은 모바일(360px)에서 자연 줄바꿈 */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {actions.map(action => {
-                      // '수정하기' — campaignRef 없으면 버튼 숨김 (원본 조건 동일)
-                      if (action === '수정하기') {
-                        if (!c.campaignRef) return null
-                        return (
-                          <button key={action}
-                            onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
-                            className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                            <Edit2 size={14} />수정하기
-                          </button>
-                        )
-                      }
-                      if (action === '콘텐츠 제출') return (
-                        <button key={action}
-                          onClick={() => setSubmitModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <Upload size={14} />콘텐츠 제출
-                        </button>
-                      )
-                      if (action === '콘텐츠 수정') return (
-                        <button key={action}
-                          onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <Edit2 size={14} />콘텐츠 수정
-                        </button>
-                      )
-                      if (action === '신청 정보 보기') return (
-                        <button key={action}
-                          onClick={() => setAppliedModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <FileText size={14} />신청 정보 보기
-                        </button>
-                      )
-                      if (action === '본인이 제출한 컨텐츠') return (
-                        // 원본 mypage L871-903: postUrl이 있으면 새 탭으로 직접 이동, 없으면 안내 토스트
-                        <button key={action}
-                          onClick={() => {
-                            if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
-                            else showToast('제출된 콘텐츠가 없어요', 'info')
-                          }}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <ExternalLink size={14} />본인이 제출한 컨텐츠
-                        </button>
-                      )
-                      if (action === '취소') return (
-                        <button key={action}
-                          onClick={() => setCancelModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
-                          <X size={14} />신청 취소
-                        </button>
-                      )
-                      // 원본 mypage/page.tsx L920-925: 미선정 상태에서 apply?mode=view 진입
-                      if (action === '상세보기') return (
-                        <button key={action}
-                          onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
-                          disabled={!c.campaignRef}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-40 disabled:cursor-not-allowed">
-                          <FileText size={14} />상세보기
-                        </button>
-                      )
-                      return null
-                    })}
+                    {/* 우측: 액션 버튼 — 모바일 flex-row, PC flex-col */}
+                    {actions.length > 0 && (
+                      <div className="flex flex-row @[480px]:flex-col gap-1.5 shrink-0 @[480px]:w-28">
+                        {actions.map(action => {
+                          if (action === '수정하기') {
+                            if (!c.campaignRef) return null
+                            return (
+                              <button key={action}
+                                onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
+                                className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
+                                <Edit2 size={13} />수정하기
+                              </button>
+                            )
+                          }
+                          if (action === '콘텐츠 제출') return (
+                            <button key={action}
+                              onClick={() => setSubmitModal(c)}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
+                              <Upload size={13} />콘텐츠 제출
+                            </button>
+                          )
+                          if (action === '콘텐츠 수정') return (
+                            <button key={action}
+                              onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
+                              <Edit2 size={13} />콘텐츠 수정
+                            </button>
+                          )
+                          if (action === '신청 정보 보기') return (
+                            <button key={action}
+                              onClick={() => setAppliedModal(c)}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
+                              <FileText size={13} />신청 정보
+                            </button>
+                          )
+                          if (action === '본인이 제출한 컨텐츠') return (
+                            <button key={action}
+                              onClick={() => {
+                                if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
+                                else showToast('제출된 콘텐츠가 없어요', 'info')
+                              }}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
+                              <ExternalLink size={13} />내 콘텐츠
+                            </button>
+                          )
+                          if (action === '취소') return (
+                            <button key={action}
+                              onClick={() => setCancelModal(c)}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60 whitespace-nowrap">
+                              <X size={13} />취소
+                            </button>
+                          )
+                          if (action === '상세보기') return (
+                            <button key={action}
+                              onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
+                              disabled={!c.campaignRef}
+                              className="flex-1 @[480px]:flex-none flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap disabled:opacity-40">
+                              <FileText size={13} />상세보기
+                            </button>
+                          )
+                          return null
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               )
