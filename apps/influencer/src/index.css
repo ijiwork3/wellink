@@ -4,6 +4,11 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }
 
 html {
@@ -13,7 +18,7 @@ html {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #F5F7F5;
+  background-color: #ffffff;
   color: #1A1A1A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -21,9 +26,9 @@ body {
 
 #root {
   width: 100%;
-  /* iOS Safari 주소창 표시·숨김 시 100vh 점프 방지 — dvh(dynamic viewport) */
-  min-height: 100vh;
-  min-height: 100dvh;
+  /* dvh 미지원 브라우저 fallback: 100vh → dvh 지원 시 100dvh로 덮어씀 */
+  height: 100vh;
+  height: 100dvh;
 }
 
 /* Animations */
