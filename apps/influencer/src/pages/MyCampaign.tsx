@@ -254,7 +254,7 @@ export default function MyCampaign() {
 
                     {/* 이미지: 모바일 풀폭 h-40 / PC 소형 w-20 h-20 (원본 w-full sm:w-20 h-40 sm:h-20 동일) */}
                     <div
-                      className={`w-full @[480px]:w-20 h-40 @[480px]:h-20 rounded-xl overflow-hidden shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                      className={`w-full @[480px]:w-24 h-40 @[480px]:h-24 rounded-xl overflow-hidden shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
                       onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
                     >
                       <img

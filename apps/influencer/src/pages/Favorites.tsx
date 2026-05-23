@@ -132,7 +132,7 @@ export default function Favorites() {
                     {/* info row */}
                     <div className="flex items-start gap-3">
                       {/* PC-only 소형 썸네일 */}
-                      <div className="hidden @[480px]:block w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
+                      <div className="hidden @[480px]:block w-24 h-24 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
                         <img
                           src={getThumbnailFromPool(c.id)}
                           alt=""
