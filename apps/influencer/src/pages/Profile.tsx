@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
-import { Toggle, BottomSheet, AlertModal } from '@wellink/ui'
+import { Toggle, ResponsiveSheet, AlertModal } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { ACTIVITY_FIELDS, INFLUENCER_TYPES, mockProfile } from '../services/mock/profile'
@@ -349,8 +349,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* 비밀번호 변경 바텀시트 */}
-      <BottomSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setShowNewPw(false); setShowConfirmPw(false) }} title="비밀번호 변경">
+      {/* 비밀번호 변경 */}
+      <ResponsiveSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setShowNewPw(false); setShowConfirmPw(false) }} title="비밀번호 변경" size="sm">
         <div className="space-y-3">
           {/* 현재 비밀번호 — 원본에 없음, 추가 필드 */}
           <input type="password" placeholder="현재 비밀번호" value={currentPw}
@@ -392,10 +392,10 @@ export default function Profile() {
           <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
           <button onClick={handlePwChange} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
         </div>
-      </BottomSheet>
+      </ResponsiveSheet>
 
-      {/* 전화번호 변경 바텀시트 */}
-      <BottomSheet open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경">
+      {/* 전화번호 변경 */}
+      <ResponsiveSheet open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경" size="sm">
         <div className="space-y-3">
           <div>
             <label htmlFor="profile-new-phone" className="text-sm text-gray-500 block mb-1.5">새 전화번호</label>
@@ -441,7 +441,7 @@ export default function Profile() {
           <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
           <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
         </div>
-      </BottomSheet>
+      </ResponsiveSheet>
 
       {/* 회원탈퇴 모달 — 광고주 패턴과 통일 (AlertModal variant="danger") */}
       <AlertModal

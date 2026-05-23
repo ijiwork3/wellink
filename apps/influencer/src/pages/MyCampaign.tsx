@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BottomSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
+import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
@@ -116,7 +116,7 @@ export default function MyCampaign() {
 
   if (qa === 'loading') {
     return (
-      <Layout>
+      <Layout hideProfileHeaderMobile>
         <div className="space-y-4">
           <Skeleton shape="text" height={20} width="8rem" />
           <div className="flex gap-2">
@@ -142,7 +142,7 @@ export default function MyCampaign() {
 
   if (qa === 'error') {
     return (
-      <Layout>
+      <Layout hideProfileHeaderMobile>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="내 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -151,7 +151,7 @@ export default function MyCampaign() {
   }
 
   return (
-    <Layout>
+    <Layout hideProfileHeaderMobile>
       <div className="space-y-4">
         <h1 className="sr-only">내 캠페인</h1>
         {/* 헤더 */}
@@ -275,7 +275,7 @@ export default function MyCampaign() {
                         src={getThumbnailFromPool(c.campaignRef)}
                         alt=""
                         loading="lazy"
-                        className="w-14 h-14 rounded-xl object-cover shrink-0"
+                        className="w-16 h-16 rounded-xl object-cover shrink-0"
                         onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
                       />
                       <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
@@ -310,7 +310,7 @@ export default function MyCampaign() {
                         src={getThumbnailFromPool(c.id)}
                         alt=""
                         loading="lazy"
-                        className="w-14 h-14 rounded-xl object-cover shrink-0"
+                        className="w-16 h-16 rounded-xl object-cover shrink-0"
                         onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
                       />
                       <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
@@ -347,7 +347,7 @@ export default function MyCampaign() {
                   </div>
 
                   {/* 액션 버튼 — flex-wrap + min-w로 좁은 모바일(360px)에서 자연 줄바꿈 */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {actions.map(action => {
                       // '수정하기' — campaignRef 없으면 버튼 숨김 (원본 조건 동일)
                       if (action === '수정하기') {
@@ -355,7 +355,7 @@ export default function MyCampaign() {
                         return (
                           <button key={action}
                             onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
-                            className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                            className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                             <Edit2 size={14} />수정하기
                           </button>
                         )
@@ -363,21 +363,21 @@ export default function MyCampaign() {
                       if (action === '콘텐츠 제출') return (
                         <button key={action}
                           onClick={() => setSubmitModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                           <Upload size={14} />콘텐츠 제출
                         </button>
                       )
                       if (action === '콘텐츠 수정') return (
                         <button key={action}
                           onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                           <Edit2 size={14} />콘텐츠 수정
                         </button>
                       )
                       if (action === '신청 정보 보기') return (
                         <button key={action}
                           onClick={() => setAppliedModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                           <FileText size={14} />신청 정보 보기
                         </button>
                       )
@@ -388,14 +388,14 @@ export default function MyCampaign() {
                             if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
                             else showToast('제출된 콘텐츠가 없어요', 'info')
                           }}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                           <ExternalLink size={14} />본인이 제출한 컨텐츠
                         </button>
                       )
                       if (action === '취소') return (
                         <button key={action}
                           onClick={() => setCancelModal(c)}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
                           <X size={14} />신청 취소
                         </button>
                       )
@@ -404,7 +404,7 @@ export default function MyCampaign() {
                         <button key={action}
                           onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
                           disabled={!c.campaignRef}
-                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-40 disabled:cursor-not-allowed">
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-40 disabled:cursor-not-allowed">
                           <FileText size={14} />상세보기
                         </button>
                       )
@@ -419,7 +419,7 @@ export default function MyCampaign() {
       </div>
 
       {/* 콘텐츠 제출/수정 바텀시트 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
-      <BottomSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'}>
+      <ResponsiveSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'} size="md">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
           {/* 미션 가이드 + 필수 키워드 — 카드 대신 제출 모달에서 표시 */}
@@ -488,10 +488,10 @@ export default function MyCampaign() {
             <button onClick={handleContentSubmit} disabled={!contentUrl.trim() || !guideAgreed} aria-disabled={!contentUrl.trim() || !guideAgreed} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
           </div>
         </div>
-      </BottomSheet>
+      </ResponsiveSheet>
 
-      {/* 신청 취소 바텀시트 */}
-      <BottomSheet open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
+      {/* 신청 취소 */}
+      <ResponsiveSheet open={!!cancelModal} onClose={() => setCancelModal(null)} title="신청 취소">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{cancelModal?.name}</strong> 신청을 취소하시겠어요?</p>
           <p className="text-sm text-gray-500">취소 후에는 재신청이 어려울 수 있어요</p>
@@ -500,9 +500,9 @@ export default function MyCampaign() {
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
           </div>
         </div>
-      </BottomSheet>
+      </ResponsiveSheet>
 
-      <BottomSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">
+      <ResponsiveSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보" size="md">
         {appliedModal && (() => {
           const applied = mockAppliedData[appliedModal.id]
           if (!applied) {
@@ -559,7 +559,7 @@ export default function MyCampaign() {
             </div>
           )
         })()}
-      </BottomSheet>
+      </ResponsiveSheet>
     </Layout>
   )
 }

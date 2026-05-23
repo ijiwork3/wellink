@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Tooltip } from '@wellink/ui'
+import { ResponsiveSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
@@ -92,7 +92,7 @@ export default function Media() {
 
   if (qa === 'loading') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
           <Skeleton shape="text" height={16} width="7rem" className="mb-5" />
           {[1,2,3].map(i => (
@@ -114,7 +114,7 @@ export default function Media() {
 
   if (qa === 'error') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="SNS 연결 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -156,7 +156,7 @@ export default function Media() {
   const instaPlatform = platforms.find(p => p.id === 'instagram')
 
   return (
-    <Layout showProfileHeader={false}>
+    <Layout>
       <div className="space-y-4 max-w-lg">
         <h1 className="sr-only">SNS 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
@@ -388,8 +388,8 @@ export default function Media() {
         </div>
       </div>
 
-      {/* 연결 바텀시트 */}
-      <BottomSheet open={!!connectModal} onClose={() => { setConnectModal(null); setUrlInput('') }} title={`${connectModal?.name ?? ''} 연결`}>
+      {/* 채널 연결 */}
+      <ResponsiveSheet open={!!connectModal} onClose={() => { setConnectModal(null); setUrlInput('') }} title={`${connectModal?.name ?? ''} 연결`} size="sm">
         {connectModal && (
           <>
             <p className="text-sm text-gray-500 mb-3">{connectModal.description}</p>
@@ -413,7 +413,7 @@ export default function Media() {
             </div>
           </>
         )}
-      </BottomSheet>
+      </ResponsiveSheet>
 
       {/* 연결 해제 모달 */}
       <AlertModal

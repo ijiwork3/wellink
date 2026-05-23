@@ -54,6 +54,7 @@ export type { FloatingScrollChevronsProps } from './components/FloatingScrollChe
 export { default as Modal }          from './components/Modal'
 export { default as AlertModal }     from './components/AlertModal'
 export { default as BottomSheet }    from './components/BottomSheet'
+export { default as ResponsiveSheet } from './components/ResponsiveSheet'
 export { default as Dropdown }       from './components/Dropdown'
 export { default as DateRangePicker } from './components/DateRangePicker'
 export type { DateRangePickerProps } from './components/DateRangePicker'

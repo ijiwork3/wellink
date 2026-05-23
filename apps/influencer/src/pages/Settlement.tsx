@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BottomSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
+import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
 
@@ -100,7 +100,7 @@ export default function Settlement() {
 
   if (qa === 'loading') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
             <Skeleton shape="text" height={16} width="7rem" />
@@ -126,7 +126,7 @@ export default function Settlement() {
 
   if (qa === 'error') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <ErrorState message="정산 정보를 불러오지 못했어요" onRetry={() => window.location.reload()} />
       </Layout>
     )
@@ -165,7 +165,7 @@ export default function Settlement() {
   }
 
   return (
-    <Layout showProfileHeader={false}>
+    <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">정산</h1>
         {/* 계좌 미등록 배너 */}
@@ -285,8 +285,8 @@ export default function Settlement() {
         )}
       </div>
 
-      {/* 정산 요청 바텀시트 */}
-      <BottomSheet open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'}>
+      {/* 정산 요청 */}
+      <ResponsiveSheet open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'} size="sm">
         {requestTarget && (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-4 space-y-2">
@@ -322,10 +322,10 @@ export default function Settlement() {
             </div>
           </div>
         )}
-      </BottomSheet>
+      </ResponsiveSheet>
 
-      {/* 계좌 등록 바텀시트 (D1) */}
-      <BottomSheet open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록">
+      {/* 계좌 등록 */}
+      <ResponsiveSheet open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록" size="sm">
         <div className="space-y-4">
           <p className="text-sm text-gray-600 break-keep">정산 금액을 지급받을 본인 명의 계좌를 등록해 주세요.</p>
 
@@ -385,7 +385,7 @@ export default function Settlement() {
             >등록하기</button>
           </div>
         </div>
-      </BottomSheet>
+      </ResponsiveSheet>
     </Layout>
   )
 }
