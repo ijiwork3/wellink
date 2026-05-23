@@ -241,7 +241,7 @@ export default function MyCampaign() {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
             {filtered.map(c => {
               const actions = getActions(c.status)
               const urgent = (c.status === '콘텐츠대기' || c.status === '검수중') && isDeadlineUrgent(c.contentDeadline)
