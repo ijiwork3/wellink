@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, X, Camera, PenTool, PlaySquare, LayoutGrid } from 'lucide-react'
+import { Search, X, SlidersHorizontal, Camera, PenTool, PlaySquare, LayoutGrid } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton } from '@wellink/ui'
+import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
 import { BRAND_URL, HELP_EMAIL, TERMS_URL } from '../config/urls'
 
@@ -55,6 +55,7 @@ export default function CampaignBrowse() {
   const [selectedChannel, setSelectedChannel] = useState('전체')
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
   const loading = qa === 'loading'
+  const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
 
   // PC·모바일 모두 동일하게 페이지 이동 (cold-review C1: 분기된 UX 통일)
   const handleCardClick = (campaign: Campaign) => {
@@ -65,6 +66,7 @@ export default function CampaignBrowse() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty-search') setSearch('검색결과없음xyz')
+    if (qa === 'modal-detail') setQuickViewId(1)
   }, [qa])
 
   const toggleLike = (id: number) => {
@@ -99,7 +101,7 @@ export default function CampaignBrowse() {
 
   if (qa === 'error') {
     return (
-      <Layout showSidebar={false} showBottomTab showProfileHeader hideProfileHeaderMobile pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
+      <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="캠페인 목록을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -108,9 +110,9 @@ export default function CampaignBrowse() {
   }
 
   return (
-    <Layout showSidebar={false} showBottomTab showProfileHeader hideProfileHeaderMobile pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
+    <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-4 @[640px]:px-6 pt-5 pb-3">
+      <div className="px-4 @[640px]:px-6 pt-8 pb-5 bg-white">
         <div className="max-w-screen-xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 캠페인</h1>
           <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
@@ -118,9 +120,9 @@ export default function CampaignBrowse() {
       </div>
 
       <div className="max-w-screen-xl mx-auto px-4 @[640px]:px-6 pb-12">
-        {/* 검색 */}
-        <div className="mb-5">
-          <div className="relative">
+        {/* 검색 + 필터 */}
+        <div className="mb-5 flex gap-2">
+          <div className="relative flex-1">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
             <input
               type="search"
@@ -137,6 +139,13 @@ export default function CampaignBrowse() {
               </button>
             )}
           </div>
+          <button
+            onClick={() => showToast('상세 필터 기능은 준비 중이에요', 'info')}
+            className="px-3 py-2.5 bg-white border border-gray-200 rounded-2xl text-gray-500 shadow-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            aria-label="상세 필터"
+          >
+            <SlidersHorizontal size={16} />
+          </button>
         </div>
 
         {/* 카테고리 탭 + 정렬 */}
@@ -219,6 +228,41 @@ export default function CampaignBrowse() {
           />
         )}
       </div>
+
+      {/* 퀵뷰 바텀시트 */}
+      {(() => {
+        const c = mockCampaigns.find(x => x.id === quickViewId)
+        return (
+          <BottomSheet
+            open={quickViewId !== null}
+            onClose={() => setQuickViewId(null)}
+            label="캠페인 퀵뷰"
+          >
+            {c && (
+              <div className="pb-4">
+                <p className="text-sm text-gray-500 mb-1">{c.brand}</p>
+                <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
+                {c.reward && (
+                  <div className="flex items-start gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
+                    <span className="text-sm font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
+                  </div>
+                )}
+                <div className="flex gap-2 flex-wrap mb-4">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-brand-green text-white whitespace-nowrap">{c.category}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">{c.channel}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap tabular-nums">{c.applied}/{c.headcount}명 모집</span>
+                </div>
+                <button
+                  onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
+                  className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  상세보기 · 신청하기
+                </button>
+              </div>
+            )}
+          </BottomSheet>
+        )
+      })()}
 
       {/* 푸터 */}
       <footer className="bg-gray-900 text-white mt-8">

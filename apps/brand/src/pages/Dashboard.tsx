@@ -198,6 +198,96 @@ export default function Dashboard() {
     return <ErrorState onRetry={() => window.location.reload()} />
   }
 
+  /* ── QA: 신규 회원 온보딩 ── */
+  if (qa === 'new-user') {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="안녕하세요, 웰링크에 오신 것을 환영합니다 👋"
+          description="웰링크에서 첫 캠페인을 시작해 보세요."
+        />
+        <div className="bg-gradient-to-br from-brand-green/10 to-brand-green-hover/5 border border-brand-green-border rounded-2xl p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-brand-green-bg flex items-center justify-center mx-auto mb-4">
+            <Sparkles size={24} className="text-brand-green" aria-hidden="true" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 mb-2">첫 캠페인을 만들어 보세요</h2>
+          <p className="text-base text-gray-500 mb-6 max-w-md mx-auto">
+            캠페인을 등록하면 AI가 브랜드에 맞는 인플루언서를 추천해 드립니다.
+          </p>
+          <div className="flex justify-center gap-3">
+            <button type="button"
+              onClick={() => navigate('/campaigns/new')}
+              className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <Megaphone size={14} className="inline mr-2" aria-hidden="true" />
+              첫 캠페인 만들기
+            </button>
+            <button type="button"
+              onClick={() => navigate('/influencers/list')}
+              className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              인플루언서 탐색
+            </button>
+          </div>
+        </div>
+
+        {/* AI 추천 미리보기 */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-brand-green" aria-hidden="true" />
+              <h2 className="text-base font-semibold text-gray-900">내 브랜드에 맞는 추천 인플루언서</h2>
+            </div>
+            <span className="text-sm text-gray-500">상위 3명</span>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {[
+              { username: 'yoga_lee', name: '이영안', fit: 92, tags: '필라테스·비건', followers: '5.2만' },
+              { username: 'kyungman_fit', name: '박경만', fit: 88, tags: '필라테스·크로스핏', followers: '1.2만' },
+              { username: 'hyun_homfit', name: '유현', fit: 84, tags: '홈트·비건', followers: '3.8만' },
+            ].map(inf => (
+              <div key={inf.username} className="flex items-center gap-4 px-5 py-3.5">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                  <Users size={14} className="text-gray-400" aria-hidden="true" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-semibold text-gray-900">@{inf.username}</span>
+                    <span className="text-sm text-gray-500">{inf.name}</span>
+                    <span className="text-sm bg-brand-green-bg text-brand-green-text px-2 py-1 rounded-md font-medium">Fit {inf.fit}</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-0.5">{inf.tags} · {inf.followers}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="px-5 py-3 border-t border-gray-50">
+            <button type="button"
+              onClick={() => navigate('/influencers/list')}
+              className="w-full text-sm font-semibold text-brand-green-text hover:text-brand-green-hover transition-colors flex items-center justify-center gap-1"
+            >
+              전체 보기 <ArrowRight size={12} />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 @xl:grid-cols-3 gap-4">
+          {[
+            { step: '01', title: '캠페인 등록', desc: '제품과 캠페인 정보를 입력하세요' },
+            { step: '02', title: '인플루언서 매칭', desc: 'AI가 적합한 인플루언서를 추천합니다' },
+            { step: '03', title: '성과 관리', desc: '실시간으로 캠페인 성과를 확인하세요' },
+          ].map(s => (
+            <div key={s.step} className="bg-white border border-gray-100 rounded-xl p-4">
+              <span className="text-sm font-bold text-brand-green-text">Step {s.step}</span>
+              <p className="text-base font-semibold text-gray-900 mt-1">{s.title}</p>
+              <p className="text-sm text-gray-500 mt-1">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   /* ── QA: 로딩 스켈레톤 — 공통 Skeleton 컴포넌트 ── */
   if (qa === 'loading') {
     return (
