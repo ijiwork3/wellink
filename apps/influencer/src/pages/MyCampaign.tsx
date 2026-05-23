@@ -251,7 +251,9 @@ export default function MyCampaign() {
           <div className="space-y-3">
             {filtered.map(c => {
               const actions = getActions(c.status)
-              const urgent = c.status === '콘텐츠대기' && isDeadlineUrgent(c.contentDeadline)
+              // A: 원본 mypage/page.tsx L791-794 — ACTIVE/CONFIRMED 상태 모두에 배너 표시
+              // '콘텐츠대기' = ACTIVE (선정 후 업로드 대기), '검수중' = CONFIRMED (업로드 후 검수 중)
+              const urgent = (c.status === '콘텐츠대기' || c.status === '검수중') && isDeadlineUrgent(c.contentDeadline)
               return (
                 <div key={c.id} className={`bg-white rounded-2xl border shadow-sm p-4 transition-all ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
                   {/* 마감 임박 알림 */}

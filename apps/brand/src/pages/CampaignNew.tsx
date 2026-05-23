@@ -316,6 +316,9 @@ export default function CampaignNew() {
         </Field>
 
         <Field label="캠페인 설명">
+          {/* C: MockRichEditor — 원본 packages/ui/CampaignForm.tsx L751 에서 ToastEditor (@toast-ui/editor WYSIWYG) 사용.
+              @wellink/ui에 ToastEditor 미포함이므로 contenteditable 기반 MockRichEditor로 대체.
+              실제 구현 시: @toast-ui/editor 설치 후 <ToastEditor ref={editorRef} initialValue={description} height="480px" initialEditType="wysiwyg" usageStatistics={false} onUploadImage={onUploadImage} /> 교체 필요 */}
           <MockRichEditor
             value={form.description}
             onChange={v => set('description', v)}
@@ -419,6 +422,7 @@ export default function CampaignNew() {
               <Select value={form.videoCount} onChange={v => set('videoCount', v)} options={VIDEO_COUNTS} />
             </SubField>
           </div>
+          {/* C: MockRichEditor — 원본 packages/ui/CampaignForm.tsx L1008 에서 ToastEditor 사용. 위 description 필드와 동일한 실제 구현 요건 */}
           <MockRichEditor
             value={form.guideText}
             onChange={v => set('guideText', v)}

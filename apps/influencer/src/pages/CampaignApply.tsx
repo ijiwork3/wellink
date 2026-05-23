@@ -30,7 +30,9 @@ export default function CampaignApply() {
   const hasPrefill = isViewMode || isEditMode
   const appliedData = mockAppliedData[id ?? '']
 
-  const [phone, setPhone] = useState(hasPrefill ? (appliedData?.phone ?? mockProfile.phone) : '')
+  // A: 원본 CampaignApplyForm.tsx L468-473 — 연락처는 항상 프로필에서 가져오며 disabled (변경 불가)
+  // 실제 구현: influencerProfile.contact 필드 사용
+  const [phone] = useState(appliedData?.phone ?? mockProfile.phone)
   const [agreed1, setAgreed1] = useState(hasPrefill)
   const [agreed2, setAgreed2] = useState(hasPrefill)
   const [answers, setAnswers] = useState<Record<string, string>>(hasPrefill ? (appliedData?.answers ?? {}) : {})
@@ -73,9 +75,8 @@ export default function CampaignApply() {
 
   const validate = () => {
     const e: Record<string, boolean> = {}
-    // 전화번호 형식: 010-1234-5678 또는 숫자 10~11자리
+    // 연락처는 프로필에서 자동 입력 (disabled) — 별도 검증 없음 (원본 CampaignApplyForm.tsx L468)
     const phoneRe = /^01[0-9]-?\d{3,4}-?\d{4}$/
-    if (!phone || !phoneRe.test(phone)) e.phone = true
     if (!agreed1) e.agreed1 = true
     if (!agreed2) e.agreed2 = true
     if (isDelivery) {
@@ -298,26 +299,17 @@ export default function CampaignApply() {
           )}
         </div>
 
-        {/* 연락처 */}
-        <Section title="연락처" required={!isViewMode}>
-          {isViewMode ? (
-            <ViewField value={phone || mockProfile.phone} />
-          ) : (
-            <>
-              <input
-                type="tel"
-                value={phone}
-                onChange={e => { setPhone(formatPhone(e.target.value)); clearError('phone') }}
-                placeholder="010-0000-0000"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={13}
-                className={fieldCls(errors.phone)}
-                aria-invalid={!!errors.phone}
-                aria-describedby={errors.phone ? 'apply-error-phone' : undefined}
-              />
-              {errors.phone && <p id="apply-error-phone" role="alert" aria-live="polite" className="text-xs text-red-500 mt-1">올바른 연락처를 입력해 주세요</p>}
-            </>
+        {/* 연락처 — 원본 CampaignApplyForm.tsx L467-474: 항상 disabled, 프로필에서 자동 입력 */}
+        <Section title="연락처" required={false}>
+          <input
+            type="tel"
+            disabled
+            value={phone || '마이페이지에서 등록해 주세요.'}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 bg-gray-50 cursor-not-allowed"
+            aria-label="연락처 (마이페이지에서 변경)"
+          />
+          {!phone && (
+            <p className="text-xs text-gray-400 mt-1">연락처는 마이페이지 &gt; 내 정보에서 변경할 수 있어요.</p>
           )}
         </Section>
 
