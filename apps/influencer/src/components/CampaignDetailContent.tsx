@@ -156,7 +156,10 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
               )
             })()}
 
-            <p className="text-sm text-gray-600 break-keep">{campaign.description}</p>
+            {/* 원본 CampaignDetail.tsx L237-244: ToastEditorViewer로 마크다운 렌더링. react-markdown으로 대체 */}
+            <div className="text-sm text-gray-600 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
+              <Markdown>{campaign.description}</Markdown>
+            </div>
           </div>
 
           {/* 기간/채널 */}

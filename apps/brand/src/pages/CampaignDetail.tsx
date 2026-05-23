@@ -2734,7 +2734,16 @@ export default function CampaignDetail() {
                     <p className="text-base font-semibold uppercase tracking-wider text-brand-green-text">완료율</p>
                     <p className="text-3xl font-bold text-gray-900 mt-0.5 tabular-nums whitespace-nowrap">{rate}%</p>
                   </div>
-                  <p className="text-base text-brand-green-text whitespace-nowrap shrink-0">{uploaded}/{total}명 등록</p>
+                  <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                    <p className="text-base text-brand-green-text whitespace-nowrap">{uploaded}/{total}명 등록</p>
+                    {/* 원본 page.tsx L783-790: "선정된 지원자 관리" 탭 이동 버튼 */}
+                    <button type="button"
+                      onClick={() => { setUploadOverviewOpen(false); setUploadOverviewDetailId(null); setActiveTab('선정 인플루언서') }}
+                      className="text-base font-semibold text-brand-green-text border border-brand-green-border bg-white rounded-xl px-3 py-1.5 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      선정 인플루언서 관리 →
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto">
                   {data.map(s => (
