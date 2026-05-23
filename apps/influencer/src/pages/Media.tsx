@@ -209,8 +209,8 @@ export default function Media() {
               </div>
             ) : null}
 
-            {/* 통계 그리드 */}
-            <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
+            {/* 통계 그리드 — 게시물 0개면 팔로워·게시물만 표시 */}
+            <div className={`grid gap-2 mb-4 px-4 @[640px]:px-5 ${mockPosts === 0 ? 'grid-cols-2' : 'grid-cols-3 xl:grid-cols-6'}`}>
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />
@@ -225,34 +225,38 @@ export default function Media() {
                 </div>
                 <p className={`text-sm font-bold tabular-nums truncate ${mockPosts === 0 ? 'text-red-500' : 'text-gray-900'}`}>{mockPosts.toLocaleString('ko-KR')}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
-                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
-                  <TrendingUp size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">참여율</p>
-                </div>
-                <p className={`text-sm font-bold tabular-nums truncate ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
-                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
-                  <Heart size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">평균 좋아요</p>
-                </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgLikes.toLocaleString('ko-KR')}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
-                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
-                  <MessageCircle size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">평균 댓글</p>
-                </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgComments.toLocaleString('ko-KR')}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
-                <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
-                  <Clock size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">최근 활동</p>
-                </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtRelativeDate(mockInstaStats.lastActive)}</p>
-              </div>
+              {mockPosts > 0 && (
+                <>
+                  <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                    <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
+                      <TrendingUp size={14} className="text-gray-400" />
+                      <p className="text-sm text-gray-500 break-keep">참여율</p>
+                    </div>
+                    <p className={`text-sm font-bold tabular-nums truncate ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                    <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
+                      <Heart size={14} className="text-gray-400" />
+                      <p className="text-sm text-gray-500 break-keep">평균 좋아요</p>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgLikes.toLocaleString('ko-KR')}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                    <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
+                      <MessageCircle size={14} className="text-gray-400" />
+                      <p className="text-sm text-gray-500 break-keep">평균 댓글</p>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgComments.toLocaleString('ko-KR')}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
+                    <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
+                      <Clock size={14} className="text-gray-400" />
+                      <p className="text-sm text-gray-500 break-keep">최근 활동</p>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtRelativeDate(mockInstaStats.lastActive)}</p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* 최근 콘텐츠 헤더 */}
@@ -289,7 +293,7 @@ export default function Media() {
                 </div>
               </>
             ) : (
-              <div className="px-4 @[640px]:px-5 pb-6 text-sm text-gray-400 text-center">
+              <div className="flex items-center justify-center py-16 text-sm text-gray-400">
                 게시물이 없어요
               </div>
             )}
