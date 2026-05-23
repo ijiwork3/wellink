@@ -63,6 +63,14 @@ export default function MyCampaign() {
   // 초기값은 useEffect에서 qa에 따라 동기화한다. lazy init과 useEffect의 분기 중복을 막기 위해 mockMyCampaigns를 시작값으로 둠.
   const [campaigns, setCampaigns] = useState<MyCampaign[]>(mockMyCampaigns)
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab)
+
+  // URL ?tab= 변경 시 탭 동기화 — ProfileHeader 스탯 카드로 이미 마운트된 상태에서 재진입할 때 필요
+  useEffect(() => {
+    const t = searchParams.get('tab') as TabKey | null
+    if (t && validTabs.includes(t)) setActiveTab(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
