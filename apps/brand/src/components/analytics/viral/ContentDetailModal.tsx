@@ -1,60 +1,21 @@
 /**
- * ContentDetailModal — 바이럴 콘텐츠 상세 모달 v2
+ * ContentDetailModal — 바이럴 콘텐츠 상세 분석 드로어 패널 v3
  *
- * 개선 (2026-05-18):
- *  - 상단 썸네일 배너 추가 (16:9, getThumbnailFromPool)
- *  - 날짜 ISO 원본 → 상대 포맷 (N시간 전 / N일 전 / yyyy.mm.dd)
- *  - 콘텐츠 타입 배지 스타일 통일
- *  - 캡션 자동 보강 + 해시태그 추가 (ViralContentRowCard 동일 로직)
- *  - 인플루언서 외부 링크 (플랫폼별 URL)
- *  - 산정 중 안내박스: blue → amber (ViralContentRowCard와 동일 톤)
- *  - 성과 점수 섹션 유지
+ * 실제 서비스 기준 (2026-05-23):
+ *  - 우측에서 슬라이드인하는 드로어 패널 (Modal → drawer)
+ *  - 상단 4개 점수 카드: 최종점수 · 등급 · 퍼포먼스 · 오멘팅
+ *  - 시계열 추이 5개 차트: 조회수 · 증가 조회수 · 좋아요수 · 댓글수 · 참여율
+ *    각 차트에 내 것(solid) vs 평균(dashed) 비교선
+ *  - X축: N일차 (0일차 ~ 27일차)
+ *  - 툴팁: "N일차 / 내 [지표]: v / 평균 [지표]: v"
  */
 
-import { memo, useState, useEffect, useRef, useMemo } from 'react'
-import { Megaphone, Info, Eye, Heart, MessageCircle, Bookmark, Share2, TrendingUp, ExternalLink, Play, AlertCircle, Camera, X } from 'lucide-react'
-import { Modal, Tooltip, PlatformBadge, fmtNumber, ChartScrollContainer, useChartScrollContext, useIsTouchDevice, CHART_COLORS, type ChartScrollContainerHandle } from '@wellink/ui'
-import GradePill from './GradePill'
-import { CAMPAIGN_MATCH_MAP, type ViralContent } from '../../../data/analytics/viral'
-import { getThumbnailFromPool, getPlaceholderDataUri } from '../../../utils/thumbnailPlaceholder'
+import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { X, ExternalLink } from 'lucide-react'
+import { fmtNumber, CHART_COLORS } from '@wellink/ui'
+import { type ViralContent } from '../../../data/analytics/viral'
 
-interface Props {
-  content: ViralContent | null
-  onClose: () => void
-}
-
-/* ── 날짜 포맷 ── */
-function fmtRelativeDate(iso: string): string {
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  const diffMs = Date.now() - d.getTime()
-  const hours = Math.floor(diffMs / 3600000)
-  if (hours < 1) return '방금 전'
-  if (hours < 24) return `${hours}시간 전`
-  const days = Math.floor(hours / 24)
-  if (days < 7) return `${days}일 전`
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}.${m}.${day}`
-}
-
-/* ── 캡션 자동 보강 ── */
-const CAPTION_DETAILS = [
-  '평소보다 댓글 반응이 뜨겁고, 저장 수도 +30% 상승해서 후속 캠페인 매칭을 적극 검토하면 좋을 콘텐츠예요.',
-  '인플루언서 톤이 자연스럽게 녹아들어 광고스럽지 않고, 팔로워들이 진심으로 반응하고 있어요.',
-  '브랜드 일상 노출로 친화도가 빠르게 쌓이는 콘텐츠. 후기·문의 댓글이 이어지고 있어요.',
-  '도달이 평소 대비 큰 폭 상승. 알고리즘이 노출을 밀어주는 시점이라 추가 콘텐츠 타이밍 좋아요.',
-  '저장·공유가 동시에 증가 중. 단순 좋아요보다 진성 관심 신호가 강하게 잡혀요.',
-  '댓글의 90%가 긍정·문의 톤이라 브랜드 호감도 점수가 높게 산출됐어요.',
-]
-
-const HASHTAG_POOLS: Record<string, string[]> = {
-  '릴스':   ['크로스핏', 'enuf', 'hyrox', '운동', 'wod', 'fitness', '오운완', 'gymlife'],
-  '피드':   ['데일리', 'sports', '운동스타그램', 'enuf', '크로스핏', 'protein', 'fitness'],
-  '영상':   ['vlog', '운동', 'crossfit', 'protein', 'enuf', 'sports', 'training'],
-  '쇼츠':   ['shorts', 'crossfit', 'enuf', 'sports', 'wod', 'fitness'],
-  '스토리': ['daily', '일상', 'enuf', '운동'],
-}
+/* ── 시리즈 데이터 생성 ───────────────────────────────────────────── */
 
 function hashSeed(s: string): number {
   let h = 0
@@ -62,313 +23,437 @@ function hashSeed(s: string): number {
   return h
 }
 
-function useDerivedContent(content: ViralContent | null) {
-  return useMemo(() => {
-    if (!content) return { caption: '', hashtags: [] as string[], profileUrl: '', thumbSrc: '' }
-    const seed = hashSeed(content.influencer + content.type)
-    const caption = CAPTION_DETAILS[seed % CAPTION_DETAILS.length]
-    const pool = HASHTAG_POOLS[content.type] ?? HASHTAG_POOLS['피드']
-    const picked: string[] = []
-    const s = hashSeed(content.influencer)
-    for (let i = 0; i < 4; i++) picked.push(pool[(s + i * 7) % pool.length])
-    const hashtags = [...new Set(picked)].slice(0, 4)
-    const handle = content.influencer.replace('@', '')
-    const profileUrl =
-      content.platform === 'instagram' ? `https://instagram.com/${handle}` :
-      content.platform === 'youtube'   ? `https://youtube.com/@${handle}` :
-                                         `https://tiktok.com/@${handle}`
-    const thumbSrc = getThumbnailFromPool(content.influencer)
-    return { caption, hashtags, profileUrl, thumbSrc }
-  }, [content])
+function seededRand(seed: number): () => number {
+  let s = seed
+  return () => {
+    s = (s * 1664525 + 1013904223) >>> 0
+    return s / 0xFFFFFFFF
+  }
 }
 
-/* ── 콘텐츠 타입 칩 스타일 ── */
-const TYPE_CHIP = 'px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-xs font-medium whitespace-nowrap'
+interface SeriesPoint { my: number; avg: number }
 
-const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }: Props) {
-  const isTouch = useIsTouchDevice()
-  const campaignMatch = content ? (CAMPAIGN_MATCH_MAP[content.id] ?? null) : null
-  const { caption, hashtags, profileUrl, thumbSrc } = useDerivedContent(content)
-  const [imgSrc, setImgSrc] = useState(thumbSrc)
+function buildSeries(content: ViralContent, days = 28) {
+  const rand = seededRand(hashSeed(content.id + content.influencer))
 
-  useEffect(() => { setImgSrc(thumbSrc) }, [thumbSrc])
-  const handleImgError = () => {
-    if (content) setImgSrc(getPlaceholderDataUri(content.influencer, content.influencer))
-  }
+  const peakDay = 1 + Math.floor(rand() * 2)           // 1~2일차에 피크
+  const peakMult = 2.5 + rand() * 4                    // 피크 배율
 
-  const isVideoType = content && (content.type === '릴스' || content.type === '영상' || content.type === '쇼츠')
+  // 조회수 시리즈 생성 함수
+  const makeViews = (base: number): number[] =>
+    Array.from({ length: days }, (_, d) => {
+      const n = rand()
+      if (d <= peakDay) {
+        const rising = base * (0.2 + (d / peakDay) * 0.8) * peakMult
+        return Math.round(rising * (0.85 + n * 0.3))
+      }
+      const decay = Math.max(0.03, 1 - (d - peakDay) * 0.085)
+      return Math.round(base * decay * (0.8 + n * 0.4))
+    })
 
-  // 점수 시계열
-  const scoreHistory = content && content.grade !== 'processing' ? Array.from({ length: 7 }, (_, i) => {
-    const base = Math.max(0, content.performanceScore - (6 - i) * 4 + (i % 3) * 2)
-    const mom  = Math.max(0, content.momentumScore  - (6 - i) * 3 + (i % 4) * 3)
-    return { label: `D-${6 - i}`, performance: Math.min(100, base), momentum: Math.min(100, mom) }
-  }) : []
+  const myViews = makeViews(content.reach)
+  const avgBase = content.reach * (1.1 + rand() * 0.6)
+  const avgViews = Array.from({ length: days }, (_, d) => {
+    const n = rand()
+    const decay = Math.max(0.05, 1 - d * 0.045)
+    return Math.round(avgBase * decay * peakMult * 0.7 * (0.9 + n * 0.2))
+  })
 
-  const [scoreIdx, setScoreIdx] = useState<number | null>(0)
-  const scoreScrollRef = useRef<ChartScrollContainerHandle>(null)
+  const views: SeriesPoint[] = myViews.map((v, i) => ({ my: v, avg: avgViews[i] }))
 
-  useEffect(() => {
-    const len = scoreHistory.length
-    setScoreIdx(len > 0 ? 0 : null)
-    requestAnimationFrame(() => { scoreScrollRef.current?.scrollToStart() })
-  }, [content, scoreHistory.length])
+  // 증가 조회수 (delta)
+  const viewsInc: SeriesPoint[] = views.map((v, i) => ({
+    my:  i === 0 ? v.my  : Math.max(0, v.my  - views[i - 1].my),
+    avg: i === 0 ? v.avg : Math.max(0, v.avg - views[i - 1].avg),
+  }))
 
-  const metrics = content ? [
-    { label: '도달',       value: content.reach,     icon: <Eye size={14} aria-hidden="true" />,           color: 'text-blue-500' },
-    { label: '좋아요',     value: content.likes,     icon: <Heart size={14} aria-hidden="true" />,          color: 'text-rose-400' },
-    { label: '댓글',       value: content.comments,  icon: <MessageCircle size={14} aria-hidden="true" />,  color: 'text-amber-500' },
-    { label: '저장',       value: content.saves,     icon: <Bookmark size={14} aria-hidden="true" />,       color: 'text-violet-500' },
-    { label: '공유',       value: content.shares,    icon: <Share2 size={14} aria-hidden="true" />,         color: 'text-emerald-500' },
-    { label: '바이럴 점수', value: content.viralScore, icon: <TrendingUp size={14} aria-hidden="true" />,  color: 'text-brand-green' },
-  ] : []
+  // 좋아요
+  const likesBase = content.likes / Math.max(content.reach, 1)
+  const likes: SeriesPoint[] = views.map(v => ({
+    my:  Math.round(v.my  * likesBase * (0.9 + rand() * 0.2)),
+    avg: Math.round(v.avg * likesBase * (0.85 + rand() * 0.3)),
+  }))
+
+  // 댓글
+  const commBase = content.comments / Math.max(content.reach, 1)
+  const comments: SeriesPoint[] = views.map(v => ({
+    my:  Math.round(v.my  * commBase * (0.8 + rand() * 0.4)),
+    avg: Math.round(v.avg * commBase * (0.9 + rand() * 0.2)),
+  }))
+
+  // 참여율 (%)
+  const engagement: SeriesPoint[] = views.map((v, i) => ({
+    my:  v.my  > 0 ? parseFloat(((likes[i].my  + comments[i].my)  / v.my  * 100).toFixed(2)) : 0,
+    avg: v.avg > 0 ? parseFloat(((likes[i].avg + comments[i].avg) / v.avg * 100).toFixed(2)) : 0,
+  }))
+
+  return { views, viewsInc, likes, comments, engagement }
+}
+
+/* ── 시계열 라인 차트 ────────────────────────────────────────────── */
+
+const MY_COLOR  = '#16a34a'  // green-600
+const AVG_COLOR = '#f59e0b'  // amber-400
+
+interface LineChartProps {
+  title: string
+  series: SeriesPoint[]
+  myLabel: string
+  avgLabel: string
+  formatValue?: (v: number) => string
+  myColor?: string
+  avgColor?: string
+}
+
+const LineChart = memo(function LineChart({
+  title, series, myLabel, avgLabel,
+  formatValue = (v) => fmtNumber(v),
+  myColor = MY_COLOR, avgColor = AVG_COLOR,
+}: LineChartProps) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const W = 480, H = 160, padL = 44, padR = 12, padT = 12, padB = 28
+  const plotW = W - padL - padR
+  const plotH = H - padT - padB
+  const n = series.length
+
+  const maxVal = useMemo(() => {
+    const all = series.flatMap(p => [p.my, p.avg])
+    return Math.max(...all, 1)
+  }, [series])
+
+  const toX = useCallback((i: number) => padL + (i / (n - 1)) * plotW, [n, plotW])
+  const toY = useCallback((v: number) => padT + plotH - (v / maxVal) * plotH, [maxVal, plotH])
+
+  const myPath  = series.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(p.my).toFixed(1)}`).join(' ')
+  const avgPath = series.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(p.avg).toFixed(1)}`).join(' ')
+
+  // X 라벨: 0, 5, 10, 15, 20, 25일차
+  const xLabels = [0, 5, 10, 15, 20, 25].filter(d => d < n)
+
+  // Y 그리드 3개
+  const yGrids = [0, 0.5, 1].map(r => padT + plotH - r * plotH)
+
+  const handleMove = useCallback((clientX: number) => {
+    const rect = svgRef.current?.getBoundingClientRect()
+    if (!rect) return
+    // SVG 실제 렌더 너비
+    const svgW = rect.width
+    const svgRatio = W / svgW
+    const svgX = (clientX - rect.left) * svgRatio
+    const rawI = Math.round((svgX - padL) / (plotW / (n - 1)))
+    setHoverIdx(Math.max(0, Math.min(n - 1, rawI)))
+  }, [n, plotW])
 
   return (
-    <Modal open={content !== null} onClose={onClose} size="lg" label="콘텐츠 상세" showClose={false}>
-      {content && (
-        <div className="space-y-4">
+    <div className="bg-white">
+      <h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+      {/* 범례 */}
+      <div className="flex items-center gap-4 mb-1.5">
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3" stroke={myColor} strokeWidth="2" strokeLinecap="round" /></svg>
+          {myLabel}
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3" stroke={avgColor} strokeWidth="2" strokeDasharray="4 2" strokeLinecap="round" /></svg>
+          {avgLabel}
+        </span>
+      </div>
+      <div className="relative select-none">
+        <svg
+          ref={svgRef}
+          width="100%" viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="xMidYMid meet"
+          style={{ height: H, touchAction: 'pan-y' }}
+          onMouseMove={e => handleMove(e.clientX)}
+          onMouseLeave={() => setHoverIdx(null)}
+          onClick={e => handleMove(e.clientX)}
+          onTouchStart={e => handleMove(e.touches[0].clientX)}
+          onTouchMove={e => { e.preventDefault(); handleMove(e.touches[0].clientX) }}
+          role="img"
+          aria-label={title}
+        >
+          {/* 그리드 */}
+          {yGrids.map(y => (
+            <line key={y} x1={padL} y1={y} x2={W - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
+          ))}
 
-          {/* 썸네일 배너 — 16:9, cover crop */}
-          <div className="relative -mx-4 -mt-4 @sm:-mx-6 @sm:-mt-6 overflow-hidden rounded-t-2xl" style={{ aspectRatio: '16/9' }}>
-            <img
-              src={imgSrc}
-              alt={`${content.influencer} ${content.type} 미리보기`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={handleImgError}
-            />
-            {/* 닫기 버튼 — 우상단 */}
-            <button
-              onClick={onClose}
-              aria-label="닫기"
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          {/* Y 라벨 */}
+          {[1, 0.5, 0].map(r => {
+            const v = maxVal * r
+            return (
+              <text key={r} x={padL - 4} y={padT + plotH - r * plotH + 4}
+                textAnchor="end" fontSize={9} fill={CHART_COLORS.axisLabel}>
+                {formatValue(Math.round(v))}
+              </text>
+            )
+          })}
+
+          {/* 평균 점선 */}
+          <path d={avgPath} fill="none" stroke={avgColor} strokeWidth={1.5} strokeDasharray="5 3" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* 내 것 실선 */}
+          <path d={myPath} fill="none" stroke={myColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* X 축 라벨 */}
+          {xLabels.map(d => (
+            <text key={d} x={toX(d)} y={H - 4} textAnchor="middle" fontSize={9} fill={CHART_COLORS.axisLabel}>
+              {d}일차
+            </text>
+          ))}
+
+          {/* hover 수직선 + 점 */}
+          {hoverIdx != null && (() => {
+            const x = toX(hoverIdx)
+            const pt = series[hoverIdx]
+            return (
+              <g>
+                <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+                <circle cx={x} cy={toY(pt.my)}  r={3.5} fill={myColor}  stroke="white" strokeWidth={1.5} />
+                <circle cx={x} cy={toY(pt.avg)} r={3.5} fill={avgColor} stroke="white" strokeWidth={1.5} />
+              </g>
+            )
+          })()}
+        </svg>
+
+        {/* hover 툴팁 — SVG 위에 HTML 오버레이 */}
+        {hoverIdx != null && (() => {
+          const pt = series[hoverIdx]
+          // SVG 내 X 비율로 HTML 툴팁 위치 계산
+          const xRatio = (hoverIdx / (n - 1))
+          const isRight = xRatio > 0.6
+          return (
+            <div
+              className="absolute top-2 pointer-events-none z-10"
+              style={{ [isRight ? 'right' : 'left']: `${isRight ? (1 - xRatio) * 100 : xRatio * 100}%`, transform: isRight ? 'translateX(8px)' : 'translateX(-8px)' }}
             >
-              <X size={16} aria-hidden="true" />
-            </button>
-            {/* 콘텐츠 타입 칩 — 좌상단 */}
-            <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-black/55 backdrop-blur-sm text-white text-xs font-semibold">
-              {content.type}
-            </span>
-            {/* 플랫폼 칩 — 좌하단 */}
-            <span className="absolute bottom-3 left-3 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 backdrop-blur-sm text-white text-xs font-medium">
-              <Camera size={11} aria-hidden="true" />
-              {content.platform === 'instagram' ? 'IG' : content.platform === 'youtube' ? 'YT' : 'TT'}
-            </span>
-            {/* 재생 버튼 오버레이 — 영상성 콘텐츠 */}
-            {isVideoType && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-12 h-12 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/50">
-                  <Play size={20} className="text-white fill-white ml-0.5" aria-hidden="true" />
+              <div className="bg-gray-900 text-white text-xs rounded-lg px-2.5 py-2 shadow-lg whitespace-nowrap">
+                <p className="text-gray-300 mb-1">{hoverIdx}일차</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: myColor }} />
+                  <span>{myLabel}: {formatValue(pt.my)}</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: avgColor }} />
+                  <span>{avgLabel}: {formatValue(pt.avg)}</span>
                 </div>
               </div>
-            )}
-            {/* 그라데이션 오버레이 */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
-          </div>
-
-          {/* 헤더 — 등급 + 플랫폼 + 타입 + 인플루언서 */}
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <GradePill grade={content.grade} />
-              <PlatformBadge platform={content.platform} />
-              <span className={TYPE_CHIP}>{content.type}</span>
             </div>
-            <p className="text-base font-bold text-gray-900 mt-2 leading-snug">{content.title}</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-sm text-gray-500">{content.influencer}</span>
-              <a
-                href={profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label={`${content.influencer} 프로필 새 창`}
-              >
-                <ExternalLink size={13} aria-hidden="true" />
-              </a>
-              <span className="text-gray-300 text-xs">·</span>
-              <span className="text-sm text-gray-400">{fmtRelativeDate(content.createdAt)}</span>
-            </div>
-          </div>
+          )
+        })()}
+      </div>
+    </div>
+  )
+})
 
-          {/* 캡션 + 해시태그 */}
-          <div className="bg-gray-50 rounded-xl px-4 py-3">
-            <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">{caption}</p>
-            {hashtags.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap mt-2">
-                {hashtags.map(t => (
-                  <span key={t} className="text-sm text-brand-green-text font-medium">#{t}</span>
-                ))}
-              </div>
-            )}
-          </div>
+/* ── 등급 카드 배경색 ────────────────────────────────────────────── */
 
-          {/* 캠페인 매칭 */}
-          {campaignMatch && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-brand-green-bg border border-brand-green-border rounded-xl">
-              <Megaphone size={14} className="text-brand-green-text shrink-0" />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-brand-green-text">{campaignMatch.campaignName}</p>
-                <p className="text-sm text-brand-green-text/70">{fmtRelativeDate(campaignMatch.uploadPeriodLabel.replace(' 등록', ''))} 등록</p>
-              </div>
-            </div>
-          )}
+function gradeCardClass(grade: string): string {
+  switch (grade) {
+    case 'A': return 'bg-amber-50 border-amber-200 text-amber-800'
+    case 'B': return 'bg-blue-50 border-blue-200 text-blue-800'
+    case 'C': return 'bg-gray-50 border-gray-200 text-gray-700'
+    default:  return 'bg-gray-50 border-gray-200 text-gray-500'
+  }
+}
 
-          {/* 주요 지표 그리드 */}
-          <div>
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">주요 지표</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {metrics.map(m => (
-                <div key={m.label} className="bg-gray-50 rounded-xl p-3">
-                  <div className={`flex items-center gap-1 mb-1 ${m.color}`}>
-                    {m.icon}
-                    <span className="text-xs text-gray-500">{m.label}</span>
-                  </div>
-                  <p className="text-base font-bold text-gray-900 tabular-nums">
-                    {m.value > 0 ? fmtNumber(m.value) : '—'}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+/* ── 요청 기준일 ─────────────────────────────────────────────────── */
 
-          {/* 점수 섹션 or 산정 중 안내 */}
-          {content.grade !== 'processing' ? (
+function todayStr(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function dateMinusDays(days: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() - days)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/* ── 메인 컴포넌트 ───────────────────────────────────────────────── */
+
+interface Props {
+  content: ViralContent | null
+  onClose: () => void
+}
+
+const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }: Props) {
+  const [visible, setVisible] = useState(false)
+  const series = useMemo(() => content ? buildSeries(content) : null, [content])
+
+  useEffect(() => {
+    if (content) {
+      requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)))
+    } else {
+      setVisible(false)
+    }
+  }, [content])
+
+  const handleClose = useCallback(() => {
+    setVisible(false)
+    setTimeout(onClose, 260)
+  }, [onClose])
+
+  // Escape 키
+  useEffect(() => {
+    if (!content) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [content, handleClose])
+
+  if (!content) return null
+
+  const finalScore = content.grade !== 'processing'
+    ? ((content.performanceScore + content.momentumScore) / 2).toFixed(1)
+    : '—'
+
+  const handle = content.influencer.replace('@', '')
+  const profileUrl = `https://instagram.com/${handle}`
+
+  return (
+    <>
+      {/* 백드롭 */}
+      <div
+        className={`fixed inset-0 z-[199] bg-black/45 backdrop-blur-sm transition-opacity duration-250 ${visible ? 'opacity-100' : 'opacity-0'}`}
+        onClick={handleClose}
+        aria-hidden="true"
+      />
+
+      {/* 드로어 패널 */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${content.influencer} 상세 분석`}
+        className={`fixed top-0 right-0 h-full z-[200] w-full sm:w-[560px] bg-white shadow-2xl flex flex-col transition-transform duration-250 ${visible ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        {/* 패널 헤더 */}
+        <div className="shrink-0 px-5 pt-5 pb-4 border-b border-gray-100">
+          <div className="flex items-start justify-between gap-3 mb-3">
             <div>
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">성과 점수</h2>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-sm text-gray-500">퍼포먼스</span>
-                    <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 누적 조회수 수준" multiline>
-                      <Info size={12} className="text-gray-400" aria-hidden="true" />
-                    </Tooltip>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900 tabular-nums">{content.performanceScore}</p>
-                  <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={content.performanceScore} aria-valuemin={0} aria-valuemax={100}>
-                    <div className="h-full rounded-full bg-violet-500" style={{ width: `${content.performanceScore}%` }} />
-                  </div>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-sm text-gray-500">모멘텀</span>
-                    <Tooltip content="같은 게시 후 시점의 다른 릴스와 비교한 최근 조회수 증가 속도" multiline>
-                      <Info size={12} className="text-gray-400" aria-hidden="true" />
-                    </Tooltip>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900 tabular-nums">{content.momentumScore}</p>
-                  <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={content.momentumScore} aria-valuemin={0} aria-valuemax={100}>
-                    <div className="h-full rounded-full bg-amber-400" style={{ width: `${content.momentumScore}%` }} />
-                  </div>
-                </div>
+              <p className="text-xs text-gray-500 font-medium mb-0.5">
+                {content.type} 상세 점수
+              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xl font-bold text-gray-900">{content.influencer}</p>
+                <a
+                  href={profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="인스타그램 프로필 새 창"
+                >
+                  <ExternalLink size={14} aria-hidden="true" />
+                </a>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">요청 기준일 {todayStr()}</p>
+            </div>
+            <button
+              onClick={handleClose}
+              aria-label="닫기"
+              className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <X size={18} aria-hidden="true" />
+            </button>
+          </div>
+
+          {/* 4개 점수 카드 */}
+          <div className="grid grid-cols-4 gap-2">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+              <p className="text-xs text-gray-500 mb-1">최종 점수</p>
+              <p className="text-xl font-bold text-gray-900 tabular-nums">{finalScore}</p>
+            </div>
+            <div className={`border rounded-xl p-3 ${gradeCardClass(content.grade)}`}>
+              <p className="text-xs opacity-70 mb-1">등급</p>
+              <p className="text-xl font-bold tabular-nums">{content.grade === 'processing' ? '—' : content.grade}</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+              <p className="text-xs text-gray-500 mb-1">퍼포먼스</p>
+              <p className="text-xl font-bold text-gray-900 tabular-nums">
+                {content.grade !== 'processing' ? `${content.performanceScore}/100` : '—'}
+              </p>
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+              <p className="text-xs text-gray-500 mb-1">오멘팅</p>
+              <p className="text-xl font-bold text-gray-900 tabular-nums">
+                {content.grade !== 'processing' ? `${content.momentumScore}/100` : '—'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 스크롤 영역 */}
+        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+
+          {content.grade === 'processing' ? (
+            <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
+              <p className="text-sm text-amber-800 leading-relaxed">
+                <strong className="font-semibold">아직 데이터가 충분하지 않아 평가 중입니다.</strong>
+                <span className="block text-amber-700 mt-0.5">데이터가 더 쌓이면 점수와 시계열 차트가 표시됩니다.</span>
+              </p>
+            </div>
+          ) : series ? (
+            <>
+              {/* 시계열 추이 헤더 */}
+              <div>
+                <h2 className="text-base font-bold text-gray-900 mb-1">시계열 추이</h2>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  {dateMinusDays(27)}부터 {todayStr()}까지 조회한 데이터를 게시 후 일차 기준으로 보여줍니다.
+                  평균선과 내 값을 함께 확인할 수 있습니다.
+                </p>
               </div>
 
-              {scoreHistory.length > 0 && (
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-3 text-sm text-gray-500">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-violet-500 inline-block rounded" />퍼포먼스</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-amber-400 inline-block rounded" />모멘텀</span>
-                  </div>
-                  <ChartScrollContainer
-                    ref={scoreScrollRef}
-                    chartW={400} padL={8} padR={8}
-                    dataLength={scoreHistory.length}
-                    activeIndex={scoreIdx}
-                    tooltipContent={(i) => {
-                      const d = scoreHistory[i]
-                      if (!d) return null
-                      return (
-                        <>
-                          <p className="text-sm text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
-                            <span className="text-sm text-gray-700 whitespace-nowrap font-medium">퍼포먼스 {d.performance}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full shrink-0 bg-amber-400" />
-                            <span className="text-sm text-gray-700 whitespace-nowrap font-medium">모멘텀 {d.momentum}</span>
-                          </div>
-                        </>
-                      )
-                    }}
-                  >
-                    <ScoreHistoryChart data={scoreHistory} activeIndex={scoreIdx} onActiveIndex={setScoreIdx} isTouch={isTouch} />
-                  </ChartScrollContainer>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
-              <AlertCircle size={15} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="text-sm text-amber-800 leading-relaxed">
-                <strong className="font-semibold">아직 데이터가 충분하지 않아 평가중입니다.</strong>
-                <span className="block text-amber-700">데이터가 더 쌓이면 점수와 등급이 표시됩니다.</span>
-              </div>
-            </div>
-          )}
+              <LineChart
+                title="조회수"
+                series={series.views}
+                myLabel="내 조회수"
+                avgLabel="평균 조회수"
+                myColor={MY_COLOR}
+                avgColor={AVG_COLOR}
+              />
+
+              <LineChart
+                title="증가 조회수"
+                series={series.viewsInc}
+                myLabel="내 증가 조회수"
+                avgLabel="평균 증가 조회수"
+                myColor={MY_COLOR}
+                avgColor={AVG_COLOR}
+              />
+
+              <LineChart
+                title="좋아요 수"
+                series={series.likes}
+                myLabel="내 좋아요 수"
+                avgLabel="평균 좋아요 수"
+                myColor="#ec4899"
+                avgColor="#f43f5e"
+              />
+
+              <LineChart
+                title="댓글 수"
+                series={series.comments}
+                myLabel="내 댓글 수"
+                avgLabel="평균 댓글 수"
+                myColor="#7c3aed"
+                avgColor="#a78bfa"
+              />
+
+              <LineChart
+                title="참여율"
+                series={series.engagement}
+                myLabel="내 참여율"
+                avgLabel="평균 참여율"
+                formatValue={(v) => `${v.toFixed(1)}%`}
+                myColor="#0891b2"
+                avgColor="#38bdf8"
+              />
+            </>
+          ) : null}
         </div>
-      )}
-    </Modal>
+      </div>
+    </>
   )
 })
 
 export default ContentDetailModal
-
-/** 점수 추이 미니 라인 차트 — ContentDetailModal 내부 전용 */
-const ScoreHistoryChart = memo(function ScoreHistoryChart({
-  data, activeIndex, onActiveIndex, isTouch,
-}: {
-  data: { label: string; performance: number; momentum: number }[]
-  activeIndex?: number | null
-  onActiveIndex?: (i: number | null) => void
-  isTouch?: boolean
-}) {
-  const ctx = useChartScrollContext()
-  const W = ctx?.measuredW ?? 400
-  const H = 120, padL = 8, padR = 8, padT = 8, padB = 24
-  const plotW = W - padL - padR, plotH = H - padT - padB
-  const stepX = plotW / Math.max(data.length - 1, 1)
-  const toY = (v: number) => padT + plotH - (v / 100) * plotH
-  const line = (key: 'performance' | 'momentum') =>
-    data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${padL + i * stepX} ${toY(d[key])}`).join(' ')
-
-  const handlePointerAt = (clientX: number, rect: DOMRect) => {
-    const ratio = (clientX - rect.left) / rect.width
-    const svgX = ratio * W - padL
-    const idx = Math.round(svgX / stepX)
-    onActiveIndex?.(Math.max(0, Math.min(data.length - 1, idx)))
-  }
-
-  return (
-    <svg
-      width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
-      className="[&_*]:pointer-events-none"
-      style={{ touchAction: isTouch ? 'pan-y' : 'auto', minWidth: Math.max(400, data.length * 44), height: H }}
-      role="img" aria-label="퍼포먼스·모멘텀 점수 추이 차트"
-      onMouseMove={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onClick={!isTouch ? (e) => handlePointerAt(e.clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onTouchStart={isTouch ? (e) => handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) : undefined}
-      onTouchMove={isTouch ? (e) => { e.preventDefault(); handlePointerAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect()) } : undefined}
-    >
-      {[0, 0.5, 1].map(r => (
-        <line key={r} x1={padL} y1={padT + plotH - r * plotH} x2={W - padR} y2={padT + plotH - r * plotH} stroke={CHART_COLORS.grid} strokeWidth={1} />
-      ))}
-      <path d={line('performance')} fill="none" stroke={CHART_COLORS.saves} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <path d={line('momentum')} fill="none" stroke={CHART_COLORS.warn} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      {data.map((d, i) => (
-        <text key={i} x={padL + i * stepX} y={H - 4} textAnchor="middle" fontSize={11} fill={CHART_COLORS.axisLabel}>{d.label}</text>
-      ))}
-      {activeIndex != null && (() => {
-        const d = data[activeIndex]
-        if (!d) return null
-        const x = padL + activeIndex * stepX
-        return (
-          <g key="active">
-            <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={toY(d.performance)} r={3.5} fill={CHART_COLORS.saves} stroke="white" strokeWidth={1.5} />
-            <circle cx={x} cy={toY(d.momentum)} r={3.5} fill={CHART_COLORS.warn} stroke="white" strokeWidth={1.5} />
-          </g>
-        )
-      })()}
-    </svg>
-  )
-})

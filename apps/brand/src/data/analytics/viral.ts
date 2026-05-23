@@ -16,7 +16,7 @@ export const kpiByMode: Record<DatePeriod, { reach: number; shares: number; save
 }
 
 // ── 콘텐츠 타입 정의 (정책 § 2-3, 2-4) ──────────────────────────────────────
-export type ViralContentType = '릴스' | '피드' | '스토리' | '영상' | '쇼츠'
+export type ViralContentType = '릴스' | '피드'
 export type ContentGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'
 export type ViralPlatform = 'instagram' | 'youtube' | 'tiktok'
 export type ViralContent = {
@@ -60,7 +60,7 @@ const VC_INFLUENCERS = [
   '@stretch_daily', '@protein_kim', '@leggings_lover', '@low_sugar', '@homecafe_master',
   '@minimal_int', '@camping_pick', '@notted_kr', '@gangnam_food', '@beauty_lab',
 ]
-const VC_TYPES: ViralContentType[] = ['릴스', '피드', '스토리', '영상', '쇼츠']
+const VC_TYPES: ViralContentType[] = ['릴스', '피드']
 
 /**
  * createdAt 정책 (영상 매칭):
@@ -86,11 +86,7 @@ export const viralContentData: ViralContent[] = Array.from({ length: 100 }, (_, 
   const saves = isProcessing ? 0 : Math.floor(likes * (0.3 + (i % 4) * 0.05))
   const shares = isProcessing ? 0 : Math.floor(likes * (0.15 + (i % 6) * 0.02))
   const type = VC_TYPES[i % VC_TYPES.length]
-  const platform: ViralPlatform = type === '영상'
-    ? 'youtube'
-    : type === '쇼츠'
-      ? (i % 2 === 0 ? 'youtube' : 'tiktok')
-      : 'instagram'
+  const platform: ViralPlatform = 'instagram'
 
   // createdAt — 최신 12개는 ISO datetime (N시간/N일 전), 그 외는 1-4월 분포
   const createdAt = isRecent

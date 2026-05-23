@@ -39,7 +39,7 @@ export default function ViralMetrics() {
   const [contentViewMode, setContentViewMode] = useState<'grid' | 'table'>('grid')
   // 콘텐츠 필터·정렬·페이지네이션·등급 필터 (원본 보강)
   type ContentSort = 'createdAt' | 'views' | 'likes' | 'comments' | 'engagement'
-  type ContentFilter = '전체' | '릴스' | '피드' | '스토리' | '영상' | '쇼츠'
+  type ContentFilter = '전체' | '릴스' | '피드'
   type GradeFilterT = '전체' | 'processing' | 'A' | 'B' | 'C' | 'D' | 'E'
   const [contentSort, setContentSort] = useState<ContentSort>('createdAt')
   const [contentFilter, setContentFilter] = useState<ContentFilter>('전체')
@@ -414,7 +414,7 @@ export default function ViralMetrics() {
               <CustomSelect
                 value={contentFilter}
                 onChange={v => { setContentFilter(v as ContentFilter); setContentPage(1) }}
-                options={(['전체', '릴스', '피드', '스토리', '영상', '쇼츠'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
+                options={(['전체', '릴스', '피드'] as ContentFilter[]).map(f => ({ label: f, value: f }))}
                 className="text-sm min-w-[110px]"
               />
             </label>
@@ -468,7 +468,7 @@ export default function ViralMetrics() {
                       username: item.influencer.replace(/^@/, ''),
                       platform: item.platform === 'instagram' ? 'instagram' : 'youtube',
                     }}
-                    contentType={item.type as '릴스' | '피드' | '스토리' | '영상' | '쇼츠'}
+                    contentType={item.type as '릴스' | '피드'}
                     metrics={{
                       likes: item.likes,
                       comments: item.comments,
