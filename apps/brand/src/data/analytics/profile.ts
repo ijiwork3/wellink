@@ -221,10 +221,11 @@ export const contentTypeData = [
 ]
 
 // ── 게시물별 상세 ───────────────────────────────────────────────────────────
-export type PostType = 'reels' | 'feed' | 'carousel' | 'story'
-export type PostSortKey = 'date' | 'views' | 'reach' | 'likes' | 'comments' | 'saves' | 'engagement'
+export type PostType = 'reels' | 'feed' | 'carousel'
+export type PostSortKey = 'date' | 'views' | 'reach' | 'impressions' | 'likes' | 'comments' | 'saves' | 'engagement'
 export type PostItem = {
   id: string; type: PostType; uploadDate: string
+  thumbnail: string
   views: number; reach: number; impressions: number
   likes: number; comments: number; saves: number
   engagementRate: number
@@ -234,11 +235,25 @@ export type PostItem = {
   profileVisits?: number; follows?: number
 }
 const POST_TYPES: PostType[] = [
-  'reels','reels','reels','reels','reels','reels','reels','reels',
-  'feed','feed','feed','feed','feed','feed','feed',
-  'carousel','carousel','carousel','carousel','carousel',
-  'story','story','story','story',
-  'reels','feed','carousel','reels','story','feed',
+  'reels','reels','reels','reels','reels','reels','reels','reels','reels','reels',
+  'feed','feed','feed','feed','feed','feed','feed','feed','feed',
+  'carousel','carousel','carousel','carousel','carousel','carousel',
+  'reels','feed','carousel','reels','feed',
+]
+// 운동·피트니스 Unsplash 큐레이션 (정사각 crop). 외부 fetch 실패 시 <img onError> fallback 처리는 호출부.
+const POST_THUMBNAILS: string[] = [
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?w=160&h=160&fit=crop&q=70',
+  'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=160&h=160&fit=crop&q=70',
 ]
 export const POST_DATA: PostItem[] = (() => {
   const today = new Date()
@@ -246,8 +261,7 @@ export const POST_DATA: PostItem[] = (() => {
     const d = new Date(today); d.setDate(today.getDate() - i * 3)
     const base = type === 'reels' ? 5200 + (i * 170) % 3000
       : type === 'carousel'       ? 3100 + (i * 120) % 1600
-      : type === 'feed'           ? 2200 + (i * 90)  % 1200
-      :                             900  + (i * 55)  % 500
+      :                             2200 + (i * 90)  % 1200
     const reach      = Math.max(400, Math.floor(base + Math.sin(i * 0.9) * 350))
     const impressions = Math.floor(reach * (1.35 + (i % 5) * 0.07))
     const views      = type === 'reels' ? Math.floor(reach * (1.2 + (i % 4) * 0.12)) : 0
@@ -262,6 +276,7 @@ export const POST_DATA: PostItem[] = (() => {
     return {
       id: `post-${i + 1}`, type,
       uploadDate: `2026-${mm}-${dd}`,
+      thumbnail: POST_THUMBNAILS[i % POST_THUMBNAILS.length],
       views, reach, impressions, likes, comments, saves, engagementRate,
       ...(type === 'reels' && {
         avgWatchTimeSec: 8 + (i % 6) * 3,

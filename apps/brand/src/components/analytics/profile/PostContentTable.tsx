@@ -9,6 +9,13 @@ import { ChevronLeft, ChevronRight, Layers, Play, Image as ImageIcon } from 'luc
 import { Modal, Pagination, Tabs, fmtNumber, ENGAGEMENT_THRESHOLD } from '@wellink/ui'
 import { POST_DATA, type PostItem, type PostType, type PostSortKey } from '../../../data/analytics/profile'
 
+const TYPE_LABEL: Record<PostType, string> = { reels: 'Reels', feed: 'Feed', carousel: 'Carousel' }
+const TYPE_COLOR: Record<PostType, string> = {
+  reels:    'bg-rose-50 text-rose-600',
+  carousel: 'bg-blue-50 text-blue-600',
+  feed:     'bg-gray-100 text-gray-600',
+}
+
 // ── 작은 셀 표시기 ──────────────────────────────────────────────────────────
 function MetricCell({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) {
   return (
@@ -46,13 +53,6 @@ function SortBtn({ k, label, sortKey, sortDir, onSort }: {
 
 // ── 게시물 상세 모달 ────────────────────────────────────────────────────────
 function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: () => void }) {
-  const TYPE_LABEL: Record<PostType, string> = { reels: 'Reels', feed: 'Feed', carousel: 'Carousel', story: 'Story' }
-  const TYPE_COLOR: Record<PostType, string> = {
-    reels:    'bg-rose-50 text-rose-600',
-    carousel: 'bg-blue-50 text-blue-600',
-    story:    'bg-amber-50 text-amber-600',
-    feed:     'bg-gray-100 text-gray-600',
-  }
   const fmtSec = (s: number) => s >= 60 ? `${Math.floor(s / 60)}분 ${s % 60}초` : `${s}초`
   const fmtTotalWatch = (avgSec: number, plays: number) => {
     const totalMin = Math.floor(avgSec * plays / 60)
@@ -119,17 +119,6 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
               </div>
             </div>
           )}
-          {/* 스토리 전용 */}
-          {post.type === 'story' && (
-            <div>
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">스토리 인사이트</h2>
-              <div className="grid grid-cols-2 gap-2">
-                <MetricCell label="도달" value={fmtNumber(post.reach)}       color="bg-amber-50" />
-                <MetricCell label="노출" value={fmtNumber(post.impressions)} color="bg-amber-50" />
-              </div>
-              <p className="text-sm text-gray-500 mt-3">* 내비게이션·이탈·답장은 Instagram API 연동 후 제공됩니다.</p>
-            </div>
-          )}
         </div>
       )}
     </Modal>
@@ -169,14 +158,15 @@ export default function PostContentTable() {
     return [...filtered].sort((a, b) => {
       const val = (item: PostItem): number => {
         switch (sortKey) {
-          case 'date':       return new Date(item.uploadDate).getTime()
-          case 'views':      return item.views
-          case 'reach':      return item.reach
-          case 'likes':      return item.likes
-          case 'comments':   return item.comments
-          case 'saves':      return item.saves
-          case 'engagement': return item.engagementRate
-          default:           return 0
+          case 'date':        return new Date(item.uploadDate).getTime()
+          case 'views':       return item.views
+          case 'reach':       return item.reach
+          case 'impressions': return item.impressions
+          case 'likes':       return item.likes
+          case 'comments':    return item.comments
+          case 'saves':       return item.saves
+          case 'engagement':  return item.engagementRate
+          default:            return 0
         }
       }
       return sortDir === 'desc' ? val(b) - val(a) : val(a) - val(b)
@@ -197,18 +187,10 @@ export default function PostContentTable() {
     { value: 'reels',    label: 'Reels' },
     { value: 'feed',     label: 'Feed' },
     { value: 'carousel', label: 'Carousel' },
-    { value: 'story',    label: 'Story' },
   ]
-  const TYPE_COLOR: Record<PostType, string> = {
-    reels:    'bg-rose-50 text-rose-600',
-    carousel: 'bg-blue-50 text-blue-600',
-    story:    'bg-amber-50 text-amber-600',
-    feed:     'bg-gray-100 text-gray-600',
-  }
   const TYPE_ICON: Record<PostType, React.ReactNode> = {
     reels:    <Play      size={12} className="inline mr-0.5" />,
     carousel: <Layers    size={12} className="inline mr-0.5" />,
-    story:    <ImageIcon size={12} className="inline mr-0.5" />,
     feed:     <ImageIcon size={12} className="inline mr-0.5" />,
   }
 
@@ -219,9 +201,9 @@ export default function PostContentTable() {
         {/* 헤더 */}
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">게시물별 상세 성과</h2>
+            <h2 className="text-base font-semibold text-gray-900">콘텐츠 성과</h2>
             <p className="text-sm text-gray-500 mt-0.5">
-              최근 {POST_DATA.length}개 게시물 · 행을 클릭하면 유형별 상세 분석 확인
+              게시물별 상세 지표를 확인하세요
             </p>
           </div>
         </div>
@@ -263,10 +245,13 @@ export default function PostContentTable() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
+                <th scope="col" className="text-center text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-12">No</th>
+                <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-20">썸네일</th>
                 <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">유형</th>
                 <SortBtn k="date"       label="날짜"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="views"      label="조회수"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="reach"      label="도달"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortBtn k="impressions" label="노출"   sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="likes"      label="좋아요"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="comments"   label="댓글"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="saves"      label="저장"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
@@ -274,14 +259,26 @@ export default function PostContentTable() {
               </tr>
             </thead>
             <tbody>
-              {paged.map(p => (
+              {paged.map((p, idx) => (
                 <tr key={p.id}
-                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
+                  className="group border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelected(p)}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(p) } }}
                 >
+                  <td className="py-3 px-4 text-center text-sm text-gray-400 font-medium tabular-nums">{(safePage - 1) * PAGE_SIZE + idx + 1}</td>
+                  <td className="py-3 px-4">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden ring-1 ring-gray-200/60 shadow-sm group-hover:shadow-md transition-all">
+                      <img
+                        src={p.thumbnail}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                    </div>
+                  </td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full ${TYPE_COLOR[p.type]}`}>
                       {TYPE_ICON[p.type]}
@@ -293,6 +290,7 @@ export default function PostContentTable() {
                     {p.views > 0 ? fmtNumber(p.views) : <span className="text-gray-300">—</span>}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.reach)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.impressions)}</td>
                   <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.likes)}</td>
                   <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.comments)}</td>
                   <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.saves)}</td>
@@ -309,7 +307,7 @@ export default function PostContentTable() {
               ))}
               {paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-sm text-gray-500">게시물이 없습니다.</td>
+                  <td colSpan={11} className="py-12 text-center text-sm text-gray-500">게시물이 없습니다.</td>
                 </tr>
               )}
             </tbody>
