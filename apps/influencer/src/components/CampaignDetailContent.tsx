@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Markdown from 'react-markdown'
-import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star, BookOpen, Search } from 'lucide-react'
+import {
+  Heart, Users, CheckCircle2, Gift, UserCheck, FileText,
+  Package, Footprints, Hash, Copy, Share2, Search, Type, Star,
+} from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -28,15 +31,46 @@ function groupConditions(conditions: string[]) {
   return { follower, content, etc }
 }
 
-export default function CampaignDetailContent({ campaign, inModal = false, forceApplied = false, forceClosed = false }: CampaignDetailContentProps) {
+// ── SVG 헬퍼 아이콘 (원본 동일) ──────────────────────────────────────────────
+function GiftSvgIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      className="text-gray-400" aria-hidden="true">
+      <title>Gift</title>
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 8v13" />
+      <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+      <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+    </svg>
+  )
+}
+function HashSvgIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      className="text-gray-400" aria-hidden="true">
+      <title>Hash</title>
+      <line x1="4" x2="20" y1="9" y2="9" />
+      <line x1="4" x2="20" y1="15" y2="15" />
+      <line x1="10" x2="8" y1="3" y2="21" />
+      <line x1="16" x2="14" y1="3" y2="21" />
+    </svg>
+  )
+}
+
+export default function CampaignDetailContent({
+  campaign,
+  inModal = false,
+  forceApplied = false,
+  forceClosed = false,
+}: CampaignDetailContentProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const bookmarks = useBookmarks()
   const liked = bookmarks.has(campaign.id)
   const applied = forceApplied
 
-  // applyEnd 당일 23:59:59 KST까지는 신청 가능 — 그 이후는 자동 마감 (cold-review 7차 M4).
-  // mount 시점 캡처해 React 19 purity 규칙 위반 회피 (Home.tsx와 동일 패턴)
   const [mountedAt] = useState(() => Date.now())
   const applyEndExpired = (() => {
     const end = new Date(campaign.applyEnd)
@@ -45,366 +79,447 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   })()
   const isClosed = forceClosed || campaign.status === '종료' || applyEndExpired
 
-  // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형 + PC에서 너비 제한
-  const wrapCls = inModal ? '' : '@container @[640px]:max-w-3xl @[640px]:mx-auto'
-  const imgCls = inModal
-    ? 'h-48 bg-gray-100 rounded-xl overflow-hidden mb-5 relative'
-    : 'h-52 @[640px]:h-64 bg-gray-100 @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden relative'
+  const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
 
-  // inModal·페이지 모두 섹션 간 border-t 유지. 페이지일 때만 좌우 패딩 추가.
-  const sectionCls = inModal ? 'py-4 border-t border-gray-100 first:border-t-0' : 'border-t border-gray-100 px-4 py-5 @[640px]:px-6'
-  const firstSectionCls = inModal ? 'pb-4' : 'px-4 py-5 @[640px]:p-6'
+  const handleShare = async () => {
+    const url = `${window.location.origin}/campaigns/${campaign.id}`
+    if (navigator.share) {
+      try { await navigator.share({ title: campaign.name, url }) } catch { /* abort */ }
+      return
+    }
+    if (navigator.clipboard?.writeText) {
+      try { await navigator.clipboard.writeText(url); showToast('링크를 복사했어요!', 'success') }
+      catch { showToast('링크 복사에 실패했어요', 'error') }
+    } else {
+      showToast('이 브라우저는 공유를 지원하지 않아요', 'info')
+    }
+  }
 
-  return (
-    <>
-    <div className={wrapCls} style={!inModal ? { paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' } : undefined}>
-      {/* 마감임박 띠 */}
-      {campaign.status === '마감임박' && (
-        <div className="bg-orange-500 text-white text-xs font-semibold text-center py-1.5 tracking-wide">
-          신청 마감이 임박했어요!
+  const handleLike = () => {
+    const wasLiked = liked
+    bookmarks.toggle(campaign.id)
+    showToast(wasLiked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', wasLiked ? 'info' : 'success')
+  }
+
+  const handleApply = () => navigate(`/campaigns/${campaign.id}/apply`)
+
+  // ── 모달 모드 (compact 단열) ─────────────────────────────────────────────────
+  if (inModal) {
+    const sectionCls = 'py-4 border-t border-gray-100'
+    return (
+      <div>
+        {/* 이미지 */}
+        <div className="h-48 bg-gray-100 rounded-xl overflow-hidden mb-5 relative">
+          <img src={getThumbnailFromPool(campaign.id)} alt="" loading="lazy"
+            className="w-full h-full object-cover"
+            onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }} />
         </div>
-      )}
 
-      {/* 이미지 배너 — Unsplash 운동 사진 풀(seed=id). 외부 fetch 실패 시 SVG 그라데이션 fallback. */}
-      <div className={imgCls}>
-        <img
-          src={getThumbnailFromPool(campaign.id)}
-          alt=""
-          loading="lazy"
-          className="w-full h-full object-cover"
-          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
-        />
-      </div>
+        {/* 브랜드 + 상태 */}
+        <div className="pb-4">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <span className="text-sm font-semibold text-gray-500">{campaign.brand}</span>
+            <StatusBadge status={campaign.status} />
+            <PlatformBadge platform={campaign.channel} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-4 break-keep">{campaign.name}</h3>
 
-      <div className={inModal ? '' : '@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6'}>
-        <div className={inModal ? '' : '@[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 @[640px]:overflow-hidden'}>
-
-          {/* 브랜드 + 상태 + 관심등록 — 좁은 모바일에서 한 줄 강제 X. flex-wrap 으로 자연 줄바꿈 */}
-          <div className={firstSectionCls}>
-            <div className="flex flex-col @[480px]:flex-row @[480px]:items-center @[480px]:justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2 flex-wrap min-w-0">
-                <span className="text-sm font-semibold text-gray-500 break-keep">{campaign.brand}</span>
-                <StatusBadge status={campaign.status} />
-                <PlatformBadge platform={campaign.channel} />
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={async () => {
-                    const url = `${window.location.origin}/campaigns/${campaign.id}`
-                    if (navigator.share) {
-                      try {
-                        await navigator.share({ title: campaign.name, text: `${campaign.brand} · ${campaign.name}`, url })
-                      } catch {
-                        // 사용자가 공유 시트를 닫은 경우(AbortError) 등 조용히 무시
-                      }
-                      return
-                    }
-                    if (navigator.clipboard?.writeText) {
-                      try {
-                        await navigator.clipboard.writeText(url)
-                        showToast('링크를 복사했어요!', 'success')
-                      } catch {
-                        showToast('링크 복사에 실패했어요', 'error')
-                      }
-                    } else {
-                      showToast('이 브라우저는 공유를 지원하지 않아요', 'info')
-                    }
-                  }}
-                  aria-label="공유하기"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 transition-all duration-150 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  <Share2 size={15} className="text-gray-500" aria-hidden="true" />
-                  <span className="text-sm text-gray-500">공유</span>
-                </button>
-                <button
-                  onClick={() => {
-                    const wasLiked = liked
-                    bookmarks.toggle(campaign.id)
-                    showToast(wasLiked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', wasLiked ? 'info' : 'success')
-                  }}
-                  aria-pressed={liked}
-                  aria-label={liked ? '관심등록 취소' : '관심등록'}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all duration-150 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300' : 'border-gray-200'}`}
-                >
-                  <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
-                  <span className={`text-sm ${liked ? 'text-red-500' : 'text-gray-500'}`}>{liked ? '관심등록됨' : '관심등록'}</span>
-                </button>
-              </div>
+          {/* 모집 현황 */}
+          <div className="mb-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
+                <Users size={13} className="text-brand-green" />모집 현황
+              </span>
+              <span className="text-sm text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
             </div>
-
-            {inModal
-              ? <h3 className="text-xl font-bold text-gray-900 mb-4 break-keep">{campaign.name}</h3>
-              : <h1 className="text-xl font-bold text-gray-900 mb-4 break-keep">{campaign.name}</h1>
-            }
-
-            {/* 모집 현황 */}
-            {(() => {
-              const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
-              return (
-                <div className="mb-5 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
-                      <Users size={13} className="text-brand-green" aria-hidden="true" />모집 현황
-                    </span>
-                    <span className="text-sm text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
-                  </div>
-                  <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
-                </div>
-              )
-            })()}
-
-            {/* 원본 CampaignDetail.tsx L237-244: ToastEditorViewer로 마크다운 렌더링. react-markdown으로 대체 */}
-            <div className="text-sm text-gray-600 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
-              <Markdown>{campaign.description}</Markdown>
+            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
             </div>
+            <p className="text-sm text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
           </div>
 
-          {/* 기간/채널 */}
-          <div className={`${sectionCls} grid grid-cols-1 @[640px]:grid-cols-2 gap-3`}>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-              <Calendar size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-              <div className="min-w-0">
-                <p className="text-sm text-gray-500">신청 마감</p>
-                <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.applyEnd}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-              <Clock size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-              <div className="min-w-0">
-                <p className="text-sm text-gray-500">게시 마감</p>
-                <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.postEnd}</p>
-              </div>
-            </div>
-            {campaign.announceDate && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 col-span-full">
-                <Bell size={17} className="text-amber-600 flex-shrink-0" aria-hidden="true" />
-                <div className="min-w-0">
-                  <p className="text-sm text-amber-700">인플루언서 발표일</p>
-                  <p className="text-sm font-semibold text-gray-900 tabular-nums truncate">{campaign.announceDate}</p>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 col-span-full">
-              <Users size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-              <div className="min-w-0">
-                <p className="text-sm text-gray-500">모집 채널</p>
-                <p className="text-sm font-semibold text-gray-900 break-keep">{campaign.channel}</p>
-              </div>
-            </div>
-            {campaign.type && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 col-span-full">
-                {campaign.type === 'delivery'
-                  ? <Package size={17} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-                  : <Footprints size={17} className="text-blue-500 flex-shrink-0" aria-hidden="true" />
-                }
-                <div className="min-w-0">
-                  <p className="text-sm text-gray-500">캠페인 유형</p>
-                  <p className={`text-sm font-semibold ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
-                    {campaign.type === 'delivery' ? '배송형' : '방문형'}
-                  </p>
-                </div>
-              </div>
-            )}
+          <div className="text-sm text-gray-600 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
+            <Markdown>{campaign.description}</Markdown>
           </div>
-
-          {/* 필수 키워드 */}
-          {(campaign.keywords ?? []).length > 0 && (
-            <div className={sectionCls}>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5 whitespace-nowrap">
-                  <Hash size={14} className="text-brand-green" aria-hidden="true" />필수 키워드
-                </p>
-                <button
-                  onClick={async () => {
-                    const text = campaign.keywords!.map(k => `#${k}`).join(' ')
-                    if (navigator.clipboard?.writeText) {
-                      try {
-                        await navigator.clipboard.writeText(text)
-                        showToast('키워드를 복사했어요!', 'success')
-                      } catch {
-                        showToast('복사에 실패했어요', 'error')
-                      }
-                    } else {
-                      showToast('이 브라우저는 복사를 지원하지 않아요', 'info')
-                    }
-                  }}
-                  className="shrink-0 flex items-center gap-1 text-sm text-gray-500 hover:text-brand-green-text transition-colors rounded-md whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  <Copy size={12} aria-hidden="true" />한 번에 복사
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {campaign.keywords!.map(k => (
-                  <span key={k} className="px-2.5 py-1 rounded-full bg-brand-green-bg text-xs font-medium text-brand-green-text whitespace-nowrap break-keep">
-                    #{k}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 보상 */}
-          {campaign.reward && (
-            <div className={sectionCls}>
-              <div className="p-4 rounded-xl border border-brand-green-border bg-brand-green-bg flex items-start gap-3">
-                <Gift size={17} className="text-brand-green-text flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-brand-green-text mb-0.5">제공 혜택</p>
-                  <p className="text-sm font-medium text-gray-900 break-keep">{campaign.reward}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 제공 내역 — 원본 CampaignDetail.tsx L249-265 */}
-          {campaign.productDetail && (
-            <div className={sectionCls}>
-              <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
-                <Gift size={14} className="text-brand-green" aria-hidden="true" />제공 내역
-              </p>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.productDetail}</p>
-              </div>
-            </div>
-          )}
-
-          {/* 참여 조건 */}
-          {campaign.conditions && (() => {
-            const { follower, content, etc } = groupConditions(campaign.conditions!)
-            const groups: { label: string; icon: React.ReactNode; items: string[] }[] = []
-            if (follower.length) groups.push({ label: '팔로워·구독자 조건', icon: <UserCheck size={14} className="text-brand-green" />, items: follower })
-            if (content.length) groups.push({ label: '콘텐츠 업로드 조건', icon: <FileText size={14} className="text-brand-green" />, items: content })
-            if (etc.length) groups.push({ label: '기타 조건', icon: <CheckCircle2 size={14} className="text-brand-green" />, items: etc })
-            return (
-              <div className={sectionCls}>
-                <p className="text-sm font-semibold text-gray-900 mb-3">참여 조건</p>
-                <div className="space-y-3">
-                  {groups.map((g, gi) => (
-                    <div key={gi} className="rounded-xl border border-gray-100 overflow-hidden">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
-                        {g.icon}
-                        <span className="text-sm font-semibold text-gray-600">{g.label}</span>
-                      </div>
-                      <ul className="px-3 py-2 space-y-1.5">
-                        {g.items.map((cond, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-gray-700 break-keep">
-                            <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-green flex-shrink-0" />
-                            <span className="min-w-0 flex-1">{cond}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })()}
-
-          {/* 필수 가이드 — 원본 CampaignApplyForm.tsx L450-457: ToastEditorViewer로 마크다운 렌더링 */}
-          {campaign.detailMissionDescription && (
-            <div className={sectionCls}>
-              <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
-                <BookOpen size={14} className="text-brand-green" aria-hidden="true" />필수 가이드
-              </p>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <div className="text-sm text-gray-700 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
-                  <Markdown>{campaign.detailMissionDescription}</Markdown>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 게시 유형 + 우대사항 — 원본 CampaignDetail.tsx L273-299 grid-cols-3 미션 카드 */}
-          {(campaign.postType || campaign.priorityType || (campaign.keywords?.length ?? 0) > 0) && (
-            <div className={sectionCls}>
-              <p className="text-sm font-semibold text-gray-900 mb-3">미션 정보</p>
-              {/* A: 원본 3열 카드 — grid-cols-3으로 키워드/게시유형/우대 */}
-              <div className={`grid gap-2 ${
-                [campaign.keywords?.length, campaign.postType, campaign.priorityType].filter(Boolean).length >= 3
-                  ? 'grid-cols-3'
-                  : 'grid-cols-2'
-              }`}>
-                {(campaign.keywords?.length ?? 0) > 0 && (
-                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-gray-100 bg-gray-50">
-                    <Search size={16} className="text-brand-green mb-1.5" aria-hidden="true" />
-                    <p className="text-xs text-gray-500 mb-1">키워드</p>
-                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.keywords!.slice(0, 2).join(', ')}{(campaign.keywords!.length > 2) ? ' …' : ''}</p>
-                  </div>
-                )}
-                {campaign.postType && (
-                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-gray-100 bg-gray-50">
-                    <Layers size={16} className="text-brand-green mb-1.5" aria-hidden="true" />
-                    <p className="text-xs text-gray-500 mb-1">게시 유형</p>
-                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.postType}</p>
-                  </div>
-                )}
-                {campaign.priorityType && (
-                  <div className="flex flex-col items-center text-center p-3 rounded-xl border border-amber-100 bg-amber-50">
-                    <Star size={16} className="text-amber-500 mb-1.5" aria-hidden="true" />
-                    <p className="text-xs text-amber-600 mb-1">우대사항</p>
-                    <p className="text-xs font-semibold text-gray-900 break-keep">{campaign.priorityType}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* 신청 버튼 — 모달 내부일 때는 인라인, 페이지(전체화면)일 때는 fixed 하단 */}
-          {inModal ? (
-            <div className={sectionCls}>
-              {isClosed ? (
-                <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
-                  마감된 캠페인이에요
-                </div>
-              ) : applied ? (
-                <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
-                  <CheckCircle2 size={16} aria-hidden="true" />신청완료
-                </div>
-              ) : (
-                <button
-                  onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-                  className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  신청하기
-                </button>
-              )}
-            </div>
-          ) : null}
         </div>
-      </div>
 
-    </div>
-
-    {/* 페이지 모드일 때만 — fixed 하단 신청 CTA */}
-
-    {!inModal && (
-      <div
-        className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3"
-        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
-      >
-        <div className="max-w-3xl mx-auto">
+        {/* 신청 버튼 */}
+        <div className={sectionCls}>
           {isClosed ? (
-            <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+            <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
               마감된 캠페인이에요
             </div>
           ) : applied ? (
-            <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
-              <CheckCircle2 size={16} aria-hidden="true" />신청완료
+            <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
+              <CheckCircle2 size={16} />신청완료
             </div>
           ) : (
-            <button
-              onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
+            <button onClick={handleApply}
+              className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               신청하기
             </button>
           )}
         </div>
       </div>
-    )}
+    )
+  }
+
+  // ── 페이지 모드 (원본 구조: 좌열 + 우사이드바) ────────────────────────────
+  const conditions = campaign.conditions
+  const { follower, content, etc } = conditions ? groupConditions(conditions) : { follower: [], content: [], etc: [] }
+  const condGroups: { label: string; icon: React.ReactNode; items: string[] }[] = []
+  if (follower.length) condGroups.push({ label: '팔로워·구독자 조건', icon: <UserCheck size={14} className="text-brand-green" />, items: follower })
+  if (content.length) condGroups.push({ label: '콘텐츠 업로드 조건', icon: <FileText size={14} className="text-brand-green" />, items: content })
+  if (etc.length) condGroups.push({ label: '기타 조건', icon: <CheckCircle2 size={14} className="text-brand-green" />, items: etc })
+
+  const ApplyButton = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
+    const py = size === 'lg' ? 'py-4' : 'py-3.5'
+    const text = size === 'lg' ? 'text-lg font-bold' : 'text-base font-semibold'
+    if (isClosed) return (
+      <div className={`w-full ${py} rounded-xl ${text} text-center bg-gray-100 text-gray-400`}>마감된 캠페인이에요</div>
+    )
+    if (applied) return (
+      <div className={`w-full ${py} rounded-xl ${text} text-center bg-brand-green-bg text-brand-green-text border border-brand-green-border flex items-center justify-center gap-2`}>
+        <CheckCircle2 size={size === 'lg' ? 20 : 18} />신청완료
+      </div>
+    )
+    return (
+      <button onClick={handleApply}
+        className={`w-full ${py} rounded-xl ${text} text-white bg-brand-green hover:opacity-90 transition-all shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}>
+        캠페인 지원하기
+      </button>
+    )
+  }
+
+  return (
+    <>
+      <div className="pb-28 lg:pb-12">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+
+              {/* ── 좌열: 콘텐츠 ─────────────────────────────────────────── */}
+              <div className="flex-1 min-w-0">
+
+                {/* 타이틀 섹션 */}
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-4 flex-wrap">
+                    <StatusBadge status={campaign.status} />
+                    <PlatformBadge platform={campaign.channel} />
+                    {campaign.category && (
+                      <span className="text-gray-500 text-sm whitespace-nowrap">
+                        {campaign.category}
+                        {campaign.type && ` · ${campaign.type === 'delivery' ? '배송형' : '방문형'}`}
+                      </span>
+                    )}
+                    <div className="w-px h-3 bg-gray-300 mx-0.5" />
+                    <span className="text-gray-600 text-sm font-bold whitespace-nowrap">{campaign.brand}</span>
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight break-keep">
+                    {campaign.name}
+                  </h1>
+                </div>
+
+                {/* 이미지 (원본: aspect-video + rounded-2xl) */}
+                <div className="w-full aspect-video bg-gray-100 rounded-2xl overflow-hidden relative mb-10 border border-gray-200">
+                  <img
+                    src={getThumbnailFromPool(campaign.id)}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
+                  />
+                </div>
+
+                {/* 섹션 그룹 (원본: space-y-12) */}
+                <div className="space-y-12">
+
+                  {/* 캠페인 설명 */}
+                  {campaign.description && (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                        <FileText className="text-gray-400" size={20} aria-hidden="true" />
+                        캠페인 설명
+                      </h3>
+                      <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white p-6">
+                        <div className="text-base text-gray-600 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                          <Markdown>{campaign.description}</Markdown>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
+                  {/* 제공 내역 */}
+                  {campaign.productDetail && (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                        <GiftSvgIcon />
+                        제공 내역
+                      </h3>
+                      <div className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                        <div className="p-6">
+                          <p className="text-base text-gray-700 whitespace-pre-line break-keep leading-relaxed">
+                            {campaign.productDetail}
+                          </p>
+                        </div>
+                        <div className="px-6 pb-6 space-y-1.5 text-sm text-gray-500">
+                          <p>※ 제품은 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</p>
+                          <p>※ 제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</p>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
+                  {/* 캠페인 미션 */}
+                  {(campaign.keywords?.length || campaign.postType || campaign.priorityType || campaign.detailMissionDescription) ? (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-6 flex items-center gap-2">
+                        <FileText className="text-gray-400" size={20} aria-hidden="true" />
+                        캠페인 미션
+                      </h3>
+
+                      {/* 3열 카드: 키워드 / 게시유형 / 우대사항 (원본 그대로) */}
+                      <div className="grid grid-cols-3 gap-4 mb-8">
+                        <div className="bg-white border border-gray-200 p-4 rounded-xl text-center shadow-sm">
+                          <div className="w-10 h-10 bg-brand-green-bg text-brand-green rounded-full flex items-center justify-center mx-auto mb-2">
+                            <Search size={18} aria-hidden="true" />
+                          </div>
+                          <div className="text-sm text-gray-500 mb-1">키워드</div>
+                          <div className="font-bold text-sm text-gray-900 break-keep">
+                            {(campaign.keywords?.length ?? 0) > 0 ? '필수 포함' : '없음'}
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 p-4 rounded-xl text-center shadow-sm">
+                          <div className="w-10 h-10 bg-brand-green-bg text-brand-green rounded-full flex items-center justify-center mx-auto mb-2">
+                            <Type size={18} aria-hidden="true" />
+                          </div>
+                          <div className="text-sm text-gray-500 mb-1">게시 유형</div>
+                          <div className="font-bold text-sm text-gray-900 break-keep">
+                            {campaign.postType?.trim() || '없음'}
+                          </div>
+                        </div>
+                        <div className="bg-white border border-gray-200 p-4 rounded-xl text-center shadow-sm">
+                          <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <Star size={18} aria-hidden="true" />
+                          </div>
+                          <div className="text-sm text-gray-500 mb-1">우대사항</div>
+                          <div className="font-bold text-sm text-gray-900 break-keep">
+                            {campaign.priorityType?.trim() || '없음'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 필수 가이드 */}
+                      {campaign.detailMissionDescription && (
+                        <div>
+                          <h4 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+                            <FileText className="text-gray-400" size={18} aria-hidden="true" />
+                            필수 가이드
+                          </h4>
+                          <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white p-6">
+                            <div className="text-base text-gray-700 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                              <Markdown>{campaign.detailMissionDescription}</Markdown>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </section>
+                  ) : null}
+
+                  {/* 필수 키워드 */}
+                  {(campaign.keywords ?? []).length > 0 && (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                        <HashSvgIcon />
+                        필수 키워드
+                      </h3>
+                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {campaign.keywords!.map((k) => (
+                            <span key={k}
+                              className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-base font-medium text-gray-700 shadow-sm whitespace-nowrap">
+                              #{k}
+                            </span>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const text = campaign.keywords!.map((k) => `#${k}`).join(' ')
+                            if (navigator.clipboard?.writeText) {
+                              try { await navigator.clipboard.writeText(text); showToast('키워드를 복사했어요!', 'success') }
+                              catch { showToast('복사에 실패했어요', 'error') }
+                            } else {
+                              showToast('이 브라우저는 복사를 지원하지 않아요', 'info')
+                            }
+                          }}
+                          className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 p-4 rounded-xl text-gray-600 font-bold hover:border-brand-green-border hover:bg-brand-green-bg hover:text-brand-green-text transition-all group shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        >
+                          <Copy size={18} className="text-gray-400 group-hover:text-brand-green transition-colors" aria-hidden="true" />
+                          <span>키워드 한 번에 복사하기</span>
+                        </button>
+                      </div>
+                    </section>
+                  )}
+
+                  {/* 참여 조건 */}
+                  {condGroups.length > 0 && (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                        <CheckCircle2 className="text-gray-400" size={20} aria-hidden="true" />
+                        참여 조건
+                      </h3>
+                      <div className="space-y-3">
+                        {condGroups.map((g, gi) => (
+                          <div key={gi} className="rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                              {g.icon}
+                              <span className="text-sm font-semibold text-gray-600">{g.label}</span>
+                            </div>
+                            <ul className="px-4 py-3 space-y-2">
+                              {g.items.map((cond, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-gray-700 break-keep">
+                                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
+                                  <span className="min-w-0 flex-1">{cond}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* 캠페인 유형 */}
+                  {campaign.type && (
+                    <section>
+                      <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                        {campaign.type === 'delivery'
+                          ? <Package className="text-gray-400" size={20} aria-hidden="true" />
+                          : <Footprints className="text-blue-400" size={20} aria-hidden="true" />}
+                        캠페인 유형
+                      </h3>
+                      <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${campaign.type === 'delivery' ? 'bg-brand-green-bg text-brand-green' : 'bg-blue-50 text-blue-500'}`}>
+                          {campaign.type === 'delivery'
+                            ? <Package size={18} aria-hidden="true" />
+                            : <Footprints size={18} aria-hidden="true" />}
+                        </div>
+                        <div>
+                          <p className={`font-bold text-base ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
+                            {campaign.type === 'delivery' ? '배송형' : '방문형'}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {campaign.type === 'delivery' ? '제품을 배송받아 콘텐츠를 제작해요' : '매장/장소를 방문하여 콘텐츠를 제작해요'}
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
+                </div>
+              </div>
+
+              {/* ── 우열: 사이드바 (PC sticky) ──────────────────────────────── */}
+              <div className="hidden lg:block w-[360px] flex-shrink-0">
+                <div className="sticky top-24 space-y-4">
+
+                  {/* 정보 카드 */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                    <div className="space-y-4 pb-5 border-b border-gray-100">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm text-gray-500 whitespace-nowrap">신청 마감</span>
+                        <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.applyEnd}</span>
+                      </div>
+                      {campaign.announceDate && (
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm text-gray-500 whitespace-nowrap">인플루언서 발표</span>
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.announceDate}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm text-gray-500 whitespace-nowrap">업로드 마감</span>
+                        <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.postEnd}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-5 space-y-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm text-gray-500 whitespace-nowrap">모집 인원</span>
+                        <div className="flex items-baseline gap-0.5">
+                          <span className="font-semibold text-gray-900 text-base tabular-nums">{campaign.headcount}</span>
+                          <span className="text-sm text-gray-500">명</span>
+                        </div>
+                      </div>
+
+                      {/* 모집 현황 프로그레스 */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-sm text-gray-500">신청 현황</span>
+                          <span className="text-sm text-gray-500 tabular-nums">{campaign.applied}/{campaign.headcount}명</span>
+                        </div>
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
+                      </div>
+                    </div>
+
+                    {/* 액션 버튼 */}
+                    <div className="mt-6 space-y-3">
+                      <ApplyButton size="lg" />
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleLike}
+                          aria-pressed={liked}
+                          aria-label={liked ? '관심등록 취소' : '관심등록'}
+                          className={`flex-1 py-3 border rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                        >
+                          <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
+                          {liked ? '관심등록됨' : '관심등록'}
+                        </button>
+                        <button
+                          onClick={handleShare}
+                          aria-label="공유하기"
+                          className="flex-1 py-3 border border-gray-200 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        >
+                          <Share2 size={16} aria-hidden="true" />
+                          공유하기
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 모집 채널 */}
+                  {campaign.channel && (
+                    <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center gap-3">
+                      <PlatformBadge platform={campaign.channel} />
+                      <div className="min-w-0">
+                        <p className="text-xs text-gray-500">모집 채널</p>
+                        <p className="text-sm font-semibold text-gray-900 break-keep">{campaign.channel}</p>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일 하단 고정 버튼 (원본 동일) */}
+      <div
+        className="fixed bottom-0 left-0 right-0 px-4 pt-3 bg-white/95 backdrop-blur-sm border-t border-gray-100 lg:hidden z-40"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        <ApplyButton size="lg" />
+      </div>
     </>
   )
 }
