@@ -318,8 +318,8 @@ export default function Profile() {
             <Link2 size={16} className="text-brand-green-text" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900">SNS 관리</p>
-            <p className="text-sm text-gray-500 mt-0.5">인스타그램, 유튜브 등 채널 연결</p>
+            <p className="text-sm font-semibold text-gray-900">인스타 관리</p>
+            <p className="text-sm text-gray-500 mt-0.5">인스타그램 계정 연결 및 분석</p>
           </div>
           <ChevronRight size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
         </button>

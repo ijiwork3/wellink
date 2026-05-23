@@ -111,9 +111,9 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── SNS 관리 ────────────────── */
+  /* ────────────────── 인스타 관리 ────────────────── */
   {
-    label: 'SNS 관리',
+    label: '인스타 관리',
     children: [
       { label: '인스타 연결됨 (기본)', path: '/media' },
       { label: '인스타 미연결', path: '/media?qa=all-disconnected' },
