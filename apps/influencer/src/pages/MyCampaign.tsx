@@ -23,18 +23,17 @@ function statusToTab(s: string): TabKey {
   return '전체'
 }
 
-// '상세보기' 액션 제거 — mockMyCampaigns id(mc-N)와 mockCampaigns id(number) 공간 분리되어
-// `/campaigns/${c.id}` 라우팅이 항상 NaN 매칭으로 깨졌었음. 카드 내부에 모든 정보가 이미 있어
-// 외부 라우팅이 불필요. (cold-review 후속 round 5 발견)
+// '상세보기' — 원본 mypage/page.tsx L920-925: 미선정/완료 상태에서 apply?mode=view 진입
+// campaignRef 기반으로 라우팅 (mc-N id가 숫자 id와 분리되어 있으므로)
 // '수정하기' — 원본 mypage/page.tsx L832-865: WAIT 상태 → campaignRef 있을 때만 표시
 // '본인이 제출한 컨텐츠' — 원본 mypage/page.tsx L871-903: 완료 캠페인에서 제출 URL 확인
-const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '본인이 제출한 컨텐츠'>>> = {
+const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '본인이 제출한 컨텐츠' | '상세보기'>>> = {
   '지원완료':   ['신청 정보 보기', '수정하기', '취소'],
   '검토중':     ['신청 정보 보기', '취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
   '검수중':     ['콘텐츠 수정'],
   '완료':       ['본인이 제출한 컨텐츠'],
-  '미선정':     [],
+  '미선정':     ['상세보기'],
 }
 
 function getActions(status: string) {
@@ -373,6 +372,15 @@ export default function MyCampaign() {
                           onClick={() => setCancelModal(c)}
                           className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-3 py-3 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
                           <X size={14} />신청 취소
+                        </button>
+                      )
+                      // 원본 mypage/page.tsx L920-925: 미선정 상태에서 apply?mode=view 진입
+                      if (action === '상세보기') return (
+                        <button key={action}
+                          onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
+                          disabled={!c.campaignRef}
+                          className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-40 disabled:cursor-not-allowed">
+                          <FileText size={14} />상세보기
                         </button>
                       )
                       return null

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton } from '@wellink/ui'
+import { BottomSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Tooltip } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
@@ -178,9 +178,16 @@ export default function Media() {
               </div>
               {/* 업데이트 시간 + 새로고침 + 인스타 프로필 링크 — 원본 mypage L1326-1330, L1435-1462 */}
               <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-xs text-gray-400 tabular-nums whitespace-nowrap">
-                  {fmtRelativeDate(mockInstaStats.lastUpdated)}
-                </span>
+                {/* 원본 mypage L1463-1498: hover 시 정확한 업데이트 시각 yyyy-MM-dd HH:mm:ss 표시 */}
+                <Tooltip content={(() => {
+                  const d = new Date(mockInstaStats.lastUpdated)
+                  const pad = (n: number) => String(n).padStart(2, '0')
+                  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+                })()}>
+                  <span className="text-xs text-gray-400 tabular-nums whitespace-nowrap cursor-default">
+                    {fmtRelativeDate(mockInstaStats.lastUpdated)}
+                  </span>
+                </Tooltip>
                 {/* 인스타 프로필 외부 링크 — 원본 mypage L1436-1446 */}
                 {instaPlatform?.url && (
                   <a
