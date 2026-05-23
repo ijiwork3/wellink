@@ -1,7 +1,13 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Heart, UserCircle, Link2, Search } from 'lucide-react'
+import { LayoutDashboard, Heart, UserCircle, Link2, Search, Home, Wallet } from 'lucide-react'
 
 const sections = [
+  {
+    title: '홈',
+    items: [
+      { label: '홈', path: '/home', icon: Home },
+    ],
+  },
   {
     title: '활동 관리',
     items: [
@@ -15,6 +21,7 @@ const sections = [
     items: [
       { label: '내 정보', path: '/profile', icon: UserCircle },
       { label: '인스타 관리', path: '/media', icon: Link2 },
+      { label: '정산', path: '/settlement', icon: Wallet },
     ],
   },
 ]

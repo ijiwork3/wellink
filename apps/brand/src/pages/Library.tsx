@@ -550,6 +550,25 @@ export default function Library() {
     return <ErrorState message="라이브러리를 불러올 수 없습니다" onRetry={() => window.location.reload()} />
   }
 
+  if (qa === 'empty') {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
+          <p className="text-base text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <EmptyState
+            size="lg"
+            icon={<ImageOff size={40} />}
+            title="등록된 콘텐츠가 없습니다"
+            description="캠페인이 진행되면 인플루언서가 제작한 콘텐츠가 여기에 표시됩니다."
+          />
+        </div>
+      </div>
+    )
+  }
+
   const currentPageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
   const isAllSelected = currentPageItems.length > 0 && currentPageItems.every(c => selectedIds.has(c.id))
   const { total: campTotal, totalReach, avgEngagement, topPerformer } = campaignStats
