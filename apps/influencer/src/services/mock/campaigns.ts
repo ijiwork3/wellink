@@ -17,9 +17,13 @@ export interface Campaign {
   channel: string
   category: string
   status: string
+  /** 모집 시작일 — 원본 CampaignSidebar participateStartDate 대응 */
+  applyStart?: string
   applyEnd: string
   /** 인플루언서 선정 발표일 — 원본 CampaignSidebar resultAnnounceDate 대응 */
   announceDate?: string
+  /** 업로드 시작일 — 원본 CampaignSidebar startDate 대응 */
+  postStart?: string
   postEnd: string
   image: string
   description?: string
@@ -57,8 +61,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '맛집·푸드',
     status: '모집중',
+    applyStart: '2026-05-18',
     applyEnd: '2026-05-25',
     announceDate: '2026-05-26',
+    postStart: '2026-06-01',
     postEnd: '2026-07-31',
     image: '🍱',
     description: `**브랜드 소개**
@@ -148,8 +154,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '피트니스·스포츠',
     status: '마감임박',
+    applyStart: '2026-05-17',
     applyEnd: '2026-05-24',
     announceDate: '2026-05-28',
+    postStart: '2026-05-29',
     postEnd: '2026-06-08',
     image: '💪',
     description: 'SMILEATO 스포츠 보충제 라인업을 직접 체험하고 크리에이티브한 콘텐츠를 제작해 주세요',
@@ -175,8 +183,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '피트니스·스포츠',
     status: '모집중',
+    applyStart: '2026-05-22',
     applyEnd: '2026-05-29',
     announceDate: '2026-06-02',
+    postStart: '2026-06-03',
     postEnd: '2026-06-12',
     image: '🧘',
     description: 'ENUF 프리미엄 요가매트의 편안한 그립감과 내구성을 직접 체험해 보세요',
@@ -199,8 +209,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '뷰티·패션',
     status: '모집중',
+    applyStart: '2026-05-15',
     applyEnd: '2026-05-22',
     announceDate: '2026-05-26',
+    postStart: '2026-05-27',
     postEnd: '2026-06-05',
     image: '✨',
     description: '웰링크뷰티의 신규 웰니스 스킨케어 라인을 체험하고 진솔한 리뷰를 남겨주세요',
@@ -218,8 +230,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '네이버 블로그',
     category: '맛집·푸드',
     status: '모집중',
+    applyStart: '2026-05-18',
     applyEnd: '2026-05-25',
     announceDate: '2026-05-29',
+    postStart: '2026-05-30',
     postEnd: '2026-06-08',
     image: '🥬',
     description: '프리코의 신선한 유기농 샐러드 키트를 매일 즐기고 블로그에 체험기를 남겨주세요',
@@ -237,8 +251,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '유튜브',
     category: '피트니스·스포츠',
     status: '모집중',
+    applyStart: '2026-05-20',
     applyEnd: '2026-05-27',
     announceDate: '2026-06-01',
+    postStart: '2026-06-02',
     postEnd: '2026-06-12',
     image: '🏋️',
     description: '필라핏 홈트 스트레칭 밴드 세트를 활용한 운동 영상을 제작해 주세요',
@@ -256,8 +272,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '라이프스타일',
     status: '모집중',
+    applyStart: '2026-05-23',
     applyEnd: '2026-05-30',
     announceDate: '2026-06-04',
+    postStart: '2026-06-05',
     postEnd: '2026-06-15',
     image: '☀️',
     description: '모닝핏의 아침 루틴 제품군을 체험하고 건강한 아침 라이프를 공유해 주세요',
@@ -275,8 +293,10 @@ export const mockCampaigns: Campaign[] = [
     channel: '인스타그램',
     category: '육아·펫',
     status: '모집중',
+    applyStart: '2026-05-19',
     applyEnd: '2026-05-26',
     announceDate: '2026-05-30',
+    postStart: '2026-05-31',
     postEnd: '2026-06-08',
     image: '🍼',
     description: '베베핏 유아 건강 이유식 제품을 직접 사용해보고 솔직한 육아 리뷰를 남겨주세요',

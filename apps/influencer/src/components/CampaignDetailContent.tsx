@@ -12,6 +12,30 @@ import type { Campaign } from '../services/mock/campaigns'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 import { useBookmarks } from '../services/userState'
 
+// ── 날짜 포맷 유틸 (원본 CampaignSidebar formatDateRangeWithDay/formatDateWithDay 대응) ──
+const DAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
+
+function formatDateFull(dateStr: string): string {
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}. ${m}. ${day}. (${DAYS_KO[d.getDay()]})`
+}
+
+function formatDateShort(dateStr: string): string {
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${m}. ${day}. (${DAYS_KO[d.getDay()]})`
+}
+
+function formatDateRangeShort(startStr: string, endStr: string): string {
+  return `${formatDateShort(startStr)} ~ ${formatDateShort(endStr)}`
+}
+
 interface CampaignDetailContentProps {
   campaign: Campaign
   inModal?: boolean
@@ -80,6 +104,15 @@ export default function CampaignDetailContent({
     return end.getTime() < mountedAt
   })()
   const isClosed = forceClosed || campaign.status === '종료' || applyEndExpired
+
+  // D-day 계산 (원본 CampaignSidebar getDaysLeft 대응)
+  const dDay = (() => {
+    const end = new Date(campaign.applyEnd)
+    end.setHours(23, 59, 59, 999)
+    const diff = end.getTime() - mountedAt
+    if (diff <= 0) return 0
+    return Math.ceil(diff / (1000 * 60 * 60 * 24))
+  })()
 
   const pct = Math.min(100, Math.round((campaign.applied / (campaign.headcount || 1)) * 100))
 
@@ -220,19 +253,21 @@ export default function CampaignDetailContent({
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4 flex-wrap">
                     <StatusBadge status={campaign.status} />
-                    <PlatformBadge platform={campaign.channel} />
                     {campaign.category && (
                       <span className="text-gray-500 text-sm whitespace-nowrap">
                         {campaign.category}
                         {campaign.type && ` · ${campaign.type === 'delivery' ? '배송형' : '방문형'}`}
                       </span>
                     )}
-                    <div className="w-px h-3 bg-gray-300 mx-0.5" />
+                    <div className="w-[1px] h-3 bg-gray-300 mx-1" />
                     <span className="text-gray-600 text-sm font-bold whitespace-nowrap">{campaign.brand}</span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight break-keep">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight break-keep">
                     {campaign.name}
                   </h1>
+                  <p className="text-gray-500 text-sm md:text-base break-keep">
+                    {campaign.name} 관련 캠페인입니다.
+                  </p>
                 </div>
 
                 {/* 이미지 (원본: aspect-video + rounded-2xl) */}
@@ -442,23 +477,42 @@ export default function CampaignDetailContent({
                   {/* 정보 카드 */}
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                     <div className="space-y-4 pb-5 border-b border-gray-100">
+                      {/* 모집 기간 + D-day (원본 CampaignSidebar participateStartDate~participateEndDate) */}
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">신청 마감</span>
-                        <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.applyEnd}</span>
+                        <span className="text-sm text-gray-500 whitespace-nowrap">모집 기간</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums text-right">
+                            {campaign.applyStart
+                              ? formatDateRangeShort(campaign.applyStart, campaign.applyEnd)
+                              : formatDateShort(campaign.applyEnd)}
+                          </span>
+                          {dDay > 0 && (
+                            <span className="shrink-0 text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap">
+                              {dDay === 1 ? '당일 마감' : `D-${dDay}`}
+                            </span>
+                          )}
+                        </div>
                       </div>
+
                       {campaign.announceDate && (
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-sm text-gray-500 whitespace-nowrap">인플루언서 발표</span>
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.announceDate}</span>
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums">{formatDateFull(campaign.announceDate)}</span>
                         </div>
                       )}
+
+                      {/* 업로드 기간 (원본 CampaignSidebar startDate~endDate) */}
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">업로드 마감</span>
-                        <span className="font-semibold text-gray-900 text-sm tabular-nums">{campaign.postEnd}</span>
+                        <span className="text-sm text-gray-500 whitespace-nowrap">업로드 기간</span>
+                        <span className="font-semibold text-gray-900 text-sm tabular-nums text-right">
+                          {campaign.postStart
+                            ? formatDateRangeShort(campaign.postStart, campaign.postEnd)
+                            : formatDateShort(campaign.postEnd)}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="pt-5 space-y-4">
+                    <div className="pt-5">
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-sm text-gray-500 whitespace-nowrap">모집 인원</span>
                         <div className="flex items-baseline gap-0.5">
@@ -466,36 +520,21 @@ export default function CampaignDetailContent({
                           <span className="text-sm text-gray-500">명</span>
                         </div>
                       </div>
-
-                      {/* 모집 현황 프로그레스 */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-sm text-gray-500">신청 현황</span>
-                          <span className="text-sm text-gray-500 tabular-nums">{campaign.applied}/{campaign.headcount}명</span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
-                      </div>
                     </div>
 
-                    {/* 액션 버튼 */}
-                    <div className="mt-6 space-y-3">
+                    {/* 액션 버튼 (원본 CampaignSidebar mt-8 space-y-3) */}
+                    <div className="mt-8 space-y-3">
                       <ApplyButton size="lg" />
 
                       <div className="flex gap-2">
                         <button
                           onClick={handleLike}
                           aria-pressed={liked}
-                          aria-label={liked ? '관심등록 취소' : '관심등록'}
+                          aria-label={liked ? '찜 취소' : '찜하기'}
                           className={`flex-1 py-3 border rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                         >
                           <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
-                          {liked ? '관심등록됨' : '관심등록'}
+                          {liked ? '찜완료' : '찜하기'}
                         </button>
                         <button
                           onClick={handleShare}
