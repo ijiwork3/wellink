@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Markdown from 'react-markdown'
 import {
   Heart, Users, CheckCircle2, Gift, UserCheck, FileText,
-  Package, Footprints, Hash, Copy, Share2, Search, Type, Star,
+  Package, Footprints, Hash, Copy, Share2, Search, Type, Star, ArrowLeft,
 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
@@ -17,6 +17,7 @@ interface CampaignDetailContentProps {
   inModal?: boolean
   forceApplied?: boolean
   forceClosed?: boolean
+  onBack?: () => void
 }
 
 function groupConditions(conditions: string[]) {
@@ -64,6 +65,7 @@ export default function CampaignDetailContent({
   inModal = false,
   forceApplied = false,
   forceClosed = false,
+  onBack,
 }: CampaignDetailContentProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
@@ -200,6 +202,19 @@ export default function CampaignDetailContent({
 
               {/* ── 좌열: 콘텐츠 ─────────────────────────────────────────── */}
               <div className="flex-1 min-w-0">
+
+                {/* 뒤로가기 (원본 동일: 콘텐츠 영역 상단) */}
+                {onBack && (
+                  <div className="mb-6">
+                    <button
+                      onClick={onBack}
+                      className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-md"
+                    >
+                      <ArrowLeft size={16} aria-hidden="true" />
+                      목록으로 돌아가기
+                    </button>
+                  </div>
+                )}
 
                 {/* 타이틀 섹션 */}
                 <div className="mb-8">

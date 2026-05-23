@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { ErrorState, Skeleton } from '@wellink/ui'
 import { mockCampaigns as campaigns } from '../services/mock/campaigns'
@@ -15,7 +15,9 @@ export default function CampaignDetail() {
   // 이미 신청한 캠페인이면 신청 버튼 대신 '신청완료' 표시 (cold-review A3: 단일 store)
   const isAlreadyApplied = campaign ? applications.has(campaign.id) : false
 
-  const goBack = () => window.history.length > 1 ? navigate(-1) : navigate('/campaigns/browse')
+  const location = useLocation()
+  // location.key === 'default' → 앱 내에서 진입한 히스토리 없음 (직접 URL 접근 or 새로고침)
+  const goBack = () => location.key !== 'default' ? navigate(-1) : navigate('/campaigns/browse')
 
   if (qa === 'loading') {
     return (
@@ -77,6 +79,7 @@ export default function CampaignDetail() {
         campaign={campaign}
         forceApplied={qa === 'applied' || isAlreadyApplied}
         forceClosed={qa === 'closed'}
+        onBack={goBack}
       />
     </Layout>
   )

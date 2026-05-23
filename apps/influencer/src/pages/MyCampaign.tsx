@@ -234,43 +234,6 @@ export default function MyCampaign() {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* ── 원본 UI 비교용 (1개) ── */}
-            {filtered.length > 0 && (() => {
-              const c = filtered[0]
-              return (
-                <div className="relative">
-                  <span className="absolute -top-2 left-3 z-10 text-[10px] font-bold px-2 py-0.5 bg-zinc-700 text-white rounded-full">원본</span>
-                  <div className="group flex flex-col gap-3 p-5 rounded-xl border border-zinc-100 bg-white hover:border-lime-300 hover:shadow-md transition-all duration-200 cursor-pointer"
-                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                      <div className="relative w-full sm:w-20 h-40 sm:h-20 rounded-lg overflow-hidden border border-zinc-100 flex-shrink-0">
-                        <img src={getThumbnailFromPool(c.campaignRef ?? 1)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={e => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? 1) }} />
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
-                      </div>
-                      <div className="flex-1 w-full min-w-0">
-                        <div className="flex flex-col gap-1.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="px-2 py-0.5 text-[10px] font-bold rounded border uppercase tracking-wider flex items-center gap-1 bg-blue-50 text-blue-600 border-blue-100">WAIT</span>
-                            <span className="text-xs font-medium text-zinc-500">{c.brand}</span>
-                          </div>
-                          <h3 className="font-bold text-zinc-900 text-base truncate pr-4 group-hover:text-lime-600 transition-colors">{c.name}</h3>
-                          <div className="flex items-center gap-x-4 gap-y-1 text-xs text-zinc-500 flex-wrap">
-                            <span className="px-2 flex items-center gap-1 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider bg-lime-100 text-lime-700">
-                              <AlertCircle size={12} className="text-zinc-400" />모집중
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="w-full sm:w-auto flex flex-row gap-2 flex-shrink-0">
-                        <button className="flex-1 sm:flex-none px-4 py-2.5 font-medium rounded-lg border text-sm whitespace-nowrap text-zinc-700 border-zinc-200 hover:bg-zinc-100 transition-colors">신청 취소</button>
-                        <button className="flex-1 sm:flex-none px-4 py-2.5 bg-zinc-900 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm whitespace-nowrap">수정하기</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })()}
-            {/* ── 워싱 UI ── */}
             {filtered.map(c => {
               const actions = getActions(c.status)
               // A: 원본 mypage/page.tsx L791-794 — ACTIVE/CONFIRMED 상태 모두에 배너 표시
@@ -286,65 +249,61 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  {/* 카드 본문: [썸네일+정보] | [버튼 우측] — PC에서 row, 모바일에서 col */}
-                  <div className="flex flex-col @[480px]:flex-row @[480px]:items-start gap-3">
+                  {/* 카드 본문: 모바일=이미지풀폭+스택 / PC=row+소형썸네일+우측버튼 (원본 구조) */}
+                  <div className="flex flex-col @[480px]:flex-row @[480px]:items-center gap-3">
 
-                    {/* 좌측: 썸네일 + 캠페인 정보 */}
+                    {/* 이미지: 모바일 풀폭 h-40 / PC 소형 w-20 h-20 (원본 w-full sm:w-20 h-40 sm:h-20 동일) */}
+                    <div
+                      className={`w-full @[480px]:w-20 h-40 @[480px]:h-20 rounded-xl overflow-hidden shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                      onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                    >
+                      <img
+                        src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                      />
+                    </div>
+
+                    {/* 캠페인 정보 */}
                     {c.campaignRef ? (
                       <button
                         onClick={() => navigate(`/campaigns/${c.campaignRef}`)}
-                        className="flex items-start gap-3 flex-1 min-w-0 text-left hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-xl"
+                        className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                         aria-label={`${c.name} 캠페인 상세 보기`}
                       >
-                        <img
-                          src={getThumbnailFromPool(c.campaignRef)}
-                          alt=""
-                          loading="lazy"
-                          className="w-16 h-16 rounded-xl object-cover shrink-0"
-                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef!, c.brand) }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <StatusBadge status={c.status} size="sm" />
-                            {c.contentDeadline && (() => {
-                              const dd = getDDay(c.contentDeadline)
-                              if (!dd) return null
-                              return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
-                              )
-                            })()}
-                            <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
-                          </div>
-                          <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                          {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <StatusBadge status={c.status} size="sm" />
+                          {c.contentDeadline && (() => {
+                            const dd = getDDay(c.contentDeadline)
+                            if (!dd) return null
+                            return (
+                              <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
+                            )
+                          })()}
+                          <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
                         </div>
+                        <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                        {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
                       </button>
                     ) : (
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <img
-                          src={getThumbnailFromPool(c.id)}
-                          alt=""
-                          loading="lazy"
-                          className="w-16 h-16 rounded-xl object-cover shrink-0"
-                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <StatusBadge status={c.status} size="sm" />
-                            {c.contentDeadline && (() => {
-                              const dd = getDDay(c.contentDeadline)
-                              if (!dd) return null
-                              return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
-                              )
-                            })()}
-                            <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
-                          </div>
-                          <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-                          {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <StatusBadge status={c.status} size="sm" />
+                          {c.contentDeadline && (() => {
+                            const dd = getDDay(c.contentDeadline)
+                            if (!dd) return null
+                            return (
+                              <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
+                            )
+                          })()}
+                          <span className="text-sm text-gray-500 whitespace-nowrap">{c.channel}</span>
                         </div>
+                        <p className="text-sm font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                        {c.reward && <p className="text-xs text-gray-500 mt-1 truncate">{c.reward}</p>}
                       </div>
                     )}
 

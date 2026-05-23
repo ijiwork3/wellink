@@ -26,7 +26,7 @@ export default function Favorites() {
 
   if (qa === 'loading') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Skeleton shape="text" height={20} width="7rem" />
@@ -61,7 +61,7 @@ export default function Favorites() {
 
   if (qa === 'error') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="관심 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -70,7 +70,7 @@ export default function Favorites() {
   }
 
   return (
-    <Layout showProfileHeader={false}>
+    <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">관심 캠페인</h1>
         <div className="flex items-center justify-between">
@@ -113,59 +113,74 @@ export default function Favorites() {
                   key={c.id}
                   role="button"
                   tabIndex={0}
-                  className="bg-white rounded-2xl border border-gray-100 p-4 cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   onClick={() => navigate(`/campaigns/${c.id}`)}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/campaigns/${c.id}`) } }}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
-                      <img
-                        src={getThumbnailFromPool(c.id)}
-                        alt=""
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                        <StatusBadge status={c.status} size="sm" dot={false} />
-                        <span className={`${getDDayBadgeStyle(dday.color, dday.pulse)} whitespace-nowrap tabular-nums`}>{dday.label}</span>
-                      </div>
-                      <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
-                    </div>
-                    <button
-                      onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                      aria-label={bookmarks.has(c.id) ? '관심 해제' : '관심'}
-                      className="shrink-0 p-3 -m-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                    >
-                      <Heart
-                        size={16}
-                        fill={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : 'none'}
-                        color={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
-                      />
-                    </button>
+                  {/* 이미지: 모바일=풀폭 h-40 / PC=없음 (info row에 소형 포함) */}
+                  <div className="@[480px]:hidden w-full h-40 bg-gray-100 overflow-hidden">
+                    <img
+                      src={getThumbnailFromPool(c.id)}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                    />
                   </div>
 
-                  {c.reward && (
-                    <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                      <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
-                      <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
+                  <div className="p-4">
+                    {/* info row */}
+                    <div className="flex items-start gap-3">
+                      {/* PC-only 소형 썸네일 */}
+                      <div className="hidden @[480px]:block w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
+                        <img
+                          src={getThumbnailFromPool(c.id)}
+                          alt=""
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                          <StatusBadge status={c.status} size="sm" dot={false} />
+                          <span className={`${getDDayBadgeStyle(dday.color, dday.pulse)} whitespace-nowrap tabular-nums`}>{dday.label}</span>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
+                      </div>
+                      <button
+                        onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
+                        aria-label={bookmarks.has(c.id) ? '관심 해제' : '관심'}
+                        className="shrink-0 p-3 -m-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >
+                        <Heart
+                          size={16}
+                          fill={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : 'none'}
+                          color={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
+                        />
+                      </button>
                     </div>
-                  )}
 
-                  <div className="mt-2.5 flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
-                      <Users size={14} aria-hidden="true" />{c.applied}/{c.headcount}명
-                    </span>
-                    <div className="flex-1 min-w-0 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
-                        style={{ width: `${progressPct}%` }}
-                      />
+                    {c.reward && (
+                      <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
+                        <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
+                      </div>
+                    )}
+
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
+                        <Users size={14} aria-hidden="true" />{c.applied}/{c.headcount}명
+                      </span>
+                      <div className="flex-1 min-w-0 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
+                          style={{ width: `${progressPct}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.applyEnd)}</span>
                     </div>
-                    <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.applyEnd)}</span>
                   </div>
                 </div>
               )
