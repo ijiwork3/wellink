@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, ExternalLink } from 'lucide-react'
+import { Search, CheckCircle, Heart, Sparkles, Lightbulb, TrendingUp, Image, MessageCircle, Users, ChevronDown, ChevronUp, X, ExternalLink, Loader2 } from 'lucide-react'
 import {
   CustomSelect, Pagination, TIMER_MS, Tooltip, Modal, useToast, ErrorState, EmptyState,
   FloatingScrollChevrons, PageHeader,
@@ -247,6 +247,14 @@ export default function InfluencerList() {
   const [sortKey, setSortKey] = useState<InfluencerSortKey>(() =>
     qa ? DEFAULT_INFLUENCER_SORT : ((params.get('sort') as InfluencerSortKey) ?? DEFAULT_INFLUENCER_SORT)
   )
+  // A-3: 정렬 변경 시 짧은 시각적 피드백 (300ms)
+  const [isSorting, setIsSorting] = useState(false)
+  const handleSort = (key: InfluencerSortKey) => {
+    setIsSorting(true)
+    setSortKey(key)
+    setPage(1)
+    setTimeout(() => setIsSorting(false), 300)
+  }
   const [bookmarked, setBookmarked] = useState<Set<number>>(() => {
     try {
       const raw = sessionStorage.getItem('wl_bookmarks')
@@ -504,7 +512,7 @@ export default function InfluencerList() {
           >
             검색
           </button>
-          <CustomSelect value={sortKey} onChange={v => { setSortKey(v as InfluencerSortKey); setPage(1) }} options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))} className="shrink-0" />
+          <CustomSelect value={sortKey} onChange={v => handleSort(v as InfluencerSortKey)} options={INFLUENCER_SORT_OPTIONS.map(o => ({ label: o.label, value: o.value }))} className="shrink-0" />
         </div>
         {/* 2행: 필터 — 좁은 화면 grid 2열, 넓은 화면(@lg 768px+) 5열 1행 */}
         <div className="grid grid-cols-2 @lg:grid-cols-5 gap-2">
@@ -766,13 +774,19 @@ export default function InfluencerList() {
         </table>
         </div>
 
-        {/* 페이지네이션 */}
-          <Pagination
-            total={sorted.length}
-            page={safePage}
-            pageSize={perPage}
-            onChange={setPage}
-          />
+        {/* 페이지네이션 — A-4: "총 N명 표시" 좌측 카운트 */}
+          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+            <span className="text-base text-gray-500 tabular-nums">
+              총 <strong className="text-gray-900">{sorted.length}</strong>명 표시
+              {isSorting && <Loader2 size={13} className="inline-block ml-1.5 animate-spin text-gray-400 align-middle" aria-label="정렬 중" />}
+            </span>
+            <Pagination
+              total={sorted.length}
+              page={safePage}
+              pageSize={perPage}
+              onChange={setPage}
+            />
+          </div>
         </div>
       </div>
 

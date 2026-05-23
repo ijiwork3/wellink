@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, ExternalLink } from 'lucide-react'
+import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react'
 
 function InstagramIcon({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
@@ -48,11 +48,13 @@ export default function MyPage() {
 
   // 편집 모드 — 디폴트 뷰. '수정' 버튼 클릭 시에만 편집 가능.
   const [editing, setEditing] = useState(false)
-  // 편집 시작 시 원본 백업 (취소 시 복원용)
+  // 편집 시작 시 원본 백업 (취소 시 복원용) — marketingConsent 포함 (A-9)
   const [editBackup, setEditBackup] = useState<{
     name: string; companyName: string; bizNumber: string; managerName: string
-    phone: string
+    phone: string; marketingConsent: string | null
   } | null>(null)
+  // 저장 중 스피너 (A-8)
+  const [isSaving, setIsSaving] = useState(false)
 
   // 마케팅 수신 — ISO 타임스탬프 (null = 미동의, string = 동의 시점)
   const [marketingConsent, setMarketingConsent] = useState<string | null>(null)
@@ -60,9 +62,12 @@ export default function MyPage() {
   const [paymentAlert, setPaymentAlert] = useState(true)
 
   // SNS 연동
-  const [snsConnected] = useState(true)
+  const [snsConnected, setSnsConnected] = useState(true)
   const [snsModal, setSnsModal] = useState(false)
   const [snsHandle, setSnsHandle] = useState('wellink_brand')
+  // C-4: Meta OAuth 로딩 시뮬레이션
+  // 실제 구현: startCompanyMetaConnect(me?.id) → Meta 앱 ID + OAuth redirect URI 필요
+  const [isConnecting, setIsConnecting] = useState(false)
 
   // 비밀번호 변경 인라인 3단계: 0=닫힘, 1=현재비번 확인, 2=새비번 입력
   const [passwordStep, setPasswordStep] = useState<0 | 1 | 2>(qa === 'modal-password' ? 1 : 0)
@@ -102,7 +107,7 @@ export default function MyPage() {
   }
 
   const handleStartEdit = () => {
-    setEditBackup({ name, companyName, bizNumber, managerName, phone })
+    setEditBackup({ name, companyName, bizNumber, managerName, phone, marketingConsent })
     setEditing(true)
   }
 
@@ -113,20 +118,43 @@ export default function MyPage() {
       setBizNumber(editBackup.bizNumber)
       setManagerName(editBackup.managerName)
       setPhone(editBackup.phone)
+      setMarketingConsent(editBackup.marketingConsent)
     }
     setEditBackup(null)
     setEditing(false)
   }
 
+  // A-9: hasChanges — 백업 대비 변경 여부 (변경 없으면 저장 버튼 비활성화)
+  // 원본 ProfileSettings.tsx L87-100: name/corpName/corpBusinessNo/phone/managerName/marketingAgreeTime 비교
+  const hasChanges = editBackup !== null && (
+    name !== editBackup.name ||
+    companyName !== editBackup.companyName ||
+    bizNumber !== editBackup.bizNumber ||
+    managerName !== editBackup.managerName ||
+    phone !== editBackup.phone ||
+    marketingConsent !== editBackup.marketingConsent
+  )
+
+  // A-10: isFormValid — 필수 필드 비어있으면 저장 버튼 비활성화
+  // 원본 ProfileSettings.tsx L77-85: name/corpName/phone/managerName 필수
+  const isFormValid = companyName.trim().length > 0 && name.trim().length > 0 &&
+    managerName.trim().length > 0 && phone.trim().length > 0
+
+  // A-8/C-5: isSaving 스피너 + mock 저장 시뮬레이션
+  // 실제 구현: useUpdateProfile.mutateAsync({ companyName, name, bizNumber, managerName, phone }) 호출 필요
   const handleSave = () => {
-    if (!companyName.trim()) { showToast('회사명을 입력하세요.', 'error'); return }
-    if (!name.trim()) { showToast('담당자 이름을 입력하세요.', 'error'); return }
+    if (!isFormValid) { showToast('필수 항목을 입력하세요.', 'error'); return }
     if (bizNumber.trim() && !/^\d{3}-\d{2}-\d{5}$/.test(bizNumber.trim())) {
       showToast('사업자 등록번호 형식을 확인해 주세요. (예: 123-45-67890)', 'error'); return
     }
-    showToast('변경사항이 저장되었습니다.', 'success')
-    setEditBackup(null)
-    setEditing(false)
+    setIsSaving(true)
+    // TODO: 실제 API 연동 시 → await useUpdateProfile.mutateAsync({ companyName, name, bizNumber, managerName, phone })
+    setTimeout(() => {
+      setIsSaving(false)
+      showToast('변경사항이 저장되었습니다.', 'success')
+      setEditBackup(null)
+      setEditing(false)
+    }, 1000)
   }
 
   const resetPasswordStep = () => {
@@ -142,9 +170,16 @@ export default function MyPage() {
     showToast('비밀번호가 변경되었습니다.', 'success')
   }
 
+  // C-4: Meta/Instagram OAuth 연동 시뮬레이션
+  // 실제 구현: startCompanyMetaConnect(me?.id) 호출 → Meta OAuth 팝업 → redirect callback 처리
   const handleSnsConnect = () => {
-    setSnsModal(false)
-    showToast('Instagram 계정이 연결되었습니다.', 'success')
+    setIsConnecting(true)
+    setTimeout(() => {
+      setIsConnecting(false)
+      setSnsConnected(true)
+      setSnsModal(false)
+      showToast('Instagram 계정이 연결되었습니다.', 'success')
+    }, 1200)
   }
 
   return (
@@ -220,10 +255,13 @@ export default function MyPage() {
                 </button>
                 <button type="button"
                   onClick={handleSave}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  disabled={isSaving || !hasChanges || !isFormValid}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-base font-medium bg-brand-green text-white hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-green"
                 >
-                  <Save size={14} aria-hidden="true" />
-                  저장
+                  {isSaving
+                    ? <><Loader2 size={14} className="animate-spin" aria-hidden="true" />저장 중...</>
+                    : <><Save size={14} aria-hidden="true" />저장</>
+                  }
                 </button>
               </div>
             ) : (
@@ -565,10 +603,13 @@ export default function MyPage() {
             </button>
             <button type="button"
               onClick={handleSnsConnect}
-              disabled={snsHandle.trim() === ''}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={snsHandle.trim() === '' || isConnecting}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              연결
+              {isConnecting
+                ? <><Loader2 size={14} className="animate-spin" aria-hidden="true" />연결 중...</>
+                : '연결'
+              }
             </button>
           </>
         }

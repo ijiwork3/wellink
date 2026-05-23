@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Megaphone, Users, Clock, Bell,
@@ -92,9 +92,10 @@ const kpis = [
 ]
 
 /* ── 캠페인 데이터 ── */
+// A-11: applicants 필드 추가 (mock — 실제: useCampaignParticipants(id).applicantCount)
 const campaigns = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28' },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05' },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', applicants: 7 },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', applicants: 3 },
 ]
 
 /* ── 알림 초기 데이터 ── */
@@ -397,6 +398,16 @@ export default function Dashboard() {
           </button>
         </div>
       )}
+      {/* C-1: Instagram 초기 동기화 배너 (mock — qa=syncing 또는 localStorage 'wl_syncing' 플래그)
+       * 실제 구현: useDashboardInitialSync({ dashMemberId, metaAccessToken }) 훅에서 isInitialSyncing 상태 수신
+       * 원본 DashboardView.tsx L204-211 참고 */}
+      {(qa === 'syncing' || (typeof window !== 'undefined' && localStorage.getItem('wl_syncing') === '1')) && (
+        <div className="flex items-center gap-2.5 bg-white border border-gray-100 rounded-xl px-5 py-3.5 text-base text-gray-600 shadow-sm">
+          <span className="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse shrink-0" aria-hidden="true" />
+          Instagram 연동 후 초기 데이터를 동기화하는 중입니다. 잠시만 기다려 주세요.
+        </div>
+      )}
+
       {/* ── 즉각 확인 배너 — 채도 톤 다운 (rose-100 → rose-50). 아이콘·CTA만 rose, 텍스트는 검정 ── */}
       {visibleUrgent.map(u => (
         <div
@@ -443,13 +454,22 @@ export default function Dashboard() {
       {/* 기간 선택기 — 분석 페이지(/analytics/profile·/ads·/viral)와 동일 패턴.
           기본 상태: 배경 투명. sticky로 상단 붙을 때만 흰색 배경 + 백드롭 블러 + 보더 적용 */}
       <div className={`sticky z-20 -mx-4 px-4 @sm:-mx-6 @sm:px-6 @lg:-mx-8 @lg:px-8 py-2.5 transition-colors ${isStuck ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100' : 'border-b border-transparent'} ${isDesktop ? 'top-0' : 'top-12'}`}>
-        <DateRangePicker
-          period={period}
-          dateOffset={dateOffset}
-          onPeriodChange={setPeriod}
-          onDateOffsetChange={setDateOffset}
-          compact={!isDesktop}
-        />
+        {/* C-2: serverSyncTime + DateRangePicker 나란히 (원본 DashboardView.tsx L197-201, PeriodFilter.tsx L27-38)
+         * 실제 구현: insights 응답의 collectedAt 필드 중 최신값을 serverSyncTime으로 사용 */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <DateRangePicker
+            period={period}
+            dateOffset={dateOffset}
+            onPeriodChange={setPeriod}
+            onDateOffsetChange={setDateOffset}
+            compact={!isDesktop}
+          />
+          {/* TODO: 실제 구현 시 → insights.collectedAt 중 최신값 사용 */}
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 whitespace-nowrap">
+            <Clock size={12} aria-hidden="true" />
+            마지막 동기화: {new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
       </div>
 
       {/* 클라 #2: 캠페인 운영 KPI 3개는 *데이터 섹션 아래*로 이동 — 데이터 가치(프로필·광고·바이럴) 우선 노출 */}
@@ -605,7 +625,7 @@ export default function Dashboard() {
               <table className="w-full" ref={tableRef}>
                 <thead>
                   <tr className="border-b border-gray-50 bg-gray-50/50">
-                    {['캠페인명', '상태', '진행률', '마감일'].map(h => (
+                    {['캠페인명', '상태', '지원자', '진행률', '마감일'].map(h => (
                       <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -627,6 +647,12 @@ export default function Dashboard() {
                         <td className="py-3.5 px-4 text-base font-medium text-gray-900 whitespace-nowrap">{c.name}</td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           <StatusBadge status={deriveDisplayStatus(c.status, c.deadline)} />
+                        </td>
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <span className="flex items-center gap-1 text-sm text-gray-700">
+                            <Users size={13} className="text-gray-400" aria-hidden="true" />
+                            {c.applicants}명
+                          </span>
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
