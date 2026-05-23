@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Search, X, SlidersHorizontal, Camera, PenTool, PlaySquare, LayoutGrid } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
@@ -43,10 +43,6 @@ export default function CampaignBrowse() {
   const qa = useQAMode()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const location = useLocation()
-  // navigation key가 'default'면 탭/북마크 직접 진입 → 일반 헤더
-  // 앱 내부 navigate()로 진입했으면 뒤로가기 헤더
-  const showBack = location.key !== 'default'
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const bookmarks = useBookmarks()
@@ -101,7 +97,7 @@ export default function CampaignBrowse() {
 
   if (qa === 'error') {
     return (
-      <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
+      <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="캠페인 목록을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -112,13 +108,12 @@ export default function CampaignBrowse() {
   return (
     <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-4 @[640px]:px-6 pt-8 pb-5">
-        <div className="max-w-screen-xl mx-auto">
-          <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
-        </div>
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-gray-900">진행 중인 캠페인</h1>
+        <p className="text-sm text-gray-500 mt-0.5">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
       </div>
 
-      <div className="max-w-screen-xl mx-auto px-4 @[640px]:px-6 pb-12">
+      <div className="pb-12">
         {/* 검색 + 필터 */}
         <div className="mb-5 flex gap-2">
           <div className="relative flex-1">
