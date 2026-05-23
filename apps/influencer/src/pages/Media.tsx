@@ -244,7 +244,7 @@ export default function Media() {
                 <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
               </div>
               {/* 5열 × 4행 = 20개/페이지 */}
-              <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[720px]:grid-cols-5 gap-1.5">
+              <div className="grid grid-cols-2 @[400px]:grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5">
                 {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
                   <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
                     <img
