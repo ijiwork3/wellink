@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'lucide-react'
+import { Compass, ChevronRight, Heart, TrendingUp, AlertCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { useQAMode, fmtDate, StatusBadge, fmtFollowers, ErrorState, EmptyState, Skeleton } from '@wellink/ui'
 import { mockMyCampaigns } from '../services/mock/campaigns'
@@ -201,7 +201,7 @@ export default function Home() {
         </div>
 
         {/* 빠른 메뉴 — 모바일 360px 한 셀 약 95px. 라벨은 4글자 이내로 통일하고 카운트는 별도 줄. */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <QuickMenu
             icon={<Compass size={20} className="text-brand-green" />}
             label="캠페인 탐색"
@@ -212,11 +212,6 @@ export default function Home() {
             label="관심 캠페인"
             badge={bookmarkCount > 0 ? String(bookmarkCount) : undefined}
             onClick={() => navigate('/campaigns/favorites')}
-          />
-          <QuickMenu
-            icon={<Wallet size={20} className="text-blue-400" />}
-            label="정산"
-            onClick={() => navigate('/settlement')}
           />
         </div>
 

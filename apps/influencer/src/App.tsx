@@ -8,7 +8,6 @@ import CampaignDetail from './pages/CampaignDetail'
 import CampaignApply from './pages/CampaignApply'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
-import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
@@ -112,19 +111,7 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
-  /* ────────────────── 정산 ────────────────── */
-  {
-    label: '정산',
-    children: [
-      { label: '기본 (정산 내역)', path: '/settlement' },
-      { label: '로딩', path: '/settlement?qa=loading' },
-      { label: '빈 상태', path: '/settlement?qa=empty' },
-      { label: '모달 — 정산 요청', path: '/settlement?qa=modal-request' },
-      { label: '에러', path: '/settlement?qa=error' },
-    ],
-  },
-
-  /* ────────────────── SNS 관리 ────────────────── */
+/* ────────────────── SNS 관리 ────────────────── */
   {
     label: 'SNS 관리',
     children: [
@@ -158,7 +145,6 @@ function AppRoutes() {
       '/campaigns/my':        '내 캠페인 — WELLINK AI',
       '/profile':          '프로필 — WELLINK AI',
       '/media':            'SNS 관리 — WELLINK AI',
-      '/settlement':       '정산 — WELLINK AI',
       '/login':            '로그인 — WELLINK AI',
       '/signup':           '회원가입 — WELLINK AI',
     }
@@ -186,7 +172,6 @@ function AppRoutes() {
         <Route path="/campaigns/:id/apply" element={<ProtectedRoute><CampaignApply /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
-        <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 
