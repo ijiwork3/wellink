@@ -393,6 +393,13 @@ export default function Media() {
         {connectModal && (
           <>
             <p className="text-sm text-gray-500 mb-3">{connectModal.description}</p>
+            {/* 인스타그램 연결 시 계정 주의 경고 — 원본 mypage/page.tsx L238-246 */}
+            {connectModal.id === 'instagram' && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 mb-3 space-y-1">
+                <p>· 본인 계정이 아닌 다른 계정을 입력하면 제재가 이루어질 수 있습니다.</p>
+                <p>· 기존 계정과 다른 계정을 입력하면 연결된 기존 데이터가 사라지거나 다시 수집될 수 있습니다.</p>
+              </div>
+            )}
             <input
               type="text"
               value={urlInput}
