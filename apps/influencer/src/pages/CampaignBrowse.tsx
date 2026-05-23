@@ -5,7 +5,7 @@ import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet } from '@wellink/ui'
+import { useQAMode, CustomSelect, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
@@ -48,6 +48,8 @@ export default function CampaignBrowse() {
   const applications = useApplications()
   const [sort, setSort] = useState<SortKey>('deadline')
   const [selectedChannel, setSelectedChannel] = useState('전체')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 30
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
   const loading = qa === 'loading'
   const [quickViewId, setQuickViewId] = useState<number | null>(qa === 'modal-detail' ? 1 : null)
@@ -93,6 +95,12 @@ export default function CampaignBrowse() {
   }, [selectedCategory, selectedChannel, search, sort])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
+
+  // 필터·검색 변경 시 첫 페이지로 리셋
+  useEffect(() => { setPage(1) }, [selectedCategory, selectedChannel, search, sort])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   if (qa === 'error') {
     return (
@@ -184,6 +192,7 @@ export default function CampaignBrowse() {
         {!loading && (
           <p className="text-sm text-gray-500 mb-4 mt-1">
             총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
+            {totalPages > 1 && <span className="ml-1">({page}/{totalPages} 페이지)</span>}
           </p>
         )}
 
@@ -193,18 +202,29 @@ export default function CampaignBrowse() {
             {Array.from({ length: 6 }).map((_, i) => <CampaignSkeletonCard key={i} />)}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
-            {filtered.map(c => (
-              <CampaignCard
-                key={c.id}
-                campaign={c}
-                liked={bookmarks.has(c.id)}
-                applied={applications.has(c.id)}
-                onToggleLike={toggleLike}
-                onCardClick={handleCardClick}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+              {paginated.map(c => (
+                <CampaignCard
+                  key={c.id}
+                  campaign={c}
+                  liked={bookmarks.has(c.id)}
+                  applied={applications.has(c.id)}
+                  onToggleLike={toggleLike}
+                  onCardClick={handleCardClick}
+                />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={p => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                />
+              </div>
+            )}
+          </>
         ) : (
           <EmptyState
             variant="search"
