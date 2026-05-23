@@ -5,7 +5,7 @@ import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, ChipSelect, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
+import { useQAMode, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
 
 function CampaignSkeletonCard() {
@@ -125,13 +125,23 @@ export default function CampaignBrowse() {
         </div>
 
         {/* 카테고리 탭 */}
-        <div className="mb-5">
-          <ChipSelect
-            options={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
-            value={selectedCategory}
-            onChange={v => { setSelectedCategory(v); setSearch('') }}
-            selectClassName="w-full"
-          />
+        <div className="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 w-max">
+            {BROWSE_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => { setSelectedCategory(cat); setSearch('') }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                  selectedCategory === cat
+                    ? 'text-white bg-brand-green shadow-sm'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-green-border hover:text-brand-green-text'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 결과 수 */}
