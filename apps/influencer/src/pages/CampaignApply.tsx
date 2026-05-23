@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import Markdown from 'react-markdown'
 import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen, ExternalLink, HelpCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
@@ -41,6 +42,8 @@ export default function CampaignApply() {
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const [addrSearchOpen, setAddrSearchOpen] = useState(false)
+  const [addrQuery, setAddrQuery] = useState('')
 
   // 사용자가 input 수정하면 해당 필드 에러 해소 (cold-review 7차 H6)
   const clearError = useCallback((key: string) => {
@@ -252,13 +255,15 @@ export default function CampaignApply() {
             </div>
           )}
 
-          {/* 필수 가이드 — 원본 CampaignApplyForm.tsx:452-458 */}
+          {/* 필수 가이드 — 원본 CampaignApplyForm.tsx L450-457: ToastEditorViewer로 마크다운 렌더링 */}
           {campaign.detailMissionDescription && (
             <div className="border-t border-gray-100 px-4 py-3">
               <p className="text-xs font-semibold text-gray-500 flex items-center gap-1 mb-1.5">
                 <BookOpen size={11} className="text-brand-green" aria-hidden="true" />필수 가이드
               </p>
-              <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.detailMissionDescription}</p>
+              <div className="text-sm text-gray-700 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
+                <Markdown>{campaign.detailMissionDescription}</Markdown>
+              </div>
             </div>
           )}
         </div>
@@ -381,11 +386,7 @@ export default function CampaignApply() {
                         className={`${fieldCls(false)} flex-1 tabular-nums`}
                       />
                       <button
-                        onClick={() => {
-                          setDeliveryZip('06234')
-                          setDeliveryAddr('서울 강남구 테헤란로 123')
-                          clearError('deliveryAddr')
-                        }}
+                        onClick={() => { setAddrQuery(''); setAddrSearchOpen(true) }}
                         className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
                         주소 검색
@@ -513,6 +514,64 @@ export default function CampaignApply() {
         )}
 
       </div>
+
+      {/* 주소 검색 모달 — 원본은 Kakao Postcode API(handleOpenPostcode L364-392). mock 환경에서 샘플 주소 목록으로 대체 */}
+      {addrSearchOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end @[640px]:items-center justify-center bg-black/40"
+          onClick={() => setAddrSearchOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-t-2xl @[640px]:rounded-2xl shadow-2xl overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100">
+              <p className="text-base font-bold text-gray-900">주소 검색</p>
+              <button
+                onClick={() => setAddrSearchOpen(false)}
+                className="text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg p-1"
+                aria-label="닫기"
+              >✕</button>
+            </div>
+            <div className="px-4 pt-3 pb-2">
+              <input
+                type="text"
+                value={addrQuery}
+                onChange={e => setAddrQuery(e.target.value)}
+                placeholder="도로명, 건물명, 지번 검색"
+                autoFocus
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+              />
+            </div>
+            <div className="overflow-y-auto max-h-64 px-2 pb-3">
+              {([
+                { zip: '06234', addr: '서울 강남구 테헤란로 123' },
+                { zip: '06135', addr: '서울 강남구 역삼로 100' },
+                { zip: '04799', addr: '서울 성동구 왕십리로 410' },
+                { zip: '03181', addr: '서울 종로구 세종대로 172' },
+                { zip: '07249', addr: '서울 영등포구 당산로 241' },
+              ] as const)
+                .filter(a => !addrQuery.trim() || a.addr.includes(addrQuery.trim()))
+                .map(a => (
+                  <button
+                    key={a.zip}
+                    onClick={() => {
+                      setDeliveryZip(a.zip)
+                      setDeliveryAddr(a.addr)
+                      clearError('deliveryAddr')
+                      setAddrSearchOpen(false)
+                    }}
+                    className="w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    <p className="text-sm font-medium text-gray-900">{a.addr}</p>
+                    <p className="text-xs text-gray-400 tabular-nums mt-0.5">({a.zip})</p>
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
   )
 }

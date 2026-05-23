@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Markdown from 'react-markdown'
 import { Heart, Calendar, Clock, Users, CheckCircle2, Gift, UserCheck, FileText, Package, Footprints, Hash, Copy, Share2, Bell, Layers, Star, BookOpen } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
@@ -299,14 +300,16 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
             )
           })()}
 
-          {/* 필수 가이드 — 원본 CampaignDetail.tsx L301-308 */}
+          {/* 필수 가이드 — 원본 CampaignApplyForm.tsx L450-457: ToastEditorViewer로 마크다운 렌더링 */}
           {campaign.detailMissionDescription && (
             <div className={sectionCls}>
               <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
                 <BookOpen size={14} className="text-brand-green" aria-hidden="true" />필수 가이드
               </p>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.detailMissionDescription}</p>
+                <div className="text-sm text-gray-700 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                  <Markdown>{campaign.detailMissionDescription}</Markdown>
+                </div>
               </div>
             </div>
           )}
