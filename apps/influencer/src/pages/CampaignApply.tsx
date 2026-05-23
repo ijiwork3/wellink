@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen, ExternalLink } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen, ExternalLink, HelpCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
-import { useToast, ErrorState, TIMER_MS } from '@wellink/ui'
+import { useToast, ErrorState, TIMER_MS, Tooltip } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
 import { useApplications } from '../services/userState'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
@@ -170,19 +170,33 @@ export default function CampaignApply() {
       <div className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
         <h1 className="sr-only">{pageTitle}</h1>
 
-        {/* view 모드 배너 */}
+        {/* view 모드 배너 + 선정 상태 배지 — 원본 CampaignApplyForm.tsx L798-817 */}
         {isViewMode && (
-          <div className="flex items-center justify-between gap-2 p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
-            <div className="flex items-center gap-2 min-w-0">
-              <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-              <span className="text-sm font-medium text-brand-green-text truncate">신청 완료된 정보예요</span>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2 p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
+              <div className="flex items-center gap-2 min-w-0">
+                <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" aria-hidden="true" />
+                <span className="text-sm font-medium text-brand-green-text truncate">신청 완료된 정보예요</span>
+              </div>
+              <button
+                onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
+                className="shrink-0 flex items-center gap-1 text-sm text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Pencil size={14} aria-hidden="true" />수정하기
+              </button>
             </div>
-            <button
-              onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
-              className="shrink-0 flex items-center gap-1 text-sm text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              <Pencil size={14} aria-hidden="true" />수정하기
-            </button>
+            {appliedData?.selectionStatus && (
+              <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-100">
+                <span className="text-sm text-gray-500">선정 상태</span>
+                <span className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${
+                  appliedData.selectionStatus === 'selected'
+                    ? 'bg-brand-green-bg text-brand-green-text'
+                    : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {appliedData.selectionStatus === 'selected' ? '선정' : '검토 중'}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -256,7 +270,7 @@ export default function CampaignApply() {
             <User size={14} className="text-gray-400 flex-shrink-0" />
             <span className="text-sm text-gray-900 truncate">{mockProfile.name}</span>
           </div>
-          {/* SNS 연결 정보 — 원본 CampaignApplyForm.tsx L479-518: 선정 후 변경 불가 안내 */}
+          {/* SNS 연결 정보 — 원본 CampaignApplyForm.tsx L479-518: 선정 후 변경 불가 안내 + HelpCircle tooltip */}
           {mockProfile.instagramConnected && (
             <div className="flex items-start gap-2.5 min-w-0">
               <AtSign size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
@@ -264,6 +278,12 @@ export default function CampaignApply() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
                   <span className="text-xs text-gray-400 whitespace-nowrap">인스타그램</span>
+                  {/* 원본 CampaignApplyForm.tsx L490-505: HelpCircle 툴팁 "마이페이지에서만 수정 가능" */}
+                  <Tooltip content="등록한 SNS는 마이페이지 내에서만 수정이 가능합니다">
+                    <button type="button" aria-label="SNS 수정 안내" className="w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                      <HelpCircle size={11} className="text-gray-500" aria-hidden="true" />
+                    </button>
+                  </Tooltip>
                 </div>
                 {!isViewMode && (
                   <p className="text-xs text-gray-400 mt-0.5 break-keep">등록한 SNS는 선정 후 변경할 수 없습니다.</p>

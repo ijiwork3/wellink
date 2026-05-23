@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { BottomSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
+import { BottomSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
@@ -58,7 +58,6 @@ export default function MyCampaign() {
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
-  const [postViewModal, setPostViewModal] = useState<MyCampaign | null>(null)
   const [contentUrl, setContentUrl] = useState('')
   const [guideAgreed, setGuideAgreed] = useState(false)
   const [search, setSearch] = useState('')
@@ -281,6 +280,16 @@ export default function MyCampaign() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                             <StatusBadge status={c.status} size="sm" />
+                            {/* 원본 mypage L122-124 getDDayLabel() — 콘텐츠 마감 D-day */}
+                            {c.contentDeadline && (() => {
+                              const dd = getDDay(c.contentDeadline)
+                              if (!dd) return null
+                              return (
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${dd.urgent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
+                                  {dd.label}
+                                </span>
+                              )
+                            })()}
                             <span className="text-sm text-gray-500">{c.channel}</span>
                           </div>
                           <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
@@ -306,6 +315,16 @@ export default function MyCampaign() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                             <StatusBadge status={c.status} size="sm" />
+                            {/* 원본 mypage L122-124 getDDayLabel() — 콘텐츠 마감 D-day */}
+                            {c.contentDeadline && (() => {
+                              const dd = getDDay(c.contentDeadline)
+                              if (!dd) return null
+                              return (
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${dd.urgent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
+                                  {dd.label}
+                                </span>
+                              )
+                            })()}
                             <span className="text-sm text-gray-500">{c.channel}</span>
                           </div>
                           <p className="text-base font-bold text-gray-900 line-clamp-2 break-keep">{c.name}</p>
@@ -361,10 +380,14 @@ export default function MyCampaign() {
                         </button>
                       )
                       if (action === '본인이 제출한 컨텐츠') return (
+                        // 원본 mypage L871-903: postUrl이 있으면 새 탭으로 직접 이동, 없으면 안내 토스트
                         <button key={action}
-                          onClick={() => setPostViewModal(c)}
+                          onClick={() => {
+                            if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
+                            else showToast('제출된 콘텐츠가 없어요', 'info')
+                          }}
                           className="flex-1 min-w-[120px] flex items-center justify-center gap-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                          <FileText size={14} />본인이 제출한 컨텐츠
+                          <ExternalLink size={14} />본인이 제출한 컨텐츠
                         </button>
                       )
                       if (action === '취소') return (
@@ -475,38 +498,6 @@ export default function MyCampaign() {
             <button onClick={() => cancelModal && handleCancel(cancelModal.id)} className="flex-1 bg-red-500 text-white py-3 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">취소하기</button>
           </div>
         </div>
-      </BottomSheet>
-
-      {/* 신청 정보 보기 바텀시트 — mc-id가 mockCampaigns(number)와 분리되어 페이지 이동 대신 inline 표시 */}
-      {/* 본인이 제출한 컨텐츠 — 원본 mypage/page.tsx L871-903: 완료 캠페인 postUrl 확인 */}
-      <BottomSheet open={!!postViewModal} onClose={() => setPostViewModal(null)} title="본인이 제출한 컨텐츠">
-        {postViewModal && (
-          <div className="space-y-3">
-            <div className="bg-gray-50 rounded-xl p-4 space-y-1">
-              <p className="text-sm font-semibold text-gray-700">{postViewModal.name}</p>
-              <p className="text-sm text-gray-500">{postViewModal.brand} · {postViewModal.channel}</p>
-            </div>
-            {postViewModal.postUrl ? (
-              <div className="flex items-start gap-2.5 p-4 rounded-xl border border-gray-100">
-                <ExternalLink size={14} className="text-brand-green mt-0.5 shrink-0" aria-hidden="true" />
-                <a
-                  href={postViewModal.postUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-brand-green-text hover:underline break-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-                >
-                  {postViewModal.postUrl}
-                </a>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-4">제출된 콘텐츠가 없어요</p>
-            )}
-            <button
-              onClick={() => setPostViewModal(null)}
-              className="w-full py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >닫기</button>
-          </div>
-        )}
       </BottomSheet>
 
       <BottomSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보">

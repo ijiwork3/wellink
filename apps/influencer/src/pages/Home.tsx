@@ -4,7 +4,7 @@ import { Compass, ChevronRight, Heart, TrendingUp, Wallet, AlertCircle } from 'l
 import Layout from '../components/Layout'
 import { useQAMode, fmtDate, StatusBadge, fmtFollowers, ErrorState, EmptyState, Skeleton } from '@wellink/ui'
 import { mockMyCampaigns } from '../services/mock/campaigns'
-import { mockProfile, mockCampaignSummary, mockInstaStats } from '../services/mock/profile'
+import { mockProfile, mockCampaignSummary, mockInstaStats, INFLUENCER_TYPES } from '../services/mock/profile'
 import { useBookmarks } from '../services/userState'
 
 const SUMMARY_CARDS = [
@@ -82,12 +82,29 @@ export default function Home() {
       <div className="space-y-4">
         <h1 className="sr-only">홈</h1>
 
-        {/* 인사말 배너 — 인스타 미연결이면 follower 카운트는 비공개, 연결 안내로 대체 */}
+        {/* 인사말 배너 — 원본 mypage L353-383: 프로필 이미지(gradient fallback) + displayType 배지 */}
         <div className="bg-gradient-to-br from-brand-green to-brand-green/80 rounded-2xl p-5 text-white">
-          <p className="text-sm font-medium opacity-80 mb-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
-          <p className="text-lg font-bold truncate">{mockProfile.name}님</p>
+          <div className="flex items-center gap-3 mb-1">
+            {/* 원본 mypage L357-367: profileImageUrl 있으면 img, 없으면 gradient circle */}
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">
+              🏃
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-lg font-bold truncate">{mockProfile.name}님</p>
+                {/* 원본 mypage L374-376: displayType 배지 */}
+                {(() => {
+                  const t = INFLUENCER_TYPES.find(t => t.value === mockProfile.influencerType)
+                  return t ? (
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/20 whitespace-nowrap">{t.label}</span>
+                  ) : null
+                })()}
+              </div>
+              <p className="text-sm font-medium opacity-80 mt-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
+            </div>
+          </div>
           {mockProfile.instagramConnected ? (
-            <p className="text-sm opacity-80 mt-1 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+            <p className="text-sm opacity-80 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
           ) : (
             <button
               onClick={() => navigate('/media')}

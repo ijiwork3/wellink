@@ -322,6 +322,8 @@ export interface AppliedData {
   deliveryAddr?: string
   deliveryAddrDetail?: string
   answers: Record<string, string>
+  /** 원본 CampaignApplyForm L800-814: view 모드에서 선정 상태 배지 — 'selected'|'reviewing'|undefined */
+  selectionStatus?: 'selected' | 'reviewing'
 }
 
 /**
@@ -337,6 +339,7 @@ export const mockAppliedData: Record<string, AppliedData> = {
     deliveryZip: '06234',
     deliveryAddr: '서울 강남구 테헤란로 123',
     deliveryAddrDetail: '101동 202호',
+    selectionStatus: 'reviewing',
     answers: {
       q1: '매일 아침 6시 헬스장, 주 5회 웨이트 트레이닝 및 주 2회 러닝',
       q2: '일부 실천 중입니다',
@@ -349,6 +352,7 @@ export const mockAppliedData: Record<string, AppliedData> = {
     deliveryZip: '06234',
     deliveryAddr: '서울 강남구 테헤란로 123',
     deliveryAddrDetail: '101동 202호',
+    selectionStatus: 'selected',
     answers: {
       q1: '매일 아침 6시 헬스장, 주 5회 웨이트 트레이닝 및 주 2회 러닝',
       q2: '일부 실천 중입니다',
