@@ -140,7 +140,7 @@ export default function Profile() {
 
   if (qa === 'loading') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-3 mb-4">
@@ -164,7 +164,7 @@ export default function Profile() {
 
   if (qa === 'error') {
     return (
-      <Layout showProfileHeader={false}>
+      <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="프로필을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -173,7 +173,7 @@ export default function Profile() {
   }
 
   return (
-    <Layout showProfileHeader={false}>
+    <Layout>
       <div className="space-y-4 max-w-xl">
         <h1 className="sr-only">내 정보</h1>
 

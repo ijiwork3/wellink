@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Tooltip } from '@wellink/ui'
+import { ResponsiveSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
 import { ko주격조사, fmtRelativeDate } from '../utils/format'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 interface Platform {
   id: string
@@ -21,31 +22,15 @@ interface Platform {
   placeholder: string
 }
 
-interface ContentPost {
-  id: string
-  emoji: string
-  likes: number
-  comments: number
-  date: string
-}
-
 const PLATFORM_META: Omit<Platform, 'connected' | 'url' | 'followers' | 'engagementRate'>[] = [
   { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', description: '아이디를 연결하면 팔로워 수가 자동으로 확인돼요', placeholder: '@인스타그램 아이디' },
-  { id: 'naver',     name: '네이버 블로그', iconBg: PLATFORM_COLOR.naver, icon: 'N', description: '블로그 URL을 연결하면 신청 시 자동 검증돼요', placeholder: 'https://blog.naver.com/아이디' },
-  { id: 'youtube',   name: '유튜브', iconBg: PLATFORM_COLOR.youtube, icon: '▶', description: '채널 URL을 연결하면 구독자 수가 자동 확인돼요', placeholder: 'https://www.youtube.com/@채널명' },
 ]
 
-const MOCK_CONTENT: ContentPost[] = [
-  { id: '1', emoji: '🏋️', likes: 420, comments: 23, date: '4/24' },
-  { id: '2', emoji: '🧘', likes: 381, comments: 15, date: '4/22' },
-  { id: '3', emoji: '🥗', likes: 298, comments: 11, date: '4/20' },
-  { id: '4', emoji: '🏃', likes: 275, comments: 9,  date: '4/18' },
-  { id: '5', emoji: '💪', likes: 341, comments: 20, date: '4/16' },
-  { id: '6', emoji: '🚴', likes: 190, comments: 7,  date: '4/14' },
-  { id: '7', emoji: '🤸', likes: 258, comments: 13, date: '4/12' },
-  { id: '8', emoji: '🏊', likes: 219, comments: 8,  date: '4/10' },
-  { id: '9', emoji: '⛹️', likes: 177, comments: 5,  date: '4/8' },
-]
+const CONTENT_PAGE_SIZE = 20
+const MOCK_CONTENT = Array.from({ length: 100 }, (_, i) => ({
+  id: String(i + 1),
+  src: getThumbnailFromPool(i + 200).replace('w=360&h=640', 'w=400&h=400'),
+}))
 
 export default function Media() {
   const qa = useQAMode()
@@ -55,18 +40,15 @@ export default function Media() {
     if (qa === 'all-disconnected') return base
     if (qa === 'all-connected') return [
       { ...PLATFORM_META[0], connected: true, url: mockProfile.instagram, followers: mockInstaStats.followers, engagementRate: mockInstaStats.engagementRate },
-      { ...PLATFORM_META[1], connected: true, url: 'myblog', followers: 3200, engagementRate: 2.8 },
-      { ...PLATFORM_META[2], connected: true, url: 'chanChannel', followers: 1200, engagementRate: 3.5 },
     ]
     // mockProfile.instagramConnected를 단일 출처로 — Home/Media 상태 sync (cold-review D4 후속)
     return [
       { ...PLATFORM_META[0], connected: mockProfile.instagramConnected, url: mockProfile.instagramConnected ? mockProfile.instagram : undefined, followers: mockProfile.instagramConnected ? mockInstaStats.followers : undefined, engagementRate: mockProfile.instagramConnected ? mockInstaStats.engagementRate : undefined },
-      { ...PLATFORM_META[1], connected: false },
-      { ...PLATFORM_META[2], connected: false },
     ]
   }
 
   const [platforms, setPlatforms] = useState<Platform[]>(initPlatforms)
+  const [contentPage, setContentPage] = useState(1)
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [connectModal, setConnectModal] = useState<Platform | null>(null)
@@ -152,62 +134,42 @@ export default function Media() {
     setDisconnectModal(null)
   }
 
-  const connectedCount = platforms.filter(p => p.connected).length
-  const instaPlatform = platforms.find(p => p.id === 'instagram')
+  const instaPlatform = platforms[0]
 
   return (
     <Layout>
       <div className="space-y-4 max-w-lg">
-        <h1 className="sr-only">SNS 관리</h1>
+        <h1 className="sr-only">인스타 관리</h1>
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
           <div className="bg-white rounded-2xl border border-brand-green-border shadow-sm p-5">
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="text-base flex-shrink-0" aria-hidden="true">📷</span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    {/* posts=0 경고 아이콘 — 원본 mypage L1373-1406 */}
-                    {mockPosts === 0 && (
-                      <AlertTriangle size={14} className="text-red-500 shrink-0" aria-label="게시물 수 0개 안내" />
-                    )}
-                    <p className={`text-sm font-semibold truncate ${mockPosts === 0 ? 'text-red-600' : 'text-gray-900'}`}>@{instaPlatform.url}</p>
-                  </div>
-                  <p className="text-xs text-gray-500">인스타그램</p>
-                </div>
-              </div>
-              {/* 업데이트 시간 + 새로고침 + 인스타 프로필 링크 — 원본 mypage L1326-1330, L1435-1462 */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                {/* 원본 mypage L1463-1498: hover 시 정확한 업데이트 시각 yyyy-MM-dd HH:mm:ss 표시 */}
-                <Tooltip content={(() => {
-                  const d = new Date(mockInstaStats.lastUpdated)
-                  const pad = (n: number) => String(n).padStart(2, '0')
-                  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
-                })()}>
-                  <span className="text-xs text-gray-400 tabular-nums whitespace-nowrap cursor-default">
-                    {fmtRelativeDate(mockInstaStats.lastUpdated)}
-                  </span>
-                </Tooltip>
-                {/* 인스타 프로필 외부 링크 — 원본 mypage L1436-1446 */}
-                {instaPlatform?.url && (
-                  <a
-                    href={`https://www.instagram.com/${instaPlatform.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="인스타 프로필로 이동"
-                    className="flex items-center justify-center w-6 h-6 rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                  >
-                    <ExternalLink size={12} aria-hidden="true" />
-                  </a>
+            {/* 패널 헤더 */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-1.5 min-w-0">
+                {mockPosts === 0 && (
+                  <AlertTriangle size={13} className="text-red-500 shrink-0" />
                 )}
+                {/* 원본 mypage L1436-1446: 핸들 + 외부링크 아이콘 함께 <a> 안에 */}
+                <a
+                  href={`https://www.instagram.com/${instaPlatform.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline truncate ${mockPosts === 0 ? 'text-red-600' : 'text-gray-900'}`}
+                  aria-label="인스타 프로필로 이동"
+                >
+                  @{instaPlatform.url}
+                  <ExternalLink size={11} className="text-gray-400 flex-shrink-0" aria-hidden="true" />
+                </a>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   aria-label="인스타 통계 새로고침"
                   onClick={() => showToast('통계를 업데이트했어요', 'success')}
-                  className="flex items-center justify-center w-6 h-6 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
-                  <RefreshCw size={13} aria-hidden="true" />
+                  <RefreshCw size={14} aria-hidden="true" />
                 </button>
-                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1 whitespace-nowrap">
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text flex items-center gap-1 whitespace-nowrap">
                   <CheckCircle2 size={12} />연결됨
                 </span>
               </div>
@@ -281,111 +243,78 @@ export default function Media() {
                 <BarChart3 size={14} className="text-brand-green" />
                 <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
               </div>
-              {/* 원본 mypage L1583: md:grid-cols-6 (태블릿+ 1행) */}
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
-                {MOCK_CONTENT.map(post => (
-                  <div key={post.id} className="aspect-square bg-brand-green-bg rounded-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden group">
-                    <span className="text-2xl" aria-hidden="true">{post.emoji}</span>
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center gap-0.5">
-                      <span className="text-white text-xs font-medium flex items-center gap-0.5 whitespace-nowrap">
-                        <Heart size={12} fill="white" aria-hidden="true" />
-                        {post.likes.toLocaleString('ko-KR')}
-                      </span>
-                      <span className="text-white text-xs flex items-center gap-0.5 whitespace-nowrap">
-                        <MessageCircle size={12} aria-hidden="true" />
-                        {post.comments.toLocaleString('ko-KR')}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">{post.date}</p>
+              {/* 5열 × 4행 = 20개/페이지 */}
+              <div className="grid grid-cols-5 gap-1.5">
+                {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
+                  <div key={post.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100">
+                    <img
+                      src={post.src}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      onError={e => { e.currentTarget.src = getPlaceholderDataUri(post.id) }}
+                    />
                   </div>
                 ))}
               </div>
+              <Pagination
+                total={MOCK_CONTENT.length}
+                page={contentPage}
+                pageSize={CONTENT_PAGE_SIZE}
+                onChange={setContentPage}
+                showSummary={false}
+                className="mt-3"
+              />
+            </div>
+            {/* 카드 하단: 계정 변경 — 원본 mypage L1436: 연결된 상태에서 아이디 변경 */}
+            <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => { setUrlInput(instaPlatform?.url ?? ''); setConnectModal(instaPlatform ?? null) }}
+                className="text-xs text-gray-500 hover:text-brand-green-text transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+              >
+                계정 변경
+              </button>
             </div>
           </div>
         )}
 
-        {/* SNS 관리 헤더 */}
-        <div className="flex items-center justify-between">
+        {/* 인스타 관리 헤더 — 미연결 상태에서만 표시 */}
+        {!instaPlatform?.connected && (
           <div className="flex items-center gap-2">
             <Link2 size={16} className="text-brand-green" />
-            <h2 className="text-base font-semibold text-gray-900">SNS 관리</h2>
+            <h2 className="text-base font-semibold text-gray-900">인스타 관리</h2>
           </div>
-          <span className="text-sm text-gray-500">{connectedCount}/{platforms.length} 연결됨</span>
-        </div>
+        )}
 
-        {/* 플랫폼 카드들 */}
-        {platforms.map(p => (
-          <div key={p.id} className={`bg-white rounded-2xl border shadow-sm p-4 transition-all ${p.connected ? 'border-brand-green-border' : 'border-gray-100'}`}>
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                {/* 아이콘 + 연결 인디케이터 */}
-                <div className="relative shrink-0">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: p.iconBg }}>
-                    {p.icon}
-                  </div>
-                  {p.connected && (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                      <CheckCircle2 size={14} className="text-brand-green" />
+        {/* 미연결 상태에서만: 플랫폼 카드 + 안내 문구 */}
+        {!instaPlatform?.connected && (
+          <>
+            {platforms.map(p => (
+              <div key={p.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: p.iconBg }}>
+                      {p.icon}
                     </div>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <p className="text-sm font-medium text-gray-900 break-keep">{p.name}</p>
-                    {p.connected && (
-                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">연결됨</span>
-                    )}
-                  </div>
-
-                  {p.connected && p.url ? (
-                    <p className="text-sm text-gray-500 truncate">{p.id === 'instagram' ? `@${p.url}` : p.url}</p>
-                  ) : (
-                    <p className="text-sm text-gray-500 break-keep">{p.description}</p>
-                  )}
-
-                  {/* 연결된 계정 지표 */}
-                  {p.connected && p.followers && (
-                    <div className="flex items-center gap-x-3 gap-y-1 mt-2 flex-wrap">
-                      <span className="flex items-center gap-1 text-sm text-gray-600 whitespace-nowrap">
-                        <Users size={14} className="text-gray-400" />
-                        <strong className="tabular-nums">{fmtFollowers(p.followers)}</strong> 팔로워
-                      </span>
-                      {p.engagementRate != null && (
-                        <span className="flex items-center gap-1 text-sm whitespace-nowrap">
-                          <TrendingUp size={14} className="text-gray-400" />
-                          <strong className={`${getEngagementColor(p.engagementRate)} tabular-nums`}>{p.engagementRate}%</strong>
-                          <span className="text-gray-400">참여율</span>
-                        </span>
-                      )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900">{p.name}</p>
+                      <p className="text-sm text-gray-500 break-keep mt-0.5">{p.description}</p>
                     </div>
-                  )}
+                  </div>
+                  <button
+                    onClick={() => { setUrlInput(''); setConnectModal(p) }}
+                    className="shrink-0 text-sm px-3.5 py-2.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    연결하기
+                  </button>
                 </div>
               </div>
-
-              {/* 액션 버튼 — 최소 40px 터치 타깃 */}
-              {p.connected ? (
-                <button
-                  onClick={() => setDisconnectModal(p)}
-                  className="shrink-0 text-sm px-3 py-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  관리
-                </button>
-              ) : (
-                <button
-                  onClick={() => { setUrlInput(''); setConnectModal(p) }}
-                  className="shrink-0 text-sm px-3.5 py-2.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  연결하기
-                </button>
-              )}
+            ))}
+            <div className="p-4 rounded-xl bg-brand-green-bg border-l-[3px] border-brand-green">
+              <p className="text-sm text-gray-600 break-keep">인스타그램을 연결하면 캠페인 신청 시 팔로워 수가 자동으로 확인돼요</p>
             </div>
-          </div>
-        ))}
-
-        <div className="p-4 rounded-xl bg-brand-green-bg border-l-[3px] border-brand-green">
-          <p className="text-sm text-gray-600 break-keep">SNS 채널을 연결하면 캠페인 신청 시 팔로워·구독자 수가 자동으로 확인돼요</p>
-        </div>
+          </>
+        )}
       </div>
 
       {/* 채널 연결 */}

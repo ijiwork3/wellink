@@ -48,15 +48,14 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
       onClick={handleCardActivate}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardActivate() } }}
     >
-      {/* 마감임박 상단 띠 */}
-      {isUrgent && (
-        <div className="bg-orange-500 text-white text-xs font-semibold text-center py-1 tracking-wide whitespace-nowrap">
-          마감 임박
-        </div>
-      )}
-
       {/* 이미지 영역 — Unsplash 운동 사진 풀(seed=campaign.id로 deterministic). 실패 시 SVG 그라데이션 fallback. */}
       <div className="h-36 relative bg-gray-100 overflow-hidden">
+        {/* 마감임박 오버레이 띠 — 이미지 위 absolute */}
+        {isUrgent && (
+          <div className="absolute top-0 left-0 right-0 z-10 bg-orange-500/90 backdrop-blur-[2px] text-white text-xs font-semibold text-center py-1.5 tracking-wide whitespace-nowrap">
+            마감 임박
+          </div>
+        )}
         <img
           src={getThumbnailFromPool(campaign.id)}
           alt=""
@@ -66,7 +65,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
         />
         {showLike && (
           <button
-            className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="absolute top-3 right-3 z-20 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             onClick={handleLike}
             aria-pressed={liked}
             aria-label={liked ? '북마크 해제' : '북마크'}

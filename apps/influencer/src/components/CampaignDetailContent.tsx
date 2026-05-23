@@ -45,8 +45,8 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
   })()
   const isClosed = forceClosed || campaign.status === '종료' || applyEndExpired
 
-  // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형
-  const wrapCls = inModal ? '' : '@container'
+  // 모달 내부일 때는 카드 박스 없이 플랫하게, 페이지일 때는 @container 반응형 + PC에서 너비 제한
+  const wrapCls = inModal ? '' : '@container @[640px]:max-w-3xl @[640px]:mx-auto'
   const imgCls = inModal
     ? 'h-48 bg-gray-100 rounded-xl overflow-hidden mb-5 relative'
     : 'h-52 @[640px]:h-64 bg-gray-100 @[640px]:mx-6 @[640px]:mt-6 @[640px]:rounded-2xl overflow-hidden relative'
@@ -385,22 +385,24 @@ export default function CampaignDetailContent({ campaign, inModal = false, force
         className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3"
         style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
       >
-        {isClosed ? (
-          <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
-            마감된 캠페인이에요
-          </div>
-        ) : applied ? (
-          <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
-            <CheckCircle2 size={16} aria-hidden="true" />신청완료
-          </div>
-        ) : (
-          <button
-            onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            신청하기
-          </button>
-        )}
+        <div className="max-w-3xl mx-auto">
+          {isClosed ? (
+            <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+              마감된 캠페인이에요
+            </div>
+          ) : applied ? (
+            <div className="w-full py-3.5 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
+              <CheckCircle2 size={16} aria-hidden="true" />신청완료
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate(`/campaigns/${campaign.id}/apply`)}
+              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              신청하기
+            </button>
+          )}
+        </div>
       </div>
     )}
     </>

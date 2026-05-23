@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
@@ -15,6 +15,7 @@ type TabKey = '전체' | '진행중' | '완료' | '미선정'
 const STATUS_TABS: TabKey[] = ['전체', '진행중', '완료', '미선정']
 
 const ACTIVE_STATUSES: Set<string> = new Set(['지원완료', '검토중', '콘텐츠대기', '검수중'])
+
 
 function statusToTab(s: string): TabKey {
   if (ACTIVE_STATUSES.has(s)) return '진행중'
@@ -51,10 +52,16 @@ export default function MyCampaign() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const { showToast } = useToast()
+  const [searchParams] = useSearchParams()
+
+  // URL ?tab= 파라미터로 초기 탭 설정 (ProfileHeader 스탯 카드 클릭 시 진입)
+  const urlTab = searchParams.get('tab') as TabKey | null
+  const validTabs: TabKey[] = ['전체', '진행중', '완료', '미선정']
+  const initialTab: TabKey = urlTab && validTabs.includes(urlTab) ? urlTab : '전체'
 
   // 초기값은 useEffect에서 qa에 따라 동기화한다. lazy init과 useEffect의 분기 중복을 막기 위해 mockMyCampaigns를 시작값으로 둠.
   const [campaigns, setCampaigns] = useState<MyCampaign[]>(mockMyCampaigns)
-  const [activeTab, setActiveTab] = useState<TabKey>('전체')
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab)
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
@@ -116,7 +123,7 @@ export default function MyCampaign() {
 
   if (qa === 'loading') {
     return (
-      <Layout hideProfileHeaderMobile>
+      <Layout>
         <div className="space-y-4">
           <Skeleton shape="text" height={20} width="8rem" />
           <div className="flex gap-2">
@@ -142,7 +149,7 @@ export default function MyCampaign() {
 
   if (qa === 'error') {
     return (
-      <Layout hideProfileHeaderMobile>
+      <Layout>
         <div className="flex items-center justify-center min-h-[350px]">
           <ErrorState message="내 캠페인을 불러오지 못했어요" onRetry={() => window.location.reload()} />
         </div>
@@ -151,14 +158,14 @@ export default function MyCampaign() {
   }
 
   return (
-    <Layout hideProfileHeaderMobile>
+    <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">내 캠페인</h1>
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-gray-900">내 캠페인</h2>
-            <p className="text-sm text-gray-500 mt-0.5">총 {campaigns.length}개 참여 중</p>
+            <p className="text-sm text-gray-500 mt-0.5">총 {campaigns.length}개 진행 중</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
@@ -226,6 +233,43 @@ export default function MyCampaign() {
           </div>
         ) : (
           <div className="space-y-3">
+            {/* ── 원본 UI 비교용 (1개) ── */}
+            {filtered.length > 0 && (() => {
+              const c = filtered[0]
+              return (
+                <div className="relative">
+                  <span className="absolute -top-2 left-3 z-10 text-[10px] font-bold px-2 py-0.5 bg-zinc-700 text-white rounded-full">원본</span>
+                  <div className="group flex flex-col gap-3 p-5 rounded-xl border border-zinc-100 bg-white hover:border-lime-300 hover:shadow-md transition-all duration-200 cursor-pointer"
+                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                      <div className="relative w-full sm:w-20 h-40 sm:h-20 rounded-lg overflow-hidden border border-zinc-100 flex-shrink-0">
+                        <img src={getThumbnailFromPool(c.campaignRef ?? 1)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={e => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? 1) }} />
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
+                      </div>
+                      <div className="flex-1 w-full min-w-0">
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded border uppercase tracking-wider flex items-center gap-1 bg-blue-50 text-blue-600 border-blue-100">WAIT</span>
+                            <span className="text-xs font-medium text-zinc-500">{c.brand}</span>
+                          </div>
+                          <h3 className="font-bold text-zinc-900 text-base truncate pr-4 group-hover:text-lime-600 transition-colors">{c.name}</h3>
+                          <div className="flex items-center gap-x-4 gap-y-1 text-xs text-zinc-500 flex-wrap">
+                            <span className="px-2 flex items-center gap-1 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider bg-lime-100 text-lime-700">
+                              <AlertCircle size={12} className="text-zinc-400" />모집중
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-full sm:w-auto flex flex-row gap-2 flex-shrink-0">
+                        <button className="flex-1 sm:flex-none px-4 py-2.5 font-medium rounded-lg border text-sm whitespace-nowrap text-zinc-700 border-zinc-200 hover:bg-zinc-100 transition-colors">신청 취소</button>
+                        <button className="flex-1 sm:flex-none px-4 py-2.5 bg-zinc-900 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm whitespace-nowrap">수정하기</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+            {/* ── 워싱 UI ── */}
             {filtered.map(c => {
               const actions = getActions(c.status)
               // A: 원본 mypage/page.tsx L791-794 — ACTIVE/CONFIRMED 상태 모두에 배너 표시
@@ -264,7 +308,7 @@ export default function MyCampaign() {
                               const dd = getDDay(c.contentDeadline)
                               if (!dd) return null
                               return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${dd.urgent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
                                   {dd.label}
                                 </span>
                               )
@@ -299,7 +343,7 @@ export default function MyCampaign() {
                               const dd = getDDay(c.contentDeadline)
                               if (!dd) return null
                               return (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${dd.urgent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
                                   {dd.label}
                                 </span>
                               )
@@ -317,11 +361,6 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  {/* 진행 상황 */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className={`w-2 h-2 rounded-full ${c.status === '완료' ? 'bg-gray-400' : c.status === '미선정' ? 'bg-red-300' : 'bg-brand-green'}`} />
-                    <span className="text-sm text-gray-600 font-medium">{c.progress}</span>
-                  </div>
 
                   {/* 액션 버튼 — flex-wrap + min-w로 좁은 모바일(360px)에서 자연 줄바꿈 */}
                   <div className="flex flex-wrap gap-1.5">

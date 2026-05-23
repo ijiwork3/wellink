@@ -112,9 +112,8 @@ export default function CampaignBrowse() {
   return (
     <Layout showSidebar={false} showBottomTab pageTitle="진행 중인 캠페인" onBack={showBack ? () => navigate(-1) : undefined}>
       {/* 헤더 */}
-      <div className="px-4 @[640px]:px-6 pt-8 pb-5 bg-white">
+      <div className="px-4 @[640px]:px-6 pt-8 pb-5">
         <div className="max-w-screen-xl mx-auto">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">진행 중인 캠페인</h1>
           <p className="text-sm text-gray-500">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
         </div>
       </div>
@@ -170,7 +169,7 @@ export default function CampaignBrowse() {
         </div>
 
         {/* 채널 필터 */}
-        <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-0.5 mb-4 scrollbar-hide">
           {CHANNELS.map(({ id, label, Icon }) => (
             <button
               key={id}
@@ -189,7 +188,7 @@ export default function CampaignBrowse() {
 
         {/* 결과 수 */}
         {!loading && (
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-4 mt-1">
             총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
           </p>
         )}
