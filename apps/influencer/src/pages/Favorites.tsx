@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { Heart, Users, Gift, Compass } from 'lucide-react'
+import { Heart, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, fmtDate, getDDay, getDDayBadgeStyle, EmptyState, ErrorState, PROGRESS_THRESHOLD, Skeleton, StatusBadge, SEMANTIC_COLORS } from '@wellink/ui'
+import { useQAMode, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockCampaigns } from '../services/mock/campaigns'
 import { useBookmarks } from '../services/userState'
-import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
+import CampaignCard from '../components/CampaignCard'
 
 export default function Favorites() {
   const qa = useQAMode()
@@ -32,28 +32,18 @@ export default function Favorites() {
             <Skeleton shape="text" height={20} width="7rem" />
             <Skeleton shape="card" height={28} width="6rem" />
           </div>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <Skeleton shape="card" height={56} width={56} className="shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="flex gap-2">
-                    <Skeleton shape="circle" height={16} width="3.5rem" />
-                    <Skeleton shape="circle" height={16} width="2.5rem" />
-                  </div>
-                  <Skeleton shape="text" height={16} width="75%" />
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <Skeleton shape="rect" className="aspect-video w-full" />
+                <div className="p-4 space-y-2.5">
+                  <div className="flex gap-2"><Skeleton shape="circle" height={16} width="3.5rem" /><Skeleton shape="circle" height={16} width="2.5rem" /></div>
+                  <Skeleton shape="text" height={16} width="80%" />
                   <Skeleton shape="text" height={12} width="50%" />
                 </div>
-                <Skeleton shape="circle" height={28} width={28} className="shrink-0" />
               </div>
-              <Skeleton shape="card" height={32} width="100%" />
-              <div className="flex gap-3 items-center">
-                <Skeleton shape="text" height={12} width="4rem" />
-                <Skeleton shape="circle" height={6} className="flex-1" />
-                <Skeleton shape="text" height={12} width="3.5rem" />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </Layout>
     )
@@ -104,87 +94,15 @@ export default function Favorites() {
             />
           </div>
         ) : (
-          <div className="space-y-3">
-            {visible.map(c => {
-              const dday = getDDay(c.applyEnd)
-              const progressPct = Math.min(100, Math.round((c.applied / (c.headcount || 1)) * 100))
-              return (
-                <div
-                  key={c.id}
-                  role="button"
-                  tabIndex={0}
-                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer hover:border-gray-200 hover:shadow-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                  onClick={() => navigate(`/campaigns/${c.id}`)}
-                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/campaigns/${c.id}`) } }}
-                >
-                  {/* 이미지: 모바일=풀폭 h-40 / PC=없음 (info row에 소형 포함) */}
-                  <div className="@[480px]:hidden w-full h-40 bg-gray-100 overflow-hidden">
-                    <img
-                      src={getThumbnailFromPool(c.id)}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
-                    />
-                  </div>
-
-                  <div className="p-4">
-                    {/* info row */}
-                    <div className="flex items-start gap-3">
-                      {/* PC-only 소형 썸네일 */}
-                      <div className="hidden @[480px]:block w-24 h-24 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
-                        <img
-                          src={getThumbnailFromPool(c.id)}
-                          alt=""
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                          <StatusBadge status={c.status} size="sm" dot={false} />
-                          <span className={`${getDDayBadgeStyle(dday.color, dday.pulse)} whitespace-nowrap tabular-nums`}>{dday.label}</span>
-                        </div>
-                        <p className="text-sm font-semibold text-gray-900 line-clamp-1">{c.name}</p>
-                        <p className="text-sm text-gray-500 mt-0.5">{c.brand} · {c.channel}</p>
-                      </div>
-                      <button
-                        onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                        aria-label={bookmarks.has(c.id) ? '관심 해제' : '관심'}
-                        className="shrink-0 p-3 -m-1.5 rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                      >
-                        <Heart
-                          size={16}
-                          fill={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : 'none'}
-                          color={bookmarks.has(c.id) ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
-                        />
-                      </button>
-                    </div>
-
-                    {c.reward && (
-                      <div className="flex items-start gap-1.5 mt-3 px-2.5 py-1.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-                        <Gift size={14} className="text-brand-green shrink-0 mt-0.5" />
-                        <span className="text-sm font-medium text-gray-700 line-clamp-2 break-keep">{c.reward}</span>
-                      </div>
-                    )}
-
-                    <div className="mt-2.5 flex items-center gap-2">
-                      <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
-                        <Users size={14} aria-hidden="true" />{c.applied}/{c.headcount}명
-                      </span>
-                      <div className="flex-1 min-w-0 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${progressPct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`}
-                          style={{ width: `${progressPct}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-gray-500 shrink-0 tabular-nums whitespace-nowrap">마감 {fmtDate(c.applyEnd)}</span>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+            {visible.map(c => (
+              <CampaignCard
+                key={c.id}
+                campaign={c}
+                liked={bookmarks.has(c.id)}
+                onToggleLike={toggleBookmark}
+              />
+            ))}
           </div>
         )}
       </div>

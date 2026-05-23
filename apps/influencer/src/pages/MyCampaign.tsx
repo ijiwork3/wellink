@@ -248,21 +248,35 @@ export default function MyCampaign() {
               // '콘텐츠대기' = ACTIVE (선정 후 업로드 대기), '검수중' = CONFIRMED (업로드 후 검수 중)
               const urgent = (c.status === '콘텐츠대기' || c.status === '검수중') && isDeadlineUrgent(c.contentDeadline)
               return (
-                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm p-4 transition-all ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
+                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
                   {/* 마감 임박 알림 */}
                   {urgent && (
-                    <div className="flex items-start gap-1.5 mb-3 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-xl break-keep">
+                    <div className="flex items-start gap-1.5 mx-4 mt-4 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-xl break-keep">
                       <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
                       <span>콘텐츠 제출 마감이 {fmtDate(c.contentDeadline!)}까지예요!</span>
                     </div>
                   )}
 
-                  {/* 카드 본문: 모바일=이미지풀폭+스택 / PC=row+소형썸네일+우측버튼 (원본 구조) */}
-                  <div className="flex flex-col @[480px]:flex-row @[480px]:items-center gap-3">
+                  {/* 모바일 풀폭 aspect-video 이미지 */}
+                  <div
+                    className={`@[480px]:hidden w-full aspect-video overflow-hidden bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                  >
+                    <img
+                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                    />
+                  </div>
 
-                    {/* 이미지: 모바일 풀폭 h-40 / PC 소형 w-20 h-20 (원본 w-full sm:w-20 h-40 sm:h-20 동일) */}
+                  {/* 카드 본문: 모바일=스택 / PC=row+소형썸네일+우측버튼 (원본 구조) */}
+                  <div className="flex flex-col @[480px]:flex-row @[480px]:items-center gap-3 p-4 pt-3">
+
+                    {/* PC 소형 썸네일 */}
                     <div
-                      className={`w-full @[480px]:w-24 h-40 @[480px]:h-24 rounded-xl overflow-hidden shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                      className={`hidden @[480px]:block @[480px]:w-24 @[480px]:h-24 rounded-xl overflow-hidden shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
                       onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
                     >
                       <img

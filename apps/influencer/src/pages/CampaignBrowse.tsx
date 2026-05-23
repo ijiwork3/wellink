@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, X, SlidersHorizontal, Camera, PenTool, PlaySquare, LayoutGrid } from 'lucide-react'
+import { Search, X, SlidersHorizontal } from 'lucide-react'
 import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
@@ -10,26 +10,18 @@ import { useBookmarks, useApplications } from '../services/userState'
 
 type SortKey = 'deadline' | 'reward' | 'recent'
 
-const CHANNELS = [
-  { id: '전체',       label: '전체',        Icon: LayoutGrid },
-  { id: '인스타그램', label: '인스타그램',   Icon: Camera },
-  { id: '네이버 블로그', label: '블로그',    Icon: PenTool },
-  { id: '유튜브',     label: '유튜브',       Icon: PlaySquare },
-]
-
 function CampaignSkeletonCard() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <Skeleton shape="rect" height={144} width="100%" />
+      <Skeleton shape="rect" className="aspect-video w-full" />
       <div className="p-4 space-y-2.5">
         <div className="flex gap-2">
           <Skeleton shape="circle" height={16} width="3.5rem" />
           <Skeleton shape="circle" height={16} width="2.5rem" />
         </div>
-        <Skeleton shape="text" height={12} width="25%" />
         <Skeleton shape="text" height={16} width="80%" />
-        <Skeleton shape="card" height={32} width="100%" className="mt-1" />
-        <div className="flex justify-between">
+        <Skeleton shape="text" height={12} width="50%" />
+        <div className="flex justify-between pt-2">
           <Skeleton shape="text" height={12} width="4rem" />
           <Skeleton shape="text" height={12} width="4rem" />
         </div>
@@ -47,7 +39,6 @@ export default function CampaignBrowse() {
   const bookmarks = useBookmarks()
   const applications = useApplications()
   const [sort, setSort] = useState<SortKey>('deadline')
-  const [selectedChannel, setSelectedChannel] = useState('전체')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 30
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
@@ -75,7 +66,6 @@ export default function CampaignBrowse() {
   const baseFiltered = useMemo(() => {
     const filtered = mockCampaigns.filter(c => {
       const matchCat = selectedCategory === '전체' || c.category === selectedCategory
-      const matchChannel = selectedChannel === '전체' || c.channel === selectedChannel
       const q = search.trim().toLowerCase()
       // A: 검색 범위 확대 — 원본 CampaignList.tsx L100-116 (name/brand/title/storeName/region/category/tags 7개)
       const matchSearch = !q || c.name.toLowerCase().includes(q)
@@ -84,20 +74,19 @@ export default function CampaignBrowse() {
         || (c.region ?? '').toLowerCase().includes(q)
         || c.category.toLowerCase().includes(q)
         || (c.tags ?? []).some(t => t.toLowerCase().includes(q))
-      return matchCat && matchChannel && matchSearch
+      return matchCat && matchSearch
     })
     return [...filtered].sort((a, b) => {
       if (sort === 'reward') return (b.rewardAmount ?? 0) - (a.rewardAmount ?? 0)
       if (sort === 'recent') return b.id - a.id
-      // deadline: 마감 임박순
       return new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
     })
-  }, [selectedCategory, selectedChannel, search, sort])
+  }, [selectedCategory, search, sort])
 
   const filtered = qa === 'empty' ? [] : baseFiltered
 
   // 필터·검색 변경 시 첫 페이지로 리셋
-  useEffect(() => { setPage(1) }, [selectedCategory, selectedChannel, search, sort])
+  useEffect(() => { setPage(1) }, [selectedCategory, search, sort])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -168,24 +157,6 @@ export default function CampaignBrowse() {
             ]}
             className="shrink-0 w-32"
           />
-        </div>
-
-        {/* 채널 필터 */}
-        <div className="flex gap-2 overflow-x-auto pb-0.5 mb-4 scrollbar-hide">
-          {CHANNELS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              onClick={() => setSelectedChannel(id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-                selectedChannel === id
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <Icon size={13} aria-hidden="true" />
-              {label}
-            </button>
-          ))}
         </div>
 
         {/* 결과 수 */}
