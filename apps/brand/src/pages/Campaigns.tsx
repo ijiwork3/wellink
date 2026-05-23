@@ -2,11 +2,11 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronLeft, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
-  MoreVertical, Copy, Share2,
+  Share2,
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import {
-  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, Dropdown, AlertModal, Pagination, Modal,
+  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, AlertModal, Pagination, Modal,
   Skeleton, SkeletonRow, PageHeader,
   getDDay, getDDayBadgeStyle, useToast,
 } from '@wellink/ui'
@@ -325,9 +325,6 @@ export default function Campaigns() {
     setPage(1)
   }
 
-  const handleDuplicate = (c: Campaign) => {
-    showToast(`'${c.name}' 복제 (mock)`, 'info')
-  }
   const handleShare = async (c: Campaign) => {
     const url = `${window.location.origin}/campaigns/${c.id}`
     try {
@@ -642,38 +639,32 @@ export default function Campaigns() {
                       ) : null
                     })()}
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
+                      <span className="text-xs text-gray-500 shrink-0">모집률</span>
+                      <div
+                        className="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"
+                        role="progressbar"
+                        aria-valuenow={pct}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`모집률 ${pct}% — 지원 ${c.current}명 / 모집 ${c.total}명`}
+                      >
                         <div
                           className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-gray-400' : 'bg-brand-green'}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-500 tabular-nums shrink-0">{pct}%</span>
+                      <span className="text-sm text-gray-700 font-medium tabular-nums shrink-0">{pct}%</span>
                     </div>
                   </div>
                 </div>
-                <div className="shrink-0" onClick={e => e.stopPropagation()}>
-                  <Dropdown
-                    trigger={
-                      <span
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                        aria-label="캠페인 액션"
-                      >
-                        <MoreVertical size={16} aria-hidden="true" />
-                      </span>
-                    }
-                  >
-                    <div className="py-1 min-w-[140px]">
-                      <button type="button" onClick={() => handleDuplicate(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
-                        <Copy size={12} aria-hidden="true" /> 복제
-                      </button>
-                      <button type="button" onClick={() => handleShare(c)} className="flex items-center gap-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-50 text-left">
-                        <Share2 size={12} aria-hidden="true" /> 링크 복사
-                      </button>
-                      {/* 삭제는 캠페인 상세 화면에서만 가능 (정책서 § 8 — 의도적으로 삭제를 번거롭게) */}
-                    </div>
-                  </Dropdown>
-                </div>
+                <button
+                  type="button"
+                  onClick={e => { e.stopPropagation(); handleShare(c) }}
+                  className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  aria-label="링크 복사"
+                >
+                  <Share2 size={16} aria-hidden="true" />
+                </button>
               </li>
               )
             })}

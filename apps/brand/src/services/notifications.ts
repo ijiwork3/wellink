@@ -86,6 +86,23 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 },
 // 처음 8건은 unread (id 1~8)
 const INITIAL_UNREAD_IDS = ALL_NOTIFICATIONS.slice(0, 8).map(n => n.id)
 
+// ── 동적 알림 (런타임 push) ─────────────────────────────────────
+// 캠페인 선정/취소/반려 등의 액션 시 발송된 알림을 광고주 알림센터에 audit log 형태로 노출.
+// id 10000+ 영역 사용 → INITIAL_UNREAD_IDS(1~8) 충돌 방지. 페이지 리프레시 시 휘발 (mock).
+const DYNAMIC_ID_START = 10000
+let dynamicCounter = DYNAMIC_ID_START
+const dynamicNotifications: NotificationItem[] = []
+
+export function pushNotification(item: Omit<NotificationItem, 'id' | 'time'>): number {
+  const id = ++dynamicCounter
+  const newItem: NotificationItem = { ...item, id, time: '방금 전' }
+  dynamicNotifications.unshift(newItem)
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(CHANGE_EVENT))
+  }
+  return id
+}
+
 // ── localStorage store ──────────────────────────────────────────
 const STORAGE_KEY = 'wl_brand_notif_read'
 const CHANGE_EVENT = 'wl-notif-changed'
@@ -120,12 +137,15 @@ export function markAllAsRead(allIds: number[] = INITIAL_UNREAD_IDS) {
   saveReadIds(ids)
 }
 
-/** 미구독자는 결제·플랜 관련 system 알림 제외 (정합성) */
+/** 미구독자는 결제·플랜 관련 system 알림 제외 (정합성). 동적 알림은 항상 최상단. */
 export function getVisibleNotifications(isSubscribed: boolean): NotificationItem[] {
-  return isSubscribed ? ALL_NOTIFICATIONS : ALL_NOTIFICATIONS.filter(n => n.type !== 'system')
+  const base = isSubscribed ? ALL_NOTIFICATIONS : ALL_NOTIFICATIONS.filter(n => n.type !== 'system')
+  return [...dynamicNotifications, ...base]
 }
 
 export function isUnread(id: number, readIds: Set<number>): boolean {
+  // 동적 알림 (id ≥ 10000): 명시적으로 읽음 처리되지 않는 한 unread
+  if (id >= DYNAMIC_ID_START) return !readIds.has(id)
   // 초기 unread (id 1~8) 중 읽지 않은 것
   return INITIAL_UNREAD_IDS.includes(id) && !readIds.has(id)
 }

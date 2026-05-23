@@ -11,6 +11,7 @@ import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_T
 import { fmtDate } from '../utils/fmtDate'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
+import { pushNotification } from '../services/notifications'
 
 /* ─── 더미 데이터 ─── */
 const campaignsData: Record<string, {
@@ -30,7 +31,7 @@ const campaignsData: Record<string, {
     budget: '2,000,000원',
     period: '2026-03-25 ~ 2026-04-28',
     headcount: 15,
-    description: '봄 시즌을 맞아 요가·필라테스 인플루언서와 함께하는 브랜드 캠페인입니다. 제품 체험 후 솔직한 후기 콘텐츠를 제작합니다.',
+    description: '## 캠페인 소개\n\n봄 시즌을 맞아 요가·필라테스 인플루언서와 함께하는 브랜드 캠페인입니다. 제품 체험 후 솔직한 후기 콘텐츠를 제작합니다.\n\n## 타겟\n\n- 요가·필라테스·홈트레이닝 관련 콘텐츠를 꾸준히 업로드하는 인플루언서\n- 20~40대 여성 팔로워 비중이 높은 계정 우대\n- 강남·서초 지역 방문 가능자\n\n## 제공 혜택\n\n프리미엄 요가매트 세트 + 매장 1회 무료 강습권 제공',
     influencers: [
       { id: 1, name: '이창민', status: '진행중', content: '인스타그램 피드 1건', deadline: '2026-04-20', avatar: 'bg-pink-200', dday: 4 },
       { id: 2, name: '김가애', status: '검수중', content: '인스타그램 릴스 1건', deadline: '2026-05-08', avatar: 'bg-yellow-200', dday: 22 },
@@ -45,7 +46,7 @@ const campaignsData: Record<string, {
     budget: '1,500,000원',
     period: '2026-04-10 ~ 2026-05-10',
     headcount: 10,
-    description: '비건 스킨케어 신제품 론칭을 알리는 캠페인입니다. 뷰티/웰니스 카테고리 인플루언서 대상.',
+    description: '## 캠페인 소개\n\n비건 스킨케어 신제품 론칭을 알리는 캠페인입니다. 뷰티·웰니스 카테고리 인플루언서 대상으로 1주일 사용 후 솔직 리뷰를 제작합니다.\n\n## 타겟\n\n- 뷰티·클린뷰티·비건 라이프 콘텐츠 채널\n- 평소 성분·제형 분석 콘텐츠를 제작하는 인플루언서 우대\n\n## 제공 혜택\n\n제품 3종 세트 + 30,000P 추가 리워드 적립',
     influencers: [
       { id: 5, name: '장영훈', status: '대기중', content: '미정', deadline: '2026-04-18', avatar: 'bg-green-200', dday: 14 },
     ],
@@ -57,7 +58,8 @@ const campaignMeta: Record<string, {
   location: string
   storeName: string
   recruitPeriod: string  // 'YYYY-MM-DD ~ YYYY-MM-DD'
-  announceDate: string
+  announcedAt: string    // 선정 결과 발표일 — 모집 마감 직후
+  completedAt: string    // 캠페인 완료일 — 업로드 마감 후 정산·집계 마감 시점
   uploadPeriod: string
   productName: string
   productDetail: string
@@ -65,41 +67,46 @@ const campaignMeta: Record<string, {
   rewardPoint: number
   campaignType: '방문형' | '택배형'
   postType: string
-  precaution: string
+  priorityType: string   // 우대사항 — 광고주가 선정 시 선호하는 인플루언서 조건
   requiredKeywords: string[]
   guideText: string
+  heroImage: string
 }> = {
   '1': {
     location: '강남/서초',
     storeName: '봄 요가 스튜디오',
     recruitPeriod: '2026-04-25 ~ 2026-05-25',
-    announceDate: '2026-05-30',
-    uploadPeriod: '2026-04-25 ~ 2026-05-25',
+    announcedAt: '2026-05-26',
+    uploadPeriod: '2026-05-27 ~ 2026-06-15',
+    completedAt: '2026-06-20',
     productName: '요가매트 세트 (프리미엄 6mm + 스트랩)',
-    productDetail: '요가매트 6mm + 논슬립 스트랩 2개 + 세척 스프레이',
+    productDetail: '- 프리미엄 요가매트 6mm (논슬립 처리)\n- 논슬립 스트랩 2개 (블랙·핑크)\n- 천연 세척 스프레이 100ml\n- 휴대용 매트 가방',
     productPrice: 58000,
     rewardPoint: 0,
     campaignType: '방문형',
     postType: '피드, 릴스',
-    precaution: '릴스 제작 우대',
+    priorityType: '릴스 제작 우대',
     requiredKeywords: ['#봄요가', '#요가스튜디오', '#강남요가'],
-    guideText: '구체적인 촬영 가이드나 강조하고 싶은 포인트를 적어주세요.',
+    guideText: '- 매트 사용 전후 비교 컷 포함 (최소 2장)\n- 자연광 촬영 우선, 인공조명 시 색온도 5000K\n- 매장 외관 1컷 + 인테리어 1컷 필수\n- 강사·매장명 노출 OK, 다른 수강생 얼굴은 모자이크\n- 캡션에 매장 위치·운영시간 1줄 포함',
+    heroImage: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1200&h=675&fit=crop&q=80',
   },
   '2': {
     location: '온라인',
     storeName: '비건 뷰티',
     recruitPeriod: '2026-04-10 ~ 2026-05-10',
-    announceDate: '2026-05-15',
+    announcedAt: '2026-05-11',
     uploadPeriod: '2026-05-15 ~ 2026-06-15',
+    completedAt: '2026-06-20',
     productName: '비건 스킨케어 3종 세트',
-    productDetail: '클렌저 200ml + 토너 150ml + 크림 50ml',
+    productDetail: '- 비건 클렌저 200ml\n- 비건 토너 150ml\n- 비건 크림 50ml\n- 동물성 원료·합성 향료 무첨가',
     productPrice: 89000,
     rewardPoint: 30000,
     campaignType: '택배형',
     postType: '피드, 릴스',
-    precaution: '실사용 1주일 후 후기 필수',
+    priorityType: '실사용 1주일 후 후기 필수',
     requiredKeywords: ['#비건뷰티', '#클린뷰티'],
-    guideText: '최소 7일 사용 후 솔직한 리뷰를 작성해주세요.',
+    guideText: '- 최소 7일 사용 후 솔직 리뷰\n- 사용 전 피부 상태 + 사용 후 변화 비교 컷\n- 성분표 클로즈업 1장 필수\n- 다른 비건 브랜드와의 비교 코멘트 우대',
+    heroImage: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&h=675&fit=crop&q=80',
   },
 }
 const fmtKRW = (n: number) => `₩${n.toLocaleString('ko-KR')}`
@@ -733,20 +740,31 @@ export default function CampaignDetail() {
 
   // 지원자 관리 핸들러
   /** 인플루언서 자동 알림 mock — 클라 정책 §54-59
-   *  실제 발송은 BE 책임. 광고주 측에는 토스트로 발송 사실을 명시해 인플루언서 인지 보장.
+   *  실제 발송은 BE 책임. 광고주 측에는 토스트 + 알림센터 audit log로 발송 사실을 명시.
    *  트리거: 검토중→콘텐츠대기(선정) / 콘텐츠대기→검토중(선정 취소) / 검토중→미선정(반려) / 검수중→완료·반려 */
   const sendNotificationMock = (
     kind: 'select' | 'select-cancel' | 'reject' | 'content-approve' | 'content-reject',
     targetCount: number,
   ) => {
     const labels: Record<typeof kind, string> = {
-      'select':         '선정 알림',
-      'select-cancel':  '선정 취소 알림',
-      'reject':         '미선정 안내',
-      'content-approve':'콘텐츠 승인 알림',
-      'content-reject': '콘텐츠 반려 안내',
+      'select':         '선정 알림 발송',
+      'select-cancel':  '선정 취소 알림 발송',
+      'reject':         '미선정 안내 발송',
+      'content-approve':'콘텐츠 승인 알림 발송',
+      'content-reject': '콘텐츠 반려 안내 발송',
     }
     // BE 연동 자리. 현재는 mock — 실제 구현 시 인플루언서 알림센터 + 푸시·이메일 연동
+    // 광고주 알림센터에는 audit log 형태로 push (인플루언서 알림 발송 이력 노출)
+    pushNotification({
+      type: 'campaign',
+      title: labels[kind],
+      desc: `'${campaign.name}' 캠페인에서 ${targetCount}명의 인플루언서에게 알림을 발송했습니다.`,
+      link: kind === 'select' || kind === 'select-cancel'
+        ? `/campaigns/${id}?qa=tab-selected`
+        : kind === 'reject'
+          ? `/campaigns/${id}?qa=tab-applicants`
+          : `/campaigns/${id}?qa=tab-content`,
+    })
     if (typeof console !== 'undefined') {
       console.info('[mock notification]', kind, `to ${targetCount}명`)
     }
@@ -1077,11 +1095,15 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* 일정 바 — 모집/콘텐츠등록/완료 3단계. 모바일 1열, @md(컨테이너 768px+) 3열 — 좁은 폭에서 날짜 침범 방지. */}
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 bg-gray-50 rounded-xl p-3">
+        {/* 일정 바 — 모집/발표/업로드/완료 4단계. 모바일 1열, @md 2열, @xl 4열. 원본은 모집·발표·업로드 3단계, vibe는 완료(집계 마감)까지 추가. */}
+        <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-4 gap-2 bg-gray-50 rounded-xl p-3">
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
             <span className="text-gray-600 break-words min-w-0">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+          </div>
+          <div className="flex items-center gap-2 text-base min-w-0">
+            <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium shrink-0">발표</span>
+            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.announcedAt)}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
@@ -1089,7 +1111,7 @@ export default function CampaignDetail() {
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
             <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">완료</span>
-            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.announceDate)}</span>
+            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.completedAt)}</span>
           </div>
         </div>
 
@@ -1179,25 +1201,40 @@ export default function CampaignDetail() {
       {/* ─── A) 캠페인 정보 탭 ─── */}
       {activeTab === '캠페인 정보' && (
         <div className="space-y-4">
-          {/* 캠페인 설명 — 썸네일을 우측 상단에 부착, 클릭 시 라이트박스 (원본 ToastEditorViewer 보강) */}
-          <Section title="캠페인 설명" icon={<FileText size={14} />}>
-            <div className="flex flex-col @sm:flex-row gap-4">
-              <button type="button"
-                onClick={() => setCampaignImageOpen(true)}
-                aria-label="대표 이미지 크게 보기"
-                className="group relative w-full @sm:w-32 @md:w-40 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <div className="aspect-[4/3] flex items-center justify-center">
-                  <Image size={22} className="text-gray-300" aria-hidden="true" strokeWidth={1.5} />
+          {/* 대표 이미지 — aspect-video, 클릭 시 라이트박스 (원본 displayImgUrl 영역 보강) */}
+          <button type="button"
+            onClick={() => setCampaignImageOpen(true)}
+            aria-label="대표 이미지 크게 보기"
+            className="group relative w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100 hover:border-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            <div className="aspect-video">
+              {meta.heroImage ? (
+                <img
+                  src={meta.heroImage}
+                  alt={`${campaign.name} 대표 이미지`}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement
+                    img.style.display = 'none'
+                    img.parentElement?.classList.add('flex', 'items-center', 'justify-center')
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-gray-100 to-gray-200/80 text-gray-400">
+                  <Image size={36} aria-hidden="true" strokeWidth={1.5} />
+                  <span className="text-sm font-medium">이미지가 없습니다</span>
                 </div>
-                <span className="absolute inset-x-0 bottom-0 px-2 py-1 text-sm font-medium text-white bg-gradient-to-t from-black/55 to-transparent flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
-                  크게 보기
-                </span>
-              </button>
-              <div className="min-w-0 flex-1">
-                <MarkdownView text={campaign.description} />
-              </div>
+              )}
             </div>
+            <span className="absolute right-3 bottom-3 px-2.5 py-1 text-sm font-medium text-white bg-black/55 rounded-full opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
+              크게 보기
+            </span>
+          </button>
+
+          {/* 캠페인 설명 — ToastEditorViewer 마크다운 뷰어 보강 */}
+          <Section title="캠페인 설명" icon={<FileText size={14} />}>
+            <MarkdownView text={campaign.description} />
           </Section>
 
           {/* 제공 내역 */}
@@ -1215,7 +1252,7 @@ export default function CampaignDetail() {
             <div className="grid grid-cols-1 @md:grid-cols-3 gap-2.5">
               <MissionCard icon={<Search size={16} />} label="키워드" value="필수 포함" />
               <MissionCard icon={<Camera size={16} />} label="게시 유형" value={meta.postType} />
-              <MissionCard icon={<Heart size={16} />} label="유의사항" value={meta.precaution} />
+              <MissionCard icon={<Heart size={16} />} label="우대사항" value={meta.priorityType} />
             </div>
           </Section>
 
@@ -2158,6 +2195,25 @@ export default function CampaignDetail() {
       {/* ─── E) 성과 리포트 탭 ─── */}
       {activeTab === '성과 리포트' && !isGated && qa !== 'tab-report-empty' && (
         <div className="space-y-4">
+          {/* 리포트 헤더 — 제목 + PDF 저장 버튼 (원본 ReportView 보강). PDF 저장은 mock — 실연동 시 jsPDF + html2canvas */}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-base font-semibold text-gray-900">캠페인 성과</h2>
+            <button type="button"
+              onClick={() => {
+                // mock: 데모에선 print dialog로 PDF 저장 흐름 제공. 실서비스 전 jsPDF + html2canvas 도입.
+                if (typeof window !== 'undefined' && window.print) {
+                  showToast('PDF 저장 — 인쇄 대화상자에서 "PDF로 저장"을 선택하세요', 'success')
+                  setTimeout(() => window.print(), 600)
+                } else {
+                  showToast('PDF 저장 기능을 지원하지 않는 환경입니다', 'error')
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-base text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <Download size={14} aria-hidden="true" />
+              PDF 저장
+            </button>
+          </div>
           {/* KPI 6개 — 카드 폭 보장. 좁으면 1열, 충분히 넓어지면 2~3열로 자동 개행 (그래프-값 충돌 방지). */}
           <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
             {reportKPI.map(k => {
@@ -2174,6 +2230,10 @@ export default function CampaignDetail() {
                     )}
                   </div>
                   <div className="text-2xl @sm:text-3xl font-bold text-gray-900 tracking-tight break-words">{k.value}</div>
+                  {/* 평균 참여율 공식 인라인 표기 — 원본 ReportView "(좋아요+댓글+공유)/조회수 기준" 보강 */}
+                  {k.label === '평균 참여율 (릴스)' && (
+                    <p className="text-sm text-gray-400 mt-1.5 break-words">(좋아요 + 댓글 + 공유) / 조회수 기준</p>
+                  )}
                 </div>
               )
             })}
@@ -2654,8 +2714,22 @@ export default function CampaignDetail() {
             >
               <X size={18} />
             </button>
-            <div className="aspect-[4/3] flex items-center justify-center">
-              <Image size={80} className="text-gray-200" aria-hidden="true" />
+            <div className="aspect-video bg-gray-100">
+              {meta.heroImage ? (
+                <img
+                  src={meta.heroImage}
+                  alt={`${campaign.name} 대표 이미지`}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement
+                    img.style.display = 'none'
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Image size={80} className="text-gray-200" aria-hidden="true" />
+                </div>
+              )}
             </div>
           </div>
         </div>
