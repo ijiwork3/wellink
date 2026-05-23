@@ -64,8 +64,8 @@ export default function MyPage() {
   const [snsModal, setSnsModal] = useState(false)
   const [snsHandle, setSnsHandle] = useState('wellink_brand')
 
-  // 모달
-  const [pwModal, setPwModal] = useState(qa === 'modal-password')
+  // 비밀번호 변경 인라인 3단계: 0=닫힘, 1=현재비번 확인, 2=새비번 입력
+  const [passwordStep, setPasswordStep] = useState<0 | 1 | 2>(qa === 'modal-password' ? 1 : 0)
   const [withdrawModal, setWithdrawModal] = useState(qa === 'modal-withdraw')
   const [withdrawConfirmText, setWithdrawConfirmText] = useState('')
 
@@ -129,12 +129,16 @@ export default function MyPage() {
     setEditing(false)
   }
 
+  const resetPasswordStep = () => {
+    setPasswordStep(0); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('')
+  }
+
   const handlePasswordChange = () => {
     setPasswordError('')
-    if (!currentPw || !newPw || !confirmPw) { setPasswordError('모든 항목을 입력하세요.'); return }
+    if (!newPw || !confirmPw) { setPasswordError('모든 항목을 입력하세요.'); return }
     if (newPw.length < 8) { setPasswordError('비밀번호는 8자 이상이어야 합니다.'); return }
     if (newPw !== confirmPw) { setPasswordError('새 비밀번호가 일치하지 않습니다.'); return }
-    setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('')
+    resetPasswordStep()
     showToast('비밀번호가 변경되었습니다.', 'success')
   }
 
@@ -340,19 +344,97 @@ export default function MyPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2 mt-3">
-                <button type="button"
-                  onClick={() => setPwModal(true)}
-                  className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  비밀번호 변경하기
-                </button>
-                <button type="button"
-                  onClick={() => setWithdrawModal(true)}
-                  className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  회원 탈퇴
-                </button>
+              {/* 비밀번호 변경 인라인 3단계 — 원본 ProfileSettings 동등 */}
+              <div className="mt-3 space-y-3">
+                <div className="flex gap-2">
+                  {passwordStep === 0 ? (
+                    <button type="button"
+                      onClick={() => setPasswordStep(1)}
+                      className="text-base text-gray-600 border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      비밀번호 변경하기
+                    </button>
+                  ) : (
+                    <button type="button"
+                      onClick={resetPasswordStep}
+                      className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      변경 취소
+                    </button>
+                  )}
+                  <button type="button"
+                    onClick={() => setWithdrawModal(true)}
+                    className="text-base text-red-500 border border-red-100 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    회원 탈퇴
+                  </button>
+                </div>
+
+                {/* Step 1: 현재 비밀번호 확인 */}
+                {passwordStep === 1 && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <label htmlFor="pw-current" className="text-sm font-medium text-gray-700 block">현재 비밀번호 확인</label>
+                    <div className="flex gap-2">
+                      <input
+                        id="pw-current"
+                        type="password"
+                        value={currentPw}
+                        onChange={e => { setCurrentPw(e.target.value); setPasswordError('') }}
+                        aria-label="현재 비밀번호"
+                        className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors bg-gray-50"
+                        placeholder="현재 비밀번호를 입력해주세요"
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (currentPw.trim()) setPasswordStep(2) } }}
+                      />
+                      <button type="button"
+                        onClick={() => {
+                          if (!currentPw.trim()) { setPasswordError('현재 비밀번호를 입력해주세요.'); return }
+                          setPasswordError(''); setPasswordStep(2)
+                        }}
+                        className="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-base font-medium hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >
+                        확인
+                      </button>
+                    </div>
+                    {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+                  </div>
+                )}
+
+                {/* Step 2: 새 비밀번호 입력 */}
+                {passwordStep === 2 && (
+                  <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div>
+                      <label htmlFor="pw-new" className="text-sm font-medium text-gray-700 block mb-1.5">새 비밀번호</label>
+                      <input
+                        id="pw-new"
+                        type="password"
+                        value={newPw}
+                        onChange={e => { setNewPw(e.target.value); setPasswordError('') }}
+                        aria-label="새 비밀번호"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors bg-gray-50"
+                        placeholder="새 비밀번호 (8자 이상)"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="pw-confirm" className="text-sm font-medium text-gray-700 block mb-1.5">새 비밀번호 확인</label>
+                      <input
+                        id="pw-confirm"
+                        type="password"
+                        value={confirmPw}
+                        onChange={e => { setConfirmPw(e.target.value); setPasswordError('') }}
+                        aria-label="새 비밀번호 확인"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors bg-gray-50"
+                        placeholder="비밀번호를 다시 입력해주세요"
+                      />
+                    </div>
+                    {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+                    <button type="button"
+                      onClick={handlePasswordChange}
+                      className="w-full bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      비밀번호 변경하기
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -467,71 +549,6 @@ export default function MyPage() {
           </div>
         </div>
       )}
-
-      {/* 비밀번호 변경 모달 */}
-      <Modal
-        open={pwModal}
-        onClose={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
-        title="비밀번호 변경"
-        footer={
-          <>
-            <button type="button"
-              onClick={() => { setPwModal(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPasswordError('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors"
-            >
-              취소
-            </button>
-            <button type="button"
-              onClick={handlePasswordChange}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors"
-            >
-              변경하기
-            </button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="pw-current" className="text-sm text-gray-500 mb-1.5 block">현재 비밀번호</label>
-            <input
-              id="pw-current"
-              type="password"
-              value={currentPw}
-              onChange={e => { setCurrentPw(e.target.value); setPasswordError('') }}
-              aria-label="현재 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
-              placeholder="현재 비밀번호를 입력하세요"
-            />
-          </div>
-          <div>
-            <label htmlFor="pw-new" className="text-sm text-gray-500 mb-1.5 block">새 비밀번호</label>
-            <input
-              id="pw-new"
-              type="password"
-              value={newPw}
-              onChange={e => { setNewPw(e.target.value); setPasswordError('') }}
-              aria-label="새 비밀번호"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
-              placeholder="새 비밀번호 (8자 이상)"
-            />
-          </div>
-          <div>
-            <label htmlFor="pw-confirm" className="text-sm text-gray-500 mb-1.5 block">새 비밀번호 확인</label>
-            <input
-              id="pw-confirm"
-              type="password"
-              value={confirmPw}
-              onChange={e => { setConfirmPw(e.target.value); setPasswordError('') }}
-              aria-label="새 비밀번호 확인"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
-              placeholder="새 비밀번호를 다시 입력하세요"
-            />
-          </div>
-          {passwordError && (
-            <p className="text-sm text-red-500 mt-1">{passwordError}</p>
-          )}
-        </div>
-      </Modal>
 
       {/* SNS 연결 모달 */}
       <Modal

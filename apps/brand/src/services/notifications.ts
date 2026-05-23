@@ -26,6 +26,9 @@ const CAMPAIGN_TITLES = [
   '캠페인 모집 마감 임박',
   '인플루언서가 콘텐츠를 제출했습니다',
   '캠페인 발표일이 도래했습니다',
+  '인플루언서가 선정을 수락했습니다',
+  '인플루언서가 참여를 취소했습니다',
+  '콘텐츠 검수 마감 임박',
 ]
 const SYSTEM_TITLES = [
   '포인트 충전 완료',
@@ -45,6 +48,9 @@ const CAMPAIGN_DESCS = [
   "'여름 캠페인' 모집이 24시간 안에 마감됩니다.",
   '선정 인플루언서가 검수용 콘텐츠를 제출했습니다.',
   '오늘이 인플루언서 발표일입니다.',
+  "@yoga_jimin님이 '봄 요가 프로모션' 캠페인 선정을 수락했습니다.",
+  "@daily_hana님이 캠페인 참여를 취소했습니다. 대체 인플루언서를 선정해 주세요.",
+  "'여름 맞이 챌린지' 콘텐츠 검수 마감이 72시간 안에 도래합니다.",
 ]
 const SYSTEM_DESCS = [
   '500,000 포인트가 성공적으로 충전되었습니다.',
@@ -66,9 +72,11 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 },
   const descPool  = type === 'campaign' ? CAMPAIGN_DESCS : type === 'system' ? SYSTEM_DESCS  : MESSAGE_DESCS
   const title = titlePool[i % titlePool.length]
   const desc = descPool[i % descPool.length]
-  // '결제 실패 알림' → 결제 수단 변경 페이지로 라우팅
+  // 타이틀별 딥링크 라우팅
   const link =
     title === '결제 실패 알림' ? '/payment/method'
+    : title === '인플루언서가 선정을 수락했습니다' || title === '인플루언서가 참여를 취소했습니다' ? '/campaigns/1?qa=tab-selected'
+    : title === '콘텐츠 검수 마감 임박' || title === '인플루언서가 콘텐츠를 제출했습니다' ? '/campaigns/1?qa=tab-content'
     : type === 'campaign' && i % 3 === 0 ? '/campaigns/1?qa=tab-applicants'
     : type === 'campaign' && i % 3 === 1 ? '/campaigns/1?qa=tab-report'
     : null
