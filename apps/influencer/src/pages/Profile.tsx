@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Link2, ChevronRight, Eye, EyeOff } from 'lucide-react'
+import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
 import { Toggle, ResponsiveSheet, AlertModal } from '@wellink/ui'
@@ -308,21 +308,6 @@ export default function Profile() {
             ))}
           </div>
         </div>
-
-        {/* SNS 관리 바로가기 */}
-        <button
-          onClick={() => navigate('/media')}
-          className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 text-left"
-        >
-          <div className="w-9 h-9 rounded-xl bg-brand-green-bg flex items-center justify-center shrink-0">
-            <Link2 size={16} className="text-brand-green-text" aria-hidden="true" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900">인스타 관리</p>
-            <p className="text-sm text-gray-500 mt-0.5">인스타그램 계정 연결 및 분석</p>
-          </div>
-          <ChevronRight size={16} className="text-gray-400 shrink-0" aria-hidden="true" />
-        </button>
 
         {/* 알림 설정 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
