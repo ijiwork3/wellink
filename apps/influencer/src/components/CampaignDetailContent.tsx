@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Markdown from 'react-markdown'
 import {
-  Heart, Users, CheckCircle2, Gift, UserCheck, FileText,
-  Package, Footprints, Hash, Copy, Share2, Search, Type, Star, ArrowLeft,
+  Heart, Users, CheckCircle2, UserCheck, FileText,
+  Package, Footprints, Copy, Share2, Search, Type, Star, ArrowLeft,
 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
