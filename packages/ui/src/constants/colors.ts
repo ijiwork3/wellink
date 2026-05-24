@@ -51,31 +51,32 @@ export const SEMANTIC_COLORS = {
 /** 바이럴 콘텐츠 등급 도넛 전용 색상
  *  GradeDonut 등 SVG prop에서 BRAND·CHART_COLORS 대신 이 상수 사용 */
 export const GRADE_COLORS = {
-  A:          '#8FD232',  // BRAND.green
+  A:          '#8DD435',  // BRAND.green
   B:          '#F59E0B',  // CHART_COLORS.warn (amber)
   C:          '#9CA3AF',  // gray-400
   D:          '#D1D5DB',  // gray-300
   E:          '#E5E7EB',  // gray-200
-  processing: '#B6E07B',  // BRAND.greenBorder
+  processing: '#B5E27E',  // BRAND.greenBorder
 } as const
 
 /** QA 목업킷 전용 강조색 */
 export const QA_ACCENT_COLOR = '#8736E3' as const
 
-/** 채도 정책 v4.5 (2026-05-24) — v4.4에서 H+2°, S+2% 미세 조정 (고채도·살짝 파란끼)
- *  H 83→85°, S 62→64%. 명도 유지. 대비 4.87:1 (AA 유지).
+/** 채도 정책 v4.6 (2026-05-24) — v4.5에서 H+2°, S+1%, L+1% 미세 조정
+ *  H 85→87°, S 64→65%, L +1%. 파란끼·고채도·명도 동시 소폭 상향.
+ *  brand-green-text 대비 4.59:1 (AA 4.5 기준 유지).
  *  packages/ui/src/theme.css 의 --color-brand-* 와 1:1 동기화
  */
 export const BRAND = {
-  /** 메인 그린 — HSL(85,64%,51%) */
-  green:      '#8FD232',
-  /** 텍스트 그린 — HSL(88,70%,29%), 대비 4.87:1 */
-  greenText:  '#4D7E16',
-  /** hover 그린 — HSL(85,64%,44%) */
-  greenHover: '#7CB828',
-  /** 연한 그린 배경 — HSL(81,74%,92%) */
-  greenBg:    '#EFFADB',
-  /** 연한 그린 보더 — HSL(85,62%,68%) */
-  greenBorder:'#B6E07B',
+  /** 메인 그린 — HSL(87,65%,52%) */
+  green:      '#8DD435',
+  /** 텍스트 그린 — HSL(90,71%,30%), 대비 4.59:1 */
+  greenText:  '#4D8316',
+  /** hover 그린 — HSL(87,65%,45%) */
+  greenHover: '#7ABD28',
+  /** 연한 그린 배경 — HSL(83,75%,93%) */
+  greenBg:    '#F0FBE0',
+  /** 연한 그린 보더 — HSL(87,63%,69%) */
+  greenBorder:'#B5E27E',
 } as const
 

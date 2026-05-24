@@ -7,16 +7,17 @@
   --color-landing-lime:      #BFF264;  /* 랜딩 라임 — 포인트 컬러 */
   --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 — gray-900 */
 
-  /* 채도 정책 v4.5 (2026-05-24) — v4.4에서 H+2°, S+2% 미세 조정 (고채도·살짝 파란끼)
-   * H 83→85°, S 62→64%. 명도 유지. 대비 4.87:1 (AA 유지).
+  /* 채도 정책 v4.6 (2026-05-24) — v4.5에서 H+2°, S+1%, L+1% 미세 조정
+   * H 85→87°, S 64→65%, L +1%. 파란끼·고채도·명도 동시 소폭 상향.
+   * brand-green-text 대비 4.59:1 (AA 4.5 기준 유지).
    * 변경 시 packages/ui/src/constants/colors.ts > BRAND 동기화 필수 */
-  --color-brand-green:       #8FD232;  /* HSL(85,64%,51%) — 메인 */
-  --color-brand-green-text:  #4D7E16;  /* HSL(88,70%,29%) — 텍스트 대비 4.87:1 */
-  --color-brand-green-hover: #7CB828;  /* HSL(85,64%,44%) — hover */
-  --color-brand-green-bg:    #EFFADB;  /* HSL(81,74%,92%) — 옅은 배경 */
-  --color-brand-green-border:#B6E07B;  /* HSL(85,62%,68%) — 보더 */
+  --color-brand-green:       #8DD435;  /* HSL(87,65%,52%) — 메인 */
+  --color-brand-green-text:  #4D8316;  /* HSL(90,71%,30%) — 텍스트 대비 4.59:1 */
+  --color-brand-green-hover: #7ABD28;  /* HSL(87,65%,45%) — hover */
+  --color-brand-green-bg:    #F0FBE0;  /* HSL(83,75%,93%) — 옅은 배경 */
+  --color-brand-green-border:#B5E27E;  /* HSL(87,63%,69%) — 보더 */
 
-  --color-sparkline-success: #8FD232;  /* 스파크라인 상승 — 브랜드 그린 동기화 */
+  --color-sparkline-success: #8DD435;  /* 스파크라인 상승 — 브랜드 그린 동기화 */
   --color-sparkline-alert:   #EF4444;  /* 스파크라인 하락 — 빨강 (red-500, 채도 충분) */
 
   --color-roas-warning:      #F59E0B;  /* ROAS ≥1.5 amber */
