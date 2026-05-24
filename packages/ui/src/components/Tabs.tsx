@@ -47,13 +47,13 @@ export interface TabsProps<V extends string = string> {
 const ACTIVE_BY_VARIANT: Record<TabVariant, string> = {
   underline: 'border-b-2 border-gray-900 font-semibold text-gray-900',
   pill:      'bg-brand-green text-white',
-  soft:      'bg-brand-green-bg text-brand-green-text font-medium',
+  soft:      'bg-brand-green-bg text-brand-green-text font-medium border border-brand-green-border',
 }
 
 const INACTIVE_BY_VARIANT: Record<TabVariant, string> = {
   underline: 'border-b-2 border-transparent text-gray-500 hover:text-gray-700',
   pill:      'bg-gray-100 text-gray-600 hover:bg-gray-200',
-  soft:      'bg-gray-50 text-gray-600 hover:bg-gray-100',
+  soft:      'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-transparent',
 }
 
 const BASE_BY_VARIANT: Record<TabVariant, string> = {
