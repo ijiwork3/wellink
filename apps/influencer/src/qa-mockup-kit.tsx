@@ -27,6 +27,7 @@ import { useState, useEffect, useRef, useCallback, createContext, useContext, ty
 import {
   Smartphone, Tablet, Monitor,
   Copy, Check, ArrowRight, Power, ChevronDown, ChevronRight, Camera,
+  Menu, X,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
@@ -712,38 +713,157 @@ export function GlobalQAHeader<S extends string, T extends string>({
   onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
+  useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
+  const handleNavigate = (item: StatusItem) => {
+    if (item.onSelect) { item.onSelect(); setMenuOpen(false); return; }
+    if (item.path) onNavigate({ path: item.path });
+    setMenuOpen(false);
+  };
+
   return (
-    <div
-      className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between gap-3 px-4 bg-slate-900 text-white border-b border-slate-700"
-      style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
-    >
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
-        <span className="text-xs font-semibold tracking-tight">{title}</span>
-        <span
-          className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
-          title={`QA 빌드 v${QA_VERSION}`}
-          aria-label={`QA 빌드 버전 ${QA_VERSION}`}
-        >
-          v{QA_VERSION}
-        </span>
+    <>
+      {/* 상단 고정 바 */}
+      <div
+        className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between gap-3 px-4 bg-slate-900 text-white border-b border-slate-700"
+        style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
+      >
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
+          <span className="text-xs font-semibold tracking-tight">{title}</span>
+          <span
+            className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
+            title={`QA 빌드 v${QA_VERSION}`}
+            aria-label={`QA 빌드 버전 ${QA_VERSION}`}
+          >
+            v{QA_VERSION}
+          </span>
+        </div>
+
+        {isMobile ? (
+          /* 모바일: 햄버거 버튼 */
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="flex items-center gap-1.5 text-xs font-medium px-3 rounded-md bg-slate-700 hover:bg-slate-600 border border-slate-600 transition-colors"
+            style={{ minHeight: 32 }}
+            aria-label="QA 메뉴 열기"
+          >
+            <Menu size={14} />
+            <span>메뉴</span>
+          </button>
+        ) : (
+          /* 데스크탑: 기존 칩 + 드롭다운 */
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {quickItems.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => { if (item.path) onNavigate({ path: item.path }); item.onSelect?.(); }}
+                className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-700 hover:bg-slate-600 border border-slate-600 transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </button>
+            ))}
+            {quickItems.length > 0 && <div className="w-px h-4 bg-slate-600" />}
+            <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
+          </div>
+        )}
       </div>
 
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {/* 현재 페이지 빠른 버튼 */}
-        {quickItems.map((item, i) => (
-          <button
-            key={i}
-            onClick={() => { if (item.path) onNavigate({ path: item.path }); item.onSelect?.(); }}
-            className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-700 hover:bg-slate-600 border border-slate-600 transition-colors whitespace-nowrap"
-          >
-            {item.label}
-          </button>
-        ))}
-        {quickItems.length > 0 && <div className="w-px h-4 bg-slate-600" />}
-        <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
-      </div>
-    </div>
+      {/* 모바일 전체화면 QA 패널 */}
+      {isMobile && menuOpen && (
+        <div className="fixed inset-0 z-[1050] bg-slate-900 flex flex-col text-white">
+          {/* 패널 헤더 */}
+          <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor }}>WL</div>
+              <span className="text-sm font-semibold">QA 패널</span>
+            </div>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="p-2 rounded-md hover:bg-slate-700 transition-colors"
+              aria-label="닫기"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* 스크롤 영역 */}
+          <div className="flex-1 overflow-y-auto">
+            {/* 현재 페이지 빠른 이동 */}
+            {quickItems.length > 0 && (
+              <div className="p-4 border-b border-slate-800">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">현재 페이지</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {quickItems.map((item, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleNavigate(item)}
+                      className="flex items-center justify-center text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 active:bg-slate-600 transition-colors px-3 py-3"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 경로 이동 */}
+            <div className="p-4">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">경로 이동</p>
+              <div className="space-y-1">
+                {pathItems.map((item, i) => (
+                  <div key={i}>
+                    {item.children ? (
+                      <>
+                        <button
+                          onClick={() => setExpandedSection(expandedSection === item.label ? null : item.label)}
+                          className="w-full flex items-center justify-between px-3 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+                        >
+                          <span className="text-sm font-semibold text-slate-300">{item.label}</span>
+                          <ChevronRight size={14} className={`transition-transform text-slate-400 ${expandedSection === item.label ? 'rotate-90' : ''}`} />
+                        </button>
+                        {expandedSection === item.label && (
+                          <div className="mt-1 space-y-1 pl-3">
+                            {item.children.map((child, j) => (
+                              <button
+                                key={j}
+                                onClick={() => handleNavigate(child)}
+                                className="w-full text-left flex items-center px-3 py-3 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                              >
+                                <span className="text-sm">{child.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (item.onSelect || item.path) ? (
+                      <button
+                        onClick={() => handleNavigate(item)}
+                        className="w-full text-left flex items-center px-3 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                      >
+                        <span className="text-sm">{item.label}</span>
+                      </button>
+                    ) : (
+                      <div className="px-3 pt-4 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        {item.label}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

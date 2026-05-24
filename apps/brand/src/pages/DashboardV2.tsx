@@ -59,7 +59,7 @@ const TREND_LABEL: Record<DatePeriod, string> = {
 export default function DashboardV2() {
   const navigate = useNavigate()
   const qa = useQAMode()
-  const { isGated, planLabel, isTrial } = usePlanAccess()
+  const { isGated, planLabel } = usePlanAccess()
   const [period, setPeriod] = useState<DatePeriod>('일간')
   const [dateOffset, setDateOffset] = useState<number>(0)
   const trendLabel = TREND_LABEL[period]
