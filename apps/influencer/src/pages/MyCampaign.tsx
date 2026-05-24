@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
+import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay, getDDayBadgeStyle } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
@@ -278,7 +278,7 @@ export default function MyCampaign() {
                         const dd = getDDay(c.contentDeadline)
                         if (!dd) return null
                         return (
-                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${(dd.color === 'red' || dd.color === 'orange') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>{dd.label}</span>
+                          <span className={getDDayBadgeStyle(dd.color, dd.pulse)}>{dd.label}</span>
                         )
                       })()}
                     </div>
