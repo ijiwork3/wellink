@@ -49,6 +49,12 @@ export default function Media() {
 
   const [platforms, setPlatforms] = useState<Platform[]>(initPlatforms)
   const [contentPage, setContentPage] = useState(1)
+
+  // qa 모드 변경 시 platforms 재초기화 (useState는 마운트 시 1회만 실행되므로)
+  useEffect(() => {
+    setPlatforms(initPlatforms())
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qa])
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [connectModal, setConnectModal] = useState<Platform | null>(null)
@@ -300,17 +306,13 @@ export default function Media() {
           </div>
         )}
 
-        {/* 인스타 관리 헤더 — 미연결 상태에서만 표시 */}
+        {/* 미연결 상태: 헤더 + 플랫폼 카드 + 안내 문구 — 모바일에서 가장자리 여백 확보 */}
         {!instaPlatform?.connected && (
-          <div className="flex items-center gap-2">
-            <Link2 size={16} className="text-brand-green" />
-            <h2 className="text-base font-semibold text-gray-900">인스타 관리</h2>
-          </div>
-        )}
-
-        {/* 미연결 상태에서만: 플랫폼 카드 + 안내 문구 */}
-        {!instaPlatform?.connected && (
-          <>
+          <div className="px-4 pt-5 @[640px]:px-0 @[640px]:pt-0 space-y-4">
+            <div className="flex items-center gap-2">
+              <Link2 size={16} className="text-brand-green" />
+              <h2 className="text-base font-semibold text-gray-900">인스타 관리</h2>
+            </div>
             {platforms.map(p => (
               <div key={p.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -332,10 +334,10 @@ export default function Media() {
                 </div>
               </div>
             ))}
-            <div className="p-4 rounded-xl bg-brand-green-bg border-l-[3px] border-brand-green">
+            <div className="p-4 rounded-xl bg-brand-green-bg">
               <p className="text-sm text-gray-600 break-keep">인스타그램을 연결하면 캠페인 신청 시 팔로워 수가 자동으로 확인돼요</p>
             </div>
-          </>
+          </div>
         )}
       </div>
 

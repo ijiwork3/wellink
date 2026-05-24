@@ -19,7 +19,7 @@ const ErrorState = memo(function ErrorState({
   return (
     /* 모바일에서 min-h-[400px]은 좁은 화면 비율을 압박 → @sm 이상에서만 적용.
      * 텍스트 메시지는 break-keep으로 한글 단어 보존하면서 줄바꿈 허용. */
-    <div role="alert" className="@container flex flex-col items-center justify-center h-full min-h-[260px] @sm:min-h-[400px] gap-4 px-4">
+    <div role="alert" className="@container w-full flex flex-col items-center justify-center h-full min-h-[260px] @sm:min-h-[400px] gap-4 px-4">
       <XCircle size={48} className="text-red-300 shrink-0" aria-hidden="true" />
       <div className="text-center max-w-md">
         <p className="text-base font-semibold text-gray-900 break-keep">{message}</p>

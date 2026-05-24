@@ -134,23 +134,42 @@ export default function MyCampaign() {
     return (
       <Layout>
         <div className="space-y-4">
-          <Skeleton shape="text" height={20} width="8rem" />
-          <div className="flex gap-2">
-            {[1,2,3,4].map(i => <Skeleton key={i} shape="circle" height={28} width="4rem" />)}
-          </div>
-          {[1,2,3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
-              <div className="flex justify-between">
-                <Skeleton shape="text" height={16} width="9rem" />
-                <Skeleton shape="circle" height={20} width="4rem" />
-              </div>
-              <Skeleton shape="text" height={12} width="12rem" />
-              <div className="flex gap-2">
-                <Skeleton shape="card" height={32} width="100%" className="flex-1" />
-                <Skeleton shape="card" height={32} width="5rem" />
-              </div>
+          {/* 헤더 */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-1.5">
+              <Skeleton shape="text" height={16} width="5.5rem" />
+              <Skeleton shape="text" height={12} width="7rem" />
             </div>
-          ))}
+            <Skeleton shape="card" height={32} width="5.5rem" />
+          </div>
+          {/* 검색 */}
+          <Skeleton shape="card" height={42} width="100%" />
+          {/* 탭 */}
+          <div className="flex gap-2">
+            {[60, 56, 56, 48, 52].map((w, i) => (
+              <Skeleton key={i} shape="card" height={36} width={`${w}px`} />
+            ))}
+          </div>
+          {/* 카드 그리드 */}
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* 썸네일 */}
+                <div className="w-full aspect-video bg-gray-100 animate-pulse" />
+                {/* 본문 */}
+                <div className="p-4 space-y-2.5">
+                  <Skeleton shape="card" height={22} width="4.5rem" />
+                  <Skeleton shape="text" height={14} width="100%" />
+                  <Skeleton shape="text" height={14} width="70%" />
+                  <Skeleton shape="text" height={12} width="9rem" />
+                  <div className="flex gap-2 pt-3 border-t border-gray-100">
+                    <Skeleton shape="card" height={34} className="flex-1" />
+                    <Skeleton shape="card" height={34} width="4.5rem" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </Layout>
     )
@@ -226,19 +245,36 @@ export default function MyCampaign() {
         {/* 카드 리스트 */}
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
-            <EmptyState
-              variant={search ? 'search' : 'default'}
-              title={search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
-              description={!search ? '새로운 캠페인에 신청해 보세요' : undefined}
-              action={!search ? (
-                <button
-                  onClick={() => navigate('/campaigns/browse')}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  캠페인 찾아보기
-                </button>
-              ) : undefined}
-            />
+            {!search && activeTab === '전체' && campaigns.length === 0 ? (
+              <ErrorState
+                message="알 수 없는 오류가 발생했어요"
+                subMessage="잠시 후 다시 시도해 주세요"
+                retryLabel="캠페인 탐색으로 이동"
+                showRetryIcon={false}
+                onRetry={() => navigate('/campaigns/browse')}
+              />
+            ) : (
+              <EmptyState
+                variant={search ? 'search' : 'default'}
+                title={search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
+                description={search ? `'${search}'와 일치하는 캠페인이 없어요` : '새로운 캠페인에 신청해 보세요'}
+                action={search ? (
+                  <button
+                    onClick={() => setSearch('')}
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    검색어 지우기
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/campaigns/browse')}
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    캠페인 찾아보기
+                  </button>
+                )}
+              />
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
