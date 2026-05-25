@@ -14,9 +14,10 @@ interface LayoutProps {
   pageTitle?: string
   onBack?: () => void
   mobileFull?: boolean
+  pageWidth?: string
 }
 
-export default function Layout({ children, showSidebar = true, showBottomTab, pageTitle, onBack, mobileFull = false }: LayoutProps) {
+export default function Layout({ children, showSidebar = true, showBottomTab, pageTitle, onBack, mobileFull = false, pageWidth }: LayoutProps) {
   const bottomTab = showBottomTab ?? showSidebar
   const [drawerOpen, setDrawerOpen] = useState(false)
   const navigate = useNavigate()
@@ -32,10 +33,10 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
       </a>
 
       {/* GNB */}
-      <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 @[640px]:px-6 bg-white border-b border-gray-100 z-40">
+      <header className="h-14 flex-shrink-0 flex items-center px-4 @[640px]:px-6 bg-white border-b border-gray-100 z-40">
         {onBack ? (
           /* 2뎁스: 뒤로가기 + 페이지 타이틀 */
-          <>
+          <div className={`flex items-center justify-between w-full ${pageWidth ? `${pageWidth} mx-auto` : ''}`}>
             <button
               onClick={onBack}
               aria-label="이전으로"
@@ -45,10 +46,10 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
               <span className="text-sm font-medium truncate max-w-[200px]">{pageTitle}</span>
             </button>
             <div className="w-8" />
-          </>
+          </div>
         ) : (
           /* 1뎁스: 로고 + 우측 메뉴 */
-          <>
+          <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               {/* 햄버거: @sm 이상 @lg 미만 (태블릿) */}
               {showSidebar && (
@@ -83,7 +84,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 로그아웃
               </button>
             </div>
-          </>
+          </div>
         )}
       </header>
 

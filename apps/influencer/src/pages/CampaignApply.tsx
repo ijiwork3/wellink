@@ -60,7 +60,7 @@ export default function CampaignApply() {
 
   if (qa === 'loading') {
     return (
-      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)} pageWidth="max-w-lg">
         <div className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
           {/* 캠페인 헤더 스켈레톤 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-4">
@@ -110,7 +110,7 @@ export default function CampaignApply() {
 
   if (qa === 'error') {
     return (
-      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)} pageWidth="max-w-lg">
         <ErrorState
           message="신청 정보를 불러올 수 없어요"
           subMessage="잠시 후 다시 시도해 주세요"
@@ -122,7 +122,7 @@ export default function CampaignApply() {
 
   if (!campaign) {
     return (
-      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)} pageWidth="max-w-lg">
         <ErrorState
           message="캠페인을 찾을 수 없어요"
           subMessage="이미 삭제됐거나 잘못된 링크일 수 있어요"
@@ -171,7 +171,7 @@ export default function CampaignApply() {
 
   if (submitted) {
     return (
-      <Layout showSidebar={false} pageTitle={isEditMode ? '신청 정보 수정' : '캠페인 신청'} onBack={() => navigate(-1)}>
+      <Layout showSidebar={false} pageTitle={isEditMode ? '신청 정보 수정' : '캠페인 신청'} onBack={() => navigate(-1)} pageWidth="max-w-lg">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-6">
           <div className="w-20 h-20 rounded-full bg-brand-green-bg flex items-center justify-center">
             <CheckCircle2 size={40} className="text-brand-green" />
@@ -209,30 +209,32 @@ export default function CampaignApply() {
   const pageTitle = isViewMode ? '신청 정보 확인' : isEditMode ? '신청 정보 수정' : `${campaign.name} 신청`
 
   return (
-    <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)}>
+    <Layout showSidebar={false} pageTitle={pageTitle} onBack={() => navigate(-1)} pageWidth="max-w-lg">
       {/* 하단 fixed CTA — safe-area 포함 */}
       <div
         className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3"
         style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
       >
-        {isViewMode ? (
-          <button
-            onClick={() => navigate('/campaigns/my')}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            돌아가기
-          </button>
-        ) : (
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            aria-disabled={isSubmitting}
-            aria-busy={isSubmitting}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            {isSubmitting ? '제출 중...' : isEditMode ? '수정 완료' : '신청하기'}
-          </button>
-        )}
+        <div className="max-w-lg mx-auto">
+          {isViewMode ? (
+            <button
+              onClick={() => navigate('/campaigns/my')}
+              className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              돌아가기
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              aria-disabled={isSubmitting}
+              aria-busy={isSubmitting}
+              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              {isSubmitting ? '제출 중...' : isEditMode ? '수정 완료' : '신청하기'}
+            </button>
+          )}
+        </div>
       </div>
       <div className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
         <h1 className="sr-only">{pageTitle}</h1>
@@ -284,7 +286,7 @@ export default function CampaignApply() {
         )}
 
         {/* 캠페인 요약 — 원본 CampaignApplyForm.tsx:439-459: 썸네일 + 제품 정보 */}
-        <div className="rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           {/* 썸네일 + 기본 정보 */}
           <div className="flex items-center gap-3 p-4 bg-gray-50">
             <div className="w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
@@ -333,7 +335,7 @@ export default function CampaignApply() {
         </div>
 
         {/* 신청자 정보 (읽기 전용) */}
-        <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5 space-y-2.5">
           <p className="text-sm font-semibold text-gray-500 mb-1">신청자 정보</p>
           <div className="flex items-center gap-2.5 min-w-0">
             <User size={14} className="text-gray-400 flex-shrink-0" />
@@ -646,7 +648,7 @@ function Section({ title, required, icon, children }: {
   children: React.ReactNode
 }) {
   return (
-    <div>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5">
       <div className="flex items-center gap-1.5 mb-3">
         {icon}
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
