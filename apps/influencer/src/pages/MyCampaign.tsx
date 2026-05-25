@@ -340,23 +340,17 @@ export default function MyCampaign() {
                         )}
 
                         {/* 보조 정보: 캠페인 모집 상태 + 콘텐츠 마감
-                            레이블을 붙여 참여 상태와 혼동 방지 */}
+                            "레이블: 값" 구조로 혼동 방지 */}
                         {(recruitChip || dday) && (
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {recruitChip && (
-                              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                                캠페인 · {recruitChip.label}
+                              <span className={`inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
+                                <span className="font-normal opacity-70 mr-0.5">캠페인:</span>{recruitChip.label}
                               </span>
                             )}
                             {dday && (
-                              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${
-                                dday.color === 'red'
-                                  ? 'bg-red-50 text-red-600'
-                                  : dday.color === 'orange'
-                                  ? 'bg-orange-50 text-orange-600'
-                                  : 'bg-gray-100 text-gray-500'
-                              } ${dday.pulse ? 'animate-pulse' : ''}`}>
-                                콘텐츠 마감 · {dday.label}
+                              <span className="inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-red-50 text-red-600">
+                                <span className="font-normal opacity-70 mr-0.5">콘텐츠 마감:</span>{dday.label}
                               </span>
                             )}
                           </div>
