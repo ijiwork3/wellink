@@ -173,7 +173,7 @@ export default function Profile() {
   }
 
   return (
-    <Layout>
+    <Layout showBottomTab={!isEditing}>
       <div className="space-y-4 max-w-xl mx-auto">
         <h1 className="sr-only">내 정보</h1>
 
