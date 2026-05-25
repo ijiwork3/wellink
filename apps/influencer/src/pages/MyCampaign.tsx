@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay, getDDayBadgeStyle } from '@wellink/ui'
+import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
@@ -323,17 +323,9 @@ export default function MyCampaign() {
 
                       {/* 정보 */}
                       <div className="flex-1 min-w-0">
-                        {/* 배지 행: 참여 상태 + 캠페인 모집 상태 */}
-                        <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                        {/* 내 참여 상태 — 단독으로 가장 위에 */}
+                        <div className="mb-1.5">
                           <StatusBadge status={c.status} size="sm" />
-                          {recruitChip && (
-                            <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                              {recruitChip.label}
-                            </span>
-                          )}
-                          {dday && (
-                            <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
-                          )}
                         </div>
 
                         {/* 캠페인명 */}
@@ -345,6 +337,29 @@ export default function MyCampaign() {
                         {/* 리워드 */}
                         {c.rewardAmount > 0 && (
                           <p className="text-xs text-gray-400 mt-0.5">{c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택</p>
+                        )}
+
+                        {/* 보조 정보: 캠페인 모집 상태 + 콘텐츠 마감
+                            레이블을 붙여 참여 상태와 혼동 방지 */}
+                        {(recruitChip || dday) && (
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {recruitChip && (
+                              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
+                                캠페인 · {recruitChip.label}
+                              </span>
+                            )}
+                            {dday && (
+                              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${
+                                dday.color === 'red'
+                                  ? 'bg-red-50 text-red-600'
+                                  : dday.color === 'orange'
+                                  ? 'bg-orange-50 text-orange-600'
+                                  : 'bg-gray-100 text-gray-500'
+                              } ${dday.pulse ? 'animate-pulse' : ''}`}>
+                                콘텐츠 마감 · {dday.label}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
 
