@@ -9,23 +9,11 @@ import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
-import Home from './pages/Home'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 import PhoneVerificationGate from './components/PhoneVerificationGate'
 
 const STATUS_ITEMS: StatusItem[] = [
-  /* ────────────────── 홈 (QA 전용) ────────────────── */
-  {
-    label: '홈',
-    children: [
-      { label: '기본', path: '/home' },
-      { label: '로딩 스켈레톤', path: '/home?qa=loading' },
-      { label: '빈 상태', path: '/home?qa=empty' },
-      { label: '에러', path: '/home?qa=error' },
-    ],
-  },
-
   /* ────────────────── 온보딩 ────────────────── */
   {
     label: '온보딩',
@@ -145,12 +133,6 @@ const STATUS_ITEMS: StatusItem[] = [
 function getQuickItems(pathname: string): StatusItem[] {
   const err = (base: string) => ({ label: '네트워크 오류', path: `${base}?qa=error` })
 
-  if (pathname === '/home') return [
-    { label: '기본',   path: '/home' },
-    { label: '로딩',   path: '/home?qa=loading' },
-    { label: '빈목록', path: '/home?qa=empty' },
-    err('/home'),
-  ]
   if (pathname === '/login') return [
     { label: '기본',    path: '/login' },
     { label: '입력완료', path: '/login?qa=filled' },
@@ -262,7 +244,6 @@ function AppRoutes() {
     <>
       <Routes>
         <Route path="/" element={<Navigate to="/campaigns/browse" replace />} />
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
