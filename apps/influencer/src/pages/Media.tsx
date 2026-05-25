@@ -82,13 +82,17 @@ export default function Media() {
     return (
       <Layout mobileFull>
         <div className="bg-white @[640px]:rounded-2xl @[640px]:border @[640px]:border-gray-100 @[640px]:shadow-sm">
-          {/* 헤더 스켈레톤 */}
+          {/* 헤더: @handle + 계정변경 텍스트 + 새로고침 버튼 + 연결됨 배지 */}
           <div className="flex items-center justify-between gap-3 px-4 pt-4 @[640px]:px-5 @[640px]:pt-5 mb-4">
-            <Skeleton shape="text" height={16} width="9rem" />
-            <Skeleton shape="card" height={28} width="5rem" />
+            <Skeleton shape="text" height={16} width="8rem" />
+            <div className="flex items-center gap-2 shrink-0">
+              <Skeleton shape="text" height={14} width="3.5rem" />
+              <Skeleton shape="circle" height={28} width={28} />
+              <Skeleton shape="card" height={24} width="4.5rem" className="rounded-full" />
+            </div>
           </div>
-          {/* 통계 그리드 스켈레톤 */}
-          <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
+          {/* 통계 그리드: 6셀 (팔로워·게시물·참여율·평균좋아요·평균댓글·최근활동) */}
+          <div className="grid grid-cols-3 @[560px]:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-1.5">
                 <Skeleton shape="text" height={12} width="3.5rem" />
@@ -96,12 +100,14 @@ export default function Media() {
               </div>
             ))}
           </div>
-          {/* 이미지 그리드 스켈레톤 */}
+          {/* 최근 콘텐츠 헤더 */}
           <div className="flex items-center gap-1.5 mb-2 px-4 @[640px]:px-5">
+            <Skeleton shape="circle" height={14} width={14} />
             <Skeleton shape="text" height={14} width="5rem" />
           </div>
+          {/* 이미지 그리드 */}
           <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 pb-4 @[640px]:px-5 @[640px]:pb-5">
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: 15 }).map((_, i) => (
               <div key={i} className="aspect-[2/3] rounded-xl bg-gray-100 animate-pulse" />
             ))}
           </div>

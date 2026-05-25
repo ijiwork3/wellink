@@ -713,7 +713,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
   onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
 
@@ -787,7 +787,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
               <span className="text-sm font-semibold">QA 패널</span>
             </div>
             <button
-              onClick={() => setMenuOpen(false)}
+              onClick={() => { setMenuOpen(false); document.dispatchEvent(new Event('qa-toggle')); }}
               className="p-2 rounded-md hover:bg-slate-700 transition-colors"
               aria-label="닫기"
             >

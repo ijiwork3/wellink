@@ -164,20 +164,53 @@ export default function Profile() {
     return (
       <Layout>
         <div className="space-y-4 max-w-xl mx-auto">
+          {/* 내 정보 카드 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <Skeleton shape="circle" height={20} width={20} />
-              <Skeleton shape="text" height={16} width="5rem" />
+            {/* 헤더: User 아이콘 + 제목 + 편집 버튼 */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Skeleton shape="circle" height={16} width={16} />
+                <Skeleton shape="text" height={16} width="4rem" />
+              </div>
+              <Skeleton shape="card" height={36} width="4.5rem" />
             </div>
+            {/* 이름·이메일·전화번호 read-only 필드 */}
             <div className="space-y-3">
-              {[1,2,3,4].map(i => <Skeleton key={i} shape="card" height={40} width="100%" />)}
+              {[1,2,3].map(i => (
+                <div key={i}>
+                  <Skeleton shape="text" height={12} width="3rem" className="mb-1.5" />
+                  <Skeleton shape="card" height={38} width="100%" />
+                </div>
+              ))}
+              {/* 인플루언서 유형 */}
+              <div>
+                <Skeleton shape="text" height={12} width="5.5rem" className="mb-2" />
+                <Skeleton shape="card" height={38} width="100%" />
+              </div>
+            </div>
+            {/* 활동 분야 — 태그 형태 */}
+            <div className="mt-5 pt-5 border-t border-gray-100">
+              <Skeleton shape="text" height={14} width="4rem" className="mb-3" />
+              <div className="flex flex-wrap gap-2">
+                {[60, 52, 68, 44, 56].map((w, i) => (
+                  <Skeleton key={i} shape="card" height={26} width={`${w}px`} className="rounded-full" />
+                ))}
+              </div>
             </div>
           </div>
+          {/* 마케팅 수신 동의 카드 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <Skeleton shape="text" height={16} width="5rem" className="mb-4" />
-            <div className="grid grid-cols-2 gap-3">
-              {Array.from({length: 10}).map((_, i) => <Skeleton key={i} shape="card" height={36} width="100%" />)}
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-1.5">
+                <Skeleton shape="text" height={14} width="7rem" />
+                <Skeleton shape="text" height={12} width="12rem" />
+              </div>
+              <Skeleton shape="card" height={24} width="2.75rem" className="rounded-full" />
             </div>
+          </div>
+          {/* 로그아웃 버튼 */}
+          <div className="flex justify-center pt-1 pb-4">
+            <Skeleton shape="card" height={40} width="7rem" className="rounded-xl" />
           </div>
         </div>
       </Layout>

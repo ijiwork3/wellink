@@ -62,13 +62,32 @@ export default function CampaignApply() {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 신청" onBack={() => navigate(-1)} pageWidth="max-w-lg">
         <div className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
-          {/* 캠페인 헤더 스켈레톤 */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-4">
-            <Skeleton shape="rect" className="w-20 h-20 rounded-xl flex-shrink-0" />
-            <div className="flex-1 space-y-2">
-              <Skeleton shape="text" className="h-4 w-2/3" />
-              <Skeleton shape="text" className="h-3 w-1/2" />
-              <Skeleton shape="text" className="h-3 w-1/3" />
+          {/* 캠페인 요약 카드 스켈레톤 */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 p-4 bg-gray-50">
+              <Skeleton shape="rect" className="w-14 h-14 rounded-xl flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton shape="text" className="h-3 w-1/3" />
+                <Skeleton shape="text" className="h-4 w-3/4" />
+                <Skeleton shape="text" className="h-3 w-1/4" />
+              </div>
+            </div>
+            <div className="border-t border-gray-100 px-4 py-3 space-y-2">
+              <Skeleton shape="text" className="h-3 w-1/5" />
+              <Skeleton shape="text" className="h-3 w-full" />
+              <Skeleton shape="text" className="h-3 w-2/3" />
+            </div>
+          </div>
+          {/* 신청자 정보 스켈레톤 */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-2.5">
+            <Skeleton shape="text" className="h-4 w-1/4 mb-1" />
+            <div className="flex items-center gap-2.5">
+              <Skeleton shape="circle" className="w-3.5 h-3.5" />
+              <Skeleton shape="text" className="h-3 w-2/5" />
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Skeleton shape="circle" className="w-3.5 h-3.5" />
+              <Skeleton shape="text" className="h-3 w-3/5" />
             </div>
           </div>
           {/* 연락처 섹션 스켈레톤 */}
@@ -82,9 +101,10 @@ export default function CampaignApply() {
             <Skeleton shape="text" className="h-10 w-full rounded-xl" />
             <Skeleton shape="text" className="h-10 w-full rounded-xl" />
             <div className="flex gap-2">
-              <Skeleton shape="text" className="h-10 w-24 rounded-xl" />
               <Skeleton shape="text" className="h-10 flex-1 rounded-xl" />
+              <Skeleton shape="text" className="h-10 w-20 rounded-xl" />
             </div>
+            <Skeleton shape="text" className="h-10 w-full rounded-xl" />
             <Skeleton shape="text" className="h-10 w-full rounded-xl" />
           </div>
           {/* 추가 질문 스켈레톤 */}
@@ -92,15 +112,19 @@ export default function CampaignApply() {
             <Skeleton shape="text" className="h-4 w-1/2" />
             <Skeleton shape="text" className="h-20 w-full rounded-xl" />
           </div>
-          {/* 동의 스켈레톤 */}
+          {/* 약관 동의 스켈레톤 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <Skeleton shape="circle" className="w-5 h-5" />
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+              <Skeleton shape="circle" className="w-4 h-4" />
               <Skeleton shape="text" className="h-3 flex-1" />
             </div>
-            <div className="flex items-center gap-3">
-              <Skeleton shape="circle" className="w-5 h-5" />
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+              <Skeleton shape="circle" className="w-4 h-4" />
               <Skeleton shape="text" className="h-3 flex-1" />
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <Skeleton shape="text" className="h-3 w-1/3" />
+              <Skeleton shape="text" className="h-3 w-1/5" />
             </div>
           </div>
         </div>

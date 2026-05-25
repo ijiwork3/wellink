@@ -20,5 +20,6 @@
       "@wellink/ui/*": ["../../packages/ui/src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/pages/_archived"]
 }

@@ -22,24 +22,43 @@ export default function CampaignDetail() {
   if (qa === 'loading') {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 상세" onBack={goBack}>
-        <div className="@container">
-          {/* 실제 콘텐츠와 동일한 컨테이너 정책: 모바일 풀폭, @[640px] 이상에서만 max-w-3xl + px-6 */}
-          <Skeleton shape="rect" height={208} width="100%" className="@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:mt-6 @[640px]:rounded-2xl" />
-          <div className="@[640px]:max-w-3xl @[640px]:mx-auto @[640px]:px-6 @[640px]:py-6">
-            <div className="px-4 py-5 @[640px]:p-6 @[640px]:bg-white @[640px]:rounded-2xl @[640px]:shadow-sm @[640px]:border @[640px]:border-gray-100 space-y-4">
-              <div className="flex gap-2">
-                <Skeleton shape="circle" height={16} width="5rem" />
-                <Skeleton shape="circle" height={16} width="3rem" />
+        <div className="pt-8 pb-28 lg:pb-12">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                {/* 좌열: 타이틀 → 이미지 → 섹션들 */}
+                <div className="flex-1 min-w-0 space-y-8">
+                  {/* 타이틀 섹션 */}
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap mb-4">
+                      <Skeleton shape="circle" height={20} width="4rem" />
+                      <Skeleton shape="text" height={14} width="8rem" />
+                    </div>
+                    <Skeleton shape="text" height={32} width="80%" className="mb-3" />
+                    <Skeleton shape="text" height={16} width="50%" />
+                  </div>
+                  {/* 이미지 — aspect-video */}
+                  <Skeleton shape="rect" className="w-full aspect-video rounded-2xl" />
+                  {/* 캠페인 설명·제공 내역 섹션 */}
+                  {[1, 2].map(i => (
+                    <div key={i} className="space-y-4">
+                      <Skeleton shape="text" height={20} width="7rem" />
+                      <Skeleton shape="card" height={100} width="100%" />
+                    </div>
+                  ))}
+                  {/* 캠페인 미션 — 3열 카드 */}
+                  <div className="space-y-4">
+                    <Skeleton shape="text" height={20} width="8rem" />
+                    <div className="grid grid-cols-3 gap-4">
+                      {[1, 2, 3].map(i => <Skeleton key={i} shape="card" height={80} width="100%" />)}
+                    </div>
+                  </div>
+                </div>
+                {/* 우사이드바 */}
+                <div className="lg:w-72 lg:shrink-0">
+                  <Skeleton shape="card" height={300} width="100%" />
+                </div>
               </div>
-              <Skeleton shape="text" height={24} width="75%" />
-              <Skeleton shape="text" height={16} width="100%" />
-              <Skeleton shape="text" height={16} width="83%" />
-              <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-3">
-                <Skeleton shape="card" height={64} width="100%" />
-                <Skeleton shape="card" height={64} width="100%" />
-              </div>
-              <Skeleton shape="card" height={56} width="100%" />
-              <Skeleton shape="card" height={48} width="100%" />
             </div>
           </div>
         </div>
