@@ -12,21 +12,16 @@ import { mockCampaigns } from '../services/mock/campaigns'
 import { mockMyCampaigns } from '../services/mock/campaigns'
 import { mockProfile, mockCampaignSummary, mockInstaStats, INFLUENCER_TYPES } from '../services/mock/profile'
 import { useBookmarks } from '../services/userState'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 // ─── 상수 ────────────────────────────────────────────────────────────────────
 
 const STAT_ITEMS = [
-  { label: '지원',    key: 'applied'    as const, color: 'text-gray-900' },
-  { label: '참여중',  key: 'ongoing'    as const, color: 'text-brand-green-text' },
-  { label: '완료',    key: 'completed'  as const, color: 'text-gray-900' },
-  { label: '미선정',  key: 'eliminated' as const, color: 'text-red-400' },
+  { label: '지원',    key: 'applied'    as const },
+  { label: '참여중',  key: 'ongoing'    as const },
+  { label: '완료',    key: 'completed'  as const },
+  { label: '미선정',  key: 'eliminated' as const },
 ]
-
-const STATUS_BG: Record<string, string> = {
-  '모집중':   'bg-brand-green-bg',
-  '마감임박': 'bg-orange-50',
-  '종료':     'bg-gray-50',
-}
 
 // ─── 컴포넌트 ────────────────────────────────────────────────────────────────
 
@@ -175,9 +170,14 @@ export default function Home() {
                     className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     aria-label={`${c.name} — ${c.status}`}
                   >
-                    {/* 채널 이모지 아바타 */}
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-lg shrink-0" aria-hidden>
-                      {CHANNEL_EMOJI[c.channel] ?? '📱'}
+                    {/* 썸네일 */}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                      <img
+                        src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        onError={e => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id) }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 line-clamp-1 mb-1">{c.name}</p>
@@ -274,13 +274,6 @@ export default function Home() {
 }
 
 // ─── 서브 컴포넌트 ────────────────────────────────────────────────────────────
-
-const CHANNEL_EMOJI: Record<string, string> = {
-  '인스타그램': '📸',
-  '유튜브':    '🎬',
-  '네이버 블로그': '📝',
-  '틱톡':     '🎵',
-}
 
 function SectionHeader({ title, count, onMore }: { title: string; count?: number; onMore?: () => void }) {
   return (
@@ -386,9 +379,15 @@ function CampaignCarousel({
               className="shrink-0 w-[152px] text-left rounded-xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               aria-label={c.name}
             >
-              {/* 썸네일 영역 */}
-              <div className={`h-[88px] flex items-center justify-center text-4xl ${STATUS_BG[c.status] ?? 'bg-gray-50'}`}>
-                {c.image}
+              {/* 썸네일 — 16:9 */}
+              <div className="aspect-video w-full overflow-hidden bg-gray-100">
+                <img
+                  src={getThumbnailFromPool(c.id)}
+                  alt=""
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  onError={e => { e.currentTarget.src = getPlaceholderDataUri(c.id, c.brand) }}
+                />
               </div>
               {/* 콘텐츠 */}
               <div className="p-2.5">
