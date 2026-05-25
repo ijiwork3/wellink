@@ -4,7 +4,7 @@ import { useEscToClose } from '../utils/useEscToClose'
 import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
-import { auth } from '@wellink/ui'
+import { auth, AlertModal } from '@wellink/ui'
 import { ArrowLeft, Menu, X } from 'lucide-react'
 
 interface LayoutProps {
@@ -20,8 +20,12 @@ interface LayoutProps {
 export default function Layout({ children, showSidebar = true, showBottomTab, pageTitle, onBack, mobileFull = false, pageWidth }: LayoutProps) {
   const bottomTab = showBottomTab ?? showSidebar
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [logoutConfirm, setLogoutConfirm] = useState(false)
   const navigate = useNavigate()
   useEscToClose(drawerOpen, () => setDrawerOpen(false))
+
+  const confirmLogout = () => setLogoutConfirm(true)
+  const doLogout = () => { auth.clear(); navigate('/login') }
 
   return (
     <div className="@container flex flex-col w-full h-full">
@@ -78,7 +82,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => { auth.clear(); navigate('/login') }}
+                onClick={confirmLogout}
                 className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
@@ -147,7 +151,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
             </div>
             <div className="border-t border-gray-100 p-4">
               <button
-                onClick={() => { auth.clear(); navigate('/login') }}
+                onClick={confirmLogout}
                 className="w-full text-sm py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
@@ -163,6 +167,16 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           <BottomTabBar />
         </div>
       )}
+
+      <AlertModal
+        open={logoutConfirm}
+        onClose={() => setLogoutConfirm(false)}
+        title="로그아웃"
+        description="로그아웃 하시겠어요?"
+        confirmLabel="로그아웃"
+        onConfirm={doLogout}
+        variant="default"
+      />
     </div>
   )
 }

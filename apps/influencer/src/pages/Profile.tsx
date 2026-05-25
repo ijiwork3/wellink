@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton, AlertModal } from '@wellink/ui'
 import { Toggle, ResponsiveSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -43,6 +43,7 @@ export default function Profile() {
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
   // 비밀번호 변경 2단계: 1=OTP 인증, 2=새 비밀번호 입력
+  const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [pwStep, setPwStep] = useState<1 | 2>(1)
   const [pwPhone, setPwPhone] = useState('')
   const [pwCode, setPwCode] = useState('')
@@ -355,7 +356,7 @@ export default function Profile() {
         {!isEditing && (
           <div className="flex justify-center pt-1 pb-4">
             <button
-              onClick={() => { auth.clear(); navigate('/login') }}
+              onClick={() => setLogoutConfirm(true)}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <LogOut size={14} />로그아웃
@@ -495,6 +496,15 @@ export default function Profile() {
         </div>
       </ResponsiveSheet>
 
+      <AlertModal
+        open={logoutConfirm}
+        onClose={() => setLogoutConfirm(false)}
+        title="로그아웃"
+        description="로그아웃 하시겠어요?"
+        confirmLabel="로그아웃"
+        onConfirm={() => { auth.clear(); navigate('/login') }}
+        variant="default"
+      />
     </Layout>
   )
 }
