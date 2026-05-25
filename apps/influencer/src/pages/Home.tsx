@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Compass, ChevronRight, Heart, TrendingUp, AlertCircle,
-  Instagram, Star, Activity,
+  Camera, Star, Activity,
 } from 'lucide-react'
 import Layout from '../components/Layout'
 import {
@@ -209,7 +209,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
               <div className="flex items-center gap-2">
-                <Instagram size={14} className="text-brand-green" aria-hidden="true" />
+                <Camera size={14} className="text-brand-green" aria-hidden="true" />
                 <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
               </div>
               <button
