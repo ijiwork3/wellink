@@ -232,7 +232,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
                 <button
                   onClick={() => setPwModalOpen(true)}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all bg-brand-green-bg hover:bg-brand-green/10 border-brand-green-border text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Lock size={14} />비밀번호 변경
                 </button>
@@ -251,7 +251,7 @@ export default function Profile() {
                       className={`px-3 py-2.5 rounded-xl text-sm font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         draftType === t.value
                           ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
                       }`}
                     >
                       {t.label}
