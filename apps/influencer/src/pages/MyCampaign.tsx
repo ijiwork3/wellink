@@ -421,6 +421,7 @@ export default function MyCampaign() {
                         </div>
                       )}
                   </div>
+                  </div>
                 </div>
               )
             })}
