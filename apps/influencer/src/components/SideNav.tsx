@@ -26,13 +26,17 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
 
   const navItemClass = (isActive: boolean) =>
     `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-      isActive ? 'bg-gray-900 text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'
+      isActive ? 'bg-brand-green-bg text-brand-green-text font-semibold' : 'text-gray-600 hover:bg-gray-100'
     }`
 
   return (
     <nav className="w-52 flex-shrink-0 space-y-6 sticky top-0 self-start">
-      {/* 캠페인 탐색 — 섹션 밖 단독 배치 */}
-      <ul>
+      {/* 탐색 섹션 */}
+      <div>
+        <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1.5 px-3">
+          탐색
+        </p>
+        <ul>
         <li>
           <button
             type="button"
@@ -44,7 +48,8 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
             {browseItem.label}
           </button>
         </li>
-      </ul>
+        </ul>
+      </div>
 
       {sections.map((section) => (
         <div key={section.title}>
