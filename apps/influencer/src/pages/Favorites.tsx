@@ -6,6 +6,7 @@ import { useToast } from '@wellink/ui'
 import { fmtDate } from '@wellink/ui'
 import { mockCampaigns } from '../services/mock/campaigns'
 import { useBookmarks } from '../services/userState'
+import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 /** 원본 mypage L772-789: getCampaignStatus — participateEndDate 기반 모집중/종료됨 */
 function getRecruitChip(applyEnd?: string): { label: string; className: string } | null {
@@ -127,9 +128,13 @@ export default function Favorites() {
                 >
                   {/* 썸네일: 카드 상하 마진 없이 꽉 채움 */}
                   <div className="relative w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100">
-                    <div className="absolute inset-0 flex items-center justify-center text-3xl @[640px]:text-4xl">
-                      {c.image}
-                    </div>
+                    <img
+                      src={getThumbnailFromPool(c.id)}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={e => { e.currentTarget.src = getPlaceholderDataUri(String(c.id), c.brand) }}
+                    />
                   </div>
 
                   {/* 내용 */}
