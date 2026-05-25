@@ -1,17 +1,38 @@
 import { useNavigate } from 'react-router-dom'
 import { Heart, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
+import CampaignCard from '../components/CampaignCard'
 import { useQAMode, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { mockCampaigns } from '../services/mock/campaigns'
-import { useBookmarks } from '../services/userState'
-import CampaignCard from '../components/CampaignCard'
+import { useBookmarks, useApplications } from '../services/userState'
+
+function FavoriteSkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <Skeleton shape="rect" className="aspect-video w-full" />
+      <div className="p-4 space-y-2.5">
+        <div className="flex gap-2">
+          <Skeleton shape="circle" height={16} width="3.5rem" />
+          <Skeleton shape="circle" height={16} width="2.5rem" />
+        </div>
+        <Skeleton shape="text" height={16} width="80%" />
+        <Skeleton shape="text" height={12} width="50%" />
+        <div className="flex justify-between pt-2">
+          <Skeleton shape="text" height={12} width="4rem" />
+          <Skeleton shape="text" height={12} width="4rem" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function Favorites() {
   const qa = useQAMode()
   const navigate = useNavigate()
   const { showToast } = useToast()
   const bookmarks = useBookmarks()
+  const applications = useApplications()
 
   const toggleBookmark = (id: number) => {
     const wasBookmarked = bookmarks.has(id)
@@ -19,7 +40,6 @@ export default function Favorites() {
     showToast(wasBookmarked ? '관심 캠페인에서 제거했어요' : '관심 캠페인에 추가했어요!', wasBookmarked ? 'info' : 'success')
   }
 
-  // 마스터(mockCampaigns)에서 북마크 ID만 필터링 — 단일 출처
   const visible = qa === 'empty'
     ? []
     : mockCampaigns.filter(c => bookmarks.has(c.id))
@@ -32,24 +52,8 @@ export default function Favorites() {
             <Skeleton shape="text" height={20} width="7rem" />
             <Skeleton shape="card" height={28} width="6rem" />
           </div>
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="aspect-video bg-gray-100 animate-pulse" />
-                <div className="p-4 space-y-2.5">
-                  <div className="flex gap-2">
-                    <Skeleton shape="circle" height={20} width="4rem" />
-                    <Skeleton shape="circle" height={20} width="3rem" />
-                  </div>
-                  <Skeleton shape="text" height={15} width="85%" />
-                  <Skeleton shape="text" height={12} width="55%" />
-                  <div className="pt-2 border-t border-gray-100 flex justify-between">
-                    <Skeleton shape="text" height={12} width="40%" />
-                    <Skeleton shape="text" height={12} width="20%" />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+            {[1, 2, 3, 4].map(i => <FavoriteSkeletonCard key={i} />)}
           </div>
         </div>
       </Layout>
@@ -101,13 +105,15 @@ export default function Favorites() {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
             {visible.map(c => (
               <CampaignCard
                 key={c.id}
                 campaign={c}
                 liked={bookmarks.has(c.id)}
+                applied={applications.has(c.id)}
                 onToggleLike={toggleBookmark}
+                onCardClick={campaign => navigate(`/campaigns/${campaign.id}`)}
               />
             ))}
           </div>
