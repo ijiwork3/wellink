@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
-import { Settings, X } from 'lucide-react'
 import Login from './pages/Login'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
@@ -215,6 +214,12 @@ function AppRoutes() {
   }
 
   useEffect(() => {
+    const handler = () => setQaOpen(o => !o)
+    document.addEventListener('qa-toggle', handler)
+    return () => document.removeEventListener('qa-toggle', handler)
+  }, [])
+
+  useEffect(() => {
     const titles: Record<string, string> = {
       '/campaigns/browse':    '캠페인 탐색 — WELLINK AI',
       '/campaigns/favorites': '관심 캠페인 — WELLINK AI',
@@ -250,16 +255,6 @@ function AppRoutes() {
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
-
-      <button
-        onClick={() => setQaOpen(o => !o)}
-        aria-label="QA 패널 열기"
-        className="fixed z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-xs font-semibold transition-colors"
-        style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))', right: '1rem' }}
-      >
-        {qaOpen ? <X size={16} /> : <Settings size={16} />}
-        <span>QA</span>
-      </button>
 
       {qaOpen && (
         <GlobalQAHeader

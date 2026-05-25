@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Video, Package, Footprints, CheckCircle2 } from 'lucide-react'
-import { PlatformBadge, SEMANTIC_COLORS, TIMER_MS, getDDay } from '@wellink/ui'
+import { Heart } from 'lucide-react'
+import { SEMANTIC_COLORS, TIMER_MS, getDDay } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
@@ -23,6 +23,21 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
   }, [])
 
   const dday = getDDay(campaign.applyEnd)
+  const isEnded = dday.label.startsWith('D+')
+  const isToday = dday.label === 'D-Day'
+  const ddayDiff = isEnded || isToday ? null : parseInt(dday.label.replace('D-', ''), 10)
+  const ddayText = isEnded
+    ? '캠페인 종료'
+    : isToday
+      ? '오늘 마감'
+      : `마감 ${ddayDiff}일 전`
+  const ddayBgClass = isEnded
+    ? 'bg-gray-100 text-gray-400'                                          // 종료 — 회색
+    : dday.color === 'text-red-500'
+      ? 'bg-red-50 text-red-600 border border-red-100'                    // D-3 이하 — 빨강
+      : dday.color === 'text-orange-400'
+        ? 'bg-amber-50 text-amber-600 border border-amber-100'            // D-4~7 — 노랑
+        : 'bg-green-50 text-green-700 border border-green-100'            // D-8+ — 초록
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -80,19 +95,18 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
       <div className="p-4">
         {/* D-day + 타입 배지 — 원본 CampaignList.tsx L271-292 */}
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <span className={`flex items-center gap-1 text-xs font-bold whitespace-nowrap ${dday.color}`}>
-            <Video size={12} aria-hidden="true" />
-            {dday.label}
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${ddayBgClass}`}>
+            {ddayText}
           </span>
           {campaign.type === 'delivery'
-            ? <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap"><Package size={10} aria-hidden="true" />배송형</span>
+            ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">배송형</span>
             : campaign.type
-              ? <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap"><Footprints size={10} aria-hidden="true" />방문형</span>
+              ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">방문형</span>
               : null
           }
           {applied && (
-            <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
-              <CheckCircle2 size={11} aria-hidden="true" />신청완료
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
+              신청완료
             </span>
           )}
         </div>
@@ -106,7 +120,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
         {/* 하단: 모집인원 + 플랫폼 — 원본 CampaignList.tsx L308-322 */}
         <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-gray-100">
           <span className="text-xs text-gray-500 whitespace-nowrap">모집 인원: {campaign.headcount.toLocaleString('ko-KR')}</span>
-          <PlatformBadge platform={campaign.channel} className="text-xs py-0 px-1.5" />
+          <span className="text-xs text-gray-400 whitespace-nowrap">{campaign.channel}</span>
         </div>
       </div>
     </div>
