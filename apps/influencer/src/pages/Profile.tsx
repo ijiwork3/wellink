@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
-import { Toggle, ResponsiveSheet, AlertModal } from '@wellink/ui'
+import { Toggle, ResponsiveSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { ACTIVITY_FIELDS, INFLUENCER_TYPES, mockProfile } from '../services/mock/profile'
@@ -31,8 +31,6 @@ export default function Profile() {
   const [searchParams] = useSearchParams()
   const [pwModalOpen, setPwModalOpen] = useState(qa === 'modal-password')
   const [phoneModalOpen, setPhoneModalOpen] = useState(qa === 'modal-phone')
-  const [withdrawModalOpen, setWithdrawModalOpen] = useState(qa === 'modal-withdraw')
-  const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
   const [phone, setPhone] = useState(mockProfile.phone)
@@ -44,6 +42,11 @@ export default function Profile() {
   const [showNewPw, setShowNewPw] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
+  // 비밀번호 변경 2단계: 1=OTP 인증, 2=새 비밀번호 입력
+  const [pwStep, setPwStep] = useState<1 | 2>(1)
+  const [pwPhone, setPwPhone] = useState('')
+  const [pwCode, setPwCode] = useState('')
+  const [pwCodeSent, setPwCodeSent] = useState(false)
 
   // URL search param 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
@@ -98,18 +101,36 @@ export default function Profile() {
     return a.some((v, i) => v !== b[i])
   }, [isEditing, draftName, name, draftType, influencerType, draftFields, selectedFields])
 
+  const closePwModal = () => {
+    setPwModalOpen(false)
+    setPwStep(1); setPwPhone(''); setPwCode(''); setPwCodeSent(false)
+    setNewPw(''); setConfirmPw(''); setShowNewPw(false); setShowConfirmPw(false)
+  }
+
+  const handlePwSendCode = () => {
+    if (!pwPhone || pwPhone.replace(/\D/g, '').length < 10) {
+      showToast('올바른 전화번호를 입력해 주세요', 'error'); return
+    }
+    setPwCodeSent(true)
+    showToast('인증번호가 발송됐어요', 'success')
+  }
+
+  const handlePwVerify = () => {
+    if (!pwCodeSent) { showToast('인증번호를 먼저 받아주세요', 'error'); return }
+    if (pwCode.length !== 6) { showToast('인증번호 6자리를 입력해 주세요', 'error'); return }
+    setPwStep(2)
+  }
+
   const handlePwChange = async () => {
     if (isPwSubmitting) return
-    if (!currentPw || !newPw || !confirmPw) { showToast('모든 항목을 입력해 주세요', 'error'); return }
+    if (!newPw || !confirmPw) { showToast('새 비밀번호를 입력해 주세요', 'error'); return }
     if (newPw.length < 8) { showToast('새 비밀번호는 8자 이상이어야 해요', 'error'); return }
-    if (newPw === currentPw) { showToast('현재 비밀번호와 다른 비밀번호로 변경해 주세요', 'error'); return }
     if (newPw !== confirmPw) { showToast('새 비밀번호가 일치하지 않아요', 'error'); return }
     setIsPwSubmitting(true)
     await new Promise(r => setTimeout(r, TIMER_MS.FORM_SUBMIT))
     if (!isMountedRef.current) return
     setIsPwSubmitting(false)
-    setPwModalOpen(false)
-    setCurrentPw(''); setNewPw(''); setConfirmPw('')
+    closePwModal()
     showToast('비밀번호를 변경했어요!', 'success')
   }
 
@@ -332,63 +353,99 @@ export default function Profile() {
 
         {/* 로그아웃 + 회원탈퇴 */}
         {!isEditing && (
-        <div className="flex flex-col items-center gap-3 pt-1 pb-4">
-          <button
-            onClick={() => { auth.clear(); navigate('/login') }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-          >
-            <LogOut size={14} />로그아웃
-          </button>
-          <button onClick={() => setWithdrawModalOpen(true)} className="text-sm text-gray-500 hover:text-red-500 underline underline-offset-2 px-3 py-2.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-            회원탈퇴
-          </button>
-        </div>
+          <div className="flex justify-center pt-1 pb-4">
+            <button
+              onClick={() => { auth.clear(); navigate('/login') }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              <LogOut size={14} />로그아웃
+            </button>
+          </div>
         )}
       </div>
 
-      {/* 비밀번호 변경 */}
-      <ResponsiveSheet open={pwModalOpen} onClose={() => { setPwModalOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setShowNewPw(false); setShowConfirmPw(false) }} title="비밀번호 변경" size="sm">
-        <div className="space-y-3">
-          {/* 현재 비밀번호 — 원본에 없음, 추가 필드 */}
-          <input type="password" placeholder="현재 비밀번호" value={currentPw}
-            autoComplete="current-password"
-            maxLength={50}
-            onChange={e => setCurrentPw(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handlePwChange()}
-            className={inputClass} />
-          {/* 새 비밀번호 — 원본 mypage L1990-2007: Eye/EyeOff 토글 */}
-          <div className="relative">
-            <input type={showNewPw ? 'text' : 'password'} placeholder="새 비밀번호 (8자 이상)" value={newPw}
-              autoComplete="new-password"
-              maxLength={50}
-              onChange={e => setNewPw(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handlePwChange()}
-              className={inputClass} />
-            <button type="button" onClick={() => setShowNewPw(v => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
-              aria-label={showNewPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
-              {showNewPw ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {/* 새 비밀번호 확인 — 원본 mypage L2022-2036: Eye/EyeOff 토글 */}
-          <div className="relative">
-            <input type={showConfirmPw ? 'text' : 'password'} placeholder="새 비밀번호 확인" value={confirmPw}
-              autoComplete="new-password"
-              maxLength={50}
-              onChange={e => setConfirmPw(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handlePwChange()}
-              className={inputClass} />
-            <button type="button" onClick={() => setShowConfirmPw(v => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
-              aria-label={showConfirmPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
-              {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-        </div>
-        <div className="flex gap-3 mt-5">
-          <button onClick={() => setPwModalOpen(false)} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-          <button onClick={handlePwChange} disabled={isPwSubmitting} aria-disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
-        </div>
+      {/* 비밀번호 변경 — 2단계: 1=전화 OTP 인증, 2=새 비밀번호 */}
+      <ResponsiveSheet open={pwModalOpen} onClose={closePwModal} title="비밀번호 변경" size="sm">
+        {pwStep === 1 ? (
+          <>
+            <p className="text-sm text-gray-500 mb-4">본인 확인을 위해 전화번호 인증이 필요해요</p>
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="pw-phone" className="text-sm text-gray-500 block mb-1.5">전화번호</label>
+                <div className="flex gap-2">
+                  <input
+                    id="pw-phone"
+                    type="tel" value={pwPhone}
+                    autoComplete="tel" inputMode="tel" maxLength={13}
+                    onChange={e => setPwPhone(formatPhone(e.target.value))}
+                    placeholder="010-0000-0000"
+                    className={`${inputBase} flex-1 tabular-nums`}
+                  />
+                  <button
+                    onClick={handlePwSendCode}
+                    className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text bg-brand-green-bg hover:bg-brand-green/10 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    {pwCodeSent ? '재발송' : '인증요청'}
+                  </button>
+                </div>
+              </div>
+              {pwCodeSent && (
+                <div>
+                  <label htmlFor="pw-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
+                  <input
+                    id="pw-code"
+                    type="text" value={pwCode}
+                    autoComplete="one-time-code" inputMode="numeric"
+                    onChange={e => setPwCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onKeyDown={e => e.key === 'Enter' && handlePwVerify()}
+                    placeholder="6자리 입력"
+                    className={inputClass}
+                    maxLength={6}
+                  />
+                  <p className="text-xs text-gray-400 mt-1.5">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 mt-5">
+              <button onClick={closePwModal} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={handlePwVerify} disabled={!pwCodeSent || pwCode.length !== 6} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">인증 완료</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-gray-500 mb-4">새로 사용할 비밀번호를 입력해 주세요</p>
+            <div className="space-y-3">
+              <div className="relative">
+                <input type={showNewPw ? 'text' : 'password'} placeholder="새 비밀번호 (8자 이상)" value={newPw}
+                  autoComplete="new-password" maxLength={50}
+                  onChange={e => setNewPw(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handlePwChange()}
+                  className={inputClass} />
+                <button type="button" onClick={() => setShowNewPw(v => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
+                  aria-label={showNewPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
+                  {showNewPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <div className="relative">
+                <input type={showConfirmPw ? 'text' : 'password'} placeholder="새 비밀번호 확인" value={confirmPw}
+                  autoComplete="new-password" maxLength={50}
+                  onChange={e => setConfirmPw(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handlePwChange()}
+                  className={inputClass} />
+                <button type="button" onClick={() => setShowConfirmPw(v => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
+                  aria-label={showConfirmPw ? '비밀번호 숨기기' : '비밀번호 표시'}>
+                  {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <button onClick={closePwModal} disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={handlePwChange} disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
+            </div>
+          </>
+        )}
       </ResponsiveSheet>
 
       {/* 전화번호 변경 */}
@@ -440,21 +497,6 @@ export default function Profile() {
         </div>
       </ResponsiveSheet>
 
-      {/* 회원탈퇴 모달 — 광고주 패턴과 통일 (AlertModal variant="danger") */}
-      <AlertModal
-        open={withdrawModalOpen}
-        onClose={() => setWithdrawModalOpen(false)}
-        title="회원탈퇴"
-        description="정말 탈퇴하시겠어요? 탈퇴 후 모든 데이터는 복구할 수 없어요"
-        variant="danger"
-        confirmLabel="탈퇴하기"
-        cancelLabel="취소"
-        onConfirm={() => { setWithdrawModalOpen(false); showToast('탈퇴 기능은 준비 중이에요', 'info') }}
-      >
-        <div className="p-3 rounded-xl text-sm bg-red-100 border border-red-200 text-red-700 break-keep">
-          탈퇴 시 캠페인 내역, 프로필 정보 등이 모두 삭제돼요
-        </div>
-      </AlertModal>
     </Layout>
   )
 }
