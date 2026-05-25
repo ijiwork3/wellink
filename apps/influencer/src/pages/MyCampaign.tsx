@@ -345,12 +345,12 @@ export default function MyCampaign() {
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {recruitChip && (
                               <span className={`inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                                <span className="font-normal opacity-70 mr-0.5">캠페인:</span>{recruitChip.label}
+                                캠페인 {recruitChip.label}
                               </span>
                             )}
                             {dday && (
                               <span className="inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-red-50 text-red-600">
-                                <span className="font-normal opacity-70 mr-0.5">콘텐츠 마감:</span>{dday.label}
+                                콘텐츠 마감 {dday.label}
                               </span>
                             )}
                           </div>
