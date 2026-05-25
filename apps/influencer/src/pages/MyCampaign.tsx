@@ -247,18 +247,9 @@ export default function MyCampaign() {
         {/* 리스트 */}
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
-            {!search && activeTab === '전체' && campaigns.length === 0 ? (
-              <ErrorState
-                message="알 수 없는 오류가 발생했어요"
-                subMessage="잠시 후 다시 시도해 주세요"
-                retryLabel="캠페인 탐색으로 이동"
-                showRetryIcon={false}
-                onRetry={() => navigate('/campaigns/browse')}
-              />
-            ) : (
-              <EmptyState
+            <EmptyState
                 variant={search ? 'search' : 'default'}
-                title={search ? '검색 결과가 없어요' : '해당 상태의 캠페인이 없어요'}
+                title={search ? '검색 결과가 없어요' : '참여 중인 캠페인이 없어요'}
                 description={search ? `'${search}'와 일치하는 캠페인이 없어요` : '새로운 캠페인에 신청해 보세요'}
                 action={search ? (
                   <button
@@ -276,7 +267,6 @@ export default function MyCampaign() {
                   </button>
                 )}
               />
-            )}
           </div>
         ) : (
           <div className="space-y-2.5">
