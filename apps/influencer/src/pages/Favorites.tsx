@@ -44,9 +44,11 @@ export default function Favorites() {
           </div>
           <div className="space-y-2.5">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex gap-3">
-                  <Skeleton shape="rect" className="w-[72px] h-[72px] rounded-xl flex-shrink-0" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex">
+                {/* 썸네일: 마진 없이 카드 상하 꽉 채움 */}
+                <div className="w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100 animate-pulse" />
+                {/* 내용 */}
+                <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex items-start gap-3">
                   <div className="flex-1 space-y-2 min-w-0">
                     <div className="flex gap-2">
                       <Skeleton shape="circle" height={18} width="3.5rem" />
@@ -56,7 +58,7 @@ export default function Favorites() {
                     <Skeleton shape="text" height={12} width="55%" />
                     <Skeleton shape="text" height={12} width="40%" />
                   </div>
-                  <Skeleton shape="circle" height={32} width={32} className="flex-shrink-0 self-start" />
+                  <Skeleton shape="circle" height={32} width={32} className="flex-shrink-0" />
                 </div>
               </div>
             ))}
@@ -120,61 +122,61 @@ export default function Favorites() {
               return (
                 <div
                   key={c.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow flex"
                   onClick={() => navigate(`/campaigns/${c.id}`)}
                 >
-                  <div className="p-4">
-                    <div className="flex gap-3">
-                      {/* 썸네일 */}
-                      <div className="w-[72px] h-[72px] rounded-xl bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
-                        {c.image}
-                      </div>
-
-                      {/* 내용 */}
-                      <div className="flex-1 min-w-0">
-                        {/* 배지 행: 모집상태 + D-day */}
-                        <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                          {recruitChip && (
-                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                              {recruitChip.label}
-                            </span>
-                          )}
-                          {dday && (
-                            <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>
-                              {dday.label}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* 캠페인명 */}
-                        <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-1">
-                          {c.name}
-                        </h3>
-
-                        {/* 브랜드 · 보상 */}
-                        <p className="text-xs text-gray-500 truncate">
-                          {c.brand}
-                          {c.rewardAmount != null && ` · ${c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택`}
-                        </p>
-
-                        {/* 모집 · 마감일 */}
-                        <p className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
-                          모집 {c.headcount}명 · 마감 {fmtDate(c.applyEnd)}
-                        </p>
-                      </div>
-
-                      {/* 북마크 버튼 */}
-                      <button
-                        aria-label={isBookmarked ? '관심 캠페인 해제' : '관심 캠페인 추가'}
-                        onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                        className="flex-shrink-0 self-start p-1 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                      >
-                        <Heart
-                          size={20}
-                          className={isBookmarked ? 'text-red-400 fill-red-400' : 'text-gray-300'}
-                        />
-                      </button>
+                  {/* 썸네일: 카드 상하 마진 없이 꽉 채움 */}
+                  <div className="relative w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100">
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl @[640px]:text-4xl">
+                      {c.image}
                     </div>
+                  </div>
+
+                  {/* 내용 */}
+                  <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      {/* 배지 행: 모집상태 + D-day */}
+                      <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                        {recruitChip && (
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
+                            {recruitChip.label}
+                          </span>
+                        )}
+                        {dday && (
+                          <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>
+                            {dday.label}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 캠페인명 */}
+                      <h3 className="text-sm @[640px]:text-base font-semibold text-gray-900 leading-snug line-clamp-2 mb-1">
+                        {c.name}
+                      </h3>
+
+                      {/* 브랜드 · 보상 */}
+                      <p className="text-xs text-gray-500 truncate">
+                        {c.brand}
+                        {c.rewardAmount != null && ` · ${c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택`}
+                      </p>
+
+                      {/* 모집 · 마감일 */}
+                      <p className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
+                        모집 {c.headcount}명 · 마감 {fmtDate(c.applyEnd)}
+                      </p>
+                    </div>
+
+                    {/* 북마크 버튼 */}
+                    <button
+                      aria-label={isBookmarked ? '관심 캠페인 해제' : '관심 캠페인 추가'}
+                      onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
+                      className="flex-shrink-0 p-1 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    >
+                      <Heart
+                        size={20}
+                        className={isBookmarked ? 'text-red-400 fill-red-400' : 'text-gray-300'}
+                      />
+                    </button>
                   </div>
                 </div>
               )
