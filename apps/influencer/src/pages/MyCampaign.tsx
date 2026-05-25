@@ -152,22 +152,26 @@ export default function MyCampaign() {
           </div>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex gap-3">
-                  <Skeleton shape="card" height={72} width={72} className="rounded-xl flex-shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="flex gap-1.5">
-                      <Skeleton shape="card" height={20} width="4rem" />
-                      <Skeleton shape="card" height={20} width="3rem" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5">
+                {/* 모바일: 썸네일+정보 위, 버튼 아래 / 데스크탑: 썸네일+정보+버튼 한 행 */}
+                <div className="flex gap-3 @[640px]:gap-4 items-start">
+                  <Skeleton shape="card" height={72} width={72} className="rounded-xl flex-shrink-0 @[640px]:!h-[100px] @[640px]:!w-[100px]" />
+                  <div className="flex-1 min-w-0 flex flex-col @[640px]:flex-row @[640px]:items-start @[640px]:gap-4">
+                    <div className="flex-1 space-y-2 min-w-0">
+                      <div className="flex gap-1.5">
+                        <Skeleton shape="card" height={20} width="4rem" />
+                        <Skeleton shape="card" height={20} width="3rem" />
+                      </div>
+                      <Skeleton shape="text" height={14} width="85%" />
+                      <Skeleton shape="text" height={12} width="55%" />
+                      <Skeleton shape="text" height={12} width="40%" />
                     </div>
-                    <Skeleton shape="text" height={14} width="85%" />
-                    <Skeleton shape="text" height={12} width="55%" />
-                    <Skeleton shape="text" height={12} width="40%" />
+                    {/* 버튼 영역: 모바일 border-t 아래, 데스크탑 우측 */}
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:shrink-0 @[640px]:w-[140px]">
+                      <Skeleton shape="card" height={36} className="flex-1 @[640px]:flex-none @[640px]:w-full" />
+                      <Skeleton shape="card" height={36} className="flex-1 @[640px]:flex-none @[640px]:w-full" />
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                  <Skeleton shape="card" height={34} className="flex-1" />
-                  <Skeleton shape="card" height={34} width="4.5rem" />
                 </div>
               </div>
             ))}
@@ -298,12 +302,11 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  <div className="p-4">
-                    {/* 메인 행: 썸네일 + 정보 */}
-                    <div className="flex gap-3">
-                      {/* 썸네일 */}
+                  <div className="p-4 @[640px]:p-5">
+                    <div className="flex gap-3 @[640px]:gap-4 items-start">
+                      {/* 썸네일: 모바일 72px, 데스크탑 100px */}
                       <div
-                        className={`w-[72px] h-[72px] rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                        className={`w-[72px] h-[72px] @[640px]:w-[100px] @[640px]:h-[100px] rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${c.campaignRef ? 'cursor-pointer' : ''}`}
                         onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
                       >
                         <img
@@ -315,98 +318,106 @@ export default function MyCampaign() {
                         />
                       </div>
 
-                      {/* 정보 */}
-                      <div className="flex-1 min-w-0">
-                        {/* 배지 행: 참여 상태 + 캠페인 모집 상태 */}
-                        <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
-                          <StatusBadge status={c.status} size="sm" />
-                          {recruitChip && (
-                            <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                              {recruitChip.label}
-                            </span>
-                          )}
-                          {dday && (
-                            <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                      {/* 정보 + 액션 버튼 */}
+                      <div className="flex-1 min-w-0 flex flex-col @[640px]:flex-row @[640px]:items-start @[640px]:gap-4">
+
+                        {/* 정보 */}
+                        <div className="flex-1 min-w-0">
+                          {/* 배지 행: 참여 상태 + 캠페인 모집 상태 */}
+                          <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                            <StatusBadge status={c.status} size="sm" />
+                            {recruitChip && (
+                              <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
+                                {recruitChip.label}
+                              </span>
+                            )}
+                            {dday && (
+                              <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                            )}
+                          </div>
+
+                          {/* 캠페인명 */}
+                          <h3 className="text-sm @[640px]:text-base font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{c.name}</h3>
+
+                          {/* 브랜드 + 신청일 */}
+                          <p className="text-xs text-gray-500 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+
+                          {/* 리워드 */}
+                          {c.rewardAmount > 0 && (
+                            <p className="text-xs text-gray-400 mt-0.5">{c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택</p>
                           )}
                         </div>
 
-                        {/* 캠페인명 */}
-                        <h3 className="text-sm font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{c.name}</h3>
-
-                        {/* 브랜드 + 신청일 */}
-                        <p className="text-xs text-gray-500 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
-
-                        {/* 리워드 */}
-                        {c.rewardAmount > 0 && (
-                          <p className="text-xs text-gray-400 mt-0.5">{c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택</p>
+                        {/* 액션 버튼:
+                            모바일 — border-t 아래, flex-row 가득 채움
+                            데스크탑(@[640px]) — 우측 고정 열(140px), flex-col */}
+                        {actions.length > 0 && (
+                          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:flex-nowrap @[640px]:shrink-0 @[640px]:w-[140px]">
+                            {actions.map(action => {
+                              // 데스크탑: 버튼 폭 100%, 모바일: flex-1
+                              const btnBase = 'flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap flex-1 @[640px]:flex-none @[640px]:w-full'
+                              if (action === '수정하기') {
+                                if (!c.campaignRef) return null
+                                return (
+                                  <button key={action}
+                                    onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
+                                    className={`${btnBase} border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg`}>
+                                    <Edit2 size={13} />수정하기
+                                  </button>
+                                )
+                              }
+                              if (action === '콘텐츠 제출') return (
+                                <button key={action}
+                                  onClick={() => setSubmitModal(c)}
+                                  className={`${btnBase} text-white bg-brand-green hover:bg-brand-green-hover font-semibold`}>
+                                  <Upload size={13} />콘텐츠 제출
+                                </button>
+                              )
+                              if (action === '콘텐츠 수정') return (
+                                <button key={action}
+                                  onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                                  className={`${btnBase} border border-brand-green-border text-brand-green-text hover:bg-brand-green/5`}>
+                                  <Edit2 size={13} />콘텐츠 수정
+                                </button>
+                              )
+                              if (action === '신청 정보 보기') return (
+                                <button key={action}
+                                  onClick={() => setAppliedModal(c)}
+                                  className={`${btnBase} border border-gray-200 text-gray-700 hover:bg-gray-50`}>
+                                  <FileText size={13} />신청 정보
+                                </button>
+                              )
+                              if (action === '본인이 제출한 컨텐츠') return (
+                                <button key={action}
+                                  onClick={() => {
+                                    if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
+                                    else showToast('제출된 콘텐츠가 없어요', 'info')
+                                  }}
+                                  className={`${btnBase} border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100`}>
+                                  <ExternalLink size={13} />내 콘텐츠
+                                </button>
+                              )
+                              if (action === '취소') return (
+                                <button key={action}
+                                  onClick={() => setCancelModal(c)}
+                                  className={`${btnBase} border border-red-100 text-red-400 hover:bg-red-50 focus-visible:ring-red-300/60`}>
+                                  <X size={13} />취소
+                                </button>
+                              )
+                              if (action === '상세보기') return (
+                                <button key={action}
+                                  onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
+                                  disabled={!c.campaignRef}
+                                  className={`${btnBase} border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 disabled:opacity-40`}>
+                                  <FileText size={13} />상세보기
+                                </button>
+                              )
+                              return null
+                            })}
+                          </div>
                         )}
                       </div>
                     </div>
-
-                    {/* 액션 버튼 */}
-                    {actions.length > 0 && (
-                      <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap">
-                        {actions.map(action => {
-                          if (action === '수정하기') {
-                            if (!c.campaignRef) return null
-                            return (
-                              <button key={action}
-                                onClick={() => navigate(`/campaigns/${c.campaignRef}/apply?mode=edit`)}
-                                className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
-                                <Edit2 size={13} />수정하기
-                              </button>
-                            )
-                          }
-                          if (action === '콘텐츠 제출') return (
-                            <button key={action}
-                              onClick={() => setSubmitModal(c)}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
-                              <Upload size={13} />콘텐츠 제출
-                            </button>
-                          )
-                          if (action === '콘텐츠 수정') return (
-                            <button key={action}
-                              onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-brand-green-border text-brand-green-text hover:bg-brand-green/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
-                              <Edit2 size={13} />콘텐츠 수정
-                            </button>
-                          )
-                          if (action === '신청 정보 보기') return (
-                            <button key={action}
-                              onClick={() => setAppliedModal(c)}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
-                              <FileText size={13} />신청 정보
-                            </button>
-                          )
-                          if (action === '본인이 제출한 컨텐츠') return (
-                            <button key={action}
-                              onClick={() => {
-                                if (c.postUrl) window.open(c.postUrl, '_blank', 'noopener,noreferrer')
-                                else showToast('제출된 콘텐츠가 없어요', 'info')
-                              }}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap">
-                              <ExternalLink size={13} />내 콘텐츠
-                            </button>
-                          )
-                          if (action === '취소') return (
-                            <button key={action}
-                              onClick={() => setCancelModal(c)}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-red-100 text-red-400 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60 whitespace-nowrap">
-                              <X size={13} />취소
-                            </button>
-                          )
-                          if (action === '상세보기') return (
-                            <button key={action}
-                              onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}/apply?mode=view`)}
-                              disabled={!c.campaignRef}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap disabled:opacity-40">
-                              <FileText size={13} />상세보기
-                            </button>
-                          )
-                          return null
-                        })}
-                      </div>
-                    )}
                   </div>
                 </div>
               )
