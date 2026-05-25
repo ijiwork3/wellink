@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Activity, Pencil, Check, X, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
+import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton } from '@wellink/ui'
 import { Toggle, ResponsiveSheet, AlertModal } from '@wellink/ui'
@@ -177,29 +177,20 @@ export default function Profile() {
       <div className="space-y-4 max-w-xl mx-auto">
         <h1 className="sr-only">내 정보</h1>
 
-        {/* 기본 정보 카드 */}
+        {/* 내 정보 통합 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <User size={16} className="text-brand-green" />
-              <h2 className="text-base font-semibold text-gray-900">기본 정보</h2>
+              <h2 className="text-base font-semibold text-gray-900">내 정보</h2>
             </div>
-            {!isEditing ? (
+            {!isEditing && (
               <button
                 onClick={() => { setDraftName(name); setDraftFields(new Set(selectedFields)); setDraftType(influencerType); setIsEditing(true) }}
                 className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Pencil size={14} />편집
               </button>
-            ) : (
-              <div className="flex gap-2">
-                <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <X size={14} />취소
-                </button>
-                <button onClick={handleSave} disabled={isSaving || !hasProfileChanges} aria-disabled={isSaving || !hasProfileChanges} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
-                </button>
-              </div>
             )}
           </div>
 
@@ -219,32 +210,36 @@ export default function Profile() {
               <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl break-all">{mockProfile.email}</p>
             </div>
 
-            {/* 전화번호 — 320px 단말까지 대비해서 좁으면 한 줄 띄움 */}
+            {/* 전화번호 */}
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1.5">전화번호</label>
               <div className="flex flex-col @[400px]:flex-row @[400px]:items-center gap-2">
                 <p className="flex-1 text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl tabular-nums">{phone}</p>
-                <button
-                  onClick={() => setPhoneModalOpen(true)}
-                  className="shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  <Phone size={14} />변경
-                </button>
+                {isEditing && (
+                  <button
+                    onClick={() => setPhoneModalOpen(true)}
+                    className="shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >
+                    <Phone size={14} />변경
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* 비밀번호 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
-              <button
-                onClick={() => setPwModalOpen(true)}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <Lock size={14} />비밀번호 변경
-              </button>
-            </div>
+            {/* 비밀번호 — 편집 모드에서만 표시 */}
+            {isEditing && (
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
+                <button
+                  onClick={() => setPwModalOpen(true)}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-brand-green/5 border-brand-green text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Lock size={14} />비밀번호 변경
+                </button>
+              </div>
+            )}
 
-            {/* 인플루언서 타입 */}
+            {/* 인플루언서 유형 */}
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-2">인플루언서 유형</label>
               {isEditing ? (
@@ -270,48 +265,24 @@ export default function Profile() {
               )}
             </div>
           </div>
-        </div>
 
-        {/* 활동 분야 카드 — 헤더에 독립 편집 버튼 (기본 정보 카드와 isEditing 상태 공유) */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Activity size={16} className="text-brand-green" />
-              <h2 className="text-base font-semibold text-gray-900">활동 분야</h2>
+          {/* 활동 분야 */}
+          <div className="mt-5 pt-5 border-t border-gray-100">
+            <p className="text-sm font-medium text-gray-700 mb-3">활동 분야</p>
+            <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
+              {ACTIVITY_FIELDS.map(field => (
+                <CustomCheckbox
+                  key={field}
+                  checked={isEditing ? draftFields.has(field) : selectedFields.has(field)}
+                  onChange={() => isEditing && toggleField(field)}
+                  label={field}
+                />
+              ))}
             </div>
-            {!isEditing ? (
-              <button
-                onClick={() => { setDraftName(name); setDraftFields(new Set(selectedFields)); setDraftType(influencerType); setIsEditing(true) }}
-                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                <Pencil size={14} />편집
-              </button>
-            ) : (
-              <div className="flex gap-2">
-                <button onClick={handleCancel} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <X size={14} />취소
-                </button>
-                <button onClick={handleSave} disabled={isSaving || !hasProfileChanges} aria-disabled={isSaving || !hasProfileChanges} aria-busy={isSaving} className="flex items-center gap-1 text-sm text-white bg-brand-green px-3 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                  <Check size={14} aria-hidden="true" />{isSaving ? '저장 중...' : '저장'}
-                </button>
-              </div>
-            )}
           </div>
-          <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
-            {ACTIVITY_FIELDS.map(field => (
-              <CustomCheckbox
-                key={field}
-                checked={isEditing ? draftFields.has(field) : selectedFields.has(field)}
-                onChange={() => isEditing && toggleField(field)}
-                label={field}
-              />
-            ))}
-          </div>
-        </div>
 
-        {/* 알림 설정 카드 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center justify-between gap-3">
+          {/* 마케팅 수신 동의 */}
+          <div className="mt-5 pt-5 border-t border-gray-100 flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p id="profile-marketing-label" className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
               <p className="text-sm text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
@@ -320,7 +291,29 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* 편집 모드 하단 CTA */}
+        {isEditing && (
+          <div className="flex gap-3 pb-2">
+            <button
+              onClick={handleCancel}
+              className="flex-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isSaving || !hasProfileChanges}
+              aria-disabled={isSaving || !hasProfileChanges}
+              aria-busy={isSaving}
+              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              {isSaving ? '저장 중...' : '저장하기'}
+            </button>
+          </div>
+        )}
+
         {/* 로그아웃 + 회원탈퇴 */}
+        {!isEditing && (
         <div className="flex flex-col items-center gap-3 pt-1 pb-4">
           <button
             onClick={() => { auth.clear(); navigate('/login') }}
@@ -332,6 +325,7 @@ export default function Profile() {
             회원탈퇴
           </button>
         </div>
+        )}
       </div>
 
       {/* 비밀번호 변경 */}
