@@ -25,7 +25,7 @@ function readSet(key: string, fallback: number[]): Set<number> {
     const raw = localStorage.getItem(key)
     if (!raw) return new Set(fallback)
     const parsed = JSON.parse(raw) as number[]
-    return new Set(parsed)
+    return parsed.length > 0 ? new Set(parsed) : new Set(fallback)
   } catch {
     return new Set(fallback)
   }

@@ -1,22 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { Heart, Compass } from 'lucide-react'
 import Layout from '../components/Layout'
-import { useQAMode, EmptyState, ErrorState, Skeleton, getDDay, getDDayBadgeStyle } from '@wellink/ui'
+import { useQAMode, EmptyState, ErrorState, Skeleton } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
-import { fmtDate } from '@wellink/ui'
 import { mockCampaigns } from '../services/mock/campaigns'
 import { useBookmarks } from '../services/userState'
-import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
-
-/** 원본 mypage L772-789: getCampaignStatus — participateEndDate 기반 모집중/종료됨 */
-function getRecruitChip(applyEnd?: string): { label: string; className: string } | null {
-  if (!applyEnd) return null
-  const end = new Date(applyEnd)
-  if (isNaN(end.getTime())) return null
-  end.setHours(23, 59, 59, 999)
-  if (end >= new Date()) return { label: '모집중', className: 'bg-lime-100 text-lime-700' }
-  return { label: '종료됨', className: 'bg-gray-100 text-gray-500' }
-}
+import CampaignCard from '../components/CampaignCard'
 
 export default function Favorites() {
   const qa = useQAMode()
@@ -43,23 +32,21 @@ export default function Favorites() {
             <Skeleton shape="text" height={20} width="7rem" />
             <Skeleton shape="card" height={28} width="6rem" />
           </div>
-          <div className="space-y-2.5">
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex">
-                {/* 썸네일: 마진 없이 카드 상하 꽉 채움 */}
-                <div className="w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100 animate-pulse" />
-                {/* 내용 */}
-                <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex items-start gap-3">
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <div className="flex gap-2">
-                      <Skeleton shape="circle" height={18} width="3.5rem" />
-                      <Skeleton shape="circle" height={18} width="2.5rem" />
-                    </div>
-                    <Skeleton shape="text" height={15} width="85%" />
-                    <Skeleton shape="text" height={12} width="55%" />
-                    <Skeleton shape="text" height={12} width="40%" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="aspect-video bg-gray-100 animate-pulse" />
+                <div className="p-4 space-y-2.5">
+                  <div className="flex gap-2">
+                    <Skeleton shape="circle" height={20} width="4rem" />
+                    <Skeleton shape="circle" height={20} width="3rem" />
                   </div>
-                  <Skeleton shape="circle" height={32} width={32} className="flex-shrink-0" />
+                  <Skeleton shape="text" height={15} width="85%" />
+                  <Skeleton shape="text" height={12} width="55%" />
+                  <div className="pt-2 border-t border-gray-100 flex justify-between">
+                    <Skeleton shape="text" height={12} width="40%" />
+                    <Skeleton shape="text" height={12} width="20%" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -114,78 +101,15 @@ export default function Favorites() {
             />
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {visible.map(c => {
-              const dday = c.applyEnd ? getDDay(c.applyEnd) : null
-              const recruitChip = getRecruitChip(c.applyEnd)
-              const isBookmarked = bookmarks.has(c.id)
-
-              return (
-                <div
-                  key={c.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow flex"
-                  onClick={() => navigate(`/campaigns/${c.id}`)}
-                >
-                  {/* 썸네일: 카드 상하 마진 없이 꽉 채움 */}
-                  <div className="relative w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100">
-                    <img
-                      src={getThumbnailFromPool(c.id)}
-                      alt=""
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={e => { e.currentTarget.src = getPlaceholderDataUri(String(c.id), c.brand) }}
-                    />
-                  </div>
-
-                  {/* 내용 */}
-                  <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex items-start gap-3">
-                    <div className="flex-1 min-w-0">
-                      {/* 배지 행: 모집상태 + D-day */}
-                      <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                        {recruitChip && (
-                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
-                            {recruitChip.label}
-                          </span>
-                        )}
-                        {dday && (
-                          <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>
-                            {dday.label}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* 캠페인명 */}
-                      <h3 className="text-sm @[640px]:text-base font-semibold text-gray-900 leading-snug line-clamp-2 mb-1">
-                        {c.name}
-                      </h3>
-
-                      {/* 브랜드 · 보상 */}
-                      <p className="text-xs text-gray-500 truncate">
-                        {c.brand}
-                        {c.rewardAmount != null && ` · ${c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택`}
-                      </p>
-
-                      {/* 모집 · 마감일 */}
-                      <p className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
-                        모집 {c.headcount}명 · 마감 {fmtDate(c.applyEnd)}
-                      </p>
-                    </div>
-
-                    {/* 북마크 버튼 */}
-                    <button
-                      aria-label={isBookmarked ? '관심 캠페인 해제' : '관심 캠페인 추가'}
-                      onClick={e => { e.stopPropagation(); toggleBookmark(c.id) }}
-                      className="flex-shrink-0 p-1 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                    >
-                      <Heart
-                        size={20}
-                        className={isBookmarked ? 'text-red-400 fill-red-400' : 'text-gray-300'}
-                      />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-1 @[640px]:grid-cols-2 gap-4">
+            {visible.map(c => (
+              <CampaignCard
+                key={c.id}
+                campaign={c}
+                liked={bookmarks.has(c.id)}
+                onToggleLike={toggleBookmark}
+              />
+            ))}
           </div>
         )}
       </div>

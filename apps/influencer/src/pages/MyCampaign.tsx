@@ -152,16 +152,11 @@ export default function MyCampaign() {
           </div>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex">
-                {/* 썸네일 영역: 마진 없이 카드 상하 꽉 채움 */}
-                <div className="w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100 animate-pulse" />
-                {/* 내용 + 버튼 */}
-                <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="aspect-video bg-gray-100 animate-pulse" />
+                <div className="p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
                   <div className="flex-1 space-y-2 min-w-0">
-                    <div className="flex gap-1.5">
-                      <Skeleton shape="card" height={20} width="4rem" />
-                      <Skeleton shape="card" height={20} width="3rem" />
-                    </div>
+                    <Skeleton shape="card" height={20} width="4rem" />
                     <Skeleton shape="text" height={14} width="85%" />
                     <Skeleton shape="text" height={12} width="55%" />
                     <Skeleton shape="text" height={12} width="40%" />
@@ -290,7 +285,7 @@ export default function MyCampaign() {
               const dday = c.contentDeadline ? getDDay(c.contentDeadline) : null
 
               return (
-                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md flex flex-col ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
+                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
 
                   {/* 마감 임박 배너 */}
                   {urgent && (
@@ -300,26 +295,22 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  {/* 메인 행: 썸네일(좌, flush) + 내용+버튼(우) */}
-                  <div className="flex flex-1">
+                  {/* 썸네일: 상단 와이드 */}
+                  <div
+                    className={`relative aspect-video bg-gray-100 overflow-hidden ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                  >
+                    <img
+                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                    />
+                  </div>
 
-                    {/* 썸네일: 카드 상하 마진 없이 꽉 채움
-                        — overflow:hidden + rounded-2xl 이 카드 모서리 클리핑 담당 */}
-                    <div
-                      className={`relative w-[100px] @[640px]:w-[160px] shrink-0 bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
-                      onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
-                    >
-                      <img
-                        src={getThumbnailFromPool(c.campaignRef ?? c.id)}
-                        alt=""
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
-                      />
-                    </div>
-
-                    {/* 내용 + 액션 버튼 */}
-                    <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
+                  {/* 내용 + 액션 버튼 */}
+                  <div className="p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
 
                       {/* 정보 */}
                       <div className="flex-1 min-w-0">
@@ -424,7 +415,6 @@ export default function MyCampaign() {
                           })}
                         </div>
                       )}
-                    </div>
                   </div>
                 </div>
               )
