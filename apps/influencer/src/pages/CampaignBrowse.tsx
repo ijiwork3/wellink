@@ -129,7 +129,7 @@ export default function CampaignBrowse() {
           <Tabs
             variant="soft"
             value={selectedCategory}
-            onChange={v => { setSelectedCategory(v); setSearch('') }}
+            onChange={v => { setSelectedCategory(v) }}
             items={BROWSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))}
             ariaLabel="캠페인 카테고리"
             scrollable
@@ -140,7 +140,6 @@ export default function CampaignBrowse() {
         {!loading && (
           <p className="text-sm text-gray-500 mb-4 mt-1">
             총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
-            {totalPages > 1 && <span className="ml-1">({page}/{totalPages} 페이지)</span>}
           </p>
         )}
 
