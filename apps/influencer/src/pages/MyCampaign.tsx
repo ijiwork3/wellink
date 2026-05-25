@@ -26,7 +26,6 @@ function statusToTab(s: string): TabKey {
 }
 
 // '상세보기' — 원본 mypage/page.tsx L920-925: 미선정/완료 상태에서 apply?mode=view 진입
-// campaignRef 기반으로 라우팅 (mc-N id가 숫자 id와 분리되어 있으므로)
 // '수정하기' — 원본 mypage/page.tsx L832-865: WAIT 상태 → campaignRef 있을 때만 표시
 // '본인이 제출한 컨텐츠' — 원본 mypage/page.tsx L871-903: 완료 캠페인에서 제출 URL 확인
 const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '본인이 제출한 컨텐츠' | '상세보기'>>> = {
@@ -49,22 +48,29 @@ function isDeadlineUrgent(dateStr?: string): boolean {
   return diff > 0 && diff < 1000 * 60 * 60 * 24 * 3
 }
 
+// 원본 mypage/page.tsx L772-789: participateEndDate → 모집중/종료됨
+function getRecruitChip(applyEnd?: string): { label: string; className: string } | null {
+  if (!applyEnd) return null
+  const end = new Date(applyEnd)
+  if (isNaN(end.getTime())) return null
+  end.setHours(23, 59, 59, 999)
+  if (end >= new Date()) return { label: '모집중', className: 'bg-lime-100 text-lime-700' }
+  return { label: '종료됨', className: 'bg-gray-100 text-gray-500' }
+}
+
 export default function MyCampaign() {
   const navigate = useNavigate()
   const qa = useQAMode()
   const { showToast } = useToast()
   const [searchParams] = useSearchParams()
 
-  // URL ?tab= 파라미터로 초기 탭 설정 (ProfileHeader 스탯 카드 클릭 시 진입)
   const urlTab = searchParams.get('tab') as TabKey | null
   const validTabs: TabKey[] = ['전체', '지원완료', '참여중', '완료', '미선정']
   const initialTab: TabKey = urlTab && validTabs.includes(urlTab) ? urlTab : '전체'
 
-  // 초기값은 useEffect에서 qa에 따라 동기화한다. lazy init과 useEffect의 분기 중복을 막기 위해 mockMyCampaigns를 시작값으로 둠.
   const [campaigns, setCampaigns] = useState<MyCampaign[]>(mockMyCampaigns)
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab)
 
-  // URL ?tab= 변경 시 탭 동기화 — ProfileHeader 스탯 카드로 이미 마운트된 상태에서 재진입할 때 필요
   useEffect(() => {
     const t = searchParams.get('tab') as TabKey | null
     if (t && validTabs.includes(t)) setActiveTab(t)
@@ -78,8 +84,6 @@ export default function MyCampaign() {
   const [guideAgreed, setGuideAgreed] = useState(false)
   const [search, setSearch] = useState('')
 
-  // QA 파라미터 외부 동기화 (정책 §외부동기화)
-  // tab-X-empty 패턴은 해당 탭으로 이동 + campaigns를 빈 배열로 설정해 탭 빈 상태 검증
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty') { setCampaigns([]); return }
@@ -87,7 +91,7 @@ export default function MyCampaign() {
     if (qa === 'modal-submit') { setSubmitModal(mockMyCampaigns[0]); return }
     const tabMap: Record<string, TabKey> = {
       'tab-신청완료': '지원완료', 'tab-진행중': '참여중',
-      'tab-게시완료': '완료', 'tab-포인트지급': '완료',
+      'tab-게시완료': '완료',     'tab-포인트지급': '완료',
       'tab-검수중':   '참여중',
       'tab-미선정':   '미선정',
       'tab-신청완료-empty': '지원완료', 'tab-진행중-empty': '참여중',
@@ -114,9 +118,7 @@ export default function MyCampaign() {
     const url = contentUrl.trim()
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
     if (!/^https?:\/\/.+\..+/.test(url)) { showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return }
-    // 검수중 상태에서 다시 열린 경우 = 콘텐츠 수정, 아니면 = 신규 제출 (cold-review 7차 H3)
     const isEdit = submitModal?.status === '검수중'
-    // postUrl 도 함께 저장 — 검수중 상태에서 '콘텐츠 수정' 버튼 동작에 필요
     setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중', postUrl: url } : c))
     showToast(isEdit ? '콘텐츠를 수정했어요!' : '콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
@@ -130,11 +132,11 @@ export default function MyCampaign() {
     showToast('신청을 취소했어요', 'info')
   }
 
+  // ── 로딩 스켈레톤 (리스트형) ─────────────────────────────────────────────
   if (qa === 'loading') {
     return (
       <Layout>
         <div className="space-y-4">
-          {/* 헤더 */}
           <div className="flex items-center justify-between">
             <div className="space-y-1.5">
               <Skeleton shape="text" height={16} width="5.5rem" />
@@ -142,30 +144,30 @@ export default function MyCampaign() {
             </div>
             <Skeleton shape="card" height={32} width="5.5rem" />
           </div>
-          {/* 검색 */}
           <Skeleton shape="card" height={42} width="100%" />
-          {/* 탭 */}
           <div className="flex gap-2">
             {[60, 56, 56, 48, 52].map((w, i) => (
               <Skeleton key={i} shape="card" height={36} width={`${w}px`} />
             ))}
           </div>
-          {/* 카드 그리드 */}
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+          <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                {/* 썸네일 */}
-                <div className="w-full aspect-video bg-gray-100 animate-pulse" />
-                {/* 본문 */}
-                <div className="p-4 space-y-2.5">
-                  <Skeleton shape="card" height={22} width="4.5rem" />
-                  <Skeleton shape="text" height={14} width="100%" />
-                  <Skeleton shape="text" height={14} width="70%" />
-                  <Skeleton shape="text" height={12} width="9rem" />
-                  <div className="flex gap-2 pt-3 border-t border-gray-100">
-                    <Skeleton shape="card" height={34} className="flex-1" />
-                    <Skeleton shape="card" height={34} width="4.5rem" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex gap-3">
+                  <Skeleton shape="card" height={72} width={72} className="rounded-xl flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="flex gap-1.5">
+                      <Skeleton shape="card" height={20} width="4rem" />
+                      <Skeleton shape="card" height={20} width="3rem" />
+                    </div>
+                    <Skeleton shape="text" height={14} width="85%" />
+                    <Skeleton shape="text" height={12} width="55%" />
+                    <Skeleton shape="text" height={12} width="40%" />
                   </div>
+                </div>
+                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                  <Skeleton shape="card" height={34} className="flex-1" />
+                  <Skeleton shape="card" height={34} width="4.5rem" />
                 </div>
               </div>
             ))}
@@ -189,6 +191,7 @@ export default function MyCampaign() {
     <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">내 캠페인</h1>
+
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <div>
@@ -223,7 +226,7 @@ export default function MyCampaign() {
           )}
         </div>
 
-        {/* 탭 — 가로 스크롤 + 쉐브론 */}
+        {/* 탭 */}
         <Tabs
           variant="pill"
           value={activeTab}
@@ -242,7 +245,7 @@ export default function MyCampaign() {
           }))}
         />
 
-        {/* 카드 리스트 */}
+        {/* 리스트 */}
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
             {!search && activeTab === '전체' && campaigns.length === 0 ? (
@@ -277,56 +280,68 @@ export default function MyCampaign() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 @[640px]:grid-cols-2 @[1024px]:grid-cols-3 gap-4">
+          <div className="space-y-2.5">
             {filtered.map(c => {
               const actions = getActions(c.status)
               const urgent = (c.status === '콘텐츠대기' || c.status === '검수중') && isDeadlineUrgent(c.contentDeadline)
+              const recruitChip = getRecruitChip(c.applyEnd)
+              const dday = c.contentDeadline ? getDDay(c.contentDeadline) : null
+
               return (
-                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
-                  {/* 풀폭 aspect-video 이미지 */}
-                  <div
-                    className={`w-full aspect-video overflow-hidden bg-gray-100 ${c.campaignRef ? 'cursor-pointer' : ''}`}
-                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
-                  >
-                    <img
-                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
-                    />
-                  </div>
+                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
 
-                  {/* 카드 본문 */}
-                  <div className="p-4">
-                    {/* 마감 임박 알림 */}
-                    {urgent && (
-                      <div className="flex items-start gap-1.5 mb-3 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-xl break-keep">
-                        <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
-                        <span>콘텐츠 제출 마감이 {fmtDate(c.contentDeadline!)}까지예요!</span>
-                      </div>
-                    )}
-
-                    {/* 상태 + D-day */}
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <StatusBadge status={c.status} size="sm" />
-                      {c.contentDeadline && (() => {
-                        const dd = getDDay(c.contentDeadline)
-                        if (!dd) return null
-                        return (
-                          <span className={getDDayBadgeStyle(dd.color, dd.pulse)}>{dd.label}</span>
-                        )
-                      })()}
+                  {/* 마감 임박 배너 */}
+                  {urgent && (
+                    <div className="flex items-start gap-1.5 text-sm text-orange-600 bg-orange-50 px-4 py-2.5 border-b border-orange-100">
+                      <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
+                      <span>콘텐츠 제출 마감이 <strong>{fmtDate(c.contentDeadline!)}</strong>까지예요!</span>
                     </div>
+                  )}
 
-                    {/* 캠페인명 */}
-                    <h3 className="text-sm font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{c.name}</h3>
+                  <div className="p-4">
+                    {/* 메인 행: 썸네일 + 정보 */}
+                    <div className="flex gap-3">
+                      {/* 썸네일 */}
+                      <div
+                        className={`w-[72px] h-[72px] rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                        onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                      >
+                        <img
+                          src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                          alt=""
+                          loading="lazy"
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                        />
+                      </div>
 
-                    {/* 브랜드 + 신청일 */}
-                    <p className="text-sm text-gray-500 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+                      {/* 정보 */}
+                      <div className="flex-1 min-w-0">
+                        {/* 배지 행: 참여 상태 + 캠페인 모집 상태 */}
+                        <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                          <StatusBadge status={c.status} size="sm" />
+                          {recruitChip && (
+                            <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap ${recruitChip.className}`}>
+                              {recruitChip.label}
+                            </span>
+                          )}
+                          {dday && (
+                            <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                          )}
+                        </div>
 
-                    {/* 리워드 */}
-                    {c.rewardAmount > 0 && <p className="text-sm text-gray-500 mt-0.5 truncate">{c.rewardAmount.toLocaleString('ko-KR')} 상당 혜택</p>}
+                        {/* 캠페인명 */}
+                        <h3 className="text-sm font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{c.name}</h3>
+
+                        {/* 브랜드 + 신청일 */}
+                        <p className="text-xs text-gray-500 truncate">{c.brand} · 신청 {fmtDate(c.appliedAt)}</p>
+
+                        {/* 리워드 */}
+                        {c.rewardAmount > 0 && (
+                          <p className="text-xs text-gray-400 mt-0.5">{c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택</p>
+                        )}
+                      </div>
+                    </div>
 
                     {/* 액션 버튼 */}
                     {actions.length > 0 && (
@@ -400,11 +415,10 @@ export default function MyCampaign() {
         )}
       </div>
 
-      {/* 콘텐츠 제출/수정 바텀시트 — submitModal.status === '검수중' 이면 수정 모드 (H2/H3) */}
+      {/* 콘텐츠 제출/수정 */}
       <ResponsiveSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'} size="md">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
-          {/* 미션 가이드 + 필수 키워드 — 카드 대신 제출 모달에서 표시 */}
           {(submitModal?.missionGuide || (submitModal?.requiredKeywords && submitModal.requiredKeywords.length > 0)) && (
             <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-2.5">
               {submitModal?.missionGuide && (
@@ -455,7 +469,6 @@ export default function MyCampaign() {
               placeholder="https://instagram.com/p/..."
             />
           </div>
-          {/* 가이드 준수 동의 — 원본 CampaignApplyForm.tsx L977-997: contentLinkGuideAgreed 체크 필수 */}
           <label className="flex items-start gap-2.5 cursor-pointer p-3 rounded-xl border transition-colors border-gray-100 bg-gray-50">
             <input
               type="checkbox"
@@ -484,6 +497,7 @@ export default function MyCampaign() {
         </div>
       </ResponsiveSheet>
 
+      {/* 신청 정보 */}
       <ResponsiveSheet open={!!appliedModal} onClose={() => setAppliedModal(null)} title="신청 정보" size="md">
         {appliedModal && (() => {
           const applied = mockAppliedData[appliedModal.id]
@@ -496,7 +510,6 @@ export default function MyCampaign() {
                 <p className="text-sm font-semibold text-gray-700 mb-1">{appliedModal.name}</p>
                 <p className="text-sm text-gray-500">{appliedModal.brand} · {appliedModal.channel}</p>
               </div>
-
               <div className="space-y-2.5">
                 <div className="flex items-start gap-2.5">
                   <Phone size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
@@ -505,7 +518,6 @@ export default function MyCampaign() {
                     <p className="text-sm font-medium text-gray-900 tabular-nums">{applied.phone}</p>
                   </div>
                 </div>
-
                 {applied.deliveryAddr && (
                   <div className="flex items-start gap-2.5">
                     <MapPin size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
@@ -518,7 +530,6 @@ export default function MyCampaign() {
                     </div>
                   </div>
                 )}
-
                 {Object.entries(applied.answers).length > 0 && (
                   <div className="flex items-start gap-2.5">
                     <FileText size={14} className="text-gray-400 mt-1 shrink-0" aria-hidden="true" />
@@ -531,7 +542,6 @@ export default function MyCampaign() {
                   </div>
                 )}
               </div>
-
               <div className="pt-2">
                 <button
                   onClick={() => setAppliedModal(null)}

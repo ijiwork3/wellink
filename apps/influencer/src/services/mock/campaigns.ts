@@ -428,6 +428,8 @@ export interface MyCampaign {
   channel: string
   appliedAt: string
   deadline: string
+  /** 캠페인 모집 마감일 — 원본 mypage L772-789: participateEndDate 기반 모집중/종료됨 계산 */
+  applyEnd?: string
   status: MyCampaignStatus
   progress: string
   reward: string
@@ -449,7 +451,7 @@ export interface MyCampaign {
 export const mockMyCampaigns: MyCampaign[] = [
   {
     id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
-    appliedAt: '2026-04-28', deadline: '2026-05-23',
+    appliedAt: '2026-04-28', deadline: '2026-05-23', applyEnd: '2026-05-08',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
     reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-05-23',
     campaignRef: 2,
@@ -458,32 +460,32 @@ export const mockMyCampaigns: MyCampaign[] = [
   },
   {
     id: 'mc-2', name: '필라테스 스튜디오 체험', brand: '바디앤핏', channel: '인스타그램',
-    appliedAt: '2026-05-05', deadline: '2026-06-05',
+    appliedAt: '2026-05-05', deadline: '2026-06-05', applyEnd: '2026-06-05',
     status: '검토중', progress: '브랜드에서 신청서를 검토하고 있어요',
     reward: '50,000원', rewardAmount: 50000, campaignRef: 3,
   },
   {
     id: 'mc-3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그',
-    appliedAt: '2026-04-10', deadline: '2026-05-29',
+    appliedAt: '2026-04-10', deadline: '2026-05-29', applyEnd: '2026-04-20',
     status: '검수중', progress: '게시 콘텐츠 확인 중',
     reward: '120,000원', rewardAmount: 120000, postUrl: 'https://blog.naver.com/chanstyler/12345', campaignRef: 5,
   },
   {
     id: 'mc-4', name: '헬스 보충제 캠페인', brand: 'SMILEATO', channel: '인스타그램',
-    appliedAt: '2026-03-10', deadline: '2026-04-20',
+    appliedAt: '2026-03-10', deadline: '2026-04-20', applyEnd: '2026-03-20',
     status: '완료', progress: '정산 가능',
     reward: '95,000원', rewardAmount: 95000, campaignRef: 2,
     postUrl: 'https://www.instagram.com/p/smileato_review_chanstyler',
   },
   {
     id: 'mc-5', name: '요가 스트레칭 밴드', brand: '필라핏', channel: '인스타그램',
-    appliedAt: '2026-04-01', deadline: '2026-05-05',
+    appliedAt: '2026-04-01', deadline: '2026-05-05', applyEnd: '2026-04-10',
     status: '미선정', progress: '미선정',
     reward: '60,000원', rewardAmount: 60000, campaignRef: 6,
   },
   {
     id: 'mc-6', name: '하이록스 챌린지 시즌 2', brand: 'enuf.sports', channel: '인스타그램',
-    appliedAt: '2026-05-08', deadline: '2026-05-25',
+    appliedAt: '2026-05-08', deadline: '2026-05-25', applyEnd: '2026-05-15',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
     reward: '120,000원', rewardAmount: 120000, contentDeadline: '2026-05-25',
     campaignRef: 3,
@@ -492,7 +494,7 @@ export const mockMyCampaigns: MyCampaign[] = [
   },
   {
     id: 'mc-7', name: '비건 단백질 신제품 체험', brand: '그린푸드', channel: '인스타그램',
-    appliedAt: '2026-05-15', deadline: '2026-06-10',
+    appliedAt: '2026-05-15', deadline: '2026-06-10', applyEnd: '2026-06-10',
     status: '지원완료', progress: '신청서가 접수됐어요',
     reward: '50,000원', rewardAmount: 50000,
     campaignRef: 1,
