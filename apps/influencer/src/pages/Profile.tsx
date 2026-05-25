@@ -389,22 +389,22 @@ export default function Profile() {
                   </button>
                 </div>
               </div>
-              {pwCodeSent && (
-                <div>
-                  <label htmlFor="pw-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
-                  <input
-                    id="pw-code"
-                    type="text" value={pwCode}
-                    autoComplete="one-time-code" inputMode="numeric"
-                    onChange={e => setPwCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    onKeyDown={e => e.key === 'Enter' && handlePwVerify()}
-                    placeholder="6자리 입력"
-                    className={inputClass}
-                    maxLength={6}
-                  />
-                  <p className="text-xs text-gray-400 mt-1.5">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
-                </div>
-              )}
+              <div>
+                <label htmlFor="pw-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
+                <input
+                  id="pw-code"
+                  type="text" value={pwCode}
+                  autoComplete="one-time-code" inputMode="numeric"
+                  onChange={e => setPwCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onKeyDown={e => e.key === 'Enter' && handlePwVerify()}
+                  placeholder="6자리 입력"
+                  className={inputClass}
+                  maxLength={6}
+                />
+                {pwCodeSent && (
+                  <p className="text-xs text-gray-400 mt-1.5">인증번호를 발송했어요. 3분 내에 입력해 주세요.</p>
+                )}
+              </div>
             </div>
             <div className="flex gap-3 mt-5">
               <button onClick={closePwModal} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
@@ -472,24 +472,22 @@ export default function Profile() {
               </button>
             </div>
           </div>
-          {phoneCodeSent && (
-            <div>
-              <label htmlFor="profile-phone-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
-              <input
-                id="profile-phone-code"
-                type="text" value={phoneCode}
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                onChange={e => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="6자리 입력"
-                className={inputClass}
-                maxLength={6}
-              />
-            </div>
-          )}
-          {phoneCodeSent && (
-            <p className="text-sm text-gray-500">인증번호를 발송했어요 — 3분 내에 입력해 주세요</p>
-          )}
+          <div>
+            <label htmlFor="profile-phone-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
+            <input
+              id="profile-phone-code"
+              type="text" value={phoneCode}
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              onChange={e => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="6자리 입력"
+              className={inputClass}
+              maxLength={6}
+            />
+            {phoneCodeSent && (
+              <p className="text-sm text-gray-500 mt-1.5">인증번호를 발송했어요. 3분 내에 입력해 주세요.</p>
+            )}
+          </div>
         </div>
         <div className="flex gap-3 mt-5">
           <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
