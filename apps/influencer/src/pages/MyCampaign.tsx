@@ -153,17 +153,19 @@ export default function MyCampaign() {
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="aspect-video bg-gray-100 animate-pulse" />
-                <div className="p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <Skeleton shape="card" height={20} width="4rem" />
-                    <Skeleton shape="text" height={14} width="85%" />
-                    <Skeleton shape="text" height={12} width="55%" />
-                    <Skeleton shape="text" height={12} width="40%" />
-                  </div>
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:shrink-0 @[640px]:w-[140px]">
-                    <Skeleton shape="card" height={36} className="flex-1 @[640px]:w-full" />
-                    <Skeleton shape="card" height={36} className="flex-1 @[640px]:w-full" />
+                <div className="flex flex-col @[640px]:flex-row @[640px]:items-stretch">
+                  <div className="relative aspect-video @[640px]:aspect-auto @[640px]:w-[180px] @[640px]:shrink-0 bg-gray-100 animate-pulse" />
+                  <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
+                    <div className="flex-1 space-y-2 min-w-0">
+                      <Skeleton shape="card" height={20} width="4rem" />
+                      <Skeleton shape="text" height={14} width="85%" />
+                      <Skeleton shape="text" height={12} width="55%" />
+                      <Skeleton shape="text" height={12} width="40%" />
+                    </div>
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:shrink-0 @[640px]:w-[140px]">
+                      <Skeleton shape="card" height={36} className="flex-1 @[640px]:w-full" />
+                      <Skeleton shape="card" height={36} className="flex-1 @[640px]:w-full" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -295,22 +297,25 @@ export default function MyCampaign() {
                     </div>
                   )}
 
-                  {/* 썸네일: 상단 와이드 */}
-                  <div
-                    className={`relative aspect-video bg-gray-100 overflow-hidden ${c.campaignRef ? 'cursor-pointer' : ''}`}
-                    onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
-                  >
-                    <img
-                      src={getThumbnailFromPool(c.campaignRef ?? c.id)}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
-                    />
-                  </div>
+                  {/* 카드 본문: 모바일=세로(이미지 상단), 태블릿+=가로(이미지 좌측) */}
+                  <div className="flex flex-col @[640px]:flex-row @[640px]:items-stretch">
+
+                    {/* 썸네일: 모바일=aspect-video 상단, 태블릿+=좌측 고정폭 */}
+                    <div
+                      className={`relative aspect-video @[640px]:aspect-auto @[640px]:w-[180px] @[640px]:shrink-0 bg-gray-100 overflow-hidden ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                      onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                    >
+                      <img
+                        src={getThumbnailFromPool(c.campaignRef ?? c.id)}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        onError={(e) => { e.currentTarget.src = getPlaceholderDataUri(c.campaignRef ?? c.id, c.brand) }}
+                      />
+                    </div>
 
                   {/* 내용 + 액션 버튼 */}
-                  <div className="p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
+                  <div className="flex-1 min-w-0 p-4 @[640px]:p-5 flex flex-col @[640px]:flex-row @[640px]:items-center @[640px]:gap-4">
 
                       {/* 정보 */}
                       <div className="flex-1 min-w-0">
