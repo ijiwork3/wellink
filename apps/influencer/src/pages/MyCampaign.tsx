@@ -114,6 +114,14 @@ export default function MyCampaign() {
     return campaigns.filter(c => statusToTab(c.status) === tab).length
   }
 
+  // 원본 mypage/page.tsx L384-413: 상단 활동 요약 카운트 (지원완료/참여중/완료/미선정)
+  const summaryStats = useMemo(() => ({
+    applied: campaigns.filter(c => c.status === '지원완료').length,
+    ongoing: campaigns.filter(c => statusToTab(c.status) === '참여중').length,
+    completed: campaigns.filter(c => statusToTab(c.status) === '완료').length,
+    eliminated: campaigns.filter(c => statusToTab(c.status) === '미선정').length,
+  }), [campaigns])
+
   const handleContentSubmit = () => {
     const url = contentUrl.trim()
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
@@ -204,6 +212,23 @@ export default function MyCampaign() {
             <Compass size={12} />
             캠페인 찾기
           </button>
+        </div>
+
+        {/* 활동 요약 카운트 — 원본 mypage/page.tsx L384-413 */}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { label: '지원 완료', value: summaryStats.applied, color: 'text-gray-900' },
+            { label: '참여중', value: summaryStats.ongoing, color: 'text-brand-green-text' },
+            { label: '완료', value: summaryStats.completed, color: 'text-gray-900' },
+            { label: '미선정', value: summaryStats.eliminated, color: 'text-gray-900' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
+              <p className="text-[11px] text-gray-500 mb-0.5 whitespace-nowrap">{label}</p>
+              <p className={`text-base font-bold ${color}`}>
+                {value}<span className="text-xs font-medium text-gray-400 ml-0.5">건</span>
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* 검색 */}
