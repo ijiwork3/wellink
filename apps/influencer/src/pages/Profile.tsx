@@ -269,20 +269,37 @@ export default function Profile() {
           {/* 활동 분야 */}
           <div className="mt-5 pt-5 border-t border-gray-100">
             <p className="text-sm font-medium text-gray-700 mb-3">활동 분야</p>
-            <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
-              {ACTIVITY_FIELDS.map(field => (
-                <CustomCheckbox
-                  key={field}
-                  checked={isEditing ? draftFields.has(field) : selectedFields.has(field)}
-                  onChange={() => isEditing && toggleField(field)}
-                  label={field}
-                />
-              ))}
-            </div>
+            {isEditing ? (
+              <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
+                {ACTIVITY_FIELDS.map(field => (
+                  <CustomCheckbox
+                    key={field}
+                    checked={draftFields.has(field)}
+                    onChange={() => toggleField(field)}
+                    label={field}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {selectedFields.size === 0 ? (
+                  <p className="text-sm text-gray-400">미설정</p>
+                ) : (
+                  [...selectedFields].map(f => (
+                    <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">
+                      {f}
+                    </span>
+                  ))
+                )}
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* 마케팅 수신 동의 */}
-          <div className="mt-5 pt-5 border-t border-gray-100 flex items-center justify-between gap-3">
+        {/* 마케팅 수신 동의 — 편집 모드와 별도 */}
+        {!isEditing && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p id="profile-marketing-label" className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
               <p className="text-sm text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
@@ -290,6 +307,7 @@ export default function Profile() {
             <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} ariaLabelledBy="profile-marketing-label" />
           </div>
         </div>
+        )}
 
         {/* 편집 모드 하단 CTA */}
         {isEditing && (
