@@ -1,11 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Search, ClipboardList, Heart, Camera, User } from 'lucide-react'
+import { Search, ClipboardList, Heart, Wallet, User } from 'lucide-react'
+
+const PROFILE_PATHS = ['/profile', '/media']
 
 const tabs = [
   { label: '탐색',      path: '/campaigns/browse',   icon: Search },
   { label: '내 캠페인',  path: '/campaigns/my',        icon: ClipboardList },
   { label: '관심',      path: '/campaigns/favorites', icon: Heart },
-  { label: '인스타',    path: '/media',               icon: Camera },
+  { label: '정산',      path: '/settlement',          icon: Wallet },
   { label: '내 정보',   path: '/profile',             icon: User },
 ]
 
@@ -19,7 +21,7 @@ export default function BottomTabBar() {
       style={{ height: 'calc(3.5rem + env(safe-area-inset-bottom))', paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {tabs.map(({ label, path, icon: Icon }) => {
-        const isActive = location.pathname === path
+        const isActive = path === '/profile' ? PROFILE_PATHS.includes(location.pathname) : location.pathname === path
         return (
           <button
             key={path}

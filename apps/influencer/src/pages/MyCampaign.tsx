@@ -82,6 +82,7 @@ export default function MyCampaign() {
   const [cancelModal, setCancelModal] = useState<MyCampaign | null>(null)
   const [submitModal, setSubmitModal] = useState<MyCampaign | null>(null)
   const [appliedModal, setAppliedModal] = useState<MyCampaign | null>(null)
+  const [rejectReasonModal, setRejectReasonModal] = useState<string | null>(null)
   const [contentUrl, setContentUrl] = useState('')
   const [guideAgreed, setGuideAgreed] = useState(false)
   const [search, setSearch] = useState('')
@@ -116,15 +117,7 @@ export default function MyCampaign() {
     return campaigns.filter(c => statusToTab(c.status) === tab).length
   }
 
-  // 원본 mypage/page.tsx L384-413: 상단 활동 요약 카운트 (지원완료/참여중/완료/미선정)
-  const summaryStats = useMemo(() => ({
-    applied: campaigns.filter(c => c.status === '지원완료').length,
-    ongoing: campaigns.filter(c => statusToTab(c.status) === '참여중').length,
-    completed: campaigns.filter(c => statusToTab(c.status) === '완료').length,
-    eliminated: campaigns.filter(c => statusToTab(c.status) === '미선정').length,
-  }), [campaigns])
-
-  const handleContentSubmit = () => {
+const handleContentSubmit = () => {
     const url = contentUrl.trim()
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
     if (!/^https?:\/\/.+\..+/.test(url)) { showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return }
@@ -217,22 +210,7 @@ export default function MyCampaign() {
           </button>
         </div>
 
-        {/* 활동 요약 카운트 — 원본 mypage/page.tsx L384-413 */}
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { label: '지원 완료', value: summaryStats.applied, color: 'text-gray-900' },
-            { label: '참여중', value: summaryStats.ongoing, color: 'text-brand-green-text' },
-            { label: '완료', value: summaryStats.completed, color: 'text-gray-900' },
-            { label: '미선정', value: summaryStats.eliminated, color: 'text-gray-900' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
-              <p className="text-[11px] text-gray-500 mb-0.5 whitespace-nowrap">{label}</p>
-              <p className={`text-base font-bold ${color}`}>
-                {value}<span className="text-xs font-medium text-gray-400 ml-0.5">건</span>
-              </p>
-            </div>
-          ))}
-        </div>
+
 
         {/* 검색 */}
         <div className="relative">
@@ -309,9 +287,19 @@ export default function MyCampaign() {
 
                   {/* 반려 사유 배너 */}
                   {c.status === '반려' && c.rejectReason && (
-                    <div className="flex items-start gap-1.5 text-sm text-red-600 bg-red-50 px-4 py-2.5 border-b border-red-100">
-                      <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
-                      <span><strong>반려 사유:</strong> {c.rejectReason}</span>
+                    <div className="flex items-center gap-1.5 text-sm text-red-600 bg-red-50 px-4 py-2.5 border-b border-red-100">
+                      <AlertCircle size={14} className="shrink-0 text-red-500" aria-hidden="true" />
+                      <p className="flex-1 min-w-0 truncate">
+                        <strong>반려 사유:</strong>{' '}{c.rejectReason}
+                      </p>
+                      {c.rejectReason.length > 40 && (
+                        <button
+                          onClick={() => setRejectReasonModal(c.rejectReason!)}
+                          className="shrink-0 text-xs font-medium text-red-400 underline underline-offset-2 hover:text-red-600 whitespace-nowrap"
+                        >
+                          더보기
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -467,6 +455,17 @@ export default function MyCampaign() {
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
 
+          {/* 재제출 시 반려 사유 표시 */}
+          {submitModal?.status === '반려' && submitModal.rejectReason && (
+            <div className="flex items-start gap-2 bg-red-50 rounded-xl px-3 py-2.5 border border-red-100">
+              <AlertCircle size={14} className="shrink-0 mt-0.5 text-red-500" aria-hidden="true" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-red-600 mb-0.5">반려 사유</p>
+                <p className="text-sm text-red-700 leading-relaxed">{submitModal.rejectReason}</p>
+              </div>
+            </div>
+          )}
+
           {/* 제출 안내 — 승인 후 수정/삭제 불가 */}
           <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200">
             <Info size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
@@ -535,6 +534,22 @@ export default function MyCampaign() {
             <button onClick={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
             <button onClick={handleContentSubmit} disabled={!contentUrl.trim() || !guideAgreed} aria-disabled={!contentUrl.trim() || !guideAgreed} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : submitModal?.status === '반려' ? '재제출하기' : '제출하기'}</button>
           </div>
+        </div>
+      </ResponsiveSheet>
+
+      {/* 반려 사유 전체 보기 */}
+      <ResponsiveSheet open={!!rejectReasonModal} onClose={() => setRejectReasonModal(null)} title="반려 사유">
+        <div className="space-y-4">
+          <div className="flex items-start gap-2 bg-red-50 rounded-xl px-4 py-3">
+            <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-500" aria-hidden="true" />
+            <p className="text-sm text-red-700 leading-relaxed">{rejectReasonModal}</p>
+          </div>
+          <button
+            onClick={() => setRejectReasonModal(null)}
+            className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          >
+            닫기
+          </button>
         </div>
       </ResponsiveSheet>
 

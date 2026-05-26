@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Search, CheckCircle } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge, Tabs, Pagination } from '@wellink/ui'
+import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, Tabs, Pagination } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
 
@@ -356,7 +356,6 @@ export default function Settlement() {
                 const id = row.data.id
                 const campaign = row.data.campaign
                 const amount = row.data.amount
-                const status = row.data.status
                 const date = isDownload ? (row.data as DownloadRevenueItem).downloadedAt : (row.data as SettlementItem).completedAt
                 const paidAt = row.data.paidAt
                 const subLabel = isDownload
@@ -364,18 +363,12 @@ export default function Settlement() {
                   : (row.data as SettlementItem).type
 
                 return (
-                  <div key={id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                    {/* 상단: 날짜(좌) + 상태 배지(우) */}
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-gray-400 tabular-nums">
-                        {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
-                      </p>
-                      <StatusBadge status={status} size="sm" className="shrink-0" />
-                    </div>
-
-                    {/* 본문: 캠페인명(좌) + 금액(우 하단, PC) */}
+                  <div key={id} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3">
                     <div className="flex items-end justify-between gap-3">
                       <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-400 tabular-nums mb-1">
+                          {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
+                        </p>
                         <p className="text-sm font-semibold text-gray-900 break-keep">{campaign}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{subLabel}</p>
                       </div>

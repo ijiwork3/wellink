@@ -7,6 +7,7 @@ import CampaignDetail from './pages/CampaignDetail'
 import CampaignApply from './pages/CampaignApply'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
+import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
@@ -109,6 +110,19 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '모달 — 전화번호 변경', path: '/profile?qa=modal-phone' },
       { label: '모달 — 회원 탈퇴', path: '/profile?qa=modal-withdraw' },
       { label: '에러', path: '/profile?qa=error' },
+    ],
+  },
+
+  /* ────────────────── 정산 ────────────────── */
+  {
+    label: '정산',
+    children: [
+      { label: '기본 (계좌 있음)', path: '/settlement?qa=has-account' },
+      { label: '계좌 없음', path: '/settlement?qa=no-account' },
+      { label: '로딩 스켈레톤', path: '/settlement?qa=loading' },
+      { label: '빈 상태 — 정산 없음', path: '/settlement?qa=empty' },
+      { label: '모달 — 정산 요청', path: '/settlement?qa=modal-request' },
+      { label: '에러', path: '/settlement?qa=error' },
     ],
   },
 
@@ -226,6 +240,7 @@ function AppRoutes() {
       '/campaigns/my':        '내 캠페인 — WELLINK AI',
       '/profile':             '프로필 — WELLINK AI',
       '/media':               '인스타 관리 — WELLINK AI',
+      '/settlement':          '정산 — WELLINK AI',
       '/login':               '로그인 — WELLINK AI',
       '/signup':              '회원가입 — WELLINK AI',
     }
@@ -253,6 +268,7 @@ function AppRoutes() {
         <Route path="/campaigns/:id/apply" element={<ProtectedRoute><CampaignApply /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
+        <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
-import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -33,6 +33,7 @@ const MOCK_CONTENT = Array.from({ length: 100 }, (_, i) => ({
 }))
 
 export default function Media() {
+  const navigate = useNavigate()
   const qa = useQAMode()
 
   const initPlatforms = (): Platform[] => {
@@ -164,6 +165,22 @@ export default function Media() {
     <Layout mobileFull>
       <div className="space-y-4">
         <h1 className="sr-only">인스타 관리</h1>
+
+        {/* 모바일 탭 — 사이드바 없는 환경에서만 표시 (mobileFull=true이므로 모바일 네거티브 마진 없음) */}
+        <div className="@[1024px]:hidden border-b border-gray-200 bg-white px-4 @[640px]:-mx-6 @[640px]:px-6 mb-2">
+          <div className="flex">
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap transition-colors"
+            >
+              <User size={14} />내 정보
+            </button>
+            <button className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold text-brand-green-text border-b-2 border-brand-green whitespace-nowrap">
+              <Camera size={14} />인스타 관리
+            </button>
+          </div>
+        </div>
+
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
           /* 모바일: 카드 경계 없음(flat) / 데스크탑: 카드 */

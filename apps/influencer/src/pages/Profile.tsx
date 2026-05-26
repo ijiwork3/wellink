@@ -232,6 +232,7 @@ export default function Profile() {
       <div className="space-y-4 max-w-xl mx-auto">
         <h1 className="sr-only">내 정보</h1>
 
+
         {/* 내 정보 통합 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-5">

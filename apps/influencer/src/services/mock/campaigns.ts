@@ -418,7 +418,7 @@ export const mockCampaigns: Campaign[] = [
 // mockCampaigns(탐색 가능한 모집 중 캠페인)와 ID 공간 분리 — `mc-` prefix 사용.
 // 같은 id가 다른 캠페인을 가리키지 않도록 명확히 구분.
 // ────────────────────────────────────────────────────────────────────────────
-export type MyCampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '완료' | '미선정'
+export type MyCampaignStatus = '지원완료' | '검토중' | '콘텐츠대기' | '검수중' | '승인' | '반려' | '완료' | '미선정'
 
 export interface MyCampaign {
   /** 인플 사용자 참여 캠페인 식별자 — `mc-N` 형식. mockCampaigns(1~8)와 충돌 회피. */
@@ -446,6 +446,8 @@ export interface MyCampaign {
    * 원본: mypage/page.tsx L860 → /campaigns/:dashCampaignId/apply?mode=edit
    */
   campaignRef?: number
+  /** 반려 사유 — 광고주가 콘텐츠를 반려할 때 입력한 피드백 */
+  rejectReason?: string
 }
 
 export const mockMyCampaigns: MyCampaign[] = [
@@ -498,6 +500,16 @@ export const mockMyCampaigns: MyCampaign[] = [
     status: '지원완료', progress: '신청서가 접수됐어요',
     reward: '50,000원', rewardAmount: 50000,
     campaignRef: 1,
+  },
+  {
+    id: 'mc-8', name: '크로스핏 장비 언박싱', brand: '아이언핏', channel: '인스타그램',
+    appliedAt: '2026-05-01', deadline: '2026-06-01', applyEnd: '2026-05-10',
+    status: '반려', progress: '콘텐츠가 반려되었습니다',
+    reward: '90,000원', rewardAmount: 90000,
+    postUrl: 'https://www.instagram.com/p/ironfit_unboxing_chanstyler',
+    rejectReason: '필수 해시태그(#아이언핏, #크로스핏장비)가 캡션에 누락되었습니다. 해당 태그를 포함하여 재제출해 주세요.',
+    campaignRef: 4,
+    requiredKeywords: ['아이언핏', '크로스핏장비', 'crossfit', '홈트'],
   },
 ]
 

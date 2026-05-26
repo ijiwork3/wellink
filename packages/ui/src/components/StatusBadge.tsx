@@ -71,7 +71,7 @@ const statusConfig: Record<string, Cfg> = {
   '틱톡':         { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
   '네이버 블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
   // 정산 (인플 — SettlementStatus)
-  '미인출':     { bg: 'bg-brand-green-bg', text: 'text-brand-green-text', dot: 'bg-brand-green' },
+  '적립':       { bg: 'bg-brand-green-bg', text: 'text-brand-green-text', dot: 'bg-brand-green' },
   '지급완료':   done,
 }
 
