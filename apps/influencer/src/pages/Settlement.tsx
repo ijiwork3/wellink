@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Download } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Download, Search, CheckCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge, Tabs, Pagination } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
@@ -116,15 +116,42 @@ export default function Settlement() {
   })
   const hasBankAccount = bankAccount !== null
   const [bankModalOpen, setBankModalOpen] = useState(false)
-  const [bankDraft, setBankDraft] = useState<BankAccount>({ bank: '', accountNumber: '', holder: mockProfile.name })
+  const [bankDraft, setBankDraft] = useState<{ bank: string; accountNumber: string }>({ bank: '', accountNumber: '' })
+  const [holderVerified, setHolderVerified] = useState<string | null>(null) // null=미조회, string=조회된 예금주명
+  const [holderChecking, setHolderChecking] = useState(false)
+  const holderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const resetBankModal = () => {
+    setBankDraft({ bank: '', accountNumber: '' })
+    setHolderVerified(null)
+    setHolderChecking(false)
+    if (holderTimerRef.current) clearTimeout(holderTimerRef.current)
+  }
+
+  // 계좌번호 변경 시 예금주 조회 초기화
+  const handleAccountNumberChange = (v: string) => {
+    setBankDraft(prev => ({ ...prev, accountNumber: v.replace(/[^0-9-]/g, '') }))
+    setHolderVerified(null)
+  }
+
+  // 예금주 조회 — mock: 1.2초 후 mockProfile.name 반환
+  const handleHolderLookup = () => {
+    if (!bankDraft.bank) { showToast('은행을 먼저 선택해 주세요', 'error'); return }
+    if (!/^\d[\d-]{6,18}\d$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
+    setHolderChecking(true)
+    setHolderVerified(null)
+    holderTimerRef.current = setTimeout(() => {
+      setHolderChecking(false)
+      setHolderVerified(mockProfile.name)
+    }, 1200)
+  }
 
   const handleBankRegister = () => {
     if (!bankDraft.bank) { showToast('은행을 선택해 주세요', 'error'); return }
-    if (!/^\d[\d-]{6,18}\d$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
-    if (!bankDraft.holder.trim()) { showToast('예금주를 입력해 주세요', 'error'); return }
-    setBankAccount({ ...bankDraft })
+    if (!holderVerified) { showToast('예금주 조회를 먼저 해주세요', 'error'); return }
+    setBankAccount({ bank: bankDraft.bank, accountNumber: bankDraft.accountNumber, holder: holderVerified })
     setBankModalOpen(false)
-    setBankDraft({ bank: '', accountNumber: '', holder: mockProfile.name })
+    resetBankModal()
     showToast('계좌가 등록됐어요!', 'success')
   }
 
@@ -191,11 +218,12 @@ export default function Settlement() {
     const d = new Date()
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
   })()
-  const thisMonthEarnings = [...items, ...downloadItems]
-    .filter(i => i.completedAt.startsWith(thisMonthPrefix))
-    .reduce((s, i) => s + i.amount, 0)
-  const totalEarnings = [...items, ...downloadItems]
-    .reduce((s, i) => s + i.amount, 0)
+  const thisMonthEarnings =
+    items.filter(i => i.completedAt.startsWith(thisMonthPrefix)).reduce((s, i) => s + i.amount, 0) +
+    downloadItems.filter(i => i.downloadedAt.startsWith(thisMonthPrefix)).reduce((s, i) => s + i.amount, 0)
+  const totalEarnings =
+    items.reduce((s, i) => s + i.amount, 0) +
+    downloadItems.reduce((s, i) => s + i.amount, 0)
 
   const confirmWithdraw = () => {
     const now = new Date()
@@ -219,7 +247,6 @@ export default function Settlement() {
     activeTab === '캠페인 리워드' ? items.map(c => ({ kind: 'campaign', data: c })) :
     allUnified
 
-  const totalPages = Math.max(1, Math.ceil(tabData.length / PAGE_SIZE))
   const pagedData = tabData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const tabItems = [
@@ -374,13 +401,12 @@ export default function Settlement() {
             </div>
 
             {/* 페이지네이션 */}
-            {totalPages > 1 && (
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
-            )}
+            <Pagination
+              total={tabData.length}
+              page={page}
+              pageSize={PAGE_SIZE}
+              onChange={setPage}
+            />
           </>
         )}
       </div>
@@ -413,7 +439,12 @@ export default function Settlement() {
       </ResponsiveSheet>
 
       {/* 계좌 등록 */}
-      <ResponsiveSheet open={bankModalOpen} onClose={() => setBankModalOpen(false)} title="정산 계좌 등록" size="sm">
+      <ResponsiveSheet
+        open={bankModalOpen}
+        onClose={() => { setBankModalOpen(false); resetBankModal() }}
+        title="정산 계좌 등록"
+        size="sm"
+      >
         <div className="space-y-4">
           <p className="text-sm text-gray-600 break-keep">정산 금액을 지급받을 본인 명의 계좌를 등록해 주세요.</p>
 
@@ -421,7 +452,7 @@ export default function Settlement() {
             <label htmlFor="bank-select" className="block text-sm font-medium text-gray-700 mb-1.5">은행 <span className="text-red-400" aria-label="필수">*</span></label>
             <CustomSelect
               value={bankDraft.bank}
-              onChange={v => setBankDraft(prev => ({ ...prev, bank: v }))}
+              onChange={v => { setBankDraft(prev => ({ ...prev, bank: v })); setHolderVerified(null) }}
               options={BANK_OPTIONS}
               placeholder="은행 선택"
               className="w-full"
@@ -430,46 +461,58 @@ export default function Settlement() {
 
           <div>
             <label htmlFor="bank-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
-            <input
-              id="bank-account"
-              type="text"
-              inputMode="numeric"
-              autoComplete="off"
-              value={bankDraft.accountNumber}
-              onChange={e => setBankDraft(prev => ({ ...prev, accountNumber: e.target.value.replace(/[^0-9-]/g, '') }))}
-              placeholder="숫자만 입력 (예: 123-456-789012)"
-              maxLength={20}
-              className={`${INPUT_BASE} tabular-nums`}
-            />
+            <div className="flex gap-2">
+              <input
+                id="bank-account"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={bankDraft.accountNumber}
+                onChange={e => handleAccountNumberChange(e.target.value)}
+                placeholder="숫자만 입력 (예: 123-456-789012)"
+                maxLength={20}
+                className={`${INPUT_BASE} tabular-nums flex-1`}
+              />
+              <button
+                onClick={handleHolderLookup}
+                disabled={holderChecking || !bankDraft.accountNumber}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+              >
+                {holderChecking
+                  ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                  : <Search size={13} />
+                }
+                조회
+              </button>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="bank-holder" className="block text-sm font-medium text-gray-700 mb-1.5">예금주 <span className="text-red-400" aria-label="필수">*</span></label>
-            <input
-              id="bank-holder"
-              type="text"
-              autoComplete="name"
-              value={bankDraft.holder}
-              onChange={e => setBankDraft(prev => ({ ...prev, holder: e.target.value }))}
-              maxLength={20}
-              placeholder="본인 명의여야 해요"
-              className={INPUT_BASE}
-            />
-          </div>
-
-          <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-brand-green-bg border border-brand-green-border">
-            <AlertCircle size={14} className="text-brand-green shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-sm text-brand-green-text break-keep">본인 명의 계좌만 등록할 수 있어요</p>
-          </div>
+          {/* 예금주 조회 결과 */}
+          {holderVerified && (
+            <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
+              <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-brand-green-text">예금주 확인됨</p>
+                <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+              </div>
+            </div>
+          )}
+          {!holderVerified && !holderChecking && (
+            <p className="text-sm text-gray-400 -mt-1">계좌번호 입력 후 조회하면 예금주명이 자동으로 확인돼요</p>
+          )}
+          {holderChecking && (
+            <p className="text-sm text-gray-400 -mt-1">예금주 조회 중...</p>
+          )}
 
           <div className="flex gap-2">
             <button
-              onClick={() => setBankModalOpen(false)}
+              onClick={() => { setBankModalOpen(false); resetBankModal() }}
               className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >취소</button>
             <button
               onClick={handleBankRegister}
-              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              disabled={!holderVerified}
+              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >등록하기</button>
           </div>
         </div>

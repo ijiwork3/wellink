@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { Search, Upload, X, AlertCircle, Compass, Edit2, Sparkles, Hash, FileText, Phone, MapPin, ExternalLink, RefreshCw, Info } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, StatusBadge, Tabs, EmptyState, ErrorState, Skeleton, getDDay } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -15,7 +15,7 @@ type TabKey = '전체' | '지원완료' | '참여중' | '완료' | '미선정'
 const STATUS_TABS: TabKey[] = ['전체', '지원완료', '참여중', '완료', '미선정']
 
 const WAIT_STATUSES: Set<string> = new Set(['지원완료'])
-const ACTIVE_STATUSES: Set<string> = new Set(['검토중', '콘텐츠대기', '검수중'])
+const ACTIVE_STATUSES: Set<string> = new Set(['검토중', '콘텐츠대기', '검수중', '승인', '반려'])
 
 function statusToTab(s: string): TabKey {
   if (WAIT_STATUSES.has(s)) return '지원완료'
@@ -28,17 +28,19 @@ function statusToTab(s: string): TabKey {
 // '상세보기' — 원본 mypage/page.tsx L920-925: 미선정/완료 상태에서 apply?mode=view 진입
 // '수정하기' — 원본 mypage/page.tsx L832-865: WAIT 상태 → campaignRef 있을 때만 표시
 // '본인이 제출한 컨텐츠' — 원본 mypage/page.tsx L871-903: 완료 캠페인에서 제출 URL 확인
-const ACTION_MAP: Partial<Record<string, Array<'신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '본인이 제출한 컨텐츠' | '상세보기'>>> = {
+type ActionKey = '신청 정보 보기' | '수정하기' | '취소' | '콘텐츠 제출' | '콘텐츠 수정' | '콘텐츠 재제출' | '본인이 제출한 컨텐츠' | '상세보기'
+const ACTION_MAP: Partial<Record<import('../services/mock/campaigns').MyCampaignStatus, Array<ActionKey>>> = {
   '지원완료':   ['신청 정보 보기', '수정하기', '취소'],
   '검토중':     ['신청 정보 보기', '취소'],
   '콘텐츠대기': ['콘텐츠 제출'],
   '검수중':     ['콘텐츠 수정'],
+  '반려':       ['콘텐츠 재제출', '본인이 제출한 컨텐츠'],
   '완료':       ['본인이 제출한 컨텐츠'],
   '미선정':     ['상세보기'],
 }
 
 function getActions(status: string) {
-  return ACTION_MAP[status] ?? []
+  return ACTION_MAP[status as import('../services/mock/campaigns').MyCampaignStatus] ?? []
 }
 
 // 콘텐츠 제출 마감 임박 여부 (3일 이내)
@@ -127,8 +129,9 @@ export default function MyCampaign() {
     if (!url) { showToast('콘텐츠 URL을 입력해 주세요', 'error'); return }
     if (!/^https?:\/\/.+\..+/.test(url)) { showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return }
     const isEdit = submitModal?.status === '검수중'
-    setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중', postUrl: url } : c))
-    showToast(isEdit ? '콘텐츠를 수정했어요!' : '콘텐츠를 제출했어요!', 'success')
+    const isResubmit = submitModal?.status === '반려'
+    setCampaigns(prev => prev.map(c => c.id === submitModal?.id ? { ...c, status: '검수중' as const, progress: '게시 콘텐츠 확인 중', postUrl: url, rejectReason: undefined } : c))
+    showToast(isEdit ? '콘텐츠를 수정했어요!' : isResubmit ? '콘텐츠를 재제출했어요!' : '콘텐츠를 제출했어요!', 'success')
     setSubmitModal(null)
     setContentUrl('')
     setGuideAgreed(false)
@@ -304,6 +307,14 @@ export default function MyCampaign() {
               return (
                 <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
 
+                  {/* 반려 사유 배너 */}
+                  {c.status === '반려' && c.rejectReason && (
+                    <div className="flex items-start gap-1.5 text-sm text-red-600 bg-red-50 px-4 py-2.5 border-b border-red-100">
+                      <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
+                      <span><strong>반려 사유:</strong> {c.rejectReason}</span>
+                    </div>
+                  )}
+
                   {/* 마감 임박 배너 */}
                   {urgent && (
                     <div className="flex items-start gap-1.5 text-sm text-orange-600 bg-orange-50 px-4 py-2.5 border-b border-orange-100">
@@ -373,7 +384,7 @@ export default function MyCampaign() {
                           데스크탑 — 우측 고정 열(140px), flex-col, 세로 중앙(items-center로 부모가 처리) */}
                       {actions.length > 0 && (
                         <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:flex-nowrap @[640px]:shrink-0 @[640px]:w-[140px]">
-                          {actions.map(action => {
+                          {actions.map((action: ActionKey) => {
                             const btnBase = 'flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap flex-1 @[640px]:flex-none @[640px]:w-full'
                             if (action === '수정하기') {
                               if (!c.campaignRef) return null
@@ -397,6 +408,13 @@ export default function MyCampaign() {
                                 onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
                                 className={`${btnBase} border border-brand-green-border text-brand-green-text hover:bg-brand-green/5`}>
                                 <Edit2 size={13} />콘텐츠 수정
+                              </button>
+                            )
+                            if (action === '콘텐츠 재제출') return (
+                              <button key={action}
+                                onClick={() => { setSubmitModal(c); setContentUrl(c.postUrl ?? '') }}
+                                className={`${btnBase} text-white bg-brand-green hover:bg-brand-green-hover font-semibold`}>
+                                <RefreshCw size={13} />재제출하기
                               </button>
                             )
                             if (action === '신청 정보 보기') return (
@@ -445,9 +463,15 @@ export default function MyCampaign() {
       </div>
 
       {/* 콘텐츠 제출/수정 */}
-      <ResponsiveSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : '콘텐츠 제출'} size="md">
+      <ResponsiveSheet open={!!submitModal} onClose={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} title={submitModal?.status === '검수중' ? '콘텐츠 수정' : submitModal?.status === '반려' ? '콘텐츠 재제출' : '콘텐츠 제출'} size="md">
         <div className="space-y-4">
           <p className="text-sm text-gray-600"><strong className="text-gray-900">{submitModal?.name}</strong>에 게시한 콘텐츠 URL을 입력해 주세요</p>
+
+          {/* 제출 안내 — 승인 후 수정/삭제 불가 */}
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200">
+            <Info size={14} className="text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-amber-700 break-keep">제출 후 승인되면 콘텐츠 수정 및 삭제가 불가합니다.</p>
+          </div>
           {(submitModal?.missionGuide || (submitModal?.requiredKeywords && submitModal.requiredKeywords.length > 0)) && (
             <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-2.5">
               {submitModal?.missionGuide && (
@@ -509,7 +533,7 @@ export default function MyCampaign() {
           </label>
           <div className="flex gap-2">
             <button onClick={() => { setSubmitModal(null); setContentUrl(''); setGuideAgreed(false) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">닫기</button>
-            <button onClick={handleContentSubmit} disabled={!contentUrl.trim() || !guideAgreed} aria-disabled={!contentUrl.trim() || !guideAgreed} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : '제출하기'}</button>
+            <button onClick={handleContentSubmit} disabled={!contentUrl.trim() || !guideAgreed} aria-disabled={!contentUrl.trim() || !guideAgreed} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{submitModal?.status === '검수중' ? '수정하기' : submitModal?.status === '반려' ? '재제출하기' : '제출하기'}</button>
           </div>
         </div>
       </ResponsiveSheet>
