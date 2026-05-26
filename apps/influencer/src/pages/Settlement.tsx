@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2, Download } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
+import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge, Tabs, Pagination } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
 
@@ -23,6 +23,9 @@ const BANK_OPTIONS = [
 ]
 
 type SettlementStatus = '정산가능' | '지급완료' | '정산대기'
+type SettlementTab = '전체' | '다운로드 수익' | '캠페인 리워드'
+
+const PAGE_SIZE = 5
 
 interface SettlementItem {
   id: string
@@ -42,6 +45,10 @@ interface SettlementItem {
 const HISTORIC_PAYMENTS: SettlementItem[] = [
   { id: 'h-1', campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '지급완료', completedAt: '2026-04-18', paidAt: '2026-04-20' },
   { id: 'h-2', campaign: '비건 신제품 론칭', type: '피드', amount: 120000, status: '지급완료', completedAt: '2026-04-10', paidAt: '2026-04-12' },
+  { id: 'h-3', campaign: '홈트레이닝 챌린지', type: '릴스', amount: 200000, status: '지급완료', completedAt: '2026-03-25', paidAt: '2026-03-27' },
+  { id: 'h-4', campaign: '스킨케어 브랜드 홍보', type: '피드', amount: 90000, status: '지급완료', completedAt: '2026-03-12', paidAt: '2026-03-14' },
+  { id: 'h-5', campaign: '프리미엄 커피 체험', type: '스토리', amount: 60000, status: '지급완료', completedAt: '2026-02-28', paidAt: '2026-03-02' },
+  { id: 'h-6', campaign: '운동복 신제품 리뷰', type: '릴스', amount: 175000, status: '지급완료', completedAt: '2026-02-14', paidAt: '2026-02-16' },
 ]
 
 interface DownloadRevenueItem {
@@ -62,6 +69,10 @@ const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
   { id: 'dr-3', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
   { id: 'dr-4', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
   { id: 'dr-5', campaign: '비건 신제품 론칭', contentType: '피드', brand: '그린푸드', downloadedAt: '2026-04-12', amount: 3000, status: '지급완료', paidAt: '2026-04-15' },
+  { id: 'dr-6', campaign: '홈트레이닝 챌린지', contentType: '릴스', brand: '아이언짐', downloadedAt: '2026-03-30', amount: 3000, status: '지급완료', paidAt: '2026-04-02' },
+  { id: 'dr-7', campaign: '스킨케어 브랜드 홍보', contentType: '피드', brand: '글로우랩', downloadedAt: '2026-03-15', amount: 3000, status: '지급완료', paidAt: '2026-03-18' },
+  { id: 'dr-8', campaign: '프리미엄 커피 체험', contentType: '스토리', brand: '카페모어', downloadedAt: '2026-03-05', amount: 3000, status: '지급완료', paidAt: '2026-03-08' },
+  { id: 'dr-9', campaign: '운동복 신제품 리뷰', contentType: '릴스', brand: '스포럭스', downloadedAt: '2026-02-20', amount: 3000, status: '지급완료', paidAt: '2026-02-22' },
 ]
 
 function buildSettlementItems(): SettlementItem[] {
@@ -89,10 +100,13 @@ export default function Settlement() {
   const [items, setItems] = useState<SettlementItem[]>(() => qa === 'empty' ? [] : MOCK_DATA)
   const [downloadItems, setDownloadItems] = useState<DownloadRevenueItem[]>(() => qa === 'empty' ? [] : MOCK_DOWNLOAD_REVENUE)
   const [requestModal, setRequestModal] = useState(qa === 'modal-request')
-  // requestTarget: SettlementItem (개별) | DownloadRevenueItem (개별) | 'all' (전체 정산 요청)
   const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
 
-  // 계좌 정보 — mockProfile 초기값 기반 + QA 오버라이드 + 사용자 등록 액션으로 갱신 (D1)
+  // 탭 + 페이지
+  const [activeTab, setActiveTab] = useState<SettlementTab>('전체')
+  const [page, setPage] = useState(1)
+
+  // 계좌 정보
   const [bankAccount, setBankAccount] = useState<BankAccount | null>(() => {
     if (qa === 'no-account') return null
     if (qa === 'has-account' || mockProfile.hasBankAccount) return { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }
@@ -104,7 +118,6 @@ export default function Settlement() {
 
   const handleBankRegister = () => {
     if (!bankDraft.bank) { showToast('은행을 선택해 주세요', 'error'); return }
-    // 시작·끝은 숫자 + 중간에 숫자·하이픈 허용 — 하이픈만 8개로는 통과 X (cold-review 7차 M12)
     if (!/^\d[\d-]{6,18}\d$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
     if (!bankDraft.holder.trim()) { showToast('예금주를 입력해 주세요', 'error'); return }
     setBankAccount({ ...bankDraft })
@@ -113,7 +126,7 @@ export default function Settlement() {
     showToast('계좌가 등록됐어요!', 'success')
   }
 
-  // QA 파라미터 외부 동기화 (정책 §외부동기화)
+  // QA 파라미터 외부 동기화
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty') { setItems([]); setDownloadItems([]); return }
@@ -123,6 +136,12 @@ export default function Settlement() {
     setItems(MOCK_DATA)
     setDownloadItems(MOCK_DOWNLOAD_REVENUE)
   }, [qa])
+
+  // 탭 변경 시 페이지 1로 리셋
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab as SettlementTab)
+    setPage(1)
+  }
 
   if (qa === 'loading') {
     return (
@@ -162,42 +181,64 @@ export default function Settlement() {
   const availableDownloadAmount = downloadItems.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
   const availableAmount = availableCampaignAmount + availableDownloadAmount
   const availableTotalCount = items.filter(i => i.status === '정산가능').length + downloadItems.filter(i => i.status === '정산가능').length
-  // KST 기준 이번 달 prefix (UTC slice는 자정 시간대 오차) — 단순화: toLocaleDateString
+
   const thisMonthPrefix = (() => {
     const d = new Date()
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
   })()
-  const thisMonthEarnings = items
+  const thisMonthEarnings = [...items, ...downloadItems]
     .filter(i => i.completedAt.startsWith(thisMonthPrefix) && i.status !== '정산대기')
     .reduce((s, i) => s + i.amount, 0)
-  // 누적 수익: 확정 수익만 (정산대기 제외)
-  const totalEarnings = items
+  const totalEarnings = [...items, ...downloadItems]
     .filter(i => i.status !== '정산대기')
     .reduce((s, i) => s + i.amount, 0)
 
   const confirmRequest = () => {
     if (!requestTarget) return
-    // KST 기준 오늘 날짜 (UTC slice는 자정 시간대 오차)
     const now = new Date()
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
     if (requestTarget === 'all') {
-      // 전체 정산 가능 항목을 일괄 지급완료 처리 (캠페인 리워드 + 다운로드 수익 통합)
       const count = availableTotalCount
       setItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
       setDownloadItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
       showToast(`${count}건 전체 정산 요청이 완료됐어요!`, 'success')
     } else {
+      // campaign item or download item (both have id/status)
       setItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+      setDownloadItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
       showToast('정산 요청이 완료됐어요!', 'success')
     }
     setRequestModal(false)
     setRequestTarget(null)
   }
 
+  // 탭별 데이터 + 페이지네이션
+  type UnifiedItem = { kind: 'campaign'; data: SettlementItem } | { kind: 'download'; data: DownloadRevenueItem }
+
+  const allUnified: UnifiedItem[] = [
+    ...downloadItems.map(d => ({ kind: 'download' as const, data: d })),
+    ...items.map(c => ({ kind: 'campaign' as const, data: c })),
+  ]
+
+  const tabData: UnifiedItem[] =
+    activeTab === '다운로드 수익' ? downloadItems.map(d => ({ kind: 'download', data: d })) :
+    activeTab === '캠페인 리워드' ? items.map(c => ({ kind: 'campaign', data: c })) :
+    allUnified
+
+  const totalPages = Math.max(1, Math.ceil(tabData.length / PAGE_SIZE))
+  const pagedData = tabData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  const tabItems = [
+    { value: '전체', label: `전체 (${allUnified.length})` },
+    { value: '다운로드 수익', label: `다운로드 수익 (${downloadItems.length})` },
+    { value: '캠페인 리워드', label: `캠페인 리워드 (${items.length})` },
+  ]
+
   return (
     <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">정산</h1>
+
         {/* 계좌 미등록 배너 */}
         {!hasBankAccount && (
           <div className="bg-brand-green-bg border border-brand-green-border rounded-2xl px-4 py-3 flex flex-col @[400px]:flex-row @[400px]:items-center gap-3">
@@ -214,7 +255,7 @@ export default function Settlement() {
           </div>
         )}
 
-        {/* 등록된 계좌 — 표시 + 변경 (D1) */}
+        {/* 등록된 계좌 */}
         {hasBankAccount && bankAccount && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
             <CheckCircle2 size={18} className="text-brand-green shrink-0" aria-hidden="true" />
@@ -231,7 +272,7 @@ export default function Settlement() {
           </div>
         )}
 
-        {/* 요약 카드 — 정산 가능 금액 중심 */}
+        {/* 요약 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <p className="text-sm font-medium text-gray-500 mb-1">정산 가능 금액</p>
           <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text mb-1 tabular-nums leading-tight">
@@ -246,7 +287,6 @@ export default function Settlement() {
             </button>
           )}
 
-          {/* 보조 지표 — 360px 한 셀 약 124px. 6-7자리(천만원대)까지 text-sm으로 안전, 큰 폭에서 text-base */}
           <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-50">
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
@@ -265,102 +305,117 @@ export default function Settlement() {
           </div>
         </div>
 
-        {/* 다운로드 수익 내역 */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-base font-semibold text-gray-900">다운로드 수익</h2>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">광고주 콘텐츠 다운로드 발생</span>
-          </div>
-          {downloadItems.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 py-10">
-              <EmptyState
-                icon={<Download size={28} className="text-gray-400" aria-hidden="true" />}
-                title="다운로드 수익이 없어요"
-                description="광고주가 콘텐츠를 다운로드하면 수익이 쌓여요"
-              />
-            </div>
-          ) : (
-            <div className="space-y-2.5">
-              {downloadItems.map(item => (
-                <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">{item.brand} · {item.contentType} · {fmtDate(item.downloadedAt)} 다운로드{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
-                    </div>
-                    <StatusBadge status={item.status} size="sm" className="shrink-0" />
-                  </div>
-                  <div className="flex items-center justify-between pt-2.5 border-t border-gray-50">
-                    <p className="text-base font-bold text-gray-900 tabular-nums">
-                      {item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
-                    </p>
-                    {item.status === '정산가능' && (
-                      <button
-                        onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget({ id: item.id, campaign: item.campaign, type: item.contentType, amount: item.amount, status: item.status, completedAt: item.downloadedAt }); setRequestModal(true) }}
-                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                      >
-                        <BanknoteIcon size={13} />정산 요청
-                      </button>
-                    )}
-                    {item.status === '지급완료' && HAS_BUSINESS_REG && (
-                      <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                        <FileText size={13} />세금계산서
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* 탭 */}
+        <Tabs
+          variant="underline"
+          value={activeTab}
+          onChange={handleTabChange}
+          items={tabItems}
+          ariaLabel="정산 내역 탭"
+        />
 
-        {/* 캠페인 리워드 정산 내역 */}
-        <h2 className="text-base font-semibold text-gray-900">캠페인 리워드 정산 내역</h2>
-
-        {items.length === 0 ? (
+        {/* 내역 리스트 */}
+        {tabData.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
             <EmptyState
               icon={<Wallet size={32} className="text-gray-400" aria-hidden="true" />}
               title="정산 내역이 없어요"
-              description="캠페인을 완료하면 내역이 쌓여요"
+              description="캠페인을 완료하거나 다운로드 수익이 생기면 내역이 쌓여요"
             />
           </div>
         ) : (
-          <div className="space-y-3">
-            {items.map(item => (
-              <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
-                  </div>
-                  <StatusBadge status={item.status} size="sm" className="shrink-0" />
-                </div>
+          <>
+            <div className="space-y-2.5">
+              {pagedData.map(row => {
+                if (row.kind === 'download') {
+                  const item = row.data
+                  return (
+                    <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                              <Download size={10} />다운로드
+                            </span>
+                          </div>
+                          <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{item.brand} · {item.contentType} · {fmtDate(item.downloadedAt)} 다운로드{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
+                        </div>
+                        <StatusBadge status={item.status} size="sm" className="shrink-0" />
+                      </div>
+                      <div className="flex items-center justify-between pt-2.5 border-t border-gray-50">
+                        <p className="text-base font-bold text-gray-900 tabular-nums">
+                          {item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
+                        </p>
+                        {item.status === '정산가능' && (
+                          <button
+                            onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget({ id: item.id, campaign: item.campaign, type: item.contentType, amount: item.amount, status: item.status, completedAt: item.downloadedAt }); setRequestModal(true) }}
+                            className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                          >
+                            <BanknoteIcon size={13} />정산 요청
+                          </button>
+                        )}
+                        {item.status === '지급완료' && HAS_BUSINESS_REG && (
+                          <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                            <FileText size={13} />세금계산서
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                }
 
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-50">
-                  <p className="text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">{item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {item.status === '지급완료' && HAS_BUSINESS_REG && (
-                      <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                        <FileText size={14} />세금계산서
-                      </button>
-                    )}
-                    {item.status === '정산가능' && (
-                      <button
-                        onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget(item); setRequestModal(true) }}
-                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                      >
-                        <BanknoteIcon size={14} />정산 요청
-                      </button>
-                    )}
-                    {item.status === '정산대기' && (
-                      <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 완료 후 정산 가능</span>
-                    )}
+                // campaign reward
+                const item = row.data
+                return (
+                  <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <Wallet size={10} />캠페인
+                          </span>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
+                      </div>
+                      <StatusBadge status={item.status} size="sm" className="shrink-0" />
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-50">
+                      <p className="text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">{item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {item.status === '지급완료' && HAS_BUSINESS_REG && (
+                          <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                            <FileText size={14} />세금계산서
+                          </button>
+                        )}
+                        {item.status === '정산가능' && (
+                          <button
+                            onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget(item); setRequestModal(true) }}
+                            className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                          >
+                            <BanknoteIcon size={14} />정산 요청
+                          </button>
+                        )}
+                        {item.status === '정산대기' && (
+                          <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 완료 후 정산 가능</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                )
+              })}
+            </div>
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
+            )}
+          </>
         )}
       </div>
 
