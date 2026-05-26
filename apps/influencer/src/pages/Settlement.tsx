@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2, Download } from 'lucide-react'
+import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Download } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge, Tabs, Pagination } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
@@ -22,7 +22,13 @@ const BANK_OPTIONS = [
   { label: '토스뱅크', value: '토스뱅크' },
 ]
 
-type SettlementStatus = '정산가능' | '지급완료' | '정산대기'
+/**
+ * 정산 플로우: 수익 자동 누적 (마일리지) → 계좌 등록 후 인출 요청 1회
+ * - '미인출': 잔액에 쌓인 상태. 개별 요청 없이 자동 누적.
+ * - '지급완료': 인출 요청 후 계좌로 지급된 상태.
+ * - 검수중 캠페인은 목록에서 제외 (완료 즉시 자동 누적).
+ */
+type SettlementStatus = '미인출' | '지급완료'
 type SettlementTab = '전체' | '다운로드 수익' | '캠페인 리워드'
 
 const PAGE_SIZE = 5
@@ -38,9 +44,7 @@ interface SettlementItem {
 }
 
 /**
- * 정산 항목은 두 소스에서 derive:
- *  1) mockMyCampaigns 의 status='완료' → 정산가능 (또는 '검수중' → 정산대기) — A2 단일 마스터
- *  2) HISTORIC_PAYMENTS — 이미 과거에 지급된 캠페인 (mockMyCampaigns에 없는 기록 데이터)
+ * 과거에 인출된 캠페인 기록 (mockMyCampaigns에 없는 이력 데이터)
  */
 const HISTORIC_PAYMENTS: SettlementItem[] = [
   { id: 'h-1', campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '지급완료', completedAt: '2026-04-18', paidAt: '2026-04-20' },
@@ -64,8 +68,8 @@ interface DownloadRevenueItem {
 
 /** 광고주 콘텐츠 다운로드로 발생한 수익 내역 (mock) */
 const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
-  { id: 'dr-1', campaign: '헬스 보충제 캠페인', contentType: '피드', brand: 'SMILEATO', downloadedAt: '2026-05-20', amount: 3000, status: '정산가능' },
-  { id: 'dr-2', campaign: '아웃도어 장비 리뷰', contentType: '블로그', brand: '아웃도어킹', downloadedAt: '2026-05-18', amount: 3000, status: '정산가능' },
+  { id: 'dr-1', campaign: '헬스 보충제 캠페인', contentType: '피드', brand: 'SMILEATO', downloadedAt: '2026-05-20', amount: 3000, status: '미인출' },
+  { id: 'dr-2', campaign: '아웃도어 장비 리뷰', contentType: '블로그', brand: '아웃도어킹', downloadedAt: '2026-05-18', amount: 3000, status: '미인출' },
   { id: 'dr-3', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
   { id: 'dr-4', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
   { id: 'dr-5', campaign: '비건 신제품 론칭', contentType: '피드', brand: '그린푸드', downloadedAt: '2026-04-12', amount: 3000, status: '지급완료', paidAt: '2026-04-15' },
@@ -76,22 +80,21 @@ const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
 ]
 
 function buildSettlementItems(): SettlementItem[] {
+  // 완료된 캠페인만 → 즉시 미인출 상태로 누적 (검수중 제외)
   const fromMyCampaigns: SettlementItem[] = mockMyCampaigns
-    .filter(c => c.status === '완료' || c.status === '검수중')
+    .filter(c => c.status === '완료')
     .map(c => ({
       id: `sl-${c.id}`,
       campaign: c.name,
       type: c.channel,
       amount: c.rewardAmount,
-      status: c.status === '완료' ? '정산가능' as const : '정산대기' as const,
-      completedAt: c.status === '완료' ? c.deadline : (c.contentDeadline ?? c.deadline),
+      status: '미인출' as const,
+      completedAt: c.deadline,
     }))
   return [...fromMyCampaigns, ...HISTORIC_PAYMENTS]
 }
 
 const MOCK_DATA = buildSettlementItems()
-
-const HAS_BUSINESS_REG = mockProfile.hasBusinessReg
 
 export default function Settlement() {
   const qa = useQAMode()
@@ -99,8 +102,7 @@ export default function Settlement() {
 
   const [items, setItems] = useState<SettlementItem[]>(() => qa === 'empty' ? [] : MOCK_DATA)
   const [downloadItems, setDownloadItems] = useState<DownloadRevenueItem[]>(() => qa === 'empty' ? [] : MOCK_DOWNLOAD_REVENUE)
-  const [requestModal, setRequestModal] = useState(qa === 'modal-request')
-  const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
+  const [withdrawModal, setWithdrawModal] = useState(qa === 'modal-request')
 
   // 탭 + 페이지
   const [activeTab, setActiveTab] = useState<SettlementTab>('전체')
@@ -130,7 +132,7 @@ export default function Settlement() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (qa === 'empty') { setItems([]); setDownloadItems([]); return }
-    if (qa === 'modal-request') { setRequestTarget(MOCK_DATA[0]); setRequestModal(true); return }
+    if (qa === 'modal-request') { setWithdrawModal(true); return }
     if (qa === 'no-account') { setBankAccount(null); return }
     if (qa === 'has-account') { setBankAccount({ bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }); return }
     setItems(MOCK_DATA)
@@ -177,39 +179,31 @@ export default function Settlement() {
     )
   }
 
-  const availableCampaignAmount = items.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
-  const availableDownloadAmount = downloadItems.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
-  const availableAmount = availableCampaignAmount + availableDownloadAmount
-  const availableTotalCount = items.filter(i => i.status === '정산가능').length + downloadItems.filter(i => i.status === '정산가능').length
+  // 잔액 계산 (미인출 합산)
+  const withdrawableAmount =
+    items.filter(i => i.status === '미인출').reduce((s, i) => s + i.amount, 0) +
+    downloadItems.filter(i => i.status === '미인출').reduce((s, i) => s + i.amount, 0)
+  const withdrawableCount =
+    items.filter(i => i.status === '미인출').length +
+    downloadItems.filter(i => i.status === '미인출').length
 
   const thisMonthPrefix = (() => {
     const d = new Date()
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
   })()
   const thisMonthEarnings = [...items, ...downloadItems]
-    .filter(i => i.completedAt.startsWith(thisMonthPrefix) && i.status !== '정산대기')
+    .filter(i => i.completedAt.startsWith(thisMonthPrefix))
     .reduce((s, i) => s + i.amount, 0)
   const totalEarnings = [...items, ...downloadItems]
-    .filter(i => i.status !== '정산대기')
     .reduce((s, i) => s + i.amount, 0)
 
-  const confirmRequest = () => {
-    if (!requestTarget) return
+  const confirmWithdraw = () => {
     const now = new Date()
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    if (requestTarget === 'all') {
-      const count = availableTotalCount
-      setItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
-      setDownloadItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
-      showToast(`${count}건 전체 정산 요청이 완료됐어요!`, 'success')
-    } else {
-      // campaign item or download item (both have id/status)
-      setItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
-      setDownloadItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
-      showToast('정산 요청이 완료됐어요!', 'success')
-    }
-    setRequestModal(false)
-    setRequestTarget(null)
+    setItems(prev => prev.map(i => i.status === '미인출' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+    setDownloadItems(prev => prev.map(i => i.status === '미인출' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+    setWithdrawModal(false)
+    showToast(`${withdrawableCount}건 인출 요청이 완료됐어요!`, 'success')
   }
 
   // 탭별 데이터 + 페이지네이션
@@ -246,7 +240,7 @@ export default function Settlement() {
               <AlertCircle size={16} className="text-brand-green shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 break-keep">계좌 정보가 없어요</p>
-                <p className="text-sm text-brand-green-text mt-0.5 break-keep">정산을 받으려면 계좌를 먼저 등록해야 해요</p>
+                <p className="text-sm text-brand-green-text mt-0.5 break-keep">인출 요청을 하려면 계좌를 먼저 등록해야 해요</p>
               </div>
             </div>
             <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-white bg-brand-green px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
@@ -272,26 +266,29 @@ export default function Settlement() {
           </div>
         )}
 
-        {/* 요약 카드 */}
+        {/* 잔액 요약 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <p className="text-sm font-medium text-gray-500 mb-1">정산 가능 금액</p>
-          <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text mb-1 tabular-nums leading-tight">
-            {availableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
+          <p className="text-sm font-medium text-gray-500 mb-1">인출 가능 잔액</p>
+          <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text tabular-nums leading-tight">
+            {withdrawableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
           </p>
-          {availableAmount > 0 && (
+          {withdrawableAmount > 0 && (
             <button
-              onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget('all'); setRequestModal(true) }}
-              className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setWithdrawModal(true) }}
+              className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
-              <BanknoteIcon size={14} />전체 정산 요청
+              <BanknoteIcon size={14} />인출 요청
             </button>
+          )}
+          {withdrawableAmount === 0 && withdrawableCount === 0 && (
+            <p className="mt-1.5 text-sm text-gray-400">인출 가능한 잔액이 없어요</p>
           )}
 
           <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-50">
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
                 <TrendingUp size={14} className="text-gray-400" />
-                <p className="text-sm text-gray-500">이번 달</p>
+                <p className="text-sm text-gray-500">이번 달 수익</p>
               </div>
               <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{thisMonthEarnings.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
             </div>
@@ -319,8 +316,8 @@ export default function Settlement() {
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
             <EmptyState
               icon={<Wallet size={32} className="text-gray-400" aria-hidden="true" />}
-              title="정산 내역이 없어요"
-              description="캠페인을 완료하거나 다운로드 수익이 생기면 내역이 쌓여요"
+              title="수익 내역이 없어요"
+              description="캠페인을 완료하거나 다운로드 수익이 생기면 여기에 쌓여요"
             />
           </div>
         ) : (
@@ -343,23 +340,10 @@ export default function Settlement() {
                         </div>
                         <StatusBadge status={item.status} size="sm" className="shrink-0" />
                       </div>
-                      <div className="flex items-center justify-between pt-2.5 border-t border-gray-50">
+                      <div className="pt-2.5 border-t border-gray-50">
                         <p className="text-base font-bold text-gray-900 tabular-nums">
                           {item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
                         </p>
-                        {item.status === '정산가능' && (
-                          <button
-                            onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget({ id: item.id, campaign: item.campaign, type: item.contentType, amount: item.amount, status: item.status, completedAt: item.downloadedAt }); setRequestModal(true) }}
-                            className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                          >
-                            <BanknoteIcon size={13} />정산 요청
-                          </button>
-                        )}
-                        {item.status === '지급완료' && HAS_BUSINESS_REG && (
-                          <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                            <FileText size={13} />세금계산서
-                          </button>
-                        )}
                       </div>
                     </div>
                   )
@@ -381,26 +365,8 @@ export default function Settlement() {
                       </div>
                       <StatusBadge status={item.status} size="sm" className="shrink-0" />
                     </div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-50">
+                    <div className="pt-3 border-t border-gray-50">
                       <p className="text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">{item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {item.status === '지급완료' && HAS_BUSINESS_REG && (
-                          <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                            <FileText size={14} />세금계산서
-                          </button>
-                        )}
-                        {item.status === '정산가능' && (
-                          <button
-                            onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget(item); setRequestModal(true) }}
-                            className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2.5 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                          >
-                            <BanknoteIcon size={14} />정산 요청
-                          </button>
-                        )}
-                        {item.status === '정산대기' && (
-                          <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 완료 후 정산 가능</span>
-                        )}
-                      </div>
                     </div>
                   </div>
                 )
@@ -419,43 +385,31 @@ export default function Settlement() {
         )}
       </div>
 
-      {/* 정산 요청 */}
-      <ResponsiveSheet open={requestModal} onClose={() => { setRequestModal(false); setRequestTarget(null) }} title={requestTarget === 'all' ? '전체 정산 요청' : '정산 요청'} size="sm">
-        {requestTarget && (
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-              {requestTarget === 'all' ? (
-                <>
-                  <div className="flex justify-between gap-3 text-sm">
-                    <span className="text-gray-500 shrink-0">정산 가능 건수</span>
-                    <span className="font-medium text-gray-900 tabular-nums">{availableTotalCount}건</span>
-                  </div>
-                  <div className="flex justify-between gap-3 text-sm">
-                    <span className="text-gray-500 shrink-0">총 정산 금액</span>
-                    <span className="font-medium text-gray-900 tabular-nums text-right break-keep min-w-0">{availableAmount.toLocaleString('ko-KR')}원</span>
-                  </div>
-                </>
-              ) : (
-                [
-                  ['캠페인', requestTarget.campaign],
-                  ['콘텐츠 유형', requestTarget.type],
-                  ['정산 금액', `${requestTarget.amount.toLocaleString('ko-KR')}원`],
-                  ['완료일', fmtDate(requestTarget.completedAt)],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex justify-between gap-3 text-sm">
-                    <span className="text-gray-500 shrink-0">{label}</span>
-                    <span className="font-medium text-gray-900 text-right break-keep min-w-0">{value}</span>
-                  </div>
-                ))
-              )}
+      {/* 인출 요청 확인 모달 */}
+      <ResponsiveSheet open={withdrawModal} onClose={() => setWithdrawModal(false)} title="인출 요청" size="sm">
+        <div className="space-y-4">
+          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="flex justify-between gap-3 text-sm">
+              <span className="text-gray-500 shrink-0">인출 건수</span>
+              <span className="font-medium text-gray-900 tabular-nums">{withdrawableCount}건</span>
             </div>
-            <p className="text-sm text-gray-500">정산 요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
-            <div className="flex gap-2">
-              <button onClick={() => { setRequestModal(false); setRequestTarget(null) }} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={confirmRequest} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+            <div className="flex justify-between gap-3 text-sm">
+              <span className="text-gray-500 shrink-0">인출 금액</span>
+              <span className="font-medium text-gray-900 tabular-nums text-right">{withdrawableAmount.toLocaleString('ko-KR')}원</span>
             </div>
+            {bankAccount && (
+              <div className="flex justify-between gap-3 text-sm pt-2 mt-1 border-t border-gray-200">
+                <span className="text-gray-500 shrink-0">입금 계좌</span>
+                <span className="font-medium text-gray-900 text-right break-keep">{bankAccount.bank} {bankAccount.accountNumber}</span>
+              </div>
+            )}
           </div>
-        )}
+          <p className="text-sm text-gray-500">요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
+          <div className="flex gap-2">
+            <button onClick={() => setWithdrawModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button onClick={confirmWithdraw} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+          </div>
+        </div>
       </ResponsiveSheet>
 
       {/* 계좌 등록 */}
