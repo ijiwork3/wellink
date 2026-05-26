@@ -365,14 +365,12 @@ export default function Settlement() {
 
                 return (
                   <div key={id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                    {/* 상단: 날짜(좌) + 지급완료 배지(우) */}
+                    {/* 상단: 날짜(좌) + 상태 배지(우) */}
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-xs text-gray-400 tabular-nums">
                         {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
                       </p>
-                      {status === '지급완료' && (
-                        <StatusBadge status="지급완료" size="sm" className="shrink-0" />
-                      )}
+                      <StatusBadge status={status} size="sm" className="shrink-0" />
                     </div>
 
                     {/* 본문: 캠페인명(좌) + 금액(우 하단, PC) */}
