@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2 } from 'lucide-react'
+import { Wallet, AlertCircle, FileText, BanknoteIcon, TrendingUp, CheckCircle2, Download } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
@@ -44,6 +44,26 @@ const HISTORIC_PAYMENTS: SettlementItem[] = [
   { id: 'h-2', campaign: '비건 신제품 론칭', type: '피드', amount: 120000, status: '지급완료', completedAt: '2026-04-10', paidAt: '2026-04-12' },
 ]
 
+interface DownloadRevenueItem {
+  id: string
+  campaign: string
+  contentType: string
+  brand: string
+  downloadedAt: string
+  amount: number
+  status: SettlementStatus
+  paidAt?: string
+}
+
+/** 광고주 콘텐츠 다운로드로 발생한 수익 내역 (mock) */
+const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
+  { id: 'dr-1', campaign: '헬스 보충제 캠페인', contentType: '피드', brand: 'SMILEATO', downloadedAt: '2026-05-20', amount: 3000, status: '정산가능' },
+  { id: 'dr-2', campaign: '아웃도어 장비 리뷰', contentType: '블로그', brand: '아웃도어킹', downloadedAt: '2026-05-18', amount: 3000, status: '정산가능' },
+  { id: 'dr-3', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
+  { id: 'dr-4', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
+  { id: 'dr-5', campaign: '비건 신제품 론칭', contentType: '피드', brand: '그린푸드', downloadedAt: '2026-04-12', amount: 3000, status: '지급완료', paidAt: '2026-04-15' },
+]
+
 function buildSettlementItems(): SettlementItem[] {
   const fromMyCampaigns: SettlementItem[] = mockMyCampaigns
     .filter(c => c.status === '완료' || c.status === '검수중')
@@ -67,14 +87,17 @@ export default function Settlement() {
   const { showToast } = useToast()
 
   const [items, setItems] = useState<SettlementItem[]>(() => qa === 'empty' ? [] : MOCK_DATA)
+  const [downloadItems, setDownloadItems] = useState<DownloadRevenueItem[]>(() => qa === 'empty' ? [] : MOCK_DOWNLOAD_REVENUE)
   const [requestModal, setRequestModal] = useState(qa === 'modal-request')
-  // requestTarget: SettlementItem (개별) | 'all' (전체 정산 요청)
+  // requestTarget: SettlementItem (개별) | DownloadRevenueItem (개별) | 'all' (전체 정산 요청)
   const [requestTarget, setRequestTarget] = useState<SettlementItem | 'all' | null>(qa === 'modal-request' ? MOCK_DATA[0] : null)
 
-  // 계좌 정보 — mockProfile 초기값 기반 + 사용자 등록 액션으로 갱신 (D1)
-  const [bankAccount, setBankAccount] = useState<BankAccount | null>(
-    mockProfile.hasBankAccount ? { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name } : null
-  )
+  // 계좌 정보 — mockProfile 초기값 기반 + QA 오버라이드 + 사용자 등록 액션으로 갱신 (D1)
+  const [bankAccount, setBankAccount] = useState<BankAccount | null>(() => {
+    if (qa === 'no-account') return null
+    if (qa === 'has-account' || mockProfile.hasBankAccount) return { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }
+    return null
+  })
   const hasBankAccount = bankAccount !== null
   const [bankModalOpen, setBankModalOpen] = useState(false)
   const [bankDraft, setBankDraft] = useState<BankAccount>({ bank: '', accountNumber: '', holder: mockProfile.name })
@@ -93,9 +116,12 @@ export default function Settlement() {
   // QA 파라미터 외부 동기화 (정책 §외부동기화)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (qa === 'empty') { setItems([]); return }
+    if (qa === 'empty') { setItems([]); setDownloadItems([]); return }
     if (qa === 'modal-request') { setRequestTarget(MOCK_DATA[0]); setRequestModal(true); return }
+    if (qa === 'no-account') { setBankAccount(null); return }
+    if (qa === 'has-account') { setBankAccount({ bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }); return }
     setItems(MOCK_DATA)
+    setDownloadItems(MOCK_DOWNLOAD_REVENUE)
   }, [qa])
 
   if (qa === 'loading') {
@@ -132,7 +158,10 @@ export default function Settlement() {
     )
   }
 
-  const availableAmount = items.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
+  const availableCampaignAmount = items.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
+  const availableDownloadAmount = downloadItems.filter(i => i.status === '정산가능').reduce((s, i) => s + i.amount, 0)
+  const availableAmount = availableCampaignAmount + availableDownloadAmount
+  const availableTotalCount = items.filter(i => i.status === '정산가능').length + downloadItems.filter(i => i.status === '정산가능').length
   // KST 기준 이번 달 prefix (UTC slice는 자정 시간대 오차) — 단순화: toLocaleDateString
   const thisMonthPrefix = (() => {
     const d = new Date()
@@ -152,9 +181,10 @@ export default function Settlement() {
     const now = new Date()
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
     if (requestTarget === 'all') {
-      // 전체 정산 가능 항목을 일괄 지급완료 처리
-      const count = items.filter(i => i.status === '정산가능').length
+      // 전체 정산 가능 항목을 일괄 지급완료 처리 (캠페인 리워드 + 다운로드 수익 통합)
+      const count = availableTotalCount
       setItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
+      setDownloadItems(prev => prev.map(i => i.status === '정산가능' ? { ...i, status: '지급완료' as const, paidAt: today } : i))
       showToast(`${count}건 전체 정산 요청이 완료됐어요!`, 'success')
     } else {
       setItems(prev => prev.map(i => i.id === requestTarget.id ? { ...i, status: '지급완료' as const, paidAt: today } : i))
@@ -235,8 +265,57 @@ export default function Settlement() {
           </div>
         </div>
 
-        {/* 정산 내역 */}
-        <h2 className="text-base font-semibold text-gray-900">정산 내역</h2>
+        {/* 다운로드 수익 내역 */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-base font-semibold text-gray-900">다운로드 수익</h2>
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">광고주 콘텐츠 다운로드 발생</span>
+          </div>
+          {downloadItems.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-100 py-10">
+              <EmptyState
+                icon={<Download size={28} className="text-gray-400" aria-hidden="true" />}
+                title="다운로드 수익이 없어요"
+                description="광고주가 콘텐츠를 다운로드하면 수익이 쌓여요"
+              />
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {downloadItems.map(item => (
+                <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{item.brand} · {item.contentType} · {fmtDate(item.downloadedAt)} 다운로드{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
+                    </div>
+                    <StatusBadge status={item.status} size="sm" className="shrink-0" />
+                  </div>
+                  <div className="flex items-center justify-between pt-2.5 border-t border-gray-50">
+                    <p className="text-base font-bold text-gray-900 tabular-nums">
+                      {item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
+                    </p>
+                    {item.status === '정산가능' && (
+                      <button
+                        onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setRequestTarget({ id: item.id, campaign: item.campaign, type: item.contentType, amount: item.amount, status: item.status, completedAt: item.downloadedAt }); setRequestModal(true) }}
+                        className="flex items-center gap-1 text-sm bg-brand-green text-white px-3 py-2 rounded-lg hover:bg-brand-green-hover transition-colors font-medium whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      >
+                        <BanknoteIcon size={13} />정산 요청
+                      </button>
+                    )}
+                    {item.status === '지급완료' && HAS_BUSINESS_REG && (
+                      <button onClick={() => showToast('세금계산서 발행을 요청했어요', 'success')} className="flex items-center gap-1 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+                        <FileText size={13} />세금계산서
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 캠페인 리워드 정산 내역 */}
+        <h2 className="text-base font-semibold text-gray-900">캠페인 리워드 정산 내역</h2>
 
         {items.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 py-12">
@@ -294,7 +373,7 @@ export default function Settlement() {
                 <>
                   <div className="flex justify-between gap-3 text-sm">
                     <span className="text-gray-500 shrink-0">정산 가능 건수</span>
-                    <span className="font-medium text-gray-900 tabular-nums">{items.filter(i => i.status === '정산가능').length}건</span>
+                    <span className="font-medium text-gray-900 tabular-nums">{availableTotalCount}건</span>
                   </div>
                   <div className="flex justify-between gap-3 text-sm">
                     <span className="text-gray-500 shrink-0">총 정산 금액</span>

@@ -804,19 +804,26 @@ export function GlobalQAHeader<S extends string, T extends string>({
         )}
       </div>
 
-      {/* 모바일 전체화면 QA 패널 */}
+      {/* 모바일 컴팩트 QA 패널 */}
       {isMobile && menuOpen && (
-        <div className="fixed inset-0 z-[1050] bg-slate-900 flex flex-col text-white">
-          {/* 패널 헤더 */}
-          <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor }}>WL</div>
-              <span className="text-sm font-semibold">QA 패널</span>
+        <>
+          {/* 반투명 백드롭 */}
+          <div
+            className="fixed inset-0 z-[1040] bg-black/50"
+            onClick={() => setMenuOpen(false)}
+          />
+          {/* 플로팅 패널 */}
+          <div className="fixed left-3 right-3 top-14 z-[1050] bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/80 text-white overflow-hidden max-h-[82vh] flex flex-col">
+            {/* 패널 헤더 */}
+            <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor }}>WL</div>
+                <span className="text-sm font-semibold">QA 패널</span>
+              </div>
+              <button onClick={() => setMenuOpen(false)} className="p-2 rounded-md hover:bg-slate-700 transition-colors" aria-label="닫기">
+                <X size={18} />
+              </button>
             </div>
-            <button onClick={() => setMenuOpen(false)} className="p-2 rounded-md hover:bg-slate-700 transition-colors" aria-label="닫기">
-              <X size={20} />
-            </button>
-          </div>
 
           {/* 스크롤 영역 */}
           <div className="flex-1 overflow-y-auto">
@@ -917,6 +924,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
             </div>
           </div>
         </div>
+        </>
       )}
     </>
   );

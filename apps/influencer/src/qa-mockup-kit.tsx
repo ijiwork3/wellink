@@ -777,91 +777,99 @@ export function GlobalQAHeader<S extends string, T extends string>({
         )}
       </div>
 
-      {/* 모바일 전체화면 QA 패널 */}
+      {/* 모바일 컴팩트 QA 패널 */}
       {isMobile && menuOpen && (
-        <div className="fixed inset-0 z-[1050] bg-slate-900 flex flex-col text-white">
-          {/* 패널 헤더 */}
-          <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor }}>WL</div>
-              <span className="text-sm font-semibold">QA 패널</span>
+        <>
+          {/* 반투명 백드롭 */}
+          <div
+            className="fixed inset-0 z-[1040] bg-black/50"
+            onClick={() => { setMenuOpen(false); document.dispatchEvent(new Event('qa-toggle')); }}
+          />
+          {/* 플로팅 패널 */}
+          <div className="fixed left-3 right-3 top-14 z-[1050] bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/80 text-white overflow-hidden max-h-[82vh] flex flex-col">
+            {/* 패널 헤더 */}
+            <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor }}>WL</div>
+                <span className="text-sm font-semibold">QA 패널</span>
+              </div>
+              <button
+                onClick={() => { setMenuOpen(false); document.dispatchEvent(new Event('qa-toggle')); }}
+                className="p-2 rounded-md hover:bg-slate-700 transition-colors"
+                aria-label="닫기"
+              >
+                <X size={18} />
+              </button>
             </div>
-            <button
-              onClick={() => { setMenuOpen(false); document.dispatchEvent(new Event('qa-toggle')); }}
-              className="p-2 rounded-md hover:bg-slate-700 transition-colors"
-              aria-label="닫기"
-            >
-              <X size={20} />
-            </button>
-          </div>
 
-          {/* 스크롤 영역 */}
-          <div className="flex-1 overflow-y-auto">
-            {/* 현재 페이지 빠른 이동 */}
-            {quickItems.length > 0 && (
-              <div className="p-4 border-b border-slate-800">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">현재 페이지</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {quickItems.map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleNavigate(item)}
-                      className="flex items-center justify-center text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 active:bg-slate-600 transition-colors px-3 py-3"
-                    >
-                      {item.label}
-                    </button>
+            {/* 스크롤 영역 */}
+            <div className="flex-1 overflow-y-auto">
+              {/* 현재 페이지 빠른 이동 */}
+              {quickItems.length > 0 && (
+                <div className="p-4 border-b border-slate-800">
+                  <p className="text-[11px] font-medium text-slate-500 mb-3">현재 페이지</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {quickItems.map((item, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleNavigate(item)}
+                        className="flex items-center justify-center text-sm font-medium rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 active:bg-slate-600 transition-colors px-3 py-3"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 경로 이동 */}
+              <div className="p-4">
+                <p className="text-[11px] font-medium text-slate-500 mb-3">경로 이동</p>
+                <div className="space-y-1">
+                  {pathItems.map((item, i) => (
+                    <div key={i}>
+                      {item.children ? (
+                        <>
+                          <button
+                            onClick={() => setExpandedSection(expandedSection === item.label ? null : item.label)}
+                            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors"
+                          >
+                            <span className="text-sm font-medium text-slate-300">{item.label}</span>
+                            <ChevronRight size={14} className={`transition-transform text-slate-500 ${expandedSection === item.label ? 'rotate-90' : ''}`} />
+                          </button>
+                          {expandedSection === item.label && (
+                            <div className="mt-1 space-y-0.5 pl-3">
+                              {item.children.map((child, j) => (
+                                <button
+                                  key={j}
+                                  onClick={() => handleNavigate(child)}
+                                  className="w-full text-left flex items-center px-3 py-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                                >
+                                  <span className="text-sm">{child.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : (item.onSelect || item.path) ? (
+                        <button
+                          onClick={() => handleNavigate(item)}
+                          className="w-full text-left flex items-center px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                        >
+                          <span className="text-sm">{item.label}</span>
+                        </button>
+                      ) : (
+                        <div className="px-3 pt-4 pb-1 text-[11px] font-medium text-slate-500">
+                          {item.label}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* 경로 이동 */}
-            <div className="p-4">
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">경로 이동</p>
-              <div className="space-y-1">
-                {pathItems.map((item, i) => (
-                  <div key={i}>
-                    {item.children ? (
-                      <>
-                        <button
-                          onClick={() => setExpandedSection(expandedSection === item.label ? null : item.label)}
-                          className="w-full flex items-center justify-between px-3 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
-                        >
-                          <span className="text-sm font-semibold text-slate-300">{item.label}</span>
-                          <ChevronRight size={14} className={`transition-transform text-slate-400 ${expandedSection === item.label ? 'rotate-90' : ''}`} />
-                        </button>
-                        {expandedSection === item.label && (
-                          <div className="mt-1 space-y-1 pl-3">
-                            {item.children.map((child, j) => (
-                              <button
-                                key={j}
-                                onClick={() => handleNavigate(child)}
-                                className="w-full text-left flex items-center px-3 py-3 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                              >
-                                <span className="text-sm">{child.label}</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    ) : (item.onSelect || item.path) ? (
-                      <button
-                        onClick={() => handleNavigate(item)}
-                        className="w-full text-left flex items-center px-3 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                      >
-                        <span className="text-sm">{item.label}</span>
-                      </button>
-                    ) : (
-                      <div className="px-3 pt-4 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                        {item.label}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );
