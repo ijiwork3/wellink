@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Download, Search, CheckCircle } from 'lucide-react'
+import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Search, CheckCircle } from 'lucide-react'
 import Layout from '../components/Layout'
 import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, StatusBadge, Tabs, Pagination } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
@@ -351,49 +351,39 @@ export default function Settlement() {
           <>
             <div className="space-y-2.5">
               {pagedData.map(row => {
-                if (row.kind === 'download') {
-                  const item = row.data
-                  return (
-                    <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                              <Download size={10} />다운로드
-                            </span>
-                          </div>
-                          <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{item.brand} · {item.contentType} · {fmtDate(item.downloadedAt)} 다운로드{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
-                        </div>
-                        <StatusBadge status={item.status} size="sm" className="shrink-0" />
-                      </div>
-                      <div className="pt-2.5 border-t border-gray-50">
-                        <p className="text-base font-bold text-gray-900 tabular-nums">
-                          {item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
-                        </p>
-                      </div>
-                    </div>
-                  )
-                }
+                // 공통 필드 추출
+                const isDownload = row.kind === 'download'
+                const id = row.data.id
+                const campaign = row.data.campaign
+                const amount = row.data.amount
+                const status = row.data.status
+                const date = isDownload ? (row.data as DownloadRevenueItem).downloadedAt : (row.data as SettlementItem).completedAt
+                const paidAt = row.data.paidAt
+                const subLabel = isDownload
+                  ? `${(row.data as DownloadRevenueItem).brand} · ${(row.data as DownloadRevenueItem).contentType}`
+                  : (row.data as SettlementItem).type
 
-                // campaign reward
-                const item = row.data
                 return (
-                  <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                            <Wallet size={10} />캠페인
-                          </span>
-                        </div>
-                        <p className="text-sm font-semibold text-gray-900 break-keep">{item.campaign}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{item.type} · {fmtDate(item.completedAt)} 완료{item.paidAt ? ` · 지급 ${fmtDate(item.paidAt)}` : ''}</p>
-                      </div>
-                      <StatusBadge status={item.status} size="sm" className="shrink-0" />
+                  <div key={id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                    {/* 상단: 날짜(좌) + 지급완료 배지(우) */}
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-gray-400 tabular-nums">
+                        {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
+                      </p>
+                      {status === '지급완료' && (
+                        <StatusBadge status="지급완료" size="sm" className="shrink-0" />
+                      )}
                     </div>
-                    <div className="pt-3 border-t border-gray-50">
-                      <p className="text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">{item.amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
+
+                    {/* 본문: 캠페인명(좌) + 금액(우 하단, PC) */}
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 break-keep">{campaign}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{subLabel}</p>
+                      </div>
+                      <p className="text-base @[640px]:text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap shrink-0">
+                        {amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
+                      </p>
                     </div>
                   </div>
                 )
