@@ -500,10 +500,6 @@ const handleContentSubmit = () => {
               )}
             </div>
           )}
-          <div className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center">
-            <Upload size={22} className="text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">인스타그램, 블로그, 유튜브 등 게시 링크</p>
-          </div>
           <div>
             <label htmlFor="content-url" className="text-sm text-gray-600 mb-1.5 block font-medium">콘텐츠 URL</label>
             <input
