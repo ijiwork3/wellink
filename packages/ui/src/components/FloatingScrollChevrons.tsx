@@ -68,15 +68,19 @@ export default function FloatingScrollChevrons({
   // 2) 세로 visible 영역 + 좌우 위치 계산 (사이드바 회피)
   useEffect(() => {
     const update = () => {
+      // 세로 높이는 contentRef(테이블 전체 높이) 기준
       const el = contentRef?.current ?? scrollRef.current
       if (!el) return
       const rect = el.getBoundingClientRect()
       const visTop = Math.max(rect.top, 0)
       const visBottom = Math.min(rect.bottom, window.innerHeight)
       setBtnTop(visBottom > visTop + 40 ? (visTop + visBottom) / 2 : null)
-      // 사이드바와 겹치지 않도록 콘텐츠 영역 안에 정확히 배치
-      setBtnLeft(rect.left + 8)
-      setBtnRight(window.innerWidth - rect.right + 8)
+      // 수평 위치는 반드시 scrollRef(overflow-x-auto 컨테이너) 기준 —
+      // contentRef(table)는 컨테이너보다 넓을 수 있어 rect.right > window.innerWidth → 음수 btnRight
+      const scrollEl = scrollRef.current ?? el
+      const scrollRect = scrollEl.getBoundingClientRect()
+      setBtnLeft(scrollRect.left + 8)
+      setBtnRight(window.innerWidth - scrollRect.right + 8)
     }
     update()
     // 부모 스크롤 컨테이너 (Layout의 overflow-y-auto) 추적
