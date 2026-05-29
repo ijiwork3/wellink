@@ -501,7 +501,8 @@ export default function Settlement() {
         title={hasBankAccount ? '정산 계좌 변경' : '정산 정보 등록'}
         size="md"
       >
-        <div className="space-y-5">
+        <div className="flex flex-col">
+        <div className="space-y-5 pb-2">
           {/* 사업자 유형 선택 */}
           <div>
             <p className="text-sm font-medium text-gray-700 mb-2">사업자 유형 <span className="text-red-400" aria-label="필수">*</span></p>
@@ -824,7 +825,9 @@ export default function Settlement() {
             </>
           )}
 
-          <div className="flex gap-2 pt-1">
+        </div>
+        {/* 플로팅 버튼 — 스크롤과 무관하게 항상 하단 고정 */}
+        <div className="sticky bottom-0 z-10 bg-white border-t border-gray-100 flex gap-2 pt-3 pb-4 -mx-4 px-4 @sm:-mx-6 @sm:px-6 rounded-b-2xl">
             <button
               onClick={() => { setBankModalOpen(false); resetBankModal() }}
               className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
