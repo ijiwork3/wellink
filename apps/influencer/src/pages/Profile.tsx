@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff } from 'lucide-react'
+import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff, Camera } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton, AlertModal } from '@wellink/ui'
 import { Toggle, ResponsiveSheet } from '@wellink/ui'
@@ -42,6 +42,20 @@ export default function Profile() {
   const [showNewPw, setShowNewPw] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
+  // 프로필 이미지
+  const avatarFileRef = useRef<HTMLInputElement>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [draftAvatarUrl, setDraftAvatarUrl] = useState<string | null>(null)
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setDraftAvatarUrl(reader.result as string)
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
   // 비밀번호 변경 2단계: 1=OTP 인증, 2=새 비밀번호 입력
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [pwStep, setPwStep] = useState<1 | 2>(1)
@@ -78,6 +92,7 @@ export default function Profile() {
     setName(draftName)
     setSelectedFields(new Set(draftFields))
     setInfluencerType(draftType)
+    if (draftAvatarUrl !== null) setAvatarUrl(draftAvatarUrl)
     setIsEditing(false)
     setIsSaving(false)
     showToast('저장했어요!', 'success')
@@ -87,6 +102,7 @@ export default function Profile() {
     setDraftName(name)
     setDraftFields(new Set(selectedFields))
     setDraftType(influencerType)
+    setDraftAvatarUrl(null)
     setIsEditing(false)
   }
 
@@ -248,6 +264,42 @@ export default function Profile() {
                 <Pencil size={14} />편집
               </button>
             )}
+          </div>
+
+          {/* 프로필 이미지 */}
+          <div className="flex justify-center mb-5">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-brand-green-bg border-2 border-brand-green-border flex items-center justify-center">
+                {(isEditing ? draftAvatarUrl : avatarUrl) ? (
+                  <img
+                    src={(isEditing ? draftAvatarUrl : avatarUrl)!}
+                    alt="프로필 이미지"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl font-bold text-brand-green-text select-none">
+                    {name.slice(0, 1)}
+                  </span>
+                )}
+              </div>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => avatarFileRef.current?.click()}
+                  aria-label="프로필 사진 변경"
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-brand-green flex items-center justify-center shadow-md hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  <Camera size={13} className="text-white" />
+                </button>
+              )}
+              <input
+                ref={avatarFileRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={handleAvatarChange}
+              />
+            </div>
           </div>
 
           <div className="space-y-3">

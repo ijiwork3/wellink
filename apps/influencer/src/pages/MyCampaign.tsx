@@ -283,7 +283,11 @@ const handleContentSubmit = () => {
               const dday = c.contentDeadline ? getDDay(c.contentDeadline) : null
 
               return (
-                <div key={c.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${urgent ? 'border-orange-200' : 'border-gray-100'}`}>
+                <div
+                  key={c.id}
+                  className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${urgent ? 'border-orange-200' : 'border-gray-100'} ${c.campaignRef ? 'cursor-pointer' : ''}`}
+                  onClick={() => c.campaignRef && navigate(`/campaigns/${c.campaignRef}`)}
+                >
 
                   {/* 반려 사유 배너 */}
                   {c.status === '반려' && c.rejectReason && (
@@ -294,7 +298,7 @@ const handleContentSubmit = () => {
                       </p>
                       {c.rejectReason.length > 40 && (
                         <button
-                          onClick={() => setRejectReasonModal(c.rejectReason!)}
+                          onClick={e => { e.stopPropagation(); setRejectReasonModal(c.rejectReason!) }}
                           className="shrink-0 text-xs font-medium text-red-400 underline underline-offset-2 hover:text-red-600 whitespace-nowrap"
                         >
                           더보기
@@ -371,7 +375,7 @@ const handleContentSubmit = () => {
                           모바일 — border-t 아래, flex-row
                           데스크탑 — 우측 고정 열(140px), flex-col, 세로 중앙(items-center로 부모가 처리) */}
                       {actions.length > 0 && (
-                        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:flex-nowrap @[640px]:shrink-0 @[640px]:w-[140px]">
+                        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 flex-wrap @[640px]:mt-0 @[640px]:pt-0 @[640px]:border-0 @[640px]:flex-col @[640px]:flex-nowrap @[640px]:shrink-0 @[640px]:w-[140px]" onClick={e => e.stopPropagation()}>
                           {actions.map((action: ActionKey) => {
                             const btnBase = 'flex items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap flex-1 @[640px]:flex-none @[640px]:w-full'
                             if (action === '수정하기') {
