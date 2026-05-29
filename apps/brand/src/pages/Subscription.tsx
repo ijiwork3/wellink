@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Check, CreditCard, AlertTriangle, CheckCircle2, Receipt } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS, ErrorState, EmptyState, SkeletonCard, Skeleton, FloatingScrollChevrons, PageHeader, fmtPrice } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtDate } from '../utils/fmtDate'
+import { fmtDate } from '@wellink/ui'
 import { ENTERPRISE_EMAIL } from '../config/urls'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { setQAState } from '../qa-state'
@@ -19,9 +19,8 @@ const plans = [
     desc: '인플루언서 매칭 기본 지원',
     features: [
       '인플루언서 DB 5,000명',
-      '기본 오디언스 분석',
-      '실시간 전환 추천',
-      '월간 리포트',
+      'Fit-Score 기반 자동 매칭',
+      '기본 성과 분석 대시보드',
       '이메일 지원',
     ],
     cta: '이 플랜으로 변경',
@@ -36,30 +35,25 @@ const plans = [
     desc: 'AI 기반 성과 분석 + 우선 매칭',
     features: [
       '인플루언서 DB 50,000명+',
-      'AI 기반 성과 시뮬레이션',
-      '실시간 ROAS 추적',
-      '간격 리포트 생성',
-      '우선 인플루언서 매칭',
-      '커스텀 대시보드',
+      'AI 성과 분석 및 최적화',
+      '커스텀 대시보드 구성',
       '우선 지원',
     ],
     cta: '이 플랜으로 변경',
     style: 'green' as const,
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
+    id: 'infinite',
+    name: 'Infinite',
     price: '문의',
     unit: '',
     tag: null,
-    desc: '글로벌 엔터프라이즈 맞춤형',
+    desc: '엔터프라이즈를 위한 무제한 통합 플랜',
     features: [
       '무제한 인플루언서 DB',
-      '전담 전문가 배정',
-      '화이트글로브 지원',
-      '커스텀 대시보드',
-      '글로벌 솔루션',
-      '아시아 진출 지원',
+      '전담 마케팅 전문가 배정',
+      'API 통합 및 커스텀 개발',
+      '24시간 전담 지원',
     ],
     cta: '도입 문의하기',
     style: 'dark' as const,
@@ -86,15 +80,15 @@ const PAYMENT_HISTORY: Record<string, { id: number; date: string; desc: string; 
     { id: 2, date: '2026-03-01', desc: 'Scale Plan 정기결제',      amount: '299,000원', status: '완료' },
     { id: 3, date: '2026-02-15', desc: 'Focus → Scale 업그레이드', amount: '200,000원', status: '완료' },
   ],
-  enterprise: [
-    { id: 1, date: '2026-04-01', desc: 'Enterprise 계약 체결', amount: '별도 문의', status: '완료' },
+  infinite: [
+    { id: 1, date: '2026-04-01', desc: 'Infinite 계약 체결', amount: '별도 문의', status: '완료' },
   ],
 }
 
 /** QA: 요금제 코드 → currentPlan 매핑 */
 function planFromQA(qa: string): string {
   if (qa === 'plan-focus')     return 'focus'
-  if (qa === 'plan-enterprise') return 'enterprise'
+  if (qa === 'plan-infinite')  return 'infinite'
   if (qa === 'plan-free')      return ''   // 미구독
   if (qa === 'trial')          return 'scale'  // 무료 체험 중 → Scale 활성
   return 'scale'                           // 기본 / plan-scale
@@ -116,6 +110,7 @@ export default function Subscription() {
   // confirmTimer cleanup — 언마운트 시 타이머 누수 방지
   useEffect(() => () => { if (confirmTimerRef.current !== null) clearTimeout(confirmTimerRef.current) }, [])
   // 신규 — 해지·환불·해지 예약 (원본 보강)
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const [cancelStatus, setCancelStatus] = useState<'active' | 'cancel_scheduled'>('active')
   const [cancelModal, setCancelModal] = useState(false)
   const [refundModal, setRefundModal] = useState(false)
@@ -335,20 +330,6 @@ export default function Subscription() {
         const next = new Date()
         next.setDate(next.getDate() + 30)
         const nextBillingDate = next.toISOString().slice(0, 10)
-        // 사용량 데이터 — 플랜별 (원본 getDefaultFeatures 동등)
-        const usage = displayPlan === 'focus' ? [
-          { name: '인플루언서 DB 접근', used: 1200, limit: 5000, unit: '명' },
-          { name: 'AI 시뮬레이션', used: 3, limit: 10, unit: '회' },
-          { name: '캠페인 관리', used: 2, limit: 5, unit: '개' },
-        ] : displayPlan === 'scale' ? [
-          { name: '인플루언서 DB 접근', used: 12500, limit: 50000, unit: '명' },
-          { name: 'AI 시뮬레이션', used: 45, limit: 100, unit: '회' },
-          { name: '캠페인 관리', used: 8, limit: 20, unit: '개' },
-        ] : /* enterprise */ [
-          { name: '인플루언서 DB 접근', used: 28000, limit: 999999, unit: '명' },
-          { name: 'AI 시뮬레이션', used: 92, limit: 999, unit: '회' },
-          { name: '캠페인 관리', used: 24, limit: 999, unit: '개' },
-        ]
         return (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 @md:p-6 space-y-5">
             <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -399,52 +380,42 @@ export default function Subscription() {
               </div>
             </div>
 
-            {/* 이번 달 사용량 — 원본 getDefaultFeatures 동등 */}
-            <div className="border-t border-gray-100 pt-4">
-              <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-1.5">
-                이번 달 사용량 현황
-                <span className="text-sm font-normal text-gray-500">(매월 결제일 초기화)</span>
-              </h3>
-              <div className="grid grid-cols-1 @[480px]:grid-cols-2 @[760px]:grid-cols-3 gap-3">
-                {usage.map(f => {
-                  const pct = Math.min(100, Math.max(0, (f.used / f.limit) * 100))
-                  const isOver = f.used >= f.limit
-                  const isWarning = pct > 90 && !isOver
-                  return (
-                    <div key={f.name} className="rounded-xl bg-gray-50 border border-gray-100 p-3">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-sm font-medium text-gray-700 break-keep min-w-0">{f.name}</span>
-                        <span className="text-sm font-bold text-gray-900 tabular-nums shrink-0 whitespace-nowrap">
-                          {f.used.toLocaleString()} / {f.limit >= 999999 ? '∞' : f.limit.toLocaleString()}{f.unit}
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            isOver || isWarning ? 'bg-red-500' : 'bg-brand-green'
-                          }`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      {isOver && (
-                        <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1">
-                          <AlertTriangle size={12} aria-hidden="true" />
-                          한도 초과! 플랜 업그레이드를 검토해 주세요.
-                        </p>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
           </div>
         )
       })()}
 
+      {/* 결제 주기 토글 */}
+      <div className="flex items-center justify-center gap-3">
+        <div className="inline-flex items-center rounded-full border border-gray-200 bg-white p-1 shadow-sm">
+          {(['monthly', 'annual'] as const).map(b => (
+            <button
+              key={b}
+              type="button"
+              onClick={() => setBilling(b)}
+              className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                billing === b
+                  ? 'bg-brand-green text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {b === 'monthly' ? '월간 결제' : '연간 결제'}
+              {b === 'annual' && (
+                <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs font-bold ${billing === 'annual' ? 'bg-white/20 text-white' : 'bg-brand-green-bg text-brand-green-text'}`}>
+                  -20%
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 플랜 카드 3개 */}
       <div className="grid grid-cols-1 @[560px]:grid-cols-2 @[920px]:grid-cols-3 gap-4 @sm:gap-5">
         {/* Focus — 흰 배경 + 검정 테두리 */}
-        {plans.filter(p => p.style === 'white').map(plan => (
+        {plans.filter(p => p.style === 'white').map(plan => {
+          const monthlyKRW = parseInt(plan.price.replace(/,/g, ''), 10)
+          const displayPrice = billing === 'annual' ? Math.round(monthlyKRW * 0.8).toLocaleString('ko-KR') : plan.price
+          return (
           <div
             key={plan.id}
             className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
@@ -464,9 +435,12 @@ export default function Subscription() {
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
-                <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                <span className="text-base text-gray-500">{plan.unit}</span>
+                <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
+                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월·연간' : plan.unit}</span>
               </div>
+              {billing === 'annual' && (
+                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 결제</p>
+              )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
@@ -488,10 +462,14 @@ export default function Subscription() {
               {plan.id === currentPlan ? '현재 플랜' : plan.cta}
             </button>
           </div>
-        ))}
+          )
+        })}
 
         {/* Scale — 흰 배경 + 그린 테두리 (border opacity 60% 의도된 alpha — 비활성 시 약화 표시) */}
-        {plans.filter(p => p.style === 'green').map(plan => (
+        {plans.filter(p => p.style === 'green').map(plan => {
+          const monthlyKRW = parseInt(plan.price.replace(/,/g, ''), 10)
+          const displayPrice = billing === 'annual' ? Math.round(monthlyKRW * 0.8).toLocaleString('ko-KR') : plan.price
+          return (
           <div
             key={plan.id}
             className={`bg-white rounded-2xl p-6 flex flex-col relative transition-all duration-200 ${
@@ -509,9 +487,12 @@ export default function Subscription() {
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
-                <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                <span className="text-base text-gray-500">{plan.unit}</span>
+                <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
+                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월·연간' : plan.unit}</span>
               </div>
+              {billing === 'annual' && (
+                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 결제</p>
+              )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
@@ -533,7 +514,8 @@ export default function Subscription() {
               {plan.id === currentPlan ? '현재 플랜' : plan.cta}
             </button>
           </div>
-        ))}
+          )
+        })}
 
         {/* Enterprise — 검정 배경 */}
         {plans.filter(p => p.style === 'dark').map(plan => (
@@ -582,6 +564,106 @@ export default function Subscription() {
           </div>
         ))}
       </div>
+
+      {/* 플랜 기능 비교표 */}
+      {(() => {
+        type FeatureVal = string | boolean
+        const comparison: { name: string; focus: FeatureVal; scale: FeatureVal; infinite: FeatureVal; section?: string }[] = [
+          { name: '인플루언서 DB',         focus: '5,000명',  scale: '50,000명+',  infinite: '무제한',      section: '핵심 기능' },
+          { name: 'AI Fit-Score 매칭',     focus: true,       scale: true,          infinite: true },
+          { name: '성과 대시보드',          focus: '기본',     scale: '고급',        infinite: '커스텀' },
+          { name: 'Fit-Score 상세 리포트',  focus: false,      scale: true,          infinite: true },
+          { name: '캠페인 수',              focus: '월 3건',   scale: '월 20건',     infinite: '무제한',      section: '운영 한도' },
+          { name: '팀 멤버',                focus: '1명',      scale: '5명',         infinite: '무제한' },
+          { name: '동시 활성 캠페인',       focus: '1건',      scale: '5건',         infinite: '무제한' },
+          { name: 'API 접근',               focus: false,      scale: false,         infinite: true,         section: '기술·통합' },
+          { name: 'Webhook 연동',           focus: false,      scale: false,         infinite: true },
+          { name: '커스텀 도메인 리포트',   focus: false,      scale: false,         infinite: true },
+          { name: '전담 매니저',            focus: false,      scale: false,         infinite: true,         section: '지원' },
+          { name: '고객 지원',              focus: '이메일',   scale: '우선 응대',   infinite: '전담 24시간' },
+          { name: '온보딩 지원',            focus: false,      scale: '기본',        infinite: '맞춤형' },
+          { name: '무료 체험',              focus: '7일',      scale: '7일',         infinite: '데모 제공' },
+        ]
+
+        const renderCell = (v: FeatureVal, col: 'focus' | 'scale' | 'infinite') => {
+          const isScale = col === 'scale'
+          const isInfinite = col === 'infinite'
+          if (v === true) return (
+            <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full ${isScale ? 'bg-brand-green' : isInfinite ? 'bg-gray-800' : 'bg-gray-100'}`}>
+              <Check size={12} className="text-white" strokeWidth={3} aria-hidden="true" />
+            </span>
+          )
+          if (v === false) return <span className="text-gray-200 font-medium">—</span>
+          return (
+            <span className={`text-sm font-semibold whitespace-nowrap tabular-nums ${isScale ? 'text-brand-green-text' : isInfinite ? 'text-gray-700' : 'text-gray-500'}`}>
+              {v}
+            </span>
+          )
+        }
+
+        return (
+          <div className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden bg-white">
+
+            {/* 타이틀 */}
+            <div className="px-6 py-5 border-b border-gray-100">
+              <p className="text-base font-bold text-gray-900">플랜별 기능 비교</p>
+              <p className="text-sm text-gray-400 mt-0.5">월간 결제 기준</p>
+            </div>
+
+            {/* 컬럼 헤더 */}
+            <div className="grid grid-cols-4">
+              <div className="border-b border-gray-100" />
+              {([
+                { key: 'focus',    label: 'Focus',    price: '99,000원/월',   accent: false, dark: false },
+                { key: 'scale',    label: 'Scale',    price: '299,000원/월',  accent: true,  dark: false },
+                { key: 'infinite', label: 'Infinite', price: '문의',           accent: false, dark: true  },
+              ] as const).map((col) => (
+                <div
+                  key={col.key}
+                  className={`relative border-l border-b border-gray-100 px-4 py-5 text-center ${col.accent ? 'bg-brand-green-bg' : col.dark ? 'bg-gray-900' : 'bg-white'}`}
+                >
+                  <p className={`text-sm font-bold ${col.accent ? 'text-brand-green-text' : col.dark ? 'text-white' : 'text-gray-800'}`}>
+                    {col.label}
+                  </p>
+                  <p className={`text-xs mt-1 ${col.accent ? 'text-brand-green-text/70' : col.dark ? 'text-gray-400' : 'text-gray-400'}`}>
+                    {col.price}
+                  </p>
+                  {col.accent && (
+                    <span className="mt-2 inline-block text-xs font-bold bg-brand-green text-white px-2 py-0.5 rounded-full">추천</span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* 비교 행 */}
+            {comparison.map((row) => (
+              <div key={row.name}>
+                {row.section && (
+                  <div className="grid grid-cols-4 bg-gray-50 border-t border-gray-100">
+                    <div className="px-6 py-2.5 col-span-4">
+                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{row.section}</span>
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-4 border-t border-gray-50 group hover:bg-gray-50/60 transition-colors duration-100">
+                  <div className="px-6 py-4 flex items-center">
+                    <span className="text-sm text-gray-600 break-keep leading-snug">{row.name}</span>
+                  </div>
+                  {(['focus', 'scale', 'infinite'] as const).map((key) => (
+                    <div
+                      key={key}
+                      className={`px-4 py-4 border-l border-gray-100 flex items-center justify-center ${key === 'scale' ? 'bg-brand-green-bg/40 group-hover:bg-brand-green-bg/60' : key === 'infinite' ? 'bg-gray-50/60' : ''} transition-colors duration-100`}
+                    >
+                      {renderCell(row[key], key)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+          </div>
+        )
+      })()}
 
       {/* 7일 무료 체험 안내 */}
       <p className="text-center text-sm text-gray-500">

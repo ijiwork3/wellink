@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, CreditCard, ShieldCheck, AlertCircle, CheckCircle2, Plus, Trash2 } from 'lucide-react'
 import { Modal, AlertModal, useToast, TIMER_MS, CustomCheckbox, PageHeader } from '@wellink/ui'
-import { fmtDate } from '../utils/fmtDate'
+import { fmtDate } from '@wellink/ui'
 
 /** 결제 수단 변경 — 토스페이먼츠 빌링 인증 mock */
 

@@ -28,7 +28,7 @@ import {
   CustomSelect, Pagination, Tooltip, FloatingScrollChevrons,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtDate } from '../utils/fmtDate'
+import { fmtDate } from '@wellink/ui'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 /* ───── Mock Data ───── */

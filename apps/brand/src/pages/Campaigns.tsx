@@ -6,14 +6,14 @@ import {
   Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
 } from 'lucide-react'
 import {
-  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, AlertModal, Pagination, Modal,
+  ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, AlertModal, Pagination,
   Skeleton, SkeletonRow, PageHeader,
   getDDay, getDDayBadgeStyle, useToast,
 } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { usePlanAccess } from '../hooks/usePlanAccess'
-import { fmtDate } from '../utils/fmtDate'
+import { fmtDate } from '@wellink/ui'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
   '맛집/푸드':     { Icon: Utensils, bg: 'bg-orange-50',   fg: 'text-orange-500' },

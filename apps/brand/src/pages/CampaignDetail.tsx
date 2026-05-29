@@ -7,8 +7,7 @@ import {
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtNumber, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
-import { fmtDate } from '../utils/fmtDate'
+import { fmtNumber, fmtDate, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { pushNotification } from '../services/notifications'
@@ -554,7 +553,7 @@ export default function CampaignDetail() {
   // 미구독자 다운로드 흐름 — 플랜 선택 → 결제 단계 (모달 내 다단계)
   type DownloadStep = 'plan-select' | 'payment'
   const [downloadStep, setDownloadStep] = useState<DownloadStep>('plan-select')
-  const [pickedPlan, setPickedPlan] = useState<'focus' | 'scale' | 'enterprise'>('scale')
+  const [pickedPlan, setPickedPlan] = useState<'focus' | 'scale' | 'infinite'>('scale')
 
   // 등록 콘텐츠 탭 — 인플루언서 찜하기
   const [contentInfluencerBookmarks, setContentInfluencerBookmarks] = useState<Set<string>>(new Set())
@@ -919,7 +918,7 @@ export default function CampaignDetail() {
       closeDownloadModal()
       setSelectedContents(new Set())
       setIsPaying(false)
-      const planName = pickedPlan === 'focus' ? 'Focus' : pickedPlan === 'scale' ? 'Scale' : 'Enterprise'
+      const planName = pickedPlan === 'focus' ? 'Focus' : pickedPlan === 'scale' ? 'Scale' : 'Infinite'
       showToast(`${planName} 플랜 결제가 완료되었습니다. 다운로드를 시작합니다.`, 'success')
     }, 1500)
   }
@@ -2580,9 +2579,9 @@ export default function CampaignDetail() {
         ) : downloadStep === 'plan-select' ? (
           <>
             <button type="button" onClick={closeDownloadModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            {pickedPlan === 'enterprise' ? (
+            {pickedPlan === 'infinite' ? (
               <button type="button"
-                onClick={() => { closeDownloadModal(); window.location.href = 'mailto:enterprise@wellink.ai?subject=Enterprise 플랜 문의' }}
+                onClick={() => { closeDownloadModal(); window.location.href = 'mailto:enterprise@wellink.ai?subject=Infinite 플랜 문의' }}
                 className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 문의하기
@@ -2635,7 +2634,7 @@ export default function CampaignDetail() {
               {([
                 { id: 'focus' as const,      name: 'Focus',      price: '₩99,000/월',  desc: '소규모 캠페인 1~3건 운영, 기본 분석' },
                 { id: 'scale' as const,      name: 'Scale',      price: '₩299,000/월', desc: '다중 캠페인, 인플루언서 관리, 고급 필터', recommend: true },
-                { id: 'enterprise' as const, name: 'Enterprise', price: '문의',         desc: '무제한 캠페인, 고급 분석, 전담 매니저' },
+                { id: 'infinite' as const,   name: 'Infinite',   price: '문의',         desc: '무제한 캠페인, 고급 분석, 전담 매니저' },
               ]).map(p => {
                 const active = pickedPlan === p.id
                 return (
@@ -2661,7 +2660,7 @@ export default function CampaignDetail() {
                 )
               })}
             </div>
-            <p className="text-base text-gray-500">Enterprise 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
+            <p className="text-base text-gray-500">Infinite 플랜은 별도 상담을 통해 견적이 산출됩니다.</p>
           </div>
         ) : (
           <div className="space-y-4">
