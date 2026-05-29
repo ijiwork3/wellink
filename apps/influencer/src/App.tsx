@@ -10,6 +10,7 @@ import Media from './pages/Media'
 import Settlement from './pages/Settlement'
 import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
+import Notifications from './pages/Notifications'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 import PhoneVerificationGate from './components/PhoneVerificationGate'
@@ -142,6 +143,23 @@ const STATUS_ITEMS: StatusItem[] = [
     ],
   },
 
+  /* ────────────────── 알림 ────────────────── */
+  {
+    label: '알림',
+    children: [
+      { label: '기본 (전체)', path: '/notifications' },
+      { label: '읽지않음만', path: '/notifications?qa=unread-only' },
+      { label: '빈 상태', path: '/notifications?qa=empty' },
+      { label: '로딩 스켈레톤', path: '/notifications?qa=loading' },
+      { label: '에러', path: '/notifications?qa=error' },
+      { label: '탭 — 캠페인', path: '/notifications?qa=tab-campaign' },
+      { label: '탭 — 콘텐츠', path: '/notifications?qa=tab-content' },
+      { label: '탭 — 메시지', path: '/notifications?qa=tab-message' },
+      { label: '탭 — 정산', path: '/notifications?qa=tab-settlement' },
+      { label: '탭 — 시스템', path: '/notifications?qa=tab-system' },
+    ],
+  },
+
 ]
 
 function getQuickItems(pathname: string): StatusItem[] {
@@ -241,6 +259,7 @@ function AppRoutes() {
       '/profile':             '프로필 — WELLINK AI',
       '/media':               '인스타 관리 — WELLINK AI',
       '/settlement':          '정산 — WELLINK AI',
+      '/notifications':       '알림 — WELLINK AI',
       '/login':               '로그인 — WELLINK AI',
       '/signup':              '회원가입 — WELLINK AI',
     }
@@ -269,6 +288,7 @@ function AppRoutes() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/media" element={<ProtectedRoute><Media /></ProtectedRoute>} />
         <Route path="/settlement" element={<ProtectedRoute><Settlement /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 

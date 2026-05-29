@@ -1,14 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
-import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Search, CheckCircle } from 'lucide-react'
+import { Wallet, AlertCircle, BanknoteIcon, TrendingUp, CheckCircle2, Search, CheckCircle, Upload, X } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, Tabs, Pagination } from '@wellink/ui'
+import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, Tabs, Pagination, CustomCheckbox } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
+
+type PayerType = '개인' | '개인사업자'
 
 interface BankAccount {
   bank: string
   accountNumber: string
   holder: string
+  payerType?: PayerType
+  name?: string
+  phone?: string
 }
 
 const BANK_OPTIONS = [
@@ -111,18 +116,40 @@ export default function Settlement() {
   // 계좌 정보
   const [bankAccount, setBankAccount] = useState<BankAccount | null>(() => {
     if (qa === 'no-account') return null
-    if (qa === 'has-account' || mockProfile.hasBankAccount) return { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }
+    if (qa === 'has-account' || mockProfile.hasBankAccount) return { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name, payerType: '개인', name: mockProfile.name, phone: '010-1234-5678' }
     return null
   })
   const hasBankAccount = bankAccount !== null
   const [bankModalOpen, setBankModalOpen] = useState(false)
-  const [bankDraft, setBankDraft] = useState<{ bank: string; accountNumber: string }>({ bank: '', accountNumber: '' })
-  const [holderVerified, setHolderVerified] = useState<string | null>(null) // null=미조회, string=조회된 예금주명
+
+  // 폼 draft — 개인 / 개인사업자 공통
+  const [payerType, setPayerType] = useState<PayerType>('개인')
+  // 개인 필드
+  const [draftName, setDraftName] = useState('')
+  const [draftResidentNo, setDraftResidentNo] = useState('') // 주민등록번호 raw
+  const [draftPhone, setDraftPhone] = useState('')
+  const [draftBank, setDraftBank] = useState('')
+  const [draftAccount, setDraftAccount] = useState('')
+  const [draftPrivacyAgree, setDraftPrivacyAgree] = useState(false)
+  // 개인사업자 추가 필드
+  const [draftBizRegFile, setDraftBizRegFile] = useState<File | null>(null)
+  const [draftBizNo, setDraftBizNo] = useState('') // 사업자등록번호
+  const [draftBizName, setDraftBizName] = useState('') // 상호
+  const [draftCeoName, setDraftCeoName] = useState('') // 대표자명
+  const [draftBizPhone, setDraftBizPhone] = useState('')
+  const [draftBizEmail, setDraftBizEmail] = useState('')
+  const [draftBizResidentNo, setDraftBizResidentNo] = useState('') // 개인사업자용 주민등록번호 (optional)
+
+  const [holderVerified, setHolderVerified] = useState<string | null>(null)
   const [holderChecking, setHolderChecking] = useState(false)
   const holderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const resetBankModal = () => {
-    setBankDraft({ bank: '', accountNumber: '' })
+    setPayerType('개인')
+    setDraftName(''); setDraftResidentNo(''); setDraftPhone('')
+    setDraftBank(''); setDraftAccount(''); setDraftPrivacyAgree(false)
+    setDraftBizRegFile(null); setDraftBizNo(''); setDraftBizName('')
+    setDraftCeoName(''); setDraftBizPhone(''); setDraftBizEmail(''); setDraftBizResidentNo('')
     setHolderVerified(null)
     setHolderChecking(false)
     if (holderTimerRef.current) clearTimeout(holderTimerRef.current)
@@ -130,14 +157,39 @@ export default function Settlement() {
 
   // 계좌번호 변경 시 예금주 조회 초기화
   const handleAccountNumberChange = (v: string) => {
-    setBankDraft(prev => ({ ...prev, accountNumber: v.replace(/[^0-9-]/g, '') }))
+    setDraftAccount(v.replace(/[^0-9-]/g, ''))
     setHolderVerified(null)
+  }
+
+  // 주민등록번호 포맷: 000000-0000000
+  const formatResidentNo = (raw: string) => {
+    const digits = raw.replace(/[^0-9]/g, '').slice(0, 13)
+    if (digits.length > 6) return digits.slice(0, 6) + '-' + digits.slice(6)
+    return digits
+  }
+
+  // 전화번호 포맷: 010-0000-0000
+  const formatPhone = (raw: string) => {
+    const digits = raw.replace(/[^0-9]/g, '').slice(0, 11)
+    if (digits.length > 7) return digits.slice(0, 3) + '-' + digits.slice(3, 7) + '-' + digits.slice(7)
+    if (digits.length > 3) return digits.slice(0, 3) + '-' + digits.slice(3)
+    return digits
+  }
+
+  // 사업자등록번호 포맷: 000-00-00000
+  const formatBizNo = (raw: string) => {
+    const digits = raw.replace(/[^0-9]/g, '').slice(0, 10)
+    if (digits.length > 5) return digits.slice(0, 3) + '-' + digits.slice(3, 5) + '-' + digits.slice(5)
+    if (digits.length > 3) return digits.slice(0, 3) + '-' + digits.slice(3)
+    return digits
   }
 
   // 예금주 조회 — mock: 1.2초 후 mockProfile.name 반환
   const handleHolderLookup = () => {
-    if (!bankDraft.bank) { showToast('은행을 먼저 선택해 주세요', 'error'); return }
-    if (!/^\d[\d-]{6,18}\d$/.test(bankDraft.accountNumber)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
+    const bank = payerType === '개인' ? draftBank : draftBank
+    const account = draftAccount
+    if (!bank) { showToast('은행을 먼저 선택해 주세요', 'error'); return }
+    if (!/^\d[\d-]{6,18}\d$/.test(account)) { showToast('계좌번호 형식을 확인해 주세요', 'error'); return }
     setHolderChecking(true)
     setHolderVerified(null)
     holderTimerRef.current = setTimeout(() => {
@@ -147,12 +199,27 @@ export default function Settlement() {
   }
 
   const handleBankRegister = () => {
-    if (!bankDraft.bank) { showToast('은행을 선택해 주세요', 'error'); return }
+    if (!draftBank) { showToast('은행을 선택해 주세요', 'error'); return }
     if (!holderVerified) { showToast('예금주 조회를 먼저 해주세요', 'error'); return }
-    setBankAccount({ bank: bankDraft.bank, accountNumber: bankDraft.accountNumber, holder: holderVerified })
+    if (payerType === '개인') {
+      if (!draftName) { showToast('이름을 입력해 주세요', 'error'); return }
+      if (!draftPhone) { showToast('전화번호를 입력해 주세요', 'error'); return }
+      if (!draftPrivacyAgree) { showToast('개인정보 수집·이용에 동의해 주세요', 'error'); return }
+    } else {
+      if (!draftBizName) { showToast('상호를 입력해 주세요', 'error'); return }
+      if (!draftCeoName) { showToast('대표자명을 입력해 주세요', 'error'); return }
+    }
+    setBankAccount({
+      bank: draftBank,
+      accountNumber: draftAccount,
+      holder: holderVerified,
+      payerType,
+      name: payerType === '개인' ? draftName : draftCeoName,
+      phone: payerType === '개인' ? draftPhone : draftBizPhone,
+    })
     setBankModalOpen(false)
     resetBankModal()
-    showToast('계좌가 등록됐어요!', 'success')
+    showToast('정산 정보가 등록됐어요!', 'success')
   }
 
   // QA 파라미터 외부 동기화
@@ -161,7 +228,7 @@ export default function Settlement() {
     if (qa === 'empty') { setItems([]); setDownloadItems([]); return }
     if (qa === 'modal-request') { setWithdrawModal(true); return }
     if (qa === 'no-account') { setBankAccount(null); return }
-    if (qa === 'has-account') { setBankAccount({ bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name }); return }
+    if (qa === 'has-account') { setBankAccount({ bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name, payerType: '개인', name: mockProfile.name, phone: '010-1234-5678' }); return }
     setItems(MOCK_DATA)
     setDownloadItems(MOCK_DOWNLOAD_REVENUE)
   }, [qa])
@@ -281,11 +348,19 @@ export default function Settlement() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
             <CheckCircle2 size={18} className="text-brand-green shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-500">정산 계좌</p>
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="text-sm text-gray-500">정산 계좌</p>
+                {bankAccount.payerType && (
+                  <span className="text-xs font-medium bg-brand-green-bg text-brand-green-text px-1.5 py-0.5 rounded-full whitespace-nowrap">{bankAccount.payerType}</span>
+                )}
+              </div>
+              {bankAccount.name && (
+                <p className="text-xs text-gray-500 mb-0.5">{bankAccount.name}{bankAccount.phone ? ` · ${bankAccount.phone}` : ''}</p>
+              )}
               <p className="text-sm font-medium text-gray-900 truncate">{bankAccount.bank} <span className="tabular-nums">{bankAccount.accountNumber}</span> ({bankAccount.holder})</p>
             </div>
             <button
-              onClick={() => { setBankDraft(bankAccount); setBankModalOpen(true) }}
+              onClick={() => { setBankModalOpen(true) }}
               className="shrink-0 text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               변경
@@ -419,73 +494,337 @@ export default function Settlement() {
         </div>
       </ResponsiveSheet>
 
-      {/* 계좌 등록 */}
+      {/* 정산 정보 등록 / 변경 */}
       <ResponsiveSheet
         open={bankModalOpen}
         onClose={() => { setBankModalOpen(false); resetBankModal() }}
-        title="정산 계좌 등록"
-        size="sm"
+        title={hasBankAccount ? '정산 계좌 변경' : '정산 정보 등록'}
+        size="md"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600 break-keep">정산 금액을 지급받을 본인 명의 계좌를 등록해 주세요.</p>
-
+        <div className="space-y-5">
+          {/* 사업자 유형 선택 */}
           <div>
-            <label htmlFor="bank-select" className="block text-sm font-medium text-gray-700 mb-1.5">은행 <span className="text-red-400" aria-label="필수">*</span></label>
-            <CustomSelect
-              value={bankDraft.bank}
-              onChange={v => { setBankDraft(prev => ({ ...prev, bank: v })); setHolderVerified(null) }}
-              options={BANK_OPTIONS}
-              placeholder="은행 선택"
-              className="w-full"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="bank-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+            <p className="text-sm font-medium text-gray-700 mb-2">사업자 유형 <span className="text-red-400" aria-label="필수">*</span></p>
             <div className="flex gap-2">
-              <input
-                id="bank-account"
-                type="text"
-                inputMode="numeric"
-                autoComplete="off"
-                value={bankDraft.accountNumber}
-                onChange={e => handleAccountNumberChange(e.target.value)}
-                placeholder="숫자만 입력 (예: 123-456-789012)"
-                maxLength={20}
-                className={`${INPUT_BASE} tabular-nums flex-1`}
-              />
-              <button
-                onClick={handleHolderLookup}
-                disabled={holderChecking || !bankDraft.accountNumber}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
-              >
-                {holderChecking
-                  ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                  : <Search size={13} />
-                }
-                조회
-              </button>
+              {(['개인', '개인사업자'] as PayerType[]).map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => { setPayerType(t); setHolderVerified(null) }}
+                  className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                    payerType === t
+                      ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* 예금주 조회 결과 */}
-          {holderVerified && (
-            <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
-              <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-brand-green-text">예금주 확인됨</p>
-                <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+          {payerType === '개인' ? (
+            <>
+              {/* 이름 */}
+              <div>
+                <label htmlFor="reg-name" className="block text-sm font-medium text-gray-700 mb-1.5">이름 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="reg-name"
+                  type="text"
+                  autoComplete="name"
+                  value={draftName}
+                  onChange={e => setDraftName(e.target.value)}
+                  placeholder="홍길동"
+                  className={INPUT_BASE}
+                />
               </div>
-            </div>
-          )}
-          {!holderVerified && !holderChecking && (
-            <p className="text-sm text-gray-400 -mt-1">계좌번호 입력 후 조회하면 예금주명이 자동으로 확인돼요</p>
-          )}
-          {holderChecking && (
-            <p className="text-sm text-gray-400 -mt-1">예금주 조회 중...</p>
+
+              {/* 주민등록번호 */}
+              <div>
+                <label htmlFor="reg-resident" className="block text-sm font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="reg-resident"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={draftResidentNo}
+                  onChange={e => setDraftResidentNo(formatResidentNo(e.target.value))}
+                  placeholder="000000-0000000"
+                  maxLength={14}
+                  className={`${INPUT_BASE} tabular-nums`}
+                />
+                <p className="text-xs text-gray-400 mt-1">뒷자리 7자리는 마스킹 처리됩니다</p>
+              </div>
+
+              {/* 전화번호 */}
+              <div>
+                <label htmlFor="reg-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="reg-phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={draftPhone}
+                  onChange={e => setDraftPhone(formatPhone(e.target.value))}
+                  placeholder="010-0000-0000"
+                  maxLength={13}
+                  className={`${INPUT_BASE} tabular-nums`}
+                />
+              </div>
+
+              {/* 은행 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <CustomSelect
+                  value={draftBank}
+                  onChange={v => { setDraftBank(v); setHolderVerified(null) }}
+                  options={BANK_OPTIONS}
+                  placeholder="은행 선택"
+                  className="w-full"
+                />
+              </div>
+
+              {/* 계좌번호 + 조회 */}
+              <div>
+                <label htmlFor="reg-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <div className="flex gap-2">
+                  <input
+                    id="reg-account"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={draftAccount}
+                    onChange={e => handleAccountNumberChange(e.target.value)}
+                    placeholder="숫자만 입력 (예: 123-456-789012)"
+                    maxLength={20}
+                    className={`${INPUT_BASE} tabular-nums flex-1`}
+                  />
+                  <button
+                    onClick={handleHolderLookup}
+                    disabled={holderChecking || !draftAccount}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+                  >
+                    {holderChecking ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" /> : <Search size={13} />}
+                    조회
+                  </button>
+                </div>
+              </div>
+
+              {/* 예금주명 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">예금주명</label>
+                {holderVerified ? (
+                  <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
+                    <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-brand-green-text">예금주 확인됨</p>
+                      <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 px-1">
+                    {holderChecking ? '예금주 조회 중...' : '계좌번호 입력 후 조회하면 자동으로 확인돼요'}
+                  </p>
+                )}
+              </div>
+
+              {/* 개인정보 동의 */}
+              <div className="pt-1">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <CustomCheckbox
+                    checked={draftPrivacyAgree}
+                    onChange={e => setDraftPrivacyAgree(e.target.checked)}
+                    label="개인정보 수집·이용 동의 (필수)"
+                  />
+                </label>
+                <p className="text-xs text-gray-400 mt-1 ml-6">정산 지급을 위한 본인 확인 목적으로만 사용됩니다.</p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* 사업자등록증 첨부 */}
+              <div>
+                <p className="block text-sm font-medium text-gray-700 mb-1.5">사업자등록증 <span className="text-red-400" aria-label="필수">*</span></p>
+                <label
+                  htmlFor="biz-reg-file"
+                  className="flex flex-col items-center justify-center gap-2 w-full h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-brand-green-border hover:bg-brand-green-bg/30 transition-colors"
+                >
+                  {draftBizRegFile ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-700 px-4">
+                      <CheckCircle size={16} className="text-brand-green shrink-0" />
+                      <span className="truncate">{draftBizRegFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={e => { e.preventDefault(); setDraftBizRegFile(null) }}
+                        className="shrink-0 text-gray-400 hover:text-gray-700"
+                        aria-label="파일 제거"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload size={22} className="text-gray-400" aria-hidden="true" />
+                      <span className="text-sm text-gray-500">클릭하여 파일 첨부</span>
+                      <span className="text-xs text-gray-400">JPG, PNG, PDF 지원</span>
+                    </>
+                  )}
+                </label>
+                <input
+                  id="biz-reg-file"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="sr-only"
+                  onChange={e => { if (e.target.files?.[0]) setDraftBizRegFile(e.target.files[0]) }}
+                />
+              </div>
+
+              {/* 사업자등록번호 */}
+              <div>
+                <label htmlFor="biz-reg-no" className="block text-sm font-medium text-gray-700 mb-1.5">사업자등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="biz-reg-no"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={draftBizNo}
+                  onChange={e => setDraftBizNo(formatBizNo(e.target.value))}
+                  placeholder="000-00-00000"
+                  maxLength={12}
+                  className={`${INPUT_BASE} tabular-nums`}
+                />
+              </div>
+
+              {/* 상호 */}
+              <div>
+                <label htmlFor="biz-name" className="block text-sm font-medium text-gray-700 mb-1.5">상호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="biz-name"
+                  type="text"
+                  value={draftBizName}
+                  onChange={e => setDraftBizName(e.target.value)}
+                  placeholder="예: 홍길동 마케팅"
+                  className={INPUT_BASE}
+                />
+              </div>
+
+              {/* 대표자명 */}
+              <div>
+                <label htmlFor="biz-ceo" className="block text-sm font-medium text-gray-700 mb-1.5">대표자명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="biz-ceo"
+                  type="text"
+                  autoComplete="name"
+                  value={draftCeoName}
+                  onChange={e => setDraftCeoName(e.target.value)}
+                  placeholder="홍길동"
+                  className={INPUT_BASE}
+                />
+              </div>
+
+              {/* 전화번호 */}
+              <div>
+                <label htmlFor="biz-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
+                <input
+                  id="biz-phone"
+                  type="tel"
+                  value={draftBizPhone}
+                  onChange={e => setDraftBizPhone(formatPhone(e.target.value))}
+                  placeholder="010-0000-0000"
+                  maxLength={13}
+                  className={`${INPUT_BASE} tabular-nums`}
+                />
+              </div>
+
+              {/* 은행 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <CustomSelect
+                  value={draftBank}
+                  onChange={v => { setDraftBank(v); setHolderVerified(null) }}
+                  options={BANK_OPTIONS}
+                  placeholder="은행 선택"
+                  className="w-full"
+                />
+              </div>
+
+              {/* 계좌번호 + 조회 */}
+              <div>
+                <label htmlFor="biz-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <div className="flex gap-2">
+                  <input
+                    id="biz-account"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={draftAccount}
+                    onChange={e => handleAccountNumberChange(e.target.value)}
+                    placeholder="숫자만 입력 (예: 123-456-789012)"
+                    maxLength={20}
+                    className={`${INPUT_BASE} tabular-nums flex-1`}
+                  />
+                  <button
+                    onClick={handleHolderLookup}
+                    disabled={holderChecking || !draftAccount}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+                  >
+                    {holderChecking ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" /> : <Search size={13} />}
+                    조회
+                  </button>
+                </div>
+              </div>
+
+              {/* 예금주명 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">예금주명</label>
+                {holderVerified ? (
+                  <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
+                    <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-brand-green-text">예금주 확인됨</p>
+                      <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 px-1">
+                    {holderChecking ? '예금주 조회 중...' : '계좌번호 입력 후 조회하면 자동으로 확인돼요'}
+                  </p>
+                )}
+              </div>
+
+              {/* 세금계산서 이메일 */}
+              <div>
+                <label htmlFor="biz-email" className="block text-sm font-medium text-gray-700 mb-1.5">세금계산서 발행/수신 이메일 <span className="text-red-400" aria-label="필수">*</span></label>
+                <input
+                  id="biz-email"
+                  type="email"
+                  autoComplete="email"
+                  value={draftBizEmail}
+                  onChange={e => setDraftBizEmail(e.target.value)}
+                  placeholder="example@company.com"
+                  className={INPUT_BASE}
+                />
+              </div>
+
+              {/* 주민등록번호 (optional) */}
+              <div>
+                <label htmlFor="biz-resident" className="block text-sm font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-gray-400 font-normal">(선택)</span></label>
+                <input
+                  id="biz-resident"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={draftBizResidentNo}
+                  onChange={e => setDraftBizResidentNo(formatResidentNo(e.target.value))}
+                  placeholder="000000-0000000"
+                  maxLength={14}
+                  className={`${INPUT_BASE} tabular-nums`}
+                />
+                <p className="text-xs text-gray-400 mt-1">원천징수 방식 확정 시 활성화됩니다</p>
+              </div>
+            </>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-1">
             <button
               onClick={() => { setBankModalOpen(false); resetBankModal() }}
               className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

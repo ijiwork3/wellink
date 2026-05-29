@@ -5,7 +5,8 @@ import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
 import { auth, AlertModal } from '@wellink/ui'
-import { ArrowLeft, Menu, X } from 'lucide-react'
+import { ArrowLeft, Menu, X, Bell } from 'lucide-react'
+import { useUnreadCount } from '../services/notifications'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -22,6 +23,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const navigate = useNavigate()
+  const unreadCount = useUnreadCount()
   useEscToClose(drawerOpen, () => setDrawerOpen(false))
 
   const confirmLogout = () => setLogoutConfirm(true)
@@ -70,7 +72,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 aria-label="WELLINK AI 홈으로"
                 className="text-base font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                WELLINK
+                WELLINK<span className="text-brand-green">.AI</span>
               </button>
               <button
                 onClick={() => document.dispatchEvent(new Event('qa-toggle'))}
@@ -80,7 +82,24 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 인플루언서
               </button>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {/* 알림 벨 */}
+              <button
+                onClick={() => navigate('/notifications')}
+                aria-label={unreadCount > 0 ? `알림 ${unreadCount}건 미읽음` : '알림'}
+                className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <Bell size={20} className="text-gray-600" />
+                {unreadCount > 0 && (
+                  <span
+                    className="absolute top-1.5 right-1.5 w-4 h-4 bg-brand-green rounded-full flex items-center justify-center text-white font-bold leading-none"
+                    style={{ fontSize: '9px' }}
+                    aria-hidden="true"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
               <button
                 onClick={confirmLogout}
                 className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -133,7 +152,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           >
             <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-bold text-gray-900">WELLINK</span>
+                <span className="text-base font-bold text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
                 <button
                   onClick={() => { setDrawerOpen(false); document.dispatchEvent(new Event('qa-toggle')) }}
                   aria-label="QA 패널 열기"

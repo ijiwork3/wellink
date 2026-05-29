@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Heart, UserCircle, Link2, Search, Wallet } from 'lucide-react'
+import { LayoutDashboard, Heart, UserCircle, Link2, Search, Wallet, Bell } from 'lucide-react'
+import { useUnreadCount } from '../services/notifications'
 
 const browseItem = { label: '캠페인 탐색', path: '/campaigns/browse', icon: Search }
 
@@ -10,6 +11,7 @@ const sections = [
       { label: '내 캠페인', path: '/campaigns/my', icon: LayoutDashboard },
       { label: '관심 캠페인', path: '/campaigns/favorites', icon: Heart },
       { label: '정산', path: '/settlement', icon: Wallet },
+      { label: '알림', path: '/notifications', icon: Bell },
     ],
   },
   {
@@ -24,6 +26,7 @@ const sections = [
 export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
+  const unreadCount = useUnreadCount()
 
   const navItemClass = (isActive: boolean) =>
     `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
@@ -71,6 +74,11 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
                   >
                     <Icon size={15} className="flex-shrink-0" />
                     {item.label}
+                    {item.path === '/notifications' && unreadCount > 0 && (
+                      <span className="ml-auto w-4 h-4 bg-brand-green rounded-full flex items-center justify-center text-white font-bold shrink-0" style={{ fontSize: '9px' }} aria-hidden="true">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
                   </button>
                 </li>
               )
