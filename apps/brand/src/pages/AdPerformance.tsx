@@ -11,7 +11,7 @@ import useAiRefresh from '../hooks/useAiRefresh'
 import { useDeviceMode } from '../qa-mockup-kit'
 import {
   ALL_ACTIVE_CAMPAIGNS,
-  ALL_CLOSED_CAMPAIGNS,
+  ALL_PAUSED_CAMPAIGNS,
   kpiByPeriod,
   CHART_DATA_BY_PERIOD,
   CHART_PERIOD_LABEL,
@@ -34,9 +34,8 @@ export default function AdPerformance() {
   const isDesktop = useDeviceMode() === 'desktop'
   const [period, setPeriod] = useState<'일간' | '주간' | '월간' | '연간'>('월간')
   const [dateOffset, setDateOffset] = useState(0)
-  // 진행중/종료 상태 탭 — 'active' = 게재중+일시중지 / 'closed' = 종료 (정책 § 1-2)
-  // 일시중지 별도 탭 정책은 Tier 0 결정 항목 — 현재는 진행중에 포함
-  const [statusTab, setStatusTab] = useState<'active' | 'closed'>('active')
+  // 게재중/일시정지 상태 탭 — 'active' = 게재중 / 'paused' = 일시정지 (원본 AdPerformance 동등)
+  const [statusTab, setStatusTab] = useState<'active' | 'paused'>('active')
   const [campaignPage, setCampaignPage] = useState(1)
   const CAMPAIGN_PAGE_SIZE = 10
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(
@@ -276,7 +275,7 @@ export default function AdPerformance() {
         />
       </div>
 
-      {/* Meta 광고 캠페인별 성과 — 진행중/종료 탭 + 캠페인 → 광고세트 → 소재 3단계 계층 (원본 보강) */}
+      {/* Meta 광고 캠페인별 성과 — 게재중/일시정지 탭 + 캠페인 → 광고세트 → 소재 3단계 계층 (원본 보강) */}
       <CampaignList
         statusTab={statusTab}
         setStatusTab={setStatusTab}
@@ -492,8 +491,8 @@ export default function AdPerformance() {
 // ── 캠페인 리스트 (캠페인 → 광고세트 → 소재 3단계 펼침/접힘) ─────────────────
 // 본 컴포넌트는 AdPerformance 메인의 캠페인 영역 IIFE를 추출. 페이지 외 재사용 의도 없음.
 interface CampaignListProps {
-  statusTab: 'active' | 'closed'
-  setStatusTab: (v: 'active' | 'closed') => void
+  statusTab: 'active' | 'paused'
+  setStatusTab: (v: 'active' | 'paused') => void
   isZero: boolean
   campaignPage: number
   setCampaignPage: (n: number) => void
@@ -510,7 +509,7 @@ function CampaignList({
 }: CampaignListProps) {
   // visibleList useMemo — conditional 배열의 reference 안정화 (avgRoas 의존성 안전)
   const visibleList = useMemo(
-    () => isZero ? [] : (statusTab === 'active' ? ALL_ACTIVE_CAMPAIGNS : ALL_CLOSED_CAMPAIGNS),
+    () => isZero ? [] : (statusTab === 'active' ? ALL_ACTIVE_CAMPAIGNS : ALL_PAUSED_CAMPAIGNS),
     [isZero, statusTab]
   )
   const totalPages = Math.max(1, Math.ceil(visibleList.length / pageSize))
@@ -539,20 +538,20 @@ function CampaignList({
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
         </div>
       </div>
-      {/* 상태 탭 — 진행중 / 종료 */}
+      {/* 상태 탭 — 게재중 / 일시정지 */}
       <div className="flex gap-2 px-5 py-3 border-b border-gray-50">
         <button type="button"
           onClick={() => { setStatusTab('active'); setCampaignPage(1); setExpandedCampaign(null) }}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
             statusTab === 'active' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
-        >진행중 {ALL_ACTIVE_CAMPAIGNS.length}</button>
+        >게재중 {ALL_ACTIVE_CAMPAIGNS.length}</button>
         <button type="button"
-          onClick={() => { setStatusTab('closed'); setCampaignPage(1); setExpandedCampaign(null) }}
+          onClick={() => { setStatusTab('paused'); setCampaignPage(1); setExpandedCampaign(null) }}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
-            statusTab === 'closed' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            statusTab === 'paused' ? 'bg-brand-green-bg text-brand-green-text' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
-        >종료 {ALL_CLOSED_CAMPAIGNS.length}</button>
+        >일시정지 {ALL_PAUSED_CAMPAIGNS.length}</button>
       </div>
       {pagedCampaigns.length === 0 ? (
         <div className="py-12 text-center text-base text-gray-400">
