@@ -632,7 +632,7 @@ export default function Settlement() {
                 <label className="flex items-start gap-2.5 cursor-pointer">
                   <CustomCheckbox
                     checked={draftPrivacyAgree}
-                    onChange={e => setDraftPrivacyAgree(e.target.checked)}
+                    onChange={() => setDraftPrivacyAgree(v => !v)}
                     label="개인정보 수집·이용 동의 (필수)"
                   />
                 </label>
