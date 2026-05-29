@@ -29,9 +29,9 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = [
   { id: 5,  type: 'content',    title: '콘텐츠가 반려됐어요',             desc: "'운동복 신제품 리뷰' 콘텐츠가 반려됐습니다. 사유: 해시태그 누락. 수정 후 재제출해 주세요.",   time: '2시간 전', link: '/campaigns/my' },
 
   // ── 메시지 ──
-  { id: 6,  type: 'message',    title: 'SMILEATO 광고주가 캠페인을 제안했습니다', desc: "'헬스 보충제 신제품 캠페인'에 참여를 제안했습니다. 조건을 확인해 보세요.",          time: '5분 전',   link: '/campaigns/browse' },
-  { id: 7,  type: 'message',    title: '요가랩 광고주가 캠페인을 제안했습니다',   desc: "'여름 요가웨어 캠페인'에 참여를 제안했습니다.",                                         time: '1시간 전', link: '/campaigns/browse' },
-  { id: 8,  type: 'message',    title: '글로우랩 광고주가 캠페인을 제안했습니다', desc: "'가을 뷰티 캠페인'에 초대됐습니다. 리워드 조건을 확인해 보세요.",                      time: '2일 전',   link: '/campaigns/browse' },
+  { id: 6,  type: 'message',    title: 'SMILEATO 광고주가 캠페인을 제안했습니다', desc: "'헬스 보충제 신제품 캠페인'에 참여를 제안했습니다. 조건을 확인해 보세요.",          time: '5분 전',   link: '/campaigns/1' },
+  { id: 7,  type: 'message',    title: '요가랩 광고주가 캠페인을 제안했습니다',   desc: "'여름 요가웨어 캠페인'에 참여를 제안했습니다.",                                         time: '1시간 전', link: '/campaigns/1' },
+  { id: 8,  type: 'message',    title: '글로우랩 광고주가 캠페인을 제안했습니다', desc: "'가을 뷰티 캠페인'에 초대됐습니다. 리워드 조건을 확인해 보세요.",                      time: '2일 전',   link: '/campaigns/1' },
 
   // ── 정산 ──
   { id: 9,  type: 'settlement', title: '유가시딩 정산 예정',              desc: "'봄 요가 프로모션' (유가시딩) 정산이 3일 후 지급 예정이에요. 계좌 정보를 확인해 주세요.",   time: '방금 전',  link: '/settlement' },
@@ -44,6 +44,9 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = [
   { id: 14, type: 'system',     title: '정기 점검 안내',                  desc: "2026년 6월 1일 새벽 2시~4시 정기 점검이 예정되어 있습니다. 해당 시간대 서비스 이용이 제한됩니다.", time: '2일 전', link: null },
   { id: 15, type: 'system',     title: '약관 변경 안내',                  desc: "개인정보 처리 방침이 2026년 6월 1일부로 변경됩니다. 변경 내용을 확인해 주세요.",             time: '3일 전',   link: null },
   { id: 16, type: 'system',     title: '서비스 이용 관련 안내',           desc: "웰링크 서비스 이용 정책이 업데이트됐습니다. 확인해 주세요.",                                  time: '1주 전',   link: null },
+
+  // ── 제안 (스펙 외 추가) ──
+  { id: 17, type: 'campaign',   title: '캠페인에 선정되지 않았습니다',     desc: "신청하신 '요가 스트레칭 밴드' 캠페인에 선정되지 않았습니다.",                                 time: '4일 전',   link: '/campaigns/my' },
 ]
 
 // 처음 6건은 unread (id 1~6)

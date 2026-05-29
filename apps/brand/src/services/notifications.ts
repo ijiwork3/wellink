@@ -25,11 +25,13 @@ const CAMPAIGN_TITLES = [
   '캠페인이 삭제됐습니다',
   '캠페인 모집이 마감됐습니다',
   '인플루언서 선정 마감 3일 전입니다',
+  '콘텐츠가 제출됐습니다',
 ]
 const CAMPAIGN_DESCS = [
   "'여름 맞이 챌린지' 캠페인이 삭제됐습니다.",
   "'봄 요가 프로모션' 캠페인 모집이 마감됐습니다.",
   "'비건 신제품 론칭' 캠페인의 인플루언서 선정 마감이 3일 남았습니다. 지금 선정하세요.",
+  "@yoga_jimin 님이 '봄 요가 프로모션' 캠페인 콘텐츠를 제출했습니다. 검수해 주세요.",
 ]
 const PAYMENT_TITLES = [
   '결제가 완료됐습니다',
@@ -80,6 +82,7 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 },
     title === '결제에 실패했습니다' ? '/payment/method'
     : title === '결제가 완료됐습니다' || title === '결제 예정 3일 전' ? '/subscription'
     : title === '인플루언서 선정 마감 3일 전입니다' ? '/campaigns/1?qa=tab-applicants'
+    : title === '콘텐츠가 제출됐습니다' ? '/campaigns/1?qa=tab-applicants'
     : type === 'campaign' ? '/campaigns/1'
     : type === 'message'  ? '/campaigns/1?qa=tab-applicants'
     : null
@@ -132,6 +135,10 @@ export function markAsRead(id: number) {
   const ids = loadReadIds()
   ids.add(id)
   saveReadIds(ids)
+}
+
+export function deleteNotification(_id: number) {
+  // mock: no-op (실서비스에서 API 연동)
 }
 
 export function markAllAsRead(allIds: number[] = INITIAL_UNREAD_IDS) {

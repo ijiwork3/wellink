@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, Settings } from 'lucide-react'
+import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, Settings, X } from 'lucide-react'
 import {
   useToast, ErrorState, Pagination,
   Tabs, EmptyState, SkeletonRow, PageHeader, Toggle,
@@ -8,7 +8,7 @@ import {
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import {
-  getVisibleNotifications, isUnread, markAsRead, markAllAsRead, useReadIds,
+  getVisibleNotifications, isUnread, markAsRead, markAllAsRead, deleteNotification, useReadIds,
   type NotificationItem, type NotificationType,
 } from '../services/notifications'
 
@@ -47,9 +47,10 @@ export default function Notifications() {
   // 알림 데이터·읽음 상태는 글로벌 store에서 (Sidebar dot과 동기화)
   // 구독 여부와 무관히 모든 카테고리(시스템·결제 포함) 동일 노출 — 클라이언트 결정
   const readIds = useReadIds()
+  const [deletedIds, setDeletedIds] = useState<Set<number>>(new Set())
   const notifications: NotificationItem[] = useMemo(
-    () => qa === 'empty' ? [] : getVisibleNotifications(true),
-    [qa]
+    () => (qa === 'empty' ? [] : getVisibleNotifications(true)).filter(n => !deletedIds.has(n.id)),
+    [qa, deletedIds]
   )
 
   const [filter, setFilter] = useState<FilterValue>(initialFilter)
@@ -114,6 +115,13 @@ export default function Notifications() {
   const handleMarkAllRead = () => {
     markAllAsRead(notifications.map(n => n.id))
     showToast('모든 알림을 읽음 처리했습니다.', 'success')
+  }
+
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    deleteNotification(id)
+    setDeletedIds(prev => new Set(prev).add(id))
+    showToast('알림을 삭제했습니다.', 'success')
   }
 
   return (
@@ -185,10 +193,10 @@ export default function Notifications() {
               const avatar = TYPE_AVATAR[item.type]
               const unread = isUnread(item.id, readIds)
               return (
-                <li key={item.id}>
+                <li key={item.id} className="group relative">
                   <button type="button"
                     onClick={() => handleNotificationClick(item)}
-                    className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 ${
+                    className={`p-4 @sm:p-5 flex items-start gap-3 transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50 pr-10 ${
                       unread ? 'bg-brand-green-bg hover:bg-brand-green-border/40' : 'hover:bg-gray-50/50'
                     }`}
                     aria-label={`${unread ? '미읽음 ' : ''}${item.title} — ${item.time}`}
@@ -206,10 +214,19 @@ export default function Notifications() {
                       <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
                     </div>
                     {item.link && (
-                      <div className="text-gray-400 shrink-0 self-center" aria-hidden="true">
+                      <div className="text-gray-400 shrink-0 self-center mr-1" aria-hidden="true">
                         <ChevronRight size={16} />
                       </div>
                     )}
+                  </button>
+                  {/* 개별 삭제 버튼 */}
+                  <button
+                    type="button"
+                    onClick={(e) => handleDelete(e, item.id)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-gray-300 opacity-0 group-hover:opacity-100 hover:text-gray-500 hover:bg-gray-100 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    aria-label="알림 삭제"
+                  >
+                    <X size={14} />
                   </button>
                 </li>
               )
