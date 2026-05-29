@@ -120,7 +120,7 @@ export default function Signup() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         {/* 로고 */}
         <div className="text-center mb-7">
-          <h1 className="text-2xl font-black text-brand-green-text">WELLINK AI</h1>
+          <h1 className="text-2xl font-black text-gray-900">WELLINK<span className="text-brand-green">.AI</span></h1>
           <p className="text-sm text-gray-500 mt-1">인플루언서 포털 회원가입</p>
         </div>
 

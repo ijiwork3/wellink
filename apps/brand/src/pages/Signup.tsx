@@ -131,8 +131,7 @@ export default function Signup() {
         {/* 로고 */}
         <div className="text-center mb-7">
           <div className="flex items-center justify-center gap-1.5 mb-1">
-            <h1 className="text-3xl font-black text-brand-green-text">WELLINK</h1>
-            <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full leading-none">AI</span>
+            <h1 className="text-3xl font-black text-gray-900">WELLINK<span className="text-brand-green">.AI</span></h1>
           </div>
           <p className="text-base text-gray-500">광고주 포털 회원가입</p>
         </div>

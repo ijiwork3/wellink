@@ -6,9 +6,9 @@ import { CheckCircle } from 'lucide-react'
  *  TODO(BE): 토스페이먼츠 API 키 확정 후 fetch('/api/payments/confirm') 검증 로직 연결.
  */
 const PLAN_NAME_MAP: Record<string, string> = {
-  focus:      'Focus',
-  scale:      'Scale',
-  enterprise: 'Enterprise',
+  focus:    'Focus',
+  scale:    'Scale',
+  infinite: 'Infinite',
 }
 
 export default function PaymentSuccess() {

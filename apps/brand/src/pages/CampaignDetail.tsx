@@ -298,17 +298,16 @@ const INFLUENCER_POOL = [
   { name: '강태현', id: 'taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
   { name: '임소희', id: 'sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
 ]
-type ContentPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+type ContentPlatform = '인스타그램' | '유튜브' | '블로그'
 type ContentSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
-// 정책 §8.3 — 플랫폼·서브타입 조합. 네이버 블로그·틱톡은 서브타입 없음(null).
+// 플랫폼·서브타입 조합. 블로그는 서브타입 없음(null).
 const PLATFORM_SUBTYPES: Array<{ platform: ContentPlatform; sub: ContentSubType | null }> = [
   { platform: '인스타그램', sub: '피드' },
   { platform: '인스타그램', sub: '릴스' },
   { platform: '인스타그램', sub: '스토리' },
   { platform: '유튜브',     sub: '영상' },
   { platform: '유튜브',     sub: '쇼츠' },
-  { platform: '네이버 블로그', sub: null },
-  { platform: '틱톡',       sub: null },
+  { platform: '블로그',     sub: null },
 ]
 const STATUSES: ContentStatus[] = ['검수중', '승인', '승인', '승인', '반려']
 const CAPTION_TEMPLATES = [
@@ -1134,7 +1133,7 @@ export default function CampaignDetail() {
             return dday.label
           })()} />
           <KpiCell label="제공 상품" value={meta.productName} small />
-          <KpiCell label="리워드" value={fmtKRW(meta.productPrice)} />
+          <KpiCell label="추가 리워드" value={meta.rewardPoint > 0 ? fmtKRW(meta.rewardPoint) : '없음'} />
         </div>
       </div>
 
@@ -1972,7 +1971,7 @@ export default function CampaignDetail() {
               <CustomSelect
                 value={contentPlatform}
                 onChange={v => { setContentPlatform(v as typeof contentPlatform); setContentPage(1); setSelectedContents(new Set()) }}
-                options={(['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const).map(p => ({
+                options={(['전체', '인스타그램', '유튜브', '블로그'] as const).map(p => ({
                   label: p === '전체' ? '플랫폼 전체' : p,
                   value: p,
                 }))}
@@ -2041,7 +2040,6 @@ export default function CampaignDetail() {
                         <span className={`text-base px-2 py-1 rounded-full font-medium ${
                           c.platform === '인스타그램' ? 'bg-pink-500/90 text-white' :
                           c.platform === '유튜브' ? 'bg-red-500/90 text-white' :
-                          c.platform === '틱톡' ? 'bg-black/80 text-white' :
                           'bg-green-600/90 text-white'
                         }`}>{c.platform}</span>
                         {c.type && (
@@ -2515,40 +2513,38 @@ export default function CampaignDetail() {
             }
           >
             <div className="space-y-3">
-              {/* 썸네일 */}
-              <div className={`w-full h-40 rounded-xl ${dc.thumbnail} flex items-center justify-center`}>
-                <Image size={36} className="text-white/40" aria-hidden="true" />
+              {/* 썸네일 — 릴스/쇼츠는 9:16, 나머지는 1:1 */}
+              <div className="flex justify-center">
+                <div className={`${dc.type === '릴스' || dc.type === '쇼츠' ? 'aspect-[9/16] max-h-64' : 'aspect-square max-h-64'} w-full rounded-xl ${dc.thumbnail} flex items-center justify-center overflow-hidden`}>
+                  <Image size={36} className="text-white/40" aria-hidden="true" />
+                </div>
               </div>
-              {/* 인플루언서 + 배지 */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-semibold text-base shrink-0">
-                    {dc.influencer[0]}
-                  </div>
-                  <div className="leading-tight">
+              {/* 인플루언서 프로필 */}
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-lg shrink-0 ring-1 ring-gray-200">
+                  {dc.influencer[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-base font-bold text-gray-900">@{dc.instagramId}</p>
-                    <p className="text-base text-gray-500 mt-0.5">본명 · {dc.influencer}</p>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
+                      dc.platform === '인스타그램' ? 'bg-pink-100 text-pink-700' :
+                      dc.platform === '유튜브' ? 'bg-red-100 text-red-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>{dc.type ? `${dc.platform} · ${dc.type}` : dc.platform}</span>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
+                  </div>
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <p className="text-sm text-gray-500">{dc.influencer}</p>
+                    <p className="text-sm text-gray-400">제출 {dc.submittedAt}</p>
+                    {dc.viralScore > 0 && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        dc.viralScore >= 80 ? 'bg-green-100 text-green-700' :
+                        dc.viralScore >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
+                      }`}>바이럴 {dc.viralScore}점</span>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                  <span className={`text-base px-2.5 py-1 rounded-full font-medium ${
-                    dc.platform === '인스타그램' ? 'bg-pink-100 text-pink-700' :
-                    dc.platform === '유튜브' ? 'bg-red-100 text-red-700' :
-                    dc.platform === '틱톡' ? 'bg-gray-200 text-gray-800' :
-                    'bg-green-100 text-green-700'
-                  }`}>{dc.type ? `${dc.platform} · ${dc.type}` : dc.platform}</span>
-                  <span className={`text-base font-semibold px-2.5 py-1 rounded-full ${CONTENT_STATUS_STYLE[dcStatus]}`}>{dcStatus}</span>
-                </div>
-              </div>
-              {/* 제출일 + 바이럴 */}
-              <div className="flex items-center justify-between text-base text-gray-500">
-                <span>제출일 {dc.submittedAt}</span>
-                {dc.viralScore > 0 && (
-                  <span className={`font-bold px-2.5 py-1 rounded-full ${
-                    dc.viralScore >= 80 ? 'bg-green-100 text-green-700' :
-                    dc.viralScore >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
-                  }`}>바이럴 {dc.viralScore}점</span>
-                )}
               </div>
               {/* 지표 — 모바일 3×2, 태블릿+ 한 줄 6열 */}
               <div className="grid grid-cols-3 @sm:grid-cols-6 gap-y-2 gap-x-1 text-center bg-gray-50 rounded-xl py-2.5 px-2">
@@ -2618,20 +2614,37 @@ export default function CampaignDetail() {
       >
         {canDownloadContent ? (
           // 구독자 — Library 건당 결제 패턴과 동일
-          <div className="space-y-3">
-            <p className="text-base text-gray-600">
-              콘텐츠 다운로드 단가 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>/건 (인플루언서에게 지급)
-            </p>
-            <div className="space-y-2 text-base bg-gray-50 rounded-xl p-4">
-              <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">선택한 콘텐츠</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">건수</span><span className="font-medium">{selectedContents.size}건</span></div>
-              <div className="flex justify-between border-t border-gray-200 pt-2 mt-1">
-                <span className="text-gray-500">결제 금액</span>
-                <span className="font-semibold text-gray-900">₩{(PRICE_PER_DOWNLOAD * selectedContents.size).toLocaleString()}</span>
+          <div className="space-y-4">
+            {/* 단가 안내 */}
+            <div className="flex items-center gap-3 bg-brand-green-bg border border-brand-green-border rounded-xl px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-500">콘텐츠 다운로드 단가</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">₩{PRICE_PER_DOWNLOAD.toLocaleString()}<span className="text-base font-medium text-gray-500"> / 건</span></p>
+              </div>
+              <p className="text-xs text-gray-400 text-right whitespace-nowrap">인플루언서에게 지급</p>
+            </div>
+
+            {/* 내역 */}
+            <div className="rounded-xl border border-gray-100 overflow-hidden text-base">
+              <div className="flex justify-between items-center px-4 py-3 bg-gray-50">
+                <span className="text-gray-500">다운로드 대상</span>
+                <span className="font-medium text-gray-900">선택한 콘텐츠</span>
+              </div>
+              <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100">
+                <span className="text-gray-500">건수</span>
+                <span className="font-medium text-gray-900">{selectedContents.size}건</span>
+              </div>
+              <div className="flex justify-between items-center px-4 py-3.5 border-t border-gray-200 bg-gray-50">
+                <span className="font-semibold text-gray-700">결제 금액</span>
+                <span className="text-lg font-bold text-gray-900">₩{(PRICE_PER_DOWNLOAD * selectedContents.size).toLocaleString()}</span>
               </div>
             </div>
-            <p className="text-base text-gray-500">등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지 결제 내역에서 확인할 수 있습니다.</p>
-            <p className="text-base text-gray-500">다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+
+            {/* 안내 문구 */}
+            <div className="space-y-1.5 text-sm text-gray-400">
+              <p>· 등록된 기본 결제 수단으로 결제됩니다. 결제 내역은 마이페이지에서 확인할 수 있습니다.</p>
+              <p>· 다운로드한 콘텐츠는 계약된 SNS 채널 및 광고 활용 범위 내에서만 사용 가능합니다.</p>
+            </div>
           </div>
         ) : downloadStep === 'plan-select' ? (
           <div className="space-y-4">

@@ -12,7 +12,7 @@ html, body {
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
   background: #FAFAFA;
   color: #111827;
 }

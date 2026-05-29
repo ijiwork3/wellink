@@ -65,7 +65,7 @@ export default function Login() {
     <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-brand-green-bg to-white p-4">
       {/* 로고 */}
       <div className="fixed top-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-10">
-        <span className="text-base font-bold tracking-tight text-brand-green-text">WELLINK AI</span>
+        <span className="text-base font-bold tracking-tight text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
         <button
           onClick={() => navigate('/signup')}
           className="text-sm px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

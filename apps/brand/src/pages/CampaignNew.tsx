@@ -12,14 +12,13 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-const PLATFORMS = ['인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
+const PLATFORMS = ['인스타그램', '유튜브', '블로그'] as const
 type Platform = typeof PLATFORMS[number]
 
 const POST_TYPE_MAP: Record<Platform, string[]> = {
-  '인스타그램':    ['피드', '릴스', '스토리'],
-  '유튜브':        ['영상', '쇼츠'],
-  '네이버 블로그': [],
-  '틱톡':          [],
+  '인스타그램': ['피드', '릴스', '스토리'],
+  '유튜브':     ['영상', '쇼츠'],
+  '블로그':     [],
 }
 
 const CATEGORIES = ['맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아']
@@ -383,7 +382,7 @@ export default function CampaignNew() {
               <Input
                 value={form.downloadPrice ? Number(form.downloadPrice).toLocaleString('ko-KR') : ''}
                 onChange={v => set('downloadPrice', v.replace(/[^0-9]/g, ''))}
-                placeholder="0 (다운로드 비활성)"
+                placeholder="0"
                 className="text-right pr-9"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">원</span>

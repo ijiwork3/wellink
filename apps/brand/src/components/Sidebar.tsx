@@ -76,7 +76,7 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
           aria-label="홈으로 이동"
         >
           <div className="flex items-center gap-1.5">
-            <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
+            <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
             <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full leading-none">광고주</span>
           </div>
         </button>

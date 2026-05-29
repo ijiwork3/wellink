@@ -273,7 +273,7 @@ export default function ViralMetrics() {
       )}
 
       {/* KPI 카드 7개 — 총조회수·총좋아요·총댓글·총참여·평균조회수·총공유·총저장 */}
-      <div className="grid grid-cols-1 @xl:grid-cols-2 @3xl:grid-cols-4 @5xl:grid-cols-7 gap-3 @sm:gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-3 @sm:gap-4">
         <KPICard
           title="총 조회수 (릴스)"
           value={isZero ? '--' : fmtNumber(reelTotalViews)}

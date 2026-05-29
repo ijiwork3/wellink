@@ -213,6 +213,13 @@ function getQuickItems(pathname: string): StatusItem[] {
     { label: '게시물 0', path: '/media?qa=no-posts' },
     err('/media'),
   ]
+  if (pathname === '/notifications') return [
+    { label: '기본 (전체)', path: '/notifications' },
+    { label: '읽지않음만', path: '/notifications?qa=unread-only' },
+    { label: '빈 상태',    path: '/notifications?qa=empty' },
+    { label: '로딩',       path: '/notifications?qa=loading' },
+    err('/notifications'),
+  ]
   // 캠페인 신청 (/campaigns/:id/apply)
   if (pathname.endsWith('/apply')) {
     const base = pathname.replace('/apply', '')

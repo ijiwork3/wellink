@@ -52,8 +52,7 @@ export default function Login() {
           aria-label="홈으로"
           className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
         >
-          <span className="text-xl font-bold tracking-tight text-gray-900">WELLINK</span>
-          <span className="text-sm font-bold bg-brand-green text-white px-2 py-1 rounded-full">AI</span>
+          <span className="text-xl font-bold tracking-tight text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
         </button>
         <div className="flex items-center gap-2">
           <button type="button"

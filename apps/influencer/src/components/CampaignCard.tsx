@@ -52,6 +52,12 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
     else navigate(`/campaigns/${campaign.id}`)
   }
 
+  const benefitTags = [
+    (campaign.rewardAmount ?? 0) > 0 ? '제품 협찬' : null,
+    (campaign.activityFee ?? 0) > 0 ? '활동비' : null,
+    (campaign.downloadPrice ?? 0) > 0 ? '콘텐츠 수익' : null,
+  ].filter(Boolean)
+
   const rewardText = campaign.rewardAmount
     ? `${campaign.rewardAmount.toLocaleString('ko-KR')} 상당 혜택`
     : campaign.reward ?? '혜택 정보 준비 중'
@@ -74,18 +80,22 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
           className="w-full h-full object-cover"
           onError={e => { e.currentTarget.src = getPlaceholderDataUri(campaign.id, campaign.brand) }}
         />
+        {applied && (
+          <span className="absolute top-3 left-3 z-10 text-xs font-semibold px-2.5 py-1 rounded-full bg-black/40 text-white backdrop-blur-sm whitespace-nowrap">신청완료</span>
+        )}
         {showLike && (
           <button
-            className="absolute top-3 right-3 z-10 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="absolute top-2.5 right-2.5 z-10 w-7 h-7 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             onClick={handleLike}
             aria-pressed={liked}
             aria-label={liked ? '북마크 해제' : '북마크'}
           >
             <Heart
-              size={17}
+              size={22}
               fill={liked ? SEMANTIC_COLORS.heart : 'none'}
-              color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive}
-              style={{ transform: heartAnim ? 'scale(1.35)' : 'scale(1)', transition: 'transform 0.15s ease-out' }}
+              color={liked ? SEMANTIC_COLORS.heart : 'rgba(255,255,255,0.85)'}
+              strokeWidth={liked ? 0 : 2}
+              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))', transform: heartAnim ? 'scale(1.35)' : 'scale(1)', transition: 'transform 0.15s ease-out' }}
             />
           </button>
         )}
@@ -94,7 +104,8 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
       {/* 콘텐츠 */}
       <div className="p-4">
         {/* D-day + 타입 배지 — 원본 CampaignList.tsx L271-292 */}
-        <div className="flex items-center gap-2 mb-2 flex-wrap">
+        {/* 1행: 캠페인 메타 */}
+        <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${ddayBgClass}`}>
             {ddayText}
           </span>
@@ -104,24 +115,18 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
               ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">방문형</span>
               : null
           }
-          {(campaign.rewardAmount ?? 0) > 0 && (
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">제품 협찬</span>
-          )}
-          {(campaign.activityFee ?? 0) > 0 && (
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
-          )}
-          {applied && (
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
-              신청완료
-            </span>
-          )}
         </div>
 
         {/* 제목 — 원본 CampaignList.tsx L296-298 */}
         <h3 className="text-sm font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{campaign.name}</h3>
 
-        {/* 리워드 — 원본 CampaignList.tsx L301-305: "N 상당 혜택" 텍스트 */}
-        <p className="text-sm text-gray-500 truncate mb-3">{rewardText}</p>
+        {/* 혜택 유형 + 리워드 — benefitTags는 텍스트로, rewardText는 금액 */}
+        <div className="mb-3">
+          {benefitTags.length > 0 && (
+            <p className="text-xs text-gray-400 mb-0.5">{(benefitTags as string[]).join(' · ')}</p>
+          )}
+          <p className="text-sm text-gray-500 truncate">{rewardText}</p>
+        </div>
 
         {/* 하단: 모집인원 + 플랫폼 — 원본 CampaignList.tsx L308-322 */}
         <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-gray-100">

@@ -273,9 +273,7 @@ export default function CampaignDetailContent({
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
                     )}
                     {(campaign.downloadPrice ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 whitespace-nowrap">
-                        다운로드 수익 {(campaign.downloadPrice!).toLocaleString('ko-KR')}원/건
-                      </span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 whitespace-nowrap">콘텐츠 수익</span>
                     )}
                   </div>
                   <p className="text-gray-500 text-sm md:text-base break-keep">
@@ -313,17 +311,31 @@ export default function CampaignDetailContent({
                   )}
 
                   {/* 제공 내역 */}
-                  {campaign.productDetail && (
+                  {(campaign.productDetail || (campaign.rewardAmount ?? 0) > 0 || (campaign.activityFee ?? 0) > 0 || (campaign.downloadPrice ?? 0) > 0) && (
                     <section>
                       <h3 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
                         <GiftSvgIcon />
                         제공 내역
                       </h3>
                       <div className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
-                        <div className="p-6">
-                          <p className="text-base text-gray-700 whitespace-pre-line break-keep leading-relaxed">
-                            {campaign.productDetail}
-                          </p>
+                        <div className="p-6 space-y-1.5">
+                          {(campaign.rewardAmount ?? 0) > 0 && (
+                            <p className="text-base text-gray-700">제품 협찬 {(campaign.rewardAmount!).toLocaleString('ko-KR')}원 상당</p>
+                          )}
+                          {(campaign.activityFee ?? 0) > 0 && (
+                            <p className="text-base text-gray-700">활동비 {(campaign.activityFee!).toLocaleString('ko-KR')}원</p>
+                          )}
+                          {(campaign.downloadPrice ?? 0) > 0 && (
+                            <p className="text-base text-gray-700">콘텐츠 수익 건당 {(campaign.downloadPrice!).toLocaleString('ko-KR')}원</p>
+                          )}
+                          {campaign.productDetail && (campaign.rewardAmount ?? 0) + (campaign.activityFee ?? 0) + (campaign.downloadPrice ?? 0) > 0 && (
+                            <div className="pt-3 mt-3 border-t border-gray-200" />
+                          )}
+                          {campaign.productDetail && (
+                            <p className="text-base text-gray-700 whitespace-pre-line break-keep leading-relaxed">
+                              {campaign.productDetail}
+                            </p>
+                          )}
                         </div>
                         <div className="px-6 pb-6 space-y-1.5 text-sm text-gray-500">
                           <p>※ 제품은 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</p>
@@ -525,7 +537,7 @@ export default function CampaignDetailContent({
                       </div>
                     </div>
 
-                    <div className="pt-5">
+                    <div className="pt-5 space-y-4">
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-sm text-gray-500 whitespace-nowrap">모집 인원</span>
                         <div className="flex items-baseline gap-0.5">
@@ -533,6 +545,33 @@ export default function CampaignDetailContent({
                           <span className="text-sm text-gray-500">명</span>
                         </div>
                       </div>
+
+                      {(campaign.rewardAmount ?? 0) > 0 && (
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm text-gray-500 whitespace-nowrap">제품 협찬</span>
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                            {(campaign.rewardAmount ?? 0).toLocaleString('ko-KR')}원 상당
+                          </span>
+                        </div>
+                      )}
+
+                      {(campaign.activityFee ?? 0) > 0 && (
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm text-gray-500 whitespace-nowrap">활동비</span>
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                            {(campaign.activityFee ?? 0).toLocaleString('ko-KR')}원
+                          </span>
+                        </div>
+                      )}
+
+                      {(campaign.downloadPrice ?? 0) > 0 && (
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 수익</span>
+                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                            건당 {(campaign.downloadPrice ?? 0).toLocaleString('ko-KR')}원
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* 액션 버튼 (원본 CampaignSidebar mt-8 space-y-3) */}
