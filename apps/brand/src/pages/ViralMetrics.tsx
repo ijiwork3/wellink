@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Image, Info, Award, Megaphone, Zap, Eye, RotateCw, Clock, ThumbsUp, MessageCircle, Activity, Clapperboard } from 'lucide-react'
+import { Image, Info, Award, Megaphone, Zap, Eye, RotateCw, Clock, ThumbsUp, MessageCircle, Activity, Clapperboard, Share2, Bookmark } from 'lucide-react'
 import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, BRAND, CustomSelect, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
@@ -150,6 +150,8 @@ export default function ViralMetrics() {
   const reelAvgViews   = useMemo(() => reels.length > 0 ? Math.floor(reelTotalViews / reels.length) : 0, [reels, reelTotalViews])
   const totalLikes     = useMemo(() => allContent.reduce((s, c) => s + c.likes, 0), [allContent])
   const totalComments  = useMemo(() => allContent.reduce((s, c) => s + c.comments, 0), [allContent])
+  const totalShares     = useMemo(() => allContent.reduce((s, c) => s + c.shares, 0), [allContent])
+  const totalSaves      = useMemo(() => allContent.reduce((s, c) => s + c.saves, 0), [allContent])
   const totalEngagement = useMemo(() => allContent.reduce((s, c) => s + c.likes + c.comments + c.shares + c.saves, 0), [allContent])
 
   // 전날 대비 — 기간별 mock 성장률 (실연동 시 BE 응답)
@@ -270,9 +272,8 @@ export default function ViralMetrics() {
         </div>
       )}
 
-      {/* KPI 카드 5개 — 원본 ViralMetricsSection L1653-1705 (총조회수·총좋아요·총댓글·총참여·평균조회수).
-       *  좁은 폭에서 2열이면 KPI 카드 본문 텍스트가 깨지므로 1열을 @xl(576px)까지 유지. */}
-      <div className="grid grid-cols-1 @xl:grid-cols-2 @3xl:grid-cols-3 @5xl:grid-cols-5 gap-3 @sm:gap-4">
+      {/* KPI 카드 7개 — 총조회수·총좋아요·총댓글·총참여·평균조회수·총공유·총저장 */}
+      <div className="grid grid-cols-1 @xl:grid-cols-2 @3xl:grid-cols-4 @5xl:grid-cols-7 gap-3 @sm:gap-4">
         <KPICard
           title="총 조회수 (릴스)"
           value={isZero ? '--' : fmtNumber(reelTotalViews)}
@@ -301,6 +302,24 @@ export default function ViralMetrics() {
           tooltip="피드·릴스 멘션 콘텐츠의 댓글 합산"
         />
         <KPICard
+          title="총 공유"
+          value={isZero ? '--' : fmtNumber(totalShares)}
+          sub="모든 멘션 콘텐츠"
+          trend={growth.engagement}
+          trendLabel="전날 대비"
+          icon={<Share2 size={16} aria-hidden="true" />}
+          tooltip="피드·릴스 멘션 콘텐츠의 공유 합산"
+        />
+        <KPICard
+          title="총 저장"
+          value={isZero ? '--' : fmtNumber(totalSaves)}
+          sub="모든 멘션 콘텐츠"
+          trend={growth.engagement}
+          trendLabel="전날 대비"
+          icon={<Bookmark size={16} aria-hidden="true" />}
+          tooltip="피드·릴스 멘션 콘텐츠의 저장 합산"
+        />
+        <KPICard
           title="총 참여"
           value={isZero ? '--' : fmtNumber(totalEngagement)}
           sub="좋아요+댓글+공유+저장"
@@ -308,7 +327,7 @@ export default function ViralMetrics() {
           trendLabel="전날 대비"
           icon={<Activity size={16} aria-hidden="true" />}
           valueColor="text-brand-green-text"
-          tooltip="좋아요·댓글·공유·저장 합산 — 자생 확산 지표"
+          tooltip="좋아요·댓글·공유·저장 합산"
         />
         <KPICard
           title="평균 조회수 (릴스)"

@@ -5,7 +5,7 @@ import {
   TrendingUp, TrendingDown, ArrowRight, Search,
   BarChart3, Sparkles, Lock, AlertTriangle, X,
   User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent,
-  Eye, ThumbsUp, MessageCircle, Activity, Clapperboard
+  Eye, Activity, Clapperboard
 } from 'lucide-react'
 import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard, FloatingScrollChevrons, PageHeader, DateRangePicker, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -132,12 +132,10 @@ const AD_METRICS = [
   { label: '평균 CPC',     baseValue: 866,       fmt: (n: number) => `${Math.round(n).toLocaleString('ko-KR')}원`, trends: { 일간: -0.4, 주간: -1.2, 월간: -3.8, 연간: -9.0 } as Record<DatePeriod, number>, positive: false, icon: <Calculator size={14} aria-hidden="true" />, hint: '클릭 1회당 평균 광고 비용. 낮을수록 효율 우수.' },
 ] as const
 
-/* ── 바이럴 메트릭스 요약 mock — 원본 ViralMetricsSection L1653-1705 기준 5개 KPI ── */
+/* ── 바이럴 메트릭스 요약 — 총 참여(좋아요+댓글+공유+저장) 포함 핵심 3개 ── */
 const VIRAL_METRICS = [
   { label: '총 조회수(릴스)',   baseValue: 284000, fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 2.4, 주간: 6.1, 월간: 16.8, 연간: 42.0 } as Record<DatePeriod, number>, icon: <Eye size={14} aria-hidden="true" />,          hint: '릴스 콘텐츠가 사용자에게 도달한 총 조회수 (피드는 조회수 비공개)' },
-  { label: '총 좋아요',         baseValue: 12400,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.8, 주간: 5.2, 월간: 14.0, 연간: 36.0 } as Record<DatePeriod, number>, icon: <ThumbsUp size={14} aria-hidden="true" />,     hint: '피드·릴스 멘션 콘텐츠의 좋아요 합산' },
-  { label: '총 댓글',           baseValue: 1840,   fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.2, 주간: 3.8, 월간: 10.5, 연간: 28.0 } as Record<DatePeriod, number>, icon: <MessageCircle size={14} aria-hidden="true" />, hint: '피드·릴스 멘션 콘텐츠의 댓글 합산' },
-  { label: '총 참여',           baseValue: 14240,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.7, 주간: 4.9, 월간: 13.5, 연간: 34.0 } as Record<DatePeriod, number>, icon: <Activity size={14} aria-hidden="true" />,     hint: '좋아요·댓글 합산 (원본 기준)' },
+  { label: '총 참여',           baseValue: 21600,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.7, 주간: 4.9, 월간: 13.5, 연간: 34.0 } as Record<DatePeriod, number>, icon: <Activity size={14} aria-hidden="true" />,     hint: '좋아요·댓글·공유·저장 합산' },
   { label: '평균 조회수(릴스)', baseValue: 23600,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.5, 주간: 4.2, 월간: 11.8, 연간: 31.0 } as Record<DatePeriod, number>, icon: <Clapperboard size={14} aria-hidden="true" />, hint: '릴스 콘텐츠 1건당 평균 조회수' },
 ] as const
 
@@ -522,7 +520,7 @@ export default function Dashboard() {
             className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >더보기 <ArrowRight size={12} /></button>
         </div>
-        <div className="grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-3 @3xl:grid-cols-5 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4">
           {VIRAL_METRICS.map(m => {
             const ratio = offsetRatio(dateOffset, seedOf(m.label))
             return (
