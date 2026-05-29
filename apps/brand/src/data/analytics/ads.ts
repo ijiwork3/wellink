@@ -147,8 +147,8 @@ const buildCampaignHierarchy = (count: number): CampaignHierarchy[] =>
 
 export const ALL_CAMPAIGNS: CampaignHierarchy[] = buildCampaignHierarchy(100)
 // 상태별 분할은 모듈 로드 시점 1회만 — 매 렌더 filter 호출 방지
-export const ALL_ACTIVE_CAMPAIGNS = ALL_CAMPAIGNS.filter(c => c.status === 'active')
-export const ALL_PAUSED_CAMPAIGNS  = ALL_CAMPAIGNS.filter(c => c.status === 'paused')
+export const ALL_ACTIVE_CAMPAIGNS = ALL_CAMPAIGNS.filter(c => c.status === '게재중')
+export const ALL_PAUSED_CAMPAIGNS  = ALL_CAMPAIGNS.filter(c => c.status === '일시중지')
 
 // ── 기간별 시계열 차트 데이터 (지출/클릭/CTR) ────────────────────────────────
 const buildChartDataByPeriod = (): Record<DatePeriod, { date: string; spend: number; clicks: number; ctr: number }[]> => {

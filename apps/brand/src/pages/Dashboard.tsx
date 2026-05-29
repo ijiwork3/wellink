@@ -4,7 +4,8 @@ import {
   Megaphone, Users, Clock, Bell,
   TrendingUp, TrendingDown, ArrowRight, Search,
   BarChart3, Sparkles, Lock, AlertTriangle, X,
-  User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent, Share2, Bookmark
+  User, Globe, MousePointer2, Zap, DollarSign, ListChecks, Calculator, Percent,
+  Eye, ThumbsUp, MessageCircle, Activity, Clapperboard
 } from 'lucide-react'
 import { StatusBadge, ErrorState, EmptyState, SkeletonCard, Skeleton, Card, KPICard, FloatingScrollChevrons, PageHeader, DateRangePicker, type DatePeriod } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -132,15 +133,13 @@ const AD_METRICS = [
   { label: '평균 CPC',     baseValue: 866,       fmt: (n: number) => `${Math.round(n).toLocaleString('ko-KR')}원`, trends: { 일간: -0.4, 주간: -1.2, 월간: -3.8, 연간: -9.0 } as Record<DatePeriod, number>, positive: false, icon: <Calculator size={14} aria-hidden="true" />, hint: '클릭 1회당 평균 광고 비용. 낮을수록 효율 우수.' },
 ] as const
 
-/* ── 바이럴 메트릭스 요약 mock (클라 #1: 광고주 웹앱 ViralMetricsSection 패턴 마이그레이션) ──
- * 광고주 웹앱(`/dashboard/viral-metrics`)에 이미 풍부하게 구현되어 있던 자산을 대시보드 요약 형태로 재배치.
- * 바이럴 계수는 '배수' 단위이므로 trendUnit='x'.
- */
+/* ── 바이럴 메트릭스 요약 mock — 원본 ViralMetricsSection L1653-1705 기준 5개 KPI ── */
 const VIRAL_METRICS = [
-  { label: '총 바이럴 도달', baseValue: 67200, fmt: (n: number) => fmtNumber(Math.round(n)),                trends: { 일간: 2.6, 주간: 6.8, 월간: 18.0, 연간: 46.0 } as Record<DatePeriod, number>, icon: <Share2 size={14} aria-hidden="true" />,   hint: '광고 외 자생적 확산 도달 — 공유·저장 기반.' },
-  { label: '공유 수',         baseValue: 1240,  fmt: (n: number) => fmtNumber(Math.round(n)),                trends: { 일간: 3.2, 주간: 7.5, 월간: 19.4, 연간: 51.0 } as Record<DatePeriod, number>, icon: <Share2 size={14} aria-hidden="true" />,   hint: '콘텐츠가 공유된 총 횟수.' },
-  { label: '저장 수',         baseValue: 2860,  fmt: (n: number) => fmtNumber(Math.round(n)),                trends: { 일간: 1.8, 주간: 5.2, 월간: 14.0, 연간: 36.0 } as Record<DatePeriod, number>, icon: <Bookmark size={14} aria-hidden="true" />, hint: '콘텐츠가 저장된 총 횟수.' },
-  { label: '바이럴 계수',     baseValue: 1.8,   fmt: (n: number) => `${n.toFixed(1)}x`,                      trends: { 일간: 0.2, 주간: 0.3, 월간: 0.5, 연간: 0.9 } as Record<DatePeriod, number>,    trendUnit: 'x', icon: <Sparkles size={14} aria-hidden="true" />, hint: '원본 1건당 평균 추가 확산 배수.' },
+  { label: '총 조회수(릴스)',   baseValue: 284000, fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 2.4, 주간: 6.1, 월간: 16.8, 연간: 42.0 } as Record<DatePeriod, number>, icon: <Eye size={14} aria-hidden="true" />,          hint: '릴스 콘텐츠가 사용자에게 도달한 총 조회수 (피드는 조회수 비공개)' },
+  { label: '총 좋아요',         baseValue: 12400,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.8, 주간: 5.2, 월간: 14.0, 연간: 36.0 } as Record<DatePeriod, number>, icon: <ThumbsUp size={14} aria-hidden="true" />,     hint: '피드·릴스 멘션 콘텐츠의 좋아요 합산' },
+  { label: '총 댓글',           baseValue: 1840,   fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.2, 주간: 3.8, 월간: 10.5, 연간: 28.0 } as Record<DatePeriod, number>, icon: <MessageCircle size={14} aria-hidden="true" />, hint: '피드·릴스 멘션 콘텐츠의 댓글 합산' },
+  { label: '총 참여',           baseValue: 14240,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.7, 주간: 4.9, 월간: 13.5, 연간: 34.0 } as Record<DatePeriod, number>, icon: <Activity size={14} aria-hidden="true" />,     hint: '좋아요·댓글 합산 (원본 기준)' },
+  { label: '평균 조회수(릴스)', baseValue: 23600,  fmt: (n: number) => fmtNumber(Math.round(n)), trends: { 일간: 1.5, 주간: 4.2, 월간: 11.8, 연간: 31.0 } as Record<DatePeriod, number>, icon: <Clapperboard size={14} aria-hidden="true" />, hint: '릴스 콘텐츠 1건당 평균 조회수' },
 ] as const
 
 export default function Dashboard() {
@@ -523,7 +522,6 @@ export default function Dashboard() {
                 value={m.fmt(m.baseValue * ratio)}
                 trend={+(m.trends[period] * ratio).toFixed(1)}
                 trendLabel={TREND_LABEL[period]}
-                trendUnit={'trendUnit' in m ? m.trendUnit : undefined}
                 positive={'positive' in m ? m.positive : undefined}
                 icon={m.icon}
                 tooltip={m.hint}
@@ -544,7 +542,7 @@ export default function Dashboard() {
             className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >더보기 <ArrowRight size={12} /></button>
         </div>
-        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 @xl:grid-cols-3 @3xl:grid-cols-5 gap-3 @sm:gap-4">
           {VIRAL_METRICS.map(m => {
             const ratio = offsetRatio(dateOffset, seedOf(m.label))
             return (
@@ -554,7 +552,6 @@ export default function Dashboard() {
                 value={m.fmt(m.baseValue * ratio)}
                 trend={+(m.trends[period] * ratio).toFixed(1)}
                 trendLabel={TREND_LABEL[period]}
-                trendUnit={'trendUnit' in m ? m.trendUnit : undefined}
                 icon={m.icon}
                 tooltip={m.hint}
               />
