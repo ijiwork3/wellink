@@ -7,7 +7,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react'
 
-export type NotificationType = 'campaign' | 'system' | 'message'
+export type NotificationType = 'campaign' | 'payment' | 'message' | 'system'
 
 export interface NotificationItem {
   id: number
@@ -20,65 +20,68 @@ export interface NotificationItem {
 
 // ── 더미 데이터 ──────────────────────────────────────────────────
 const TIME_POOL = ['방금 전', '5분 전', '30분 전', '1시간 전', '2시간 전', '4시간 전', '어제', '2일 전', '3일 전', '1주 전', '2주 전']
+// ── 클라이언트 스펙 기준 데이터 풀 ──────────────────────────────
 const CAMPAIGN_TITLES = [
-  '새로운 지원자가 있습니다',
-  '캠페인 리포트 생성 완료',
-  '캠페인 모집 마감 임박',
-  '인플루언서가 콘텐츠를 제출했습니다',
-  '캠페인 발표일이 도래했습니다',
-  '인플루언서가 선정을 수락했습니다',
-  '인플루언서가 참여를 취소했습니다',
-  '콘텐츠 검수 마감 임박',
-]
-const SYSTEM_TITLES = [
-  '포인트 충전 완료',
-  '정기 점검 안내',
-  '구독 결제 예정',
-  '결제 실패 알림',
-  '플랜 업그레이드 완료',
-]
-const MESSAGE_TITLES = [
-  '새로운 메시지',
-  '제안에 인플루언서가 답변했습니다',
-  '캠페인 문의가 도착했습니다',
+  '캠페인이 삭제됐습니다',
+  '캠페인 모집이 마감됐습니다',
+  '인플루언서 선정 마감 3일 전입니다',
 ]
 const CAMPAIGN_DESCS = [
-  "'봄 요가 프로모션' 캠페인에 새로운 인플루언서가 지원했습니다.",
-  "'비건 신제품 론칭' 캠페인의 최종 성과 리포트가 생성되었습니다.",
-  "'여름 캠페인' 모집이 24시간 안에 마감됩니다.",
-  '선정 인플루언서가 검수용 콘텐츠를 제출했습니다.',
-  '오늘이 인플루언서 발표일입니다.',
-  "@yoga_jimin님이 '봄 요가 프로모션' 캠페인 선정을 수락했습니다.",
-  "@daily_hana님이 캠페인 참여를 취소했습니다. 대체 인플루언서를 선정해 주세요.",
-  "'여름 맞이 챌린지' 콘텐츠 검수 마감이 72시간 안에 도래합니다.",
+  "'여름 맞이 챌린지' 캠페인이 삭제됐습니다.",
+  "'봄 요가 프로모션' 캠페인 모집이 마감됐습니다.",
+  "'비건 신제품 론칭' 캠페인의 인플루언서 선정 마감이 3일 남았습니다. 지금 선정하세요.",
+]
+const PAYMENT_TITLES = [
+  '결제가 완료됐습니다',
+  '결제 예정 3일 전',
+  '결제에 실패했습니다',
+]
+const PAYMENT_DESCS = [
+  'Pro 플랜 구독료 결제가 정상 완료됐습니다.',
+  '다음 구독 결제일이 3일 후입니다. 결제 수단을 미리 확인해 주세요.',
+  '카드 결제에 실패했습니다. 결제 수단을 확인해 주세요.',
+]
+const SYSTEM_TITLES = [
+  '서비스 공지',
+  '정기 점검 안내',
+  '약관 변경 안내',
+  '서비스 이용 관련 안내',
 ]
 const SYSTEM_DESCS = [
-  '500,000 포인트가 성공적으로 충전되었습니다.',
+  '웰링크 AI 매칭 기능이 업데이트됐습니다. 더욱 정교한 인플루언서 추천 결과를 경험해 보세요.',
   '정기 점검이 새벽 2시부터 4시까지 진행될 예정입니다.',
-  '다음 결제일이 7일 남았습니다.',
-  '카드 결제에 실패했습니다. 결제 수단을 확인해주세요.',
-  'Scale 플랜으로 업그레이드되었습니다.',
+  '서비스 이용 약관이 2026년 7월 1일부로 변경됩니다. 변경 내용을 확인해 주세요.',
+  '웰링크 서비스 이용 정책이 업데이트됐습니다. 확인해 주세요.',
+]
+const MESSAGE_TITLES = [
+  '인플루언서가 제안 캠페인에 지원했습니다',
 ]
 const MESSAGE_DESCS = [
-  "인플루언서 '@yoga_jimin'님으로부터 새로운 메시지가 도착했습니다.",
-  "'@daily_hana'님이 캠페인 제안을 수락했습니다.",
-  "'@beauty_sora'님이 캠페인 관련 문의를 보냈습니다.",
+  "@yoga_jimin 님이 제안받은 '봄 요가 프로모션' 캠페인에 지원했습니다.",
+  "@daily_hana 님이 제안받은 '여름 캠페인'에 지원했습니다.",
+  "@beauty_sora 님이 제안받은 '비건 신제품 론칭' 캠페인에 지원했습니다.",
 ]
-const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'campaign', 'system', 'system', 'message', 'message']
+const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'campaign', 'payment', 'system', 'message', 'message']
 
 export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 }, (_, i) => {
   const type = TYPE_CYCLE[i % TYPE_CYCLE.length]
-  const titlePool = type === 'campaign' ? CAMPAIGN_TITLES : type === 'system' ? SYSTEM_TITLES : MESSAGE_TITLES
-  const descPool  = type === 'campaign' ? CAMPAIGN_DESCS : type === 'system' ? SYSTEM_DESCS  : MESSAGE_DESCS
+  const titlePool =
+    type === 'campaign' ? CAMPAIGN_TITLES :
+    type === 'payment'  ? PAYMENT_TITLES  :
+    type === 'system'   ? SYSTEM_TITLES   : MESSAGE_TITLES
+  const descPool =
+    type === 'campaign' ? CAMPAIGN_DESCS :
+    type === 'payment'  ? PAYMENT_DESCS  :
+    type === 'system'   ? SYSTEM_DESCS   : MESSAGE_DESCS
   const title = titlePool[i % titlePool.length]
   const desc = descPool[i % descPool.length]
-  // 타이틀별 딥링크 라우팅
+  // 타이틀별 딥링크 라우팅 (스펙: 캠페인→캠페인 상세, 메시지→캠페인 상세, 결제→결제/구독, 시스템→null)
   const link =
-    title === '결제 실패 알림' ? '/payment/method'
-    : title === '인플루언서가 선정을 수락했습니다' || title === '인플루언서가 참여를 취소했습니다' ? '/campaigns/1?qa=tab-selected'
-    : title === '콘텐츠 검수 마감 임박' || title === '인플루언서가 콘텐츠를 제출했습니다' ? '/campaigns/1?qa=tab-content'
-    : type === 'campaign' && i % 3 === 0 ? '/campaigns/1?qa=tab-applicants'
-    : type === 'campaign' && i % 3 === 1 ? '/campaigns/1?qa=tab-report'
+    title === '결제에 실패했습니다' ? '/payment/method'
+    : title === '결제가 완료됐습니다' || title === '결제 예정 3일 전' ? '/subscription'
+    : title === '인플루언서 선정 마감 3일 전입니다' ? '/campaigns/1?qa=tab-applicants'
+    : type === 'campaign' ? '/campaigns/1'
+    : type === 'message'  ? '/campaigns/1?qa=tab-applicants'
     : null
   return { id: i + 1, type, title, desc, time: TIME_POOL[i % TIME_POOL.length], link }
 })
@@ -137,9 +140,9 @@ export function markAllAsRead(allIds: number[] = INITIAL_UNREAD_IDS) {
   saveReadIds(ids)
 }
 
-/** 미구독자는 결제·플랜 관련 system 알림 제외 (정합성). 동적 알림은 항상 최상단. */
+/** 미구독자는 결제·플랜 관련 payment·system 알림 제외 (정합성). 동적 알림은 항상 최상단. */
 export function getVisibleNotifications(isSubscribed: boolean): NotificationItem[] {
-  const base = isSubscribed ? ALL_NOTIFICATIONS : ALL_NOTIFICATIONS.filter(n => n.type !== 'system')
+  const base = isSubscribed ? ALL_NOTIFICATIONS : ALL_NOTIFICATIONS.filter(n => n.type !== 'payment' && n.type !== 'system')
   return [...dynamicNotifications, ...base]
 }
 
