@@ -218,6 +218,9 @@ export interface SparklineSet {
   shares: number[]
   saves: number[]
   viralFactor: number[]
+  reelViews: number[]
+  totalEngagement: number[]
+  avgReelViews: number[]
 }
 
 /* ── 스파크라인 mock — 각 KPI별 7 포인트 (최근 7일, 일간 디폴트) ── */
@@ -232,10 +235,13 @@ export const DASHBOARD_SPARKLINES: SparklineSet = {
   adResults:    [98, 105, 112, 118, 125, 134, 142],
   costPerResult:[2410, 2350, 2280, 2210, 2160, 2120, 2070],
   // 바이럴 요약 (인라인)
-  viralReach:   [310000, 325000, 340000, 352000, 365000, 378000, 386000],
-  shares:       [980, 1020, 1080, 1110, 1140, 1180, 1245],
-  saves:        [820, 830, 845, 850, 853, 855, 856],
-  viralFactor:  [1.4, 1.45, 1.5, 1.55, 1.6, 1.65, 1.7],
+  viralReach:      [310000, 325000, 340000, 352000, 365000, 378000, 386000],
+  shares:          [980, 1020, 1080, 1110, 1140, 1180, 1245],
+  saves:           [820, 830, 845, 850, 853, 855, 856],
+  viralFactor:     [1.4, 1.45, 1.5, 1.55, 1.6, 1.65, 1.7],
+  reelViews:       [210000, 225000, 238000, 248000, 260000, 272000, 284000],
+  totalEngagement: [12800, 13500, 14200, 15100, 16200, 17800, 21600],
+  avgReelViews:    [19800, 20400, 21000, 21800, 22500, 23100, 23600],
 }
 
 /* ── 팔로워 추이 — 기간별 (FollowerBarChart 데이터, 마지막이 max) ── */
@@ -362,10 +368,13 @@ export const DASHBOARD_SPARKLINES_BY_PERIOD: Record<DatePeriod, SparklineSet> = 
     roas:         [3.30, 3.32, 3.30, 3.28, 3.25, 3.22, 3.2],            // 후반 하락 (trend -0.4)
     adResults:    [20, 21, 22, 22, 23, 23, 24],                          // 상승 (trend +9.1)
     costPerResult:[6000, 5950, 5900, 5850, 5820, 5780, 5750],            // 하락 (positive=false, trend -2.4 → good)
-    viralReach:   [375000, 378000, 380000, 382000, 384000, 385000, 386000],
-    shares:       [1265, 1260, 1255, 1250, 1240, 1225, 1200],            // 후반 하락 (trend -1.5)
-    saves:        [850, 851, 852, 853, 854, 855, 856],
-    viralFactor:  [1.62, 1.64, 1.66, 1.67, 1.68, 1.69, 1.7],
+    viralReach:      [375000, 378000, 380000, 382000, 384000, 385000, 386000],
+    shares:          [1265, 1260, 1255, 1250, 1240, 1225, 1200],         // 후반 하락 (trend -1.5)
+    saves:           [850, 851, 852, 853, 854, 855, 856],
+    viralFactor:     [1.62, 1.64, 1.66, 1.67, 1.68, 1.69, 1.7],
+    reelViews:       [276000, 278000, 280000, 281000, 282000, 283000, 284000],
+    totalEngagement: [20800, 21000, 21200, 21300, 21400, 21500, 21600],
+    avgReelViews:    [23000, 23100, 23200, 23300, 23400, 23500, 23600],
   },
   주간: {
     followers:    [23200, 23380, 23540, 23720, 23900, 24100, 24512],
@@ -375,10 +384,13 @@ export const DASHBOARD_SPARKLINES_BY_PERIOD: Record<DatePeriod, SparklineSet> = 
     roas:         [2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2],
     adResults:    [89, 102, 115, 124, 131, 137, 142],
     costPerResult:[2580, 2480, 2390, 2280, 2210, 2140, 2070],
-    viralReach:   [280000, 305000, 325000, 340000, 358000, 372000, 386000],
-    shares:       [840, 920, 980, 1050, 1120, 1185, 1245],
-    saves:        [780, 800, 820, 835, 845, 852, 856],
-    viralFactor:  [1.2, 1.3, 1.4, 1.5, 1.6, 1.65, 1.7],
+    viralReach:      [280000, 305000, 325000, 340000, 358000, 372000, 386000],
+    shares:          [840, 920, 980, 1050, 1120, 1185, 1245],
+    saves:           [780, 800, 820, 835, 845, 852, 856],
+    viralFactor:     [1.2, 1.3, 1.4, 1.5, 1.6, 1.65, 1.7],
+    reelViews:       [206000, 222000, 238000, 252000, 265000, 275000, 284000],
+    totalEngagement: [14200, 15800, 17200, 18600, 19800, 20800, 21600],
+    avgReelViews:    [20400, 21000, 21600, 22200, 22800, 23200, 23600],
   },
   월간: {
     followers:    [19800, 20800, 21600, 22400, 23100, 23800, 24512],
@@ -388,10 +400,13 @@ export const DASHBOARD_SPARKLINES_BY_PERIOD: Record<DatePeriod, SparklineSet> = 
     roas:         [2.4, 2.6, 2.7, 2.9, 3.05, 3.15, 3.2],
     adResults:    [62, 78, 92, 108, 124, 132, 142],
     costPerResult:[3210, 2980, 2740, 2510, 2280, 2150, 2070],
-    viralReach:   [218000, 245000, 278000, 312000, 340000, 365000, 386000],
-    shares:       [580, 690, 810, 940, 1070, 1170, 1245],
-    saves:        [680, 720, 760, 800, 830, 850, 856],
-    viralFactor:  [0.9, 1.1, 1.3, 1.45, 1.55, 1.65, 1.7],
+    viralReach:      [218000, 245000, 278000, 312000, 340000, 365000, 386000],
+    shares:          [580, 690, 810, 940, 1070, 1170, 1245],
+    saves:           [680, 720, 760, 800, 830, 850, 856],
+    viralFactor:     [0.9, 1.1, 1.3, 1.45, 1.55, 1.65, 1.7],
+    reelViews:       [160000, 185000, 210000, 235000, 255000, 271000, 284000],
+    totalEngagement: [9200, 11400, 13500, 15800, 18000, 20200, 21600],
+    avgReelViews:    [16800, 18200, 19600, 20800, 21800, 22800, 23600],
   },
   연간: {
     followers:    [8400, 13200, 17800, 22100, 24512, 24512, 24512],  // 5년치 (마지막 3년 동일은 padding)
@@ -401,10 +416,13 @@ export const DASHBOARD_SPARKLINES_BY_PERIOD: Record<DatePeriod, SparklineSet> = 
     roas:         [1.8, 2.2, 2.6, 2.9, 3.2, 3.2, 3.2],
     adResults:    [58, 92, 115, 128, 142, 142, 142],
     costPerResult:[5800, 4200, 3100, 2480, 2070, 2070, 2070],
-    viralReach:   [128000, 198000, 268000, 332000, 386000, 386000, 386000],
-    shares:       [340, 580, 820, 1080, 1245, 1245, 1245],
-    saves:        [420, 580, 720, 820, 856, 856, 856],
-    viralFactor:  [0.6, 0.9, 1.2, 1.5, 1.7, 1.7, 1.7],
+    viralReach:      [128000, 198000, 268000, 332000, 386000, 386000, 386000],
+    shares:          [340, 580, 820, 1080, 1245, 1245, 1245],
+    saves:           [420, 580, 720, 820, 856, 856, 856],
+    viralFactor:     [0.6, 0.9, 1.2, 1.5, 1.7, 1.7, 1.7],
+    reelViews:       [98000, 152000, 206000, 258000, 305000, 340000, 340000],
+    totalEngagement: [5200, 9400, 13800, 17600, 21600, 21600, 21600],
+    avgReelViews:    [12200, 15800, 19000, 21600, 23600, 23600, 23600],
   },
 }
 
@@ -412,7 +430,7 @@ export const DASHBOARD_SPARKLINES_BY_PERIOD: Record<DatePeriod, SparklineSet> = 
 export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
   profile: { followers: string; reachRate: string; engagement: string; trends: { followers: number; reachRate: number; engagement: number } }
   ad: { spend: string; roas: string; results: string; costPerResult: string; trends: { spend: number; roas: number; results: number; costPerResult: number } }
-  viral: { reach: string; shares: string; saves: string; factor: string; trends: { reach: number; shares: number; saves: number; factor: number } }
+  viral: { reach: string; shares: string; saves: string; factor: string; reelViews: string; totalEngagement: string; avgReelViews: string; trends: { reach: number; shares: number; saves: number; factor: number; reelViews: number; totalEngagement: number; avgReelViews: number } }
 }> = {
   일간: {
     profile: {
@@ -427,8 +445,9 @@ export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
     },
     viral: {
       reach: '38.6만', shares: '1.2k', saves: '856', factor: '1.7',
+      reelViews: '28.4만', totalEngagement: '2.16만', avgReelViews: '2.36만',
       // 공유 음수 케이스 — amber (사용자 데모용)
-      trends: { reach: 2.1, shares: -1.5, saves: 0.4, factor: 4.0 },
+      trends: { reach: 2.1, shares: -1.5, saves: 0.4, factor: 4.0, reelViews: 2.4, totalEngagement: 1.7, avgReelViews: 1.5 },
     },
   },
   주간: {
@@ -442,7 +461,8 @@ export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
     },
     viral: {
       reach: '38.6만', shares: '1.2k', saves: '856', factor: '1.7',
-      trends: { reach: 5.5, shares: 5.5, saves: 0.5, factor: 6.0 },
+      reelViews: '28.4만', totalEngagement: '2.16만', avgReelViews: '2.36만',
+      trends: { reach: 5.5, shares: 5.5, saves: 0.5, factor: 6.0, reelViews: 6.1, totalEngagement: 4.9, avgReelViews: 4.2 },
     },
   },
   월간: {
@@ -456,7 +476,8 @@ export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
     },
     viral: {
       reach: '38.6만', shares: '1.2k', saves: '856', factor: '1.7',
-      trends: { reach: 4.2, shares: 6.4, saves: -1.1, factor: 8.0 },
+      reelViews: '28.4만', totalEngagement: '2.16만', avgReelViews: '2.36만',
+      trends: { reach: 4.2, shares: 6.4, saves: -1.1, factor: 8.0, reelViews: 16.8, totalEngagement: 13.5, avgReelViews: 11.8 },
     },
   },
   연간: {
@@ -470,7 +491,8 @@ export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
     },
     viral: {
       reach: '430만', shares: '14.2k', saves: '8.6k', factor: '1.7',
-      trends: { reach: 28.0, shares: 35.0, saves: 12.0, factor: 18.0 },
+      reelViews: '340만', totalEngagement: '26만', avgReelViews: '28.3만',
+      trends: { reach: 28.0, shares: 35.0, saves: 12.0, factor: 18.0, reelViews: 42.0, totalEngagement: 34.0, avgReelViews: 31.0 },
     },
   },
 }

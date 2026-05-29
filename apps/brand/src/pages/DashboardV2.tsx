@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'motion/react'
 import {
   ArrowRight, Users, Eye, TrendingUp as TrendIcon, Sparkles,
-  ListChecks, Calculator, Percent, DollarSign, Heart, Bookmark, Share2,
+  ListChecks, Calculator, Percent, DollarSign, Activity, Clapperboard,
   LayoutGrid, Hash, ChevronLeft, ChevronRight, RefreshCw,
 } from 'lucide-react'
 import {
@@ -234,44 +234,34 @@ export default function DashboardV2() {
 
   const viralMetrics = useMemo(() => [
     {
-      label: '총 도달',
-      value: kpiValues.viral.reach,
-      trend: kpiValues.viral.trends.reach,
+      label: '총 조회수 (릴스)',
+      value: kpiValues.viral.reelViews,
+      trend: kpiValues.viral.trends.reelViews,
       trendUnit: '%',
-      sparkline: sparks.viralReach,
-      sparklineVariant: 'line' as const,  // 누적 절대값
+      sparkline: sparks.reelViews,
+      sparklineVariant: 'line' as const,
       icon: <Eye size={14} aria-hidden="true" />,
-      hint: '캠페인 콘텐츠가 도달한 누적 사용자 수',
+      hint: '릴스 콘텐츠가 사용자에게 도달한 총 조회수 (피드는 조회수 비공개)',
     },
     {
-      label: '공유',
-      value: kpiValues.viral.shares,
-      trend: kpiValues.viral.trends.shares,
+      label: '총 참여',
+      value: kpiValues.viral.totalEngagement,
+      trend: kpiValues.viral.trends.totalEngagement,
       trendUnit: '%',
-      sparkline: sparks.shares,
-      sparklineVariant: 'bar' as const,  // 증분 카운트
-      icon: <Share2 size={14} aria-hidden="true" />,
-      hint: '콘텐츠가 사용자에게 공유된 횟수',
+      sparkline: sparks.totalEngagement,
+      sparklineVariant: 'bar' as const,
+      icon: <Activity size={14} aria-hidden="true" />,
+      hint: '좋아요·댓글·공유·저장 합산',
     },
     {
-      label: '저장',
-      value: kpiValues.viral.saves,
-      trend: kpiValues.viral.trends.saves,
+      label: '평균 조회수 (릴스)',
+      value: kpiValues.viral.avgReelViews,
+      trend: kpiValues.viral.trends.avgReelViews,
       trendUnit: '%',
-      sparkline: sparks.saves,
-      sparklineVariant: 'bar' as const,  // 증분 카운트 — 공유와 동일하게 기간 내 발생 건수. 리셋됨.
-      icon: <Bookmark size={14} aria-hidden="true" />,
-      hint: '콘텐츠가 저장된 횟수',
-    },
-    {
-      label: '바이럴 계수',
-      value: kpiValues.viral.factor,
-      trend: kpiValues.viral.trends.factor,
-      trendUnit: 'x',
-      sparkline: sparks.viralFactor,
-      sparklineVariant: 'line' as const,  // 비율
-      icon: <Heart size={14} aria-hidden="true" />,
-      hint: '콘텐츠 1개당 평균 확산 배수 — 높을수록 바이럴 효과 ↑',
+      sparkline: sparks.avgReelViews,
+      sparklineVariant: 'line' as const,
+      icon: <Clapperboard size={14} aria-hidden="true" />,
+      hint: '릴스 콘텐츠 1건당 평균 조회수',
     },
   ], [kpiValues, sparks])
 
@@ -581,8 +571,8 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/viral')}
         />
 
-        {/* 바이럴 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-5">
+        {/* 바이럴 KPI 3개 — 모바일 1열, sm 이상 3열 */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
           {viralMetrics.map(m => (
             <KPICard
               key={m.label}
