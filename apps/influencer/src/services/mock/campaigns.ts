@@ -29,6 +29,8 @@ export interface Campaign {
   description?: string
   reward?: string
   rewardAmount?: number
+  /** 활동비(원고료) — 0 또는 미입력이면 제품 협찬만, 양수면 활동비 배지 노출 */
+  activityFee?: number
   headcount: number
   applied: number
   conditions?: string[]
@@ -163,6 +165,7 @@ export const mockCampaigns: Campaign[] = [
     description: 'SMILEATO 스포츠 보충제 라인업을 직접 체험하고 크리에이티브한 콘텐츠를 제작해 주세요',
     reward: '보충제 풀패키지 + 활동비 10만원',
     rewardAmount: 100000,
+    activityFee: 100000,
     headcount: 10,
     applied: 9,
     conditions: ['운동 관련 콘텐츠 계정', '인스타그램 또는 유튜브 채널 보유', '피드 또는 릴스 1개 이상'],
@@ -260,6 +263,7 @@ export const mockCampaigns: Campaign[] = [
     description: '필라핏 홈트 스트레칭 밴드 세트를 활용한 운동 영상을 제작해 주세요',
     reward: '스트레칭 밴드 세트 + 활동비 5만원',
     rewardAmount: 50000,
+    activityFee: 50000,
     headcount: 6,
     applied: 2,
     conditions: ['유튜브 구독자 500명 이상', '운동 영상 3개 이상 보유', '영상 1개 이상 제작'],
@@ -281,6 +285,7 @@ export const mockCampaigns: Campaign[] = [
     description: '모닝핏의 아침 루틴 제품군을 체험하고 건강한 아침 라이프를 공유해 주세요',
     reward: '모닝 키트 + 활동비 6만원',
     rewardAmount: 60000,
+    activityFee: 60000,
     headcount: 12,
     applied: 5,
     conditions: ['라이프스타일 계정', '팔로워 2,000명 이상', '피드 1개 + 스토리 3개'],
@@ -448,6 +453,8 @@ export interface MyCampaign {
   campaignRef?: number
   /** 반려 사유 — 광고주가 콘텐츠를 반려할 때 입력한 피드백 */
   rejectReason?: string
+  /** 활동비(원고료·포인트) — 0 초과 시 활동비 배지 */
+  activityFee?: number
 }
 
 export const mockMyCampaigns: MyCampaign[] = [
@@ -455,7 +462,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
     appliedAt: '2026-04-28', deadline: '2026-05-28', applyEnd: '2026-05-08',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
-    reward: '80,000원', rewardAmount: 80000, contentDeadline: '2026-05-28',
+    reward: '80,000원', rewardAmount: 80000, activityFee: 150000, contentDeadline: '2026-05-28',
     campaignRef: 2,
     missionGuide: '제품을 사용한 운동 루틴 영상 또는 일상 콘텐츠 1개 + 솔직 후기 캡션. 협찬 표기 필수(@광고). 운동 전·후 변화 사진 포함 시 가산점.',
     requiredKeywords: ['뉴트리션랩', '프로틴', '단백질챌린지', '오운완'],
@@ -470,7 +477,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     id: 'mc-3', name: '아웃도어 장비 리뷰', brand: '아웃도어킹', channel: '네이버 블로그',
     appliedAt: '2026-04-10', deadline: '2026-05-29', applyEnd: '2026-04-20',
     status: '검수중', progress: '게시 콘텐츠 확인 중',
-    reward: '120,000원', rewardAmount: 120000, postUrl: 'https://blog.naver.com/chanstyler/12345', campaignRef: 5,
+    reward: '120,000원', rewardAmount: 120000, activityFee: 200000, postUrl: 'https://blog.naver.com/chanstyler/12345', campaignRef: 5,
   },
   {
     id: 'mc-4', name: '헬스 보충제 캠페인', brand: 'SMILEATO', channel: '인스타그램',
@@ -489,7 +496,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     id: 'mc-6', name: '하이록스 챌린지 시즌 2', brand: 'enuf.sports', channel: '인스타그램',
     appliedAt: '2026-05-08', deadline: '2026-05-29', applyEnd: '2026-05-15',
     status: '콘텐츠대기', progress: '콘텐츠를 제출해 주세요',
-    reward: '120,000원', rewardAmount: 120000, contentDeadline: '2026-05-29',
+    reward: '120,000원', rewardAmount: 120000, activityFee: 80000, contentDeadline: '2026-05-29',
     campaignRef: 3,
     missionGuide: '하이록스 종목 도전 영상 + 운동복/장비에 brand tag. 릴스 60초 이상, 본문에 운동 기록(시간·반복수) 포함.',
     requiredKeywords: ['enuf', '하이록스', 'hyrox', 'crossfit', '운동스타그램'],

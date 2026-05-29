@@ -104,6 +104,12 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
               ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 whitespace-nowrap">방문형</span>
               : null
           }
+          {(campaign.rewardAmount ?? 0) > 0 && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">제품 협찬</span>
+          )}
+          {(campaign.activityFee ?? 0) > 0 && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
+          )}
           {applied && (
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
               신청완료

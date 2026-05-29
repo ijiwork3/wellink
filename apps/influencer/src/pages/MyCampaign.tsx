@@ -353,6 +353,18 @@ const handleContentSubmit = () => {
                           <p className="text-xs text-gray-400 mt-0.5">{c.rewardAmount.toLocaleString('ko-KR')}원 상당 혜택</p>
                         )}
 
+                        {/* 제품 협찬 / 활동비 배지 */}
+                        {((c.rewardAmount > 0) || (c.activityFee ?? 0) > 0) && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {c.rewardAmount > 0 && (
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-teal-50 text-teal-600 border border-teal-100">제품 협찬</span>
+                            )}
+                            {(c.activityFee ?? 0) > 0 && (
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-violet-50 text-violet-600 border border-violet-100">활동비</span>
+                            )}
+                          </div>
+                        )}
+
                         {/* 보조 정보: 캠페인 모집 상태 + 콘텐츠 마감
                             "레이블: 값" 구조로 혼동 방지 */}
                         {(recruitChip || dday) && (

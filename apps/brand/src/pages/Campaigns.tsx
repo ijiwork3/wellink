@@ -31,14 +31,16 @@ type Campaign = {
   imageUrl?: string  // 캠페인 대표 이미지 — 원본 displayImgUrl 동등
   createdAt: string  // 캠페인 등록일 (YYYY-MM-DD) — 원본 createdAt 동등, 최근 등록순 정렬·관리에 사용
   selectedCount?: number  // 선정 인원 (정책서 § 7-2) — 광고주가 지원자 중 선정한 수
+  productPrice?: number   // 상품 가격(소비자가) — 0 초과 시 제품 협찬 배지
+  activityFee?: number    // 활동비(원고료·포인트) — 0 초과 시 활동비 배지
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
   { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18' },
-  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05' },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '네이버 블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25' },
-  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12' },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: 1500000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18', productPrice: 85000 },
+  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05', activityFee: 300000 },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25', productPrice: 35000, activityFee: 100000 },
+  { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12', productPrice: 250000 },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
@@ -49,7 +51,7 @@ const NAME_TEMPLATES: Record<string, string[]> = {
   '라이프스타일': ['미니멀 인테리어', '홈카페 굿즈 리뷰', '반려동물 용품', '독서 챌린지'],
   '육아': ['신생아 용품 체험', '유아식 레시피', '교육 완구 리뷰', '주말 가족 나들이'],
 }
-const PLATFORM_LIST = ['인스타그램', '유튜브', '네이버 블로그', '틱톡']
+const PLATFORM_LIST = ['인스타그램', '유튜브', '블로그']
 const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
 const STATUS_LIST: CampaignStatus[] = ['대기중', '모집중', '진행중', '완료', '종료', '취소']
 
@@ -76,10 +78,13 @@ const generated: Campaign[] = Array.from({ length: 95 }, (_, i) => {
   const createdDay = (((i % 20) + 1)).toString().padStart(2, '0')
   const createdAt = `2026-${createdMonth}-${createdDay}`
   const budget = (i % 7 + 1) * 500000
+  // 제품 협찬: 3개 중 1개, 활동비: 4개 중 1개
+  const productPrice = i % 3 === 1 ? (i % 5 + 1) * 20000 : undefined
+  const activityFee = i % 4 === 2 ? (i % 4 + 1) * 50000 : undefined
   return {
     id, name: `${baseName} #${id}`, status, total, current, selectedCount, deadline, budget, category, platform,
     imageUrl: `https://picsum.photos/seed/wellink-${id}/160/160`,
-    createdAt,
+    createdAt, productPrice, activityFee,
   }
 })
 
@@ -171,7 +176,7 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
  * 칩 보조 설명 (Tooltip 컨텐츠) — 정책서 § 4-0
  */
 
-const PLATFORMS = ['전체', '인스타그램', '유튜브', '네이버 블로그', '틱톡'] as const
+const PLATFORMS = ['전체', '인스타그램', '유튜브', '블로그'] as const
 const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
 const SORTS = [
   { value: 'deadline', label: '마감 임박순' },
@@ -571,6 +576,12 @@ export default function Campaigns() {
                       <PlatformBadge platform={c.platform} />
                       {showDDay && (
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
+                      )}
+                      {(c.productPrice ?? 0) > 0 && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-teal-50 text-teal-600 border border-teal-100">제품 협찬</span>
+                      )}
+                      {(c.activityFee ?? 0) > 0 && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-violet-50 text-violet-600 border border-violet-100">활동비</span>
                       )}
                     </div>
                     <p className="text-base @sm:text-base font-semibold text-gray-900 break-keep mb-1">{c.name}</p>

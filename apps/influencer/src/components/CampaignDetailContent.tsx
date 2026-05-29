@@ -265,6 +265,14 @@ export default function CampaignDetailContent({
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight break-keep">
                     {campaign.name}
                   </h1>
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {(campaign.rewardAmount ?? 0) > 0 && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">제품 협찬</span>
+                    )}
+                    {(campaign.activityFee ?? 0) > 0 && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
+                    )}
+                  </div>
                   <p className="text-gray-500 text-sm md:text-base break-keep">
                     {campaign.name} 관련 캠페인입니다.
                   </p>
