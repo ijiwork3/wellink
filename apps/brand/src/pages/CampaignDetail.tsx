@@ -64,6 +64,8 @@ const campaignMeta: Record<string, {
   productDetail: string
   productPrice: number
   rewardPoint: number
+  /** 콘텐츠 다운로드 단가 — 광고주가 인플루언서 콘텐츠를 2차 활용 시 건당 지급 금액. 0이면 다운로드 버튼 비활성. */
+  downloadPrice: number
   campaignType: '방문형' | '택배형'
   postType: string
   priorityType: string   // 우대사항 — 광고주가 선정 시 선호하는 인플루언서 조건
@@ -82,6 +84,7 @@ const campaignMeta: Record<string, {
     productDetail: '- 프리미엄 요가매트 6mm (논슬립 처리)\n- 논슬립 스트랩 2개 (블랙·핑크)\n- 천연 세척 스프레이 100ml\n- 휴대용 매트 가방',
     productPrice: 58000,
     rewardPoint: 0,
+    downloadPrice: 5000,
     campaignType: '방문형',
     postType: '피드, 릴스',
     priorityType: '릴스 제작 우대',
@@ -100,6 +103,7 @@ const campaignMeta: Record<string, {
     productDetail: '- 비건 클렌저 200ml\n- 비건 토너 150ml\n- 비건 크림 50ml\n- 동물성 원료·합성 향료 무첨가',
     productPrice: 89000,
     rewardPoint: 30000,
+    downloadPrice: 3000,
     campaignType: '택배형',
     postType: '피드, 릴스',
     priorityType: '실사용 1주일 후 후기 필수',
@@ -892,9 +896,8 @@ export default function CampaignDetail() {
     setDownloadStep('plan-select')
   }
 
-  // 구독자 건당 결제 — Library 패턴과 동일
-  // TODO: 다운로드 단가 미확정 — 현재 임의값(3,000원), 클라이언트 확정 후 반영 필요
-  const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
+  // 콘텐츠 다운로드 단가 — 캠페인 등록 시 광고주가 설정. 0이면 다운로드 비활성.
+  const PRICE_PER_DOWNLOAD = meta?.downloadPrice ?? 0
 
   const handleDownload = () => {
     if (isPaying) return
@@ -1938,13 +1941,16 @@ export default function CampaignDetail() {
                   {filtered.every(c => selectedContents.has(c.id)) && filtered.length > 0 ? '선택 해제' : '전체 선택'}
                 </button>
                 <button type="button"
+                  disabled={PRICE_PER_DOWNLOAD === 0}
                   onClick={() => {
+                    if (PRICE_PER_DOWNLOAD === 0) return
                     // 권한 없으면 선택 여부와 무관하게 즉시 구독 유도 모달
                     if (!canDownloadContent) { setDownloadModal(true); return }
                     if (selectedContents.size === 0) { showToast('다운로드할 콘텐츠를 선택해주세요.', 'error'); return }
                     setDownloadModal(true)
                   }}
-                  className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap"
+                  title={PRICE_PER_DOWNLOAD === 0 ? '캠페인 등록 시 다운로드 단가를 설정해야 활성화됩니다' : undefined}
+                  className="inline-flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-brand-green"
                 >
                   <Download size={14} aria-hidden="true" />
                   다운로드{selectedContents.size > 0 && ` (${selectedContents.size})`}
@@ -2614,7 +2620,7 @@ export default function CampaignDetail() {
           // 구독자 — Library 건당 결제 패턴과 동일
           <div className="space-y-3">
             <p className="text-base text-gray-600">
-              다운로드 1건당 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>이 부과됩니다.
+              콘텐츠 다운로드 단가 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>/건 (인플루언서에게 지급)
             </p>
             <div className="space-y-2 text-base bg-gray-50 rounded-xl p-4">
               <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">선택한 콘텐츠</span></div>

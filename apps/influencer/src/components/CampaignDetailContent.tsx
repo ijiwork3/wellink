@@ -272,6 +272,11 @@ export default function CampaignDetailContent({
                     {(campaign.activityFee ?? 0) > 0 && (
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
                     )}
+                    {(campaign.downloadPrice ?? 0) > 0 && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 whitespace-nowrap">
+                        다운로드 수익 {(campaign.downloadPrice!).toLocaleString('ko-KR')}원/건
+                      </span>
+                    )}
                   </div>
                   <p className="text-gray-500 text-sm md:text-base break-keep">
                     {campaign.name} 관련 캠페인입니다.

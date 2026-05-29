@@ -43,6 +43,7 @@ const FILLED = {
   productDetail: '요가매트 6mm + 논슬립 스트랩 2개 + 세척 스프레이',
   productPrice: '58000',
   rewardPoint: '0',
+  downloadPrice: '5000',
   keywords: ['#봄요가', '#강남요가'],
   postType: '피드',
   precaution: '릴스 제작 우대',
@@ -87,7 +88,7 @@ export default function CampaignNew() {
     location: '', storeName: '',
     brandName: '', shippedProductName: '',  // 택배형 전용 — 원본 보강
     platform: '인스타그램' as Platform, category: '맛집/푸드',
-    description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '',
+    description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '', downloadPrice: '',
     keywords: [] as string[], postType: '피드', precaution: '릴스 제작 우대',
     photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
     recruitStart: '', recruitEnd: '', announceDate: '', uploadStart: '', uploadEnd: '',
@@ -375,6 +376,17 @@ export default function CampaignNew() {
                 className="text-right pr-9"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">P</span>
+            </div>
+          </Field>
+          <Field label="콘텐츠 다운로드 단가" hint="0원 또는 미입력 시 콘텐츠 다운로드 기능이 비활성화됩니다">
+            <div className="relative">
+              <Input
+                value={form.downloadPrice ? Number(form.downloadPrice).toLocaleString('ko-KR') : ''}
+                onChange={v => set('downloadPrice', v.replace(/[^0-9]/g, ''))}
+                placeholder="0 (다운로드 비활성)"
+                className="text-right pr-9"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">원</span>
             </div>
           </Field>
         </div>

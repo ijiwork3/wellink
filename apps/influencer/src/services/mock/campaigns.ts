@@ -53,6 +53,8 @@ export interface Campaign {
   region?: string
   /** 태그 — 원본 CampaignList.tsx L104 tags 검색 필드 대응 */
   tags?: string[]
+  /** 콘텐츠 다운로드 단가 — 광고주가 인플루언서 콘텐츠를 2차 활용 시 건당 지급 금액. 0이면 다운로드 비활성. */
+  downloadPrice?: number
 }
 
 export const mockCampaigns: Campaign[] = [
@@ -143,6 +145,7 @@ export const mockCampaigns: Campaign[] = [
 - 타 브랜드 비교 비방성 표현 금지`,
     keywords: ['사계단백연구소', '사계단백', '단백질도시락', '식단관리', '식단도시락'],
     tags: ['단백질', '도시락', '식단', '서포터즈', '헬스'],
+    downloadPrice: 5000,
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요? (예: 크로스핏, 러닝, 웨이트 등)', required: true, type: 'text' },
       { id: 'q2', question: '현재 운동 및 식단 루틴을 기록하는 SNS 채널을 알려주세요', required: true, type: 'text' },
@@ -175,6 +178,7 @@ export const mockCampaigns: Campaign[] = [
     productDetail: 'SMILEATO 스포츠 보충제 풀패키지 (단백질 파우더 1kg + 프리워크아웃 300g + 아미노산 250g) + 활동비 100,000원\n\n· 각 제품의 권장 복용법은 동봉된 설명서를 참고해 주세요.\n· 냉암소 또는 냉장 보관을 권장합니다.',
     detailMissionDescription: '1. 제품 수령 후 언박싱 스토리 업로드 (필수)\n2. 실제 운동 중 또는 운동 후 섭취 장면 포함\n3. 릴스 최소 30초, 피드 최소 3장 이상\n4. #SMILEATO #크로스핏 태그 필수\n5. 유료 광고 표기 필수 (광고, AD, 유료광고 중 택 1)',
     keywords: ['SMILEATO', '크로스핏', '보충제', '스포츠영양'],
+    downloadPrice: 3000,
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요?', required: true, type: 'text' },
     ],
