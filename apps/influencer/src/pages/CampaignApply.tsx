@@ -374,58 +374,6 @@ export default function CampaignApply() {
           )}
         </div>
 
-        {/* 지원 조건 요약 박스 — 2차 활용·활동비·프로페셔널 계정 요건 한눈에 */}
-        {!isViewMode && ((campaign.activityFee ?? 0) > 0 || campaign.secondaryUse?.enabled) && (
-          <div className="rounded-2xl border border-gray-200 overflow-hidden">
-            <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
-              <p className="text-sm font-semibold text-gray-700">지원 전 확인 사항</p>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {/* 활동비 있음 → 프로페셔널 계정 요건 */}
-              {(campaign.activityFee ?? 0) > 0 && (
-                <div className={`px-4 py-3.5 flex items-start gap-3 ${!mockProfile.instagramProfessional ? 'bg-amber-50' : ''}`}>
-                  <span className="text-base mt-0.5" aria-hidden="true">{mockProfile.instagramProfessional ? '✅' : '⚠️'}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">프로페셔널 계정 필요</p>
-                    <p className="text-xs text-gray-500 mt-0.5 break-keep">
-                      활동비 지급 캠페인은 인스타그램 비즈니스·크리에이터 계정만 지원할 수 있어요.
-                    </p>
-                    {!mockProfile.instagramProfessional && (
-                      <button
-                        type="button"
-                        onClick={() => navigate('/profile')}
-                        className="mt-2 text-xs font-semibold text-amber-700 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 rounded"
-                      >
-                        마이페이지에서 계정 연동하기 →
-                      </button>
-                    )}
-                  </div>
-                  <span className="text-xs font-bold whitespace-nowrap text-brand-green-text">
-                    {(campaign.activityFee!).toLocaleString('ko-KR')}원
-                  </span>
-                </div>
-              )}
-              {/* 2차 활용 동의 필요 */}
-              {campaign.secondaryUse?.enabled && (
-                <div className="px-4 py-3.5 flex items-start gap-3">
-                  <span className="text-base mt-0.5" aria-hidden="true">📢</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">콘텐츠 2차 활용 동의 필요</p>
-                    <p className="text-xs text-gray-500 mt-0.5 break-keep">
-                      광고주가 제작한 콘텐츠를 마케팅에 재활용할 수 있습니다.
-                    </p>
-                    {(campaign.secondaryUse.channels?.length ?? 0) > 0 && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        채널: {campaign.secondaryUse.channels!.join(', ')}
-                        {(campaign.secondaryUse.durationMonths ?? 0) > 0 && ` · ${campaign.secondaryUse.durationMonths}개월`}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* 신청자 정보 (읽기 전용) */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5 space-y-2.5">
