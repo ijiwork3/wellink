@@ -397,8 +397,8 @@ export default function Media() {
               <p className="text-sm text-gray-500 break-keep">계정 유형에 따라 이용 가능한 캠페인 범위가 달라요</p>
             </div>
 
-            <div className="space-y-3">
-              {/* 일반 계정 */}
+            <div className="flex flex-col-reverse gap-3 @[640px]:flex-col">
+              {/* 일반 계정 — 모바일에서 아래, 데스크톱에서 위 */}
               <div className="rounded-xl border border-gray-200 p-4">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
@@ -422,7 +422,7 @@ export default function Media() {
                 </button>
               </div>
 
-              {/* 프로페셔널 계정 */}
+              {/* 프로페셔널 계정 — 모바일에서 위, 데스크톱에서 아래 */}
               <div className="rounded-xl border-2 border-brand-green-border bg-brand-green-bg p-4">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
