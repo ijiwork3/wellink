@@ -397,33 +397,11 @@ export default function Media() {
               <p className="text-sm text-gray-500 break-keep">계정 유형에 따라 이용 가능한 캠페인 범위가 달라요</p>
             </div>
 
-            <div className="flex flex-col-reverse gap-3 @[640px]:flex-col">
-              {/* 일반 계정 — 모바일에서 아래, 데스크톱에서 위 */}
-              <div className="rounded-xl border border-gray-200 p-4">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">일반 계정</p>
-                    <p className="text-xs text-gray-500 mt-0.5 break-keep">개인 인스타그램 계정</p>
-                  </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap shrink-0">기본</span>
-                </div>
-                <ul className="space-y-1 mb-3">
-                  <li className="text-xs text-gray-500 flex items-center gap-1.5"><CheckCircle2 size={11} className="text-gray-400 shrink-0" />무가시딩 캠페인 지원 가능</li>
-                  <li className="text-xs text-gray-400 flex items-center gap-1.5 line-through"><CheckCircle2 size={11} className="shrink-0" />팔로워·인사이트 통계 (제공 안 됨)</li>
-                  <li className="text-xs text-gray-400 flex items-center gap-1.5 line-through"><CheckCircle2 size={11} className="shrink-0" />활동비 지급 캠페인 (제공 안 됨)</li>
-                </ul>
-                <button
-                  type="button"
-                  disabled={isConnecting}
-                  onClick={() => handleConnect(false)}
-                  className="w-full py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  {isConnecting ? '연결 중...' : '일반 계정으로 연결'}
-                </button>
-              </div>
+            {/* 모바일: 세로(프로 위·일반 아래) / 데스크톱: 가로(프로 왼·일반 오) */}
+            <div className="flex flex-col @[640px]:flex-row gap-3">
 
-              {/* 프로페셔널 계정 — 모바일에서 위, 데스크톱에서 아래 */}
-              <div className="rounded-xl border-2 border-brand-green-border bg-brand-green-bg p-4">
+              {/* 프로페셔널 계정 — 항상 첫 번째 (모바일 위 / 데스크톱 왼쪽) */}
+              <div className="flex-1 rounded-xl border-2 border-brand-green-border bg-brand-green-bg p-4 flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
                     <p className="text-sm font-semibold text-brand-green-text">프로페셔널 계정</p>
@@ -431,7 +409,7 @@ export default function Media() {
                   </div>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-brand-green text-white whitespace-nowrap shrink-0">추천</span>
                 </div>
-                <ul className="space-y-1 mb-3">
+                <ul className="space-y-1 mb-4 flex-1">
                   <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />무가시딩 캠페인 지원 가능</li>
                   <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />팔로워·인사이트 통계 자동 연동</li>
                   <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />활동비 지급 캠페인 지원 가능</li>
@@ -449,6 +427,30 @@ export default function Media() {
                   )}
                 </button>
               </div>
+
+              {/* 일반 계정 — 두 번째 (모바일 아래 / 데스크톱 오른쪽) */}
+              <div className="flex-1 rounded-xl border border-gray-200 p-4 flex flex-col">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700">일반 계정</p>
+                    <p className="text-xs text-gray-400 mt-0.5 break-keep">개인 인스타그램 계정</p>
+                  </div>
+                </div>
+                <ul className="space-y-1 mb-4 flex-1">
+                  <li className="text-xs text-gray-500 flex items-center gap-1.5"><CheckCircle2 size={11} className="text-gray-400 shrink-0" />무가시딩 캠페인 지원 가능</li>
+                  <li className="text-xs text-gray-300 flex items-center gap-1.5 line-through decoration-gray-300"><CheckCircle2 size={11} className="shrink-0 text-gray-300" />팔로워·인사이트 통계</li>
+                  <li className="text-xs text-gray-300 flex items-center gap-1.5 line-through decoration-gray-300"><CheckCircle2 size={11} className="shrink-0 text-gray-300" />활동비 지급 캠페인</li>
+                </ul>
+                <button
+                  type="button"
+                  disabled={isConnecting}
+                  onClick={() => handleConnect(false)}
+                  className="w-full py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                >
+                  {isConnecting ? '연결 중...' : '일반 계정으로 연결'}
+                </button>
+              </div>
+
             </div>
           </div>
         )}
