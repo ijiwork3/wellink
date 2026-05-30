@@ -228,10 +228,10 @@ export default function CampaignDetailContent({
 
   return (
     <>
-      <div className="pt-8 pb-28 lg:pb-12">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      <div className="pt-8 pb-28 @[1024px]:pb-12">
+        <div className="max-w-6xl mx-auto px-4 @sm:px-6">
+          <div>
+            <div className="flex flex-col @[1024px]:flex-row gap-8 @[1024px]:gap-12">
 
               {/* ── 좌열: 콘텐츠 ─────────────────────────────────────────── */}
               <div className="flex-1 min-w-0">
@@ -262,21 +262,21 @@ export default function CampaignDetailContent({
                     <div className="w-[1px] h-3 bg-gray-300 mx-1" />
                     <span className="text-gray-600 text-sm font-bold whitespace-nowrap">{campaign.brand}</span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight break-keep">
+                  <h1 className="text-2xl @md:text-3xl font-bold text-gray-900 mb-3 leading-tight break-keep">
                     {campaign.name}
                   </h1>
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {(campaign.rewardAmount ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">제품 협찬</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-100 text-teal-600 border border-teal-200 whitespace-nowrap">제품 협찬</span>
                     )}
                     {(campaign.activityFee ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-100 text-violet-600 border border-violet-200 whitespace-nowrap">활동비</span>
                     )}
                     {(campaign.downloadPrice ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 whitespace-nowrap">콘텐츠 수익</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-100 text-sky-600 border border-sky-200 whitespace-nowrap">콘텐츠 수익</span>
                     )}
                   </div>
-                  <p className="text-gray-500 text-sm md:text-base break-keep">
+                  <p className="text-gray-500 text-sm @md:text-base break-keep">
                     {campaign.name} 관련 캠페인입니다.
                   </p>
                 </div>
@@ -496,7 +496,7 @@ export default function CampaignDetailContent({
               </div>
 
               {/* ── 우열: 사이드바 (PC sticky) ──────────────────────────────── */}
-              <div className="hidden lg:block w-[360px] flex-shrink-0">
+              <div className="hidden @[1024px]:block w-[360px] flex-shrink-0">
                 <div className="sticky top-24 space-y-4">
 
                   {/* 정보 카드 */}
@@ -512,7 +512,7 @@ export default function CampaignDetailContent({
                               : formatDateShort(campaign.applyEnd)}
                           </span>
                           {dDay > 0 && (
-                            <span className="shrink-0 text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap">
+                            <span className="shrink-0 text-[10px] font-bold text-red-500 bg-red-100 px-1.5 py-0.5 rounded whitespace-nowrap">
                               {dDay === 1 ? '당일 마감' : `D-${dDay}`}
                             </span>
                           )}
@@ -611,7 +611,7 @@ export default function CampaignDetailContent({
 
       {/* 모바일 하단 고정 버튼 (원본 동일) */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-4 pt-3 bg-white/95 backdrop-blur-sm border-t border-gray-100 lg:hidden z-40"
+        className="fixed bottom-0 left-0 right-0 px-4 pt-3 bg-white/95 backdrop-blur-sm border-t border-gray-100 @[1024px]:hidden z-40"
         style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
       >
         <ApplyButton size="lg" />

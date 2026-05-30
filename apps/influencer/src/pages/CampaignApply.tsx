@@ -508,7 +508,7 @@ export default function CampaignApply() {
             <div className="space-y-4">
               {campaign.questions!.map(q => (
                 <div key={q.id}>
-                  <label className="text-sm font-medium text-gray-800 block mb-1">
+                  <label className="text-sm font-medium text-gray-900 block mb-1">
                     {q.question}
                     {q.required && !isViewMode && <span className="text-red-500 ml-0.5">*</span>}
                   </label>
@@ -584,7 +584,7 @@ export default function CampaignApply() {
                   href={TERMS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                  className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                 >
                   자세히보기
                   <ExternalLink size={10} aria-hidden="true" />

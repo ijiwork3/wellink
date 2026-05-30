@@ -297,13 +297,13 @@ export default function DashboardV2() {
 
   if (qa === 'loading') {
     return (
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 @sm:space-y-6">
         <div>
           <Skeleton shape="text" className="h-7 w-40 mb-2" />
           <Skeleton shape="text" className="h-4 w-56" />
         </div>
         {/* KPI 카드 그리드 — 2x3 */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 @sm:grid-cols-3 gap-3 @sm:gap-4">
           {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
         {/* 차트 섹션 */}
@@ -334,7 +334,7 @@ export default function DashboardV2() {
 
   if (qa === 'empty' || qa === 'new-user') {
     return (
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
           <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
@@ -363,7 +363,7 @@ export default function DashboardV2() {
 
   if (qa === 'plan-locked' || isGated) {
     return (
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
           <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
@@ -388,7 +388,7 @@ export default function DashboardV2() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 @sm:space-y-6">
       {/* 헤더 — 페이지 제목 + 기간선택(PC만, sticky 전) + 마지막 업데이트 (sticky 감지 ref) */}
       <motion.div
         variants={sectionVariants}
@@ -442,7 +442,7 @@ export default function DashboardV2() {
       </div>
 
       {/* ── 1+2 xl 이상: 2열 나란히 / xl 미만: 세로 쌓기 ── */}
-      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+      <div className="grid grid-cols-1 @2xl:grid-cols-2 gap-4 @sm:gap-6 items-stretch">
 
       {/* ── 1. 프로필 인사이트 ─────────────────────────── */}
       <motion.section
@@ -450,7 +450,7 @@ export default function DashboardV2() {
         custom={1}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @sm:p-5"
       >
         <SectionHeader
           icon={<Users size={16} aria-hidden="true" />}
@@ -460,7 +460,7 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/profile')}
         />
         {/* 프로필 인사이트 KPI 3개 — 모바일 1열 → sm 2+1열 → lg 3열 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-3 @sm:gap-4 mb-4">
           {profileMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -522,7 +522,7 @@ export default function DashboardV2() {
         custom={2}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5 flex flex-col"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @sm:p-5 flex flex-col"
       >
         <SectionHeader
           icon={<TrendIcon size={16} aria-hidden="true" />}
@@ -532,7 +532,7 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/ads')}
         />
         {/* 광고 성과 KPI 4개 — 모바일 1열, 중간 폭 2열, 큰 폭 4열. 그래프-값 충돌 방지. */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 flex-1 content-start">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4 mb-4 flex-1 content-start">
           {adMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -561,7 +561,7 @@ export default function DashboardV2() {
         custom={3}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @sm:p-5"
       >
         <SectionHeader
           icon={<Sparkles size={16} aria-hidden="true" />}
@@ -572,7 +572,7 @@ export default function DashboardV2() {
         />
 
         {/* 바이럴 KPI 3개 — 모바일 1열, sm 이상 3열 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 @sm:gap-4 mb-5">
           {viralMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -591,7 +591,7 @@ export default function DashboardV2() {
         </div>
 
         {/* 멘션 구성 도넛 + 워드클라우드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-4 lg:gap-6 mb-5">
+        <div className="grid grid-cols-1 @lg:grid-cols-[240px_1fr] gap-4 @lg:gap-6 mb-5">
           {/* 멘션 구성 도넛 */}
           <div className="rounded-xl bg-gray-50 p-4 flex flex-col items-center">
             <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 self-start">멘션 구성</h3>
@@ -666,7 +666,7 @@ export default function DashboardV2() {
               description="캠페인이 시작되면 인플루언서 멘션 콘텐츠가 이곳에 나타납니다."
             />
           ) : (
-            <div className="relative -mx-3 sm:-mx-5">
+            <div className="relative -mx-3 @sm:-mx-5">
               {/* 좌측 fade */}
               {canScrollLeft && (
                 <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-none z-[5]" aria-hidden="true" />
@@ -698,7 +698,7 @@ export default function DashboardV2() {
               )}
 
               {/* 가로 스크롤 트랙 */}
-              <div ref={contentScrollRef} className="overflow-x-auto scrollbar-none px-3 sm:px-5">
+              <div ref={contentScrollRef} className="overflow-x-auto scrollbar-none px-3 @sm:px-5">
                 <div className="flex gap-3 pb-1">
                   {DASHBOARD_VIRAL_CONTENTS.map(content => (
                     <ViralContentMiniCard
@@ -725,7 +725,7 @@ export default function DashboardV2() {
         custom={4}
         initial="hidden"
         animate="visible"
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @sm:p-5"
       >
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">

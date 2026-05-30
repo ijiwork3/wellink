@@ -38,7 +38,7 @@ const CampaignPreviewRow = memo(function CampaignPreviewRow({
       onKeyDown={isClickable ? (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.() }
       } : undefined}
-      className={`flex flex-col gap-2.5 p-3 sm:p-4 rounded-xl border border-gray-100 bg-white transition-colors ${
+      className={`flex flex-col gap-2.5 p-3 @sm:p-4 rounded-xl border border-gray-100 bg-white transition-colors ${
         isClickable ? 'hover:bg-gray-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50' : ''
       }`}
     >

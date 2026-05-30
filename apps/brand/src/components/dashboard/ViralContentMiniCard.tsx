@@ -66,7 +66,7 @@ const ViralContentMiniCard = memo(function ViralContentMiniCard({
       onKeyDown={isClickable ? (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.() }
       } : undefined}
-      className={`group flex flex-col w-[160px] sm:w-[180px] shrink-0 rounded-xl bg-white shadow-sm overflow-hidden border border-gray-100 transition-all duration-200 ${
+      className={`group flex flex-col w-[160px] @sm:w-[180px] shrink-0 rounded-xl bg-white shadow-sm overflow-hidden border border-gray-100 transition-all duration-200 ${
         isClickable ? 'hover:shadow-lg hover:-translate-y-0.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50' : ''
       }`}
       aria-label={`${influencer.username} 콘텐츠, ${metrics.likes.toLocaleString()} 좋아요`}

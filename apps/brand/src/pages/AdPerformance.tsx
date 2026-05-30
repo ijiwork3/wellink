@@ -290,7 +290,7 @@ export default function AdPerformance() {
       />
 
       {/* 기간별 광고 성과 차트 (지출 bar + 클릭 line) */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-1.5">
             <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 광고 성과</h2>
@@ -336,7 +336,7 @@ export default function AdPerformance() {
 
       {/* CTR 추이 + 기간별 클릭 — 2열 배치 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">CTR 추이</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.ctrTrend} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -371,7 +371,7 @@ export default function AdPerformance() {
             />
           </ChartScrollContainer>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">{chartPeriodLabel} 클릭</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.dailyClicks} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -410,7 +410,7 @@ export default function AdPerformance() {
 
       {/* 도달·참여 출처 도넛 (광고 vs 유기적) */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">도달 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.reachSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
@@ -423,7 +423,7 @@ export default function AdPerformance() {
             ]}
           />
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center gap-1.5 mb-4">
             <h2 className="text-base font-semibold text-gray-900">참여 출처</h2>
             <Tooltip content={AD_SECTION_HINTS_KO.engagementSource} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>

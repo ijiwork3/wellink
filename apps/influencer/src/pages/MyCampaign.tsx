@@ -357,10 +357,10 @@ const handleContentSubmit = () => {
                         {((c.rewardAmount > 0) || (c.activityFee ?? 0) > 0) && (
                           <div className="flex flex-wrap gap-1 mt-1.5">
                             {c.rewardAmount > 0 && (
-                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-teal-50 text-teal-600 border border-teal-100">제품 협찬</span>
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-teal-100 text-teal-600 border border-teal-200">제품 협찬</span>
                             )}
                             {(c.activityFee ?? 0) > 0 && (
-                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-violet-50 text-violet-600 border border-violet-100">활동비</span>
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-violet-100 text-violet-600 border border-violet-200">활동비</span>
                             )}
                           </div>
                         )}
@@ -375,7 +375,7 @@ const handleContentSubmit = () => {
                               </span>
                             )}
                             {dday && (
-                              <span className="inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-red-50 text-red-600">
+                              <span className="inline-flex items-center text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-red-100 text-red-600">
                                 콘텐츠 마감 {dday.label}
                               </span>
                             )}

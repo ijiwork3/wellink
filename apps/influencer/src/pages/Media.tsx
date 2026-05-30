@@ -237,7 +237,7 @@ export default function Media() {
             ) : null}
 
             {/* 통계 그리드 — 게시물 0개면 팔로워·게시물만 표시 */}
-            <div className={`grid gap-2 mb-4 px-4 ${mockPosts === 0 ? 'grid-cols-2' : 'grid-cols-3 xl:grid-cols-6'}`}>
+            <div className={`grid gap-2 mb-4 px-4 ${mockPosts === 0 ? 'grid-cols-2' : 'grid-cols-3 @xl:grid-cols-6'}`}>
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />

@@ -361,7 +361,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
                 <button
                   onClick={() => setPwModalOpen(true)}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all bg-brand-green-bg hover:bg-brand-green/10 border-brand-green-border text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all bg-brand-green-bg hover:bg-brand-green/5 border-brand-green-border text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Lock size={14} />비밀번호 변경
                 </button>
@@ -497,7 +497,7 @@ export default function Profile() {
                   />
                   <button
                     onClick={handlePwSendCode}
-                    className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text bg-brand-green-bg hover:bg-brand-green/10 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text bg-brand-green-bg hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >
                     {pwCodeSent ? '재발송' : '인증요청'}
                   </button>

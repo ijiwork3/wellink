@@ -437,9 +437,10 @@ export default function Settlement() {
                   ? `${(row.data as DownloadRevenueItem).brand} · ${(row.data as DownloadRevenueItem).contentType}`
                   : (row.data as SettlementItem).type
 
+                const status = row.data.status
                 return (
                   <div key={id} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-3">
-                    <div className="flex items-end justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-400 tabular-nums mb-1">
                           {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
@@ -447,9 +448,18 @@ export default function Settlement() {
                         <p className="text-sm font-semibold text-gray-900 break-keep">{campaign}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{subLabel}</p>
                       </div>
-                      <p className="text-base @[640px]:text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap shrink-0">
-                        {amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
-                      </p>
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <p className="text-base @[640px]:text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">
+                          {amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
+                        </p>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                          status === '미인출'
+                            ? 'bg-amber-100 text-amber-600 border border-amber-200'
+                            : 'bg-green-100 text-green-700 border border-green-200'
+                        }`}>
+                          {status}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )

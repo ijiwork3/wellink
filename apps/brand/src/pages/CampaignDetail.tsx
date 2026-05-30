@@ -1077,10 +1077,10 @@ export default function CampaignDetail() {
                 <span className="text-base font-medium rounded-full px-3 py-1 bg-gray-100 text-gray-600">{meta.campaignType}</span>
                 <span className="text-base font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text">{campaign.category}</span>
                 {meta.productPrice > 0 && (
-                  <span className="text-base font-medium rounded-full px-3 py-1 bg-teal-50 text-teal-600 border border-teal-100 whitespace-nowrap">제품 협찬</span>
+                  <span className="text-base font-medium rounded-full px-3 py-1 bg-teal-100 text-teal-600 border border-teal-200 whitespace-nowrap">제품 협찬</span>
                 )}
                 {meta.rewardPoint > 0 && (
-                  <span className="text-base font-medium rounded-full px-3 py-1 bg-violet-50 text-violet-600 border border-violet-100 whitespace-nowrap">활동비</span>
+                  <span className="text-base font-medium rounded-full px-3 py-1 bg-violet-100 text-violet-600 border border-violet-200 whitespace-nowrap">활동비</span>
                 )}
               </div>
               <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>

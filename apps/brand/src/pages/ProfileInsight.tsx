@@ -268,7 +268,7 @@ export default function ProfileInsight() {
       {/* 피드별 성과 추세 + 노출&도달 — 960px+ 부터 1:1 2열 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-4">
         {/* 피드별 추세선 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
@@ -345,7 +345,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 노출 & 도달 라인 차트 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-semibold text-gray-900">노출 & 도달</h2>
@@ -398,7 +398,7 @@ export default function ProfileInsight() {
       {/* 콘텐츠 유형별 성과 + 팔로워 추이 */}
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 — 클라 #2: bar 기준을 *최상위 참여율 100% 상대 비교* 로 명시 */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
           <h2 className="text-base font-semibold text-gray-900 mb-1">콘텐츠 유형별 성과</h2>
           <p className="text-sm text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
           {/* 헤더 행 */}
@@ -445,7 +445,7 @@ export default function ProfileInsight() {
         </div>
 
         {/* 팔로워 추이 (2/5) */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
           <div className="mb-4">
             <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
             <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
@@ -491,7 +491,7 @@ export default function ProfileInsight() {
       {/* 최근 게시물 상세 */}
       {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
       <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
         <h2 className="text-base font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
         </h2>
@@ -548,7 +548,7 @@ export default function ProfileInsight() {
       </div>
 
       {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-5 relative">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h2 className="text-base font-semibold text-gray-900">팔로워 분석</h2>
           <div className="flex items-center gap-2">

@@ -22,10 +22,10 @@ export default function CampaignDetail() {
   if (qa === 'loading') {
     return (
       <Layout showSidebar={false} pageTitle="캠페인 상세" onBack={goBack}>
-        <div className="pt-8 pb-28 lg:pb-12">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <div className="pt-8 pb-28 @[1024px]:pb-12">
+          <div className="max-w-6xl mx-auto px-4 @sm:px-6">
+            <div>
+              <div className="flex flex-col @[1024px]:flex-row gap-8 @[1024px]:gap-12">
                 {/* 좌열: 타이틀 → 이미지 → 섹션들 */}
                 <div className="flex-1 min-w-0 space-y-8">
                   {/* 타이틀 섹션 */}
@@ -55,7 +55,7 @@ export default function CampaignDetail() {
                   </div>
                 </div>
                 {/* 우사이드바 */}
-                <div className="lg:w-72 lg:shrink-0">
+                <div className="@[1024px]:w-72 @[1024px]:shrink-0">
                   <Skeleton shape="card" height={300} width="100%" />
                 </div>
               </div>

@@ -358,7 +358,7 @@ export default function InfluencerManage() {
             <div key={i} className="h-9 rounded-full bg-gray-100 animate-pulse" style={{ width: w + 'px' }} />
           ))}
         </div>
-        <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
+        <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 @xl:grid-cols-3 @2xl:grid-cols-4'}`}>
           {[1, 2, 3].map(i => <SkeletonCard key={i} height={180} />)}
         </div>
       </div>
@@ -400,7 +400,7 @@ export default function InfluencerManage() {
   return (
     <div className="space-y-5">
       {/* 상단 헤더 + 탭 (sticky) */}
-      <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
+      <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 @md:-mx-6 @lg:-mx-8 px-4 @md:px-6 @lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
         <div>
           <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
           <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
@@ -486,7 +486,7 @@ export default function InfluencerManage() {
         )
       ) : (
         <>
-          <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
+          <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 @xl:grid-cols-3 @2xl:grid-cols-4'}`}>
             {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}

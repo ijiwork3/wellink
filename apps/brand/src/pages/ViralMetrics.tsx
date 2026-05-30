@@ -498,7 +498,7 @@ export default function ViralMetrics() {
         </div>
 
         {/* ── 콘텐츠 표시 — 카드 그리드 (테이블 토글 제거됨) ── */}
-        <div className="p-3 sm:p-4 bg-gray-50/30">
+        <div className="p-3 @sm:p-4 bg-gray-50/30">
             {paginated.length === 0 ? (
               <div className="py-12 text-center text-sm text-gray-500">조건에 맞는 콘텐츠가 없습니다.</div>
             ) : (
