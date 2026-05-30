@@ -17,8 +17,12 @@ const plans = [
     unit: '원/월',
     tag: null,
     desc: '소규모 브랜드와 초기 스타트업을 위한 시작 플랜',
+    quota: [
+      { value: '5,000명', label: '인플루언서 DB' },
+      { value: '월 3건', label: '캠페인' },
+      { value: '1명', label: '팀 멤버' },
+    ],
     features: [
-      '인플루언서 DB 5,000명',
       'Fit-Score 기반 인플루언서 추천',
       '기본 성과 분석 대시보드',
       '이메일 지원',
@@ -33,8 +37,12 @@ const plans = [
     unit: '원/월',
     tag: '추천',
     desc: '성장 중인 브랜드를 위한 가장 인기 있는 플랜',
+    quota: [
+      { value: '5만 명', label: '인플루언서 DB' },
+      { value: '월 20건', label: '캠페인' },
+      { value: '5명', label: '팀 멤버' },
+    ],
     features: [
-      '인플루언서 DB 50,000명+',
       'AI 성과 분석 및 최적화',
       '커스텀 대시보드 구성',
       '우선 지원',
@@ -49,8 +57,12 @@ const plans = [
     unit: '',
     tag: null,
     desc: '엔터프라이즈를 위한 무제한 통합 플랜',
+    quota: [
+      { value: '무제한', label: '인플루언서 DB' },
+      { value: '무제한', label: '캠페인' },
+      { value: '무제한', label: '팀 멤버' },
+    ],
     features: [
-      '무제한 인플루언서 DB',
       '전담 마케팅 전문가 배정',
       'API 통합 및 커스텀 개발',
       '24시간 전담 지원',
@@ -453,7 +465,11 @@ export default function Subscription() {
                   <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
                 </div>
               )}
+              <p className="mt-4 text-xs text-gray-400">
+                {plan.quota.map(q => `${q.value} ${q.label}`).join(' · ')}
+              </p>
             </div>
+            <div className="mb-5 h-px bg-gray-100" />
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
@@ -517,7 +533,11 @@ export default function Subscription() {
                   <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
                 </div>
               )}
+              <p className="mt-4 text-xs text-gray-400">
+                {plan.quota.map(q => `${q.value} ${q.label}`).join(' · ')}
+              </p>
             </div>
+            <div className="mb-5 h-px bg-brand-green-border" />
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
@@ -562,7 +582,11 @@ export default function Subscription() {
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-white">{plan.price}</span>
               </div>
+              <p className="mt-4 text-xs text-gray-500">
+                {plan.quota.map(q => `${q.value} ${q.label}`).join(' · ')}
+              </p>
             </div>
+            <div className="mb-5 h-px bg-gray-700" />
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-2.5 text-base text-gray-300">
