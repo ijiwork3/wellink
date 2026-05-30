@@ -40,7 +40,6 @@ export default function Media() {
 
   const [contentPage, setContentPage] = useState(1)
   const [isConnecting, setIsConnecting] = useState(false)
-  const [isUpgrading, setIsUpgrading] = useState(false)
   const [showMetaModal, setShowMetaModal] = useState(false)
   const [showConnectModal, setShowConnectModal] = useState(false)
   const [connectInput, setConnectInput] = useState('')
@@ -138,17 +137,6 @@ export default function Media() {
   /** 프로페셔널 전환 — Meta OAuth 모달 열기 */
   const handleUpgradeToProfessional = () => {
     setShowMetaModal(true)
-  }
-
-  /** Meta 모달 확인 — OAuth 완료 시뮬레이션 */
-  const handleMetaConfirm = () => {
-    setShowMetaModal(false)
-    setIsUpgrading(true)
-    setTimeout(() => {
-      ig.upgradeToProfessional()
-      setIsUpgrading(false)
-      showToast('프로페셔널 계정으로 전환됐어요!', 'success')
-    }, 1200)
   }
 
   const handleDisconnect = () => {
@@ -350,15 +338,10 @@ export default function Media() {
                 </p>
                 <button
                   type="button"
-                  disabled={isUpgrading}
                   onClick={handleUpgradeToProfessional}
-                  className="shrink-0 flex items-center gap-1 text-xs font-semibold text-amber-800 border border-amber-300 bg-white hover:bg-amber-50 rounded-lg px-2.5 py-1.5 transition-colors whitespace-nowrap disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
+                  className="shrink-0 flex items-center gap-1 text-xs font-semibold text-amber-800 border border-amber-300 bg-white hover:bg-amber-50 rounded-lg px-2.5 py-1.5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
                 >
-                  {isUpgrading ? (
-                    <><Loader2 size={11} className="animate-spin" aria-hidden="true" />연결 중...</>
-                  ) : (
-                    <>전환하기 <ArrowUpRight size={11} aria-hidden="true" /></>
-                  )}
+                  전환하기 <ArrowUpRight size={11} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -488,7 +471,7 @@ export default function Media() {
         )}
       </div>
 
-      {/* Meta OAuth 시뮬레이션 모달 — 프로페셔널 전환 */}
+      {/* Meta OAuth 모달 — 프로페셔널 전환 */}
       <Modal
         open={showMetaModal}
         onClose={() => setShowMetaModal(false)}
@@ -498,7 +481,6 @@ export default function Media() {
         noDividers
       >
         <div className="flex flex-col items-center gap-5 px-2 py-2">
-          {/* Meta 로고 */}
           <div className="flex flex-col items-center gap-2">
             <svg viewBox="0 0 48 48" width="48" height="48" fill="none" aria-label="Meta" role="img">
               <path d="M8 18.5C8 13.8 10.9 10 14.7 10c2.3 0 4 1.1 6.1 4.2L24 18l3.2-3.8C29.3 11.1 31 10 33.3 10 37.1 10 40 13.8 40 18.5c0 2.6-.8 5.1-2.6 7.5L24 40 10.6 26C8.8 23.6 8 21.1 8 18.5Z" fill="#0866FF"/>
@@ -508,21 +490,21 @@ export default function Media() {
               웰링크가 회원님의 Instagram 비즈니스 계정에 접근하도록 허용합니다
             </p>
           </div>
-
           <div className="w-full rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 space-y-1.5 text-xs text-gray-600">
             <p className="flex items-center gap-2"><span className="text-green-500">✓</span>팔로워 수 및 도달 데이터 읽기</p>
             <p className="flex items-center gap-2"><span className="text-green-500">✓</span>게시물 인사이트(노출·참여율) 읽기</p>
             <p className="flex items-center gap-2"><span className="text-green-500">✓</span>계정 기본 정보 읽기</p>
           </div>
-
           <div className="w-full flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleMetaConfirm}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
+            <a
+              href="https://www.instagram.com/accounts/convert_to_professional/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setShowMetaModal(false)}
+              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
             >
               계속
-            </button>
+            </a>
             <button
               type="button"
               onClick={() => setShowMetaModal(false)}
