@@ -434,9 +434,9 @@ export default function Subscription() {
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
-                <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
-                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월' : '원'}</span>
+              <div className="mt-4 flex items-baseline gap-x-1">
+                <span className="text-4xl font-extrabold text-gray-900 tabular-nums">{displayPrice}</span>
+                <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
                 <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
@@ -489,9 +489,9 @@ export default function Subscription() {
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
-              <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
-                <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
-                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월' : '원'}</span>
+              <div className="mt-4 flex items-baseline gap-x-1">
+                <span className="text-4xl font-extrabold text-gray-900 tabular-nums">{displayPrice}</span>
+                <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
                 <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
