@@ -316,7 +316,7 @@ export default function App() {
         <section className="relative overflow-hidden bg-[var(--color-landing-dark)] py-24 text-white md:py-32">
           <div
             className="absolute inset-0 opacity-10"
-            style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+            style={{ backgroundImage: 'radial-gradient(var(--color-white) 1px, transparent 1px)', backgroundSize: '24px 24px' }}
           />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
