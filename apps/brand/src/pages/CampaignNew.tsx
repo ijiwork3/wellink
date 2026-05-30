@@ -28,6 +28,9 @@ const VIDEO_COUNTS = ['1개 이상 (15초+)', '1개 이상 (30초+)', '2개 이�
 
 const TODAY = new Date().toISOString().split('T')[0]
 
+const SECONDARY_USE_CHANNELS = ['인스타그램 광고', '유튜브 광고', '자사몰 배너', '이메일 마케팅', '오프라인 매장'] as const
+const SECONDARY_USE_DURATIONS = ['3개월', '6개월', '12개월', '24개월'] as const
+
 const FILLED = {
   type: '방문형' as '방문형' | '택배형',
   location: '강남/서초',
@@ -43,6 +46,9 @@ const FILLED = {
   productPrice: '58000',
   rewardPoint: '0',
   downloadPrice: '5000',
+  secondaryUseEnabled: true,
+  secondaryUseChannels: ['인스타그램 광고', '자사몰 배너'] as string[],
+  secondaryUseDuration: '12개월',
   keywords: ['#봄요가', '#강남요가'],
   postType: '피드',
   precaution: '릴스 제작 우대',
@@ -88,6 +94,9 @@ export default function CampaignNew() {
     brandName: '', shippedProductName: '',  // 택배형 전용 — 원본 보강
     platform: '인스타그램' as Platform, category: '맛집/푸드',
     description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '', downloadPrice: '',
+    secondaryUseEnabled: false,
+    secondaryUseChannels: [] as string[],
+    secondaryUseDuration: '6개월',
     keywords: [] as string[], postType: '피드', precaution: '릴스 제작 우대',
     photoCount: '5장 이상', videoCount: '1개 이상 (15초+)', guideText: '', link: '',
     recruitStart: '', recruitEnd: '', announceDate: '', uploadStart: '', uploadEnd: '',
@@ -394,6 +403,90 @@ export default function CampaignNew() {
           <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-sm text-blue-800">
             <p className="font-semibold mb-0.5">택배형 캠페인 안내</p>
             <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
+          </div>
+        )}
+      </Section>
+
+      {/* ── 섹션 2-B: 콘텐츠 2차 활용 ── */}
+      <Section title="콘텐츠 2차 활용">
+        <p className="text-sm text-gray-500 -mt-1 break-keep">
+          인플루언서가 제작한 콘텐츠를 광고·마케팅 목적으로 재활용할 계획이 있다면 반드시 사전에 고지해야 합니다.
+        </p>
+        <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 bg-gray-50">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900">콘텐츠 2차 활용</p>
+            <p className="text-xs text-gray-500 mt-0.5 break-keep">활성화하면 지원자에게 사전 고지됩니다</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.secondaryUseEnabled}
+            onClick={() => set('secondaryUseEnabled', !form.secondaryUseEnabled)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              form.secondaryUseEnabled ? 'bg-brand-green' : 'bg-gray-200'
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                form.secondaryUseEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+
+        {form.secondaryUseEnabled && (
+          <div className="space-y-4 pt-1">
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">활용 채널 <span className="text-xs font-normal text-gray-400">(복수 선택 가능)</span></p>
+              <div className="flex flex-wrap gap-2">
+                {SECONDARY_USE_CHANNELS.map(ch => {
+                  const selected = form.secondaryUseChannels.includes(ch)
+                  return (
+                    <button
+                      key={ch}
+                      type="button"
+                      onClick={() => {
+                        const next = selected
+                          ? form.secondaryUseChannels.filter(c => c !== ch)
+                          : [...form.secondaryUseChannels, ch]
+                        set('secondaryUseChannels', next)
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
+                        selected
+                          ? 'bg-brand-green text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {ch}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">활용 기간</p>
+              <div className="flex flex-wrap gap-2">
+                {SECONDARY_USE_DURATIONS.map(d => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => set('secondaryUseDuration', d)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
+                      form.secondaryUseDuration === d
+                        ? 'bg-brand-green text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-sm text-amber-700 break-keep leading-relaxed">
+              <strong>고지 예시:</strong> 이 캠페인의 콘텐츠는 광고주가{' '}
+              {form.secondaryUseChannels.length > 0 ? form.secondaryUseChannels.join(', ') + ' 등 ' : ''}
+              마케팅 목적으로 콘텐츠 게재 후 {form.secondaryUseDuration} 동안 재활용할 수 있습니다.
+            </div>
           </div>
         )}
       </Section>

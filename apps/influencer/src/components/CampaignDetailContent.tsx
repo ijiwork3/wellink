@@ -342,6 +342,45 @@ export default function CampaignDetailContent({
                           <p>※ 제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</p>
                         </div>
                       </div>
+
+                      {/* 콘텐츠 2차 활용 고지 — 있을 때만 표시 */}
+                      {campaign.secondaryUse?.enabled && (
+                        <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+                          <p className="text-sm font-semibold text-amber-800 mb-1.5 flex items-center gap-1.5">
+                            <span aria-hidden="true">📢</span> 콘텐츠 2차 활용 안내
+                          </p>
+                          <p className="text-sm text-amber-700 leading-relaxed break-keep">
+                            이 캠페인의 콘텐츠는 광고주가 마케팅 목적으로 재활용할 수 있습니다. 지원 전 반드시 확인하세요.
+                          </p>
+                          <ul className="mt-2 space-y-1">
+                            {(campaign.secondaryUse.channels?.length ?? 0) > 0 && (
+                              <li className="text-sm text-amber-700">
+                                <span className="font-medium">활용 채널:</span>{' '}
+                                {campaign.secondaryUse.channels!.join(', ')}
+                              </li>
+                            )}
+                            {(campaign.secondaryUse.durationMonths ?? 0) > 0 && (
+                              <li className="text-sm text-amber-700">
+                                <span className="font-medium">활용 기간:</span>{' '}
+                                콘텐츠 게재 후 {campaign.secondaryUse.durationMonths}개월
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* 유가시딩(활동비 있음) → 프로페셔널 계정 필요 고지 */}
+                      {(campaign.activityFee ?? 0) > 0 && (
+                        <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3.5">
+                          <p className="text-sm font-semibold text-blue-800 mb-1 flex items-center gap-1.5">
+                            <span aria-hidden="true">ℹ️</span> 활동비 지급 캠페인 안내
+                          </p>
+                          <p className="text-sm text-blue-700 leading-relaxed break-keep">
+                            활동비가 지급되는 캠페인은 인스타그램 <strong>프로페셔널 계정(비즈니스·크리에이터)</strong>만 지원할 수 있습니다.
+                            프로페셔널 계정은 마이페이지에서 연동할 수 있어요.
+                          </p>
+                        </div>
+                      )}
                     </section>
                   )}
 

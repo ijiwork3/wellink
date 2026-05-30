@@ -18,6 +18,13 @@ export interface InfluencerProfile {
   instagram: string
   /** 인스타그램 연결 여부. true면 mockInstaStats 노출 가능, false면 SNS 연결 유도 */
   instagramConnected: boolean
+  /**
+   * 인스타그램 프로페셔널 계정(비즈니스·크리에이터) 여부.
+   * Meta Graph API는 프로페셔널 계정만 인사이트(팔로워·노출·도달) 제공.
+   * true → 유가시딩(activityFee > 0) 캠페인 지원 가능 + 인사이트 연동 가능
+   * false → 무가시딩 전용. 유가시딩 지원 시 전환 안내 노출.
+   */
+  instagramProfessional: boolean
   bio: string
   marketing: boolean
   selectedFields: string[]
@@ -39,6 +46,7 @@ export const mockProfile: InfluencerProfile = {
   email: 'chanki@example.com',
   instagram: 'chanstyler',
   instagramConnected: true,
+  instagramProfessional: false,   // 데모 기본값: 일반 계정 → 유가시딩 전환 안내 흐름 시연
   bio: '헬스·필라테스 전문 인플루언서 | 건강한 라이프스타일을 공유합니다',
   marketing: true,
   selectedFields: ['헬스/웨이트', '필라테스'],

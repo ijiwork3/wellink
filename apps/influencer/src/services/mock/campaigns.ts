@@ -55,6 +55,18 @@ export interface Campaign {
   tags?: string[]
   /** 콘텐츠 다운로드 단가 — 광고주가 인플루언서 콘텐츠를 2차 활용 시 건당 지급 금액. 0이면 다운로드 비활성. */
   downloadPrice?: number
+  /**
+   * 콘텐츠 2차 활용 조건.
+   * enabled: true면 광고주가 인플루언서 콘텐츠를 SNS 광고·웹사이트 등에 재활용 가능.
+   * 인플루언서는 지원 전 이 조건을 확인하고 동의해야 함.
+   */
+  secondaryUse?: {
+    enabled: boolean
+    /** 활용 채널 — 예: ['인스타그램 광고', '자사몰', '이메일 마케팅'] */
+    channels?: string[]
+    /** 활용 기간 (개월) */
+    durationMonths?: number
+  }
 }
 
 export const mockCampaigns: Campaign[] = [
@@ -146,6 +158,11 @@ export const mockCampaigns: Campaign[] = [
     keywords: ['사계단백연구소', '사계단백', '단백질도시락', '식단관리', '식단도시락'],
     tags: ['단백질', '도시락', '식단', '서포터즈', '헬스'],
     downloadPrice: 5000,
+    secondaryUse: {
+      enabled: true,
+      channels: ['인스타그램 광고', '자사몰 배너', '이메일 마케팅'],
+      durationMonths: 12,
+    },
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요? (예: 크로스핏, 러닝, 웨이트 등)', required: true, type: 'text' },
       { id: 'q2', question: '현재 운동 및 식단 루틴을 기록하는 SNS 채널을 알려주세요', required: true, type: 'text' },
@@ -179,6 +196,11 @@ export const mockCampaigns: Campaign[] = [
     detailMissionDescription: '1. 제품 수령 후 언박싱 스토리 업로드 (필수)\n2. 실제 운동 중 또는 운동 후 섭취 장면 포함\n3. 릴스 최소 30초, 피드 최소 3장 이상\n4. #SMILEATO #크로스핏 태그 필수\n5. 유료 광고 표기 필수 (광고, AD, 유료광고 중 택 1)',
     keywords: ['SMILEATO', '크로스핏', '보충제', '스포츠영양'],
     downloadPrice: 3000,
+    secondaryUse: {
+      enabled: true,
+      channels: ['인스타그램 광고', '유튜브 광고'],
+      durationMonths: 6,
+    },
     questions: [
       { id: 'q1', question: '주로 어떤 운동을 하시나요?', required: true, type: 'text' },
     ],

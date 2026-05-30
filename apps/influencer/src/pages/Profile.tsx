@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff, Camera, Trash2 } from 'lucide-react'
+import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff, Camera, Trash2, BadgeCheck, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton, AlertModal, Modal } from '@wellink/ui'
 import { Toggle, ResponsiveSheet } from '@wellink/ui'
@@ -42,6 +42,12 @@ export default function Profile() {
   const [showNewPw, setShowNewPw] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
+  // 프로페셔널 계정 연동 — mock 상태 (실서비스: Meta OAuth)
+  const [isProfessional, setIsProfessional] = useState(mockProfile.instagramProfessional)
+  const [isProfessionalConnecting, setIsProfessionalConnecting] = useState(false)
+  const professionalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (professionalTimerRef.current) clearTimeout(professionalTimerRef.current) }, [])
+
   // 프로필 이미지
   const avatarFileRef = useRef<HTMLInputElement>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -434,6 +440,66 @@ export default function Profile() {
               <p className="text-sm text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
             </div>
             <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} ariaLabelledBy="profile-marketing-label" />
+          </div>
+        </div>
+        )}
+
+        {/* 프로페셔널 계정 연동 — 편집 모드와 별도 */}
+        {!isEditing && mockProfile.instagramConnected && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-sm font-medium text-gray-900">인스타그램 프로페셔널 계정</p>
+                {isProfessional && (
+                  <span className="flex items-center gap-0.5 text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                    <BadgeCheck size={11} aria-hidden="true" />연동됨
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 break-keep leading-relaxed">
+                {isProfessional
+                  ? '비즈니스·크리에이터 계정이 연동되었습니다. 활동비 지급 캠페인에 지원할 수 있어요.'
+                  : '비즈니스·크리에이터 계정을 연동하면 활동비(원고료) 지급 캠페인에 지원할 수 있어요.'}
+              </p>
+              {!isProfessional && (
+                <a
+                  href="https://help.instagram.com/502981923235522"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                >
+                  프로페셔널 계정 전환 방법 <ExternalLink size={10} aria-hidden="true" />
+                </a>
+              )}
+            </div>
+            {isProfessional ? (
+              <button
+                type="button"
+                onClick={() => { setIsProfessional(false); showToast('연동이 해제되었어요', 'info') }}
+                className="shrink-0 text-xs text-gray-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 rounded px-2 py-1"
+              >
+                연동 해제
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={isProfessionalConnecting}
+                aria-disabled={isProfessionalConnecting}
+                aria-busy={isProfessionalConnecting}
+                onClick={() => {
+                  setIsProfessionalConnecting(true)
+                  professionalTimerRef.current = setTimeout(() => {
+                    setIsProfessionalConnecting(false)
+                    setIsProfessional(true)
+                    showToast('프로페셔널 계정이 연동되었어요!', 'success')
+                  }, 1400)
+                }}
+                className="shrink-0 text-xs font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+              >
+                {isProfessionalConnecting ? '연동 중...' : '계정 연동'}
+              </button>
+            )}
           </div>
         </div>
         )}
