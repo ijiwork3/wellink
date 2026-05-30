@@ -506,8 +506,18 @@
 }
 
 :root {
-  --gradient-auth-bg: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 15%, transparent) 0%, #ffffff 70%);
+  /* 그라디언트 내부 색상 토큰 */
+  --color-gradient-auth-stop:        #ffffff;   /* = --color-white */
+  --color-gradient-login-stop-1:     #EFF9D8;   /* 랜딩 그린 그라디언트 1 */
+  --color-gradient-login-stop-2:     #DCEFAF;   /* 랜딩 그린 그라디언트 2 */
+  --color-gradient-login-stop-3:     #BFDD75;   /* 랜딩 그린 그라디언트 3 */
+  --color-gradient-login-stop-4:     #A2C748;   /* 랜딩 그린 그라디언트 4 */
+  --color-gradient-instagram-purple: #833ab4;   /* 인스타그램 그라디언트 보라 */
+  --color-gradient-instagram-red:    #fd1d1d;   /* 인스타그램 그라디언트 빨강 */
+  --color-gradient-instagram-orange: #fcb045;   /* 인스타그램 그라디언트 오렌지 */
+
+  --gradient-auth-bg: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 15%, transparent) 0%, var(--color-gradient-auth-stop) 70%);
   /* 로그인 그라디언트 — v4.1 동기화 */
-  --gradient-login-bg: linear-gradient(135deg, #EFF9D8 0%, #DCEFAF 30%, #BFDD75 60%, #A2C748 100%);
-  --gradient-instagram: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+  --gradient-login-bg: linear-gradient(135deg, var(--color-gradient-login-stop-1) 0%, var(--color-gradient-login-stop-2) 30%, var(--color-gradient-login-stop-3) 60%, var(--color-gradient-login-stop-4) 100%);
+  --gradient-instagram: linear-gradient(45deg, var(--color-gradient-instagram-purple), var(--color-gradient-instagram-red), var(--color-gradient-instagram-orange));
 }
