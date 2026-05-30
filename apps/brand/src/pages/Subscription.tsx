@@ -682,15 +682,17 @@ export default function Subscription() {
                   key={col.key}
                   className={`relative border-l border-b border-gray-100 px-4 py-5 text-center ${col.accent ? 'bg-brand-green-bg' : col.dark ? 'bg-gray-900' : 'bg-white'}`}
                 >
-                  <p className={`text-sm font-bold ${col.accent ? 'text-brand-green-text' : col.dark ? 'text-white' : 'text-gray-900'}`}>
-                    {col.label}
-                  </p>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className={`text-sm font-bold ${col.accent ? 'text-brand-green-text' : col.dark ? 'text-white' : 'text-gray-900'}`}>
+                      {col.label}
+                    </p>
+                    {col.accent && (
+                      <span className="text-xs font-bold bg-brand-green text-white px-2 py-0.5 rounded-full whitespace-nowrap">추천</span>
+                    )}
+                  </div>
                   <p className={`text-xs mt-1 ${col.accent ? 'text-brand-green-text/70' : col.dark ? 'text-gray-400' : 'text-gray-400'}`}>
                     {col.price}
                   </p>
-                  {col.accent && (
-                    <span className="mt-2 inline-block text-xs font-bold bg-brand-green text-white px-2 py-0.5 rounded-full">추천</span>
-                  )}
                 </div>
               ))}
             </div>
