@@ -49,10 +49,10 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
       <div className="flex flex-col items-center justify-center min-h-[420px] bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
         {/* Instagram 그라디언트 아이콘 */}
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-5 shadow-lg">
-          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <circle cx="12" cy="12" r="4" />
-            <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
+            <circle cx="17.5" cy="6.5" r="1" fill={SEMANTIC_COLORS.white} stroke="none" />
           </svg>
         </div>
 
@@ -68,10 +68,10 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
           className="flex items-center gap-2 text-base font-semibold text-white px-6 py-2.5 rounded-xl transition-opacity hover:opacity-90"
           style={{ background: 'var(--gradient-instagram)' }}
         >
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <circle cx="12" cy="12" r="4" />
-            <circle cx="17.5" cy="6.5" r="0.8" fill="white" stroke="none" />
+            <circle cx="17.5" cy="6.5" r="0.8" fill={SEMANTIC_COLORS.white} stroke="none" />
           </svg>
           계정 연결하기
         </button>
@@ -91,10 +91,10 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
             {step === 'confirm' && (
               <div className="p-6 text-center">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                     <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
+                    <circle cx="17.5" cy="6.5" r="1" fill={SEMANTIC_COLORS.white} stroke="none" />
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Instagram 계정 연결</h3>
@@ -143,10 +143,10 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
             {step === 'loading' && (
               <div className="p-8 text-center">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mx-auto mb-4 shadow-md animate-pulse">
-                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                     <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
+                    <circle cx="17.5" cy="6.5" r="1" fill={SEMANTIC_COLORS.white} stroke="none" />
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">연결 중...</h3>

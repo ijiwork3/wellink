@@ -10,7 +10,7 @@
  *  - 'area': 진한 면적 그라데이션 — 누적 성장 강조
  */
 import { memo, useEffect, useRef, useState } from 'react'
-import { BRAND } from '../constants/colors'
+import { BRAND, SEMANTIC_COLORS } from '../constants/colors'
 
 interface SparklineProps {
   /** 데이터 포인트 배열 — 길이 < 2면 렌더 안 함 */
@@ -211,7 +211,7 @@ const Sparkline = memo(function Sparkline({
         {endDot && (
           <>
             <circle cx={lastPt.x} cy={lastPt.y} r={3} fill={stroke} />
-            <circle cx={lastPt.x} cy={lastPt.y} r={1.4} fill="white" />
+            <circle cx={lastPt.x} cy={lastPt.y} r={1.4} fill={SEMANTIC_COLORS.white} />
           </>
         )}
       </>

@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -114,7 +114,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
           {seg.map((p, i) => (
             <g key={i}>
               <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={CHART_COLORS.saves} />
-              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill={SEMANTIC_COLORS.white} />
             </g>
           ))}
         </g>
@@ -126,7 +126,7 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
           {seg.map((p, i) => (
             <g key={i}>
               <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={BRAND.green} />
-              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill="white" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill={SEMANTIC_COLORS.white} />
             </g>
           ))}
         </g>
@@ -151,8 +151,8 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         return (
           <g key="active">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill={CHART_COLORS.saves} stroke="white" strokeWidth={1.5} />}
-            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill={BRAND.green} stroke="white" strokeWidth={1.5} />}
+            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill={CHART_COLORS.saves} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
+            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill={BRAND.green} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
           </g>
         )
       })()}

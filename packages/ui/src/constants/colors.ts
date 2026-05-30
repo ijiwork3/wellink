@@ -46,6 +46,26 @@ export const CHART_COLORS = {
   badStroke: '#f43f5e',
   /** KPI bad 지표 뮤트 배경 — rose-300 */
   badMuted: '#fda4af',
+  /** 콘텐츠 상세 — 조회수 메인 (green-600) */
+  contentViews: '#16a34a',
+  /** 콘텐츠 상세 — 조회수 평균 dashed (green-400) */
+  contentViewsAvg: '#4ade80',
+  /** 콘텐츠 상세 — 증가 조회수 메인 (orange-500) */
+  contentViewsInc: '#f97316',
+  /** 콘텐츠 상세 — 증가 조회수 평균 dashed (amber-400) */
+  contentViewsIncAvg: '#fbbf24',
+  /** 콘텐츠 상세 — 좋아요 메인 (pink-500) */
+  contentLikes: '#ec4899',
+  /** 콘텐츠 상세 — 좋아요 평균 dashed (pink-300) */
+  contentLikesAvg: '#f9a8d4',
+  /** 콘텐츠 상세 — 댓글 메인 (violet-700) */
+  contentComments: '#7c3aed',
+  /** 콘텐츠 상세 — 댓글 평균 dashed (violet-400) */
+  contentCommentsAvg: '#a78bfa',
+  /** 콘텐츠 상세 — 참여율 메인 (cyan-700) */
+  contentEngage: '#0891b2',
+  /** 콘텐츠 상세 — 참여율 평균 dashed (cyan-300) */
+  contentEngageAvg: '#67e8f9',
 } as const
 
 /** SVG stroke/fill prop에서 Tailwind 클래스 불가한 경우에만 사용 */
@@ -62,6 +82,8 @@ export const SEMANTIC_COLORS = {
   textPrimary: '#111827',
   /** 인라인 style prop 전용 — secondary 텍스트 (gray-700) */
   textSecondary: '#374151',
+  /** SVG dot/icon 흰색 (stroke·fill — 배경 대비 구분선) */
+  white: '#ffffff',
 } as const
 
 /** 바이럴 콘텐츠 등급 도넛 전용 색상

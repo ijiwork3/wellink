@@ -2412,7 +2412,7 @@ export default function CampaignDetail() {
                               <text x={b.x + barW / 2} y={barTop - 34} textAnchor="middle" fontSize={10} fill={CHART_COLORS.inactive}>
                                 {b.caption.length > 20 ? `${b.caption.slice(0, 20)}…` : b.caption}
                               </text>
-                              <text x={b.x + barW / 2} y={barTop - 16} textAnchor="middle" fontSize={12} fill="white" fontWeight="600">
+                              <text x={b.x + barW / 2} y={barTop - 16} textAnchor="middle" fontSize={12} fill={SEMANTIC_COLORS.white} fontWeight="600">
                                 ♥ {b.likes.toLocaleString()}
                               </text>
                             </g>
@@ -3500,15 +3500,15 @@ function TrendChart({
               <line x1={hx} y1={padT} x2={hx} y2={padT + plotH} stroke={CHART_COLORS.axisLine} strokeWidth={1} strokeDasharray="3 3" />
               {series.map(s => {
                 const p = pointFor(data[hoverIdx][s.dataKey], hoverIdx)
-                return <circle key={s.dataKey} cx={p.x} cy={p.y} r={5} fill="white" stroke={s.stroke} strokeWidth={2.5} />
+                return <circle key={s.dataKey} cx={p.x} cy={p.y} r={5} fill={SEMANTIC_COLORS.white} stroke={s.stroke} strokeWidth={2.5} />
               })}
               <rect x={tx} y={ty} width={tipW} height={tipH} rx={8} fill={CHART_COLORS.tooltipBg} opacity={0.94} />
-              <text x={tx + 12} y={ty + 18} fontSize={13} fontWeight={700} fill="white">{data[hoverIdx].label}</text>
+              <text x={tx + 12} y={ty + 18} fontSize={13} fontWeight={700} fill={SEMANTIC_COLORS.white}>{data[hoverIdx].label}</text>
               {series.map((s, i) => (
                 <g key={s.dataKey}>
                   <circle cx={tx + 16} cy={ty + 36 + i * 20} r={3.5} fill={s.stroke} />
                   <text x={tx + 26} y={ty + 40 + i * 20} fontSize={12} fill={CHART_COLORS.tooltipText}>
-                    {s.label}: <tspan fontWeight={700} fill="white">{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
+                    {s.label}: <tspan fontWeight={700} fill={SEMANTIC_COLORS.white}>{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
                   </text>
                 </g>
               ))}

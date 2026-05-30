@@ -13,7 +13,7 @@
 import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { X, ExternalLink, Link2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { fmtNumber, CHART_COLORS } from '@wellink/ui'
+import { fmtNumber, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 import { type ViralContent, CAMPAIGN_MATCH_MAP } from '../../../data/analytics/viral'
 
 /* ── 시리즈 데이터 생성 ───────────────────────────────────────────── */
@@ -93,13 +93,13 @@ function buildSeries(content: ViralContent, days = 28) {
 
 /* ── 시계열 라인 차트 ────────────────────────────────────────────── */
 
-// 차트 per-metric 색상 (원본 서비스 기준)
+// 차트 per-metric 색상 (CHART_COLORS 토큰 기반)
 const COLORS = {
-  views:    { my: '#16a34a', avg: '#4ade80' },  // 조회수:      초록 solid / 초록 연한 dashed
-  viewsInc: { my: '#f97316', avg: '#fbbf24' },  // 증가 조회수: 오렌지 / 앰버 dashed
-  likes:    { my: '#ec4899', avg: '#f9a8d4' },  // 좋아요:      핑크 / 연핑크 dashed
-  comments: { my: '#7c3aed', avg: '#a78bfa' },  // 댓글:        보라 / 연보라 dashed
-  engage:   { my: '#0891b2', avg: '#67e8f9' },  // 참여율:      시안 / 연시안 dashed
+  views:    { my: CHART_COLORS.contentViews,      avg: CHART_COLORS.contentViewsAvg },
+  viewsInc: { my: CHART_COLORS.contentViewsInc,   avg: CHART_COLORS.contentViewsIncAvg },
+  likes:    { my: CHART_COLORS.contentLikes,      avg: CHART_COLORS.contentLikesAvg },
+  comments: { my: CHART_COLORS.contentComments,   avg: CHART_COLORS.contentCommentsAvg },
+  engage:   { my: CHART_COLORS.contentEngage,     avg: CHART_COLORS.contentEngageAvg },
 }
 
 interface LineChartProps {
@@ -216,8 +216,8 @@ const LineChart = memo(function LineChart({
             return (
               <g>
                 <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-                <circle cx={x} cy={toY(pt.my)}  r={3.5} fill={myColor}  stroke="white" strokeWidth={1.5} />
-                <circle cx={x} cy={toY(pt.avg)} r={3.5} fill={avgColor} stroke="white" strokeWidth={1.5} />
+                <circle cx={x} cy={toY(pt.my)}  r={3.5} fill={myColor}  stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
+                <circle cx={x} cy={toY(pt.avg)} r={3.5} fill={avgColor} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
               </g>
             )
           })()}

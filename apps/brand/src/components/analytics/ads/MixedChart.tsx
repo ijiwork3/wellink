@@ -13,7 +13,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 
 interface Props {
   data: { date: string; spend: number; clicks: number; ctr?: number }[]
@@ -158,7 +158,7 @@ const MixedChart = memo(function MixedChart({
         return (
           <g key={i}>
             <circle cx={x} cy={y} r={3} fill={secondaryColor} />
-            <circle cx={x} cy={y} r={1.2} fill="white" />
+            <circle cx={x} cy={y} r={1.2} fill={SEMANTIC_COLORS.white} />
           </g>
         )
       })}
@@ -178,8 +178,8 @@ const MixedChart = memo(function MixedChart({
         return (
           <g key="active-indicator">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={spendY} r={4} fill={BRAND.green} stroke="white" strokeWidth={1.5} />
-            <circle cx={x} cy={clicksY} r={4} fill={secondaryColor} stroke="white" strokeWidth={1.5} />
+            <circle cx={x} cy={spendY} r={4} fill={BRAND.green} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
+            <circle cx={x} cy={clicksY} r={4} fill={secondaryColor} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
           </g>
         )
       })()}

@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { CHART_COLORS, useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
+import { CHART_COLORS, SEMANTIC_COLORS, useChartScrollContext, niceCeil, shouldShowLabel } from '@wellink/ui'
 import { metricColors, type TrendItem, type MetricKey } from '../../../data/analytics/profile'
 
 interface Props {
@@ -182,7 +182,7 @@ const MultiLineTrendChart = memo(function MultiLineTrendChart({
                   {seg.map((p, i) => (
                     <g key={i}>
                       <circle cx={p.x} cy={p.y} r={dotR} fill={color} />
-                      <circle cx={p.x} cy={p.y} r={dotInner} fill="white" />
+                      <circle cx={p.x} cy={p.y} r={dotInner} fill={SEMANTIC_COLORS.white} />
                     </g>
                   ))}
                 </g>

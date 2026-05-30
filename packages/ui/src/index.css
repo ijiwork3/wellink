@@ -5,8 +5,8 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #F8F9FA;
-  color: #111827;
+  background: var(--color-devui-bg);
+  color: var(--color-gray-900);
 }
 
 #root {
@@ -33,5 +33,5 @@ pre {
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
+::-webkit-scrollbar-thumb { background: var(--color-gray-200); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gray-300); }

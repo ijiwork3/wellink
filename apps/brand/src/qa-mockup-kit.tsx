@@ -33,7 +33,7 @@ import {
   Menu, X,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { QA_ACCENT_COLOR, TIMER_MS } from '@wellink/ui';
+import { QA_ACCENT_COLOR, TIMER_MS, SEMANTIC_COLORS } from '@wellink/ui';
 import { useQAState, setQAState, resetQAState, QA_PLAN_OPTIONS, type QAPlan } from './qa-state';
 
 // ─────────────────────────────────────────────────────────────
@@ -514,7 +514,7 @@ export function ScreenshotButton({ targetId }: { targetId: string }) {
         useCORS: true,
         allowTaint: true,
         logging: false,
-        backgroundColor: '#ffffff',
+        backgroundColor: SEMANTIC_COLORS.white,
         scale: window.devicePixelRatio || 1,
       });
 
@@ -768,7 +768,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
         style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
       >
         <div className="flex items-center gap-2 shrink-0">
-          <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor, color: '#ffffff' }}>WL</div>
+          <div className="w-6 h-6 rounded-md flex items-center justify-center text-sm font-bold" style={{ background: accentColor, color: SEMANTIC_COLORS.white }}>WL</div>
           <span className="text-sm font-semibold tracking-tight">{title}</span>
           <span
             className="font-mono text-sm font-semibold tracking-wider px-2 py-1 rounded bg-white/10 text-white/90 border border-white/15"
@@ -860,7 +860,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
                     onClick={chip.onClick}
                     className="flex items-center justify-center gap-2 py-3 rounded-lg border font-medium text-sm transition-colors"
                     style={chip.active
-                      ? { background: accentColor, borderColor: accentColor, color: '#ffffff' }
+                      ? { background: accentColor, borderColor: accentColor, color: SEMANTIC_COLORS.white }
                       : { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }
                     }
                   >
@@ -945,7 +945,7 @@ function ToggleChip({
       className="flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-md transition-colors border"
       style={
         active
-          ? { background: accentColor, borderColor: accentColor, color: '#ffffff' }
+          ? { background: accentColor, borderColor: accentColor, color: SEMANTIC_COLORS.white }
           : { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }
       }
     >

@@ -18,7 +18,7 @@ html {
 body {
   margin: 0;
   font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   color: var(--color-gray-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

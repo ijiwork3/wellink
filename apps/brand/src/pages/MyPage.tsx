@@ -14,6 +14,7 @@ function InstagramIcon({ size = 22, className = '' }: { size?: number; className
 import {
   Modal, TIMER_MS, useToast,
   Tabs, ErrorState, SkeletonCard, SkeletonRow, PageHeader,
+  SEMANTIC_COLORS,
   type TabItem,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
@@ -498,7 +499,7 @@ export default function MyPage() {
                   >
                     {marketingConsent && (
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke={SEMANTIC_COLORS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </span>
@@ -534,7 +535,7 @@ export default function MyPage() {
                     >
                       {item.value && (
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M2.5 6L5 8.5L9.5 3.5" stroke={SEMANTIC_COLORS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       )}
                     </span>

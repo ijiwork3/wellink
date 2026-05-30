@@ -252,6 +252,12 @@
   --color-chart-saves:       #8858F9;  /* 저장 지표 라인 — violet */
 
   /* ─────────────────────────────────────────────────────────────
+   * 흰색·검정 기본 토큰 (SVG attr / CSS var 참조용)
+   * ─────────────────────────────────────────────────────────────*/
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* ─────────────────────────────────────────────────────────────
    * 개발 UI (gallery / CodeBlock) 전용 토큰 — 실서비스 미사용
    * ─────────────────────────────────────────────────────────────*/
   --color-code-bg:     #1e1e2e;  /* CodeBlock 코드 영역 어두운 배경 */
@@ -308,7 +314,9 @@
   --color-mb-primary-5:  #74b81e;
   --color-mb-primary-6:  #6db214;
   --color-mb-primary-7:  #78c212;
+  --color-mb-primary-8:  #84cc16;
   --color-mb-primary-9:  #95d81a;
+  --color-mb-primary-10: #a3e635;
   /* 브랜드 그린 라이트 단계 (PRIMARY.greenLight) */
   --color-mb-light-1:    #f0f9e8;
   --color-mb-light-2:    #edf8de;
@@ -316,13 +324,25 @@
   --color-mb-light-4:    #e0f0c4;
   --color-mb-light-5:    #d8ebb8;
   --color-mb-light-6:    #d0e6b0;
+  --color-mb-light-7:    #ecfccb;
+  --color-mb-light-8:    #f7fee7;
   /* 딥 그린 단계 (DEEP) */
   --color-mb-deep-1:     #6a9e14;
   --color-mb-deep-2:     #5a9010;
   --color-mb-deep-3:     #4a840e;
   --color-mb-deep-4:     #3b7a18;
   --color-mb-deep-5:     #267822;
+  --color-mb-deep-6:     #15803d;
   --color-mb-deep-7:     #108050;
+  --color-mb-deep-8:     #047857;
+  --color-mb-deep-9:     #065f46;
+  --color-mb-deep-10:    #064e3b;
+  /* 그레이 1단계 전용 — 원본 기준값 (gray-100/400/500 공유) */
+  --color-mb-border-1:   #f3f4f6;
+  --color-mb-muted-1:    #6b7280;
+  --color-mb-muted-2:    #6b7280;
+  --color-mb-subtle-1:   #9ca3af;
+  --color-mb-subtle-2:   #9ca3af;
 }
 
 :root {

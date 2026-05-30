@@ -14,10 +14,10 @@ const PRIMARY = [
   { n:  4, green:'var(--color-mb-primary-4)', greenLight:'var(--color-mb-light-4)' },
   { n:  5, green:'var(--color-mb-primary-5)', greenLight:'var(--color-mb-light-5)' },
   { n:  6, green:'var(--color-mb-primary-6)', greenLight:'var(--color-mb-light-6)' },
-  { n:  7, green:'var(--color-mb-primary-7)', greenLight:'#ecfccb' },
-  { n:  8, green:'#84CC16',                    greenLight:'#f7fee7' },
-  { n:  9, green:'var(--color-mb-primary-9)', greenLight:'#f7fee7' },
-  { n: 10, green:'#A3E635',                    greenLight:'#f7fee7' },
+  { n:  7, green:'var(--color-mb-primary-7)', greenLight:'var(--color-mb-light-7)' },
+  { n:  8, green:'var(--color-mb-primary-8)', greenLight:'var(--color-mb-light-8)' },
+  { n:  9, green:'var(--color-mb-primary-9)', greenLight:'var(--color-mb-light-8)' },
+  { n: 10, green:'var(--color-mb-primary-10)',greenLight:'var(--color-mb-light-8)' },
 ]
 
 // ─── 프라이머리 딥 10단계 (텍스트 전용) ──────────────────────────
@@ -28,11 +28,11 @@ const DEEP = [
   { n:  3, color:'var(--color-mb-deep-3)' },
   { n:  4, color:'var(--color-mb-deep-4)' },
   { n:  5, color:'var(--color-mb-deep-5)' },
-  { n:  6, color:'#15803d' },                  // green-700
+  { n:  6, color:'var(--color-mb-deep-6)' },   // green-700
   { n:  7, color:'var(--color-mb-deep-7)' },
-  { n:  8, color:'#047857' },                  // emerald-700
-  { n:  9, color:'#065f46' },                  // emerald-800
-  { n: 10, color:'#064e3b' },                  // emerald-900
+  { n:  8, color:'var(--color-mb-deep-8)' },   // emerald-700
+  { n:  9, color:'var(--color-mb-deep-9)' },   // emerald-800
+  { n: 10, color:'var(--color-mb-deep-10)' },  // emerald-900
 ]
 
 // ─── 나머지 10단계 ─────────────────────────────────────────────────
@@ -114,16 +114,16 @@ const ACCENT = [
 // 1단계 = 원본 / 10단계 = 다소 어두운 뉴트럴 그레이
 // 파란 끼 없음 — R≈G≈B 순수 회색 계열만 / 카드 전 단계 #ffffff
 const GRAY = [
-  { n:1,  pageBg:'var(--color-mb-bg-1)',  cardBg:'#ffffff', border:'#f3f4f6',                   muted:'#6b7280',                   subtle:'#9ca3af',                   pillBg:'#f3f4f6',                   navActive:'#f3f4f6' },
-  { n:2,  pageBg:'var(--color-mb-bg-2)',  cardBg:'#ffffff', border:'var(--color-mb-border-2)',   muted:'#6b7280',                   subtle:'#9ca3af',                   pillBg:'var(--color-mb-border-2)',  navActive:'var(--color-mb-border-2)' },
-  { n:3,  pageBg:'var(--color-mb-bg-3)',  cardBg:'#ffffff', border:'var(--color-mb-bg-6)',       muted:'var(--color-mb-muted-3)',   subtle:'var(--color-mb-subtle-3)',   pillBg:'var(--color-mb-bg-6)',      navActive:'var(--color-mb-bg-6)' },
-  { n:4,  pageBg:'var(--color-mb-bg-4)',  cardBg:'#ffffff', border:'var(--color-mb-border-4)',   muted:'var(--color-mb-muted-4)',   subtle:'var(--color-mb-subtle-4)',   pillBg:'var(--color-mb-border-4)',  navActive:'var(--color-mb-border-4)' },
-  { n:5,  pageBg:'var(--color-mb-bg-5)',  cardBg:'#ffffff', border:'var(--color-mb-border-5)',   muted:'var(--color-mb-muted-5)',   subtle:'var(--color-mb-subtle-5)',   pillBg:'var(--color-mb-border-5)',  navActive:'var(--color-mb-border-5)' },
-  { n:6,  pageBg:'var(--color-mb-bg-6)',  cardBg:'#ffffff', border:'var(--color-mb-border-6)',   muted:'var(--color-mb-muted-6)',   subtle:'var(--color-mb-subtle-6)',   pillBg:'var(--color-mb-border-6)',  navActive:'var(--color-mb-border-6)' },
-  { n:7,  pageBg:'var(--color-mb-bg-7)',  cardBg:'#ffffff', border:'var(--color-mb-border-7)',   muted:'var(--color-mb-muted-7)',   subtle:'var(--color-mb-subtle-7)',   pillBg:'var(--color-mb-border-7)',  navActive:'var(--color-mb-border-7)' },
-  { n:8,  pageBg:'var(--color-mb-bg-8)',  cardBg:'#ffffff', border:'var(--color-mb-border-8)',   muted:'var(--color-mb-muted-8)',   subtle:'var(--color-mb-subtle-8)',   pillBg:'var(--color-mb-border-8)',  navActive:'var(--color-mb-border-8)' },
-  { n:9,  pageBg:'var(--color-mb-bg-9)',  cardBg:'#ffffff', border:'var(--color-mb-border-9)',   muted:'var(--color-mb-muted-9)',   subtle:'var(--color-mb-subtle-9)',   pillBg:'var(--color-mb-border-9)',  navActive:'var(--color-mb-border-9)' },
-  { n:10, pageBg:'var(--color-mb-bg-10)', cardBg:'#ffffff', border:'var(--color-mb-border-10)',  muted:'var(--color-mb-muted-10)',  subtle:'var(--color-mb-subtle-10)',  pillBg:'var(--color-mb-border-10)', navActive:'var(--color-mb-border-10)' },
+  { n:1,  pageBg:'var(--color-mb-bg-1)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-1)',   muted:'var(--color-mb-muted-1)',   subtle:'var(--color-mb-subtle-1)',   pillBg:'var(--color-mb-border-1)',  navActive:'var(--color-mb-border-1)' },
+  { n:2,  pageBg:'var(--color-mb-bg-2)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-2)',   muted:'var(--color-mb-muted-2)',   subtle:'var(--color-mb-subtle-2)',   pillBg:'var(--color-mb-border-2)',  navActive:'var(--color-mb-border-2)' },
+  { n:3,  pageBg:'var(--color-mb-bg-3)',  cardBg:'var(--color-white)', border:'var(--color-mb-bg-6)',       muted:'var(--color-mb-muted-3)',   subtle:'var(--color-mb-subtle-3)',   pillBg:'var(--color-mb-bg-6)',      navActive:'var(--color-mb-bg-6)' },
+  { n:4,  pageBg:'var(--color-mb-bg-4)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-4)',   muted:'var(--color-mb-muted-4)',   subtle:'var(--color-mb-subtle-4)',   pillBg:'var(--color-mb-border-4)',  navActive:'var(--color-mb-border-4)' },
+  { n:5,  pageBg:'var(--color-mb-bg-5)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-5)',   muted:'var(--color-mb-muted-5)',   subtle:'var(--color-mb-subtle-5)',   pillBg:'var(--color-mb-border-5)',  navActive:'var(--color-mb-border-5)' },
+  { n:6,  pageBg:'var(--color-mb-bg-6)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-6)',   muted:'var(--color-mb-muted-6)',   subtle:'var(--color-mb-subtle-6)',   pillBg:'var(--color-mb-border-6)',  navActive:'var(--color-mb-border-6)' },
+  { n:7,  pageBg:'var(--color-mb-bg-7)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-7)',   muted:'var(--color-mb-muted-7)',   subtle:'var(--color-mb-subtle-7)',   pillBg:'var(--color-mb-border-7)',  navActive:'var(--color-mb-border-7)' },
+  { n:8,  pageBg:'var(--color-mb-bg-8)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-8)',   muted:'var(--color-mb-muted-8)',   subtle:'var(--color-mb-subtle-8)',   pillBg:'var(--color-mb-border-8)',  navActive:'var(--color-mb-border-8)' },
+  { n:9,  pageBg:'var(--color-mb-bg-9)',  cardBg:'var(--color-white)', border:'var(--color-mb-border-9)',   muted:'var(--color-mb-muted-9)',   subtle:'var(--color-mb-subtle-9)',   pillBg:'var(--color-mb-border-9)',  navActive:'var(--color-mb-border-9)' },
+  { n:10, pageBg:'var(--color-mb-bg-10)', cardBg:'var(--color-white)', border:'var(--color-mb-border-10)',  muted:'var(--color-mb-muted-10)',  subtle:'var(--color-mb-subtle-10)',  pillBg:'var(--color-mb-border-10)', navActive:'var(--color-mb-border-10)' },
 ]
 
 type P = typeof PRIMARY[0]

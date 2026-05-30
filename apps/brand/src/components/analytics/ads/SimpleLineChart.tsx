@@ -6,7 +6,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 
 interface Props {
   data: { label: string; value: number }[]
@@ -96,7 +96,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
         return (
           <g key="active">
             <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={p.x} cy={p.y} r={4} fill={stroke} stroke="white" strokeWidth={2} />
+            <circle cx={p.x} cy={p.y} r={4} fill={stroke} stroke={SEMANTIC_COLORS.white} strokeWidth={2} />
           </g>
         )
       })()}

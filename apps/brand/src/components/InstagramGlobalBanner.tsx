@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { SEMANTIC_COLORS } from '@wellink/ui'
 import { useInstagramConnected } from '../utils/useInstagramState'
 
 export default function InstagramGlobalBanner() {
@@ -11,10 +12,10 @@ export default function InstagramGlobalBanner() {
     <div className="bg-gradient-to-r from-amber-100 to-pink-100 border-b border-amber-200">
       <div className="max-w-[1080px] mx-auto px-4 sm:px-8 py-2.5 flex items-center gap-3">
         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shrink-0" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <circle cx="12" cy="12" r="4" />
-            <circle cx="17.5" cy="6.5" r="0.8" fill="white" stroke="none" />
+            <circle cx="17.5" cy="6.5" r="0.8" fill={SEMANTIC_COLORS.white} stroke="none" />
           </svg>
         </div>
         <p className="text-base text-gray-900 flex-1 min-w-0">
