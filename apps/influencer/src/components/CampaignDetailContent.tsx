@@ -224,14 +224,18 @@ export default function CampaignDetailContent({
       </div>
     )
     if (needsProForApply) return (
-      <button
-        type="button"
-        onClick={() => setShowProModal(true)}
-        className={`w-full ${py} rounded-xl ${text} text-gray-400 bg-gray-100 border border-gray-200 flex flex-col items-center justify-center gap-0.5 transition-colors hover:bg-gray-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300`}
-      >
-        <span>프로페셔널 계정 전용</span>
-        <span className={`${size === 'lg' ? 'text-sm' : 'text-xs'} font-normal text-gray-400`}>전환 방법 안내 보기</span>
-      </button>
+      <div className={`w-full flex flex-col gap-2`}>
+        <div className={`w-full ${py} rounded-xl ${text} text-center bg-gray-100 text-gray-400`}>
+          프로페셔널 계정 전용
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowProModal(true)}
+          className={`w-full py-2.5 rounded-xl text-sm font-semibold text-brand-green-text bg-brand-green-bg border border-brand-green-border hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+        >
+          프로페셔널 계정 연결하기
+        </button>
+      </div>
     )
     return (
       <button onClick={handleApply}
@@ -672,10 +676,10 @@ export default function CampaignDetailContent({
       </div>
 
       {/* 프로페셔널 계정 전환 안내 모달 (활동비 캠페인 + 일반 계정) */}
-      {showProModal && (
-        <Modal
-          title="프로페셔널 계정이 필요해요"
-          onClose={() => setShowProModal(false)}
+      <Modal
+        open={showProModal}
+        title="프로페셔널 계정이 필요해요"
+        onClose={() => setShowProModal(false)}
           footer={
             <div className="flex gap-2">
               <button
@@ -703,8 +707,7 @@ export default function CampaignDetailContent({
           <p className="mt-2 text-sm text-gray-500">
             인스타그램에서 계정을 전환한 뒤 다시 지원해 주세요.
           </p>
-        </Modal>
-      )}
+      </Modal>
     </>
   )
 }
