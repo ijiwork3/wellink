@@ -358,7 +358,7 @@ export default function InfluencerManage() {
             <div key={i} className="h-9 rounded-full bg-gray-100 animate-pulse" style={{ width: w + 'px' }} />
           ))}
         </div>
-        <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 @xl:grid-cols-3 @2xl:grid-cols-4'}`}>
+        <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
           {[1, 2, 3].map(i => <SkeletonCard key={i} height={180} />)}
         </div>
       </div>
@@ -486,7 +486,7 @@ export default function InfluencerManage() {
         )
       ) : (
         <>
-          <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 @xl:grid-cols-3 @2xl:grid-cols-4'}`}>
+          <div className={`grid gap-4 ${device === 'phone' ? 'grid-cols-1' : 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}`}>
             {pagedInfluencers.map(inf => (
               <div
                 key={inf.id}
