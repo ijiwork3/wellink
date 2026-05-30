@@ -562,8 +562,9 @@ export default function CampaignApply() {
           </Section>
         )}
 
-        {/* 약관 동의 */}
+        {/* 약관 동의 + 공통 안내사항 */}
         {!isViewMode && (
+          <>
           <Section title="약관 동의" required>
             <div className="space-y-3">
               <AgreementRow
@@ -580,11 +581,10 @@ export default function CampaignApply() {
                 title={campaign.secondaryUse?.enabled ? `개인정보 수집·이용 및 저작물 이용 동의 (2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})` : '개인정보 수집·이용 및 저작물 이용 동의'}
                 description="본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다."
               />
-
             </div>
           </Section>
 
-          {/* 공통 안내사항 — 컨테이너 없이 오픈 스타일, 원본 CampaignApplyForm.tsx L859-872 */}
+          {/* 공통 안내사항 — 원본 CampaignApplyForm.tsx L859-872 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <p className="text-sm font-semibold text-gray-900 mb-3">공통 안내사항</p>
             <div className="space-y-3 text-xs leading-relaxed">
@@ -606,6 +606,7 @@ export default function CampaignApply() {
               ))}
             </div>
           </div>
+          </>
         )}
 
       </div>
