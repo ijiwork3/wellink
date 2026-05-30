@@ -395,14 +395,9 @@ export default function CampaignApply() {
               <div className="flex items-start px-4 py-3.5 gap-4">
                 <span className="text-xs text-gray-400 w-20 shrink-0 pt-0.5">인스타그램</span>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
-                    <span className="inline-flex items-center text-[10px] font-medium text-pink-600 bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 whitespace-nowrap">
-                      인스타그램
-                    </span>
-                  </div>
+                  <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
                   {!isViewMode && (
-                    <p className="text-xs text-gray-400 mt-1 break-keep">선정 후에는 연결 계정을 변경할 수 없습니다. 마이페이지에서만 수정 가능해요.</p>
+                    <p className="text-xs text-gray-400 mt-1 break-keep">선정 후에는 연결된 계정을 변경할 수 없습니다.</p>
                   )}
                 </div>
               </div>
