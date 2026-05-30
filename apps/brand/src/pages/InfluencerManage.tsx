@@ -25,7 +25,7 @@ import {
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { getEngagementColor, getAuthenticColor, CHART_COLORS } from '@wellink/ui'
+import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
 import {
   INFLUENCER_SORT_OPTIONS,
   DEFAULT_INFLUENCER_SORT,
