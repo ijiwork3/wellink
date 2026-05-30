@@ -10,16 +10,7 @@
  *    - 이모지 없음, 실제 콘텐츠가 없는 상태임을 중립적으로 표현
  */
 
-const PALETTES: { from: string; to: string }[] = [
-  { from: '#E8F5E9', to: '#66BB6A' },  // 그린
-  { from: '#E3F2FD', to: '#42A5F5' },  // 블루
-  { from: '#F3E5F5', to: '#AB47BC' },  // 퍼플
-  { from: '#FFF3E0', to: '#FFA726' },  // 오렌지
-  { from: '#FCE4EC', to: '#EC407A' },  // 핑크
-  { from: '#E8EAF6', to: '#5C6BC0' },  // 인디고
-  { from: '#E0F7FA', to: '#26C6DA' },  // 시안
-  { from: '#F1F8E9', to: '#9CCC65' },  // 라임
-]
+import { THUMBNAIL_PALETTES as PALETTES } from '@wellink/ui'
 
 /**
  * 시드 기반 안정적 해시

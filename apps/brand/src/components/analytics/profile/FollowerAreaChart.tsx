@@ -7,7 +7,7 @@
  *   line + area fill 이 추세와 누적 성장을 함께 보여주는 정석.
  *
  * 디자인:
- *   - line: brand-green-text (#95D135) 2px
+ *   - line: brand-green (#85D435) 2px
  *   - area: brand-green gradient (위 35% → 아래 0)
  *   - Y축: minVal·midVal·maxVal 3구간 라벨 (0에서 시작 X — base 24000에서 변동 100 단위 가시화)
  *   - X축: showLabel 정책 (>14 데이터 시 sparse)
@@ -17,7 +17,7 @@
  */
 
 import { memo } from 'react'
-import { fmtNumber, useChartScrollContext, shouldShowLabel, BRAND, CHART_COLORS } from '@wellink/ui'
+import { fmtNumber, useChartScrollContext, shouldShowLabel, BRAND, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 import type { BarDataItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -158,7 +158,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
             y={H - 10}
             textAnchor="middle"
             fontSize="11"
-            fill={isMax ? BRAND.green : (isActive ? '#374151' : '#9ca3af')}
+            fill={isMax ? BRAND.green : (isActive ? SEMANTIC_COLORS.textSecondary : CHART_COLORS.axisLine)}
             fontWeight={isMax ? 600 : 400}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
           >

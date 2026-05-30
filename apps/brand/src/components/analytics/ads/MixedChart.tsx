@@ -35,7 +35,7 @@ const MixedChart = memo(function MixedChart({
   secondaryLabel = '클릭',
   secondaryFormatter,
   referenceLine,
-  secondaryColor = '#f97316',
+  secondaryColor = CHART_COLORS.feed,
 }: Props) {
   // 부모 ChartScrollContainer의 측정 width → fluid viewBox. 컨텍스트 없으면 default.
   const ctx = useChartScrollContext()

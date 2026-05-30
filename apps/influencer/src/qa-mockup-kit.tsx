@@ -417,7 +417,7 @@ export const StatusDropdown = PathDropdown;
 // ─────────────────────────────────────────────────────────────
 
 export function QANavigator<S extends string, T extends string>({
-  appLabel, validStates, tabMap, onNavigate, accentColor = '#8736e3', placeholder,
+  appLabel, validStates, tabMap, onNavigate, accentColor = QA_ACCENT_COLOR, placeholder,
 }: {
   appLabel: string;
   validStates: S[];
@@ -737,7 +737,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
         style={{ height: GLOBAL_QA_HEADER_HEIGHT }}
       >
         <div className="flex items-center gap-2 shrink-0">
-          <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#fff' }}>WL</div>
+          <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor, color: '#ffffff' }}>WL</div>
           <span className="text-xs font-semibold tracking-tight">{title}</span>
           <span
             className="font-mono text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"

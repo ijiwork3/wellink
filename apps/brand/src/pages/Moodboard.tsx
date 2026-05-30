@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SEMANTIC_COLORS } from '@wellink/ui'
 import {
   Megaphone, Users, Activity, Bell, Heart, Eye,
   LayoutDashboard, BarChart3, TrendingUp, TrendingDown,
@@ -7,31 +8,31 @@ import {
 
 // ─── 프라이머리 10단계 (버튼 bg·진행바·차트A·알림뱃지) ──────────
 const PRIMARY = [
-  { n:  1, green:'#8CC63F', greenLight:'#f0f9e8' },
-  { n:  2, green:'#88C43A', greenLight:'#edf8de' },
-  { n:  3, green:'#82C132', greenLight:'#e8f5d4' },
-  { n:  4, green:'#7BBD28', greenLight:'#e0f0c4' },
-  { n:  5, green:'#74B81E', greenLight:'#d8ebb8' },
-  { n:  6, green:'#6DB214', greenLight:'#d0e6b0' },
-  { n:  7, green:'#78C212', greenLight:'#ecfccb' },
-  { n:  8, green:'#84CC16', greenLight:'#f7fee7' },
-  { n:  9, green:'#95D81A', greenLight:'#f7fee7' },
-  { n: 10, green:'#A3E635', greenLight:'#f7fee7' },
+  { n:  1, green:'var(--color-mb-primary-1)', greenLight:'var(--color-mb-light-1)' },
+  { n:  2, green:'var(--color-mb-primary-2)', greenLight:'var(--color-mb-light-2)' },
+  { n:  3, green:'var(--color-mb-primary-3)', greenLight:'var(--color-mb-light-3)' },
+  { n:  4, green:'var(--color-mb-primary-4)', greenLight:'var(--color-mb-light-4)' },
+  { n:  5, green:'var(--color-mb-primary-5)', greenLight:'var(--color-mb-light-5)' },
+  { n:  6, green:'var(--color-mb-primary-6)', greenLight:'var(--color-mb-light-6)' },
+  { n:  7, green:'var(--color-mb-primary-7)', greenLight:'#ecfccb' },
+  { n:  8, green:'#84CC16',                    greenLight:'#f7fee7' },
+  { n:  9, green:'var(--color-mb-primary-9)', greenLight:'#f7fee7' },
+  { n: 10, green:'#A3E635',                    greenLight:'#f7fee7' },
 ]
 
 // ─── 프라이머리 딥 10단계 (텍스트 전용) ──────────────────────────
 // 1: 현재 1단계보다 밝은 lime(#6a9e14) → 10: deep cool emerald(#022c22)
 const DEEP = [
-  { n:  1, color:'#6a9e14' },  // lime-ish, 1단계보다 밝게 시작
-  { n:  2, color:'#5a9010' },
-  { n:  3, color:'#4a840e' },
-  { n:  4, color:'#3b7a18' },
-  { n:  5, color:'#267822' },
-  { n:  6, color:'#15803d' },  // green-700
-  { n:  7, color:'#108050' },
-  { n:  8, color:'#047857' },  // emerald-700
-  { n:  9, color:'#065f46' },  // emerald-800
-  { n: 10, color:'#064e3b' },  // emerald-900
+  { n:  1, color:'var(--color-mb-deep-1)' },  // lime-ish, 1단계보다 밝게 시작
+  { n:  2, color:'var(--color-mb-deep-2)' },
+  { n:  3, color:'var(--color-mb-deep-3)' },
+  { n:  4, color:'var(--color-mb-deep-4)' },
+  { n:  5, color:'var(--color-mb-deep-5)' },
+  { n:  6, color:'#15803d' },                  // green-700
+  { n:  7, color:'var(--color-mb-deep-7)' },
+  { n:  8, color:'#047857' },                  // emerald-700
+  { n:  9, color:'#065f46' },                  // emerald-800
+  { n: 10, color:'#064e3b' },                  // emerald-900
 ]
 
 // ─── 나머지 10단계 ─────────────────────────────────────────────────
@@ -113,16 +114,16 @@ const ACCENT = [
 // 1단계 = 원본 / 10단계 = 다소 어두운 뉴트럴 그레이
 // 파란 끼 없음 — R≈G≈B 순수 회색 계열만 / 카드 전 단계 #ffffff
 const GRAY = [
-  { n:1,  pageBg:'#fafafa', cardBg:'#ffffff', border:'#f3f4f6', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f3f4f6', navActive:'#f3f4f6' },
-  { n:2,  pageBg:'#f7f7f8', cardBg:'#ffffff', border:'#f0f0f2', muted:'#6b7280', subtle:'#9ca3af', pillBg:'#f0f0f2', navActive:'#f0f0f2' },
-  { n:3,  pageBg:'#f4f4f5', cardBg:'#ffffff', border:'#ebebed', muted:'#686878', subtle:'#989aaa', pillBg:'#ebebed', navActive:'#ebebed' },
-  { n:4,  pageBg:'#f1f1f3', cardBg:'#ffffff', border:'#e6e6e9', muted:'#656575', subtle:'#9596a6', pillBg:'#e6e6e9', navActive:'#e6e6e9' },
-  { n:5,  pageBg:'#eeeef0', cardBg:'#ffffff', border:'#e2e2e5', muted:'#626272', subtle:'#9292a2', pillBg:'#e2e2e5', navActive:'#e2e2e5' },
-  { n:6,  pageBg:'#ebebed', cardBg:'#ffffff', border:'#dedee2', muted:'#5f5f70', subtle:'#8e8e9e', pillBg:'#dedee2', navActive:'#dedee2' },
-  { n:7,  pageBg:'#e8e8eb', cardBg:'#ffffff', border:'#dadade', muted:'#5c5c6c', subtle:'#8a8a9a', pillBg:'#dadade', navActive:'#dadade' },
-  { n:8,  pageBg:'#e5e5e8', cardBg:'#ffffff', border:'#d6d6db', muted:'#595968', subtle:'#878796', pillBg:'#d6d6db', navActive:'#d6d6db' },
-  { n:9,  pageBg:'#e2e2e6', cardBg:'#ffffff', border:'#d2d2d8', muted:'#565664', subtle:'#848492', pillBg:'#d2d2d8', navActive:'#d2d2d8' },
-  { n:10, pageBg:'#dfdfe2', cardBg:'#ffffff', border:'#cecece', muted:'#535360', subtle:'#81818e', pillBg:'#cecece', navActive:'#cecece' },
+  { n:1,  pageBg:'var(--color-mb-bg-1)',  cardBg:'#ffffff', border:'#f3f4f6',                   muted:'#6b7280',                   subtle:'#9ca3af',                   pillBg:'#f3f4f6',                   navActive:'#f3f4f6' },
+  { n:2,  pageBg:'var(--color-mb-bg-2)',  cardBg:'#ffffff', border:'var(--color-mb-border-2)',   muted:'#6b7280',                   subtle:'#9ca3af',                   pillBg:'var(--color-mb-border-2)',  navActive:'var(--color-mb-border-2)' },
+  { n:3,  pageBg:'var(--color-mb-bg-3)',  cardBg:'#ffffff', border:'var(--color-mb-bg-6)',       muted:'var(--color-mb-muted-3)',   subtle:'var(--color-mb-subtle-3)',   pillBg:'var(--color-mb-bg-6)',      navActive:'var(--color-mb-bg-6)' },
+  { n:4,  pageBg:'var(--color-mb-bg-4)',  cardBg:'#ffffff', border:'var(--color-mb-border-4)',   muted:'var(--color-mb-muted-4)',   subtle:'var(--color-mb-subtle-4)',   pillBg:'var(--color-mb-border-4)',  navActive:'var(--color-mb-border-4)' },
+  { n:5,  pageBg:'var(--color-mb-bg-5)',  cardBg:'#ffffff', border:'var(--color-mb-border-5)',   muted:'var(--color-mb-muted-5)',   subtle:'var(--color-mb-subtle-5)',   pillBg:'var(--color-mb-border-5)',  navActive:'var(--color-mb-border-5)' },
+  { n:6,  pageBg:'var(--color-mb-bg-6)',  cardBg:'#ffffff', border:'var(--color-mb-border-6)',   muted:'var(--color-mb-muted-6)',   subtle:'var(--color-mb-subtle-6)',   pillBg:'var(--color-mb-border-6)',  navActive:'var(--color-mb-border-6)' },
+  { n:7,  pageBg:'var(--color-mb-bg-7)',  cardBg:'#ffffff', border:'var(--color-mb-border-7)',   muted:'var(--color-mb-muted-7)',   subtle:'var(--color-mb-subtle-7)',   pillBg:'var(--color-mb-border-7)',  navActive:'var(--color-mb-border-7)' },
+  { n:8,  pageBg:'var(--color-mb-bg-8)',  cardBg:'#ffffff', border:'var(--color-mb-border-8)',   muted:'var(--color-mb-muted-8)',   subtle:'var(--color-mb-subtle-8)',   pillBg:'var(--color-mb-border-8)',  navActive:'var(--color-mb-border-8)' },
+  { n:9,  pageBg:'var(--color-mb-bg-9)',  cardBg:'#ffffff', border:'var(--color-mb-border-9)',   muted:'var(--color-mb-muted-9)',   subtle:'var(--color-mb-subtle-9)',   pillBg:'var(--color-mb-border-9)',  navActive:'var(--color-mb-border-9)' },
+  { n:10, pageBg:'var(--color-mb-bg-10)', cardBg:'#ffffff', border:'var(--color-mb-border-10)',  muted:'var(--color-mb-muted-10)',  subtle:'var(--color-mb-subtle-10)',  pillBg:'var(--color-mb-border-10)', navActive:'var(--color-mb-border-10)' },
 ]
 
 type P = typeof PRIMARY[0]
@@ -169,7 +170,7 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
               )}
               <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base mb-0.5 cursor-pointer"
                 style={isActive
-                  ? { backgroundColor: g.navActive, color: '#111827', fontWeight: 500 }
+                  ? { backgroundColor: g.navActive, color: SEMANTIC_COLORS.textPrimary, fontWeight: 500 }
                   : { color: g.muted }}>
                 <span style={{ color: g.subtle }}>{item.icon}</span>
                 {item.label}
@@ -289,7 +290,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                   <div className="flex gap-2.5 items-start">
                     <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: n.dot }}/>
                     <div>
-                      <p className="text-sm leading-relaxed" style={{ color: n.unread ? '#111827' : g.muted, fontWeight: n.unread ? 500 : 400 }}>{n.text}</p>
+                      <p className="text-sm leading-relaxed" style={{ color: n.unread ? SEMANTIC_COLORS.textPrimary : g.muted, fontWeight: n.unread ? 500 : 400 }}>{n.text}</p>
                       <p className="text-sm mt-0.5" style={{ color: g.subtle }}>{n.time}</p>
                     </div>
                   </div>
@@ -460,7 +461,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: g.pillBg }}>
               {['최근 7일','최근 30일','이번 달'].map((label, i) => (
                 <span key={label} className="text-sm px-3 py-1.5 rounded-lg cursor-pointer font-medium"
-                  style={i === 1 ? { backgroundColor: g.cardBg, color: '#111827', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' } : { color: g.subtle }}>
+                  style={i === 1 ? { backgroundColor: g.cardBg, color: SEMANTIC_COLORS.textPrimary, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' } : { color: g.subtle }}>
                   {label}
                 </span>
               ))}

@@ -68,6 +68,7 @@
   --color-red-500: #ef4444;
   --color-red-600: #dc2626;
   --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
 
   /* ─────────────────────────────────────────────────────────────
    * 상태 — Warning  (amber)
@@ -96,6 +97,7 @@
   --color-green-500: #22c55e;
   --color-green-600: #16a34a;
   --color-green-700: #15803d;
+  --color-green-900: #14532d;
 
   /* ─────────────────────────────────────────────────────────────
    * 정보 / 데이터  (blue)
@@ -133,6 +135,7 @@
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
   --color-violet-700: #6d28d9;
+  --color-violet-900: #4c1d95;
 
   /* ─────────────────────────────────────────────────────────────
    * 배지 장식 C — emerald  (특수·고성과 유형)
@@ -141,9 +144,13 @@
   --color-emerald-100: #d1fae5;
   --color-emerald-200: #a7f3d0;
   --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
   --color-emerald-500: #10b981;
   --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
   --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
 
   /* ─────────────────────────────────────────────────────────────
    * 배지 장식 D — indigo  (콘텐츠·카테고리 유형)
@@ -175,6 +182,7 @@
   --color-rose-500: #f43f5e;
   --color-rose-600: #e11d48;
   --color-rose-700: #be123c;
+  --color-rose-800: #9f1239;
   --color-rose-900: #881337;
 
   --color-pink-50:  #fdf2f8;
@@ -194,15 +202,19 @@
   --color-orange-600: #ea580c;
   --color-orange-700: #c2410c;
   --color-orange-800: #9a3412;
+  --color-orange-900: #7c2d12;
+  --color-orange-950: #431407;
 
   --color-yellow-100: #fef9c3;
   --color-yellow-200: #fef08a;
   --color-yellow-300: #fde047;
   --color-yellow-400: #facc15;
+  --color-yellow-500: #eab308;
   --color-yellow-700: #a16207;
 
   --color-lime-50:  #f7fee7;
   --color-lime-100: #ecfccb;
+  --color-lime-500: #84cc16;
   --color-lime-200: #d9f99d;
   --color-lime-300: #bef264;
   --color-lime-400: #a3e635;
@@ -221,6 +233,7 @@
   --color-cyan-100: #cffafe;
   --color-cyan-200: #a5f3fc;
   --color-cyan-300: #67e8f9;
+  --color-cyan-600: #0891b2;
 
   --color-fuchsia-100: #fae8ff;
   --color-fuchsia-200: #f5d0fe;
@@ -237,6 +250,72 @@
   --color-chart-reach:       #3983F9;  /* 도달 지표 라인 — blue */
   --color-chart-comments:    #F9A006;  /* 댓글 지표 라인 — amber */
   --color-chart-saves:       #8858F9;  /* 저장 지표 라인 — violet */
+
+  /* ─────────────────────────────────────────────────────────────
+   * Moodboard 팔레트 데모 전용 토큰 — 실서비스 미사용
+   * GRAY array 커스텀 뉴트럴 · PRIMARY/DEEP 그린 스케일
+   * ─────────────────────────────────────────────────────────────*/
+  /* 뉴트럴 배경 단계 (pageBg) */
+  --color-mb-bg-1:       #fafafa;
+  --color-mb-bg-2:       #f7f7f8;
+  --color-mb-bg-3:       #f4f4f5;
+  --color-mb-bg-4:       #f1f1f3;
+  --color-mb-bg-5:       #eeeef0;
+  --color-mb-bg-6:       #ebebed;  /* pageBg-6, border-3 공유 */
+  --color-mb-bg-7:       #e8e8eb;
+  --color-mb-bg-8:       #e5e5e8;
+  --color-mb-bg-9:       #e2e2e6;
+  --color-mb-bg-10:      #dfdfe2;
+  /* 뉴트럴 보더 단계 (border) */
+  --color-mb-border-2:   #f0f0f2;
+  --color-mb-border-4:   #e6e6e9;
+  --color-mb-border-5:   #e2e2e5;
+  --color-mb-border-6:   #dedee2;
+  --color-mb-border-7:   #dadade;
+  --color-mb-border-8:   #d6d6db;
+  --color-mb-border-9:   #d2d2d8;
+  --color-mb-border-10:  #cecece;
+  /* 뉴트럴 muted 텍스트 단계 */
+  --color-mb-muted-3:    #686878;
+  --color-mb-muted-4:    #656575;
+  --color-mb-muted-5:    #626272;
+  --color-mb-muted-6:    #5f5f70;
+  --color-mb-muted-7:    #5c5c6c;
+  --color-mb-muted-8:    #595968;
+  --color-mb-muted-9:    #565664;
+  --color-mb-muted-10:   #535360;
+  /* 뉴트럴 subtle 텍스트 단계 */
+  --color-mb-subtle-3:   #989aaa;
+  --color-mb-subtle-4:   #9596a6;
+  --color-mb-subtle-5:   #9292a2;
+  --color-mb-subtle-6:   #8e8e9e;
+  --color-mb-subtle-7:   #8a8a9a;
+  --color-mb-subtle-8:   #878796;
+  --color-mb-subtle-9:   #848492;
+  --color-mb-subtle-10:  #81818e;
+  /* 브랜드 그린 커스텀 단계 (PRIMARY.green) */
+  --color-mb-primary-1:  #8cc63f;
+  --color-mb-primary-2:  #88c43a;
+  --color-mb-primary-3:  #82c132;
+  --color-mb-primary-4:  #7bbd28;
+  --color-mb-primary-5:  #74b81e;
+  --color-mb-primary-6:  #6db214;
+  --color-mb-primary-7:  #78c212;
+  --color-mb-primary-9:  #95d81a;
+  /* 브랜드 그린 라이트 단계 (PRIMARY.greenLight) */
+  --color-mb-light-1:    #f0f9e8;
+  --color-mb-light-2:    #edf8de;
+  --color-mb-light-3:    #e8f5d4;
+  --color-mb-light-4:    #e0f0c4;
+  --color-mb-light-5:    #d8ebb8;
+  --color-mb-light-6:    #d0e6b0;
+  /* 딥 그린 단계 (DEEP) */
+  --color-mb-deep-1:     #6a9e14;
+  --color-mb-deep-2:     #5a9010;
+  --color-mb-deep-3:     #4a840e;
+  --color-mb-deep-4:     #3b7a18;
+  --color-mb-deep-5:     #267822;
+  --color-mb-deep-7:     #108050;
 }
 
 :root {
