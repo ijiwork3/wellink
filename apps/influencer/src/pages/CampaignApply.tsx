@@ -570,15 +570,15 @@ export default function CampaignApply() {
                 checked={agreed1}
                 onChange={(v) => { setAgreed1(v); clearError('agreed1') }}
                 error={errors.agreed1}
-                text="캠페인 진행 과정에서 촬영된 사진·영상 속 초상(얼굴·신체·이름 등)을 광고주가 SNS, 광고, 판촉물 등 마케팅에 활용하는 것에 동의합니다. (초상권 활용)"
+                title="초상권 활용 동의"
+                description="캠페인 진행 과정에서 촬영된 사진·영상 속 초상(얼굴·신체·이름 등)을 광고주가 SNS, 광고, 판촉물 등 마케팅에 활용하는 것에 동의합니다."
               />
               <AgreementRow
                 checked={agreed2}
                 onChange={(v) => { setAgreed2(v); clearError('agreed2') }}
                 error={errors.agreed2}
-                text={campaign.secondaryUse?.enabled
-                  ? `본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다. (콘텐츠 2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})`
-                  : '본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다.'}
+                title={campaign.secondaryUse?.enabled ? `개인정보 수집·이용 및 저작물 이용 동의 (2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})` : '개인정보 수집·이용 및 저작물 이용 동의'}
+                description="본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다."
               />
 
               {/* 공통 안내사항 inline 확장 — 원본 CampaignApplyForm.tsx L859-872 */}
@@ -699,11 +699,12 @@ function Section({ title, required, icon, children }: {
   )
 }
 
-function AgreementRow({ checked, onChange, error, text }: {
+function AgreementRow({ checked, onChange, error, title, description }: {
   checked: boolean
   onChange: (v: boolean) => void
   error?: boolean
-  text: string
+  title: string
+  description?: string
 }) {
   return (
     <label className={`flex items-start gap-2.5 cursor-pointer p-3 rounded-xl border transition-colors ${
@@ -713,9 +714,12 @@ function AgreementRow({ checked, onChange, error, text }: {
         type="checkbox"
         checked={checked}
         onChange={e => onChange(e.target.checked)}
-        className="mt-0.5 accent-brand-green"
+        className="mt-0.5 accent-brand-green shrink-0"
       />
-      <span className="text-sm text-gray-700 leading-snug break-keep">{text}</span>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-gray-800 leading-snug break-keep">{title} <span className="text-red-500">*</span></p>
+        {description && <p className="text-xs text-gray-400 mt-0.5 break-keep leading-relaxed">{description}</p>}
+      </div>
     </label>
   )
 }
