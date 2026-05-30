@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Markdown from 'react-markdown'
-import { CheckCircle2, MapPin, Package, Footprints, User, AtSign, Pencil, Gift, BookOpen, ExternalLink, HelpCircle } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, Pencil, Gift, BookOpen, ExternalLink, Instagram } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
-import { useToast, ErrorState, TIMER_MS, Tooltip, useQAMode, Skeleton } from '@wellink/ui'
+import { useToast, ErrorState, TIMER_MS, useQAMode, Skeleton } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
 import { useApplications, useInstagramState } from '../services/userState'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
-import { TERMS_URL } from '../config/urls'
 
 
 export default function CampaignApply() {
@@ -375,49 +374,41 @@ export default function CampaignApply() {
         </div>
 
 
-        {/* 신청자 정보 (읽기 전용) */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5 space-y-2.5">
-          <p className="text-sm font-semibold text-gray-500 mb-1">신청자 정보</p>
-          <div className="flex items-center gap-2.5 min-w-0">
-            <User size={14} className="text-gray-400 flex-shrink-0" />
-            <span className="text-sm text-gray-900 truncate">{mockProfile.name}</span>
+        {/* 신청자 정보 + 연락처 통합 카드 — 원본 CampaignApplyForm.tsx L463-518 */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+            <p className="text-sm font-semibold text-gray-900">신청자 정보</p>
           </div>
-          {/* SNS 연결 정보 — 원본 CampaignApplyForm.tsx L479-518: 선정 후 변경 불가 안내 + HelpCircle tooltip */}
-          {mockProfile.instagramConnected && (
-            <div className="flex items-start gap-2.5 min-w-0">
-              <AtSign size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
-                  <span className="text-xs text-gray-400 whitespace-nowrap">인스타그램</span>
-                  {/* 원본 CampaignApplyForm.tsx L490-505: HelpCircle 툴팁 "마이페이지에서만 수정 가능" */}
-                  <Tooltip content="등록한 SNS는 마이페이지 내에서만 수정이 가능합니다">
-                    <button type="button" aria-label="SNS 수정 안내" className="w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
-                      <HelpCircle size={11} className="text-gray-500" aria-hidden="true" />
-                    </button>
-                  </Tooltip>
-                </div>
-                {!isViewMode && (
-                  <p className="text-xs text-gray-400 mt-0.5 break-keep">등록한 SNS는 선정 후 변경할 수 없습니다.</p>
-                )}
-              </div>
+          <div className="divide-y divide-gray-50">
+            <div className="flex items-center px-4 py-3.5 gap-4">
+              <span className="text-xs text-gray-400 w-20 shrink-0">이름</span>
+              <span className="text-sm text-gray-900">{mockProfile.name}</span>
             </div>
-          )}
+            <div className="flex items-center px-4 py-3.5 gap-4">
+              <span className="text-xs text-gray-400 w-20 shrink-0">연락처</span>
+              {phone
+                ? <span className="text-sm text-gray-700 tabular-nums">{phone}</span>
+                : <button onClick={() => navigate('/profile')} className="text-sm text-brand-green-text font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">마이페이지에서 등록하기 →</button>
+              }
+            </div>
+            {mockProfile.instagramConnected && (
+              <div className="flex items-start px-4 py-3.5 gap-4">
+                <span className="text-xs text-gray-400 w-20 shrink-0 pt-0.5">인스타그램</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-pink-600 bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 whitespace-nowrap">
+                      <Instagram size={9} aria-hidden="true" />인스타그램
+                    </span>
+                  </div>
+                  {!isViewMode && (
+                    <p className="text-xs text-gray-400 mt-1 break-keep">선정 후에는 연결 계정을 변경할 수 없습니다. 마이페이지에서만 수정 가능해요.</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* 연락처 — 원본 CampaignApplyForm.tsx L467-474: 항상 disabled, 프로필에서 자동 입력 */}
-        <Section title="연락처" required={false}>
-          <input
-            type="tel"
-            disabled
-            value={phone || '마이페이지에서 등록해 주세요.'}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 bg-gray-50 cursor-not-allowed"
-            aria-label="연락처 (마이페이지에서 변경)"
-          />
-          {!phone && (
-            <p className="text-xs text-gray-400 mt-1">연락처는 마이페이지 &gt; 내 정보에서 변경할 수 있어요.</p>
-          )}
-        </Section>
 
         {/* 배송 정보 (배송형만) */}
         {isDelivery && (
@@ -586,28 +577,49 @@ export default function CampaignApply() {
                 checked={agreed1}
                 onChange={(v) => { setAgreed1(v); clearError('agreed1') }}
                 error={errors.agreed1}
-                text="초상권 활용에 동의합니다."
+                text="캠페인 진행 과정에서 촬영된 사진·영상 속 제 초상(얼굴, 신체, 이름 포함)을 광고주가 SNS·광고·판촉물 등 마케팅 채널에 활용하는 것에 동의합니다. (초상권 활용 동의)"
               />
               <AgreementRow
                 checked={agreed2}
                 onChange={(v) => { setAgreed2(v); clearError('agreed2') }}
                 error={errors.agreed2}
                 text={campaign.secondaryUse?.enabled
-                  ? `캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다. (콘텐츠 2차 활용 포함${campaign.secondaryUse.durationMonths ? ` — ${campaign.secondaryUse.durationMonths}개월` : ''})`
-                  : '캠페인 유의사항, 개인정보 및 콘텐츠 제3자 제공, 저작물 이용에 동의합니다.'}
+                  ? `제가 제작한 콘텐츠(사진·영상·글)를 광고주가 자사 SNS, 유료 광고, 웹사이트, 오프라인 매체 등에 재게시·활용하는 것에 동의합니다. 캠페인 유의사항 및 개인정보 수집·이용에도 동의합니다. (콘텐츠 2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})`
+                  : '제가 제작한 콘텐츠(사진·영상·글)를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다.'}
               />
-              {/* 공통 안내사항 자세히보기 — 원본 CampaignApplyForm.tsx L859-872 */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <p className="text-sm font-medium text-gray-700">공통 안내사항 <span className="text-red-500">*</span></p>
-                <a
-                  href={TERMS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-                >
-                  자세히보기
-                  <ExternalLink size={10} aria-hidden="true" />
-                </a>
+
+              {/* 공통 안내사항 inline 확장 — 원본 CampaignApplyForm.tsx L859-872 */}
+              <div className="rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                  <p className="text-sm font-semibold text-gray-700">공통 안내사항 <span className="text-red-500">*</span></p>
+                  <p className="text-xs text-gray-400 mt-0.5">캠페인 신청 전 반드시 확인해 주세요</p>
+                </div>
+                <div className="px-4 py-4 space-y-5 text-xs leading-relaxed">
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">① 광고 표시 의무</p>
+                    <p className="text-gray-500">게시물에 <strong className="text-gray-700">[광고]</strong> 또는 <strong className="text-gray-700">[협찬]</strong> 문구를 첫 줄 또는 가장 눈에 띄는 위치에 한국어로 명확히 표시해야 합니다. 공정거래위원회 추천·보증 광고 심사지침에 따른 의무 사항이며, 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">② 게시 유지 의무</p>
+                    <p className="text-gray-500">선정 후 승인된 콘텐츠는 캠페인 종료일로부터 <strong className="text-gray-700">최소 90일</strong> 동안 삭제하거나 비공개로 전환할 수 없습니다. 부득이한 사유가 있는 경우 사전에 운영팀에 알려주세요. 임의 삭제 시 보상금 회수 및 향후 참여 제한 조치가 취해질 수 있습니다.</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">③ 콘텐츠 가이드 준수</p>
+                    <p className="text-gray-500">광고주가 제공한 브랜드 가이드라인에 따라 콘텐츠를 제작해야 합니다. 허위·과장 표현, 타 브랜드 비교, 미성년자에게 부적절한 내용(음주·흡연 등)은 금지됩니다. 가이드라인에 맞지 않는 콘텐츠는 수정 요청이 올 수 있으며, 2회 이상 수정 불이행 시 선정이 취소될 수 있습니다.</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">④ 보상 지급 기준</p>
+                    <p className="text-gray-500">보상(제품·활동비)은 콘텐츠 검수 완료 및 게시 확인 후 지급됩니다. 활동비는 게시 확인일로부터 <strong className="text-gray-700">15영업일 이내</strong> 등록된 계좌로 입금되며, 기타소득 기준 초과 시 원천세(3.3%)가 공제될 수 있습니다.</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">⑤ 부정 행위 금지 및 제재</p>
+                    <p className="text-gray-500">팔로워·조회수 조작, 타인의 콘텐츠 도용, 중복 계정 신청, 제공 상품 미사용 후 허위 리뷰 작성 등의 행위가 확인될 경우 보상이 전액 회수되고 서비스 이용이 영구 제한됩니다.</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 mb-1.5">⑥ 개인정보 수집·이용</p>
+                    <p className="text-gray-500">수집 항목: 이름, 연락처, SNS 계정, 배송 정보. 이용 목적: 캠페인 운영, 상품 발송, 보상 지급. 보유 기간: 캠페인 종료 후 2년. 귀하는 동의 거부 권리가 있으나, 거부 시 캠페인 신청이 불가합니다.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </Section>
