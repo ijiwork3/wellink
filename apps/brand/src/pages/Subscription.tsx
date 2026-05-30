@@ -436,10 +436,13 @@ export default function Subscription() {
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
-                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월·연간' : plan.unit}</span>
+                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
+              {billing === 'monthly' && (
+                <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
+              )}
               {billing === 'annual' && (
-                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 결제</p>
+                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
               )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
@@ -488,10 +491,13 @@ export default function Subscription() {
               <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
-                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월·연간' : plan.unit}</span>
+                <span className="text-base text-gray-500">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
+              {billing === 'monthly' && (
+                <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
+              )}
               {billing === 'annual' && (
-                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 결제</p>
+                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
               )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
