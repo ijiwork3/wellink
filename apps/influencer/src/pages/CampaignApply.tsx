@@ -581,33 +581,31 @@ export default function CampaignApply() {
                 description="본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다."
               />
 
-              {/* 공통 안내사항 inline 확장 — 원본 CampaignApplyForm.tsx L859-872 */}
-              <div className="rounded-xl border border-gray-200 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-700">공통 안내사항 <span className="text-red-500">*</span></p>
-                  <p className="text-xs text-gray-400 mt-0.5">캠페인 신청 전 반드시 확인해 주세요</p>
-                </div>
-                <div className="px-4 py-4 space-y-3.5 text-xs leading-relaxed">
-                  {[
-                    { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
-                    { num: '②', title: '게시 유지 의무', desc: '선정 후 콘텐츠는 최소 90일간 삭제·비공개 전환이 불가합니다. 임의 삭제 시 보상 회수 및 참여 제한 조치가 취해질 수 있습니다.' },
-                    { num: '③', title: '콘텐츠 가이드 준수', desc: '광고주 제공 가이드라인에 따라 제작해야 하며, 허위·과장 표현, 타 브랜드 비교, 부적절한 내용은 금지됩니다.' },
-                    { num: '④', title: '보상 지급', desc: '콘텐츠 검수 완료 후 15영업일 이내 지급됩니다. 활동비는 원천세(3.3%) 공제 후 지급될 수 있습니다.' },
-                    { num: '⑤', title: '부정 행위 제재', desc: '팔로워·조회수 조작, 콘텐츠 도용, 중복 신청 등 부정 행위 적발 시 보상 전액 회수 및 서비스 이용이 제한됩니다.' },
-                    { num: '⑥', title: '개인정보 수집·이용', desc: '수집 항목: 이름·연락처·SNS 계정·배송 정보 / 이용 목적: 캠페인 운영·보상 지급 / 보유 기간: 종료 후 2년' },
-                  ].map(({ num, title, desc }) => (
-                    <div key={num} className="flex gap-2.5">
-                      <span className="text-gray-400 shrink-0 font-medium">{num}</span>
-                      <div>
-                        <span className="font-semibold text-gray-700">{title} </span>
-                        <span className="text-gray-500">{desc}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </Section>
+
+          {/* 공통 안내사항 — 컨테이너 없이 오픈 스타일, 원본 CampaignApplyForm.tsx L859-872 */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+            <p className="text-sm font-semibold text-gray-900 mb-3">공통 안내사항</p>
+            <div className="space-y-3 text-xs leading-relaxed">
+              {[
+                { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
+                { num: '②', title: '게시 유지 의무', desc: '선정 후 콘텐츠는 최소 90일간 삭제·비공개 전환이 불가합니다. 임의 삭제 시 보상 회수 및 참여 제한 조치가 취해질 수 있습니다.' },
+                { num: '③', title: '콘텐츠 가이드 준수', desc: '광고주 제공 가이드라인에 따라 제작해야 하며, 허위·과장 표현, 타 브랜드 비교, 부적절한 내용은 금지됩니다.' },
+                { num: '④', title: '보상 지급', desc: '콘텐츠 검수 완료 후 15영업일 이내 지급됩니다. 활동비는 원천세(3.3%) 공제 후 지급될 수 있습니다.' },
+                { num: '⑤', title: '부정 행위 제재', desc: '팔로워·조회수 조작, 콘텐츠 도용, 중복 신청 등 부정 행위 적발 시 보상 전액 회수 및 서비스 이용이 제한됩니다.' },
+                { num: '⑥', title: '개인정보 수집·이용', desc: '수집 항목: 이름·연락처·SNS 계정·배송 정보 / 이용 목적: 캠페인 운영·보상 지급 / 보유 기간: 종료 후 2년' },
+              ].map(({ num, title: t, desc }) => (
+                <div key={num} className="flex gap-2.5">
+                  <span className="text-gray-400 shrink-0 font-medium">{num}</span>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t} </span>
+                    <span className="text-gray-500">{desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
       </div>
