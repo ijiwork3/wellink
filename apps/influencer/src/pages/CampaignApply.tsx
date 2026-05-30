@@ -582,7 +582,7 @@ export default function CampaignApply() {
               />
               {/* 공통 안내사항 — 원본 CampaignApplyForm.tsx L859-872 */}
               <div className="pt-4 mt-2">
-                <p className="text-sm font-semibold text-gray-900 mb-2.5">공통 안내사항</p>
+                <p className="text-sm font-semibold text-gray-900 mb-4">공통 안내사항</p>
                 <div className="space-y-5 text-xs leading-relaxed">
                   {[
                     { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
