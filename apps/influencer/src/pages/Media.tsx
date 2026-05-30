@@ -431,15 +431,10 @@ export default function Media() {
                 </ul>
                 <button
                   type="button"
-                  disabled={isConnecting}
-                  onClick={() => handleConnect(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  onClick={() => setShowMetaModal(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
-                  {isConnecting ? (
-                    <><Loader2 size={13} className="animate-spin" aria-hidden="true" />연결 중...</>
-                  ) : (
-                    <><BadgeCheck size={14} aria-hidden="true" />프로페셔널 계정으로 연결</>
-                  )}
+                  <BadgeCheck size={14} aria-hidden="true" />프로페셔널 계정으로 연결
                 </button>
               </div>
 
