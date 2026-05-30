@@ -675,38 +675,49 @@ export default function CampaignDetailContent({
         <ApplyButton size="lg" />
       </div>
 
-      {/* 프로페셔널 계정 전환 안내 모달 (활동비 캠페인 + 일반 계정) */}
+      {/* Meta OAuth 모달 — 프로페셔널 전환 (활동비 캠페인 + 일반 계정) */}
       <Modal
         open={showProModal}
-        title="프로페셔널 계정이 필요해요"
         onClose={() => setShowProModal(false)}
-          footer={
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setShowProModal(false)}
-                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                취소
-              </button>
-              <a
-                href="https://www.instagram.com/accounts/convert_to_professional/"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setShowProModal(false)}
-                className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-sm font-semibold text-center hover:opacity-90 transition-opacity"
-              >
-                전환하러 가기
-              </a>
-            </div>
-          }
-        >
-          <p className="text-sm text-gray-600 leading-relaxed break-keep">
-            활동비가 지급되는 캠페인은 인스타그램 <strong className="text-gray-900">프로페셔널 계정(비즈니스·크리에이터)</strong>만 지원할 수 있어요.
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            인스타그램에서 계정을 전환한 뒤 다시 지원해 주세요.
-          </p>
+        title=""
+        showClose={false}
+        size="xs"
+        noDividers
+      >
+        <div className="flex flex-col items-center gap-5 px-2 py-2">
+          <div className="flex flex-col items-center gap-2">
+            <svg viewBox="0 0 48 48" width="48" height="48" fill="none" aria-label="Meta" role="img">
+              <path d="M8 18.5C8 13.8 10.9 10 14.7 10c2.3 0 4 1.1 6.1 4.2L24 18l3.2-3.8C29.3 11.1 31 10 33.3 10 37.1 10 40 13.8 40 18.5c0 2.6-.8 5.1-2.6 7.5L24 40 10.6 26C8.8 23.6 8 21.1 8 18.5Z" fill="#0866FF"/>
+            </svg>
+            <p className="text-base font-bold text-gray-900">Meta로 계속하기</p>
+            <p className="text-xs text-gray-500 text-center break-keep">
+              웰링크가 회원님의 Instagram 비즈니스 계정에 접근하도록 허용합니다
+            </p>
+          </div>
+          <div className="w-full rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 space-y-1.5 text-xs text-gray-600">
+            <p className="flex items-center gap-2"><span className="text-green-500">✓</span>팔로워 수 및 도달 데이터 읽기</p>
+            <p className="flex items-center gap-2"><span className="text-green-500">✓</span>게시물 인사이트(노출·참여율) 읽기</p>
+            <p className="flex items-center gap-2"><span className="text-green-500">✓</span>계정 기본 정보 읽기</p>
+          </div>
+          <div className="w-full flex flex-col gap-2">
+            <a
+              href="https://www.instagram.com/accounts/convert_to_professional/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setShowProModal(false)}
+              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
+            >
+              계속
+            </a>
+            <button
+              type="button"
+              onClick={() => setShowProModal(false)}
+              className="w-full py-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              취소
+            </button>
+          </div>
+        </div>
       </Modal>
     </>
   )
