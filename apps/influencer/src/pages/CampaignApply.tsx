@@ -587,7 +587,7 @@ export default function CampaignApply() {
           {/* 공통 안내사항 — 원본 CampaignApplyForm.tsx L859-872 */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <p className="text-sm font-semibold text-gray-900 mb-3">공통 안내사항</p>
-            <div className="space-y-3 text-xs leading-relaxed">
+            <div className="h-44 overflow-y-auto overscroll-contain rounded-xl border border-gray-100 bg-gray-50 px-4 py-3.5 space-y-3 text-xs leading-relaxed">
               {[
                 { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
                 { num: '②', title: '게시 유지 의무', desc: '선정 후 콘텐츠는 최소 90일간 삭제·비공개 전환이 불가합니다. 임의 삭제 시 보상 회수 및 참여 제한 조치가 취해질 수 있습니다.' },
