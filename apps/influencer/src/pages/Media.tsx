@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera, BadgeCheck, ArrowUpRight, Pencil } from 'lucide-react'
+import { Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera, BadgeCheck, ArrowUpRight } from 'lucide-react'
 import Layout from '../components/Layout'
 import { AlertModal, Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination, SEMANTIC_COLORS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
@@ -332,14 +332,6 @@ export default function Media() {
                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap shrink-0">
                   일반 계정
                 </span>
-                <button
-                  type="button"
-                  onClick={() => { setConnectInput(''); setShowConnectModal(true) }}
-                  aria-label="계정 변경"
-                  className="flex items-center justify-center w-6 h-6 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                >
-                  <Pencil size={12} aria-hidden="true" />
-                </button>
               </div>
               <button
                 type="button"
