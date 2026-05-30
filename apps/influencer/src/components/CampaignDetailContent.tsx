@@ -99,12 +99,8 @@ export default function CampaignDetailContent({
   const applied = forceApplied
   const [showProModal, setShowProModal] = useState(false)
 
-  // 활동비 캠페인 + 일반(비프로) 계정이면 지원 전 전환 안내
+  // 활동비 캠페인 + 일반(비프로) 계정이면 지원 버튼 → 프로페셔널 전환 모달
   const needsProForApply = (campaign.activityFee ?? 0) > 0 && igState.connected && !igState.professional
-  const handleApplyOrPro = () => {
-    if (needsProForApply) { setShowProModal(true); return }
-    navigate(`/campaigns/${campaign.id}/apply`)
-  }
 
   const [mountedAt] = useState(() => Date.now())
   const applyEndExpired = (() => {
@@ -145,7 +141,7 @@ export default function CampaignDetailContent({
     showToast(wasLiked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', wasLiked ? 'info' : 'success')
   }
 
-  const handleApply = handleApplyOrPro
+  const handleApply = () => navigate(`/campaigns/${campaign.id}/apply`)
 
   // ── 모달 모드 (compact 단열) ─────────────────────────────────────────────────
   if (inModal) {
@@ -226,6 +222,16 @@ export default function CampaignDetailContent({
       <div className={`w-full ${py} rounded-xl ${text} text-center bg-brand-green-bg text-brand-green-text border border-brand-green-border flex items-center justify-center gap-2`}>
         <CheckCircle2 size={size === 'lg' ? 20 : 18} />신청완료
       </div>
+    )
+    if (needsProForApply) return (
+      <button
+        type="button"
+        onClick={() => setShowProModal(true)}
+        className={`w-full ${py} rounded-xl ${text} text-gray-400 bg-gray-100 border border-gray-200 flex flex-col items-center justify-center gap-0.5 transition-colors hover:bg-gray-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300`}
+      >
+        <span>프로페셔널 계정 전용</span>
+        <span className={`${size === 'lg' ? 'text-sm' : 'text-xs'} font-normal text-gray-400`}>전환 방법 안내 보기</span>
+      </button>
     )
     return (
       <button onClick={handleApply}
