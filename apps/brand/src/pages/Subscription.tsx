@@ -439,10 +439,19 @@ export default function Subscription() {
                 <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
-                <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                  <p className="text-xs text-gray-400 whitespace-nowrap">매월 청구됩니다</p>
+                  <p className="text-xs text-brand-green-text whitespace-nowrap">연간 결제 시 {Math.round(monthlyKRW * 0.8).toLocaleString('ko-KR')}원/월</p>
+                </div>
               )}
               {billing === 'annual' && (
-                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
+                <div className="mt-1.5 space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
+                    <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-md whitespace-nowrap">20% 절약</span>
+                  </div>
+                  <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
+                </div>
               )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
@@ -494,10 +503,19 @@ export default function Subscription() {
                 <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
-                <p className="mt-1 text-xs text-gray-400">매월 청구됩니다</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                  <p className="text-xs text-gray-400 whitespace-nowrap">매월 청구됩니다</p>
+                  <p className="text-xs text-brand-green-text whitespace-nowrap">연간 결제 시 {Math.round(monthlyKRW * 0.8).toLocaleString('ko-KR')}원/월</p>
+                </div>
               )}
               {billing === 'annual' && (
-                <p className="mt-1 text-xs text-brand-green-text font-medium">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
+                <div className="mt-1.5 space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
+                    <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-md whitespace-nowrap">20% 절약</span>
+                  </div>
+                  <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
+                </div>
               )}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
