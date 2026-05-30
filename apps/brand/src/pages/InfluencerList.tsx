@@ -945,7 +945,7 @@ export default function InfluencerList() {
                         <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0">
                           {(() => {
                             const items = [
-                              { pct: feedCount / totalContent, color: '#f97316' },
+                              { pct: feedCount / totalContent, color: CHART_COLORS.feed },
                               { pct: reelsCount / totalContent, color: CHART_COLORS.saves },
                               { pct: imgCount / totalContent, color: SEMANTIC_COLORS.success },
                             ]

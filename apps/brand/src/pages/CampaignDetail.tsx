@@ -7,7 +7,7 @@ import {
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { fmtNumber, fmtDate, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay } from '@wellink/ui'
+import { fmtNumber, fmtDate, CAMPAIGN_STATUS_STYLE, PARTICIPATION_STATUS_STYLE, CONTENT_TYPE_STYLE, getDDay, CHART_COLORS } from '@wellink/ui'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { pushNotification } from '../services/notifications'
@@ -2369,8 +2369,8 @@ export default function CampaignDetail() {
                       const val = Math.round(r * safeMaxLikes)
                       return (
                         <g key={r}>
-                          <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
-                          <text x={padL - 8} y={y + 4} textAnchor="end" fontSize={11} fill="#9ca3af">{val.toLocaleString()}</text>
+                          <line x1={padL} y1={y} x2={chartW - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
+                          <text x={padL - 8} y={y + 4} textAnchor="end" fontSize={11} fill={CHART_COLORS.axisLine}>{val.toLocaleString()}</text>
                         </g>
                       )
                     })}
@@ -2401,15 +2401,15 @@ export default function CampaignDetail() {
                             textAnchor="end"
                             transform={`rotate(-35 ${b.x + barW / 2} ${padT + plotH + 16})`}
                             fontSize={11}
-                            fill="#6b7280"
+                            fill={CHART_COLORS.axisLabel}
                           >
                             {b.name.length > 5 ? `${b.name.slice(0, 5)}…` : b.name}
                           </text>
                           {/* 호버 툴팁 */}
                           {isHovered && (
                             <g>
-                              <rect x={b.x + barW / 2 - 72} y={barTop - 52} width={144} height={44} rx={6} fill="#1f2937" fillOpacity={0.92} />
-                              <text x={b.x + barW / 2} y={barTop - 34} textAnchor="middle" fontSize={10} fill="#d1d5db">
+                              <rect x={b.x + barW / 2 - 72} y={barTop - 52} width={144} height={44} rx={6} fill={CHART_COLORS.tooltipBg} fillOpacity={0.92} />
+                              <text x={b.x + barW / 2} y={barTop - 34} textAnchor="middle" fontSize={10} fill={CHART_COLORS.inactive}>
                                 {b.caption.length > 20 ? `${b.caption.slice(0, 20)}…` : b.caption}
                               </text>
                               <text x={b.x + barW / 2} y={barTop - 16} textAnchor="middle" fontSize={12} fill="white" fontWeight="600">
@@ -3459,8 +3459,8 @@ function TrendChart({
           const v = Math.round(r * max)
           return (
             <g key={r}>
-              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f3f4f6" strokeWidth={1} />
-              <text x={padL - 6} y={y + 3} textAnchor="end" fontSize={9} fill="#9ca3af">{v.toLocaleString()}</text>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke={CHART_COLORS.grid} strokeWidth={1} />
+              <text x={padL - 6} y={y + 3} textAnchor="end" fontSize={9} fill={CHART_COLORS.axisLine}>{v.toLocaleString()}</text>
             </g>
           )
         })}
@@ -3483,8 +3483,8 @@ function TrendChart({
         {/* X축: 첫·마지막 라벨만 (호버로 상세 확인) */}
         {data.length > 0 && (
           <>
-            <text x={padL} y={padT + plotH + 16} textAnchor="start" fontSize={10} fill="#6b7280">{data[0].label}</text>
-            <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" fontSize={10} fill="#6b7280">{data[data.length - 1].label}</text>
+            <text x={padL} y={padT + plotH + 16} textAnchor="start" fontSize={10} fill={CHART_COLORS.axisLabel}>{data[0].label}</text>
+            <text x={padL + plotW} y={padT + plotH + 16} textAnchor="end" fontSize={10} fill={CHART_COLORS.axisLabel}>{data[data.length - 1].label}</text>
           </>
         )}
         {/* 호버/탭 인디케이터 + 툴팁 (모바일은 더 크게) */}
@@ -3497,17 +3497,17 @@ function TrendChart({
           const ty = 4
           return (
             <g pointerEvents="none">
-              <line x1={hx} y1={padT} x2={hx} y2={padT + plotH} stroke="#9ca3af" strokeWidth={1} strokeDasharray="3 3" />
+              <line x1={hx} y1={padT} x2={hx} y2={padT + plotH} stroke={CHART_COLORS.axisLine} strokeWidth={1} strokeDasharray="3 3" />
               {series.map(s => {
                 const p = pointFor(data[hoverIdx][s.dataKey], hoverIdx)
                 return <circle key={s.dataKey} cx={p.x} cy={p.y} r={5} fill="white" stroke={s.stroke} strokeWidth={2.5} />
               })}
-              <rect x={tx} y={ty} width={tipW} height={tipH} rx={8} fill="#111827" opacity={0.94} />
+              <rect x={tx} y={ty} width={tipW} height={tipH} rx={8} fill={CHART_COLORS.tooltipBg} opacity={0.94} />
               <text x={tx + 12} y={ty + 18} fontSize={13} fontWeight={700} fill="white">{data[hoverIdx].label}</text>
               {series.map((s, i) => (
                 <g key={s.dataKey}>
                   <circle cx={tx + 16} cy={ty + 36 + i * 20} r={3.5} fill={s.stroke} />
-                  <text x={tx + 26} y={ty + 40 + i * 20} fontSize={12} fill="#e5e7eb">
+                  <text x={tx + 26} y={ty + 40 + i * 20} fontSize={12} fill={CHART_COLORS.tooltipText}>
                     {s.label}: <tspan fontWeight={700} fill="white">{data[hoverIdx][s.dataKey].toLocaleString()}</tspan>
                   </text>
                 </g>

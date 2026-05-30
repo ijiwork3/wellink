@@ -353,7 +353,7 @@ export default function AdPerformance() {
                 <>
                   <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#f97316' }} />
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS.feed }} />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
                   </div>
                 </>
@@ -362,7 +362,7 @@ export default function AdPerformance() {
           >
             <SimpleLineChart
               data={chartData.map(d => ({ label: d.date, value: d.ctr }))}
-              stroke="#f97316"
+              stroke={CHART_COLORS.feed}
               ariaLabel="CTR 추이 차트"
               yLabelFormatter={(n) => `${n.toFixed(1)}%`}
               activeIndex={ctrChartIdx}
@@ -418,7 +418,7 @@ export default function AdPerformance() {
           <DonutChartSimple
             ariaLabel="광고 도달과 유기적 도달 비율 도넛 차트"
             data={[
-              { label: '광고 도달', value: kpi.reach, color: '#f97316' },
+              { label: '광고 도달', value: kpi.reach, color: CHART_COLORS.feed },
               { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: CHART_COLORS.saves },
             ]}
           />
@@ -431,7 +431,7 @@ export default function AdPerformance() {
           <DonutChartSimple
             ariaLabel="광고 참여와 유기적 참여 비율 도넛 차트"
             data={[
-              { label: '광고 참여', value: kpi.clicks, color: '#f97316' },
+              { label: '광고 참여', value: kpi.clicks, color: CHART_COLORS.feed },
               { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: CHART_COLORS.saves },
             ]}
           />

@@ -25,7 +25,7 @@ import {
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { getEngagementColor, getAuthenticColor } from '@wellink/ui'
+import { getEngagementColor, getAuthenticColor, CHART_COLORS } from '@wellink/ui'
 import {
   INFLUENCER_SORT_OPTIONS,
   DEFAULT_INFLUENCER_SORT,
@@ -898,7 +898,7 @@ export default function InfluencerManage() {
                       <svg width="96" height="96" viewBox="0 0 64 64" className="shrink-0">
                         {(() => {
                           const items = [
-                            { pct: feedCount / totalContent, color: '#f97316' },
+                            { pct: feedCount / totalContent, color: CHART_COLORS.feed },
                             { pct: reelsCount / totalContent, color: CHART_COLORS.saves },
                             { pct: imgCount / totalContent, color: SEMANTIC_COLORS.success },
                           ]

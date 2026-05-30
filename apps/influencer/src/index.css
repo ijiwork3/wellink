@@ -19,7 +19,7 @@ body {
   margin: 0;
   font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
   background-color: #ffffff;
-  color: #1A1A1A;
+  color: var(--color-gray-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -81,10 +81,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
+  background: var(--color-gray-200);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D1D5DB;
+  background: var(--color-gray-300);
 }

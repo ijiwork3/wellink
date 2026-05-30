@@ -121,7 +121,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
             y={y + 4}
             textAnchor="end"
             fontSize="11"
-            fill="#9ca3af"
+            fill={CHART_COLORS.axisLine}
             fontFamily="-apple-system,BlinkMacSystemFont,sans-serif"
             className="tabular-nums"
           >

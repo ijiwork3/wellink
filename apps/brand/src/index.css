@@ -13,8 +13,8 @@ html, body {
 body {
   margin: 0;
   font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
-  background: #FAFAFA;
-  color: #111827;
+  background: var(--color-gray-50);
+  color: var(--color-gray-900);
 }
 
 #root {

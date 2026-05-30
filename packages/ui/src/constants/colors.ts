@@ -16,21 +16,29 @@ export const AVATAR_COLORS = [
 
 /** Recharts/SVG에서 Tailwind 클래스 불가한 경우에만 사용 */
 export const CHART_COLORS = {
-  /** 비활성/비교 데이터 막대 (Recharts fill prop) */
+  /** 비활성/비교 데이터 막대 (Recharts fill prop) — gray-300 */
   inactive: '#D1D5DB',
   /** 격자선 (CartesianGrid stroke prop) — gray-100 */
   grid: '#f3f4f6',
-  /** 축 레이블 (tick fill prop) — gray-500 */
+  /** 축 레이블 텍스트 (tick fill prop) — gray-500 */
   axisLabel: '#6b7280',
+  /** 축 보조선·크로스헤어 라인 색상 — gray-400 */
+  axisLine: '#9ca3af',
+  /** 다크 툴팁 배경 — gray-900 */
+  tooltipBg: '#111827',
+  /** 다크 툴팁 위 텍스트 — gray-200 */
+  tooltipText: '#e5e7eb',
+  /** 피드 콘텐츠 지표 라인/범례 — orange-500 */
+  feed: '#f97316',
   /** 도달(reach) 라인 — 파랑 S+3% */
   reach: '#3983F9',
   /** 저장(saves) 라인 — 보라 S+3% */
   saves: '#8858F9',
   /** 경고/주의 점수 — amber S+3% */
   warn: '#F9A006',
-  /** 차트 null 구간 배경 */
+  /** 차트 null 구간 배경 — gray-50 */
   nullBg: '#f9fafb',
-  /** 차트 null 텍스트/라벨 */
+  /** 차트 null 텍스트/라벨 — gray-300 */
   nullText: '#d1d5db',
   /** 공유(shares) 라인 — 에메랄드 그린 */
   shares: '#10b981',
