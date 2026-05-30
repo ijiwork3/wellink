@@ -327,7 +327,7 @@ export default function CampaignApply() {
         {/* 캠페인 요약 — 원본 CampaignApplyForm.tsx:439-459: 썸네일 + 제품 정보 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           {/* 썸네일 + 기본 정보 */}
-          <div className="flex items-center gap-3.5 p-4 bg-gray-50">
+          <div className="flex items-center gap-3.5 p-4">
             <div className="w-24 h-[72px] rounded-xl shrink-0 bg-gray-100 overflow-hidden">
               <img
                 src={getThumbnailFromPool(campaign.id)}
@@ -375,16 +375,14 @@ export default function CampaignApply() {
 
 
         {/* 신청자 정보 + 연락처 통합 카드 — 원본 CampaignApplyForm.tsx L463-518 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-            <p className="text-sm font-semibold text-gray-900">신청자 정보</p>
-          </div>
-          <div className="divide-y divide-gray-50">
-            <div className="flex items-center px-4 py-3.5 gap-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <p className="text-sm font-semibold text-gray-900 mb-3">신청자 정보</p>
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-4">
               <span className="text-xs text-gray-400 w-20 shrink-0">이름</span>
               <span className="text-sm text-gray-900">{mockProfile.name}</span>
             </div>
-            <div className="flex items-center px-4 py-3.5 gap-4">
+            <div className="flex items-center gap-4">
               <span className="text-xs text-gray-400 w-20 shrink-0">연락처</span>
               {phone
                 ? <span className="text-sm text-gray-700 tabular-nums">{phone}</span>
@@ -392,12 +390,12 @@ export default function CampaignApply() {
               }
             </div>
             {mockProfile.instagramConnected && (
-              <div className="flex items-start px-4 py-3.5 gap-4">
+              <div className="flex items-start gap-4">
                 <span className="text-xs text-gray-400 w-20 shrink-0 pt-0.5">인스타그램</span>
                 <div className="flex-1 min-w-0">
                   <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
                   {!isViewMode && (
-                    <p className="text-xs text-gray-400 mt-1 break-keep">선정 후에는 연결된 계정을 변경할 수 없습니다.</p>
+                    <p className="text-xs text-gray-400 mt-0.5 break-keep">선정 후에는 연결된 계정을 변경할 수 없습니다.</p>
                   )}
                 </div>
               </div>
