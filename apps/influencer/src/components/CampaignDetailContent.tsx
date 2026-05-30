@@ -7,10 +7,10 @@ import {
 } from 'lucide-react'
 import { SEMANTIC_COLORS, PROGRESS_THRESHOLD } from '@wellink/ui'
 import { StatusBadge, PlatformBadge } from '@wellink/ui'
-import { useToast } from '@wellink/ui'
+import { useToast, Modal } from '@wellink/ui'
 import type { Campaign } from '../services/mock/campaigns'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
-import { useBookmarks } from '../services/userState'
+import { useBookmarks, useInstagramState } from '../services/userState'
 
 // ── 날짜 포맷 유틸 (원본 CampaignSidebar formatDateRangeWithDay/formatDateWithDay 대응) ──
 const DAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
@@ -94,8 +94,17 @@ export default function CampaignDetailContent({
   const navigate = useNavigate()
   const { showToast } = useToast()
   const bookmarks = useBookmarks()
+  const igState = useInstagramState()
   const liked = bookmarks.has(campaign.id)
   const applied = forceApplied
+  const [showProModal, setShowProModal] = useState(false)
+
+  // 활동비 캠페인 + 일반(비프로) 계정이면 지원 전 전환 안내
+  const needsProForApply = (campaign.activityFee ?? 0) > 0 && igState.connected && !igState.professional
+  const handleApplyOrPro = () => {
+    if (needsProForApply) { setShowProModal(true); return }
+    navigate(`/campaigns/${campaign.id}/apply`)
+  }
 
   const [mountedAt] = useState(() => Date.now())
   const applyEndExpired = (() => {
@@ -136,7 +145,7 @@ export default function CampaignDetailContent({
     showToast(wasLiked ? '관심 등록을 취소했어요' : '관심 캠페인에 등록했어요!', wasLiked ? 'info' : 'success')
   }
 
-  const handleApply = () => navigate(`/campaigns/${campaign.id}/apply`)
+  const handleApply = handleApplyOrPro
 
   // ── 모달 모드 (compact 단열) ─────────────────────────────────────────────────
   if (inModal) {
@@ -655,6 +664,41 @@ export default function CampaignDetailContent({
       >
         <ApplyButton size="lg" />
       </div>
+
+      {/* 프로페셔널 계정 전환 안내 모달 (활동비 캠페인 + 일반 계정) */}
+      {showProModal && (
+        <Modal
+          title="프로페셔널 계정이 필요해요"
+          onClose={() => setShowProModal(false)}
+          footer={
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowProModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <a
+                href="https://www.instagram.com/accounts/convert_to_professional/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowProModal(false)}
+                className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-sm font-semibold text-center hover:opacity-90 transition-opacity"
+              >
+                전환하러 가기
+              </a>
+            </div>
+          }
+        >
+          <p className="text-sm text-gray-600 leading-relaxed break-keep">
+            활동비가 지급되는 캠페인은 인스타그램 <strong className="text-gray-900">프로페셔널 계정(비즈니스·크리에이터)</strong>만 지원할 수 있어요.
+          </p>
+          <p className="mt-2 text-sm text-gray-500">
+            인스타그램에서 계정을 전환한 뒤 다시 지원해 주세요.
+          </p>
+        </Modal>
+      )}
     </>
   )
 }
