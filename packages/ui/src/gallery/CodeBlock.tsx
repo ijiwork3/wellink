@@ -20,9 +20,9 @@ export default function CodeBlock({ code, lang = 'tsx' }: CodeBlockProps) {
   }
 
   return (
-    <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-[#1E1E2E]">
+    <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-code-bg">
       {/* 상단 바 */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#181825] border-b border-white/5">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-code-header border-b border-white/5">
         <span className="text-[11px] font-medium text-gray-500 uppercase tracking-widest">{lang}</span>
         <button
           onClick={handleCopy}

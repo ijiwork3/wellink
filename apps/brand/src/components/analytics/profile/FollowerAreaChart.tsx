@@ -170,7 +170,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
       {/* Max point 강조 + 값 라벨 */}
       {maxPoint && (
         <g>
-          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="#fff" stroke={BRAND.green} strokeWidth={2.5} />
+          <circle cx={maxPoint.x} cy={maxPoint.y} r={5} fill="white" stroke={BRAND.green} strokeWidth={2.5} />
           <text
             x={maxPoint.x}
             y={maxPoint.y - 12}
@@ -193,7 +193,7 @@ const FollowerAreaChart = memo(function FollowerAreaChart({ data, activeIndex, o
         return (
           <g>
             <line x1={p.x} y1={padT} x2={p.x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={p.x} cy={p.y} r={4} fill={BRAND.green} stroke="#fff" strokeWidth={2} />
+            <circle cx={p.x} cy={p.y} r={4} fill={BRAND.green} stroke="white" strokeWidth={2} />
           </g>
         )
       })()}

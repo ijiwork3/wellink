@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BRAND } from './constants/colors'
 import { Menu, X, ExternalLink } from 'lucide-react'
 
 // Stories
@@ -150,10 +151,10 @@ function Overview() {
             </div>
           </div>
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: '#7AB535' }} />
+            <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: BRAND.greenHover }} />
             <div>
               <p className="text-xs font-semibold text-gray-900">Hover</p>
-              <p className="text-xs font-mono text-gray-500">#7AB535</p>
+              <p className="text-xs font-mono text-gray-500">{BRAND.greenHover}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
@@ -164,10 +165,10 @@ function Overview() {
             </div>
           </div>
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: '#FAFAFA' }} />
+            <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: BRAND.greenBg }} />
             <div>
               <p className="text-xs font-semibold text-gray-900">BG</p>
-              <p className="text-xs font-mono text-gray-500">#FAFAFA</p>
+              <p className="text-xs font-mono text-gray-500">{BRAND.greenBg}</p>
             </div>
           </div>
         </div>
@@ -248,7 +249,7 @@ export default function App() {
   const content = active === 'overview' ? <Overview /> : (storyMap[active] ?? <Overview />)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F8F9FA]">
+    <div className="flex h-screen overflow-hidden bg-devui-bg">
 
       {/* 사이드바 — 데스크탑: 항상 표시 */}
       <div className="hidden lg:flex lg:flex-col w-[220px] shrink-0 h-full">

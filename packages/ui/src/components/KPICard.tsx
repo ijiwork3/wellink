@@ -19,6 +19,7 @@ import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react'
 import Tooltip from './Tooltip'
 import Sparkline from './Sparkline'
 import { useIsTouchDevice } from '../utils/useIsTouchDevice'
+import { BRAND, CHART_COLORS } from '../constants/colors'
 
 interface KPICardProps {
   title: string
@@ -70,16 +71,16 @@ const SEVERITY_TEXT: Record<Severity, string> = {
 }
 
 const SEVERITY_STROKE: Record<Severity, string> = {
-  good:    '#95D135',  // brand-green (광고주 배지 동기화)
-  neutral: '#9ca3af',  // gray-400
-  bad:     '#f43f5e',  // rose-500 (vivid red)
+  good:    BRAND.green,           // brand-green
+  neutral: CHART_COLORS.axisLine, // gray-400
+  bad:     CHART_COLORS.badStroke, // rose-500 (vivid red)
 }
 
 // bar variant 비활성 막대 색 — bad는 회색 (초록 bar가 빨간 카드 안에 있으면 어색)
 const SEVERITY_MUTED: Record<Severity, string> = {
-  good:    '#BADE7E',  // brand-green-border
-  neutral: '#d1d5db',  // gray-300
-  bad:     '#fda4af',  // rose-300 (세컨더리)
+  good:    BRAND.greenBorder,      // brand-green-border
+  neutral: CHART_COLORS.inactive,  // gray-300
+  bad:     CHART_COLORS.badMuted,  // rose-300 (세컨더리)
 }
 
 const KPICard = memo(function KPICard({
@@ -93,7 +94,7 @@ const KPICard = memo(function KPICard({
 
   const tonedBg = tonedBackground && trend !== undefined ? SEVERITY_BG[severity] : 'bg-white border-gray-100'
   const trendColor = trend === undefined ? 'text-gray-500' : SEVERITY_TEXT[severity]
-  const sparkStroke = trend === undefined ? '#9ca3af' : SEVERITY_STROKE[severity]
+  const sparkStroke = trend === undefined ? CHART_COLORS.axisLine : SEVERITY_STROKE[severity]
   const sparkMuted  = SEVERITY_MUTED[severity]
 
   const ariaLabel = trend !== undefined

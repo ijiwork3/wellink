@@ -42,6 +42,10 @@ export const CHART_COLORS = {
   nullText: '#d1d5db',
   /** 공유(shares) 라인 — 에메랄드 그린 */
   shares: '#10b981',
+  /** KPI bad 지표 스트로크 — rose-500 */
+  badStroke: '#f43f5e',
+  /** KPI bad 지표 뮤트 배경 — rose-300 */
+  badMuted: '#fda4af',
 } as const
 
 /** SVG stroke/fill prop에서 Tailwind 클래스 불가한 경우에만 사용 */
