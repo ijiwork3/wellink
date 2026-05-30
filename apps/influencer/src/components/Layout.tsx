@@ -44,6 +44,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           /* 2뎁스: 뒤로가기 + 페이지 타이틀 */
           <div className={`flex items-center justify-between w-full ${pageWidth ? `${pageWidth} mx-auto` : ''}`}>
             <button
+              type="button"
               onClick={onBack}
               aria-label="이전으로"
               className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -60,6 +61,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
               {/* 햄버거: @sm 이상 @lg 미만 (태블릿) */}
               {showSidebar && (
                 <button
+                  type="button"
                   onClick={() => setDrawerOpen(true)}
                   aria-label="메뉴 열기"
                   className="hidden @[640px]:flex @[1024px]:hidden w-10 h-10 items-center justify-center -ml-1 rounded-lg hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -68,6 +70,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 </button>
               )}
               <button
+                type="button"
                 onClick={() => navigate('/campaigns/browse')}
                 aria-label="WELLINK AI 홈으로"
                 className="text-base font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -75,6 +78,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 WELLINK<span className="text-brand-green">.AI</span>
               </button>
               <button
+                type="button"
                 onClick={() => document.dispatchEvent(new Event('qa-toggle'))}
                 aria-label="QA 패널 열기"
                 className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -85,6 +89,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
             <div className="flex items-center gap-2">
               {/* 알림 벨 */}
               <button
+                type="button"
                 onClick={() => navigate('/notifications')}
                 aria-label={unreadCount > 0 ? `알림 ${unreadCount}건 미읽음` : '알림'}
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -101,6 +106,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 )}
               </button>
               <button
+                type="button"
                 onClick={confirmLogout}
                 className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
@@ -154,6 +160,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-bold text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
                 <button
+                  type="button"
                   onClick={() => { setDrawerOpen(false); document.dispatchEvent(new Event('qa-toggle')) }}
                   aria-label="QA 패널 열기"
                   className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
@@ -161,7 +168,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                   인플루언서
                 </button>
               </div>
-              <button onClick={() => setDrawerOpen(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              <button type="button" onClick={() => setDrawerOpen(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-600" />
               </button>
             </div>

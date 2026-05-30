@@ -504,7 +504,7 @@ export default function InfluencerManage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <p className="text-base font-semibold text-gray-900 break-words min-w-0">@{inf.instagramId ?? inf.name}</p>
+                      <p className="text-base font-semibold text-gray-900 truncate min-w-0">@{inf.instagramId ?? inf.name}</p>
                       {NOW - inf.addedAt <= 3 * DAY_MS && (
                         <span className="shrink-0 text-sm font-semibold bg-brand-green text-white px-2 py-1 rounded-full">NEW</span>
                       )}

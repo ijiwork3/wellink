@@ -25,6 +25,7 @@ export default function ProfileHeader() {
         {/* 프로필 행 */}
         <div className="flex items-start gap-3 @[640px]:gap-4 mb-3 @[640px]:mb-4">
           <button
+            type="button"
             onClick={() => navigate('/profile')}
             className="flex items-start gap-3 @[640px]:gap-4 flex-1 text-left rounded-xl hover:bg-gray-50 -mx-1 px-1 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             aria-label="마이페이지로 이동"
@@ -51,6 +52,7 @@ export default function ProfileHeader() {
         <div className="grid grid-cols-4 gap-1.5 @[640px]:gap-2 @[640px]:ml-[calc(3.5rem+1rem)]">
           {stats.map(s => (
             <button
+              type="button"
               key={s.label}
               onClick={() => navigate(`/campaigns/my?tab=${s.tab}`)}
               className="bg-gray-50 hover:bg-gray-100 rounded-xl py-2.5 px-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"

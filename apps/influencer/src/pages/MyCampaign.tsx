@@ -298,6 +298,7 @@ const handleContentSubmit = () => {
                       </p>
                       {c.rejectReason.length > 40 && (
                         <button
+                          type="button"
                           onClick={e => { e.stopPropagation(); setRejectReasonModal(c.rejectReason!) }}
                           className="shrink-0 text-xs font-medium text-red-400 underline underline-offset-2 hover:text-red-600 whitespace-nowrap"
                         >

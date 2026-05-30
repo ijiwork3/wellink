@@ -79,7 +79,7 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                 {[0.8, 0.6, 0.9].map((w, i) => (
                   <div key={i} className="flex items-center gap-4">
                     <div className="h-8 w-8 rounded bg-white/10" />
-                    <div className="h-2 flex-1 rounded-full bg-white/10">
+                    <div className="h-2 flex-1 rounded-full bg-white/20">
                       {shouldReduceMotion ? (
                         <div
                           className="h-full rounded-full bg-[var(--color-landing-lime)]"
@@ -101,7 +101,7 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
             <motion.div
               initial={shouldReduceMotion ? false : { y: 20, opacity: 0 }}
               whileInView={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
-              className="absolute -bottom-10 -left-10 rounded-2xl bg-white p-6 shadow-2xl"
+              className="absolute bottom-4 left-4 sm:-bottom-10 sm:-left-10 rounded-2xl bg-white p-5 sm:p-6 shadow-2xl z-10"
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500">

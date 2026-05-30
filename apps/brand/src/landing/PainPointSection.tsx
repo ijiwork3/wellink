@@ -61,15 +61,15 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
             <motion.div
               key={item.id}
               whileHover={hoverScaleCard}
-              className="flex overflow-hidden rounded-[2.5rem] bg-white shadow-sm"
+              className="flex flex-col sm:flex-row overflow-hidden rounded-[2.5rem] bg-white shadow-sm"
             >
-              <div className={cn('flex w-1/3 flex-col items-center justify-center p-8', item.color)}>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white font-black text-[var(--color-landing-dark)] shadow-sm">
+              <div className={cn('flex sm:w-1/3 flex-row sm:flex-col items-center justify-center gap-4 sm:gap-0 p-5 sm:p-8', item.color)}>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white font-black text-[var(--color-landing-dark)] shadow-sm sm:mb-4">
                   {item.id}
                 </div>
-                <div className="text-center font-black text-slate-900">{item.role}</div>
+                <div className="font-black text-slate-900 sm:text-center">{item.role}</div>
               </div>
-              <div className="flex flex-1 flex-col justify-center p-8 text-left">
+              <div className="flex flex-1 flex-col justify-center p-5 sm:p-8 text-left">
                 <div className="mb-6">
                   <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-red-400">
                     <div className="flex h-4 w-4 items-center justify-center rounded-full border border-red-400 text-[8px]">
@@ -79,7 +79,7 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
                   </div>
                   <div className="text-xl font-black leading-tight text-slate-900">{item.problem}</div>
                 </div>
-                <div className="mb-6 h-px w-full bg-slate-100" />
+                <div className="mb-6 h-px w-full bg-slate-200" />
                 <div>
                   <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-500">
                     <CheckCircle2 size={12} />

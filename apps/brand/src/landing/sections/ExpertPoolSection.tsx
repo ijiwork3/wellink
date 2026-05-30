@@ -61,14 +61,15 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
           </div>
 
           <div className="order-1 flex justify-center lg:order-2">
-            <div className="relative h-[600px] w-[300px] overflow-hidden rounded-[3rem] border-8 border-slate-900 bg-white shadow-2xl">
+            <div className="relative">
+            <div className="relative h-[420px] w-[240px] sm:h-[520px] sm:w-[270px] lg:h-[600px] lg:w-[300px] overflow-hidden rounded-[2.5rem] lg:rounded-[3rem] border-8 border-slate-900 bg-white shadow-2xl">
               <div className="absolute top-0 h-6 w-full bg-slate-900" />
               <div className="p-4">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-200">
                     <img
                       src="https://picsum.photos/seed/profile/100/100"
-                      alt=""
+                      alt="인플루언서 프로필"
                       referrerPolicy="no-referrer"
                       loading="lazy"
                       decoding="async"
@@ -110,17 +111,19 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                 </div>
               </div>
 
-              <motion.div
-                initial={shouldReduceMotion ? false : { x: 50, opacity: 0 }}
-                whileInView={shouldReduceMotion ? undefined : { x: 0, opacity: 1 }}
-                className="absolute top-20 -right-12 rounded-xl bg-white p-4 shadow-xl"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-lime-400" />
-                  <div className="text-sm font-bold uppercase text-slate-400">Current Streak</div>
-                </div>
-                <div className="text-base font-black text-slate-900">오운완 1,249일차</div>
-              </motion.div>
+            </div>
+
+            <motion.div
+              initial={shouldReduceMotion ? false : { x: 50, opacity: 0 }}
+              whileInView={shouldReduceMotion ? undefined : { x: 0, opacity: 1 }}
+              className="absolute top-20 -right-2 sm:-right-10 rounded-xl bg-white p-4 shadow-xl z-10"
+            >
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-lime-400" />
+                <div className="text-sm font-bold uppercase text-slate-400">Current Streak</div>
+              </div>
+              <div className="text-base font-black text-slate-900">오운완 1,249일차</div>
+            </motion.div>
             </div>
           </div>
         </div>

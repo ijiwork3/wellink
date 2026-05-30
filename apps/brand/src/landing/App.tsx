@@ -104,7 +104,7 @@ export default function App() {
           <button
             ref={menuButtonRef}
             type="button"
-            className="md:hidden"
+            className="md:hidden p-2 -m-2 rounded-lg hover:opacity-70 active:opacity-50 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-landing-dark)]/30"
             onClick={() => setIsMenuOpen((prev) => !prev)}
             aria-controls="mobile-navigation-menu"
             aria-expanded={isMenuOpen}
@@ -132,7 +132,7 @@ export default function App() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-xl font-medium"
+                className="text-xl font-medium px-3 py-2 rounded-xl hover:text-[var(--color-landing-dark)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-landing-dark)]/50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
@@ -143,7 +143,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_mobile"
               ctaId="header_mobile_consult"
-              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-[var(--color-landing-dark)]"
+              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-[var(--color-landing-dark)] hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
               onClick={() => setIsMenuOpen(false)}
             >
               상담 신청
@@ -237,7 +237,7 @@ export default function App() {
                   {['#헬스', '#크로스핏', '#요가', '#필라테스', '#바레', '#러닝'].map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-slate-100 px-4 py-2 text-base font-medium text-slate-600"
+                      className="rounded-full bg-slate-100 px-4 py-2 text-base font-medium text-slate-600 whitespace-nowrap"
                     >
                       {tag}
                     </span>
@@ -295,7 +295,7 @@ export default function App() {
                 <motion.div
                   key={item.title}
                   whileHover={hoverLiftCard}
-                  className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-shadow hover:shadow-xl"
+                  className="rounded-[2rem] border border-slate-100 bg-white p-8 text-left shadow-sm transition-all hover:shadow-xl hover:border-slate-200 hover:bg-slate-50/40"
                 >
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-landing-dark)]">
                     <item.icon size={28} />

@@ -1105,20 +1105,20 @@ export default function CampaignDetail() {
         {/* 일정 바 — 모집/발표/업로드/완료 4단계. 모바일 1열, @md 2열, @xl 4열. 원본은 모집·발표·업로드 3단계, vibe는 완료(집계 마감)까지 추가. */}
         <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-4 gap-2 bg-gray-50 rounded-xl p-3">
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0">모집</span>
-            <span className="text-gray-600 break-words min-w-0">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 font-medium shrink-0 whitespace-nowrap">모집</span>
+            <span className="text-gray-600 whitespace-nowrap truncate min-w-0">{meta.recruitPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium shrink-0">발표</span>
-            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.announcedAt)}</span>
+            <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium shrink-0 whitespace-nowrap">발표</span>
+            <span className="text-gray-600 whitespace-nowrap min-w-0">{fmtDate(meta.announcedAt)}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">업로드</span>
-            <span className="text-gray-600 break-words min-w-0">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
+            <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0 whitespace-nowrap">업로드</span>
+            <span className="text-gray-600 whitespace-nowrap truncate min-w-0">{meta.uploadPeriod.split(' ~ ').map(fmtDate).join(' ~ ')}</span>
           </div>
           <div className="flex items-center gap-2 text-base min-w-0">
-            <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0">완료</span>
-            <span className="text-gray-600 break-words min-w-0">{fmtDate(meta.completedAt)}</span>
+            <span className="px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text font-medium shrink-0 whitespace-nowrap">완료</span>
+            <span className="text-gray-600 whitespace-nowrap min-w-0">{fmtDate(meta.completedAt)}</span>
           </div>
         </div>
 
