@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Markdown from 'react-markdown'
-import { CheckCircle2, MapPin, Package, Footprints, Pencil, Gift, BookOpen, ExternalLink, Instagram } from 'lucide-react'
+import { CheckCircle2, MapPin, Package, Footprints, Pencil, Gift, BookOpen, ExternalLink } from 'lucide-react'
 import Layout from '../components/Layout'
 import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
@@ -397,8 +397,8 @@ export default function CampaignApply() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-pink-600 bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 whitespace-nowrap">
-                      <Instagram size={9} aria-hidden="true" />인스타그램
+                    <span className="inline-flex items-center text-[10px] font-medium text-pink-600 bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 whitespace-nowrap">
+                      인스타그램
                     </span>
                   </div>
                   {!isViewMode && (
