@@ -16,10 +16,10 @@ const plans = [
     price: '99,000',
     unit: '원/월',
     tag: null,
-    desc: '인플루언서 매칭 기본 지원',
+    desc: '소규모 브랜드와 초기 스타트업을 위한 시작 플랜',
     features: [
       '인플루언서 DB 5,000명',
-      'Fit-Score 기반 자동 매칭',
+      'Fit-Score 기반 인플루언서 추천',
       '기본 성과 분석 대시보드',
       '이메일 지원',
     ],
@@ -32,7 +32,7 @@ const plans = [
     price: '299,000',
     unit: '원/월',
     tag: '추천',
-    desc: 'AI 기반 성과 분석 + 우선 매칭',
+    desc: '성장 중인 브랜드를 위한 가장 인기 있는 플랜',
     features: [
       '인플루언서 DB 50,000명+',
       'AI 성과 분석 및 최적화',
@@ -594,7 +594,7 @@ export default function Subscription() {
         type FeatureVal = string | boolean
         const comparison: { name: string; focus: FeatureVal; scale: FeatureVal; infinite: FeatureVal; section?: string }[] = [
           { name: '인플루언서 DB',         focus: '5,000명',  scale: '50,000명+',  infinite: '무제한',      section: '핵심 기능' },
-          { name: 'AI Fit-Score 매칭',     focus: true,       scale: true,          infinite: true },
+          { name: 'Fit-Score 인플루언서 추천',     focus: true,       scale: true,          infinite: true },
           { name: '성과 대시보드',          focus: '기본',     scale: '고급',        infinite: '커스텀' },
           { name: 'Fit-Score 상세 리포트',  focus: false,      scale: true,          infinite: true },
           { name: '캠페인 수',              focus: '월 3건',   scale: '월 20건',     infinite: '무제한',      section: '운영 한도' },
@@ -923,7 +923,7 @@ export default function Subscription() {
               {isDowngrade && (
                 <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
                   <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
-                  <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 매칭 등 Scale 전용 기능이 비활성화됩니다.</p>
+                  <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 지원 등 Scale 전용 기능이 비활성화됩니다.</p>
                 </div>
               )}
             </div>
