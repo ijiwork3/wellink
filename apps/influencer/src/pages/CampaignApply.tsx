@@ -581,7 +581,7 @@ export default function CampaignApply() {
                 description="본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다."
               />
               {/* 공통 안내사항 — 원본 CampaignApplyForm.tsx L859-872 */}
-              <div className="pt-2 mt-1">
+              <div className="pt-4 mt-2">
                 <p className="text-sm font-semibold text-gray-900 mb-2.5">공통 안내사항</p>
                 <div className="space-y-5 text-xs leading-relaxed">
                   {[
