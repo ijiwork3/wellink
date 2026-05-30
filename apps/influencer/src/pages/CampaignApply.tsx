@@ -265,10 +265,10 @@ export default function CampaignApply() {
           ) : (
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              aria-disabled={isSubmitting}
+              disabled={isSubmitting || !agreed1 || !agreed2}
+              aria-disabled={isSubmitting || !agreed1 || !agreed2}
               aria-busy={isSubmitting}
-              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {isSubmitting ? '제출 중...' : isEditMode ? '수정 완료' : '신청하기'}
             </button>
@@ -327,8 +327,8 @@ export default function CampaignApply() {
         {/* 캠페인 요약 — 원본 CampaignApplyForm.tsx:439-459: 썸네일 + 제품 정보 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           {/* 썸네일 + 기본 정보 */}
-          <div className="flex items-center gap-3 p-4 bg-gray-50">
-            <div className="w-14 h-14 rounded-xl shrink-0 bg-gray-100 overflow-hidden">
+          <div className="flex items-center gap-3.5 p-4 bg-gray-50">
+            <div className="w-24 h-[72px] rounded-xl shrink-0 bg-gray-100 overflow-hidden">
               <img
                 src={getThumbnailFromPool(campaign.id)}
                 alt=""
