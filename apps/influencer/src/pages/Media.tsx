@@ -425,7 +425,7 @@ export default function Media() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-brand-green text-white whitespace-nowrap shrink-0">추천</span>
                 </div>
                 <ul className="space-y-1 mb-4 flex-1">
-                  <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />무가시딩 캠페인 지원 가능</li>
+                  <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />제품 협찬 캠페인 지원 가능</li>
                   <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />팔로워·인사이트 통계 자동 연동</li>
                   <li className="text-xs text-brand-green-text flex items-center gap-1.5"><CheckCircle2 size={11} className="shrink-0" />활동비 지급 캠페인 지원 가능</li>
                 </ul>
@@ -452,7 +452,7 @@ export default function Media() {
                   </div>
                 </div>
                 <ul className="space-y-1 mb-4 flex-1">
-                  <li className="text-xs text-gray-500 flex items-center gap-1.5"><CheckCircle2 size={11} className="text-gray-400 shrink-0" />무가시딩 캠페인 지원 가능</li>
+                  <li className="text-xs text-gray-500 flex items-center gap-1.5"><CheckCircle2 size={11} className="text-gray-400 shrink-0" />제품 협찬 캠페인 지원 가능</li>
                   <li className="text-xs text-gray-300 flex items-center gap-1.5 line-through decoration-gray-300"><CheckCircle2 size={11} className="shrink-0 text-gray-300" />팔로워·인사이트 통계</li>
                   <li className="text-xs text-gray-300 flex items-center gap-1.5 line-through decoration-gray-300"><CheckCircle2 size={11} className="shrink-0 text-gray-300" />활동비 지급 캠페인</li>
                 </ul>
