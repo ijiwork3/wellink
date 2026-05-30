@@ -7,6 +7,7 @@ import { Toggle, ResponsiveSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { ACTIVITY_FIELDS, INFLUENCER_TYPES, mockProfile } from '../services/mock/profile'
+import { useInstagramState } from '../services/userState'
 import { formatPhone } from '../utils/format'
 
 
@@ -42,8 +43,8 @@ export default function Profile() {
   const [showNewPw, setShowNewPw] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   const [isPhoneSubmitting, setIsPhoneSubmitting] = useState(false)
-  // 프로페셔널 계정 연동 — mock 상태 (실서비스: Meta OAuth)
-  const [isProfessional, setIsProfessional] = useState(mockProfile.instagramProfessional)
+  // 인스타그램 연결 상태 — Media·CampaignApply와 localStorage 공유
+  const ig = useInstagramState()
   const [isProfessionalConnecting, setIsProfessionalConnecting] = useState(false)
   const professionalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (professionalTimerRef.current) clearTimeout(professionalTimerRef.current) }, [])
@@ -444,25 +445,25 @@ export default function Profile() {
         </div>
         )}
 
-        {/* 프로페셔널 계정 연동 — 편집 모드와 별도 */}
-        {!isEditing && mockProfile.instagramConnected && (
+        {/* 프로페셔널 계정 연동 — 인스타 연결된 경우에만 표시 */}
+        {!isEditing && ig.connected && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <p className="text-sm font-medium text-gray-900">인스타그램 프로페셔널 계정</p>
-                {isProfessional && (
+                {ig.professional && (
                   <span className="flex items-center gap-0.5 text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-full whitespace-nowrap">
                     <BadgeCheck size={11} aria-hidden="true" />연동됨
                   </span>
                 )}
               </div>
               <p className="text-xs text-gray-500 break-keep leading-relaxed">
-                {isProfessional
+                {ig.professional
                   ? '비즈니스·크리에이터 계정이 연동되었습니다. 활동비 지급 캠페인에 지원할 수 있어요.'
                   : '비즈니스·크리에이터 계정을 연동하면 활동비(원고료) 지급 캠페인에 지원할 수 있어요.'}
               </p>
-              {!isProfessional && (
+              {!ig.professional && (
                 <a
                   href="https://help.instagram.com/502981923235522"
                   target="_blank"
@@ -473,10 +474,10 @@ export default function Profile() {
                 </a>
               )}
             </div>
-            {isProfessional ? (
+            {ig.professional ? (
               <button
                 type="button"
-                onClick={() => { setIsProfessional(false); showToast('연동이 해제되었어요', 'info') }}
+                onClick={() => { ig.downgradeToPersonal(); showToast('연동이 해제되었어요', 'info') }}
                 className="shrink-0 text-xs text-gray-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 rounded px-2 py-1"
               >
                 연동 해제
@@ -491,7 +492,7 @@ export default function Profile() {
                   setIsProfessionalConnecting(true)
                   professionalTimerRef.current = setTimeout(() => {
                     setIsProfessionalConnecting(false)
-                    setIsProfessional(true)
+                    ig.upgradeToProfessional()
                     showToast('프로페셔널 계정이 연동되었어요!', 'success')
                   }, 1400)
                 }}

@@ -7,7 +7,7 @@ import { mockCampaigns, mockAppliedData } from '../services/mock/campaigns'
 import { mockProfile } from '../services/mock/profile'
 import { useToast, ErrorState, TIMER_MS, Tooltip, useQAMode, Skeleton } from '@wellink/ui'
 import { formatPhone } from '../utils/format'
-import { useApplications } from '../services/userState'
+import { useApplications, useInstagramState } from '../services/userState'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 import { TERMS_URL } from '../config/urls'
 
@@ -19,6 +19,9 @@ export default function CampaignApply() {
   const { showToast } = useToast()
   const qa = useQAMode()
   const applications = useApplications()
+  const ig = useInstagramState()
+  // 유가시딩(activityFee > 0) + 일반 계정 → 신청 불가
+  const needsProfessional = (campaign?.activityFee ?? 0) > 0 && !ig.professional
   const campaign = mockCampaigns.find(c => c.id === Number(id))
   const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => {
@@ -247,6 +250,19 @@ export default function CampaignApply() {
             >
               돌아가기
             </button>
+          ) : needsProfessional ? (
+            <div className="space-y-2">
+              <p className="text-xs text-center text-amber-700 font-medium break-keep">
+                활동비 지급 캠페인은 프로페셔널 계정이 필요해요
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/media')}
+                className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
+              >
+                인스타 관리에서 계정 연동하기
+              </button>
+            </div>
           ) : (
             <button
               onClick={handleSubmit}
