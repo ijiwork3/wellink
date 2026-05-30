@@ -577,15 +577,15 @@ export default function CampaignApply() {
                 checked={agreed1}
                 onChange={(v) => { setAgreed1(v); clearError('agreed1') }}
                 error={errors.agreed1}
-                text="캠페인 진행 과정에서 촬영된 사진·영상 속 제 초상(얼굴, 신체, 이름 포함)을 광고주가 SNS·광고·판촉물 등 마케팅 채널에 활용하는 것에 동의합니다. (초상권 활용 동의)"
+                text="캠페인 진행 과정에서 촬영된 사진·영상 속 초상(얼굴·신체·이름 등)을 광고주가 SNS, 광고, 판촉물 등 마케팅에 활용하는 것에 동의합니다. (초상권 활용)"
               />
               <AgreementRow
                 checked={agreed2}
                 onChange={(v) => { setAgreed2(v); clearError('agreed2') }}
                 error={errors.agreed2}
                 text={campaign.secondaryUse?.enabled
-                  ? `제가 제작한 콘텐츠(사진·영상·글)를 광고주가 자사 SNS, 유료 광고, 웹사이트, 오프라인 매체 등에 재게시·활용하는 것에 동의합니다. 캠페인 유의사항 및 개인정보 수집·이용에도 동의합니다. (콘텐츠 2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})`
-                  : '제가 제작한 콘텐츠(사진·영상·글)를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다.'}
+                  ? `본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다. (콘텐츠 2차 활용 포함${campaign.secondaryUse.durationMonths ? ` · ${campaign.secondaryUse.durationMonths}개월` : ''})`
+                  : '본인이 제작한 콘텐츠를 광고주가 자사 SNS, 광고, 웹사이트 등 마케팅 채널에 재게시·활용하는 것에 동의하며, 캠페인 유의사항 및 개인정보 수집·이용에 동의합니다.'}
               />
 
               {/* 공통 안내사항 inline 확장 — 원본 CampaignApplyForm.tsx L859-872 */}
@@ -594,31 +594,23 @@ export default function CampaignApply() {
                   <p className="text-sm font-semibold text-gray-700">공통 안내사항 <span className="text-red-500">*</span></p>
                   <p className="text-xs text-gray-400 mt-0.5">캠페인 신청 전 반드시 확인해 주세요</p>
                 </div>
-                <div className="px-4 py-4 space-y-5 text-xs leading-relaxed">
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">① 광고 표시 의무</p>
-                    <p className="text-gray-500">게시물에 <strong className="text-gray-700">[광고]</strong> 또는 <strong className="text-gray-700">[협찬]</strong> 문구를 첫 줄 또는 가장 눈에 띄는 위치에 한국어로 명확히 표시해야 합니다. 공정거래위원회 추천·보증 광고 심사지침에 따른 의무 사항이며, 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">② 게시 유지 의무</p>
-                    <p className="text-gray-500">선정 후 승인된 콘텐츠는 캠페인 종료일로부터 <strong className="text-gray-700">최소 90일</strong> 동안 삭제하거나 비공개로 전환할 수 없습니다. 부득이한 사유가 있는 경우 사전에 운영팀에 알려주세요. 임의 삭제 시 보상금 회수 및 향후 참여 제한 조치가 취해질 수 있습니다.</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">③ 콘텐츠 가이드 준수</p>
-                    <p className="text-gray-500">광고주가 제공한 브랜드 가이드라인에 따라 콘텐츠를 제작해야 합니다. 허위·과장 표현, 타 브랜드 비교, 미성년자에게 부적절한 내용(음주·흡연 등)은 금지됩니다. 가이드라인에 맞지 않는 콘텐츠는 수정 요청이 올 수 있으며, 2회 이상 수정 불이행 시 선정이 취소될 수 있습니다.</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">④ 보상 지급 기준</p>
-                    <p className="text-gray-500">보상(제품·활동비)은 콘텐츠 검수 완료 및 게시 확인 후 지급됩니다. 활동비는 게시 확인일로부터 <strong className="text-gray-700">15영업일 이내</strong> 등록된 계좌로 입금되며, 기타소득 기준 초과 시 원천세(3.3%)가 공제될 수 있습니다.</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">⑤ 부정 행위 금지 및 제재</p>
-                    <p className="text-gray-500">팔로워·조회수 조작, 타인의 콘텐츠 도용, 중복 계정 신청, 제공 상품 미사용 후 허위 리뷰 작성 등의 행위가 확인될 경우 보상이 전액 회수되고 서비스 이용이 영구 제한됩니다.</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800 mb-1.5">⑥ 개인정보 수집·이용</p>
-                    <p className="text-gray-500">수집 항목: 이름, 연락처, SNS 계정, 배송 정보. 이용 목적: 캠페인 운영, 상품 발송, 보상 지급. 보유 기간: 캠페인 종료 후 2년. 귀하는 동의 거부 권리가 있으나, 거부 시 캠페인 신청이 불가합니다.</p>
-                  </div>
+                <div className="px-4 py-4 space-y-3.5 text-xs leading-relaxed">
+                  {[
+                    { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
+                    { num: '②', title: '게시 유지 의무', desc: '선정 후 콘텐츠는 최소 90일간 삭제·비공개 전환이 불가합니다. 임의 삭제 시 보상 회수 및 참여 제한 조치가 취해질 수 있습니다.' },
+                    { num: '③', title: '콘텐츠 가이드 준수', desc: '광고주 제공 가이드라인에 따라 제작해야 하며, 허위·과장 표현, 타 브랜드 비교, 부적절한 내용은 금지됩니다.' },
+                    { num: '④', title: '보상 지급', desc: '콘텐츠 검수 완료 후 15영업일 이내 지급됩니다. 활동비는 원천세(3.3%) 공제 후 지급될 수 있습니다.' },
+                    { num: '⑤', title: '부정 행위 제재', desc: '팔로워·조회수 조작, 콘텐츠 도용, 중복 신청 등 부정 행위 적발 시 보상 전액 회수 및 서비스 이용이 제한됩니다.' },
+                    { num: '⑥', title: '개인정보 수집·이용', desc: '수집 항목: 이름·연락처·SNS 계정·배송 정보 / 이용 목적: 캠페인 운영·보상 지급 / 보유 기간: 종료 후 2년' },
+                  ].map(({ num, title, desc }) => (
+                    <div key={num} className="flex gap-2.5">
+                      <span className="text-gray-400 shrink-0 font-medium">{num}</span>
+                      <div>
+                        <span className="font-semibold text-gray-700">{title} </span>
+                        <span className="text-gray-500">{desc}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
