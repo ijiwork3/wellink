@@ -59,9 +59,8 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
         <h3 className="text-lg font-bold text-gray-900 mb-2">
           인스타그램 비즈니스 계정을 연결해 주세요
         </h3>
-        <p className="text-base text-gray-500 max-w-[280px] mb-6 leading-relaxed">
-          {featureName}는 Instagram 비즈니스 계정과 연결되어야
-          데이터를 수집하고 표시할 수 있습니다.
+        <p className="text-base text-gray-500 max-w-[380px] mb-6 leading-relaxed">
+          {featureName}는 Instagram 비즈니스 계정과 연결되어야<br />데이터를 수집하고 표시할 수 있습니다.
         </p>
 
         <button

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { Link2, Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera } from 'lucide-react'
+import { Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ResponsiveSheet, AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination } from '@wellink/ui'
+import { AlertModal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
-import { ko주격조사, fmtRelativeDate } from '../utils/format'
+import { fmtRelativeDate } from '../utils/format'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 
 interface Platform {
@@ -58,9 +58,7 @@ export default function Media() {
   }, [qa])
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const [connectModal, setConnectModal] = useState<Platform | null>(null)
   const [disconnectModal, setDisconnectModal] = useState<Platform | null>(null)
-  const [urlInput, setUrlInput] = useState('')
   const { showToast } = useToast()
   // 데이터 수집 상태 — 원본 mypage L1357-1364 isMentionsUpdating/isMentionsFailed
   const isUpdating = qa === 'updating'
@@ -72,9 +70,7 @@ export default function Media() {
   useEffect(() => {
     const m = searchParams.get('modal')
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (m === 'connect')    setConnectModal(platforms.find(p => p.id === 'naver') ?? null)
     if (m === 'disconnect') setDisconnectModal(platforms.find(p => p.id === 'instagram') ?? null)
-    if (qa === 'modal-connect')    setConnectModal(platforms.find(p => p.id === 'naver') ?? null)
     if (qa === 'modal-disconnect') setDisconnectModal(platforms.find(p => p.id === 'instagram') ?? null)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, location.key, qa])
@@ -93,7 +89,7 @@ export default function Media() {
             </div>
           </div>
           {/* 통계 그리드: 6셀 (팔로워·게시물·참여율·평균좋아요·평균댓글·최근활동) */}
-          <div className="grid grid-cols-3 @[560px]:grid-cols-6 gap-2 mb-4 px-4 @[640px]:px-5">
+          <div className="grid grid-cols-3 @[560px]:grid-cols-6 gap-2 mb-4 px-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-1.5">
                 <Skeleton shape="text" height={12} width="3.5rem" />
@@ -102,7 +98,7 @@ export default function Media() {
             ))}
           </div>
           {/* 최근 콘텐츠 헤더 */}
-          <div className="flex items-center gap-1.5 mb-2 px-4 @[640px]:px-5">
+          <div className="flex items-center gap-1.5 mb-2 px-4">
             <Skeleton shape="circle" height={14} width={14} />
             <Skeleton shape="text" height={14} width="5rem" />
           </div>
@@ -129,28 +125,27 @@ export default function Media() {
     )
   }
 
-  const handleConnect = () => {
-    if (!urlInput.trim()) { showToast('URL을 입력해 주세요', 'error'); return }
-    const input = urlInput.trim()
-    // 플랫폼별 검증 — 인스타는 핸들/URL 모두 허용, 네이버/유튜브는 URL 형식 요구
-    if (connectModal?.id === 'instagram') {
-      const handle = input.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')
-      if (!/^[a-zA-Z0-9_.]{1,30}$/.test(handle)) {
-        showToast('올바른 인스타그램 아이디를 입력해 주세요', 'error'); return
-      }
-    } else {
-      if (!/^https?:\/\/.+\..+/.test(input)) {
-        showToast('올바른 URL 형식이 아니에요 (예: https://...)', 'error'); return
-      }
-    }
-    // 인스타그램만 @ 핸들 정규화. 네이버 블로그·유튜브는 URL 그대로 저장 (L264 @${url} 노출 방지)
-    const normalized = connectModal?.id === 'instagram'
-      ? input.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')
-      : input
-    setPlatforms(prev => prev.map(p => p.id === connectModal?.id ? { ...p, connected: true, url: normalized } : p))
-    showToast(`${connectModal?.name}${ko주격조사(connectModal?.name ?? '')} 연결됐어요!`, 'success')
-    setConnectModal(null)
-    setUrlInput('')
+  // 인스타 최초 연동 — Meta OAuth redirect (광고주 앱과 동일 방식)
+  // 실제 구현: startInfluencerMetaConnect() → client_id/redirect_uri 인플루언서용으로 교체
+  const handleConnectInstagram = () => {
+    const params = new URLSearchParams({
+      client_id: '742315354931014',
+      redirect_uri: 'https://matcha.pnutbutter.kr/api-meta/auth/callback',
+      scope: 'public_profile,instagram_basic,instagram_manage_insights',
+      response_type: 'code',
+      auth_type: 'rerequest',
+    })
+    window.location.href = `https://www.facebook.com/v24.0/dialog/oauth?${params}`
+  }
+
+  // 계정 변경 — 이미 연결된 계정을 다른 계정으로 교체하는 mock
+  const [isChangingAccount, setIsChangingAccount] = useState(false)
+  const handleChangeAccount = () => {
+    setIsChangingAccount(true)
+    setTimeout(() => {
+      setIsChangingAccount(false)
+      showToast('계정이 변경됐어요.', 'success')
+    }, 1200)
   }
 
   const handleDisconnect = () => {
@@ -162,20 +157,23 @@ export default function Media() {
   const instaPlatform = platforms[0]
 
   return (
-    <Layout mobileFull>
+    <Layout>
       <div className="space-y-4">
         <h1 className="sr-only">인스타 관리</h1>
 
-        {/* 모바일 탭 — 사이드바 없는 환경에서만 표시 (mobileFull=true이므로 모바일 네거티브 마진 없음) */}
-        <div className="@[1024px]:hidden border-b border-gray-200 bg-white px-4 @[640px]:-mx-6 @[640px]:px-6 mb-2">
-          <div className="flex">
+        {/* 모바일 탭 — 모바일(< 640px)에서만 표시, sticky */}
+        <div className="@[640px]:hidden sticky top-0 z-10 -mx-4 px-4 py-2 bg-gray-50/95 backdrop-blur-sm">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-1 flex">
             <button
               onClick={() => navigate('/profile')}
-              className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
             >
               <User size={14} />내 정보
             </button>
-            <button className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold text-brand-green-text border-b-2 border-brand-green whitespace-nowrap">
+            <button
+              aria-current="page"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
               <Camera size={14} />인스타 관리
             </button>
           </div>
@@ -183,10 +181,9 @@ export default function Media() {
 
         {/* 인스타그램 통계 패널 — 연결된 경우만 */}
         {instaPlatform?.connected && (
-          /* 모바일: 카드 경계 없음(flat) / 데스크탑: 카드 */
-          <div className="bg-white @[640px]:rounded-2xl @[640px]:border @[640px]:border-gray-100 @[640px]:shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
             {/* 패널 헤더 */}
-            <div className="flex items-center justify-between gap-3 px-4 pt-4 @[640px]:px-5 @[640px]:pt-5 mb-4">
+            <div className="flex items-center justify-between gap-3 p-4 mb-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 {mockPosts === 0 && (
                   <AlertTriangle size={13} className="text-red-500 shrink-0" />
@@ -204,10 +201,11 @@ export default function Media() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
-                  onClick={() => { setUrlInput(instaPlatform?.url ?? ''); setConnectModal(instaPlatform ?? null) }}
-                  className="text-xs text-gray-500 hover:text-brand-green-text transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                  onClick={handleChangeAccount}
+                  disabled={isChangingAccount}
+                  className="text-xs text-gray-500 hover:text-brand-green-text transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded disabled:opacity-60"
                 >
-                  계정 변경
+                  {isChangingAccount ? '변경 중...' : '계정 변경'}
                 </button>
                 <button
                   aria-label="인스타 통계 새로고침"
@@ -224,22 +222,22 @@ export default function Media() {
 
             {/* 상태 배너 */}
             {isFailed ? (
-              <div className="mx-4 @[640px]:mx-5 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <div className="mx-4 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
                 올바르지 않은 사용자 이름이에요. 다시 확인해보세요.
               </div>
             ) : isUpdating ? (
-              <div className="mx-4 @[640px]:mx-5 mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
+              <div className="mx-4 mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
                 <Loader2 size={13} className="animate-spin shrink-0" aria-hidden="true" />
                 <span>데이터를 수집 중이에요. 잠시만 기다려주세요.</span>
               </div>
             ) : mockPosts === 0 ? (
-              <div className="mx-4 @[640px]:mx-5 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <div className="mx-4 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
                 게시물 수가 0개예요. 연결한 계정 정보가 정확한지 확인해주세요.
               </div>
             ) : null}
 
             {/* 통계 그리드 — 게시물 0개면 팔로워·게시물만 표시 */}
-            <div className={`grid gap-2 mb-4 px-4 @[640px]:px-5 ${mockPosts === 0 ? 'grid-cols-2' : 'grid-cols-3 xl:grid-cols-6'}`}>
+            <div className={`grid gap-2 mb-4 px-4 ${mockPosts === 0 ? 'grid-cols-2' : 'grid-cols-3 xl:grid-cols-6'}`}>
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />
@@ -289,7 +287,7 @@ export default function Media() {
             </div>
 
             {/* 최근 콘텐츠 헤더 */}
-            <div className="flex items-center gap-1.5 mb-2 px-4 @[640px]:px-5">
+            <div className="flex items-center gap-1.5 mb-2 px-4">
               <BarChart3 size={14} className="text-brand-green" />
               <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
             </div>
@@ -297,7 +295,7 @@ export default function Media() {
             {/* 이미지 그리드 — no-posts 시 0개 */}
             {mockPosts > 0 ? (
               <>
-                <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4 @[640px]:gap-1.5 @[640px]:px-5">
+                <div className="grid grid-cols-3 @[560px]:grid-cols-4 @[720px]:grid-cols-5 gap-1.5 px-4">
                   {MOCK_CONTENT.slice((contentPage - 1) * CONTENT_PAGE_SIZE, contentPage * CONTENT_PAGE_SIZE).map(post => (
                     <div key={post.id} className="aspect-[2/3] rounded-xl overflow-hidden bg-gray-100">
                       <img
@@ -310,7 +308,7 @@ export default function Media() {
                     </div>
                   ))}
                 </div>
-                <div className="px-4 @[640px]:px-5 pb-4 @[640px]:pb-5">
+                <div className="px-4 pb-4">
                   <Pagination
                     total={MOCK_CONTENT.length}
                     page={contentPage}
@@ -329,74 +327,37 @@ export default function Media() {
           </div>
         )}
 
-        {/* 미연결 상태: 헤더 + 플랫폼 카드 + 안내 문구 — 모바일에서 가장자리 여백 확보 */}
+        {/* 미연결 상태 — InstagramConnectPrompt 스타일 (프로페셔널 계정) */}
         {!instaPlatform?.connected && (
-          <div className="px-4 pt-5 @[640px]:px-0 @[640px]:pt-0 space-y-4">
-            <div className="flex items-center gap-2">
-              <Link2 size={16} className="text-brand-green" />
-              <h2 className="text-base font-semibold text-gray-900">인스타 관리</h2>
+          <div className="flex flex-col items-center justify-center min-h-[420px] bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-lg" style={{ background: 'var(--gradient-instagram)' }}>
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
+              </svg>
             </div>
-            {platforms.map(p => (
-              <div key={p.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: p.iconBg }}>
-                      {p.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{p.name}</p>
-                      <p className="text-sm text-gray-500 break-keep mt-0.5">{p.description}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => { setUrlInput(''); setConnectModal(p) }}
-                    className="shrink-0 text-sm px-3.5 py-2.5 rounded-xl text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-                  >
-                    연결하기
-                  </button>
-                </div>
-              </div>
-            ))}
-            <div className="p-4 rounded-xl bg-brand-green-bg">
-              <p className="text-sm text-gray-600 break-keep">인스타그램을 연결하면 캠페인 신청 시 팔로워 수가 자동으로 확인돼요</p>
-            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              인스타그램 프로페셔널 계정을 연결해 주세요
+            </h3>
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              프로페셔널 계정 연결 후<br />팔로워·참여율 통계를 바로 확인할 수 있어요.
+            </p>
+            <button
+              onClick={handleConnectInstagram}
+              className="flex items-center gap-2 text-base font-semibold text-white px-6 py-2.5 rounded-xl transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400/50"
+              style={{ background: 'var(--gradient-instagram)' }}
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.8" fill="white" stroke="none" />
+              </svg>
+              계정 연결하기
+            </button>
           </div>
         )}
       </div>
-
-      {/* 채널 연결 */}
-      <ResponsiveSheet open={!!connectModal} onClose={() => { setConnectModal(null); setUrlInput('') }} title={`${connectModal?.name ?? ''} 연결`} size="sm">
-        {connectModal && (
-          <>
-            <p className="text-sm text-gray-500 mb-3">{connectModal.description}</p>
-            {/* 인스타그램 연결 시 계정 주의 경고 — 원본 mypage/page.tsx L238-246 */}
-            {connectModal.id === 'instagram' && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 mb-3 space-y-1">
-                <p>· 본인 계정이 아닌 다른 계정을 입력하면 제재가 이루어질 수 있습니다.</p>
-                <p>· 기존 계정과 다른 계정을 입력하면 연결된 기존 데이터가 사라지거나 다시 수집될 수 있습니다.</p>
-              </div>
-            )}
-            <input
-              type="text"
-              value={urlInput}
-              onChange={e => setUrlInput(e.target.value)}
-              placeholder={connectModal.placeholder}
-              aria-label={`${connectModal.name} ${connectModal.id === 'instagram' ? '아이디' : 'URL'}`}
-              autoComplete="off"
-              autoCapitalize="off"
-              autoCorrect="off"
-              spellCheck={false}
-              maxLength={200}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all mb-4"
-              onKeyDown={e => e.key === 'Enter' && handleConnect()}
-            />
-            <div className="flex gap-3">
-              <button onClick={() => setConnectModal(null)} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={handleConnect} className="flex-1 py-3 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">연결</button>
-            </div>
-          </>
-        )}
-      </ResponsiveSheet>
 
       {/* 연결 해제 모달 */}
       <AlertModal

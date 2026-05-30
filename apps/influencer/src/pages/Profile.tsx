@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff, Camera } from 'lucide-react'
+import { User, Pencil, Phone, Lock, LogOut, Eye, EyeOff, Camera, Trash2 } from 'lucide-react'
 import Layout from '../components/Layout'
-import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton, AlertModal } from '@wellink/ui'
+import { CustomCheckbox, INPUT_BASE as inputBase, TIMER_MS, auth, ErrorState, Skeleton, AlertModal, Modal } from '@wellink/ui'
 import { Toggle, ResponsiveSheet } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
@@ -58,6 +58,8 @@ export default function Profile() {
 
   // 비밀번호 변경 2단계: 1=OTP 인증, 2=새 비밀번호 입력
   const [logoutConfirm, setLogoutConfirm] = useState(false)
+  const [withdrawModal, setWithdrawModal] = useState(qa === 'modal-withdraw')
+  const [withdrawConfirmText, setWithdrawConfirmText] = useState('')
   const [pwStep, setPwStep] = useState<1 | 2>(1)
   const [pwPhone, setPwPhone] = useState('')
   const [pwCode, setPwCode] = useState('')
@@ -248,6 +250,25 @@ export default function Profile() {
       <div className="space-y-4 max-w-xl mx-auto">
         <h1 className="sr-only">내 정보</h1>
 
+        {/* 모바일 탭 — 사이드바 없는 환경(< 640px)에서만 표시, sticky */}
+        {!isEditing && (
+          <div className="@[640px]:hidden sticky top-0 z-10 -mx-4 px-4 py-2 bg-gray-50/95 backdrop-blur-sm">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-1 flex">
+              <button
+                aria-current="page"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              >
+                <User size={14} />내 정보
+              </button>
+              <button
+                onClick={() => navigate('/media')}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
+              >
+                <Camera size={14} />인스타 관리
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 내 정보 통합 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -440,12 +461,18 @@ export default function Profile() {
 
         {/* 로그아웃 + 회원탈퇴 */}
         {!isEditing && (
-          <div className="flex justify-center pt-1 pb-4">
+          <div className="flex flex-col items-center gap-3 pt-1 pb-4">
             <button
               onClick={() => setLogoutConfirm(true)}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <LogOut size={14} />로그아웃
+            </button>
+            <button
+              onClick={() => { setWithdrawConfirmText(''); setWithdrawModal(true) }}
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 rounded"
+            >
+              <Trash2 size={12} />탈퇴신청
             </button>
           </div>
         )}
@@ -591,6 +618,61 @@ export default function Profile() {
         onConfirm={() => { auth.clear(); navigate('/login') }}
         variant="default"
       />
+
+      {/* 회원 탈퇴 모달 */}
+      <Modal
+        open={withdrawModal}
+        onClose={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
+        title="탈퇴신청"
+        footer={
+          <>
+            <button type="button"
+              onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            >
+              취소
+            </button>
+            <button type="button"
+              disabled={withdrawConfirmText !== '탈퇴'}
+              onClick={() => {
+                setWithdrawModal(false)
+                setWithdrawConfirmText('')
+                showToast('탈퇴 신청이 완료됐어요.', 'info')
+                setTimeout(() => { auth.clear(); navigate('/login') }, TIMER_MS.NAV_DELAY)
+              }}
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
+            >
+              탈퇴하기
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
+            <ul className="text-xs text-red-600 space-y-1 mt-2">
+              {['참여 중인 캠페인 이력과 정산 정보가 삭제돼요.', '연결된 인스타그램 계정 정보도 함께 삭제돼요.', '삭제된 데이터는 복구할 수 없어요.'].map(text => (
+                <li key={text} className="flex items-start gap-1.5">
+                  <span className="mt-px flex-shrink-0">•</span>
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <label className="text-sm text-gray-500 mb-1.5 block">
+              아래 입력란에 <span className="font-semibold text-red-600">탈퇴</span>를 입력하면 버튼이 활성화돼요.
+            </label>
+            <input
+              type="text"
+              value={withdrawConfirmText}
+              onChange={e => setWithdrawConfirmText(e.target.value)}
+              placeholder="'탈퇴'를 입력해 주세요"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
+            />
+          </div>
+        </div>
+      </Modal>
     </Layout>
   )
 }
