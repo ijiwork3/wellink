@@ -297,7 +297,7 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-violet-500 inline-block" />지출</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm inline-block" style={{ backgroundColor: '#3983F9' }} />지출</span>
             <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-500 inline-block" />클릭</span>
           </div>
         </div>
@@ -313,7 +313,7 @@ export default function AdPerformance() {
               <>
                 <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-2 h-2 rounded-sm shrink-0 bg-violet-500" />
+                  <span className="w-2 h-2 rounded-sm shrink-0 inline-block" style={{ backgroundColor: '#3983F9' }} />
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 mb-1">

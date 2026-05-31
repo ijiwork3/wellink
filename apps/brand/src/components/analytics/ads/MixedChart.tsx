@@ -13,7 +13,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 
 interface Props {
   data: { date: string; spend: number; clicks: number; ctr?: number }[]
@@ -100,7 +100,7 @@ const MixedChart = memo(function MixedChart({
         )
       })}
       {/* 축 단위 안내 — 컬러 유지 (어느 축이 어느 데이터인지 식별), 폰트는 X축과 동일 사이즈 */}
-      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill={BRAND.green}>지출 (원)</text>
+      <text x={yLabelLeftX} y={padT - 10} textAnchor="end" fontSize={14} fill={CHART_COLORS.reach}>지출 (원)</text>
       <text x={yLabelRightX} y={padT - 10} textAnchor="start" fontSize={14} fill={secondaryColor}>{secondaryLabel}</text>
 
       {/* 기준선 (referenceLine) — 우축 값 기준 점선 + 우측 라벨 */}
@@ -137,7 +137,7 @@ const MixedChart = memo(function MixedChart({
       {data.map((d, i) => {
         const x = padL + i * stepX - BAR_W / 2
         const h = (d.spend / maxSpend) * plotH
-        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill={BRAND.green} />
+        return <rect key={i} x={x} y={padT + plotH - h} width={BAR_W} height={h} rx={2} fill={CHART_COLORS.reach} />
       })}
       {/* 라인 (보조) — 보색으로 막대와 대비 강화 */}
       <path
@@ -178,7 +178,7 @@ const MixedChart = memo(function MixedChart({
         return (
           <g key="active-indicator">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={x} cy={spendY} r={4} fill={BRAND.green} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
+            <circle cx={x} cy={spendY} r={4} fill={CHART_COLORS.reach} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
             <circle cx={x} cy={clicksY} r={4} fill={secondaryColor} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />
           </g>
         )
