@@ -422,7 +422,7 @@ export default function Campaigns() {
               <button type="button"
                 key={tab}
                 onClick={() => handleTabClick(tab)}
-                className={`px-3 py-3 text-base whitespace-nowrap border-b-2 transition-colors ${
+                className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab
                     ? 'border-gray-900 font-semibold text-gray-900'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -453,7 +453,7 @@ export default function Campaigns() {
               onChange={e => setInputValue(e.target.value)}
               placeholder="캠페인명 검색"
               aria-label="캠페인명 검색"
-              className="w-full pl-8 pr-8 py-2 text-base bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
+              className="w-full pl-8 pr-8 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
             {inputValue && (
               <button type="button"
@@ -531,7 +531,7 @@ export default function Campaigns() {
             action={!qaEmpty && hasActiveFilters ? (
               <button type="button"
                 onClick={resetAllFilters}
-                className="inline-flex items-center gap-1 text-base text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="inline-flex items-center gap-1 text-sm text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 필터 초기화
@@ -539,7 +539,7 @@ export default function Campaigns() {
             ) : qaEmpty ? (
               <button type="button"
                 onClick={() => navigate('/campaigns/new')}
-                className="text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 새 캠페인 등록
               </button>

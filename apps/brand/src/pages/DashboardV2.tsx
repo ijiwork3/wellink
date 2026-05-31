@@ -337,7 +337,7 @@ export default function DashboardV2() {
       <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+          <p className="text-sm text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState
@@ -366,7 +366,7 @@ export default function DashboardV2() {
       <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-base text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+          <p className="text-sm text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState
