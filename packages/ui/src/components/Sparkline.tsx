@@ -164,12 +164,12 @@ const Sparkline = memo(function Sparkline({
       return (
         <>
           <defs>
-            <linearGradient id={`spark-area-${stroke.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={`spark-area-${stroke.replace(/[^a-zA-Z0-9]/g, '')}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={stroke} stopOpacity="0.32" />
               <stop offset="100%" stopColor={stroke} stopOpacity="0.02" />
             </linearGradient>
           </defs>
-          <path d={areaPath} fill={`url(#spark-area-${stroke.replace('#', '')})`} />
+          <path d={areaPath} fill={`url(#spark-area-${stroke.replace(/[^a-zA-Z0-9]/g, '')})`} />
           <path
             d={linePath}
             fill="none"

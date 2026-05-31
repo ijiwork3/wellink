@@ -530,7 +530,7 @@ export default function ProfileInsight() {
                               const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
                               const isBad  = parseFloat(engRate) < 2.5
                               return (
-                                <span className={`text-sm font-semibold ${isGood ? 'text-success-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                                <span className={`text-sm font-semibold ${isGood ? 'text-brand-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
                                   {engRate}%
                                 </span>
                               )

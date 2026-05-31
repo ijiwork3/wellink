@@ -762,7 +762,7 @@ function MentionStatCard({ label, value, growth }: { label: string; value: numbe
       <div className="text-xs text-gray-500">{label}</div>
       <div className="mt-0.5 flex items-baseline gap-2">
         <div className="text-lg font-bold text-gray-900 tabular-nums">{fmtNumber(value)}</div>
-        <span className={`text-xs font-semibold tabular-nums whitespace-nowrap ${growth >= 0 ? 'text-success-green-text' : 'text-red-600'}`}>
+        <span className={`text-xs font-semibold tabular-nums whitespace-nowrap ${growth >= 0 ? 'text-brand-green-text' : 'text-red-600'}`}>
           {growth >= 0 ? '↗︎ +' : '↘︎ '}{Math.abs(growth).toFixed(1)}%
         </span>
       </div>
