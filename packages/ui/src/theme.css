@@ -564,22 +564,22 @@
   --color-gradient-login-stop-4: #7DD3FC;
 }
 
-/* ── 테마: 틸 × 네이비 ── */
+/* ── 테마: 틸 × 퍼플네이비 ── */
 :root.theme-teal-navy {
   --color-brand-green:        #00C9B5;
   --color-brand-green-text:   #0A7A6E;
   --color-brand-green-hover:  #00B5A0;
   --color-brand-green-bg:     #F0FDFB;
   --color-brand-green-border: #76E4DC;
-  --color-brand-fuchsia:        #1845C0;
-  --color-brand-fuchsia-text:   #0E2A7A;
-  --color-brand-fuchsia-bg:     #EEF2FF;
-  --color-brand-fuchsia-border: #A5B4FC;
-  --gradient-brand: linear-gradient(135deg, #00C9B5 0%, #1845C0 100%);
+  --color-brand-fuchsia:        #6D28D9;
+  --color-brand-fuchsia-text:   #4C1D95;
+  --color-brand-fuchsia-bg:     #F5F3FF;
+  --color-brand-fuchsia-border: #DDD6FE;
+  --gradient-brand: linear-gradient(135deg, #00C9B5 0%, #6D28D9 100%);
   --color-gradient-login-stop-1: #CCFBF7;
   --color-gradient-login-stop-2: #76E4DC;
-  --color-gradient-login-stop-3: #E0E7FF;
-  --color-gradient-login-stop-4: #818CF8;
+  --color-gradient-login-stop-3: #EDE9FE;
+  --color-gradient-login-stop-4: #C4B5FD;
 }
 
 /* ── 테마: 인디고 × 블루 ── */
@@ -670,6 +670,60 @@
   --color-gradient-login-stop-2: #99F6E4;
   --color-gradient-login-stop-3: #DBEAFE;
   --color-gradient-login-stop-4: #93C5FD;
+}
+
+/* ── 테마: 딥아쿠아 × 로얄퍼플 ── */
+:root.theme-teal-deep {
+  --color-brand-green:        #00BFB2;
+  --color-brand-green-text:   #0A7068;
+  --color-brand-green-hover:  #00A89C;
+  --color-brand-green-bg:     #F0FDFA;
+  --color-brand-green-border: #6BE8DE;
+  --color-brand-fuchsia:        #4935D0;
+  --color-brand-fuchsia-text:   #2E1B8A;
+  --color-brand-fuchsia-bg:     #EEF0FF;
+  --color-brand-fuchsia-border: #B8B0F0;
+  --gradient-brand: linear-gradient(135deg, #00BFB2 0%, #4935D0 100%);
+  --color-gradient-login-stop-1: #CCFBF7;
+  --color-gradient-login-stop-2: #6BE8DE;
+  --color-gradient-login-stop-3: #E0DCFF;
+  --color-gradient-login-stop-4: #A498F0;
+}
+
+/* ── 테마: 비비드틸 × 일렉트릭퍼플 ── */
+:root.theme-teal-vivid {
+  --color-brand-green:        #00D4C4;
+  --color-brand-green-text:   #0A7A72;
+  --color-brand-green-hover:  #00BAB0;
+  --color-brand-green-bg:     #F0FDFB;
+  --color-brand-green-border: #80EDE7;
+  --color-brand-fuchsia:        #5B3EE0;
+  --color-brand-fuchsia-text:   #3520A8;
+  --color-brand-fuchsia-bg:     #EEE8FF;
+  --color-brand-fuchsia-border: #B8A8F8;
+  --gradient-brand: linear-gradient(135deg, #00D4C4 0%, #5B3EE0 100%);
+  --color-gradient-login-stop-1: #CCFDF9;
+  --color-gradient-login-stop-2: #80EDE7;
+  --color-gradient-login-stop-3: #E4DCFF;
+  --color-gradient-login-stop-4: #A898F8;
+}
+
+/* ── 테마: 사이언 × 미드나잇퍼플 ── */
+:root.theme-teal-cyan {
+  --color-brand-green:        #06C8D8;
+  --color-brand-green-text:   #0E6E78;
+  --color-brand-green-hover:  #05AEB8;
+  --color-brand-green-bg:     #ECFEFF;
+  --color-brand-green-border: #80E5ED;
+  --color-brand-fuchsia:        #2D1FA8;
+  --color-brand-fuchsia-text:   #1A1060;
+  --color-brand-fuchsia-bg:     #EEEAFF;
+  --color-brand-fuchsia-border: #A8A0F0;
+  --gradient-brand: linear-gradient(135deg, #06C8D8 0%, #2D1FA8 100%);
+  --color-gradient-login-stop-1: #CFFAFE;
+  --color-gradient-login-stop-2: #80E5ED;
+  --color-gradient-login-stop-3: #E0D8FF;
+  --color-gradient-login-stop-4: #9888F0;
 }
 
 /* ── 테마: 틸 × 퓨시아 ── */

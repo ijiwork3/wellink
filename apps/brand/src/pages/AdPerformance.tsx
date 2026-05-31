@@ -353,7 +353,7 @@ export default function AdPerformance() {
                 <>
                   <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.date}</p>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS.feed }} />
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-brand-fuchsia" />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">CTR {d.ctr.toFixed(2)}%</span>
                   </div>
                 </>
@@ -362,7 +362,7 @@ export default function AdPerformance() {
           >
             <SimpleLineChart
               data={chartData.map(d => ({ label: d.date, value: d.ctr }))}
-              stroke={CHART_COLORS.feed}
+              stroke="var(--color-brand-fuchsia)"
               ariaLabel="CTR 추이 차트"
               yLabelFormatter={(n) => `${n.toFixed(1)}%`}
               activeIndex={ctrChartIdx}
@@ -470,7 +470,7 @@ export default function AdPerformance() {
                   aria-valuetext={`${ratioPct}%`}
                 >
                   <div
-                    className="h-full rounded-full bg-success-green"
+                    className="h-full rounded-full bg-brand-fuchsia"
                     style={{ width: `${ratioPct}%` }}
                   />
                 </div>
@@ -571,7 +571,7 @@ function CampaignList({
                   className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                 >
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-fuchsia-bg text-brand-fuchsia-text shrink-0">
                       <Megaphone size={16} aria-hidden="true" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -609,7 +609,7 @@ function CampaignList({
                       ))}
                     </div>
                     {/* 광고세트 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
-                    <div className="mb-2 text-sm font-semibold text-violet-700 uppercase tracking-wide">
+                    <div className="mb-2 text-sm font-semibold text-brand-fuchsia-text uppercase tracking-wide">
                       광고세트 ({c.adSets.length})
                     </div>
                     <div className="space-y-2">

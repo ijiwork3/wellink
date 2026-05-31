@@ -4,7 +4,7 @@
  * 선택값은 localStorage 'wl-demo-theme'에 유지.
  *
  * 기본 (4): blue · teal-navy · violet · indigo
- * 에너지 (6): teal · orange · red · coral · sunset · crimson
+ * 한색 (7): cyan-navy · sky-indigo · deep-purple · teal-blue · teal-deep · teal-vivid · teal-cyan
  */
 import { useEffect, useState } from 'react'
 
@@ -12,7 +12,7 @@ export type ThemeId =
   | 'blue'
   | 'teal-navy' | 'violet' | 'indigo'
   | 'cyan-navy' | 'sky-indigo' | 'deep-purple' | 'teal-blue'
-  | 'teal' | 'orange' | 'red' | 'coral' | 'sunset' | 'crimson'
+  | 'teal-deep' | 'teal-vivid' | 'teal-cyan'
 
 interface ThemeDef {
   id: ThemeId
@@ -22,10 +22,10 @@ interface ThemeDef {
 }
 
 const STANDARD: ThemeDef[] = [
+  { id: 'teal-navy', label: '틸+퍼플네이비', primary: '#00C9B5', secondary: '#6D28D9' },
   { id: 'blue',      label: '블루+에메랄드', primary: '#2563EB', secondary: '#10B981' },
-  { id: 'teal-navy', label: '틸+네이비',    primary: '#00C9B5', secondary: '#1845C0' },
-  { id: 'violet',    label: '보라+퓨시아',  primary: '#A44FFF', secondary: '#F00B7A' },
-  { id: 'indigo',    label: '인디고+블루',  primary: '#4F46E5', secondary: '#0EA5E9' },
+  { id: 'violet',    label: '보라+퓨시아',   primary: '#A44FFF', secondary: '#F00B7A' },
+  { id: 'indigo',    label: '인디고+블루',   primary: '#4F46E5', secondary: '#0EA5E9' },
 ]
 
 const COOL: ThemeDef[] = [
@@ -33,23 +33,18 @@ const COOL: ThemeDef[] = [
   { id: 'sky-indigo',   label: '스카이+인디고',   primary: '#0EA5E9', secondary: '#4338CA' },
   { id: 'deep-purple',  label: '딥블루+퍼플',     primary: '#1D4ED8', secondary: '#7C3AED' },
   { id: 'teal-blue',    label: '틸+딥블루',       primary: '#0D9488', secondary: '#1D4ED8' },
-]
-
-const ENERGETIC: ThemeDef[] = [
-  { id: 'teal',    label: '틸+퓨시아',    primary: '#0D9488', secondary: '#D946EF' },
-  { id: 'orange',  label: '오렌지+딥블루', primary: '#EA580C', secondary: '#1D4ED8' },
-  { id: 'red',     label: '레드+블루',    primary: '#E11D48', secondary: '#2563EB' },
-  { id: 'coral',   label: '코랄+인디고',  primary: '#F43F5E', secondary: '#4338CA' },
-  { id: 'sunset',  label: '선셋+바이올렛', primary: '#F97316', secondary: '#7C3AED' },
-  { id: 'crimson', label: '크림슨+틸',    primary: '#DC2626', secondary: '#0D9488' },
+  { id: 'teal-deep',    label: '딥아쿠아+로얄퍼플', primary: '#00BFB2', secondary: '#4935D0' },
+  { id: 'teal-vivid',   label: '비비드틸+일렉트릭퍼플', primary: '#00D4C4', secondary: '#5B3EE0' },
+  { id: 'teal-cyan',    label: '사이언+미드나잇퍼플', primary: '#06C8D8', secondary: '#2D1FA8' },
 ]
 
 /** html에서 제거할 모든 테마 클래스 목록 */
 export const ALL_THEME_CLASSES = [
   'theme-teal-navy', 'theme-violet', 'theme-indigo',
   'theme-cyan-navy', 'theme-sky-indigo', 'theme-deep-purple', 'theme-teal-blue',
-  'theme-teal', 'theme-orange', 'theme-red', 'theme-coral', 'theme-sunset', 'theme-crimson',
+  'theme-teal-deep', 'theme-teal-vivid', 'theme-teal-cyan',
   // 구버전 클래스 (마이그레이션용)
+  'theme-teal', 'theme-orange', 'theme-red', 'theme-coral', 'theme-sunset', 'theme-crimson',
   'theme-c', 'theme-d', 'theme-e', 'theme-blue', 'theme-green',
 ] as const
 
@@ -62,12 +57,9 @@ const CLASS_MAP: Record<ThemeId, string> = {
   'sky-indigo':  'theme-sky-indigo',
   'deep-purple': 'theme-deep-purple',
   'teal-blue':   'theme-teal-blue',
-  teal:          'theme-teal',
-  orange:        'theme-orange',
-  red:           'theme-red',
-  coral:         'theme-coral',
-  sunset:        'theme-sunset',
-  crimson:       'theme-crimson',
+  'teal-deep':   'theme-teal-deep',
+  'teal-vivid':  'theme-teal-vivid',
+  'teal-cyan':   'theme-teal-cyan',
 }
 
 export const STORAGE_KEY = 'wl-demo-theme'
@@ -88,11 +80,10 @@ function Dot({ theme, active, onSelect }: {
   return (
     <button
       type="button"
-      title={theme.label}
       aria-pressed={active}
       aria-label={theme.label}
       onClick={() => onSelect(theme.id)}
-      className="w-[18px] h-[18px] rounded-full transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 flex-shrink-0"
+      className="relative group w-[18px] h-[18px] rounded-full transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 flex-shrink-0"
       style={{
         background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
         transform: active ? 'scale(1.25)' : 'scale(1)',
@@ -101,7 +92,14 @@ function Dot({ theme, active, onSelect }: {
           ? `0 0 0 2px white, 0 0 0 3.5px ${theme.primary}`
           : 'none',
       }}
-    />
+    >
+      {/* 호버 툴팁 */}
+      <span
+        className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-1.5 py-0.5 rounded bg-gray-800 text-white text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-100 z-10"
+      >
+        {theme.label}
+      </span>
+    </button>
   )
 }
 
@@ -167,9 +165,6 @@ export default function ThemeSwitcher({ bottomOffset = '3.75rem' }: Props) {
       <div className="h-px bg-gray-100 -mx-1" />
       {/* 한색 팔레트 */}
       <Row label="❄" themes={COOL} active={active} onSelect={handleSelect} />
-      <div className="h-px bg-gray-100 -mx-1" />
-      {/* 에너지 팔레트 */}
-      <Row label="⚡" themes={ENERGETIC} active={active} onSelect={handleSelect} />
     </div>
   )
 }

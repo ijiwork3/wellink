@@ -427,14 +427,14 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`참여율 ${ct.engagementRate}% (${engPct}%)`}
                     >
-                      {/* 공통 정책 — 최대값만 sky-500 (진함), 나머지는 sky-200 (옅음) */}
+                      {/* 최대값만 진함(brand-green), 나머지는 옅음(brand-green-border) */}
                       <div
-                        className={`h-full rounded-full ${isMax ? 'bg-sky-500' : 'bg-sky-200'}`}
+                        className={`h-full rounded-full ${isMax ? 'bg-brand-green' : 'bg-brand-green-border'}`}
                         style={{ width: `${engPct}%` }}
                       />
                     </div>
                     <span className="text-sm font-semibold text-gray-700 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
-                    <span className="text-sm font-semibold text-sky-700 w-10 text-right tabular-nums">
+                    <span className="text-sm font-semibold text-brand-green-text w-10 text-right tabular-nums">
                       {ct.engagementRate}%
                     </span>
                   </div>
@@ -448,7 +448,7 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
           <div className="mb-4">
             <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
-            <p className="text-sm text-success-green-text font-medium mt-0.5">{growthLabel}</p>
+            <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <ChartScrollContainer
             ref={followerChartScrollRef}

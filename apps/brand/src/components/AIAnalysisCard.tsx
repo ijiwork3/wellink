@@ -50,15 +50,15 @@ interface NumberedSectionProps {
 
 function NumberedSection({ icon, title, items }: NumberedSectionProps) {
   return (
-    <div className="bg-white rounded-xl p-4 border border-purple-100/60">
-      <div className="flex items-center gap-1.5 mb-3 text-sm font-semibold text-purple-700">
+    <div className="bg-white rounded-xl p-4 border border-brand-fuchsia-border/60">
+      <div className="flex items-center gap-1.5 mb-3 text-sm font-semibold text-brand-fuchsia-text">
         {icon}
         {title}
       </div>
       <ol className="space-y-2.5">
         {items.map((item, i) => (
           <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700">
-            <span className="shrink-0 w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold flex items-center justify-center mt-0.5" aria-hidden="true">
+            <span className="shrink-0 w-5 h-5 rounded-full bg-brand-fuchsia-bg text-brand-fuchsia-text text-xs font-semibold flex items-center justify-center mt-0.5" aria-hidden="true">
               {i + 1}
             </span>
             <span className="leading-relaxed flex-1 min-w-0">{item}</span>
@@ -75,17 +75,17 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
   const hasStructured = (analysis && analysis.length > 0) || (guides && guides.length > 0)
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100 rounded-2xl p-5">
+    <div className="bg-gradient-to-br from-brand-fuchsia-bg to-brand-green-bg border border-brand-fuchsia-border rounded-2xl p-5">
       {/* 헤더 */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-purple-600" aria-hidden="true" />
+          <Sparkles size={16} className="text-brand-fuchsia-text" aria-hidden="true" />
           <h2 className="text-base font-bold text-gray-900">{title}</h2>
         </div>
         <button type="button"
           onClick={onRefresh}
           disabled={refreshing}
-          className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50 whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-brand-fuchsia-border bg-white hover:bg-brand-fuchsia-bg text-brand-fuchsia-text disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fuchsia/30 whitespace-nowrap"
         >
           {refreshing ? (
             <>
@@ -103,10 +103,10 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
 
       {refreshing ? (
         <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="AI 분석 진행 중">
-          <div className="h-3 w-3/4 bg-purple-200/50 rounded-xl" />
-          <div className="h-3 w-full bg-purple-200/50 rounded-xl" />
-          <div className="h-3 w-5/6 bg-purple-200/50 rounded-xl" />
-          <div className="h-3 w-2/3 bg-purple-200/50 rounded-xl" />
+          <div className="h-3 w-3/4 bg-brand-fuchsia-border/50 rounded-xl" />
+          <div className="h-3 w-full bg-brand-fuchsia-border/50 rounded-xl" />
+          <div className="h-3 w-5/6 bg-brand-fuchsia-border/50 rounded-xl" />
+          <div className="h-3 w-2/3 bg-brand-fuchsia-border/50 rounded-xl" />
         </div>
       ) : !hasStructured ? (
         // 단일 summary fallback (바이럴 호환)

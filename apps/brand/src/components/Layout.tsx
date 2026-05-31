@@ -58,7 +58,7 @@ export default function Layout() {
                 className="text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                 aria-label="홈으로 이동"
               >
-                WELLINK<span className="text-brand-green">.AI</span> <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
+                WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-sm font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
               </button>
               <button type="button" onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-500" aria-hidden="true" />
@@ -89,7 +89,7 @@ export default function Layout() {
               className="ml-2 text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               aria-label="홈으로 이동"
             >
-              WELLINK<span className="text-brand-green">.AI</span> <span className="text-sm font-medium bg-brand-green text-white px-2 py-1 rounded-full ml-1">광고주</span>
+              WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-sm font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
             </button>
           </div>
         )}

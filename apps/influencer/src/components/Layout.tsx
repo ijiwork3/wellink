@@ -75,13 +75,13 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 aria-label="WELLINK AI 홈으로"
                 className="text-base font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                WELLINK<span className="text-brand-green">.AI</span>
+                WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span>
               </button>
               <button
                 type="button"
                 onClick={() => document.dispatchEvent(new Event('qa-toggle'))}
                 aria-label="QA 패널 열기"
-                className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                style={{ background: 'var(--gradient-brand)' }} className="text-xs font-medium text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 인플루언서
               </button>
@@ -158,12 +158,12 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           >
             <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-bold text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
+                <span className="text-base font-bold text-gray-900">WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span></span>
                 <button
                   type="button"
                   onClick={() => { setDrawerOpen(false); document.dispatchEvent(new Event('qa-toggle')) }}
                   aria-label="QA 패널 열기"
-                  className="text-xs font-medium bg-brand-green text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  style={{ background: 'var(--gradient-brand)' }} className="text-xs font-medium text-white px-2 py-0.5 rounded-full leading-tight whitespace-nowrap transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   인플루언서
                 </button>
