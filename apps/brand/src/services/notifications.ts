@@ -7,7 +7,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react'
 
-export type NotificationType = 'campaign' | 'payment' | 'message' | 'system'
+export type NotificationType = 'campaign' | 'content' | 'payment' | 'message' | 'system'
 
 export interface NotificationItem {
   id: number
@@ -25,13 +25,19 @@ const CAMPAIGN_TITLES = [
   '캠페인이 삭제됐습니다',
   '캠페인 모집이 마감됐습니다',
   '인플루언서 선정 마감이 3일 남았습니다',
-  '콘텐츠가 제출됐습니다',
 ]
 const CAMPAIGN_DESCS = [
   "'여름 맞이 챌린지' 캠페인이 삭제됐습니다.",
   "'봄 요가 프로모션' 캠페인 모집이 마감됐습니다.",
   "'비건 신제품 론칭' 캠페인의 인플루언서 선정 마감이 3일 남았습니다. 지금 선정하세요.",
+]
+const CONTENT_TITLES = [
+  '콘텐츠가 제출됐습니다',
+]
+const CONTENT_DESCS = [
   "@yoga_jimin 님이 '봄 요가 프로모션' 캠페인 콘텐츠를 제출했습니다. 검수해 주세요.",
+  "@daily_hana 님이 '여름 캠페인' 캠페인 콘텐츠를 제출했습니다. 검수해 주세요.",
+  "@beauty_sora 님이 '비건 신제품 론칭' 캠페인 콘텐츠를 제출했습니다. 검수해 주세요.",
 ]
 const PAYMENT_TITLES = [
   '결제가 완료됐습니다',
@@ -63,16 +69,18 @@ const MESSAGE_DESCS = [
   "@daily_hana 님이 제안받은 '여름 캠페인'에 지원했습니다.",
   "@beauty_sora 님이 제안받은 '비건 신제품 론칭' 캠페인에 지원했습니다.",
 ]
-const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'campaign', 'payment', 'system', 'message', 'message']
+const TYPE_CYCLE: NotificationType[] = ['campaign', 'campaign', 'content', 'payment', 'system', 'message', 'message']
 
 export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 }, (_, i) => {
   const type = TYPE_CYCLE[i % TYPE_CYCLE.length]
   const titlePool =
     type === 'campaign' ? CAMPAIGN_TITLES :
+    type === 'content'  ? CONTENT_TITLES  :
     type === 'payment'  ? PAYMENT_TITLES  :
     type === 'system'   ? SYSTEM_TITLES   : MESSAGE_TITLES
   const descPool =
     type === 'campaign' ? CAMPAIGN_DESCS :
+    type === 'content'  ? CONTENT_DESCS  :
     type === 'payment'  ? PAYMENT_DESCS  :
     type === 'system'   ? SYSTEM_DESCS   : MESSAGE_DESCS
   const title = titlePool[i % titlePool.length]
@@ -82,7 +90,7 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 },
     title === '결제에 실패했습니다' ? '/payment/method'
     : title === '결제가 완료됐습니다' || title === '결제 예정일이 3일 남았습니다' ? '/subscription'
     : title === '인플루언서 선정 마감이 3일 남았습니다' ? '/campaigns/1?qa=tab-applicants'
-    : title === '콘텐츠가 제출됐습니다' ? '/campaigns/1?qa=tab-applicants'
+    : type === 'content'  ? '/campaigns/1?qa=tab-applicants'
     : type === 'campaign' ? '/campaigns/1'
     : type === 'message'  ? '/campaigns/1?qa=tab-applicants'
     : null

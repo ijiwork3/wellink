@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, ChevronRight, CreditCard, FileText, MessageSquare, Settings, X } from 'lucide-react'
+import { Bell, ChevronRight, CreditCard, FileText, Image, MessageSquare, Settings, X } from 'lucide-react'
 import {
   useToast, ErrorState, Pagination,
   Tabs, EmptyState, SkeletonRow, PageHeader, Toggle,
@@ -21,6 +21,7 @@ const PAGE_SIZE = 15
 const FILTER_LABELS: Record<FilterValue, string> = {
   all:      '전체',
   campaign: '캠페인',
+  content:  '콘텐츠',
   message:  '메시지',
   payment:  '결제',
   system:   '시스템',
@@ -28,6 +29,7 @@ const FILTER_LABELS: Record<FilterValue, string> = {
 
 const TYPE_AVATAR: Record<NotificationType, { bg: string; icon: React.ReactNode }> = {
   campaign: { bg: 'bg-brand-green-bg text-brand-green-text', icon: <FileText size={16} aria-hidden="true" /> },
+  content:  { bg: 'bg-blue-100 text-blue-700',               icon: <Image size={16} aria-hidden="true" /> },
   payment:  { bg: 'bg-amber-100 text-amber-700',             icon: <CreditCard size={16} aria-hidden="true" /> },
   message:  { bg: 'bg-purple-100 text-purple-700',           icon: <MessageSquare size={16} aria-hidden="true" /> },
   system:   { bg: 'bg-gray-100 text-gray-500',               icon: <Settings size={16} aria-hidden="true" /> },
@@ -40,6 +42,7 @@ export default function Notifications() {
 
   const initialFilter: FilterValue =
     qa === 'tab-campaign' ? 'campaign' :
+    qa === 'tab-content'  ? 'content'  :
     qa === 'tab-message'  ? 'message'  :
     qa === 'tab-payment'  ? 'payment'  :
     qa === 'tab-system'   ? 'system'   : 'all'
@@ -72,11 +75,12 @@ export default function Notifications() {
     const counts: Record<FilterValue, number> = {
       all:      notifications.length,
       campaign: notifications.filter(n => n.type === 'campaign').length,
+      content:  notifications.filter(n => n.type === 'content').length,
       message:  notifications.filter(n => n.type === 'message').length,
       payment:  notifications.filter(n => n.type === 'payment').length,
       system:   notifications.filter(n => n.type === 'system').length,
     }
-    return (['all', 'campaign', 'message', 'payment', 'system'] as const).map(v => ({
+    return (['all', 'campaign', 'content', 'message', 'payment', 'system'] as const).map(v => ({
       value: v,
       label: FILTER_LABELS[v],
       trailing: counts[v] > 0 ? (

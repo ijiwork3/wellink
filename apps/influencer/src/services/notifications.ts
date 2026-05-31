@@ -20,7 +20,7 @@ export interface NotificationItem {
 // ── 알림 데이터 (클라이언트 스펙 기준) ────────────────────────────
 export const ALL_NOTIFICATIONS: NotificationItem[] = [
   // ── 캠페인 ──
-  { id: 1,  type: 'campaign',   title: '헬스 보충제 캠페인의 신청 결과를 확인해 주세요', desc: "신청하신 '헬스 보충제 캠페인'의 선정 결과가 나왔습니다. 지금 바로 확인해 보세요.",        time: '방금 전',  link: '/campaigns/my' },
+  { id: 1,  type: 'campaign',   title: '헬스 보충제 캠페인의 신청 결과를 확인해 보세요', desc: "신청하신 '헬스 보충제 캠페인'의 선정 결과가 나왔습니다. 지금 바로 확인해 보세요.",        time: '방금 전',  link: '/campaigns/my' },
   { id: 2,  type: 'campaign',   title: '콘텐츠 등록 마감이 3일 남았습니다', desc: "'아웃도어 장비 리뷰' 캠페인 콘텐츠 등록 마감이 3일 남았습니다.",                           time: '1시간 전', link: '/campaigns/my' },
   { id: 3,  type: 'campaign',   title: '좋아요한 캠페인이 3일 후 마감돼요', desc: "관심 등록한 '뷰티 트렌드 2026' 캠페인 모집이 3일 후 마감됩니다.",                             time: '3시간 전', link: '/campaigns/browse' },
 
@@ -46,7 +46,7 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = [
   { id: 16, type: 'system',     title: '서비스 이용 안내',                desc: "웰링크 서비스 이용 정책이 업데이트됐습니다. 확인해 주세요.",                                  time: '1주 전',   link: null },
 
   // ── 제안 (스펙 외 추가) ──
-  { id: 17, type: 'campaign',   title: '요가 스트레칭 밴드 캠페인의 신청 결과를 확인해 주세요', desc: "신청하신 '요가 스트레칭 밴드' 캠페인의 선정 결과가 나왔습니다. 지금 바로 확인해 보세요.", time: '4일 전',   link: '/campaigns/my' },
+  { id: 17, type: 'campaign',   title: '요가 스트레칭 밴드 캠페인의 신청 결과를 확인해 보세요', desc: "신청하신 '요가 스트레칭 밴드' 캠페인의 선정 결과가 나왔습니다. 지금 바로 확인해 보세요.", time: '4일 전',   link: '/campaigns/my' },
 ]
 
 // 처음 6건은 unread (id 1~6)
