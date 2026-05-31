@@ -131,6 +131,7 @@ interface Props {
 }
 
 export default function ThemeSwitcher({ bottomOffset = '3.75rem' }: Props) {
+  const [open, setOpen] = useState(true)
   const [active, setActive] = useState<ThemeId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     return (saved && saved in CLASS_MAP ? saved : 'blue') as ThemeId
@@ -158,17 +159,45 @@ export default function ThemeSwitcher({ bottomOffset = '3.75rem' }: Props) {
   }
 
   return (
-    <div
-      role="group"
-      aria-label="데모 테마 선택"
-      className="fixed right-4 z-[1090] bg-white/92 backdrop-blur-sm border border-gray-200/80 rounded-2xl px-2.5 py-2 shadow-lg flex flex-col gap-2"
-      style={{ bottom: bottomOffset }}
-    >
-      {/* 기본 팔레트 */}
-      <Row label="기본" themes={STANDARD} active={active} onSelect={handleSelect} />
-      <div className="h-px bg-gray-100 -mx-1" />
-      {/* 한색 팔레트 */}
-      <Row label="❄" themes={COOL} active={active} onSelect={handleSelect} />
+    <div className="fixed right-4 z-[1090] flex flex-col items-end gap-1.5" style={{ bottom: bottomOffset }}>
+      {open && (
+        <div
+          role="group"
+          aria-label="데모 테마 선택"
+          className="relative bg-white/92 backdrop-blur-sm border border-gray-200/80 rounded-2xl px-2.5 py-2 shadow-lg flex flex-col gap-2"
+        >
+          {/* 닫기 버튼 */}
+          <button
+            type="button"
+            aria-label="테마 패널 닫기"
+            onClick={() => setOpen(false)}
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+          >
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+              <path d="M1 1l6 6M7 1L1 7" stroke="#888" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
+          {/* 기본 팔레트 */}
+          <Row label="기본" themes={STANDARD} active={active} onSelect={handleSelect} />
+          <div className="h-px bg-gray-100 -mx-1" />
+          {/* 한색 팔레트 */}
+          <Row label="❄" themes={COOL} active={active} onSelect={handleSelect} />
+        </div>
+      )}
+      {!open && (
+        <button
+          type="button"
+          aria-label="테마 패널 열기"
+          onClick={() => setOpen(true)}
+          className="w-8 h-8 rounded-full bg-white/90 border border-gray-200/80 shadow-md backdrop-blur-sm flex items-center justify-center hover:shadow-lg transition-all active:scale-95"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="3" cy="7" r="1.5" fill="#aaa"/>
+            <circle cx="7" cy="7" r="1.5" fill="#aaa"/>
+            <circle cx="11" cy="7" r="1.5" fill="#aaa"/>
+          </svg>
+        </button>
+      )}
     </div>
   )
 }
