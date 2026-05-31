@@ -2,26 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera, BadgeCheck, ArrowUpRight } from 'lucide-react'
 import Layout from '../components/Layout'
-import { AlertModal, Modal, getEngagementColor, PLATFORM_COLORS as PLATFORM_COLOR, fmtFollowers, ErrorState, Skeleton, Pagination, SEMANTIC_COLORS } from '@wellink/ui'
+import { AlertModal, Modal, getEngagementColor, fmtFollowers, ErrorState, Skeleton, Pagination, SEMANTIC_COLORS } from '@wellink/ui'
 import { useToast } from '@wellink/ui'
 import { useQAMode } from '@wellink/ui'
 import { mockInstaStats, mockProfile } from '../services/mock/profile'
 import { fmtRelativeDate } from '../utils/format'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
 import { useInstagramState } from '../services/userState'
-
-interface Platform {
-  id: string
-  name: string
-  iconBg: string
-  icon: string
-  connected: boolean
-  url?: string
-  followers?: number
-  engagementRate?: number
-  description: string
-  placeholder: string
-}
 
 const CONTENT_PAGE_SIZE = 20
 const MOCK_CONTENT = Array.from({ length: 100 }, (_, i) => ({

@@ -34,8 +34,8 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = [
   { id: 8,  type: 'message',    title: '글로우랩 광고주가 캠페인을 제안했습니다', desc: "'가을 뷰티 캠페인'에 초대됐습니다. 리워드 조건을 확인해 보세요.",                      time: '2일 전',   link: '/campaigns/1' },
 
   // ── 정산 ──
-  { id: 9,  type: 'settlement', title: '유가시딩 정산 예정',              desc: "'봄 요가 프로모션' (유가시딩) 정산이 3일 후 지급 예정이에요. 계좌 정보를 확인해 주세요.",   time: '방금 전',  link: '/settlement' },
-  { id: 10, type: 'settlement', title: '무가시딩 정산 예정',              desc: "'헬스 보충제 캠페인' (무가시딩) 정산이 예정됐습니다. 세금 서류를 미리 준비해 주세요.",       time: '1시간 전', link: '/settlement' },
+  { id: 9,  type: 'settlement', title: '활동비 정산 예정',                desc: "'봄 요가 프로모션' 활동비 정산이 3일 후 지급 예정이에요. 계좌 정보를 확인해 주세요.",     time: '방금 전',  link: '/settlement' },
+  { id: 10, type: 'settlement', title: '제품 협찬 정산 예정',             desc: "'헬스 보충제 캠페인' 제품 협찬 정산이 예정됐습니다. 세금 서류를 미리 준비해 주세요.",         time: '1시간 전', link: '/settlement' },
   { id: 11, type: 'settlement', title: '정산이 완료됐어요',               desc: "150,000원이 등록 계좌로 지급됐습니다.",                                                        time: '어제',     link: '/settlement' },
   { id: 12, type: 'settlement', title: '정산에 실패했어요',               desc: "계좌 정보 불일치로 정산 지급에 실패했습니다. 계좌를 다시 확인해 주세요.",                     time: '3일 전',   link: '/settlement' },
 
