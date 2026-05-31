@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, BRAND, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { TrendingUp, MousePointer, ShoppingBag, DollarSign, BarChart2, ExternalLink, ChevronDown, ChevronUp, Megaphone, Info, Layers } from 'lucide-react'
 import { getThumbnailFromPool, getPlaceholderDataUri } from '../utils/thumbnailPlaceholder'
-import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, PageHeader, CHART_COLORS, type ChartScrollContainerHandle } from '@wellink/ui'
+import { KPICard, StatusBadge, ErrorState, EmptyState, DateRangePicker, Tooltip, Pagination, fmtNumber, fmtPrice, getRoasColor, getCtrColor, useIsTouchDevice, SkeletonCard, ChartScrollContainer, PageHeader, type ChartScrollContainerHandle } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
