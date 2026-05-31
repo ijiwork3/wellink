@@ -511,7 +511,7 @@ export default function Settlement() {
         title={hasBankAccount ? '정산 계좌 변경' : '정산 정보 등록'}
         size="md"
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col -mb-4 @sm:-mb-6">
         <div className="space-y-5 pb-2">
           {/* 사업자 유형 선택 */}
           <div>
