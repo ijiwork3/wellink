@@ -75,7 +75,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 aria-label="WELLINK AI 홈으로"
                 className="text-[15px] font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
-                WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span>
+                WELLINK<span className="text-brand-green">.AI</span>
               </button>
               <button
                 type="button"
@@ -158,7 +158,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           >
             <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-[15px] font-bold text-gray-900">WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span></span>
+                <span className="text-[15px] font-bold text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
                 <button
                   type="button"
                   onClick={() => { setDrawerOpen(false); document.dispatchEvent(new Event('qa-toggle')) }}
