@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
-import { mockProfile, mockCampaignSummary, INFLUENCER_TYPES } from '../services/mock/profile'
+import { mockProfile, mockCampaignSummary } from '../services/mock/profile'
 import { useEscToClose } from '../utils/useEscToClose'
 
 const stats = [
@@ -15,8 +15,7 @@ export default function ProfileHeader() {
   const [, setSnsOpen] = useState(false)
   const navigate = useNavigate()
   const initial = mockProfile.name.charAt(0)
-  const displayType = INFLUENCER_TYPES.find(t => t.value === mockProfile.influencerType)?.label ?? '개인 인플루언서'
-  useEscToClose(false, () => setSnsOpen(false))
+useEscToClose(false, () => setSnsOpen(false))
 
   return (
     <div className="@container bg-white border-b border-gray-100 shadow-sm">
@@ -36,7 +35,6 @@ export default function ProfileHeader() {
             <div className="flex-1 min-w-0 pt-0.5">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="text-base @[640px]:text-lg font-bold text-gray-900 truncate">{mockProfile.name}님</span>
-                <span className="px-2 py-0.5 bg-lime-100 text-lime-700 text-[10px] font-bold rounded-full flex-shrink-0 whitespace-nowrap">{displayType}</span>
                 {/* 인스타 연결 시 핸들 인라인 표시 */}
                 {mockProfile.instagramConnected && (
                   <span className="text-sm text-gray-400 font-normal flex-shrink-0 whitespace-nowrap">@{mockProfile.instagram}</span>
