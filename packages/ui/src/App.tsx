@@ -147,7 +147,7 @@ function Overview() {
             <div className="w-8 h-8 rounded-lg bg-brand-green" />
             <div>
               <p className="text-xs font-semibold text-gray-900">Primary</p>
-              <p className="text-xs font-mono text-gray-500">#8CC63F</p>
+              <p className="text-xs font-mono text-gray-500">{BRAND.green}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
