@@ -89,12 +89,12 @@ export const SEMANTIC_COLORS = {
 /** 바이럴 콘텐츠 등급 도넛 전용 색상
  *  GradeDonut 등 SVG prop에서 BRAND·CHART_COLORS 대신 이 상수 사용 */
 export const GRADE_COLORS = {
-  A:          '#85D435',  // BRAND.green
+  A:          '#A44FFF',  // BRAND.green (violet)
   B:          '#F9A006',  // CHART_COLORS.warn (amber S+3%)
   C:          '#9CA3AF',  // gray-400
   D:          '#D1D5DB',  // gray-300
   E:          '#E5E7EB',  // gray-200
-  processing: '#B0E27E',  // BRAND.greenBorder
+  processing: '#CFA0FF',  // BRAND.greenBorder (light violet)
 } as const
 
 /** QA 목업킷 전용 강조색 */
@@ -112,21 +112,28 @@ export const THUMBNAIL_PALETTES: { from: string; to: string }[] = [
   { from: '#f1f8e9', to: '#9ccc65' },  // 라임
 ]
 
-/** 채도 정책 v4.7 (2026-05-24) — v4.6에서 H+3° (파란끼 소폭 강화) + 보조색 S+3%
- *  brand-green: H 87→90°. 파랑·빨강·앰버·바이올렛 모두 채도 3% 상향.
- *  brand-green-text 대비 4.64:1 (AA 4.5 기준 유지).
+/** 컬러 정책 v5.0 (2026-05-31) — 바이올렛 × 퓨시아. S=100% 고채도.
+ *  brand-green-text 대비 8.1:1 (AAA).
  *  packages/ui/src/theme.css 의 --color-brand-* 와 1:1 동기화
  */
 export const BRAND = {
-  /** 메인 그린 — HSL(90,65%,52%) */
-  green:      '#85D435',
-  /** 텍스트 그린 — HSL(93,71%,30%), 대비 4.64:1 */
-  greenText:  '#478316',
-  /** hover 그린 — HSL(90,65%,45%) */
-  greenHover: '#73BD28',
-  /** 연한 그린 배경 — HSL(86,75%,93%) */
-  greenBg:    '#EFFBE0',
-  /** 연한 그린 보더 — HSL(90,63%,69%) */
-  greenBorder:'#B0E27E',
+  /** 메인 바이올렛 — HSL(270,100%,65%) */
+  green:      '#A44FFF',
+  /** 텍스트 바이올렛 — HSL(270,87%,42%), 대비 8.1:1 */
+  greenText:  '#6B10CC',
+  /** hover 바이올렛 — HSL(270,82%,57%) */
+  greenHover: '#8C3AED',
+  /** 연한 바이올렛 배경 — HSL(270,100%,96%) */
+  greenBg:    '#F5EEFF',
+  /** 연한 바이올렛 보더 — HSL(270,100%,82%) */
+  greenBorder:'#CFA0FF',
+  /** 퓨시아 — HSL(330,100%,50%) — 그라디언트·액센트 전용 */
+  fuchsia:      '#F00B7A',
+  /** 퓨시아 텍스트 — HSL(330,100%,33%), 대비 7.2:1 */
+  fuchsiaText:  '#A8005A',
+  /** 연한 퓨시아 배경 */
+  fuchsiaBg:    '#FFF0F7',
+  /** 연한 퓨시아 보더 */
+  fuchsiaBorder:'#FFB0D8',
 } as const
 

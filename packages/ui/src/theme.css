@@ -11,20 +11,29 @@
   /* ─────────────────────────────────────────────────────────────
    * 랜딩 전용 토큰
    * ─────────────────────────────────────────────────────────────*/
-  --color-landing-dark:      #0A3622;  /* 랜딩 다크 그린 — 텍스트·아이콘·배경 */
-  --color-landing-lime:      #BFF264;  /* 랜딩 라임 포인트 */
+  --color-landing-dark:      #2D0869;  /* 랜딩 다크 바이올렛 — 텍스트·아이콘·배경 */
+  --color-landing-lime:      #CFA0FF;  /* 랜딩 라이트 바이올렛 포인트 */
   --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 (= gray-900) */
 
   /* ─────────────────────────────────────────────────────────────
-   * 브랜드 컬러 (primary)
-   * 채도 정책 v4.7 (2026-05-24) — H 90°, S 65%, brand-green-text 대비 4.64:1
+   * 브랜드 컬러 (primary — 바이올렛 × 퓨시아)
+   * 컬러 정책 v5.0 (2026-05-31) — 전기 바이올렛 S=100% L=65%, 퓨시아 S=100% L=50%
    * 변경 시 packages/ui/src/constants/colors.ts > BRAND 동기화 필수
    * ─────────────────────────────────────────────────────────────*/
-  --color-brand-green:        #85D435;  /* HSL(90,65%,52%) — 아이콘·border·bg·포커스링 */
-  --color-brand-green-text:   #478316;  /* HSL(93,71%,30%) — 흰 배경 강조 텍스트 (AA 4.64:1) */
-  --color-brand-green-hover:  #73BD28;  /* HSL(90,65%,45%) — hover */
-  --color-brand-green-bg:     #EFFBE0;  /* HSL(86,75%,93%) — 옅은 배경 */
-  --color-brand-green-border: #B0E27E;  /* HSL(90,63%,69%) — 보더 */
+  --color-brand-green:        #A44FFF;  /* HSL(270,100%,65%) — 아이콘·border·bg·포커스링 */
+  --color-brand-green-text:   #6B10CC;  /* HSL(270,87%,42%) — 흰 배경 강조 텍스트 (AA 8.1:1) */
+  --color-brand-green-hover:  #8C3AED;  /* HSL(270,82%,57%) — hover */
+  --color-brand-green-bg:     #F5EEFF;  /* HSL(270,100%,96%) — 옅은 배경 */
+  --color-brand-green-border: #CFA0FF;  /* HSL(270,100%,82%) — 보더 */
+
+  /* 퓨시아 보조 토큰 — 그라디언트·액센트 전용 */
+  --color-brand-fuchsia:        #F00B7A;  /* HSL(330,100%,50%) — 그라디언트 끝점·포인트 */
+  --color-brand-fuchsia-text:   #A8005A;  /* HSL(330,100%,33%) — 흰 배경 텍스트 (AA 7.2:1) */
+  --color-brand-fuchsia-bg:     #FFF0F7;  /* HSL(330,100%,97%) — 옅은 배경 */
+  --color-brand-fuchsia-border: #FFB0D8;  /* HSL(330,100%,84%) — 보더 */
+
+  /* 브랜드 그라디언트 */
+  --gradient-brand: linear-gradient(135deg, #A44FFF 0%, #F00B7A 100%);
 
   /* ─────────────────────────────────────────────────────────────
    * 뉴트럴 — gray  (메인 앱 전반 중립 팔레트)
@@ -242,7 +251,7 @@
    * 차트 / 스파크라인  (SVG prop 전용 — Tailwind 클래스 불가 영역)
    * import { BRAND, CHART_COLORS } from '@wellink/ui'
    * ─────────────────────────────────────────────────────────────*/
-  --color-sparkline-success: #85D435;  /* 스파크라인 상승 — brand-green 동기화 */
+  --color-sparkline-success: #A44FFF;  /* 스파크라인 상승 — brand-green 동기화 */
   --color-sparkline-alert:   #F04242;  /* 스파크라인 하락 */
   --color-roas-warning:      #F9A006;  /* ROAS ≥ 1.5 amber */
   --color-roas-danger:       #F04242;  /* ROAS < 1.5 red */
@@ -508,10 +517,10 @@
 :root {
   /* 그라디언트 내부 색상 토큰 */
   --color-gradient-auth-stop:        #ffffff;   /* = --color-white */
-  --color-gradient-login-stop-1:     #EFF9D8;   /* 랜딩 그린 그라디언트 1 */
-  --color-gradient-login-stop-2:     #DCEFAF;   /* 랜딩 그린 그라디언트 2 */
-  --color-gradient-login-stop-3:     #BFDD75;   /* 랜딩 그린 그라디언트 3 */
-  --color-gradient-login-stop-4:     #A2C748;   /* 랜딩 그린 그라디언트 4 */
+  --color-gradient-login-stop-1:     #F0E8FF;   /* 바이올렛 그라디언트 1 */
+  --color-gradient-login-stop-2:     #E0C8FF;   /* 바이올렛 그라디언트 2 */
+  --color-gradient-login-stop-3:     #FFD8EF;   /* 퓨시아 그라디언트 3 */
+  --color-gradient-login-stop-4:     #F590BB;   /* 퓨시아 그라디언트 4 */
   --color-gradient-instagram-purple: #833ab4;   /* 인스타그램 그라디언트 보라 */
   --color-gradient-instagram-red:    #fd1d1d;   /* 인스타그램 그라디언트 빨강 */
   --color-gradient-instagram-orange: #fcb045;   /* 인스타그램 그라디언트 오렌지 */
