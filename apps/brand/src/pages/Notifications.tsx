@@ -137,7 +137,7 @@ export default function Notifications() {
         actions={unreadCount > 0 ? (
           <button type="button"
             onClick={handleMarkAllRead}
-            className="text-base text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
           >모두 읽음으로 표시</button>
         ) : undefined}
       />
@@ -206,7 +206,7 @@ export default function Notifications() {
                     </div>
                     <div className="flex-1 min-w-0">
                       {/* 제목 + 시간 inline (메일 인박스 스타일) — 시간을 좌측 영역으로 이동 */}
-                      <h3 className={`text-base mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                      <h3 className={`text-sm mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                         {item.title}
                         {unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
                         <span className="ml-2 text-sm font-normal text-gray-500 whitespace-nowrap">· {item.time}</span>

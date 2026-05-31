@@ -351,7 +351,7 @@ export default function InfluencerManage() {
       <div className="space-y-5">
         <div>
           <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
-          <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
+          <p className={`${isMobile ? 'text-sm' : 'text-sm'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {[60, 52, 80, 72].map((w, i) => (
@@ -381,7 +381,7 @@ export default function InfluencerManage() {
             action={
               <Link
                 to="/influencers/list"
-                className="inline-block text-base bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="inline-block text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 인플루언서 찾아보기
               </Link>
@@ -403,7 +403,7 @@ export default function InfluencerManage() {
       <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 @md:-mx-6 @lg:-mx-8 px-4 @md:px-6 @lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
         <div>
           <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
-          <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
+          <p className={`${isMobile ? 'text-sm' : 'text-sm'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
         </div>
 
       {/* 그룹 필터 + 공통 정렬 — role=group (tablist는 단일 패널 토글에만 사용. 여기는 X 삭제 액션 동반된 필터) */}
@@ -412,7 +412,7 @@ export default function InfluencerManage() {
         {tabs.map(tab => (
           <div
             key={tab}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full ${isMobile ? 'text-sm' : 'text-base'} transition-all duration-150 ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full ${isMobile ? 'text-sm' : 'text-sm'} transition-all duration-150 ${
               activeTab === tab
                 ? 'bg-brand-green text-white font-medium'
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900'
@@ -440,7 +440,7 @@ export default function InfluencerManage() {
         ))}
         <button type="button"
           onClick={() => setNewGroupModal(true)}
-          className="flex items-center gap-1 px-3 py-2 rounded-full text-base border border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
+          className="flex items-center gap-1 px-3 py-2 rounded-full text-sm border border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
         >
           <Plus size={14} aria-hidden="true" />
           그룹 추가
@@ -462,11 +462,11 @@ export default function InfluencerManage() {
           // 그룹 탭에서 0건 — "이 그룹에 인플루언서 없음"
           <div className="py-16 text-center">
             <Users size={40} className="mx-auto text-gray-300 mb-4" aria-hidden="true" />
-            <p className="text-base font-medium text-gray-500 mb-1">'{activeTab}' 그룹에 인플루언서가 없습니다.</p>
+            <p className="text-sm font-medium text-gray-500 mb-1">'{activeTab}' 그룹에 인플루언서가 없습니다.</p>
             <p className="text-sm text-gray-500 mb-4">전체 탭에서 인플루언서를 그룹에 추가해 보세요.</p>
             <button type="button"
               onClick={() => setActiveTab('전체')}
-              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-base px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
             >
               전체 보기
             </button>
@@ -474,11 +474,11 @@ export default function InfluencerManage() {
         ) : (
           <div className="py-16 text-center">
             <Heart size={40} className="mx-auto text-gray-400 mb-4" aria-hidden="true" />
-            <p className="text-base font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
+            <p className="text-sm font-medium text-gray-500 mb-1">저장된 인플루언서가 없습니다.</p>
             <p className="text-sm text-gray-500 mb-4">인플루언서 리스트에서 하트를 눌러 저장해보세요.</p>
             <Link
               to="/influencers/list"
-              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-base px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
+              className="inline-flex items-center gap-1.5 bg-brand-green text-white text-sm px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors duration-150"
             >
               인플루언서 찾아보기
             </Link>
@@ -575,7 +575,7 @@ export default function InfluencerManage() {
                             )
                         ) : (
                           getAddableGroups(inf).map(g => (
-                            <button type="button" key={g} onClick={() => addToGroup(inf.id, g)} className="w-full text-left px-3 py-2 text-base text-gray-700 hover:bg-gray-50 transition-colors">
+                            <button type="button" key={g} onClick={() => addToGroup(inf.id, g)} className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                               {g}
                             </button>
                           ))
@@ -657,16 +657,16 @@ export default function InfluencerManage() {
               <div className="px-5 py-6 text-center">
                 {groups.length === 0 ? (
                   <>
-                    <p className="text-base text-gray-500 mb-3">생성된 그룹이 없습니다.</p>
+                    <p className="text-sm text-gray-500 mb-3">생성된 그룹이 없습니다.</p>
                     <button type="button"
                       onClick={() => { setAddToGroupTarget(null); setNewGroupModal(true) }}
-                      className="text-base text-brand-green-text font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                      className="text-sm text-brand-green-text font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                     >
                       새 그룹 만들기
                     </button>
                   </>
                 ) : (
-                  <p className="text-base text-gray-500">모든 그룹에 소속되어 있습니다.</p>
+                  <p className="text-sm text-gray-500">모든 그룹에 소속되어 있습니다.</p>
                 )}
               </div>
             ) : (
@@ -675,7 +675,7 @@ export default function InfluencerManage() {
                   <li key={g}>
                     <button type="button"
                       onClick={() => addToGroup(targetInfluencer.id, g)}
-                      className="w-full text-left px-5 py-3.5 text-base text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-5 py-3.5 text-sm text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2"
                     >
                       <span className="w-2 h-2 rounded-full bg-brand-green shrink-0" />
                       {g}
@@ -696,13 +696,13 @@ export default function InfluencerManage() {
         size="sm"
         footer={
           <>
-            <button type="button" onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button type="button" onClick={createGroup} disabled={!newGroupName.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">생성</button>
+            <button type="button" onClick={() => { setNewGroupModal(false); setNewGroupName(''); setNewGroupError('') }} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={createGroup} disabled={!newGroupName.trim()} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">생성</button>
           </>
         }
       >
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1.5">그룹명</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">그룹명</label>
           <input
             type="text"
             value={newGroupName}
@@ -711,7 +711,7 @@ export default function InfluencerManage() {
             maxLength={GROUP_NAME_MAX + 1}
             aria-invalid={!!newGroupError}
             aria-describedby={newGroupError ? 'group-name-error' : undefined}
-            className={`w-full text-base border rounded-xl px-3 py-2.5 focus-visible:outline-none focus-visible:ring-2 transition-all ${
+            className={`w-full text-sm border rounded-xl px-3 py-2.5 focus-visible:outline-none focus-visible:ring-2 transition-all ${
               newGroupError ? 'border-red-400 focus-visible:ring-red-300/50' : 'border-gray-200 focus-visible:ring-brand-green/50'
             }`}
             onKeyDown={e => e.key === 'Enter' && createGroup()}
@@ -788,7 +788,7 @@ export default function InfluencerManage() {
                     {/* 1행: 이름 + 상태 배지들 + X */}
                     <div className="flex items-center gap-1.5 flex-wrap pr-1">
                       <h2 className="text-lg font-bold text-gray-900 leading-tight">@{inf.instagramId ?? inf.name}</h2>
-                      <span className="text-base text-gray-500">{inf.name}</span>
+                      <span className="text-sm text-gray-500">{inf.name}</span>
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-sm bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
@@ -943,7 +943,7 @@ export default function InfluencerManage() {
                     { word: '#follow', weight: 1 },
                     { word: '#like4like', weight: 1 },
                   ]
-                  const sizes = ['text-2xl font-black', 'text-xl font-bold', 'text-lg font-bold', 'text-base font-semibold', 'text-sm font-medium']
+                  const sizes = ['text-2xl font-black', 'text-xl font-bold', 'text-lg font-bold', 'text-sm font-semibold', 'text-sm font-medium']
                   const colors = ['text-gray-900', 'text-brand-green-text', 'text-brand-fuchsia-text', 'text-gray-600', 'text-gray-400']
                   return (
                     <div className="border border-gray-100 rounded-xl p-4">
@@ -1091,14 +1091,14 @@ export default function InfluencerManage() {
                 {proposedSet.has(inf.id) ? (
                   <div className="w-full flex items-center justify-center gap-2 py-1.5">
                     <CheckCircle size={16} className="text-green-500" aria-hidden="true" />
-                    <span className="text-base text-gray-500">이미 제안을 보냈습니다</span>
+                    <span className="text-sm text-gray-500">이미 제안을 보냈습니다</span>
                   </div>
                 ) : proposableCampaigns.length === 0 ? (
                   <div className="space-y-2">
                     <Tooltip content="진행 중인 캠페인이 없습니다. 캠페인을 먼저 등록해주세요." multiline>
                       <button type="button"
                         disabled
-                        className="w-full bg-brand-green text-white text-base py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                        className="w-full bg-brand-green text-white text-sm py-3 rounded-xl font-medium opacity-50 cursor-not-allowed"
                       >
                         캠페인 제안보내기
                       </button>
@@ -1116,7 +1116,7 @@ export default function InfluencerManage() {
                 ) : (
                   <button type="button"
                     onClick={() => setProposalModal(true)}
-                    className="w-full bg-brand-green text-white text-base py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
+                    className="w-full bg-brand-green text-white text-sm py-3 rounded-xl hover:bg-brand-green-hover transition-colors duration-150 font-medium"
                   >
                     캠페인 제안보내기
                   </button>
@@ -1166,7 +1166,7 @@ export default function InfluencerManage() {
 
             <div>
               <p className="text-sm font-semibold text-gray-500 mb-1.5">캡션</p>
-              <p className="text-base text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">{contentDetail.caption}</p>
+              <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">{contentDetail.caption}</p>
             </div>
 
             <p className="text-sm text-gray-500 text-center">※ POC 목업 데이터입니다. 실데이터는 인스타그램 API 연동 후 표시됩니다.</p>
@@ -1182,8 +1182,8 @@ export default function InfluencerManage() {
         size="md"
         footer={!proposalSent ? (
           <>
-            <button type="button" onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button type="button" onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제안 보내기</button>
+            <button type="button" onClick={() => setProposalModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleProposal} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-sm hover:bg-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">제안 보내기</button>
           </>
         ) : undefined}
       >
@@ -1193,7 +1193,7 @@ export default function InfluencerManage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-base text-gray-600"><strong>{detailInfluencer?.name}</strong>님에게 제안을 보낼 캠페인을 선택하세요.</p>
+            <p className="text-sm text-gray-600"><strong>{detailInfluencer?.name}</strong>님에게 제안을 보낼 캠페인을 선택하세요.</p>
             <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
               {proposableCampaigns.map(c => {
                 const appliedIds = detailInfluencer ? getAppliedCampaignIds(detailInfluencer.id) : []
@@ -1231,7 +1231,7 @@ export default function InfluencerManage() {
                         tabIndex={-1}
                         className="accent-gray-900 disabled:cursor-not-allowed pointer-events-none"
                       />
-                      <span className={`text-base flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
+                      <span className={`text-sm flex-1 break-words ${hasApplied ? 'text-gray-400' : 'text-gray-700'}`}>{c.name}</span>
                       {hasApplied && (
                         <span className="shrink-0 text-sm px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">이미 신청함</span>
                       )}
