@@ -78,7 +78,10 @@ export default function CampaignBrowse() {
     )
   }, [selectedCategory, search])
 
-  const filtered = qa === 'empty' ? [] : baseFiltered
+  const filtered = qa === 'empty' ? []
+    : qa === 'status-모집중'   ? baseFiltered.filter(c => c.status === '모집중')
+    : qa === 'status-마감임박' ? baseFiltered.filter(c => c.status === '마감임박')
+    : baseFiltered
 
   // 필터·검색 변경 시 첫 페이지로 리셋
   useEffect(() => { setPage(1) }, [selectedCategory, search])

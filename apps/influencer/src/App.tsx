@@ -47,6 +47,8 @@ const STATUS_ITEMS: StatusItem[] = [
     label: '캠페인 탐색',
     children: [
       { label: '기본 (캠페인 있음)', path: '/campaigns/browse' },
+      { label: '상태 — 모집중', path: '/campaigns/browse?qa=status-모집중' },
+      { label: '상태 — 마감임박 (D-2)', path: '/campaigns/browse?qa=status-마감임박' },
       { label: '로딩 스켈레톤', path: '/campaigns/browse?qa=loading' },
       { label: '검색 결과 없음', path: '/campaigns/browse?qa=empty-search' },
       { label: '전체 빈 상태', path: '/campaigns/browse?qa=empty' },
