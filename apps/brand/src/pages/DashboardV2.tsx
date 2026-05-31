@@ -450,7 +450,7 @@ export default function DashboardV2() {
         custom={1}
         initial="hidden"
         animate="visible"
-        className="@container bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @[350px]:p-5"
+        className="@container bg-white rounded-2xl border border-gray-100 shadow-sm p-3 @[350px]:p-5 flex flex-col"
       >
         <SectionHeader
           icon={<Users size={16} aria-hidden="true" />}
@@ -460,7 +460,7 @@ export default function DashboardV2() {
           onAction={() => navigate('/analytics/profile')}
         />
         {/* 프로필 인사이트 KPI 3개 — 모바일 1열 → 350px 2열 → 530px 3열 */}
-        <div className="grid grid-cols-1 @[350px]:grid-cols-2 @[530px]:grid-cols-3 gap-3 @[350px]:gap-4 mb-4">
+        <div className="grid grid-cols-1 @[350px]:grid-cols-2 @[530px]:grid-cols-3 gap-3 @[350px]:gap-4 mb-4 shrink-0">
           {profileMetrics.map(m => (
             <KPICard
               key={m.label}
@@ -478,7 +478,7 @@ export default function DashboardV2() {
           ))}
         </div>
         {/* 노출 & 도달 추이 — 프로필인사이트 ImpressReachChart 재사용 */}
-        <div className="border-t border-gray-100 pt-4 mt-4">
+        <div className="flex-1 min-h-0 pt-2">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <h3 className="text-[15px] font-medium text-gray-600">노출 & 도달 추이</h3>
             <div className="flex items-center gap-4 text-xs text-gray-500">
