@@ -8,6 +8,7 @@
  */
 
 import { memo } from 'react'
+import type React from 'react'
 
 type PlatformType = 'instagram' | 'youtube' | 'blog' | 'tiktok' | string
 type Variant = 'soft' | 'solid'
@@ -18,8 +19,14 @@ interface PlatformBadgeProps {
   className?: string
 }
 
-const STYLES: Record<string, { soft: string; solid: string; label: string }> = {
-  '인스타그램':    { soft: 'bg-pink-100 text-pink-700',    solid: 'bg-pink-500/90 text-white',    label: '인스타그램' },
+const STYLES: Record<string, { soft: string; solid: string; softStyle?: React.CSSProperties; solidStyle?: React.CSSProperties; label: string }> = {
+  '인스타그램':    {
+    soft:       'text-[#C13584]',
+    softStyle:  { background: 'linear-gradient(135deg, #f3e8ff 0%, #fce7f3 60%, #fff7ed 100%)' },
+    solid:      'text-white',
+    solidStyle: { background: 'linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #FCAF45 100%)' },
+    label: '인스타그램',
+  },
   '유튜브':        { soft: 'bg-red-100 text-red-700',      solid: 'bg-red-500/90 text-white',     label: '유튜브' },
   '네이버 블로그': { soft: 'bg-green-100 text-green-700',  solid: 'bg-green-600/90 text-white',   label: '네이버 블로그' },
   '틱톡':          { soft: 'bg-slate-100 text-slate-700',  solid: 'bg-black/80 text-white',       label: '틱톡' },
@@ -37,9 +44,13 @@ const PlatformBadge = memo(function PlatformBadge({ platform, variant = 'soft', 
   const key = ALIAS[platform.toLowerCase?.() ?? platform] ?? platform
   const style = STYLES[key] ?? { soft: 'bg-gray-100 text-gray-600', solid: 'bg-gray-500/80 text-white', label: platform }
   const tone = variant === 'solid' ? style.solid : style.soft
+  const inlineStyle = variant === 'solid' ? style.solidStyle : style.softStyle
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium whitespace-nowrap ${tone} ${className}`}>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium whitespace-nowrap ${tone} ${className}`}
+      style={inlineStyle}
+    >
       {style.label}
     </span>
   )

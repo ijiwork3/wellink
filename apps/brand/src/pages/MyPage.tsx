@@ -564,7 +564,7 @@ export default function MyPage() {
               </div>
               <div className="border border-gray-200 rounded-xl p-5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #FCAF45 100%)' }}>
                     <InstagramIcon size={22} className="text-white" aria-hidden="true" />
                   </div>
                   <div>
