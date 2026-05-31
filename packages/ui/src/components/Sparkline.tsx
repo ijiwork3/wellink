@@ -10,7 +10,7 @@
  *  - 'area': 진한 면적 그라데이션 — 누적 성장 강조
  */
 import { memo, useEffect, useRef, useState } from 'react'
-import { BRAND, SEMANTIC_COLORS } from '../constants/colors'
+import { CHART_COLORS, SEMANTIC_COLORS } from '../constants/colors'
 
 interface SparklineProps {
   /** 데이터 포인트 배열 — 길이 < 2면 렌더 안 함 */
@@ -46,8 +46,8 @@ interface SparklineProps {
 
 const Sparkline = memo(function Sparkline({
   data,
-  stroke = BRAND.green,
-  mutedStroke = BRAND.greenBorder,
+  stroke = CHART_COLORS.axisLine,
+  mutedStroke = CHART_COLORS.inactive,
   width = 60,
   height = 24,
   fill = false,

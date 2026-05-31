@@ -470,7 +470,7 @@ export default function AdPerformance() {
                   aria-valuetext={`${ratioPct}%`}
                 >
                   <div
-                    className="h-full rounded-full bg-brand-green"
+                    className="h-full rounded-full bg-success-green"
                     style={{ width: `${ratioPct}%` }}
                   />
                 </div>
@@ -534,7 +534,7 @@ function CampaignList({
           <p className="text-sm text-gray-500 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
         </div>
         <div className="flex items-center gap-3 text-sm text-gray-400">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success-green inline-block" />≥4.0x 우수</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
         </div>
       </div>

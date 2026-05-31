@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Image, Info, Award, Megaphone, Zap, Eye, RotateCw, Clock, ThumbsUp, MessageCircle, Activity, Clapperboard, Share2, Bookmark } from 'lucide-react'
-import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, BRAND, CustomSelect, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
+import { KPICard, ErrorState, EmptyState, useToast, DateRangePicker, Tooltip, Pagination, WordCloud, fmtNumber, getDateLabel, CHART_COLORS, CustomSelect, SkeletonCard, FloatingScrollChevrons, PageHeader, type DatePeriod, type WordCloudEntry } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
 import { useInstagramConnected } from '../utils/useInstagramState'
 import InstagramConnectPrompt from '../components/InstagramConnectPrompt'
@@ -712,7 +712,7 @@ function MentionMixDonut() {
           <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" aria-hidden="true" />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke={BRAND.green} strokeWidth="14"
+            stroke={CHART_COLORS.reach} strokeWidth="14"
             strokeDasharray={`${reelsDash} ${C - reelsDash}`}
             className="transition-opacity cursor-pointer"
             style={{ opacity: hover && hover !== 'reels' ? 0.35 : 1 }}
@@ -722,7 +722,7 @@ function MentionMixDonut() {
           />
           <circle
             cx="45" cy="45" r="36" fill="none"
-            stroke={BRAND.greenText} strokeWidth="14"
+            stroke={CHART_COLORS.feed} strokeWidth="14"
             strokeDasharray={`${feedDash} ${C - feedDash}`}
             strokeDashoffset={-reelsDash}
             className="transition-opacity cursor-pointer"
@@ -734,7 +734,7 @@ function MentionMixDonut() {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className={`text-2xl font-bold tabular-nums transition-colors ${
-            hover === 'reels' ? 'text-brand-green-text' : hover === 'feed' ? 'text-brand-green-text' : 'text-gray-900'
+            hover === 'reels' ? 'text-sky-700' : hover === 'feed' ? 'text-orange-600' : 'text-gray-900'
           }`}>{center.value}</span>
           <span className="text-sm text-gray-500 mt-0.5">{center.label}</span>
         </div>
@@ -742,11 +742,11 @@ function MentionMixDonut() {
       {/* 범례 (작은 색상 chip) — dl 리스트는 사이드 MentionStatCard로 이전 (원본 매칭). 색상 표기는 유지. */}
       <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-brand-green inline-block" aria-hidden="true" />
+          <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CHART_COLORS.reach }} aria-hidden="true" />
           릴스 {mix.reels.percent}%
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-brand-green-text inline-block" aria-hidden="true" />
+          <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CHART_COLORS.feed }} aria-hidden="true" />
           피드 {mix.feed.percent}%
         </span>
       </div>
@@ -762,7 +762,7 @@ function MentionStatCard({ label, value, growth }: { label: string; value: numbe
       <div className="text-xs text-gray-500">{label}</div>
       <div className="mt-0.5 flex items-baseline gap-2">
         <div className="text-lg font-bold text-gray-900 tabular-nums">{fmtNumber(value)}</div>
-        <span className={`text-xs font-semibold tabular-nums whitespace-nowrap ${growth >= 0 ? 'text-brand-green-text' : 'text-red-600'}`}>
+        <span className={`text-xs font-semibold tabular-nums whitespace-nowrap ${growth >= 0 ? 'text-success-green-text' : 'text-red-600'}`}>
           {growth >= 0 ? '↗︎ +' : '↘︎ '}{Math.abs(growth).toFixed(1)}%
         </span>
       </div>

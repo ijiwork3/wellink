@@ -358,7 +358,7 @@ export default function ProfileInsight() {
             </div>
             <div className="flex gap-3 text-sm text-gray-500">
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-green inline-block rounded" />도달</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-sky-500 inline-block rounded" />도달</span>
             </div>
           </div>
           <ChartScrollContainer
@@ -427,14 +427,14 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`참여율 ${ct.engagementRate}% (${engPct}%)`}
                     >
-                      {/* 공통 정책 — 최대값만 brand-green (진함), 나머지는 brand-green-border (옅음) */}
+                      {/* 공통 정책 — 최대값만 sky-500 (진함), 나머지는 sky-200 (옅음) */}
                       <div
-                        className={`h-full rounded-full ${isMax ? 'bg-brand-green' : 'bg-brand-green-border'}`}
+                        className={`h-full rounded-full ${isMax ? 'bg-sky-500' : 'bg-sky-200'}`}
                         style={{ width: `${engPct}%` }}
                       />
                     </div>
                     <span className="text-sm font-semibold text-gray-700 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
-                    <span className="text-sm font-semibold text-brand-green-text w-10 text-right tabular-nums">
+                    <span className="text-sm font-semibold text-sky-700 w-10 text-right tabular-nums">
                       {ct.engagementRate}%
                     </span>
                   </div>
@@ -448,7 +448,7 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
           <div className="mb-4">
             <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
-            <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
+            <p className="text-sm text-success-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <ChartScrollContainer
             ref={followerChartScrollRef}
@@ -530,7 +530,7 @@ export default function ProfileInsight() {
                               const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
                               const isBad  = parseFloat(engRate) < 2.5
                               return (
-                                <span className={`text-sm font-semibold ${isGood ? 'text-brand-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                                <span className={`text-sm font-semibold ${isGood ? 'text-success-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
                                   {engRate}%
                                 </span>
                               )
@@ -571,7 +571,7 @@ export default function ProfileInsight() {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-700 font-medium">남성</span>
-                      <span className="text-brand-green-text font-bold">{malePct}%</span>
+                      <span className="text-sky-700 font-bold">{malePct}%</span>
                     </div>
                     <div
                       className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -582,13 +582,13 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`${malePct}%`}
                     >
-                      <div className={`h-full rounded-full ${maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${malePct}%` }} />
+                      <div className={`h-full rounded-full ${maleIsMax ? 'bg-sky-500' : 'bg-sky-200'}`} style={{ width: `${malePct}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-700 font-medium">여성</span>
-                      <span className="text-brand-green-text font-bold">{femalePct}%</span>
+                      <span className="text-sky-700 font-bold">{femalePct}%</span>
                     </div>
                     <div
                       className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -599,7 +599,7 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`${femalePct}%`}
                     >
-                      <div className={`h-full rounded-full ${!maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${femalePct}%` }} />
+                      <div className={`h-full rounded-full ${!maleIsMax ? 'bg-sky-500' : 'bg-sky-200'}`} style={{ width: `${femalePct}%` }} />
                     </div>
                   </div>
                 </div>
@@ -612,7 +612,7 @@ export default function ProfileInsight() {
                     <div key={a.range}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-700 font-medium">{a.range}세</span>
-                        <span className="text-brand-green-text font-bold">{a.percent}%</span>
+                        <span className="text-sky-700 font-bold">{a.percent}%</span>
                       </div>
                       <div
                         className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -624,7 +624,7 @@ export default function ProfileInsight() {
                         aria-valuetext={`${a.percent}%`}
                       >
                         <div
-                          className={`h-full rounded-full ${i === ageMaxIdx ? 'bg-brand-green' : 'bg-brand-green-border'}`}
+                          className={`h-full rounded-full ${i === ageMaxIdx ? 'bg-sky-500' : 'bg-sky-200'}`}
                           style={{ width: `${a.percent}%` }}
                         />
                       </div>
