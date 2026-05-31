@@ -26,6 +26,14 @@
   --color-brand-green-bg:     #F5EEFF;  /* HSL(270,100%,96%) — 옅은 배경 */
   --color-brand-green-border: #CFA0FF;  /* HSL(270,100%,82%) — 보더 */
 
+  /* 시맨틱 성공·긍정 지표 (브랜드 컬러와 분리) — KPI 상승·성장·good severity 전용
+   * 컬러 정책 v5.0 (2026-05-31): 블루그린 HSL(158,100%,39%) — 바이올렛 브랜드와 보색 트라이어드
+   * 옐로우그린 계열(HSL<145) 금지. 텍스트 대비 7.1:1 (AA) */
+  --color-success-green:        #00C896;  /* HSL(158,100%,39%) — 차트 상승 스트로크·스파크라인 */
+  --color-success-green-text:   #006B4A;  /* HSL(158,100%,21%) — 흰 배경 텍스트 (AA 7.1:1) */
+  --color-success-green-bg:     #E5FFF9;  /* HSL(158,100%,95%) — 옅은 배경 */
+  --color-success-green-border: #7AE8C8;  /* HSL(158,70%,69%) — 보더 */
+
   /* 퓨시아 보조 토큰 — 그라디언트·액센트 전용 */
   --color-brand-fuchsia:        #F00B7A;  /* HSL(330,100%,50%) — 그라디언트 끝점·포인트 */
   --color-brand-fuchsia-text:   #A8005A;  /* HSL(330,100%,33%) — 흰 배경 텍스트 (AA 7.2:1) */
@@ -251,7 +259,7 @@
    * 차트 / 스파크라인  (SVG prop 전용 — Tailwind 클래스 불가 영역)
    * import { BRAND, CHART_COLORS } from '@wellink/ui'
    * ─────────────────────────────────────────────────────────────*/
-  --color-sparkline-success: #A44FFF;  /* 스파크라인 상승 — brand-green 동기화 */
+  --color-sparkline-success: #00C896;  /* 스파크라인 상승 — success-green 동기화 (블루그린, 브랜드와 분리) */
   --color-sparkline-alert:   #F04242;  /* 스파크라인 하락 */
   --color-roas-warning:      #F9A006;  /* ROAS ≥ 1.5 amber */
   --color-roas-danger:       #F04242;  /* ROAS < 1.5 red */

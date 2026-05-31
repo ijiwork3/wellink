@@ -97,6 +97,20 @@ export const GRADE_COLORS = {
   processing: '#CFA0FF',  // BRAND.greenBorder (light violet)
 } as const
 
+/** 시맨틱 성공·긍정 지표 — 브랜드 컬러(바이올렛)와 분리. KPI 상승·차트 good severity 전용
+ *  컬러 정책 v5.0 (2026-05-31): 블루그린 HSL(158,100%,39%) — 바이올렛과 트라이어드 배색
+ *  옐로우그린(HSL<145) 계열 금지. 텍스트 대비 7.1:1 */
+export const SUCCESS = {
+  /** 블루그린 — HSL(158,100%,39%) — 차트 스트로크·스파크라인 상승 */
+  green:       '#00C896',
+  /** 텍스트 — HSL(158,100%,21%), 대비 7.1:1 */
+  greenText:   '#006B4A',
+  /** 연한 배경 */
+  greenBg:     '#E5FFF9',
+  /** 보더 */
+  greenBorder: '#7AE8C8',
+} as const
+
 /** QA 목업킷 전용 강조색 */
 export const QA_ACCENT_COLOR = '#8736E3' as const
 

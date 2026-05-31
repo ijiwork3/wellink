@@ -19,7 +19,7 @@ import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react'
 import Tooltip from './Tooltip'
 import Sparkline from './Sparkline'
 import { useIsTouchDevice } from '../utils/useIsTouchDevice'
-import { BRAND, CHART_COLORS } from '../constants/colors'
+import { BRAND, CHART_COLORS, SUCCESS } from '../constants/colors'
 
 interface KPICardProps {
   title: string
@@ -59,26 +59,26 @@ function severityFromTrend(trend: number | undefined, positive: boolean | undefi
 }
 
 const SEVERITY_BG: Record<Severity, string> = {
-  good:    'bg-brand-green-bg/40 border-brand-green-border',
+  good:    'bg-success-green-bg border-success-green-border',
   neutral: 'bg-gray-50 border-gray-100',
   bad:     'bg-rose-50/70 border-rose-200',  // 스파크라인 rose-500 동기화
 }
 
 const SEVERITY_TEXT: Record<Severity, string> = {
-  good:    'text-brand-green-text',
+  good:    'text-success-green-text',
   neutral: 'text-gray-500',
   bad:     'text-rose-600',
 }
 
 const SEVERITY_STROKE: Record<Severity, string> = {
-  good:    BRAND.green,           // brand-green
-  neutral: CHART_COLORS.axisLine, // gray-400
+  good:    SUCCESS.green,          // success-green (블루그린 — 긍정 지표 전용)
+  neutral: CHART_COLORS.axisLine,  // gray-400
   bad:     CHART_COLORS.badStroke, // rose-500 (vivid red)
 }
 
 // bar variant 비활성 막대 색 — bad는 회색 (초록 bar가 빨간 카드 안에 있으면 어색)
 const SEVERITY_MUTED: Record<Severity, string> = {
-  good:    BRAND.greenBorder,      // brand-green-border
+  good:    SUCCESS.greenBorder,    // success-green-border
   neutral: CHART_COLORS.inactive,  // gray-300
   bad:     CHART_COLORS.badMuted,  // rose-300 (세컨더리)
 }
