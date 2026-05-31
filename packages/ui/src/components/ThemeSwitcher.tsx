@@ -19,10 +19,12 @@ interface ThemeDef {
   label: string
   primary: string
   secondary: string
+  /** 그라디언트 중간 정지점 — 명시 시 primary가 이 지점까지 유지 후 secondary로 전환 */
+  midpoint?: string
 }
 
 const STANDARD: ThemeDef[] = [
-  { id: 'teal-navy', label: '틸+퍼플네이비', primary: '#00C9B5', secondary: '#6D28D9' },
+  { id: 'teal-navy', label: '틸+퍼플네이비', primary: '#00C9B5', secondary: '#6D28D9', midpoint: '70%' },
   { id: 'blue',      label: '블루+에메랄드', primary: '#2563EB', secondary: '#10B981' },
   { id: 'violet',    label: '보라+퓨시아',   primary: '#A44FFF', secondary: '#F00B7A' },
   { id: 'indigo',    label: '인디고+블루',   primary: '#4F46E5', secondary: '#0EA5E9' },
@@ -85,7 +87,9 @@ function Dot({ theme, active, onSelect }: {
       onClick={() => onSelect(theme.id)}
       className="relative group w-[18px] h-[18px] rounded-full transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 flex-shrink-0"
       style={{
-        background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
+        background: theme.midpoint
+          ? `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primary} ${theme.midpoint}, ${theme.secondary} 100%)`
+          : `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
         transform: active ? 'scale(1.25)' : 'scale(1)',
         opacity: active ? 1 : 0.55,
         boxShadow: active

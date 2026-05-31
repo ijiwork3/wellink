@@ -575,7 +575,7 @@
   --color-brand-fuchsia-text:   #4C1D95;
   --color-brand-fuchsia-bg:     #F5F3FF;
   --color-brand-fuchsia-border: #DDD6FE;
-  --gradient-brand: linear-gradient(135deg, #00C9B5 0%, #6D28D9 100%);
+  --gradient-brand: linear-gradient(135deg, #00C9B5 0%, #00C9B5 70%, #6D28D9 100%);
   --color-gradient-login-stop-1: #CCFBF7;
   --color-gradient-login-stop-2: #76E4DC;
   --color-gradient-login-stop-3: #EDE9FE;
