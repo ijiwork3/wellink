@@ -226,9 +226,7 @@ const STATUS_ITEMS: StatusItem[] = [
     children: [
       { label: '기본 (브랜드 프로필 탭)', path: '/mypage' },
       { label: '로딩 스켈레톤', path: '/mypage?qa=loading' },
-      { label: '탭 — 팀 관리', path: '/mypage?qa=tab-team' },
-      { label: '탭 — 트래킹 설정', path: '/mypage?qa=tab-tracking' },
-      { label: '탭 — 구독 관리', path: '/mypage?qa=tab-settings' },
+      { label: '탭 — 구독 관리', path: '/subscription' },
       { label: '모달 — 비밀번호 변경', path: '/mypage?qa=modal-password' },
       { label: '모달 — 회원 탈퇴', path: '/mypage?qa=modal-withdraw' },
       { label: '에러', path: '/mypage?qa=error' },

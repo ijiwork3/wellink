@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Users, TrendingUp, CheckCircle2, Heart, MessageCircle, Image, Clock, BarChart3, RefreshCw, AlertTriangle, Loader2, ExternalLink, User, Camera, BadgeCheck, ArrowUpRight } from 'lucide-react'
 import Layout from '../components/Layout'
@@ -41,12 +41,15 @@ export default function Media() {
   const [contentPage, setContentPage] = useState(1)
   const [isConnecting, setIsConnecting] = useState(false)
   const [showMetaModal, setShowMetaModal] = useState(false)
-  const [showConnectModal, setShowConnectModal] = useState(false)
+  const [showConnectModal, setShowConnectModal] = useState(qa === 'modal-connect')
   const [connectInput, setConnectInput] = useState('')
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [showDisconnectModal, setShowDisconnectModal] = useState(false)
   const { showToast } = useToast()
+
+  // QA: all-disconnected → ig.connected 강제 override (localStorage 상태 무관)
+  const isConnected = qa === 'all-disconnected' ? false : ig.connected
 
   // 데이터 수집 상태 — 원본 mypage L1357-1364 isMentionsUpdating/isMentionsFailed
   const isUpdating  = qa === 'updating'
@@ -55,6 +58,20 @@ export default function Media() {
   const mockPosts   = qa === 'no-posts' ? 0 : mockInstaStats.posts
   // 일반 계정 비공개 케이스 — 스크래핑 불가, 게시물 없음
   const isPrivate   = qa === 'personal-private'
+
+  // 새로고침 상태 — 원본 InstagramSettings onRefreshProfile() refreshing 상태
+  const [refreshing, setRefreshing] = useState(false)
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current) }, [])
+
+  const handleRefresh = () => {
+    if (refreshing) return
+    setRefreshing(true)
+    refreshTimerRef.current = setTimeout(() => {
+      setRefreshing(false)
+      showToast('통계를 업데이트했어요', 'success')
+    }, 1500)
+  }
 
   // QA 파라미터 외부 동기화
   useEffect(() => {
@@ -169,7 +186,7 @@ export default function Media() {
         </div>
 
         {/* ── 프로페셔널 계정 연결됨 — 통계 풀뷰 ── */}
-        {ig.connected && ig.professional && (
+        {isConnected && ig.professional && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
             {/* 패널 헤더 */}
             <div className="flex items-center justify-between gap-3 p-4">
@@ -193,10 +210,11 @@ export default function Media() {
                 <button
                   type="button"
                   aria-label="인스타 통계 새로고침"
-                  onClick={() => showToast('통계를 업데이트했어요', 'success')}
-                  className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  disabled={refreshing}
+                  onClick={handleRefresh}
+                  className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
-                  <RefreshCw size={14} aria-hidden="true" />
+                  <RefreshCw size={14} aria-hidden="true" className={refreshing ? 'animate-spin' : ''} />
                 </button>
                 <button
                   type="button"
@@ -302,7 +320,7 @@ export default function Media() {
         )}
 
         {/* ── 일반 계정 연결됨 — 인사이트 배너 + 게시물 그리드 ── */}
-        {ig.connected && !ig.professional && (
+        {isConnected && !ig.professional && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
 
             {/* 헤더 */}
@@ -398,7 +416,7 @@ export default function Media() {
         )}
 
         {/* ── 미연결 — 일반 / 프로페셔널 선택 ── */}
-        {!ig.connected && (
+        {!isConnected && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div className="text-center mb-6">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md" style={{ background: 'var(--gradient-instagram)' }}>
