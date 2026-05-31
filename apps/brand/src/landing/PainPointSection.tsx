@@ -71,7 +71,7 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
               </div>
               <div className="flex flex-1 flex-col justify-center p-5 sm:p-8 text-left">
                 <div className="mb-6">
-                  <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-red-400">
+                  <div className="mb-2 flex items-center gap-2 text-[15px] font-bold uppercase tracking-widest text-red-400">
                     <div className="flex h-4 w-4 items-center justify-center rounded-full border border-red-400 text-[8px]">
                       !
                     </div>
@@ -81,11 +81,11 @@ export function PainPointSection({ shouldReduceMotion }: PainPointSectionProps) 
                 </div>
                 <div className="mb-6 h-px w-full bg-slate-200" />
                 <div>
-                  <div className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-500">
+                  <div className="mb-2 flex items-center gap-2 text-[15px] font-bold uppercase tracking-widest text-emerald-500">
                     <CheckCircle2 size={12} />
                     Value
                   </div>
-                  <div className="text-base font-medium text-slate-600">{item.value}</div>
+                  <div className="text-[15px] font-medium text-slate-600">{item.value}</div>
                 </div>
               </div>
             </motion.div>

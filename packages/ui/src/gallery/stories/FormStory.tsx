@@ -37,7 +37,7 @@ export default function FormStory() {
       />
 
       {/* CustomSelect */}
-      <h2 className="text-base font-bold text-gray-900 mb-4 mt-2">CustomSelect</h2>
+      <h2 className="text-[15px] font-bold text-gray-900 mb-4 mt-2">CustomSelect</h2>
       <StoryBlock title="Single Select">
         <div className="w-64">
           <CustomSelect value={single} onChange={v => setSingle(v as string)} options={options} placeholder="카테고리 선택" />
@@ -69,7 +69,7 @@ export default function FormStory() {
       </div>
 
       {/* TagInput */}
-      <h2 className="text-base font-bold text-gray-900 mb-4">TagInput</h2>
+      <h2 className="text-[15px] font-bold text-gray-900 mb-4">TagInput</h2>
       <StoryBlock title="Default Tags">
         <div className="w-full max-w-sm">
           <TagInput tags={tags} onChange={setTags} placeholder="카테고리 입력 후 Enter" />
@@ -93,16 +93,16 @@ export default function FormStory() {
       </div>
 
       {/* Toggle & Checkbox */}
-      <h2 className="text-base font-bold text-gray-900 mb-4">Toggle & CustomCheckbox</h2>
+      <h2 className="text-[15px] font-bold text-gray-900 mb-4">Toggle & CustomCheckbox</h2>
       <StoryBlock title="Toggle">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <Toggle checked={toggle1} onChange={() => setToggle1(v => !v)} />
-            <span className="text-sm text-gray-600">{toggle1 ? 'ON' : 'OFF'}</span>
+            <span className="text-[15px] text-gray-600">{toggle1 ? 'ON' : 'OFF'}</span>
           </div>
           <div className="flex items-center gap-3">
             <Toggle checked={toggle2} onChange={() => setToggle2(v => !v)} />
-            <span className="text-sm text-gray-600">{toggle2 ? 'ON' : 'OFF'}</span>
+            <span className="text-[15px] text-gray-600">{toggle2 ? 'ON' : 'OFF'}</span>
           </div>
         </div>
       </StoryBlock>
@@ -115,19 +115,19 @@ export default function FormStory() {
       </StoryBlock>
 
       {/* Dropdown */}
-      <h2 className="text-base font-bold text-gray-900 mb-4">Dropdown</h2>
+      <h2 className="text-[15px] font-bold text-gray-900 mb-4">Dropdown</h2>
       <StoryBlock title="Dropdown Menu">
-        <Dropdown trigger={<button type="button" className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50"><MoreHorizontal size={14} /> 더보기</button>}>
+        <Dropdown trigger={<button type="button" className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-[15px] text-gray-700 hover:bg-gray-50"><MoreHorizontal size={14} /> 더보기</button>}>
           <div className="py-1 min-w-[140px]">
-            <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">상세보기</button>
-            <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">수정</button>
-            <button className="w-full text-left px-4 py-2 text-sm text-rose-500 hover:bg-rose-50">삭제</button>
+            <button className="w-full text-left px-4 py-2 text-[15px] text-gray-700 hover:bg-gray-50">상세보기</button>
+            <button className="w-full text-left px-4 py-2 text-[15px] text-gray-700 hover:bg-gray-50">수정</button>
+            <button className="w-full text-left px-4 py-2 text-[15px] text-rose-500 hover:bg-rose-50">삭제</button>
           </div>
         </Dropdown>
       </StoryBlock>
 
       {/* FileUpload */}
-      <h2 className="text-base font-bold text-gray-900 mb-4">FileUpload</h2>
+      <h2 className="text-[15px] font-bold text-gray-900 mb-4">FileUpload</h2>
       <StoryBlock title="Drag & Drop" bg="gray">
         <div className="w-full">
           <FileUpload hint="브랜드 가이드라인, 이미지 파일 등을 첨부하세요" />

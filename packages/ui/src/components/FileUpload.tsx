@@ -66,8 +66,8 @@ export default function FileUpload({
           ${dragging ? 'border-brand-green bg-brand-green/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'}`}
       >
         <Upload size={20} className="text-gray-400 shrink-0" aria-hidden="true" />
-        <p className="text-sm text-gray-500 text-center break-keep">{hint}</p>
-        <p className="text-sm text-gray-400 break-keep text-center">클릭하거나 파일을 드래그하세요</p>
+        <p className="text-[15px] text-gray-500 text-center break-keep">{hint}</p>
+        <p className="text-[15px] text-gray-400 break-keep text-center">클릭하거나 파일을 드래그하세요</p>
         <input
           ref={inputRef}
           type="file"
@@ -89,8 +89,8 @@ export default function FileUpload({
               className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100 min-w-0"
             >
               <FileText size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
-              <span className="flex-1 text-sm text-gray-700 truncate min-w-0">{file.name}</span>
-              <span className="text-sm text-gray-400 shrink-0 whitespace-nowrap tabular-nums">
+              <span className="flex-1 text-[15px] text-gray-700 truncate min-w-0">{file.name}</span>
+              <span className="text-[15px] text-gray-400 shrink-0 whitespace-nowrap tabular-nums">
                 {(file.size / 1024).toFixed(0)}KB
               </span>
               <button

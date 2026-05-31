@@ -154,7 +154,7 @@ const LineChart = memo(function LineChart({
 
   return (
     <div className="rounded-xl border border-gray-100 bg-gray-50/40 p-4">
-      <h3 className="text-base font-semibold text-gray-900 mb-3">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-gray-900 mb-3">{title}</h3>
       {/* 범례 */}
       <div className="flex items-center gap-4 mb-2">
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -411,7 +411,7 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
                   <Link2 size={12} aria-hidden="true" />
                   연결된 캠페인
                 </div>
-                <p className="text-base font-bold text-gray-900 mb-1 break-words">{match.campaignName}</p>
+                <p className="text-[15px] font-bold text-gray-900 mb-1 break-words">{match.campaignName}</p>
                 <p className="text-xs text-gray-500">업로드 기간 · {match.uploadPeriodLabel}</p>
               </Link>
             )
@@ -419,7 +419,7 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
 
           {content.grade === 'processing' ? (
             <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
-              <p className="text-sm text-amber-800 leading-relaxed">
+              <p className="text-[15px] text-amber-800 leading-relaxed">
                 <strong className="font-semibold">아직 데이터가 충분하지 않아 평가 중입니다.</strong>
                 <span className="block text-amber-700 mt-0.5">데이터가 더 쌓이면 점수와 시계열 차트가 표시됩니다.</span>
               </p>
@@ -428,7 +428,7 @@ const ContentDetailModal = memo(function ContentDetailModal({ content, onClose }
             <>
               {/* 시계열 추이 헤더 */}
               <div>
-                <h2 className="text-base font-bold text-gray-900 mb-1">시계열 추이</h2>
+                <h2 className="text-[15px] font-bold text-gray-900 mb-1">시계열 추이</h2>
                 <p className="text-xs text-gray-500 leading-relaxed">
                   {dateMinusDays(27)}부터 {todayStr()}까지 조회한 데이터를 게시 후 일차 기준으로 보여줍니다.
                   평균선과 내 값을 함께 확인할 수 있습니다.

@@ -121,7 +121,7 @@ const KPICard = memo(function KPICard({
           {/* 라벨 — 컨테이너 폭 기준 (viewport와 무관) */}
           <div className="flex items-center gap-1.5 min-w-0 mb-2.5">
             {icon && <span className="text-gray-400 shrink-0">{icon}</span>}
-            <span className="text-sm @md:text-base text-gray-600 whitespace-nowrap font-medium truncate min-w-0">{title}</span>
+            <span className="text-[15px] @md:text-[15px] text-gray-600 whitespace-nowrap font-medium truncate min-w-0">{title}</span>
             {tooltip && !isTouch && (
               <Tooltip content={tooltip} side="top" multiline className="ml-0.5">
                 <span aria-label="상세 정보" className="text-gray-300 hover:text-gray-400 transition-colors inline-flex">
@@ -136,12 +136,12 @@ const KPICard = memo(function KPICard({
             <div className={`text-2xl @md:text-3xl font-bold tracking-tight whitespace-nowrap tabular-nums leading-tight ${valueColor || 'text-gray-900'}`}>
               {value}
             </div>
-            {sub && <div className="text-sm text-gray-400 mt-1 truncate">{sub}</div>}
+            {sub && <div className="text-[15px] text-gray-400 mt-1 truncate">{sub}</div>}
           </div>
 
           {/* trend — 카드 하단 */}
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 text-xs @md:text-sm font-semibold whitespace-nowrap mt-auto pt-2.5 ${trendColor}`}>
+            <div className={`flex items-center gap-1 text-xs @md:text-[15px] font-semibold whitespace-nowrap mt-auto pt-2.5 ${trendColor}`}>
               <TrendIconCmp size={14} aria-hidden="true" />
               <span className="tabular-nums">
                 {isPositive ? '+' : ''}{trend}{trendUnit ?? '%'}
@@ -171,7 +171,7 @@ const KPICard = memo(function KPICard({
 
       {/* 모바일/태블릿 hint inline */}
       {tooltip && isTouch && (
-        <p className="text-sm text-gray-500 leading-snug border-t border-gray-100 pt-2 mt-3">{tooltip}</p>
+        <p className="text-[15px] text-gray-500 leading-snug border-t border-gray-100 pt-2 mt-3">{tooltip}</p>
       )}
     </div>
   )

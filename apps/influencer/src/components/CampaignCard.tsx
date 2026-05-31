@@ -118,14 +118,14 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
         </div>
 
         {/* 제목 — 원본 CampaignList.tsx L296-298 */}
-        <h3 className="text-sm font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{campaign.name}</h3>
+        <h3 className="text-[15px] font-bold text-gray-900 line-clamp-2 break-keep leading-snug mb-1">{campaign.name}</h3>
 
         {/* 혜택 유형 + 리워드 — benefitTags는 텍스트로, rewardText는 금액 */}
         <div className="mb-3">
           {benefitTags.length > 0 && (
             <p className="text-xs text-gray-400 mb-0.5">{(benefitTags as string[]).join(' · ')}</p>
           )}
-          <p className="text-sm text-gray-500 truncate">{rewardText}</p>
+          <p className="text-[15px] text-gray-500 truncate">{rewardText}</p>
         </div>
 
         {/* 하단: 모집인원 + 플랫폼 — 원본 CampaignList.tsx L308-322 */}

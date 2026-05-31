@@ -80,7 +80,7 @@ export default function Notifications() {
       value: v,
       label: FILTER_LABELS[v],
       trailing: counts[v] > 0 ? (
-        <span className="ml-1 text-sm text-gray-500 font-normal whitespace-nowrap">{counts[v]}</span>
+        <span className="ml-1 text-[15px] text-gray-500 font-normal whitespace-nowrap">{counts[v]}</span>
       ) : undefined,
     }))
   }, [notifications])
@@ -130,14 +130,14 @@ export default function Notifications() {
       <PageHeader
         title="알림 센터"
         meta={unreadCount > 0 ? (
-          <span className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full whitespace-nowrap" aria-label={`미읽음 ${unreadCount}건`}>
+          <span className="bg-brand-green text-white text-[15px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" aria-label={`미읽음 ${unreadCount}건`}>
             {unreadCount}
           </span>
         ) : undefined}
         actions={unreadCount > 0 ? (
           <button type="button"
             onClick={handleMarkAllRead}
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
+            className="text-[15px] text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
           >모두 읽음으로 표시</button>
         ) : undefined}
       />
@@ -156,7 +156,7 @@ export default function Notifications() {
               ariaLabel="알림 카테고리 필터"
             />
           </div>
-          <label className="flex items-center gap-2 shrink-0 cursor-pointer text-sm">
+          <label className="flex items-center gap-2 shrink-0 cursor-pointer text-[15px]">
             <span className="text-gray-700 whitespace-nowrap">읽지 않음만</span>
             <Toggle
               checked={unreadOnly}
@@ -206,12 +206,12 @@ export default function Notifications() {
                     </div>
                     <div className="flex-1 min-w-0">
                       {/* 제목 + 시간 inline (메일 인박스 스타일) — 시간을 좌측 영역으로 이동 */}
-                      <h3 className={`text-sm mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                      <h3 className={`text-[15px] mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                         {item.title}
                         {unread && <span className="inline-block w-1.5 h-1.5 bg-brand-green rounded-full ml-2 align-middle" aria-hidden="true" />}
-                        <span className="ml-2 text-sm font-normal text-gray-500 whitespace-nowrap">· {item.time}</span>
+                        <span className="ml-2 text-[15px] font-normal text-gray-500 whitespace-nowrap">· {item.time}</span>
                       </h3>
-                      <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
+                      <p className="text-[15px] text-gray-500 line-clamp-2">{item.desc}</p>
                     </div>
                     {item.link && (
                       <div className="text-gray-400 shrink-0 self-center mr-1" aria-hidden="true">

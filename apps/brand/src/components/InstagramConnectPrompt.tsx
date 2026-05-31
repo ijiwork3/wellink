@@ -59,13 +59,13 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
         <h3 className="text-lg font-bold text-gray-900 mb-2">
           인스타그램 비즈니스 계정을 연결해 주세요
         </h3>
-        <p className="text-base text-gray-500 max-w-[380px] mb-6 leading-relaxed">
+        <p className="text-[15px] text-gray-500 max-w-[380px] mb-6 leading-relaxed">
           {featureName}는 Instagram 비즈니스 계정과 연결되어야<br />데이터를 수집하고 표시할 수 있습니다.
         </p>
 
         <button
           onClick={openModal}
-          className="flex items-center gap-2 text-base font-semibold text-white px-6 py-2.5 rounded-xl transition-opacity hover:opacity-90"
+          className="flex items-center gap-2 text-[15px] font-semibold text-white px-6 py-2.5 rounded-xl transition-opacity hover:opacity-90"
           style={{ background: 'var(--gradient-instagram)' }}
         >
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke={SEMANTIC_COLORS.white} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -98,7 +98,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Instagram 계정 연결</h3>
-                <p className="text-base text-gray-500 mb-5 leading-relaxed">
+                <p className="text-[15px] text-gray-500 mb-5 leading-relaxed">
                   Instagram 비즈니스 계정을 연결하면<br />
                   {featureName} 데이터를 실시간으로 확인할 수 있어요.
                 </p>
@@ -109,14 +109,14 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                     '게시물·릴스 성과 지표',
                     '광고 캠페인 연계 데이터',
                   ].map(item => (
-                    <div key={item} className="flex items-center gap-2 text-base text-gray-600">
+                    <div key={item} className="flex items-center gap-2 text-[15px] text-gray-600">
                       <span className="text-green-500 font-bold">✓</span>
                       {item}
                     </div>
                   ))}
                 </div>
 
-                <p className="text-sm text-gray-400 mb-5">
+                <p className="text-[15px] text-gray-400 mb-5">
                   연결 시 Instagram 로그인 페이지로 이동합니다.<br />
                   읽기 전용 권한만 요청됩니다.
                 </p>
@@ -124,13 +124,13 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={closeModal}
-                    className="flex-1 text-base font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 py-2.5 rounded-xl transition-colors"
+                    className="flex-1 text-[15px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 py-2.5 rounded-xl transition-colors"
                   >
                     취소
                   </button>
                   <button
                     onClick={handleConnect}
-                    className="flex-1 text-base font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90"
+                    className="flex-1 text-[15px] font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90"
                     style={{ background: 'var(--gradient-instagram)' }}
                   >
                     연결 시작
@@ -150,7 +150,7 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">연결 중...</h3>
-                <p className="text-base text-gray-500">Instagram 계정 정보를 확인하고 있어요.</p>
+                <p className="text-[15px] text-gray-500">Instagram 계정 정보를 확인하고 있어요.</p>
                 <div className="mt-5 flex justify-center gap-1">
                   {[0, 1, 2].map(i => (
                     <div
@@ -172,13 +172,13 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">연결 완료!</h3>
-                <p className="text-base text-gray-500 mb-5 leading-relaxed">
+                <p className="text-[15px] text-gray-500 mb-5 leading-relaxed">
                   Instagram 비즈니스 계정이 성공적으로<br />
                   연결되었습니다. 이제 {featureName}를 이용해 보세요.
                 </p>
                 <button
                   onClick={handleSuccessConfirm}
-                  className="w-full text-base font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90 bg-green-500"
+                  className="w-full text-[15px] font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90 bg-green-500"
                 >
                   확인
                 </button>
@@ -196,23 +196,23 @@ export default function InstagramConnectPrompt({ featureName }: Props) {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">연결에 실패했어요</h3>
-                <p className="text-base text-gray-500 mb-2 leading-relaxed">
+                <p className="text-[15px] text-gray-500 mb-2 leading-relaxed">
                   Instagram 계정 연결 중 오류가 발생했습니다.
                 </p>
-                <p className="text-sm text-gray-400 bg-gray-50 rounded-lg px-3 py-2 mb-5">
+                <p className="text-[15px] text-gray-400 bg-gray-50 rounded-lg px-3 py-2 mb-5">
                   오류 코드: IGC_AUTH_TIMEOUT<br />
                   Instagram 서버 응답 시간이 초과되었습니다.
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={closeModal}
-                    className="flex-1 text-base font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 py-2.5 rounded-xl transition-colors"
+                    className="flex-1 text-[15px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 py-2.5 rounded-xl transition-colors"
                   >
                     닫기
                   </button>
                   <button
                     onClick={handleConnect}
-                    className="flex-1 text-base font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90 bg-red-500"
+                    className="flex-1 text-[15px] font-semibold text-white py-2.5 rounded-xl transition-opacity hover:opacity-90 bg-red-500"
                   >
                     다시 시도
                   </button>

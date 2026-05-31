@@ -76,12 +76,12 @@ export default function Favorites() {
         <h1 className="sr-only">관심 캠페인</h1>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">관심 캠페인</h2>
-            <p className="text-sm text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
+            <h2 className="text-[15px] font-semibold text-gray-900">관심 캠페인</h2>
+            <p className="text-[15px] text-gray-500 mt-0.5">{visible.length}개 저장됨</p>
           </div>
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="flex items-center gap-1.5 text-[15px] text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             <Compass size={14} />
             캠페인 탐색
@@ -97,7 +97,7 @@ export default function Favorites() {
               action={
                 <button
                   onClick={() => navigate('/campaigns/browse')}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="px-5 py-2.5 rounded-xl text-[15px] font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   캠페인 둘러보기
                 </button>

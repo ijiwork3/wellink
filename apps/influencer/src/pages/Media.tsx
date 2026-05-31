@@ -172,13 +172,13 @@ export default function Media() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-1 flex">
             <button
               onClick={() => navigate('/profile')}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
             >
               <User size={14} />내 정보
             </button>
             <button
               aria-current="page"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[15px] font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Camera size={14} />인스타 관리
             </button>
@@ -196,7 +196,7 @@ export default function Media() {
                   href={`https://www.instagram.com/${mockProfile.instagram}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline truncate ${mockPosts === 0 ? 'text-red-600' : 'text-gray-900'}`}
+                  className={`inline-flex items-center gap-1 text-[15px] font-semibold hover:underline truncate ${mockPosts === 0 ? 'text-red-600' : 'text-gray-900'}`}
                   aria-label="인스타 프로필로 이동"
                 >
                   @{mockProfile.instagram}
@@ -247,46 +247,46 @@ export default function Media() {
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Users size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">팔로워</p>
+                  <p className="text-[15px] text-gray-500 break-keep">팔로워</p>
                 </div>
-                <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtFollowers(mockInstaStats.followers)}</p>
+                <p className="text-[15px] font-bold text-gray-900 tabular-nums truncate">{fmtFollowers(mockInstaStats.followers)}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                 <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                   <Image size={14} className="text-gray-400" />
-                  <p className="text-sm text-gray-500 break-keep">게시물</p>
+                  <p className="text-[15px] text-gray-500 break-keep">게시물</p>
                 </div>
-                <p className={`text-sm font-bold tabular-nums truncate ${mockPosts === 0 ? 'text-red-500' : 'text-gray-900'}`}>{mockPosts.toLocaleString('ko-KR')}</p>
+                <p className={`text-[15px] font-bold tabular-nums truncate ${mockPosts === 0 ? 'text-red-500' : 'text-gray-900'}`}>{mockPosts.toLocaleString('ko-KR')}</p>
               </div>
               {mockPosts > 0 && (
                 <>
                   <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                     <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                       <TrendingUp size={14} className="text-gray-400" />
-                      <p className="text-sm text-gray-500 break-keep">참여율</p>
+                      <p className="text-[15px] text-gray-500 break-keep">참여율</p>
                     </div>
-                    <p className={`text-sm font-bold tabular-nums truncate ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
+                    <p className={`text-[15px] font-bold tabular-nums truncate ${getEngagementColor(mockInstaStats.engagementRate)}`}>{mockInstaStats.engagementRate}%</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                     <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                       <Heart size={14} className="text-gray-400" />
-                      <p className="text-sm text-gray-500 break-keep">평균 좋아요</p>
+                      <p className="text-[15px] text-gray-500 break-keep">평균 좋아요</p>
                     </div>
-                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgLikes.toLocaleString('ko-KR')}</p>
+                    <p className="text-[15px] font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgLikes.toLocaleString('ko-KR')}</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                     <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                       <MessageCircle size={14} className="text-gray-400" />
-                      <p className="text-sm text-gray-500 break-keep">평균 댓글</p>
+                      <p className="text-[15px] text-gray-500 break-keep">평균 댓글</p>
                     </div>
-                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgComments.toLocaleString('ko-KR')}</p>
+                    <p className="text-[15px] font-bold text-gray-900 tabular-nums truncate">{mockInstaStats.avgComments.toLocaleString('ko-KR')}</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3 text-center min-w-0">
                     <div className="flex items-center justify-center gap-1 mb-1 flex-wrap">
                       <Clock size={14} className="text-gray-400" />
-                      <p className="text-sm text-gray-500 break-keep">최근 활동</p>
+                      <p className="text-[15px] text-gray-500 break-keep">최근 활동</p>
                     </div>
-                    <p className="text-sm font-bold text-gray-900 tabular-nums truncate">{fmtRelativeDate(mockInstaStats.lastActive)}</p>
+                    <p className="text-[15px] font-bold text-gray-900 tabular-nums truncate">{fmtRelativeDate(mockInstaStats.lastActive)}</p>
                   </div>
                 </>
               )}
@@ -295,7 +295,7 @@ export default function Media() {
             {/* 최근 콘텐츠 헤더 */}
             <div className="flex items-center gap-1.5 mb-2 px-4">
               <BarChart3 size={14} className="text-brand-green" />
-              <p className="text-sm font-semibold text-gray-700">최근 콘텐츠</p>
+              <p className="text-[15px] font-semibold text-gray-700">최근 콘텐츠</p>
             </div>
 
             {mockPosts > 0 ? (
@@ -314,7 +314,7 @@ export default function Media() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center py-16 text-sm text-gray-400">게시물이 없어요</div>
+              <div className="flex items-center justify-center py-16 text-[15px] text-gray-400">게시물이 없어요</div>
             )}
           </div>
         )}
@@ -330,7 +330,7 @@ export default function Media() {
                   href={`https://www.instagram.com/${mockProfile.instagram}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 hover:underline truncate"
+                  className="inline-flex items-center gap-1 text-[15px] font-semibold text-gray-900 hover:underline truncate"
                 >
                   @{mockProfile.instagram}
                   <ExternalLink size={15} className="text-gray-400 flex-shrink-0" aria-hidden="true" />
@@ -374,7 +374,7 @@ export default function Media() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 mb-1">비공개 계정이에요</p>
+                  <p className="text-[15px] font-semibold text-gray-700 mb-1">비공개 계정이에요</p>
                   <p className="text-xs text-gray-400 break-keep leading-relaxed">
                     비공개 계정은 게시물을 가져올 수 없어요.<br />
                     인스타그램에서 계정을 공개로 전환하면 캠페인 심사에 유리해요.
@@ -386,7 +386,7 @@ export default function Media() {
                 {/* 게시물 수 */}
                 <div className="flex items-center gap-1.5 px-4 pt-4 pb-2">
                   <BarChart3 size={14} className="text-gray-400" />
-                  <p className="text-sm font-semibold text-gray-700">
+                  <p className="text-[15px] font-semibold text-gray-700">
                     게시물
                     <span className="ml-1.5 text-gray-400 font-normal tabular-nums">{mockPosts.toLocaleString('ko-KR')}개</span>
                   </p>
@@ -408,7 +408,7 @@ export default function Media() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center py-16 text-sm text-gray-400">게시물이 없어요</div>
+                  <div className="flex items-center justify-center py-16 text-[15px] text-gray-400">게시물이 없어요</div>
                 )}
               </>
             )}
@@ -426,8 +426,8 @@ export default function Media() {
                   <circle cx="17.5" cy="6.5" r="1" fill={SEMANTIC_COLORS.white} stroke="none" />
                 </svg>
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-1">인스타그램 계정을 연결해 주세요</h3>
-              <p className="text-sm text-gray-500 break-keep">계정 유형에 따라 이용 가능한 캠페인 범위가 달라요</p>
+              <h3 className="text-[15px] font-bold text-gray-900 mb-1">인스타그램 계정을 연결해 주세요</h3>
+              <p className="text-[15px] text-gray-500 break-keep">계정 유형에 따라 이용 가능한 캠페인 범위가 달라요</p>
             </div>
 
             {/* 모바일: 세로(프로 위·일반 아래) / 데스크톱: 가로(프로 왼·일반 오) */}
@@ -437,7 +437,7 @@ export default function Media() {
               <div className="flex-1 rounded-xl border-2 border-brand-green-border bg-brand-green-bg p-4 flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
-                    <p className="text-sm font-semibold text-brand-green-text">프로페셔널 계정</p>
+                    <p className="text-[15px] font-semibold text-brand-green-text">프로페셔널 계정</p>
                     <p className="text-xs text-gray-600 mt-0.5 break-keep">비즈니스·크리에이터 계정</p>
                   </div>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-brand-green text-white whitespace-nowrap shrink-0">추천</span>
@@ -450,7 +450,7 @@ export default function Media() {
                 <button
                   type="button"
                   onClick={() => setShowMetaModal(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <BadgeCheck size={14} aria-hidden="true" />프로페셔널 계정으로 연결
                 </button>
@@ -460,7 +460,7 @@ export default function Media() {
               <div className="flex-1 rounded-xl border border-gray-200 p-4 flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
-                    <p className="text-sm font-semibold text-gray-700">일반 계정</p>
+                    <p className="text-[15px] font-semibold text-gray-700">일반 계정</p>
                     <p className="text-xs text-gray-400 mt-0.5 break-keep">개인 인스타그램 계정</p>
                   </div>
                 </div>
@@ -473,7 +473,7 @@ export default function Media() {
                   type="button"
                   disabled={isConnecting}
                   onClick={() => { setConnectInput(''); setShowConnectModal(true) }}
-                  className="w-full py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full py-2 rounded-xl text-[15px] font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   {isConnecting ? '연결 중...' : '일반 계정으로 연결'}
                 </button>
@@ -498,7 +498,7 @@ export default function Media() {
             <svg viewBox="0 0 16 16" width="48" height="48" fill="#0866FF" aria-label="Meta" role="img">
               <path fillRule="evenodd" d="M8.217 5.243C9.145 3.988 10.171 3 11.483 3 13.96 3 16 6.153 16.001 9.907c0 2.29-.986 3.725-2.757 3.725-1.543 0-2.395-.866-3.924-3.424l-.667-1.123-.118-.197a55 55 0 0 0-.53-.877l-1.178 2.08c-1.673 2.925-2.615 3.541-3.923 3.541C1.086 13.632 0 12.217 0 9.973 0 6.388 1.995 3 4.598 3q.477-.001.924.122c.31.086.611.22.913.407.577.359 1.154.915 1.782 1.714m1.516 2.224q-.378-.615-.727-1.133L9 6.326c.845-1.305 1.543-1.954 2.372-1.954 1.723 0 3.102 2.537 3.102 5.653 0 1.188-.39 1.877-1.195 1.877-.773 0-1.142-.51-2.61-2.87zM4.846 4.756c.725.1 1.385.634 2.34 2.001A212 212 0 0 0 5.551 9.3c-1.357 2.126-1.826 2.603-2.581 2.603-.777 0-1.24-.682-1.24-1.9 0-2.602 1.298-5.264 2.846-5.264q.137 0 .27.018"/>
             </svg>
-            <p className="text-base font-bold text-gray-900">Meta로 계속하기</p>
+            <p className="text-[15px] font-bold text-gray-900">Meta로 계속하기</p>
             <p className="text-xs text-gray-500 text-center break-keep">
               웰링크가 회원님의 Instagram 비즈니스 계정에 접근하도록 허용합니다
             </p>
@@ -514,7 +514,7 @@ export default function Media() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setShowMetaModal(false)}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
+              className="w-full py-2.5 rounded-xl text-[15px] font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
             >
               계속
             </a>
@@ -540,14 +540,14 @@ export default function Media() {
             <button
               type="button"
               onClick={() => setShowConnectModal(false)}
-              className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="px-4 py-2 text-[15px] text-gray-500 hover:text-gray-700 border border-gray-200 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
             <button
               type="button"
               onClick={handleConnectPersonalConfirm}
-              className="px-4 py-2 text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="px-4 py-2 text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               연결
             </button>
@@ -564,7 +564,7 @@ export default function Media() {
             placeholder="@인스타그램 아이디"
             value={connectInput}
             onChange={e => setConnectInput(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 placeholder:text-gray-400"
+            className="w-full px-3 py-2 text-[15px] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 placeholder:text-gray-400"
           />
         </div>
       </Modal>

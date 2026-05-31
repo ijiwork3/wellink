@@ -73,7 +73,7 @@ function PhoneVerifyModal({ onVerified }: { onVerified: () => void }) {
           <Phone size={26} className="text-brand-green-text" />
         </div>
         <h2 className="text-lg font-bold text-gray-900 mb-1">전화번호 인증이 필요해요</h2>
-        <p className="text-sm text-gray-500 break-keep">캠페인 신청을 위해 휴대폰 번호를 인증해 주세요</p>
+        <p className="text-[15px] text-gray-500 break-keep">캠페인 신청을 위해 휴대폰 번호를 인증해 주세요</p>
       </div>
 
       {step === 'phone' ? (
@@ -86,7 +86,7 @@ function PhoneVerifyModal({ onVerified }: { onVerified: () => void }) {
               value={phone}
               onChange={e => { setPhone(e.target.value); setPhoneError('') }}
               onKeyDown={e => { if (e.key === 'Enter') handleSendCode() }}
-              className={`w-full px-4 py-3 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              className={`w-full px-4 py-3 rounded-xl border text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 phoneError ? 'border-red-300' : 'border-gray-200'
               }`}
             />
@@ -96,14 +96,14 @@ function PhoneVerifyModal({ onVerified }: { onVerified: () => void }) {
             type="button"
             onClick={handleSendCode}
             disabled={sending}
-            className="w-full py-3.5 rounded-xl bg-brand-green text-white text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-3.5 rounded-xl bg-brand-green text-white text-[15px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             {sending ? '발송 중...' : '인증번호 발송'}
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-gray-600 text-center break-keep">
+          <p className="text-[15px] text-gray-600 text-center break-keep">
             <span className="font-semibold text-gray-900">{phone}</span>으로 인증번호를 발송했어요
           </p>
           <div>
@@ -115,7 +115,7 @@ function PhoneVerifyModal({ onVerified }: { onVerified: () => void }) {
               value={code}
               onChange={e => { setCode(e.target.value.replace(/\D/g, '')); setCodeError('') }}
               onKeyDown={e => { if (e.key === 'Enter') handleVerify() }}
-              className={`w-full px-4 py-3 rounded-xl border text-sm text-center tracking-[0.25em] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              className={`w-full px-4 py-3 rounded-xl border text-[15px] text-center tracking-[0.25em] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 codeError ? 'border-red-300' : 'border-gray-200'
               }`}
             />
@@ -124,14 +124,14 @@ function PhoneVerifyModal({ onVerified }: { onVerified: () => void }) {
           <button
             type="button"
             onClick={handleVerify}
-            className="w-full py-3.5 rounded-xl bg-brand-green text-white text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-3.5 rounded-xl bg-brand-green text-white text-[15px] font-semibold transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             인증 완료
           </button>
           <button
             type="button"
             onClick={() => { setStep('phone'); setCode(''); setCodeError('') }}
-            className="w-full py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
+            className="w-full py-2 text-[15px] text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
           >
             번호 다시 입력
           </button>

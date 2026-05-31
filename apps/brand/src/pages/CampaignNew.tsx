@@ -230,7 +230,7 @@ export default function CampaignNew() {
       {/* 뒤로가기 */}
       <button type="button"
         onClick={() => navigate('/campaigns')}
-        className="flex items-center gap-1 text-base text-gray-600 hover:text-gray-900 transition-colors"
+        className="flex items-center gap-1 text-[15px] text-gray-600 hover:text-gray-900 transition-colors"
       >
         <ArrowLeft size={14} aria-hidden="true" />
         뒤로 가기
@@ -249,8 +249,8 @@ export default function CampaignNew() {
         <div className="bg-amber-100 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-start gap-3">
           <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
-            <p className="text-base font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
-            <p className="text-sm text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
+            <p className="text-[15px] font-semibold text-amber-900">현재 캠페인 상태: {editStatusInfo.status}</p>
+            <p className="text-[15px] text-amber-700 mt-0.5">{editStatusInfo.reason}</p>
           </div>
         </div>
       )}
@@ -265,7 +265,7 @@ export default function CampaignNew() {
                 key={t}
                 onClick={() => set('type', t)}
                 aria-pressed={form.type === t}
-                className={`py-3 rounded-xl text-base font-medium border transition-colors ${
+                className={`py-3 rounded-xl text-[15px] font-medium border transition-colors ${
                   form.type === t
                     ? 'bg-gray-900 text-white border-gray-900'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
@@ -303,7 +303,7 @@ export default function CampaignNew() {
             value={autoTitle}
             disabled
             placeholder="위 정보를 입력하면 제목이 자동 생성됩니다"
-            className="w-full text-base bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700"
+            className="w-full text-[15px] bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700"
           />
         </Field>
 
@@ -322,8 +322,8 @@ export default function CampaignNew() {
             className="border border-dashed border-gray-300 rounded-xl py-10 flex flex-col items-center justify-center bg-gray-50/30 cursor-pointer hover:bg-gray-50 transition-colors"
           >
             <ImageIcon size={28} className="text-gray-300 mb-2" aria-hidden="true" />
-            <p className="text-base text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
-            <p className="text-sm text-gray-500 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
+            <p className="text-[15px] text-gray-500">이미지를 드래그하거나 클릭하여 업로드</p>
+            <p className="text-[15px] text-gray-500 mt-0.5">권장 사이즈: 1200 × 800px (JPG, PNG)</p>
             <input
               id="campaign-image-upload"
               type="file"
@@ -359,7 +359,7 @@ export default function CampaignNew() {
             onChange={e => set('productDetail', e.target.value)}
             rows={3}
             placeholder="제공되는 상품의 구성이나 특징을 자세히 적어주세요."
-            className="w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
+            className="w-full text-[15px] border border-gray-200 rounded-xl px-3 py-2.5 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green"
           />
         </Field>
 
@@ -372,7 +372,7 @@ export default function CampaignNew() {
                 placeholder="0"
                 className="text-right pr-9"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">원</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[15px] text-gray-500">원</span>
             </div>
           </Field>
           <Field label="추가 리워드 (포인트)">
@@ -383,7 +383,7 @@ export default function CampaignNew() {
                 placeholder="0"
                 className="text-right pr-9"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">P</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[15px] text-gray-500">P</span>
             </div>
           </Field>
           <Field label="콘텐츠 다운로드 단가" hint="0원 또는 미입력 시 콘텐츠 다운로드 기능이 비활성화됩니다">
@@ -394,13 +394,13 @@ export default function CampaignNew() {
                 placeholder="0"
                 className="text-right pr-9"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-base text-gray-500">원</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[15px] text-gray-500">원</span>
             </div>
           </Field>
         </div>
 
         {form.type === '택배형' && (
-          <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-sm text-blue-800">
+          <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-[15px] text-blue-800">
             <p className="font-semibold mb-0.5">택배형 캠페인 안내</p>
             <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
           </div>
@@ -409,12 +409,12 @@ export default function CampaignNew() {
 
       {/* ── 섹션 2-B: 콘텐츠 2차 활용 ── */}
       <Section title="콘텐츠 2차 활용">
-        <p className="text-sm text-gray-500 -mt-1 break-keep">
+        <p className="text-[15px] text-gray-500 -mt-1 break-keep">
           인플루언서가 제작한 콘텐츠를 광고·마케팅 목적으로 재활용할 계획이 있다면 반드시 사전에 고지해야 합니다.
         </p>
         <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 bg-gray-50">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900">콘텐츠 2차 활용</p>
+            <p className="text-[15px] font-medium text-gray-900">콘텐츠 2차 활용</p>
             <p className="text-xs text-gray-500 mt-0.5 break-keep">활성화하면 지원자에게 사전 고지됩니다</p>
           </div>
           <button
@@ -437,7 +437,7 @@ export default function CampaignNew() {
         {form.secondaryUseEnabled && (
           <div className="space-y-4 pt-1">
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">활용 채널 <span className="text-xs font-normal text-gray-400">(복수 선택 가능)</span></p>
+              <p className="text-[15px] font-medium text-gray-700 mb-2">활용 채널 <span className="text-xs font-normal text-gray-400">(복수 선택 가능)</span></p>
               <div className="flex flex-wrap gap-2">
                 {SECONDARY_USE_CHANNELS.map(ch => {
                   const selected = form.secondaryUseChannels.includes(ch)
@@ -451,7 +451,7 @@ export default function CampaignNew() {
                           : [...form.secondaryUseChannels, ch]
                         set('secondaryUseChannels', next)
                       }}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
+                      className={`px-3 py-1.5 rounded-full text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
                         selected
                           ? 'bg-brand-green text-white'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -464,14 +464,14 @@ export default function CampaignNew() {
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">활용 기간</p>
+              <p className="text-[15px] font-medium text-gray-700 mb-2">활용 기간</p>
               <div className="flex flex-wrap gap-2">
                 {SECONDARY_USE_DURATIONS.map(d => (
                   <button
                     key={d}
                     type="button"
                     onClick={() => set('secondaryUseDuration', d)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-full text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap ${
                       form.secondaryUseDuration === d
                         ? 'bg-brand-green text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -482,7 +482,7 @@ export default function CampaignNew() {
                 ))}
               </div>
             </div>
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-sm text-amber-700 break-keep leading-relaxed">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-[15px] text-amber-700 break-keep leading-relaxed">
               <strong>고지 예시:</strong> 이 캠페인의 콘텐츠는 광고주가{' '}
               {form.secondaryUseChannels.length > 0 ? form.secondaryUseChannels.join(', ') + ' 등 ' : ''}
               마케팅 목적으로 콘텐츠 게재 후 {form.secondaryUseDuration} 동안 재활용할 수 있습니다.
@@ -500,17 +500,17 @@ export default function CampaignNew() {
               onChange={e => setKeywordInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
               placeholder="예) #봄요가, #웰니스챌린지 (엔터로 추가)"
-              className="flex-1 text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 text-[15px] border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
             <button type="button"
               onClick={addKeyword}
-              className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-base hover:bg-gray-800 transition-colors"
+              className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-[15px] hover:bg-gray-800 transition-colors"
             >추가</button>
           </div>
           {form.keywords.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {form.keywords.map(k => (
-                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
+                <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-[15px]">
                   {k}
                   <button type="button" onClick={() => removeKeyword(k)} aria-label="삭제"><X size={12} /></button>
                 </span>
@@ -551,18 +551,18 @@ export default function CampaignNew() {
 
         <Field label="신청 정보 질문 설정" hint="인플루언서가 캠페인 신청 시 답변해야 할 질문을 설정합니다.">
           <div className="flex gap-2 mb-2 flex-wrap">
-            <button type="button" onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <button type="button" onClick={() => addQuestion('short')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />단답형 추가
             </button>
-            <button type="button" onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <button type="button" onClick={() => addQuestion('long')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />서술형 추가
             </button>
-            <button type="button" onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <button type="button" onClick={() => addQuestion('choice')} className="flex items-center gap-1 px-3 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               <Plus size={12} />객관식 추가
             </button>
           </div>
           {questions.length === 0 ? (
-            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-sm text-gray-500">
+            <div className="border border-dashed border-gray-200 rounded-xl py-8 text-center text-[15px] text-gray-500">
               추가된 질문이 없습니다.
             </div>
           ) : (
@@ -591,7 +591,7 @@ export default function CampaignNew() {
               <SubField label="모집 기간">
                 <div className="flex items-center gap-1.5">
                   <DateInput value={form.recruitStart} min={TODAY} onChange={v => set('recruitStart', v)} />
-                  <span className="text-gray-500 text-sm shrink-0" aria-hidden="true">~</span>
+                  <span className="text-gray-500 text-[15px] shrink-0" aria-hidden="true">~</span>
                   <DateInput value={form.recruitEnd} min={form.recruitStart || TODAY} onChange={v => set('recruitEnd', v)} />
                 </div>
               </SubField>
@@ -606,8 +606,8 @@ export default function CampaignNew() {
           <SubField label="등록 기간">
             <div className="flex flex-col @sm:flex-row items-stretch @sm:items-center gap-1.5 max-w-md">
               <DateInput value={form.uploadStart} min={form.announceDate || TODAY} onChange={v => set('uploadStart', v)} />
-              <span className="hidden @sm:inline text-gray-500 text-sm" aria-hidden="true">~</span>
-              <span className="@sm:hidden text-gray-500 text-sm">종료일</span>
+              <span className="hidden @sm:inline text-gray-500 text-[15px]" aria-hidden="true">~</span>
+              <span className="@sm:hidden text-gray-500 text-[15px]">종료일</span>
               <DateInput value={form.uploadEnd} min={form.uploadStart || TODAY} onChange={v => set('uploadEnd', v)} />
             </div>
           </SubField>
@@ -616,8 +616,8 @@ export default function CampaignNew() {
         <Field label={<span className="flex items-center gap-1"><Users size={14} /> 모집 인원</span>}>
           <div className="border border-gray-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-base font-medium text-gray-900">총 모집 인원</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-[15px] font-medium text-gray-900">총 모집 인원</p>
+              <p className="text-[15px] text-gray-500">
                 {isEdit
                   ? `현재 ${currentApplicantCount.toLocaleString()}명의 지원자가 있습니다.`
                   : '최소 5명 이상부터 진행 가능합니다.'}
@@ -630,9 +630,9 @@ export default function CampaignNew() {
                 placeholder="20"
                 value={form.headcount}
                 onChange={e => set('headcount', e.target.value)}
-                className="w-24 text-base text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-24 text-[15px] text-right border border-gray-200 rounded-lg pr-7 pl-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">명</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[15px] text-gray-500">명</span>
             </div>
           </div>
         </Field>
@@ -640,10 +640,10 @@ export default function CampaignNew() {
 
       {/* 총 결제 예정 금액 */}
       <div className="bg-blue-50/50 border border-blue-100 rounded-2xl px-4 py-3.5 flex items-center justify-between gap-3">
-        <span className="text-base font-semibold text-gray-900">총 결제 예정 금액</span>
+        <span className="text-[15px] font-semibold text-gray-900">총 결제 예정 금액</span>
         <div className="text-right">
           <p className="text-xl @md:text-2xl font-bold text-blue-700">{fmtKRW(totalPay)}</p>
-          <p className="text-sm text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
+          <p className="text-[15px] text-blue-500">기본 수수료 및 리워드가 포함된 금액입니다 (VAT 별도)</p>
         </div>
       </div>
 
@@ -651,12 +651,12 @@ export default function CampaignNew() {
       <div className="flex items-center justify-end gap-2">
         <button type="button"
           onClick={() => navigate('/campaigns')}
-          className="px-4 py-2.5 text-base text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          className="px-4 py-2.5 text-[15px] text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
         >취소하기</button>
         <button type="button"
           onClick={handleSubmit}
           disabled={submitting}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-base bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-2.5 text-[15px] bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
         >
           {isEdit ? '변경사항 저장' : '캠페인 등록하기'}
           <CheckCircle size={14} />
@@ -678,7 +678,7 @@ export default function CampaignNew() {
           <div className="w-12 h-12 rounded-full bg-brand-green-bg flex items-center justify-center mx-auto mb-3">
             <CheckCircle size={24} className="text-brand-green" />
           </div>
-          <p className="text-base text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
+          <p className="text-[15px] text-gray-700">{autoTitle || '새 캠페인'}이(가) 모집을 시작합니다.</p>
         </div>
       </AlertModal>
     </div>
@@ -699,12 +699,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, hint, children, required, optional }: { label: React.ReactNode; hint?: string; children: React.ReactNode; required?: boolean; optional?: boolean }) {
   return (
     <div>
-      <label className="text-base font-semibold text-gray-900 block mb-2">
+      <label className="text-[15px] font-semibold text-gray-900 block mb-2">
         {label}
         {required && <span className="ml-1 text-red-500" aria-label="필수 입력">*</span>}
-        {optional && <span className="ml-1 text-sm font-normal text-gray-500">(선택)</span>}
+        {optional && <span className="ml-1 text-[15px] font-normal text-gray-500">(선택)</span>}
       </label>
-      {hint && <p className="text-sm text-gray-500 -mt-1 mb-2">{hint}</p>}
+      {hint && <p className="text-[15px] text-gray-500 -mt-1 mb-2">{hint}</p>}
       {children}
     </div>
   )
@@ -713,7 +713,7 @@ function Field({ label, hint, children, required, optional }: { label: React.Rea
 function SubField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-sm font-medium text-gray-600 block mb-1.5">{label}</label>
+      <label className="text-[15px] font-medium text-gray-600 block mb-1.5">{label}</label>
       {children}
     </div>
   )
@@ -725,7 +725,7 @@ function Input({ value, onChange, placeholder, className = '' }: { value: string
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full text-base border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-colors ${className}`}
+      className={`w-full text-[15px] border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus:border-brand-green transition-colors ${className}`}
     />
   )
 }
@@ -747,7 +747,7 @@ function DateInput({ value, min, onChange }: { value: string; min?: string; onCh
       value={value}
       min={min}
       onChange={e => onChange(e.target.value)}
-      className="flex-1 text-base border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
+      className="flex-1 text-[15px] border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 cursor-pointer"
     />
   )
 }
@@ -807,7 +807,7 @@ function MockRichEditor({
       title={title}
       aria-label={title}
       onMouseDown={ev => { ev.preventDefault(); action() }}
-      className="px-2 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50"
+      className="px-2 py-1 text-[15px] text-gray-600 hover:bg-gray-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-green/50"
     >
       {label}
     </button>
@@ -844,7 +844,7 @@ function MockRichEditor({
       {/* 편집 영역 */}
       <div className="relative">
         {showPlaceholder && placeholder && (
-          <p className="absolute top-3 left-3 right-3 text-base text-gray-400 pointer-events-none select-none leading-relaxed whitespace-pre-line" aria-hidden="true">
+          <p className="absolute top-3 left-3 right-3 text-[15px] text-gray-400 pointer-events-none select-none leading-relaxed whitespace-pre-line" aria-hidden="true">
             {placeholder}
           </p>
         )}
@@ -856,7 +856,7 @@ function MockRichEditor({
           onFocus={() => setShowPlaceholder(false)}
           onBlur={() => setShowPlaceholder(!(editorRef.current?.innerText.trim()))}
           style={{ minHeight }}
-          className="px-3 py-3 text-base text-gray-900 outline-none leading-relaxed [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
+          className="px-3 py-3 text-[15px] text-gray-900 outline-none leading-relaxed [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-1.5 [&_h3]:text-[15px] [&_h3]:font-semibold [&_h3]:mb-1 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
         />
       </div>
     </div>
@@ -893,14 +893,14 @@ function SortableQuestion({
         >
           <GripVertical size={14} aria-hidden="true" />
         </button>
-        <span className="text-sm px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+        <span className="text-[15px] px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
           질문 {i + 1} ({q.type === 'short' ? '단답형' : q.type === 'long' ? '서술형' : '객관식'})
         </span>
         <CustomCheckbox
           checked={q.required}
           onChange={() => updateQ(q.id, { required: !q.required })}
           label="필수 답변"
-          labelClassName="text-sm text-gray-600"
+          labelClassName="text-[15px] text-gray-600"
           className="ml-auto"
         />
         <button type="button" onClick={() => removeQ(q.id)} aria-label="삭제" className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
@@ -926,7 +926,7 @@ function SortableQuestion({
           ))}
           <button type="button"
             onClick={() => updateQ(q.id, { options: [...(q.options ?? []), `옵션 ${(q.options?.length ?? 0) + 1}`] })}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-[15px] text-blue-600 hover:text-blue-700"
           >+ 옵션 추가하기</button>
         </div>
       )}

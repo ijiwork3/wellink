@@ -50,11 +50,11 @@ const RoasBar = memo(function RoasBar({ value, avg }: Props) {
           />
         )}
       </div>
-      <span className={`text-base font-semibold ${getRoasColor(value)} whitespace-nowrap`}>
+      <span className={`text-[15px] font-semibold ${getRoasColor(value)} whitespace-nowrap`}>
         {value > 0 ? `${value}x` : '—'}
       </span>
       {avg > 0 && (
-        <span className="text-sm text-gray-500 whitespace-nowrap">
+        <span className="text-[15px] text-gray-500 whitespace-nowrap">
           vs 평균 {avg.toFixed(1)}x
         </span>
       )}

@@ -56,7 +56,7 @@ const WordCloud = memo(function WordCloud({
 
   if (visible.length === 0) {
     return (
-      <div className={`flex items-center justify-center py-10 text-sm text-gray-400 ${className ?? ''}`}>
+      <div className={`flex items-center justify-center py-10 text-[15px] text-gray-400 ${className ?? ''}`}>
         {emptyMessage}
       </div>
     )

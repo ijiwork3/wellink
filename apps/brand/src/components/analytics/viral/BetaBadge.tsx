@@ -12,7 +12,7 @@ const BetaBadge = memo(function BetaBadge() {
   return (
     <Tooltip content="베타 버전 — 일부 기능이 변경될 수 있습니다">
       <span
-        className="text-sm font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap"
+        className="text-[15px] font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full leading-none whitespace-nowrap"
         aria-label="베타 버전"
       >
         Beta

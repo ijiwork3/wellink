@@ -108,7 +108,7 @@ export default function BottomSheet({ open, onClose, title, label = '선택', ch
         {/* 헤더 — 긴 타이틀 truncate, 닫기 버튼 shrink-0 */}
         {title && (
           <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-gray-100 flex-shrink-0">
-            <h3 id={titleId} className="text-sm font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
+            <h3 id={titleId} className="text-[15px] font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
             <button
               onClick={() => onCloseRef.current()}
               aria-label="닫기"

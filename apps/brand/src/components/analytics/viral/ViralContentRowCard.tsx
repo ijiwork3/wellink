@@ -41,7 +41,7 @@ function MetricItem({
       <span className="flex items-center gap-1 whitespace-nowrap">
         {icon}
         {display !== null ? (
-          <strong className="text-gray-900 font-semibold text-sm">{display}</strong>
+          <strong className="text-gray-900 font-semibold text-[15px]">{display}</strong>
         ) : (
           <span className="text-gray-400 text-xs font-normal">알 수 없음</span>
         )}
@@ -209,7 +209,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
         {/* @핸들 + 액션 (외부링크·상세분석·등급) — 외부링크는 우측 액션 그룹으로 이동 */}
         <div className="flex items-start justify-between gap-2 mb-1 flex-wrap">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-base @lg:text-lg font-bold text-gray-900 truncate">@{influencer.username}</span>
+            <span className="text-[15px] @lg:text-lg font-bold text-gray-900 truncate">@{influencer.username}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {/* 외부링크(Instagram 프로필) — 우측 액션 영역 */}
@@ -260,7 +260,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
         </div>
 
         {/* 캡션 */}
-        <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">
+        <p className="text-[15px] text-gray-700 line-clamp-2 leading-relaxed">
           {enrichedCaption}
         </p>
 
@@ -300,7 +300,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
          *  최종점수 = (퍼포먼스 + 모멘텀) / 2. 각 라벨에 info 아이콘 + 호버 툴팁
          *  카드 폭 충분하면 4열 한 줄, 좁으면 2×2 */}
         {showInlineScores && scoreData && (
-          <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-2 @sm:grid-cols-4 gap-x-4 gap-y-2 text-sm">
+          <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-2 @sm:grid-cols-4 gap-x-4 gap-y-2 text-[15px]">
             <div>
               <div className="flex items-center gap-1 text-xs text-gray-400">
                 최종 점수

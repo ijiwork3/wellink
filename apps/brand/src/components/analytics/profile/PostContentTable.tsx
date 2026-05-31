@@ -20,8 +20,8 @@ const TYPE_COLOR: Record<PostType, string> = {
 function MetricCell({ label, value, color = 'bg-gray-50' }: { label: string; value: string; color?: string }) {
   return (
     <div className={`${color} rounded-xl p-3`}>
-      <p className="text-sm text-gray-500 mb-1">{label}</p>
-      <p className="text-base font-bold text-gray-900">{value}</p>
+      <p className="text-[15px] text-gray-500 mb-1">{label}</p>
+      <p className="text-[15px] font-bold text-gray-900">{value}</p>
     </div>
   )
 }
@@ -37,7 +37,7 @@ function SortBtn({ k, label, sortKey, sortDir, onSort }: {
     <th scope="col"
       tabIndex={0}
       aria-sort={ariaSortValue}
-      className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50"
+      className="text-left text-[15px] font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap cursor-pointer hover:bg-gray-100/50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green/50"
       onClick={() => onSort(k)}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(k) } }}
     >
@@ -77,7 +77,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 참여율 하이라이트 */}
           <div className="bg-brand-green-bg rounded-xl p-4 flex items-center gap-4">
             <div>
-              <p className="text-sm text-gray-500 mb-0.5">참여율</p>
+              <p className="text-[15px] text-gray-500 mb-0.5">참여율</p>
               <p className="text-3xl font-bold text-brand-green-text">{post.engagementRate}%</p>
             </div>
             <div className="flex-1 h-2 bg-white/60 rounded-full overflow-hidden">
@@ -87,7 +87,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           </div>
           {/* 핵심 지표 */}
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">핵심 지표</h2>
+            <h2 className="text-[15px] font-semibold text-gray-700 mb-3">핵심 지표</h2>
             <div className="grid grid-cols-3 gap-2">
               <MetricCell label="좋아요"  value={fmtNumber(post.likes)} />
               <MetricCell label="댓글"    value={fmtNumber(post.comments)} />
@@ -100,7 +100,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 릴스 전용 */}
           {post.type === 'reels' && (
             <div>
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">릴스 인사이트</h2>
+              <h2 className="text-[15px] font-semibold text-gray-700 mb-3">릴스 인사이트</h2>
               <div className="grid grid-cols-2 gap-2">
                 <MetricCell label="조회수"       value={fmtNumber(post.views)}                                                                          color="bg-rose-50" />
                 <MetricCell label="다시 보기"    value={fmtNumber(post.replays ?? 0)}                                                                   color="bg-rose-50" />
@@ -112,7 +112,7 @@ function PostDetailModal({ post, onClose }: { post: PostItem | null; onClose: ()
           {/* 피드·카루셀 전용 */}
           {(post.type === 'feed' || post.type === 'carousel') && (
             <div>
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">피드 인사이트</h2>
+              <h2 className="text-[15px] font-semibold text-gray-700 mb-3">피드 인사이트</h2>
               <div className="grid grid-cols-2 gap-2">
                 <MetricCell label="프로필 방문" value={fmtNumber(post.profileVisits ?? 0)} color="bg-blue-50" />
                 <MetricCell label="팔로우"       value={fmtNumber(post.follows ?? 0)}       color="bg-blue-50" />
@@ -201,8 +201,8 @@ export default function PostContentTable() {
         {/* 헤더 */}
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">콘텐츠 성과</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h2 className="text-[15px] font-semibold text-gray-900">콘텐츠 성과</h2>
+            <p className="text-[15px] text-gray-500 mt-0.5">
               게시물별 상세 지표를 확인하세요
             </p>
           </div>
@@ -218,7 +218,7 @@ export default function PostContentTable() {
               value: tab.value,
               label: tab.label,
               trailing: tab.value !== 'all'
-                ? <span className="text-sm opacity-60 tabular-nums">{POST_DATA.filter(p => p.type === tab.value).length}</span>
+                ? <span className="text-[15px] opacity-60 tabular-nums">{POST_DATA.filter(p => p.type === tab.value).length}</span>
                 : undefined,
             }))}
           />
@@ -245,9 +245,9 @@ export default function PostContentTable() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
-                <th scope="col" className="text-center text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-12">No</th>
-                <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-20">썸네일</th>
-                <th scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">유형</th>
+                <th scope="col" className="text-center text-[15px] font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-12">No</th>
+                <th scope="col" className="text-left text-[15px] font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap w-20">썸네일</th>
+                <th scope="col" className="text-left text-[15px] font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap">유형</th>
                 <SortBtn k="date"       label="날짜"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="views"      label="조회수"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortBtn k="reach"      label="도달"    sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
@@ -267,7 +267,7 @@ export default function PostContentTable() {
                   onClick={() => setSelected(p)}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(p) } }}
                 >
-                  <td className="py-3 px-4 text-center text-sm text-gray-400 font-medium tabular-nums">{(safePage - 1) * PAGE_SIZE + idx + 1}</td>
+                  <td className="py-3 px-4 text-center text-[15px] text-gray-400 font-medium tabular-nums">{(safePage - 1) * PAGE_SIZE + idx + 1}</td>
                   <td className="py-3 px-4">
                     <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden ring-1 ring-gray-200/60 shadow-sm group-hover:shadow-md transition-all">
                       <img
@@ -285,17 +285,17 @@ export default function PostContentTable() {
                       {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap tabular-nums">{p.uploadDate}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">
+                  <td className="py-3 px-4 text-[15px] text-gray-500 whitespace-nowrap tabular-nums">{p.uploadDate}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">
                     {p.views > 0 ? fmtNumber(p.views) : <span className="text-gray-300">—</span>}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.reach)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.impressions)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.likes)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.comments)}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.saves)}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.reach)}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.impressions)}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.likes)}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.comments)}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap tabular-nums">{fmtNumber(p.saves)}</td>
                   <td className="py-3 px-4 whitespace-nowrap">
-                    <span className={`text-sm font-bold tabular-nums ${
+                    <span className={`text-[15px] font-bold tabular-nums ${
                       p.engagementRate >= ENGAGEMENT_THRESHOLD.high ? 'text-brand-green-text'
                       : p.engagementRate < 2.5 ? 'text-red-500'
                       : 'text-gray-700'
@@ -307,7 +307,7 @@ export default function PostContentTable() {
               ))}
               {paged.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="py-12 text-center text-sm text-gray-500">게시물이 없습니다.</td>
+                  <td colSpan={11} className="py-12 text-center text-[15px] text-gray-500">게시물이 없습니다.</td>
                 </tr>
               )}
             </tbody>

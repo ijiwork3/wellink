@@ -29,7 +29,7 @@ export default function SideNav({ onNavigate }: { onNavigate?: () => void } = {}
   const unreadCount = useUnreadCount()
 
   const navItemClass = (isActive: boolean) =>
-    `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+    `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[15px] transition-all duration-150 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
       isActive ? 'bg-brand-green-bg text-brand-green-text font-semibold' : 'text-gray-600 hover:bg-gray-100'
     }`
 

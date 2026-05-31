@@ -99,7 +99,7 @@ function Overview() {
           <span className="text-2xl font-bold tracking-tight text-gray-900">WELLINK</span>
           <span className="text-xs font-semibold bg-brand-green text-white px-2.5 py-1 rounded-full">UI</span>
         </div>
-        <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
+        <p className="text-[15px] text-gray-500 leading-relaxed max-w-xl">
           Wellink 전사 공통 UI 컴포넌트 라이브러리.<br />
           Admin / Brand / Influencer 3개 앱에서 공유하는 컴포넌트를 관리합니다.
         </p>
@@ -113,11 +113,11 @@ function Overview() {
 
       {/* 컴포넌트 목록 */}
       <div className="mb-10">
-        <h2 className="text-base font-bold text-gray-900 mb-4">Components <span className="text-gray-400 font-normal text-sm ml-1">{allComponents.length}개</span></h2>
+        <h2 className="text-[15px] font-bold text-gray-900 mb-4">Components <span className="text-gray-400 font-normal text-[15px] ml-1">{allComponents.length}개</span></h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {allComponents.map(c => (
             <div key={c.name} className="bg-white border border-gray-200 rounded-xl p-4 hover:border-brand-green/40 hover:shadow-sm transition-all">
-              <p className="text-sm font-semibold text-gray-900 font-mono">{c.name}</p>
+              <p className="text-[15px] font-semibold text-gray-900 font-mono">{c.name}</p>
               <p className="text-xs text-gray-500 mt-1">{c.desc}</p>
               <span className="inline-block mt-2 text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{c.group}</span>
             </div>
@@ -127,7 +127,7 @@ function Overview() {
 
       {/* 컬러 정책 */}
       <div className="mb-10">
-        <h2 className="text-base font-bold text-gray-900 mb-1">Status Color Policy</h2>
+        <h2 className="text-[15px] font-bold text-gray-900 mb-1">Status Color Policy</h2>
         <p className="text-xs text-gray-500 mb-4">원색 사용 금지 — bg-*-100 / text-*-600~700 톤 유지</p>
         <div className="space-y-2">
           {colorPolicy.map(c => (
@@ -141,7 +141,7 @@ function Overview() {
 
       {/* 브랜드 컬러 */}
       <div>
-        <h2 className="text-base font-bold text-gray-900 mb-4">Brand Colors</h2>
+        <h2 className="text-[15px] font-bold text-gray-900 mb-4">Brand Colors</h2>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
             <div className="w-8 h-8 rounded-lg bg-brand-green" />
@@ -188,7 +188,7 @@ function Sidebar({ active, onChange, onClose }: {
       {/* 헤더 */}
       <div className="px-5 pt-5 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-gray-900 tracking-tight">WELLINK</span>
+          <span className="text-[15px] font-bold text-gray-900 tracking-tight">WELLINK</span>
           <span className="text-[10px] font-semibold bg-brand-green text-white px-1.5 py-0.5 rounded-full">UI</span>
         </div>
         {onClose && (
@@ -212,7 +212,7 @@ function Sidebar({ active, onChange, onClose }: {
               <button
                 key={item.id}
                 onClick={() => { onChange(item.id); onClose?.() }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-0.5 transition-all duration-150 ${
+                className={`w-full text-left px-3 py-2 rounded-lg text-[15px] mb-0.5 transition-all duration-150 ${
                   active === item.id
                     ? 'bg-brand-green/10 text-brand-green-text font-semibold'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -277,7 +277,7 @@ export default function App() {
           >
             <Menu size={20} />
           </button>
-          <span className="text-sm font-bold text-gray-900">WELLINK UI</span>
+          <span className="text-[15px] font-bold text-gray-900">WELLINK UI</span>
         </header>
 
         {/* 스크롤 영역 */}

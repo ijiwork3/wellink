@@ -39,27 +39,27 @@ const InfluencerCard = memo(function InfluencerCard({ influencer, selected, onTo
       onClick={onClick}
     >
       <div className="flex items-start gap-3">
-        <div className={`w-10 h-10 rounded-full ${colorClass} flex items-center justify-center text-gray-700 font-semibold text-sm shrink-0`}>
+        <div className={`w-10 h-10 rounded-full ${colorClass} flex items-center justify-center text-gray-700 font-semibold text-[15px] shrink-0`}>
           {initials}
         </div>
         <div className="flex-1 min-w-0">
           {/* 이름 + 플랫폼 배지 — 좁은 폭에서 줄바꿈 허용. break-keep으로 한글 단어 보존. */}
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            <span className="font-semibold text-sm text-gray-900 break-keep">{influencer.name}</span>
+            <span className="font-semibold text-[15px] text-gray-900 break-keep">{influencer.name}</span>
             {influencer.platform.split('/').map(p => (
               <StatusBadge key={p} status={p.trim()} />
             ))}
           </div>
           {/* 통계 행 — gap-x-3 gap-y-1 flex-wrap. 각 값 whitespace-nowrap으로 중간 절단 방지.
            * 좁은 폭에서 줄바꿈으로 내려감. 사용자 정책: 침범보다 개행. */}
-          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-sm text-gray-500">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[15px] text-gray-500">
             <span className="whitespace-nowrap">팔로워 {fmtFollowers(influencer.followers)}</span>
             <span className={`whitespace-nowrap ${getEngagementColor(influencer.engagement)}`}>참여율 {influencer.engagement}%</span>
             <span className="whitespace-nowrap">진성 {influencer.authentic}%</span>
           </div>
           <div className="flex gap-1 mt-2 flex-wrap">
             {influencer.category.map(c => (
-              <span key={c} className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap">{c}</span>
+              <span key={c} className="text-[15px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap">{c}</span>
             ))}
           </div>
         </div>

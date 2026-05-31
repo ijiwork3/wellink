@@ -66,7 +66,7 @@ export default function Home() {
             action={
               <button
                 onClick={() => navigate('/campaigns/browse')}
-                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="px-5 py-2.5 rounded-xl text-[15px] font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 찾아보기
               </button>
@@ -100,15 +100,15 @@ export default function Home() {
                   ) : null
                 })()}
               </div>
-              <p className="text-sm font-medium opacity-80 mt-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
+              <p className="text-[15px] font-medium opacity-80 mt-0.5">안녕하세요 <span aria-hidden="true">👋</span></p>
             </div>
           </div>
           {mockProfile.instagramConnected ? (
-            <p className="text-sm opacity-80 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
+            <p className="text-[15px] opacity-80 truncate">@{mockProfile.instagram} · {fmtFollowers(mockInstaStats.followers)} 팔로워</p>
           ) : (
             <button
               onClick={() => navigate('/media')}
-              className="text-sm opacity-90 mt-1 truncate underline underline-offset-2 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-md"
+              className="text-[15px] opacity-90 mt-1 truncate underline underline-offset-2 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-md"
             >
               SNS를 연결하면 더 많은 캠페인을 추천받아요
             </button>
@@ -125,7 +125,7 @@ export default function Home() {
               aria-label={`${card.label} ${mockCampaignSummary[card.key]}건 보기`}
             >
               <p className={`text-xl font-bold tabular-nums ${card.color}`}>{mockCampaignSummary[card.key]}</p>
-              <p className="text-sm text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
+              <p className="text-[15px] text-gray-500 mt-0.5 leading-tight whitespace-nowrap">{card.label}</p>
             </button>
           ))}
         </div>
@@ -135,7 +135,7 @@ export default function Home() {
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle size={14} className="text-orange-500 shrink-0" />
-              <p className="text-sm font-semibold text-orange-700">콘텐츠 제출 마감 임박!</p>
+              <p className="text-[15px] font-semibold text-orange-700">콘텐츠 제출 마감 임박!</p>
             </div>
             <div className="space-y-1.5">
               {urgentCampaigns.map(c => (
@@ -146,8 +146,8 @@ export default function Home() {
                   aria-label={`${c.name} — ${fmtDate(c.contentDeadline!)}까지 콘텐츠 제출`}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
-                    <p className="text-sm text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
+                    <p className="text-[15px] font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
+                    <p className="text-[15px] text-orange-600 mt-0.5">{fmtDate(c.contentDeadline!)}까지</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0 ml-2" aria-hidden="true" />
                 </button>
@@ -159,20 +159,20 @@ export default function Home() {
         {/* 진행 중인 캠페인 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-            <p className="text-sm font-semibold text-gray-900">진행 중인 캠페인</p>
+            <p className="text-[15px] font-semibold text-gray-900">진행 중인 캠페인</p>
             <button
               onClick={() => navigate('/campaigns/my')}
-              className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-0.5 text-[15px] text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               전체보기 <ChevronRight size={14} />
             </button>
           </div>
           {activeCampaigns.length === 0 ? (
             <div className="py-10 text-center">
-              <p className="text-sm text-gray-500">진행 중인 캠페인이 없어요</p>
+              <p className="text-[15px] text-gray-500">진행 중인 캠페인이 없어요</p>
               <button
                 onClick={() => navigate('/campaigns/browse')}
-                className="mt-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="mt-3 px-4 py-2.5 rounded-xl text-[15px] font-medium text-white bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 찾아보기
               </button>
@@ -190,8 +190,8 @@ export default function Home() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <StatusBadge status={c.status} size="sm" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
-                    <p className="text-sm text-gray-500 mt-0.5 truncate">{c.progress}</p>
+                    <p className="text-[15px] font-medium text-gray-900 break-keep line-clamp-1">{c.name}</p>
+                    <p className="text-[15px] text-gray-500 mt-0.5 truncate">{c.progress}</p>
                   </div>
                   <ChevronRight size={14} className="text-gray-400 shrink-0" aria-hidden="true" />
                 </button>
@@ -219,15 +219,15 @@ export default function Home() {
         {mockProfile.instagramConnected ? (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-              <p className="text-sm font-semibold text-gray-900">SNS 지표</p>
+              <p className="text-[15px] font-semibold text-gray-900">SNS 지표</p>
               <button
                 onClick={() => navigate('/media')}
-                className="flex items-center gap-0.5 text-sm text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="flex items-center gap-0.5 text-[15px] text-brand-green-text font-medium rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 자세히 <ChevronRight size={14} />
               </button>
             </div>
-            {/* 360px 한 셀 가용 80px. fmtFollowers가 6자(예 123.4만) 일 때 text-base는 overflow → text-sm + px 축소 */}
+            {/* 360px 한 셀 가용 80px. fmtFollowers가 6자(예 123.4만) 일 때 text-base는 overflow → text-[15px] + px 축소 */}
             <div className="grid grid-cols-3 divide-x divide-gray-50 px-1 py-3">
               {[
                 { label: '팔로워', value: fmtFollowers(mockInstaStats.followers) },
@@ -235,14 +235,14 @@ export default function Home() {
                 { label: '게시물', value: String(mockInstaStats.posts) },
               ].map(item => (
                 <div key={item.label} className="text-center px-1.5 min-w-0">
-                  <p className={`text-sm @[480px]:text-base font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
-                  <p className="text-sm text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
+                  <p className={`text-[15px] @[480px]:text-[15px] font-bold tabular-nums truncate ${item.highlight ? 'text-brand-green-text' : 'text-gray-900'}`}>{item.value}</p>
+                  <p className="text-[15px] text-gray-500 mt-0.5 whitespace-nowrap">{item.label}</p>
                 </div>
               ))}
             </div>
             <div className="flex items-center gap-1.5 mx-4 mb-3 px-3 py-2 rounded-xl bg-gray-50">
               <TrendingUp size={14} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-              <p className="text-sm text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
+              <p className="text-[15px] text-gray-600 truncate flex-1 min-w-0">인스타그램 <span className="font-medium text-gray-800">@{mockProfile.instagram}</span> 연결됨</p>
             </div>
           </div>
         ) : (
@@ -255,8 +255,8 @@ export default function Home() {
                 <TrendingUp size={18} className="text-brand-green-text" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900">SNS를 연결해 주세요</p>
-                <p className="text-sm text-gray-500 mt-0.5 break-keep">팔로워·참여율 정보로 더 적합한 캠페인을 추천받을 수 있어요</p>
+                <p className="text-[15px] font-semibold text-gray-900">SNS를 연결해 주세요</p>
+                <p className="text-[15px] text-gray-500 mt-0.5 break-keep">팔로워·참여율 정보로 더 적합한 캠페인을 추천받을 수 있어요</p>
               </div>
               <ChevronRight size={18} className="text-gray-400 shrink-0" aria-hidden="true" />
             </div>
@@ -275,7 +275,7 @@ function QuickMenu({ icon, label, badge, onClick }: { icon: React.ReactNode; lab
       className="relative bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center gap-2 py-4 px-2 hover:border-gray-200 hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
     >
       {icon}
-      <span className="text-sm font-medium text-gray-700 text-center leading-tight break-keep">
+      <span className="text-[15px] font-medium text-gray-700 text-center leading-tight break-keep">
         {label}
       </span>
       {badge && (

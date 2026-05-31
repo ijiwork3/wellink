@@ -124,7 +124,7 @@ export default function ViralMetrics() {
             action={
               <button type="button"
                 onClick={() => navigate('/campaigns')}
-                className="text-base font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="text-[15px] font-medium text-white px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 만들기
               </button>
@@ -213,7 +213,7 @@ export default function ViralMetrics() {
                 type="button"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[15px] font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <RotateCw size={13} className={isRefreshing ? 'animate-spin' : ''} aria-hidden="true" />
                 새로고침
@@ -242,7 +242,7 @@ export default function ViralMetrics() {
       {(period === '월간' || period === '연간') && (
         <div className="flex items-start gap-2 bg-amber-100 border border-amber-200 rounded-xl px-4 py-3">
           <Info size={14} className="text-amber-700 mt-0.5 shrink-0" aria-hidden="true" />
-          <p className="text-sm text-amber-800 leading-relaxed">
+          <p className="text-[15px] text-amber-800 leading-relaxed">
             데이터는 최근 28일 기준으로 수집됩니다. <strong>월간·연간 수치는 실제와 다를 수 있습니다.</strong>
           </p>
         </div>
@@ -250,7 +250,7 @@ export default function ViralMetrics() {
 
       {/* 데이터 수집/동기화 상태 배너 — 원본 ViralMetricsSection L1636-1647 보강. qa=updating 또는 새로고침 진행 중일 때 노출. */}
       {(qa === 'updating' || isRefreshing) && (
-        <div className="flex items-center gap-2 rounded-xl border border-brand-green-border bg-brand-green-bg/60 px-4 py-3 text-sm text-brand-green-text">
+        <div className="flex items-center gap-2 rounded-xl border border-brand-green-border bg-brand-green-bg/60 px-4 py-3 text-[15px] text-brand-green-text">
           <RotateCw size={14} className="animate-spin shrink-0" aria-hidden="true" />
           <span>
             {qa === 'updating'
@@ -262,7 +262,7 @@ export default function ViralMetrics() {
 
       {/* 전날 대비 비교 배너 — 원본 ViralMetricsSection L1649-1651 보강 */}
       {!isZero && (
-        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 flex items-center gap-2 flex-wrap">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-600 flex items-center gap-2 flex-wrap">
           <span className="font-medium text-gray-900">전날 대비</span>
           <span>총 참여 {growth.engagement > 0 ? '+' : ''}{growth.engagement.toFixed(1)}%</span>
           <span className="text-gray-300">·</span>
@@ -346,7 +346,7 @@ export default function ViralMetrics() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-3">
             <Award size={14} className="text-gray-400" aria-hidden="true" />
-            <h2 className="text-base font-semibold text-gray-900">콘텐츠 등급 분포</h2>
+            <h2 className="text-[15px] font-semibold text-gray-900">콘텐츠 등급 분포</h2>
             <Tooltip content="원본 ContentScoreItem 등급(A~E)에 따라 콘텐츠를 분류합니다." multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <GradeDonut data={viralContentData} />
@@ -356,9 +356,9 @@ export default function ViralMetrics() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative">
           <div className="flex items-center gap-1.5 mb-1">
             <Image size={14} className="text-gray-400" aria-hidden="true" />
-            <h2 className="text-base font-semibold text-gray-900">멘션 구성</h2>
+            <h2 className="text-[15px] font-semibold text-gray-900">멘션 구성</h2>
           </div>
-          <p className="text-sm text-gray-500 mb-4">최근 수집된 멘션의 피드와 릴스의 비중입니다.</p>
+          <p className="text-[15px] text-gray-500 mb-4">최근 수집된 멘션의 피드와 릴스의 비중입니다.</p>
           <div className="flex flex-col @sm:flex-row items-center @sm:items-center gap-4">
             <div className="shrink-0">
               <MentionMixDonut />
@@ -377,18 +377,18 @@ export default function ViralMetrics() {
         <header className="flex items-end justify-between flex-wrap gap-2">
           <div>
             <h2 className="text-xl font-bold text-gray-900">최근 3개월 멘션 콘텐츠</h2>
-            <p className="text-sm text-gray-500 mt-1">릴스만 점수 분석하며, 목록은 피드와 릴스를 필터로 나눠 볼 수 있습니다.</p>
+            <p className="text-[15px] text-gray-500 mt-1">릴스만 점수 분석하며, 목록은 피드와 릴스를 필터로 나눠 볼 수 있습니다.</p>
           </div>
-          <p className="text-sm text-gray-500">계정 <span className="font-medium text-gray-700">@enuf.sports</span></p>
+          <p className="text-[15px] text-gray-500">계정 <span className="font-medium text-gray-700">@enuf.sports</span></p>
         </header>
 
         {/* 캡션 워드클라우드 — 원본 매칭, 단순 워드클라우드 (sentiment 토글 제거) */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 relative flex flex-col">
           <div className="flex items-center gap-1.5 mb-1">
             <Megaphone size={14} className="text-gray-400" aria-hidden="true" />
-            <h2 className="text-base font-semibold text-gray-900">캡션 워드클라우드</h2>
+            <h2 className="text-[15px] font-semibold text-gray-900">캡션 워드클라우드</h2>
           </div>
-          <p className="text-sm text-gray-500 mb-4">캡션 데이터 {DASHBOARD_VIRAL_KEYWORDS.length}개 · 큰 단어일수록 많이 언급</p>
+          <p className="text-[15px] text-gray-500 mb-4">캡션 데이터 {DASHBOARD_VIRAL_KEYWORDS.length}개 · 큰 단어일수록 많이 언급</p>
           <div className="flex-1 flex items-center justify-center min-h-[260px]">
           <WordCloud
             entries={DASHBOARD_VIRAL_KEYWORDS as WordCloudEntry[]}
@@ -408,19 +408,19 @@ export default function ViralMetrics() {
         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 className="text-lg font-bold text-gray-900">콘텐츠별 바이럴 성과</h2>
-            <p className="text-sm text-gray-500 mt-1">총 {sortedContent.length}건 · {getDateLabel(period, dateOffset)}</p>
+            <p className="text-[15px] text-gray-500 mt-1">총 {sortedContent.length}건 · {getDateLabel(period, dateOffset)}</p>
           </div>
           {/* 우측 — 콘텐츠 타입(pill) + 정렬 기준(dropdown) — 원본 ViralMetricsSection 매칭 */}
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠</span>
+              <span className="text-[15px] text-gray-500 whitespace-nowrap">콘텐츠</span>
               <div className="inline-flex rounded-lg border border-gray-200 bg-white p-0.5">
                 {(['전체', '피드', '릴스'] as ContentFilter[]).map(f => (
                   <button
                     key={f}
                     type="button"
                     onClick={() => { setContentFilter(f); setContentPage(1) }}
-                    className={`text-sm px-3 py-1 rounded-md font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                    className={`text-[15px] px-3 py-1 rounded-md font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       contentFilter === f ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'
                     }`}
                     aria-pressed={contentFilter === f}
@@ -431,7 +431,7 @@ export default function ViralMetrics() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500 whitespace-nowrap">정렬 기준</span>
+              <span className="text-[15px] text-gray-500 whitespace-nowrap">정렬 기준</span>
               <CustomSelect
                 value={contentSort}
                 onChange={v => { setContentSort(v as ContentSort); setContentPage(1) }}
@@ -442,7 +442,7 @@ export default function ViralMetrics() {
                   { label: '댓글 많은순', value: 'comments' },
                   { label: '참여 많은순', value: 'engagement' },
                 ]}
-                className="text-sm min-w-[130px]"
+                className="text-[15px] min-w-[130px]"
               />
             </div>
           </div>
@@ -475,7 +475,7 @@ export default function ViralMetrics() {
                 key={chip.value}
                 type="button"
                 onClick={() => { setGradeFilter(chip.value); setContentPage(1) }}
-                className={`text-sm px-3 py-1.5 rounded-full font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                className={`text-[15px] px-3 py-1.5 rounded-full font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   gradeFilter === chip.value
                     ? 'bg-gray-900 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -491,7 +491,7 @@ export default function ViralMetrics() {
         </div>
         {/* 글로벌 안내 — 피드 조회수 표시 정책 (영상 매칭) */}
         <div className="px-5 py-2.5 border-b border-gray-100 bg-gray-50/60">
-          <p className="text-sm text-gray-500 flex items-center gap-1.5">
+          <p className="text-[15px] text-gray-500 flex items-center gap-1.5">
             <Info size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
             피드 조회수는 확인할 수 없어 <strong className="font-semibold text-gray-600">'알 수 없음'</strong>으로 표시됩니다.
           </p>
@@ -500,7 +500,7 @@ export default function ViralMetrics() {
         {/* ── 콘텐츠 표시 — 카드 그리드 (테이블 토글 제거됨) ── */}
         <div className="p-3 @sm:p-4 bg-gray-50/30">
             {paginated.length === 0 ? (
-              <div className="py-12 text-center text-sm text-gray-500">조건에 맞는 콘텐츠가 없습니다.</div>
+              <div className="py-12 text-center text-[15px] text-gray-500">조건에 맞는 콘텐츠가 없습니다.</div>
             ) : (
               // 항상 1열 — 2열로 가면 카드가 좁아져 가로 layout이 깨짐. 카드 자체가 wide horizontal이라 1열로 충분히 나열.
               <div className="grid grid-cols-1 gap-3">
@@ -581,7 +581,7 @@ export default function ViralMetrics() {
                   { h: '바이럴 점수', w: 'min-w-[96px]' },
                   { h: '동작',       w: 'min-w-[88px]' },
                 ] as const).map(({ h, w }) => (
-                  <th key={h} scope="col" className={`text-left text-sm font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap ${w}`}>{h}</th>
+                  <th key={h} scope="col" className={`text-left text-[15px] font-medium text-gray-500 py-2.5 px-4 whitespace-nowrap ${w}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -596,39 +596,39 @@ export default function ViralMetrics() {
                       <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                         <Image size={14} className="text-gray-400" aria-hidden="true" />
                       </div>
-                      <span className="text-sm text-gray-900 whitespace-nowrap">{item.title}</span>
+                      <span className="text-[15px] text-gray-900 whitespace-nowrap">{item.title}</span>
                     </div>
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     {CAMPAIGN_MATCH_MAP[item.id] ? (
                       <Tooltip content={`${CAMPAIGN_MATCH_MAP[item.id].uploadPeriodLabel}`}>
-                        <span className="inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 text-[15px] font-medium px-2 py-1 rounded-full bg-brand-green-bg text-brand-green-text whitespace-nowrap">
                           <Megaphone size={12} aria-hidden="true" />
                           {CAMPAIGN_MATCH_MAP[item.id].campaignName}
                         </span>
                       </Tooltip>
                     ) : (
-                      <span className="text-sm text-gray-300">—</span>
+                      <span className="text-[15px] text-gray-300">—</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{item.influencer}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-500 whitespace-nowrap">{item.influencer}</td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     <PlatformBadge platform={item.platform} />
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center text-sm font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
+                    <span className={`inline-flex items-center text-[15px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${CONTENT_TYPE_STYLE[item.type as keyof typeof CONTENT_TYPE_STYLE] ?? 'bg-gray-100 text-gray-700'}`}>{item.type}</span>
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     <GradePill grade={item.grade} />
                   </td>
-                  <td className="py-3 px-4 text-base text-gray-700 font-medium whitespace-nowrap">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
-                  <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
-                  <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
-                  <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
-                  <td className="py-3 px-4 text-base text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 font-medium whitespace-nowrap">{item.reach > 0 ? fmtNumber(item.reach) : '—'}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap">{item.likes > 0 ? fmtNumber(item.likes) : '—'}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap">{item.comments > 0 ? fmtNumber(item.comments) : '—'}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap">{item.saves > 0 ? fmtNumber(item.saves) : '—'}</td>
+                  <td className="py-3 px-4 text-[15px] text-gray-700 whitespace-nowrap">{item.shares > 0 ? fmtNumber(item.shares) : '—'}</td>
                   <td className="py-3 px-4 whitespace-nowrap">
                     {item.grade === 'processing' ? (
-                      <span className="text-sm text-gray-500">산정 중</span>
+                      <span className="text-[15px] text-gray-500">산정 중</span>
                     ) : (
                       <div className="flex items-center gap-2 min-w-[110px]">
                         <div
@@ -648,7 +648,7 @@ export default function ViralMetrics() {
                             }}
                           />
                         </div>
-                        <span className={`text-base font-bold ${item.viralScore >= 80 ? 'text-brand-green-text' : item.viralScore >= 50 ? 'text-amber-700' : 'text-gray-400'}`}>
+                        <span className={`text-[15px] font-bold ${item.viralScore >= 80 ? 'text-brand-green-text' : item.viralScore >= 50 ? 'text-amber-700' : 'text-gray-400'}`}>
                           {item.viralScore}
                         </span>
                       </div>
@@ -667,7 +667,7 @@ export default function ViralMetrics() {
               ))}
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={13} className="py-12 text-center text-sm text-gray-500">조건에 맞는 콘텐츠가 없습니다.</td>
+                  <td colSpan={13} className="py-12 text-center text-[15px] text-gray-500">조건에 맞는 콘텐츠가 없습니다.</td>
                 </tr>
               )}
             </tbody>
@@ -739,7 +739,7 @@ function MentionMixDonut() {
           <span className={`text-2xl font-bold tabular-nums transition-colors ${
             hover === 'reels' ? 'text-brand-green-text' : hover === 'feed' ? 'text-brand-fuchsia-text' : 'text-gray-900'
           }`}>{center.value}</span>
-          <span className="text-sm text-gray-500 mt-0.5">{center.label}</span>
+          <span className="text-[15px] text-gray-500 mt-0.5">{center.label}</span>
         </div>
       </div>
       {/* 범례 (작은 색상 chip) — dl 리스트는 사이드 MentionStatCard로 이전 (원본 매칭). 색상 표기는 유지. */}

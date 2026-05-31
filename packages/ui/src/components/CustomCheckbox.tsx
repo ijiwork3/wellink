@@ -25,7 +25,7 @@ const CustomCheckbox = memo(function CustomCheckbox({
   checked,
   onChange,
   label,
-  labelClassName = 'text-sm',
+  labelClassName = 'text-[15px]',
   disabled = false,
   className = '',
   ariaLabel,

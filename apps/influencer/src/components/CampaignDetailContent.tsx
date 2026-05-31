@@ -158,7 +158,7 @@ export default function CampaignDetailContent({
         {/* 브랜드 + 상태 */}
         <div className="pb-4">
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className="text-sm font-semibold text-gray-500">{campaign.brand}</span>
+            <span className="text-[15px] font-semibold text-gray-500">{campaign.brand}</span>
             <StatusBadge status={campaign.status} />
             <PlatformBadge platform={campaign.channel} />
           </div>
@@ -167,18 +167,18 @@ export default function CampaignDetailContent({
           {/* 모집 현황 */}
           <div className="mb-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
+              <span className="text-[15px] font-semibold text-gray-700 flex items-center gap-1 whitespace-nowrap">
                 <Users size={13} className="text-brand-green" />모집 현황
               </span>
-              <span className="text-sm text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
+              <span className="text-[15px] text-gray-500 tabular-nums whitespace-nowrap">{campaign.applied}/{campaign.headcount}명</span>
             </div>
             <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div className={`h-full rounded-full ${pct >= PROGRESS_THRESHOLD.warning ? 'bg-orange-400' : 'bg-brand-green'}`} style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-sm text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
+            <p className="text-[15px] text-gray-500 mt-1 tabular-nums">{pct}% 모집</p>
           </div>
 
-          <div className="text-sm text-gray-600 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
+          <div className="text-[15px] text-gray-600 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:text-gray-900 prose-strong:text-gray-900">
             <Markdown>{campaign.description}</Markdown>
           </div>
         </div>
@@ -186,16 +186,16 @@ export default function CampaignDetailContent({
         {/* 신청 버튼 */}
         <div className={sectionCls}>
           {isClosed ? (
-            <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
+            <div className="w-full py-3 rounded-xl text-[15px] font-medium text-center border border-gray-200 text-gray-400 bg-gray-50">
               마감된 캠페인이에요
             </div>
           ) : applied ? (
-            <div className="w-full py-3 rounded-xl text-sm font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
+            <div className="w-full py-3 rounded-xl text-[15px] font-medium text-center border border-brand-green text-brand-green-text bg-brand-green-bg flex items-center justify-center gap-2">
               <CheckCircle2 size={16} />신청완료
             </div>
           ) : (
             <button onClick={handleApply}
-              className="w-full py-3 rounded-xl text-sm font-medium text-white bg-brand-green transition-all hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+              className="w-full py-3 rounded-xl text-[15px] font-medium text-white bg-brand-green transition-all hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               신청하기
             </button>
           )}
@@ -214,7 +214,7 @@ export default function CampaignDetailContent({
 
   const ApplyButton = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
     const py = size === 'lg' ? 'py-4' : 'py-3.5'
-    const text = size === 'lg' ? 'text-lg font-bold' : 'text-base font-semibold'
+    const text = size === 'lg' ? 'text-lg font-bold' : 'text-[15px] font-semibold'
     if (isClosed) return (
       <div className={`w-full ${py} rounded-xl ${text} text-center bg-gray-100 text-gray-400`}>마감된 캠페인이에요</div>
     )
@@ -231,7 +231,7 @@ export default function CampaignDetailContent({
         <button
           type="button"
           onClick={() => setShowProModal(true)}
-          className={`w-full py-2.5 rounded-xl text-sm font-semibold text-brand-green-text bg-brand-green-bg border border-brand-green-border hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
+          className={`w-full py-2.5 rounded-xl text-[15px] font-semibold text-brand-green-text bg-brand-green-bg border border-brand-green-border hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50`}
         >
           프로페셔널 계정 연결하기
         </button>
@@ -260,7 +260,7 @@ export default function CampaignDetailContent({
                   <div className="mb-6">
                     <button
                       onClick={onBack}
-                      className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-md"
+                      className="inline-flex items-center gap-1 text-[15px] text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-md"
                     >
                       <ArrowLeft size={16} aria-hidden="true" />
                       목록으로 돌아가기
@@ -273,13 +273,13 @@ export default function CampaignDetailContent({
                   <div className="flex items-center gap-2 mb-4 flex-wrap">
                     <StatusBadge status={campaign.status} />
                     {campaign.category && (
-                      <span className="text-gray-500 text-sm whitespace-nowrap">
+                      <span className="text-gray-500 text-[15px] whitespace-nowrap">
                         {campaign.category}
                         {campaign.type && ` · ${campaign.type === 'delivery' ? '배송형' : '방문형'}`}
                       </span>
                     )}
                     <div className="w-[1px] h-3 bg-gray-300 mx-1" />
-                    <span className="text-gray-600 text-sm font-bold whitespace-nowrap">{campaign.brand}</span>
+                    <span className="text-gray-600 text-[15px] font-bold whitespace-nowrap">{campaign.brand}</span>
                   </div>
                   <h1 className="text-2xl @md:text-3xl font-bold text-gray-900 mb-3 leading-tight break-keep">
                     {campaign.name}
@@ -295,7 +295,7 @@ export default function CampaignDetailContent({
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-100 text-sky-600 border border-sky-200 whitespace-nowrap">콘텐츠 수익</span>
                     )}
                   </div>
-                  <p className="text-gray-500 text-sm @md:text-base break-keep">
+                  <p className="text-gray-500 text-[15px] @md:text-[15px] break-keep">
                     {campaign.name} 관련 캠페인입니다.
                   </p>
                 </div>
@@ -322,7 +322,7 @@ export default function CampaignDetailContent({
                         캠페인 설명
                       </h3>
                       <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white p-6">
-                        <div className="text-base text-gray-600 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                        <div className="text-[15px] text-gray-600 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
                           <Markdown>{campaign.description}</Markdown>
                         </div>
                       </div>
@@ -339,24 +339,24 @@ export default function CampaignDetailContent({
                       <div className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
                         <div className="p-6 space-y-1.5">
                           {(campaign.rewardAmount ?? 0) > 0 && (
-                            <p className="text-base text-gray-700">제품 협찬 {(campaign.rewardAmount!).toLocaleString('ko-KR')}원 상당</p>
+                            <p className="text-[15px] text-gray-700">제품 협찬 {(campaign.rewardAmount!).toLocaleString('ko-KR')}원 상당</p>
                           )}
                           {(campaign.activityFee ?? 0) > 0 && (
-                            <p className="text-base text-gray-700">활동비 {(campaign.activityFee!).toLocaleString('ko-KR')}원</p>
+                            <p className="text-[15px] text-gray-700">활동비 {(campaign.activityFee!).toLocaleString('ko-KR')}원</p>
                           )}
                           {(campaign.downloadPrice ?? 0) > 0 && (
-                            <p className="text-base text-gray-700">콘텐츠 수익 건당 {(campaign.downloadPrice!).toLocaleString('ko-KR')}원</p>
+                            <p className="text-[15px] text-gray-700">콘텐츠 수익 건당 {(campaign.downloadPrice!).toLocaleString('ko-KR')}원</p>
                           )}
                           {campaign.productDetail && (campaign.rewardAmount ?? 0) + (campaign.activityFee ?? 0) + (campaign.downloadPrice ?? 0) > 0 && (
                             <div className="pt-3 mt-3 border-t border-gray-200" />
                           )}
                           {campaign.productDetail && (
-                            <p className="text-base text-gray-700 whitespace-pre-line break-keep leading-relaxed">
+                            <p className="text-[15px] text-gray-700 whitespace-pre-line break-keep leading-relaxed">
                               {campaign.productDetail}
                             </p>
                           )}
                         </div>
-                        <div className="px-6 pb-6 space-y-1.5 text-sm text-gray-500">
+                        <div className="px-6 pb-6 space-y-1.5 text-[15px] text-gray-500">
                           <p>※ 제품은 받자마자 보관방법을 확인하여 설명서대로 보관해주세요.</p>
                           <p>※ 제품의 자세한 정보는 반드시 상세페이지에서 꼼꼼히 숙지 부탁드립니다.</p>
                         </div>
@@ -365,21 +365,21 @@ export default function CampaignDetailContent({
                       {/* 콘텐츠 2차 활용 고지 — 있을 때만 표시 */}
                       {campaign.secondaryUse?.enabled && (
                         <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
-                          <p className="text-sm font-semibold text-amber-800 mb-1.5 flex items-center gap-1.5">
+                          <p className="text-[15px] font-semibold text-amber-800 mb-1.5 flex items-center gap-1.5">
                             <span aria-hidden="true">📢</span> 콘텐츠 2차 활용 안내
                           </p>
-                          <p className="text-sm text-amber-700 leading-relaxed break-keep">
+                          <p className="text-[15px] text-amber-700 leading-relaxed break-keep">
                             이 캠페인의 콘텐츠는 광고주가 마케팅 목적으로 재활용할 수 있습니다. 지원 전 반드시 확인하세요.
                           </p>
                           <ul className="mt-2 space-y-1">
                             {(campaign.secondaryUse.channels?.length ?? 0) > 0 && (
-                              <li className="text-sm text-amber-700">
+                              <li className="text-[15px] text-amber-700">
                                 <span className="font-medium">활용 채널:</span>{' '}
                                 {campaign.secondaryUse.channels!.join(', ')}
                               </li>
                             )}
                             {(campaign.secondaryUse.durationMonths ?? 0) > 0 && (
-                              <li className="text-sm text-amber-700">
+                              <li className="text-[15px] text-amber-700">
                                 <span className="font-medium">활용 기간:</span>{' '}
                                 콘텐츠 게재 후 {campaign.secondaryUse.durationMonths}개월
                               </li>
@@ -405,8 +405,8 @@ export default function CampaignDetailContent({
                           <div className="w-10 h-10 bg-brand-green-bg text-brand-green rounded-full flex items-center justify-center mx-auto mb-2">
                             <Search size={18} aria-hidden="true" />
                           </div>
-                          <div className="text-sm text-gray-500 mb-1">키워드</div>
-                          <div className="font-bold text-sm text-gray-900 break-keep">
+                          <div className="text-[15px] text-gray-500 mb-1">키워드</div>
+                          <div className="font-bold text-[15px] text-gray-900 break-keep">
                             {(campaign.keywords?.length ?? 0) > 0 ? '필수 포함' : '없음'}
                           </div>
                         </div>
@@ -414,8 +414,8 @@ export default function CampaignDetailContent({
                           <div className="w-10 h-10 bg-brand-green-bg text-brand-green rounded-full flex items-center justify-center mx-auto mb-2">
                             <Type size={18} aria-hidden="true" />
                           </div>
-                          <div className="text-sm text-gray-500 mb-1">게시 유형</div>
-                          <div className="font-bold text-sm text-gray-900 break-keep">
+                          <div className="text-[15px] text-gray-500 mb-1">게시 유형</div>
+                          <div className="font-bold text-[15px] text-gray-900 break-keep">
                             {campaign.postType?.trim() || '없음'}
                           </div>
                         </div>
@@ -423,8 +423,8 @@ export default function CampaignDetailContent({
                           <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2">
                             <Star size={18} aria-hidden="true" />
                           </div>
-                          <div className="text-sm text-gray-500 mb-1">우대사항</div>
-                          <div className="font-bold text-sm text-gray-900 break-keep">
+                          <div className="text-[15px] text-gray-500 mb-1">우대사항</div>
+                          <div className="font-bold text-[15px] text-gray-900 break-keep">
                             {campaign.priorityType?.trim() || '없음'}
                           </div>
                         </div>
@@ -438,7 +438,7 @@ export default function CampaignDetailContent({
                             필수 가이드
                           </h4>
                           <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white p-6">
-                            <div className="text-base text-gray-700 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                            <div className="text-[15px] text-gray-700 break-keep leading-relaxed prose prose-base max-w-none prose-p:my-1 prose-li:my-0.5 prose-ul:my-1.5 prose-headings:text-gray-900 prose-strong:text-gray-900">
                               <Markdown>{campaign.detailMissionDescription}</Markdown>
                             </div>
                           </div>
@@ -458,7 +458,7 @@ export default function CampaignDetailContent({
                         <div className="flex flex-wrap gap-2 mb-4">
                           {campaign.keywords!.map((k) => (
                             <span key={k}
-                              className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-base font-medium text-gray-700 shadow-sm whitespace-nowrap">
+                              className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-[15px] font-medium text-gray-700 shadow-sm whitespace-nowrap">
                               #{k}
                             </span>
                           ))}
@@ -495,11 +495,11 @@ export default function CampaignDetailContent({
                           <div key={gi} className="rounded-xl border border-gray-200 overflow-hidden">
                             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
                               {g.icon}
-                              <span className="text-sm font-semibold text-gray-600">{g.label}</span>
+                              <span className="text-[15px] font-semibold text-gray-600">{g.label}</span>
                             </div>
                             <ul className="px-4 py-3 space-y-2">
                               {g.items.map((cond, i) => (
-                                <li key={i} className="flex items-start gap-2 text-sm text-gray-700 break-keep">
+                                <li key={i} className="flex items-start gap-2 text-[15px] text-gray-700 break-keep">
                                   <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-green flex-shrink-0" />
                                   <span className="min-w-0 flex-1">{cond}</span>
                                 </li>
@@ -527,10 +527,10 @@ export default function CampaignDetailContent({
                             : <Footprints size={18} aria-hidden="true" />}
                         </div>
                         <div>
-                          <p className={`font-bold text-base ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
+                          <p className={`font-bold text-[15px] ${campaign.type === 'delivery' ? 'text-gray-900' : 'text-blue-700'}`}>
                             {campaign.type === 'delivery' ? '배송형' : '방문형'}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-[15px] text-gray-500">
                             {campaign.type === 'delivery' ? '제품을 배송받아 콘텐츠를 제작해요' : '매장/장소를 방문하여 콘텐츠를 제작해요'}
                           </p>
                         </div>
@@ -550,9 +550,9 @@ export default function CampaignDetailContent({
                     <div className="space-y-4 pb-5 border-b border-gray-100">
                       {/* 모집 기간 + D-day (원본 CampaignSidebar participateStartDate~participateEndDate) */}
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">모집 기간</span>
+                        <span className="text-[15px] text-gray-500 whitespace-nowrap">모집 기간</span>
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums text-right">
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums text-right">
                             {campaign.applyStart
                               ? formatDateRangeShort(campaign.applyStart, campaign.applyEnd)
                               : formatDateShort(campaign.applyEnd)}
@@ -567,15 +567,15 @@ export default function CampaignDetailContent({
 
                       {campaign.announceDate && (
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm text-gray-500 whitespace-nowrap">인플루언서 발표</span>
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums">{formatDateFull(campaign.announceDate)}</span>
+                          <span className="text-[15px] text-gray-500 whitespace-nowrap">인플루언서 발표</span>
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums">{formatDateFull(campaign.announceDate)}</span>
                         </div>
                       )}
 
                       {/* 업로드 기간 (원본 CampaignSidebar startDate~endDate) */}
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">업로드 기간</span>
-                        <span className="font-semibold text-gray-900 text-sm tabular-nums text-right">
+                        <span className="text-[15px] text-gray-500 whitespace-nowrap">업로드 기간</span>
+                        <span className="font-semibold text-gray-900 text-[15px] tabular-nums text-right">
                           {campaign.postStart
                             ? formatDateRangeShort(campaign.postStart, campaign.postEnd)
                             : formatDateShort(campaign.postEnd)}
@@ -585,17 +585,17 @@ export default function CampaignDetailContent({
 
                     <div className="pt-5 space-y-4">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">모집 인원</span>
+                        <span className="text-[15px] text-gray-500 whitespace-nowrap">모집 인원</span>
                         <div className="flex items-baseline gap-0.5">
-                          <span className="font-semibold text-gray-900 text-base tabular-nums">{campaign.headcount}</span>
-                          <span className="text-sm text-gray-500">명</span>
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums">{campaign.headcount}</span>
+                          <span className="text-[15px] text-gray-500">명</span>
                         </div>
                       </div>
 
                       {(campaign.rewardAmount ?? 0) > 0 && (
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm text-gray-500 whitespace-nowrap">제품 협찬</span>
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                          <span className="text-[15px] text-gray-500 whitespace-nowrap">제품 협찬</span>
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums">
                             {(campaign.rewardAmount ?? 0).toLocaleString('ko-KR')}원 상당
                           </span>
                         </div>
@@ -603,8 +603,8 @@ export default function CampaignDetailContent({
 
                       {(campaign.activityFee ?? 0) > 0 && (
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm text-gray-500 whitespace-nowrap">활동비</span>
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                          <span className="text-[15px] text-gray-500 whitespace-nowrap">활동비</span>
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums">
                             {(campaign.activityFee ?? 0).toLocaleString('ko-KR')}원
                           </span>
                         </div>
@@ -612,8 +612,8 @@ export default function CampaignDetailContent({
 
                       {(campaign.downloadPrice ?? 0) > 0 && (
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm text-gray-500 whitespace-nowrap">콘텐츠 수익</span>
-                          <span className="font-semibold text-gray-900 text-sm tabular-nums">
+                          <span className="text-[15px] text-gray-500 whitespace-nowrap">콘텐츠 수익</span>
+                          <span className="font-semibold text-gray-900 text-[15px] tabular-nums">
                             건당 {(campaign.downloadPrice ?? 0).toLocaleString('ko-KR')}원
                           </span>
                         </div>
@@ -629,7 +629,7 @@ export default function CampaignDetailContent({
                           onClick={handleLike}
                           aria-pressed={liked}
                           aria-label={liked ? '찜 취소' : '찜하기'}
-                          className={`flex-1 py-3 border rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          className={`flex-1 py-3 border rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${liked ? 'border-red-300 text-red-500 bg-red-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                         >
                           <Heart size={16} aria-hidden="true" fill={liked ? SEMANTIC_COLORS.heart : 'none'} color={liked ? SEMANTIC_COLORS.heart : SEMANTIC_COLORS.heartInactive} />
                           {liked ? '찜완료' : '찜하기'}
@@ -637,7 +637,7 @@ export default function CampaignDetailContent({
                         <button
                           onClick={handleShare}
                           aria-label="공유하기"
-                          className="flex-1 py-3 border border-gray-200 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                          className="flex-1 py-3 border border-gray-200 rounded-xl font-bold text-[15px] text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                         >
                           <Share2 size={16} aria-hidden="true" />
                           공유하기
@@ -677,7 +677,7 @@ export default function CampaignDetailContent({
             <svg viewBox="0 0 16 16" width="48" height="48" fill="#0866FF" aria-label="Meta" role="img">
               <path fillRule="evenodd" d="M8.217 5.243C9.145 3.988 10.171 3 11.483 3 13.96 3 16 6.153 16.001 9.907c0 2.29-.986 3.725-2.757 3.725-1.543 0-2.395-.866-3.924-3.424l-.667-1.123-.118-.197a55 55 0 0 0-.53-.877l-1.178 2.08c-1.673 2.925-2.615 3.541-3.923 3.541C1.086 13.632 0 12.217 0 9.973 0 6.388 1.995 3 4.598 3q.477-.001.924.122c.31.086.611.22.913.407.577.359 1.154.915 1.782 1.714m1.516 2.224q-.378-.615-.727-1.133L9 6.326c.845-1.305 1.543-1.954 2.372-1.954 1.723 0 3.102 2.537 3.102 5.653 0 1.188-.39 1.877-1.195 1.877-.773 0-1.142-.51-2.61-2.87zM4.846 4.756c.725.1 1.385.634 2.34 2.001A212 212 0 0 0 5.551 9.3c-1.357 2.126-1.826 2.603-2.581 2.603-.777 0-1.24-.682-1.24-1.9 0-2.602 1.298-5.264 2.846-5.264q.137 0 .27.018"/>
             </svg>
-            <p className="text-base font-bold text-gray-900">Meta로 계속하기</p>
+            <p className="text-[15px] font-bold text-gray-900">Meta로 계속하기</p>
             <p className="text-xs text-gray-500 text-center break-keep">
               웰링크가 회원님의 Instagram 비즈니스 계정에 접근하도록 허용합니다
             </p>
@@ -693,7 +693,7 @@ export default function CampaignDetailContent({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setShowProModal(false)}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
+              className="w-full py-2.5 rounded-xl text-[15px] font-semibold text-white bg-[#0866FF] hover:bg-[#0757E0] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0866FF]/50"
             >
               계속
             </a>

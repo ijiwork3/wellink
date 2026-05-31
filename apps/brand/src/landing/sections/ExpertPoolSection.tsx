@@ -10,7 +10,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="order-2 lg:order-1">
-            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+            <span className="mb-4 block text-[15px] font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               02. Verified Experts
             </span>
             <h2 className="mb-6 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
@@ -42,18 +42,18 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                     />
                   </div>
                 ))}
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-lime-200 text-sm font-bold text-[var(--color-landing-dark)]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-lime-200 text-[15px] font-bold text-[var(--color-landing-dark)]">
                   +50k
                 </div>
               </div>
               <div>
                 <div className="font-bold text-slate-900">실시간 활성 전문가</div>
-                <div className="text-base text-slate-500">매칭 대기 중인 인플루언서</div>
+                <div className="text-[15px] text-slate-500">매칭 대기 중인 인플루언서</div>
               </div>
             </div>
 
             <div className="inline-block rounded-xl bg-[var(--color-landing-dark)] px-6 py-4 text-white">
-              <div className="text-sm font-bold uppercase tracking-wider opacity-60">
+              <div className="text-[15px] font-bold uppercase tracking-wider opacity-60">
                 Conversion Rate
               </div>
               <div className="text-3xl font-black text-[var(--color-landing-lime)]">CVR 12.8%</div>
@@ -78,8 +78,8 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                     />
                   </div>
                   <div>
-                    <div className="text-sm font-bold">@WELLINK_STAR</div>
-                    <div className="text-sm text-slate-400">Seoul, Korea</div>
+                    <div className="text-[15px] font-bold">@WELLINK_STAR</div>
+                    <div className="text-[15px] text-slate-400">Seoul, Korea</div>
                   </div>
                 </div>
                 <div className="aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
@@ -120,9 +120,9 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
             >
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-lime-400" />
-                <div className="text-sm font-bold uppercase text-slate-400">Current Streak</div>
+                <div className="text-[15px] font-bold uppercase text-slate-400">Current Streak</div>
               </div>
-              <div className="text-base font-black text-slate-900">오운완 1,249일차</div>
+              <div className="text-[15px] font-black text-slate-900">오운완 1,249일차</div>
             </motion.div>
             </div>
           </div>

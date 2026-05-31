@@ -48,7 +48,7 @@ const PlatformBadge = memo(function PlatformBadge({ platform, variant = 'soft', 
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium whitespace-nowrap ${tone} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[15px] font-medium whitespace-nowrap ${tone} ${className}`}
       style={inlineStyle}
     >
       {style.label}

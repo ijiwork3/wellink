@@ -57,9 +57,9 @@ const INACTIVE_BY_VARIANT: Record<TabVariant, string> = {
 }
 
 const BASE_BY_VARIANT: Record<TabVariant, string> = {
-  underline: 'px-3 py-3 text-base whitespace-nowrap transition-colors',
-  pill:      'flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-medium whitespace-nowrap transition-colors',
-  soft:      'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+  underline: 'px-3 py-3 text-[15px] whitespace-nowrap transition-colors',
+  pill:      'flex items-center gap-2 px-5 py-2.5 rounded-xl text-[15px] font-medium whitespace-nowrap transition-colors',
+  soft:      'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[15px] font-medium whitespace-nowrap transition-colors',
 }
 
 const FOCUS = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-offset-1'

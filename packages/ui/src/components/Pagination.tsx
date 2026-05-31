@@ -37,7 +37,7 @@ export default function Pagination({ total, page, pageSize, onChange, showSummar
   return (
     <div className={`flex items-center justify-between gap-2 px-3 @sm:px-5 py-3 border-t border-gray-100 flex-wrap ${className}`}>
       {showSummary ? (
-        <span className="text-sm text-gray-500 shrink-0">
+        <span className="text-[15px] text-gray-500 shrink-0">
           총 {total.toLocaleString()}개 · {safePage} / {totalPages}
         </span>
       ) : <span />}
@@ -45,17 +45,17 @@ export default function Pagination({ total, page, pageSize, onChange, showSummar
         <button
           onClick={() => onChange(Math.max(1, safePage - 1))}
           disabled={safePage === 1}
-          className="text-sm px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-[15px] px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
         >이전</button>
         {pages.map((p, i) =>
           p === '…' ? (
-            <span key={`gap-${i}`} className="text-sm text-gray-400 px-1">…</span>
+            <span key={`gap-${i}`} className="text-[15px] text-gray-400 px-1">…</span>
           ) : (
             <button
               key={p}
               onClick={() => onChange(p)}
               aria-current={safePage === p ? 'page' : undefined}
-              className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+              className={`w-8 h-8 rounded-lg text-[15px] font-medium transition-colors ${
                 safePage === p
                   ? 'bg-gray-100 text-gray-900'
                   : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -66,7 +66,7 @@ export default function Pagination({ total, page, pageSize, onChange, showSummar
         <button
           onClick={() => onChange(Math.min(totalPages, safePage + 1))}
           disabled={safePage === totalPages}
-          className="text-sm px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-[15px] px-2.5 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
         >다음</button>
       </div>
     </div>

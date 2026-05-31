@@ -36,7 +36,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? undefined : { duration: 0.6 }}
         >
-          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-sm font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
+          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-[15px] font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
             Fitness & Wellness Specialized
           </span>
           <h1 className="mb-8 text-5xl font-black leading-tight text-white md:text-7xl">

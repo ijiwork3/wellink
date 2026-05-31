@@ -86,7 +86,7 @@ export default function StatusBadgeStory() {
 
       {/* 코드 */}
       <div className="mt-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Usage</h3>
+        <h3 className="text-[15px] font-semibold text-gray-700 mb-3">Usage</h3>
         <CodeBlock code={`import { StatusBadge } from '@wellink/ui'
 
 // 기본

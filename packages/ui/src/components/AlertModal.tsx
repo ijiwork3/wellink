@@ -78,7 +78,7 @@ export default function AlertModal({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {cancelLabel}
             </button>
@@ -88,7 +88,7 @@ export default function AlertModal({
               type="button"
               onClick={onConfirm}
               disabled={confirmDisabled || loading}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${styles.confirm}`}
+              className={`flex-1 py-2.5 rounded-xl text-[15px] font-medium transition-colors disabled:opacity-50 ${styles.confirm}`}
             >
               {loading && confirmLoadingLabel ? confirmLoadingLabel : confirmLabel}
             </button>
@@ -99,7 +99,7 @@ export default function AlertModal({
       <div className="space-y-3">
         <div className="flex items-start gap-2">
           {styles.icon && <span className="shrink-0 mt-0.5">{styles.icon}</span>}
-          {description && <p className="text-sm text-gray-600">{description}</p>}
+          {description && <p className="text-[15px] text-gray-600">{description}</p>}
         </div>
         {children}
       </div>

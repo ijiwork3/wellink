@@ -333,11 +333,11 @@ export default function Settlement() {
             <div className="flex items-start gap-3 flex-1 min-w-0">
               <AlertCircle size={16} className="text-brand-green shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 break-keep">계좌 정보가 없어요</p>
-                <p className="text-sm text-brand-green-text mt-0.5 break-keep">인출 요청을 하려면 계좌를 먼저 등록해야 해요</p>
+                <p className="text-[15px] font-semibold text-gray-900 break-keep">계좌 정보가 없어요</p>
+                <p className="text-[15px] text-brand-green-text mt-0.5 break-keep">인출 요청을 하려면 계좌를 먼저 등록해야 해요</p>
               </div>
             </div>
-            <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-sm font-semibold text-white bg-brand-green px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
+            <button onClick={() => setBankModalOpen(true)} className="w-full @[400px]:w-auto shrink-0 text-[15px] font-semibold text-white bg-brand-green px-4 py-2.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
               계좌 등록
             </button>
           </div>
@@ -349,7 +349,7 @@ export default function Settlement() {
             <CheckCircle2 size={18} className="text-brand-green shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <p className="text-sm text-gray-500">정산 계좌</p>
+                <p className="text-[15px] text-gray-500">정산 계좌</p>
                 {bankAccount.payerType && (
                   <span className="text-xs font-medium bg-brand-green-bg text-brand-green-text px-1.5 py-0.5 rounded-full whitespace-nowrap">{bankAccount.payerType}</span>
                 )}
@@ -357,11 +357,11 @@ export default function Settlement() {
               {bankAccount.name && (
                 <p className="text-xs text-gray-500 mb-0.5">{bankAccount.name}{bankAccount.phone ? ` · ${bankAccount.phone}` : ''}</p>
               )}
-              <p className="text-sm font-medium text-gray-900 truncate">{bankAccount.bank} <span className="tabular-nums">{bankAccount.accountNumber}</span> ({bankAccount.holder})</p>
+              <p className="text-[15px] font-medium text-gray-900 truncate">{bankAccount.bank} <span className="tabular-nums">{bankAccount.accountNumber}</span> ({bankAccount.holder})</p>
             </div>
             <button
               onClick={() => { setBankModalOpen(true) }}
-              className="shrink-0 text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="shrink-0 text-[15px] text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               변경
             </button>
@@ -370,36 +370,36 @@ export default function Settlement() {
 
         {/* 잔액 요약 카드 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <p className="text-sm font-medium text-gray-500 mb-1">인출 가능 잔액</p>
+          <p className="text-[15px] font-medium text-gray-500 mb-1">인출 가능 잔액</p>
           <p className="text-2xl @[400px]:text-3xl font-bold text-brand-green-text tabular-nums leading-tight">
-            {withdrawableAmount.toLocaleString('ko-KR')}<span className="text-base font-normal text-gray-500 ml-1">원</span>
+            {withdrawableAmount.toLocaleString('ko-KR')}<span className="text-[15px] font-normal text-gray-500 ml-1">원</span>
           </p>
           {withdrawableAmount > 0 && (
             <button
               onClick={() => { if (!hasBankAccount) { setBankModalOpen(true); return }; setWithdrawModal(true) }}
-              className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="mt-3 flex items-center gap-1.5 text-[15px] font-semibold text-white bg-brand-green px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <BanknoteIcon size={14} />인출 요청
             </button>
           )}
           {withdrawableAmount === 0 && withdrawableCount === 0 && (
-            <p className="mt-1.5 text-sm text-gray-400">인출 가능한 잔액이 없어요</p>
+            <p className="mt-1.5 text-[15px] text-gray-400">인출 가능한 잔액이 없어요</p>
           )}
 
           <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-50">
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
                 <TrendingUp size={14} className="text-gray-400" />
-                <p className="text-sm text-gray-500">이번 달 수익</p>
+                <p className="text-[15px] text-gray-500">이번 달 수익</p>
               </div>
-              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{thisMonthEarnings.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
+              <p className="text-[15px] @[480px]:text-[15px] font-bold text-gray-900 tabular-nums break-keep">{thisMonthEarnings.toLocaleString('ko-KR')}<span className="text-[15px] font-normal text-gray-500 ml-0.5">원</span></p>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1 mb-1">
                 <Wallet size={14} className="text-gray-400" />
-                <p className="text-sm text-gray-500">누적 수익</p>
+                <p className="text-[15px] text-gray-500">누적 수익</p>
               </div>
-              <p className="text-sm @[480px]:text-base font-bold text-gray-900 tabular-nums break-keep">{totalEarnings.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span></p>
+              <p className="text-[15px] @[480px]:text-[15px] font-bold text-gray-900 tabular-nums break-keep">{totalEarnings.toLocaleString('ko-KR')}<span className="text-[15px] font-normal text-gray-500 ml-0.5">원</span></p>
             </div>
           </div>
         </div>
@@ -445,12 +445,12 @@ export default function Settlement() {
                         <p className="text-xs text-gray-400 tabular-nums mb-1">
                           {fmtDate(paidAt ?? date)}{paidAt ? ' 지급' : ''}
                         </p>
-                        <p className="text-sm font-semibold text-gray-900 break-keep">{campaign}</p>
+                        <p className="text-[15px] font-semibold text-gray-900 break-keep">{campaign}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{subLabel}</p>
                       </div>
                       <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <p className="text-base @[640px]:text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">
-                          {amount.toLocaleString('ko-KR')}<span className="text-sm font-normal text-gray-500 ml-0.5">원</span>
+                        <p className="text-[15px] @[640px]:text-lg font-bold text-gray-900 tabular-nums whitespace-nowrap">
+                          {amount.toLocaleString('ko-KR')}<span className="text-[15px] font-normal text-gray-500 ml-0.5">원</span>
                         </p>
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${
                           status === '미인출'
@@ -481,25 +481,25 @@ export default function Settlement() {
       <ResponsiveSheet open={withdrawModal} onClose={() => setWithdrawModal(false)} title="인출 요청" size="sm">
         <div className="space-y-4">
           <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-            <div className="flex justify-between gap-3 text-sm">
+            <div className="flex justify-between gap-3 text-[15px]">
               <span className="text-gray-500 shrink-0">인출 건수</span>
               <span className="font-medium text-gray-900 tabular-nums">{withdrawableCount}건</span>
             </div>
-            <div className="flex justify-between gap-3 text-sm">
+            <div className="flex justify-between gap-3 text-[15px]">
               <span className="text-gray-500 shrink-0">인출 금액</span>
               <span className="font-medium text-gray-900 tabular-nums text-right">{withdrawableAmount.toLocaleString('ko-KR')}원</span>
             </div>
             {bankAccount && (
-              <div className="flex justify-between gap-3 text-sm pt-2 mt-1 border-t border-gray-200">
+              <div className="flex justify-between gap-3 text-[15px] pt-2 mt-1 border-t border-gray-200">
                 <span className="text-gray-500 shrink-0">입금 계좌</span>
                 <span className="font-medium text-gray-900 text-right break-keep">{bankAccount.bank} {bankAccount.accountNumber}</span>
               </div>
             )}
           </div>
-          <p className="text-sm text-gray-500">요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
+          <p className="text-[15px] text-gray-500">요청 후 영업일 기준 3~5일 내 등록 계좌로 지급돼요</p>
           <div className="flex gap-2">
-            <button onClick={() => setWithdrawModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button onClick={confirmWithdraw} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
+            <button onClick={() => setWithdrawModal(false)} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button onClick={confirmWithdraw} className="flex-1 bg-brand-green text-white py-3 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">요청하기</button>
           </div>
         </div>
       </ResponsiveSheet>
@@ -515,14 +515,14 @@ export default function Settlement() {
         <div className="space-y-5 pb-2">
           {/* 사업자 유형 선택 */}
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">사업자 유형 <span className="text-red-400" aria-label="필수">*</span></p>
+            <p className="text-[15px] font-medium text-gray-700 mb-2">사업자 유형 <span className="text-red-400" aria-label="필수">*</span></p>
             <div className="flex gap-2">
               {(['개인', '개인사업자'] as PayerType[]).map(t => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => { setPayerType(t); setHolderVerified(null) }}
-                  className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                  className={`flex-1 py-2.5 rounded-xl border text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                     payerType === t
                       ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -538,7 +538,7 @@ export default function Settlement() {
             <>
               {/* 이름 */}
               <div>
-                <label htmlFor="reg-name" className="block text-sm font-medium text-gray-700 mb-1.5">이름 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="reg-name" className="block text-[15px] font-medium text-gray-700 mb-1.5">이름 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="reg-name"
                   type="text"
@@ -552,7 +552,7 @@ export default function Settlement() {
 
               {/* 주민등록번호 */}
               <div>
-                <label htmlFor="reg-resident" className="block text-sm font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="reg-resident" className="block text-[15px] font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="reg-resident"
                   type="text"
@@ -569,7 +569,7 @@ export default function Settlement() {
 
               {/* 전화번호 */}
               <div>
-                <label htmlFor="reg-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="reg-phone" className="block text-[15px] font-medium text-gray-700 mb-1.5">전화번호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="reg-phone"
                   type="tel"
@@ -584,7 +584,7 @@ export default function Settlement() {
 
               {/* 은행 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label className="block text-[15px] font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
                 <CustomSelect
                   value={draftBank}
                   onChange={v => { setDraftBank(v); setHolderVerified(null) }}
@@ -596,7 +596,7 @@ export default function Settlement() {
 
               {/* 계좌번호 + 조회 */}
               <div>
-                <label htmlFor="reg-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="reg-account" className="block text-[15px] font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <div className="flex gap-2">
                   <input
                     id="reg-account"
@@ -612,7 +612,7 @@ export default function Settlement() {
                   <button
                     onClick={handleHolderLookup}
                     disabled={holderChecking || !draftAccount}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[15px] font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                   >
                     {holderChecking ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" /> : <Search size={13} />}
                     조회
@@ -622,17 +622,17 @@ export default function Settlement() {
 
               {/* 예금주명 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">예금주명</label>
+                <label className="block text-[15px] font-medium text-gray-700 mb-1.5">예금주명</label>
                 {holderVerified ? (
                   <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
                     <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-brand-green-text">예금주 확인됨</p>
-                      <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+                      <p className="text-[15px] font-semibold text-gray-900">{holderVerified}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400 px-1">
+                  <p className="text-[15px] text-gray-400 px-1">
                     {holderChecking ? '예금주 조회 중...' : '계좌번호 입력 후 조회하면 자동으로 확인돼요'}
                   </p>
                 )}
@@ -654,13 +654,13 @@ export default function Settlement() {
             <>
               {/* 사업자등록증 첨부 */}
               <div>
-                <p className="block text-sm font-medium text-gray-700 mb-1.5">사업자등록증 <span className="text-red-400" aria-label="필수">*</span></p>
+                <p className="block text-[15px] font-medium text-gray-700 mb-1.5">사업자등록증 <span className="text-red-400" aria-label="필수">*</span></p>
                 <label
                   htmlFor="biz-reg-file"
                   className="flex flex-col items-center justify-center gap-2 w-full h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-brand-green-border hover:bg-brand-green-bg/30 transition-colors"
                 >
                   {draftBizRegFile ? (
-                    <div className="flex items-center gap-2 text-sm text-gray-700 px-4">
+                    <div className="flex items-center gap-2 text-[15px] text-gray-700 px-4">
                       <CheckCircle size={16} className="text-brand-green shrink-0" />
                       <span className="truncate">{draftBizRegFile.name}</span>
                       <button
@@ -675,7 +675,7 @@ export default function Settlement() {
                   ) : (
                     <>
                       <Upload size={22} className="text-gray-400" aria-hidden="true" />
-                      <span className="text-sm text-gray-500">클릭하여 파일 첨부</span>
+                      <span className="text-[15px] text-gray-500">클릭하여 파일 첨부</span>
                       <span className="text-xs text-gray-400">JPG, PNG, PDF 지원</span>
                     </>
                   )}
@@ -691,7 +691,7 @@ export default function Settlement() {
 
               {/* 사업자등록번호 */}
               <div>
-                <label htmlFor="biz-reg-no" className="block text-sm font-medium text-gray-700 mb-1.5">사업자등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="biz-reg-no" className="block text-[15px] font-medium text-gray-700 mb-1.5">사업자등록번호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="biz-reg-no"
                   type="text"
@@ -707,7 +707,7 @@ export default function Settlement() {
 
               {/* 상호 */}
               <div>
-                <label htmlFor="biz-name" className="block text-sm font-medium text-gray-700 mb-1.5">상호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="biz-name" className="block text-[15px] font-medium text-gray-700 mb-1.5">상호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="biz-name"
                   type="text"
@@ -720,7 +720,7 @@ export default function Settlement() {
 
               {/* 대표자명 */}
               <div>
-                <label htmlFor="biz-ceo" className="block text-sm font-medium text-gray-700 mb-1.5">대표자명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="biz-ceo" className="block text-[15px] font-medium text-gray-700 mb-1.5">대표자명 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="biz-ceo"
                   type="text"
@@ -734,7 +734,7 @@ export default function Settlement() {
 
               {/* 전화번호 */}
               <div>
-                <label htmlFor="biz-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
+                <label htmlFor="biz-phone" className="block text-[15px] font-medium text-gray-700 mb-1.5">전화번호</label>
                 <input
                   id="biz-phone"
                   type="tel"
@@ -748,7 +748,7 @@ export default function Settlement() {
 
               {/* 은행 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label className="block text-[15px] font-medium text-gray-700 mb-1.5">은행명 <span className="text-red-400" aria-label="필수">*</span></label>
                 <CustomSelect
                   value={draftBank}
                   onChange={v => { setDraftBank(v); setHolderVerified(null) }}
@@ -760,7 +760,7 @@ export default function Settlement() {
 
               {/* 계좌번호 + 조회 */}
               <div>
-                <label htmlFor="biz-account" className="block text-sm font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="biz-account" className="block text-[15px] font-medium text-gray-700 mb-1.5">계좌번호 <span className="text-red-400" aria-label="필수">*</span></label>
                 <div className="flex gap-2">
                   <input
                     id="biz-account"
@@ -776,7 +776,7 @@ export default function Settlement() {
                   <button
                     onClick={handleHolderLookup}
                     disabled={holderChecking || !draftAccount}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[15px] font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                   >
                     {holderChecking ? <span className="inline-block w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" /> : <Search size={13} />}
                     조회
@@ -786,17 +786,17 @@ export default function Settlement() {
 
               {/* 예금주명 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">예금주명</label>
+                <label className="block text-[15px] font-medium text-gray-700 mb-1.5">예금주명</label>
                 {holderVerified ? (
                   <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
                     <CheckCircle size={15} className="text-brand-green shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-brand-green-text">예금주 확인됨</p>
-                      <p className="text-sm font-semibold text-gray-900">{holderVerified}</p>
+                      <p className="text-[15px] font-semibold text-gray-900">{holderVerified}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400 px-1">
+                  <p className="text-[15px] text-gray-400 px-1">
                     {holderChecking ? '예금주 조회 중...' : '계좌번호 입력 후 조회하면 자동으로 확인돼요'}
                   </p>
                 )}
@@ -804,7 +804,7 @@ export default function Settlement() {
 
               {/* 세금계산서 이메일 */}
               <div>
-                <label htmlFor="biz-email" className="block text-sm font-medium text-gray-700 mb-1.5">세금계산서 발행/수신 이메일 <span className="text-red-400" aria-label="필수">*</span></label>
+                <label htmlFor="biz-email" className="block text-[15px] font-medium text-gray-700 mb-1.5">세금계산서 발행/수신 이메일 <span className="text-red-400" aria-label="필수">*</span></label>
                 <input
                   id="biz-email"
                   type="email"
@@ -818,7 +818,7 @@ export default function Settlement() {
 
               {/* 주민등록번호 (optional) */}
               <div>
-                <label htmlFor="biz-resident" className="block text-sm font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-gray-400 font-normal">(선택)</span></label>
+                <label htmlFor="biz-resident" className="block text-[15px] font-medium text-gray-700 mb-1.5">주민등록번호 <span className="text-gray-400 font-normal">(선택)</span></label>
                 <input
                   id="biz-resident"
                   type="text"
@@ -840,12 +840,12 @@ export default function Settlement() {
         <div className="sticky bottom-0 z-10 bg-white border-t border-gray-100 flex gap-2 pt-3 pb-4 -mx-4 px-4 @sm:-mx-6 @sm:px-6 rounded-b-2xl">
             <button
               onClick={() => { setBankModalOpen(false); resetBankModal() }}
-              className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >취소</button>
             <button
               onClick={handleBankRegister}
               disabled={!holderVerified}
-              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-sm font-medium hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 bg-brand-green text-white py-3 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >등록하기</button>
           </div>
         </div>

@@ -43,11 +43,11 @@ export default function PaymentSuccess() {
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-gray-900">구독이 시작되었습니다!</h1>
           {planName ? (
-            <p className="text-base text-gray-600 break-keep">
+            <p className="text-[15px] text-gray-600 break-keep">
               <span className="font-semibold text-gray-900">{planName} 플랜</span>이 활성화되었습니다.
             </p>
           ) : (
-            <p className="text-base text-gray-500 break-keep">결제가 정상적으로 완료되었습니다.</p>
+            <p className="text-[15px] text-gray-500 break-keep">결제가 정상적으로 완료되었습니다.</p>
           )}
         </div>
 
@@ -55,13 +55,13 @@ export default function PaymentSuccess() {
         {(orderId || amountNumber !== null) && (
           <dl className="bg-gray-50 rounded-xl p-4 text-left space-y-2">
             {orderId && (
-              <div className="flex justify-between items-center gap-3 text-base">
+              <div className="flex justify-between items-center gap-3 text-[15px]">
                 <dt className="text-gray-600 whitespace-nowrap">주문 번호</dt>
-                <dd className="text-gray-900 font-medium text-sm break-all"><code className="font-mono">{orderId}</code></dd>
+                <dd className="text-gray-900 font-medium text-[15px] break-all"><code className="font-mono">{orderId}</code></dd>
               </div>
             )}
             {amountNumber !== null && (
-              <div className="flex justify-between items-center gap-3 text-base">
+              <div className="flex justify-between items-center gap-3 text-[15px]">
                 <dt className="text-gray-600 whitespace-nowrap">결제 금액</dt>
                 <dd className="text-gray-900 font-semibold whitespace-nowrap tabular-nums">
                   ₩{amountNumber.toLocaleString('ko-KR')}
@@ -72,7 +72,7 @@ export default function PaymentSuccess() {
         )}
 
         {/* 안내 문구 */}
-        <p className="text-sm text-gray-500">
+        <p className="text-[15px] text-gray-500">
           결제 내역은 <span className="font-medium text-gray-700">마이페이지 &gt; 구독 관리</span>에서 확인할 수 있습니다.
         </p>
 
@@ -80,13 +80,13 @@ export default function PaymentSuccess() {
         <div className="flex flex-col gap-3">
           <button type="button"
             onClick={() => navigate('/dashboard')}
-            className="w-full py-3 bg-brand-green text-white rounded-xl text-base font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-3 bg-brand-green text-white rounded-xl text-[15px] font-semibold hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             대시보드로 이동
           </button>
           <button type="button"
             onClick={() => navigate('/subscription')}
-            className="w-full py-3 border border-gray-200 text-gray-700 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-3 border border-gray-200 text-gray-700 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             구독 관리 보기
           </button>

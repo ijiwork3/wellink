@@ -18,7 +18,7 @@ const DonutChartSimple = memo(function DonutChartSimple({ data, ariaLabel }: Pro
   const [hover, setHover] = useState<{ idx: number; x: number; y: number } | null>(null)
 
   const total = data.reduce((s, d) => s + d.value, 0)
-  if (total === 0) return <p className="text-base text-gray-500 text-center py-12">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-[15px] text-gray-500 text-center py-12">데이터가 없습니다.</p>
   const cx = 90, cy = 90, r = 70, ir = 50
   // 누적값 계산 — reduce로 mutation 없이 [acc0, acc1, ...] 생성
   const cumulative = data.reduce<number[]>((arr, d) => [...arr, (arr[arr.length - 1] ?? 0) + d.value], [])
@@ -70,9 +70,9 @@ const DonutChartSimple = memo(function DonutChartSimple({ data, ariaLabel }: Pro
           >
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: a.color }} aria-hidden="true" />
             {/* 라벨 폭 고정 — 항목 간 값 시작 X 좌표 정렬 (4글자 한국어 기준 64px) */}
-            <span className="text-sm text-gray-700" style={{ minWidth: 64 }}>{a.label}</span>
-            <span className="text-sm font-semibold text-gray-900 tabular-nums">{fmtNumber(a.value)}</span>
-            <span className="text-sm text-gray-500">({a.pct}%)</span>
+            <span className="text-[15px] text-gray-700" style={{ minWidth: 64 }}>{a.label}</span>
+            <span className="text-[15px] font-semibold text-gray-900 tabular-nums">{fmtNumber(a.value)}</span>
+            <span className="text-[15px] text-gray-500">({a.pct}%)</span>
           </div>
         ))}
       </div>
@@ -85,11 +85,11 @@ const DonutChartSimple = memo(function DonutChartSimple({ data, ariaLabel }: Pro
         >
           <div className="flex items-center gap-1.5 whitespace-nowrap mb-0.5">
             <span className="w-2 h-2 rounded-full" style={{ background: arcs[hover.idx].color }} aria-hidden="true" />
-            <span className="text-sm font-medium text-gray-700">{arcs[hover.idx].label}</span>
+            <span className="text-[15px] font-medium text-gray-700">{arcs[hover.idx].label}</span>
           </div>
-          <p className="text-sm font-semibold text-gray-900 tabular-nums whitespace-nowrap">
+          <p className="text-[15px] font-semibold text-gray-900 tabular-nums whitespace-nowrap">
             {fmtNumber(arcs[hover.idx].value)}
-            <span className="text-sm text-gray-500 font-normal ml-1">({arcs[hover.idx].pct}%)</span>
+            <span className="text-[15px] text-gray-500 font-normal ml-1">({arcs[hover.idx].pct}%)</span>
           </p>
         </div>
       )}

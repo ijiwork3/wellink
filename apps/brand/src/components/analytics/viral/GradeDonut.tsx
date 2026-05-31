@@ -24,7 +24,7 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
     { label: '산정중',  value: counts.processing, color: GRADE_COLORS.processing },
   ].filter(a => a.value > 0)
   const total = arr.reduce((s, a) => s + a.value, 0)
-  if (total === 0) return <p className="text-base text-gray-500 text-center py-8">데이터가 없습니다.</p>
+  if (total === 0) return <p className="text-[15px] text-gray-500 text-center py-8">데이터가 없습니다.</p>
   const cx = 60, cy = 60, r = 50, ir = 32
   const cumulative = arr.reduce<number[]>((carry, a) => [...carry, (carry[carry.length - 1] ?? 0) + a.value], [])
 
@@ -82,7 +82,7 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
           return (
             <li
               key={a.label}
-              className="grid grid-cols-[14px_64px_1fr_auto_44px] items-center gap-2.5 text-sm cursor-pointer hover:bg-gray-50/60 -mx-1 px-1 py-0.5 rounded transition-colors"
+              className="grid grid-cols-[14px_64px_1fr_auto_44px] items-center gap-2.5 text-[15px] cursor-pointer hover:bg-gray-50/60 -mx-1 px-1 py-0.5 rounded transition-colors"
               onMouseEnter={(e) => handleMove(realIdx, e.clientX, e.clientY)}
               onMouseLeave={() => setHover(null)}
             >
@@ -107,11 +107,11 @@ const GradeDonut = memo(function GradeDonut({ data }: { data: ViralContent[] }) 
         >
           <div className="flex items-center gap-1.5 whitespace-nowrap mb-0.5">
             <span className="w-2 h-2 rounded-full" style={{ background: arcsWithPct[hover.idx].color }} aria-hidden="true" />
-            <span className="text-sm font-medium text-gray-700">{arcsWithPct[hover.idx].label}</span>
+            <span className="text-[15px] font-medium text-gray-700">{arcsWithPct[hover.idx].label}</span>
           </div>
-          <p className="text-sm font-semibold text-gray-900 tabular-nums whitespace-nowrap">
+          <p className="text-[15px] font-semibold text-gray-900 tabular-nums whitespace-nowrap">
             {arcsWithPct[hover.idx].value}건
-            <span className="text-sm text-gray-500 font-normal ml-1">({arcsWithPct[hover.idx].pct}%)</span>
+            <span className="text-[15px] text-gray-500 font-normal ml-1">({arcsWithPct[hover.idx].pct}%)</span>
           </p>
         </div>
       )}

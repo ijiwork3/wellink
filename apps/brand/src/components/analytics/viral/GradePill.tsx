@@ -12,7 +12,7 @@ const GradePill = memo(function GradePill({ grade }: { grade: ContentGrade }) {
     : grade === 'processing' ? 'bg-blue-100 text-blue-700'
     : 'bg-gray-100 text-gray-600'
   const label = grade === 'processing' ? '산정 중' : grade
-  return <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${cls}`}>{label}</span>
+  return <span className={`text-[15px] font-bold px-2.5 py-1 rounded-full ${cls}`}>{label}</span>
 })
 
 export default GradePill

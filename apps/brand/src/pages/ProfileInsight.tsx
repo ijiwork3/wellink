@@ -271,8 +271,8 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <div>
-              <h2 className="text-base font-semibold text-gray-900">피드별 성과 추세</h2>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <h2 className="text-[15px] font-semibold text-gray-900">피드별 성과 추세</h2>
+              <p className="text-[15px] text-gray-500 mt-0.5">
                 {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'} · 위 기간 선택기로 변경
               </p>
             </div>
@@ -285,7 +285,7 @@ export default function ProfileInsight() {
                     onClick={() => toggleMetric(metric)}
                     aria-pressed={isActive}
                     disabled={isOnly}
-                    className={`flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                    className={`flex items-center gap-1.5 text-[15px] px-2.5 py-1 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                       isActive
                         ? 'border-transparent text-white'
                         : 'border-gray-200 text-gray-400 bg-white hover:border-gray-300'
@@ -348,15 +348,15 @@ export default function ProfileInsight() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
-              <h2 className="text-base font-semibold text-gray-900">노출 & 도달</h2>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <h2 className="text-[15px] font-semibold text-gray-900">노출 & 도달</h2>
+              <p className="text-[15px] text-gray-500 mt-0.5">
                 노출(총 표시 횟수) vs 도달(순 사용자 수) · {period === '일간' ? '최근 30일' : period === '주간' ? '최근 12주' : period === '월간' ? '최근 12개월' : '연도별'}
                 {impressReachByPeriod[period].some(d => d.impressions === null) && (
                   <span className="ml-1.5 text-gray-500">· 일부 구간 데이터 없음</span>
                 )}
               </p>
             </div>
-            <div className="flex gap-3 text-sm text-gray-500">
+            <div className="flex gap-3 text-[15px] text-gray-500">
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-green inline-block rounded" />노출</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-fuchsia inline-block rounded" />도달</span>
             </div>
@@ -399,14 +399,14 @@ export default function ProfileInsight() {
       <div className="grid grid-cols-1 @5xl:grid-cols-2 gap-3 @sm:gap-5">
         {/* 콘텐츠 유형별 성과 — 클라 #2: bar 기준을 *최상위 참여율 100% 상대 비교* 로 명시 */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
-          <h2 className="text-base font-semibold text-gray-900 mb-1">콘텐츠 유형별 성과</h2>
-          <p className="text-sm text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
+          <h2 className="text-[15px] font-semibold text-gray-900 mb-1">콘텐츠 유형별 성과</h2>
+          <p className="text-[15px] text-gray-500 mb-3">막대는 *참여율* 기준 — 최상위 유형을 100%로 두고 나머지 유형의 상대 비율</p>
           {/* 헤더 행 */}
           <div className="flex items-center gap-4 mb-2">
-            <span className="text-sm text-gray-500 w-16 shrink-0">유형</span>
+            <span className="text-[15px] text-gray-500 w-16 shrink-0">유형</span>
             <div className="flex-1" />
-            <span className="text-sm text-gray-500 w-14 text-right">평균 도달</span>
-            <span className="text-sm text-gray-500 w-10 text-right">참여율</span>
+            <span className="text-[15px] text-gray-500 w-14 text-right">평균 도달</span>
+            <span className="text-[15px] text-gray-500 w-10 text-right">참여율</span>
           </div>
           <div className="space-y-3">
             {(() => {
@@ -417,7 +417,7 @@ export default function ProfileInsight() {
                 const isMax = ct.engagementRate === maxEng
                 return (
                   <div key={ct.type} className="flex items-center gap-4">
-                    <span className="text-sm text-gray-700 font-medium w-16 shrink-0">{ct.type}</span>
+                    <span className="text-[15px] text-gray-700 font-medium w-16 shrink-0">{ct.type}</span>
                     <div
                       className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"
                       role="progressbar"
@@ -433,8 +433,8 @@ export default function ProfileInsight() {
                         style={{ width: `${engPct}%` }}
                       />
                     </div>
-                    <span className="text-sm font-semibold text-gray-700 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
-                    <span className="text-sm font-semibold text-brand-green-text w-10 text-right tabular-nums">
+                    <span className="text-[15px] font-semibold text-gray-700 w-14 text-right tabular-nums">{fmtNumber(ct.avgReach)}</span>
+                    <span className="text-[15px] font-semibold text-brand-green-text w-10 text-right tabular-nums">
                       {ct.engagementRate}%
                     </span>
                   </div>
@@ -447,8 +447,8 @@ export default function ProfileInsight() {
         {/* 팔로워 추이 (2/5) */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
           <div className="mb-4">
-            <h2 className="text-base font-semibold text-gray-900">팔로워 추이</h2>
-            <p className="text-sm text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
+            <h2 className="text-[15px] font-semibold text-gray-900">팔로워 추이</h2>
+            <p className="text-[15px] text-brand-green-text font-medium mt-0.5">{growthLabel}</p>
           </div>
           <ChartScrollContainer
             ref={followerChartScrollRef}
@@ -476,12 +476,12 @@ export default function ProfileInsight() {
             />
           </ChartScrollContainer>
           {nullCount > 0 && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-[15px] text-gray-500 mt-2">
               회색 점선 바: 해당 기간 데이터 없음
             </p>
           )}
           {period === '연간' && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-[15px] text-gray-500 mt-2">
               * 2026년은 1~4월 기준
             </p>
           )}
@@ -492,22 +492,22 @@ export default function ProfileInsight() {
       {/* fixed 플로팅 스크롤 쉐브론 — 사이드바 회피 + 40px 터치 타깃 */}
       <FloatingScrollChevrons scrollRef={tableScrollRef} contentRef={tableRef} />
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5">
-        <h2 className="text-base font-semibold text-gray-900 mb-4">
+        <h2 className="text-[15px] font-semibold text-gray-900 mb-4">
           {period === '일간' ? '일별' : period === '주간' ? '주별' : period === '월간' ? '월별' : '연도별'} 게시물 성과
         </h2>
         <div className="relative" ref={tableWrapperRef}>
           {canTableScrollLeft && <div className="absolute left-0 inset-y-0 w-10 bg-gradient-to-r from-white/95 to-transparent pointer-events-none z-10" />}
           {canTableScrollRight && <div className="absolute right-0 inset-y-0 w-10 bg-gradient-to-l from-white/95 to-transparent pointer-events-none z-10" />}
           <div className="overflow-x-auto scrollbar-none" ref={tableScrollRef}>
-            <table className="w-full text-base" ref={tableRef}>
+            <table className="w-full text-[15px]" ref={tableRef}>
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th scope="col" className="text-left text-sm font-medium text-gray-400 pb-3 pr-4 whitespace-nowrap">기간</th>
-                  <th scope="col" className="text-right text-sm font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">도달</th>
-                  <th scope="col" className="text-right text-sm font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">좋아요</th>
-                  <th scope="col" className="text-right text-sm font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">댓글</th>
-                  <th scope="col" className="text-right text-sm font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">저장</th>
-                  <th scope="col" className="text-right text-sm font-medium text-gray-400 pb-3 whitespace-nowrap">참여율</th>
+                  <th scope="col" className="text-left text-[15px] font-medium text-gray-400 pb-3 pr-4 whitespace-nowrap">기간</th>
+                  <th scope="col" className="text-right text-[15px] font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">도달</th>
+                  <th scope="col" className="text-right text-[15px] font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">좋아요</th>
+                  <th scope="col" className="text-right text-[15px] font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">댓글</th>
+                  <th scope="col" className="text-right text-[15px] font-medium text-gray-400 pb-3 px-4 whitespace-nowrap">저장</th>
+                  <th scope="col" className="text-right text-[15px] font-medium text-gray-400 pb-3 whitespace-nowrap">참여율</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -515,22 +515,22 @@ export default function ProfileInsight() {
                   const isNull = d.reach === null
                   return (
                     <tr key={i} className={`transition-colors ${isNull ? '' : 'hover:bg-gray-50'}`}>
-                      <td className={`py-2.5 pr-4 text-sm whitespace-nowrap ${isNull ? 'text-gray-400' : 'text-gray-500'}`}>{d.label}</td>
+                      <td className={`py-2.5 pr-4 text-[15px] whitespace-nowrap ${isNull ? 'text-gray-400' : 'text-gray-500'}`}>{d.label}</td>
                       {isNull ? (
-                        <td colSpan={5} className="py-2.5 text-center text-sm text-gray-500 whitespace-nowrap">데이터 없음</td>
+                        <td colSpan={5} className="py-2.5 text-center text-[15px] text-gray-500 whitespace-nowrap">데이터 없음</td>
                       ) : (
                         <>
-                          <td className="py-2.5 px-4 text-right text-sm text-gray-700 whitespace-nowrap">{fmtNumber(d.reach as number)}</td>
-                          <td className="py-2.5 px-4 text-right text-sm text-gray-700 whitespace-nowrap">{fmtNumber(d.likes as number)}</td>
-                          <td className="py-2.5 px-4 text-right text-sm text-gray-700 whitespace-nowrap">{fmtNumber(d.comments as number)}</td>
-                          <td className="py-2.5 px-4 text-right text-sm text-gray-700 whitespace-nowrap">{fmtNumber(d.saves as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-[15px] text-gray-700 whitespace-nowrap">{fmtNumber(d.reach as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-[15px] text-gray-700 whitespace-nowrap">{fmtNumber(d.likes as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-[15px] text-gray-700 whitespace-nowrap">{fmtNumber(d.comments as number)}</td>
+                          <td className="py-2.5 px-4 text-right text-[15px] text-gray-700 whitespace-nowrap">{fmtNumber(d.saves as number)}</td>
                           <td className="py-2.5 text-right whitespace-nowrap">
                             {(() => {
                               const engRate = (((d.likes as number) + (d.comments as number) + (d.saves as number)) / (d.reach as number) * 100).toFixed(1)
                               const isGood = parseFloat(engRate) >= ENGAGEMENT_THRESHOLD.high
                               const isBad  = parseFloat(engRate) < 2.5
                               return (
-                                <span className={`text-sm font-semibold ${isGood ? 'text-brand-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
+                                <span className={`text-[15px] font-semibold ${isGood ? 'text-brand-green-text' : isBad ? 'text-red-500' : 'text-gray-700'}`}>
                                   {engRate}%
                                 </span>
                               )
@@ -550,10 +550,10 @@ export default function ProfileInsight() {
       {/* 팔로워 인구통계 분석 — 원본 followersAudience 보강 */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 @sm:p-5 relative">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h2 className="text-base font-semibold text-gray-900">팔로워 분석</h2>
+          <h2 className="text-[15px] font-semibold text-gray-900">팔로워 분석</h2>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{periodLabel}</span>
-            <span className="text-sm text-gray-500">비공개 계정 제외</span>
+            <span className="text-[15px] font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{periodLabel}</span>
+            <span className="text-[15px] text-gray-500">비공개 계정 제외</span>
           </div>
         </div>
         {(() => {
@@ -566,10 +566,10 @@ export default function ProfileInsight() {
             <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
               {/* 성별 */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-3">성별</p>
+                <p className="text-[15px] font-medium text-gray-500 mb-3">성별</p>
                 <div className="space-y-3">
                   <div>
-                    <div className="flex justify-between text-sm mb-1">
+                    <div className="flex justify-between text-[15px] mb-1">
                       <span className="text-gray-700 font-medium">남성</span>
                       <span className="text-brand-green-text font-bold">{malePct}%</span>
                     </div>
@@ -586,7 +586,7 @@ export default function ProfileInsight() {
                     </div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-1">
+                    <div className="flex justify-between text-[15px] mb-1">
                       <span className="text-gray-700 font-medium">여성</span>
                       <span className="text-brand-green-text font-bold">{femalePct}%</span>
                     </div>
@@ -606,11 +606,11 @@ export default function ProfileInsight() {
               </div>
               {/* 연령대 */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-3">연령대</p>
+                <p className="text-[15px] font-medium text-gray-500 mb-3">연령대</p>
                 <div className="space-y-2.5">
                   {FOLLOWER_DEMOGRAPHIC.age.map((a, i) => (
                     <div key={a.range}>
-                      <div className="flex justify-between text-sm mb-1">
+                      <div className="flex justify-between text-[15px] mb-1">
                         <span className="text-gray-700 font-medium">{a.range}세</span>
                         <span className="text-brand-green-text font-bold">{a.percent}%</span>
                       </div>

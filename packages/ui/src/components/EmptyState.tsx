@@ -3,8 +3,8 @@
  *
  * 정책 (CLAUDE.md > "공통 빈/에러/로딩 상태 정책"):
  * - 아이콘: 32~48px, text-gray-300 (눈에 거슬리지 않게)
- * - 타이틀: text-base font-semibold text-gray-500 (가시성↑, 강조 ❌)
- * - 보조: text-sm text-gray-400
+ * - 타이틀: text-[15px] font-semibold text-gray-500 (가시성↑, 강조 ❌)
+ * - 보조: text-[15px] text-gray-400
  * - CTA: 선택. 있으면 outline 스타일(과한 강조 회피)
  *
  * variant:
@@ -65,9 +65,9 @@ const EmptyState = memo(function EmptyState({
       <div className="text-gray-300 shrink-0" aria-hidden="true">
         {icon ?? <Icon size={iconSize} />}
       </div>
-      <p className="text-base font-semibold text-gray-500 break-keep max-w-md">{title}</p>
+      <p className="text-[15px] font-semibold text-gray-500 break-keep max-w-md">{title}</p>
       {description && (
-        <p className="text-sm text-gray-400 max-w-md whitespace-pre-line break-keep">{description}</p>
+        <p className="text-[15px] text-gray-400 max-w-md whitespace-pre-line break-keep">{description}</p>
       )}
       {action && <div className="mt-2">{action}</div>}
     </div>

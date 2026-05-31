@@ -16,7 +16,7 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div>
-            <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-sm font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
+            <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-[15px] font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
               04. Operation Automation
             </span>
             <h2 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
@@ -55,20 +55,20 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                   <div className="h-3 w-3 rounded-full bg-yellow-400" />
                   <div className="h-3 w-3 rounded-full bg-green-400" />
                 </div>
-                <div className="text-sm font-bold uppercase tracking-widest opacity-40">
+                <div className="text-[15px] font-bold uppercase tracking-widest opacity-40">
                   Dashboard Pro
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl bg-white/5 p-6">
-                  <div className="text-sm font-bold uppercase tracking-widest opacity-40">
+                  <div className="text-[15px] font-bold uppercase tracking-widest opacity-40">
                     Total Reach
                   </div>
                   <div className="text-3xl font-black text-[var(--color-landing-lime)]">1.4M+</div>
                 </div>
                 <div className="rounded-2xl bg-white/5 p-6">
-                  <div className="text-sm font-bold uppercase tracking-widest opacity-40">
+                  <div className="text-[15px] font-bold uppercase tracking-widest opacity-40">
                     Campaign ROI
                   </div>
                   <div className="text-3xl font-black text-[var(--color-landing-lime)]">348%</div>
@@ -108,10 +108,10 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                   <X size={20} />
                 </div>
                 <div>
-                  <div className="text-sm font-bold uppercase tracking-widest text-slate-400">
+                  <div className="text-[15px] font-bold uppercase tracking-widest text-slate-400">
                     Old Process
                   </div>
-                  <div className="text-base font-black text-slate-900">엑셀 수동 리스트업</div>
+                  <div className="text-[15px] font-black text-slate-900">엑셀 수동 리스트업</div>
                 </div>
               </div>
               <div className="mt-4 h-1.5 w-full rounded-full bg-slate-100">

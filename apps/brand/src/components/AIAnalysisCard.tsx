@@ -51,13 +51,13 @@ interface NumberedSectionProps {
 function NumberedSection({ icon, title, items }: NumberedSectionProps) {
   return (
     <div className="bg-white rounded-xl p-4 border border-brand-fuchsia-border/60">
-      <div className="flex items-center gap-1.5 mb-3 text-sm font-semibold text-brand-fuchsia-text">
+      <div className="flex items-center gap-1.5 mb-3 text-[15px] font-semibold text-brand-fuchsia-text">
         {icon}
         {title}
       </div>
       <ol className="space-y-2.5">
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700">
+          <li key={i} className="flex items-start gap-2.5 text-[15px] text-gray-700">
             <span className="shrink-0 w-5 h-5 rounded-full bg-brand-fuchsia-bg text-brand-fuchsia-text text-xs font-semibold flex items-center justify-center mt-0.5" aria-hidden="true">
               {i + 1}
             </span>
@@ -80,12 +80,12 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <Sparkles size={16} className="text-brand-fuchsia-text" aria-hidden="true" />
-          <h2 className="text-base font-bold text-gray-900">{title}</h2>
+          <h2 className="text-[15px] font-bold text-gray-900">{title}</h2>
         </div>
         <button type="button"
           onClick={onRefresh}
           disabled={refreshing}
-          className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-brand-fuchsia-border bg-white hover:bg-brand-fuchsia-bg text-brand-fuchsia-text disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fuchsia/30 whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 text-[15px] px-3 py-1.5 rounded-lg border border-brand-fuchsia-border bg-white hover:bg-brand-fuchsia-bg text-brand-fuchsia-text disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fuchsia/30 whitespace-nowrap"
         >
           {refreshing ? (
             <>
@@ -110,7 +110,7 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
         </div>
       ) : !hasStructured ? (
         // 단일 summary fallback (바이럴 호환)
-        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{summary ?? ''}</p>
+        <p className="text-[15px] text-gray-700 leading-relaxed whitespace-pre-line">{summary ?? ''}</p>
       ) : (
         <div className="space-y-3">
           {/* 분석 + 가이드 2열 (좁은 화면에서 1열) */}
@@ -133,7 +133,7 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
 
           {/* 분석 시각 */}
           {generatedAt && (
-            <p className="text-sm text-gray-500 text-right pt-1">
+            <p className="text-[15px] text-gray-500 text-right pt-1">
               분석 시각: {formatTimestamp(generatedAt)}
             </p>
           )}

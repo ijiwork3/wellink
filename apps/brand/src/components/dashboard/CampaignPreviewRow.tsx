@@ -45,7 +45,7 @@ const CampaignPreviewRow = memo(function CampaignPreviewRow({
       {/* 1행 — 캠페인명 + 상태 + D-day */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="text-base font-semibold text-gray-900 break-keep">{name}</span>
+          <span className="text-[15px] font-semibold text-gray-900 break-keep">{name}</span>
           <StatusBadge status={status === 'active' ? '게재중' : status === 'paused' ? '일시중지' : status === 'closed' ? '종료' : '검토중'} dot={false} />
         </div>
         {status === 'active' && (
@@ -60,7 +60,7 @@ const CampaignPreviewRow = memo(function CampaignPreviewRow({
 
       {/* 2행 — 진행률 바 */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-600 whitespace-nowrap tabular-nums shrink-0">
+        <span className="text-[15px] text-gray-600 whitespace-nowrap tabular-nums shrink-0">
           {goal.unit} <strong className="text-gray-900 font-semibold">{fmtNumber(goal.current)}</strong> / {fmtNumber(goal.target)}
         </span>
         <div
@@ -76,11 +76,11 @@ const CampaignPreviewRow = memo(function CampaignPreviewRow({
             style={{ width: `${goalPct}%` }}
           />
         </div>
-        <span className="text-sm font-bold text-brand-green-text tabular-nums shrink-0">{goalPct}%</span>
+        <span className="text-[15px] font-bold text-brand-green-text tabular-nums shrink-0">{goalPct}%</span>
       </div>
 
       {/* 3행 — 인플루언서 + 핵심 지표 */}
-      <div className="flex items-center justify-between gap-3 text-sm flex-wrap">
+      <div className="flex items-center justify-between gap-3 text-[15px] flex-wrap">
         <span className="flex items-center gap-1 text-gray-600">
           <Users size={12} aria-hidden="true" />
           <span className="tabular-nums">

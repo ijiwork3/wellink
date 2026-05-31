@@ -91,12 +91,12 @@ export const Section = memo(function Section({
       {/* 좁은 폭에서 액션이 우측 침범 → flex-wrap 으로 다음 줄. 사용자 정책: 침범보다 개행. */}
       <div className="flex flex-wrap items-start justify-between gap-2 @sm:gap-3 mb-3">
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-gray-800 flex items-center gap-1.5 min-w-0">
+          <h2 className="text-[15px] font-semibold text-gray-800 flex items-center gap-1.5 min-w-0">
             {icon && <span className="text-gray-500 shrink-0">{icon}</span>}
             <span className="min-w-0 break-keep">{title}</span>
           </h2>
           {description && (
-            <p className="text-sm text-gray-500 mt-1 break-keep">{description}</p>
+            <p className="text-[15px] text-gray-500 mt-1 break-keep">{description}</p>
           )}
         </div>
         {action && <div className="shrink-0 max-w-full">{action}</div>}

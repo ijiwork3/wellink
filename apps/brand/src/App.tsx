@@ -314,7 +314,7 @@ function AppRoutes() {
           <button
             onClick={() => setQaOpen(o => !o)}
             aria-label="QA 패널 열기"
-            className="fixed bottom-4 right-4 z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-sm font-semibold transition-colors"
+            className="fixed bottom-4 right-4 z-[1100] h-11 px-4 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 flex items-center gap-1.5 text-[15px] font-semibold transition-colors"
           >
             {qaOpen ? <X size={16} /> : <Settings size={16} />}
             <span>QA</span>

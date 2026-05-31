@@ -791,7 +791,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
             <div className="flex items-center justify-between px-4 border-b border-slate-700 shrink-0" style={{ minHeight: 52 }}>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold" style={{ background: accentColor }}>WL</div>
-                <span className="text-sm font-semibold">QA 패널</span>
+                <span className="text-[15px] font-semibold">QA 패널</span>
               </div>
               <button
                 onClick={() => { setMenuOpen(false); document.dispatchEvent(new Event('qa-toggle')); }}
@@ -813,7 +813,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
                       <button
                         key={i}
                         onClick={() => handleNavigate(item)}
-                        className="flex items-center justify-center text-sm font-medium rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 active:bg-slate-600 transition-colors px-3 py-3"
+                        className="flex items-center justify-center text-[15px] font-medium rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 active:bg-slate-600 transition-colors px-3 py-3"
                       >
                         {item.label}
                       </button>
@@ -834,7 +834,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
                             onClick={() => setExpandedSection(expandedSection === item.label ? null : item.label)}
                             className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors"
                           >
-                            <span className="text-sm font-medium text-slate-300">{item.label}</span>
+                            <span className="text-[15px] font-medium text-slate-300">{item.label}</span>
                             <ChevronRight size={14} className={`transition-transform text-slate-500 ${expandedSection === item.label ? 'rotate-90' : ''}`} />
                           </button>
                           {expandedSection === item.label && (
@@ -845,7 +845,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
                                   onClick={() => handleNavigate(child)}
                                   className="w-full text-left flex items-center px-3 py-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
                                 >
-                                  <span className="text-sm">{child.label}</span>
+                                  <span className="text-[15px]">{child.label}</span>
                                 </button>
                               ))}
                             </div>
@@ -856,7 +856,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
                           onClick={() => handleNavigate(item)}
                           className="w-full text-left flex items-center px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
                         >
-                          <span className="text-sm">{item.label}</span>
+                          <span className="text-[15px]">{item.label}</span>
                         </button>
                       ) : (
                         <div className="px-3 pt-4 pb-1 text-[11px] font-medium text-slate-500">

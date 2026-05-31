@@ -34,13 +34,13 @@ useEscToClose(false, () => setSnsOpen(false))
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="text-base @[640px]:text-lg font-bold text-gray-900 truncate">{mockProfile.name}님</span>
+                <span className="text-[15px] @[640px]:text-lg font-bold text-gray-900 truncate">{mockProfile.name}님</span>
                 {/* 인스타 연결 시 핸들 인라인 표시 */}
                 {mockProfile.instagramConnected && (
-                  <span className="text-sm text-gray-400 font-normal flex-shrink-0 whitespace-nowrap">@{mockProfile.instagram}</span>
+                  <span className="text-[15px] text-gray-400 font-normal flex-shrink-0 whitespace-nowrap">@{mockProfile.instagram}</span>
                 )}
               </div>
-              <p className="text-sm text-gray-500 line-clamp-1 break-keep">{mockProfile.bio}</p>
+              <p className="text-[15px] text-gray-500 line-clamp-1 break-keep">{mockProfile.bio}</p>
             </div>
             <ChevronRight size={16} className="text-gray-400 mt-1 flex-shrink-0 @[640px]:hidden" aria-hidden="true" />
           </button>

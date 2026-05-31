@@ -263,13 +263,13 @@ export default function Profile() {
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-1 flex">
               <button
                 aria-current="page"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[15px] font-semibold bg-brand-green-bg text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <User size={14} />내 정보
               </button>
               <button
                 onClick={() => navigate('/media')}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors focus-visible:outline-none"
               >
                 <Camera size={14} />인스타 관리
               </button>
@@ -282,12 +282,12 @@ export default function Profile() {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <User size={16} className="text-brand-green" />
-              <h2 className="text-base font-semibold text-gray-900">내 정보</h2>
+              <h2 className="text-[15px] font-semibold text-gray-900">내 정보</h2>
             </div>
             {!isEditing && (
               <button
                 onClick={() => { setDraftName(name); setDraftFields(new Set(selectedFields)); setDraftType(influencerType); setIsEditing(true) }}
-                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="flex items-center gap-1.5 text-[15px] text-gray-500 border border-gray-200 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Pencil size={14} />편집
               </button>
@@ -333,28 +333,28 @@ export default function Profile() {
           <div className="space-y-3">
             {/* 이름 */}
             <div>
-              <label htmlFor="profile-name" className="block text-sm font-medium text-gray-500 mb-1.5">이름</label>
+              <label htmlFor="profile-name" className="block text-[15px] font-medium text-gray-500 mb-1.5">이름</label>
               {isEditing
                 ? <input id="profile-name" type="text" value={draftName} onChange={e => setDraftName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !isSaving) { e.preventDefault(); handleSave() } }} maxLength={20} autoComplete="name" className={inputClass} />
-                : <p className="text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl break-keep">{name}</p>
+                : <p className="text-[15px] text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl break-keep">{name}</p>
               }
             </div>
 
             {/* 이메일 (읽기 전용) */}
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1.5">이메일</label>
-              <p className="text-sm text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl break-all">{mockProfile.email}</p>
+              <label className="block text-[15px] font-medium text-gray-500 mb-1.5">이메일</label>
+              <p className="text-[15px] text-gray-500 px-3 py-2.5 bg-gray-50 rounded-xl break-all">{mockProfile.email}</p>
             </div>
 
             {/* 전화번호 */}
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1.5">전화번호</label>
+              <label className="block text-[15px] font-medium text-gray-500 mb-1.5">전화번호</label>
               <div className="flex flex-col @[400px]:flex-row @[400px]:items-center gap-2">
-                <p className="flex-1 text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl tabular-nums">{phone}</p>
+                <p className="flex-1 text-[15px] text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl tabular-nums">{phone}</p>
                 {isEditing && (
                   <button
                     onClick={() => setPhoneModalOpen(true)}
-                    className="shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    className="shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-[15px] font-medium border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >
                     <Phone size={14} />변경
                   </button>
@@ -365,10 +365,10 @@ export default function Profile() {
             {/* 비밀번호 — 편집 모드에서만 표시 */}
             {isEditing && (
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1.5">비밀번호</label>
+                <label className="block text-[15px] font-medium text-gray-500 mb-1.5">비밀번호</label>
                 <button
                   onClick={() => setPwModalOpen(true)}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all bg-brand-green-bg hover:bg-brand-green/5 border-brand-green-border text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-[15px] font-medium transition-all bg-brand-green-bg hover:bg-brand-green/5 border-brand-green-border text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <Lock size={14} />비밀번호 변경
                 </button>
@@ -377,14 +377,14 @@ export default function Profile() {
 
             {/* 인플루언서 유형 */}
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">인플루언서 유형</label>
+              <label className="block text-[15px] font-medium text-gray-500 mb-2">인플루언서 유형</label>
               {isEditing ? (
                 <div className="grid grid-cols-2 gap-2">
                   {INFLUENCER_TYPES.map(t => (
                     <button
                       key={t.value}
                       onClick={() => setDraftType(t.value)}
-                      className={`px-3 py-2.5 rounded-xl text-sm font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                      className={`px-3 py-2.5 rounded-xl text-[15px] font-medium text-left break-keep leading-tight transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                         draftType === t.value
                           ? 'border-brand-green bg-brand-green-bg text-brand-green-text'
                           : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
@@ -395,7 +395,7 @@ export default function Profile() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl">
+                <p className="text-[15px] text-gray-900 px-3 py-2.5 bg-gray-50 rounded-xl">
                   {INFLUENCER_TYPES.find(t => t.value === influencerType)?.label ?? '미설정'}
                 </p>
               )}
@@ -404,7 +404,7 @@ export default function Profile() {
 
           {/* 활동 분야 */}
           <div className="mt-5 pt-5 border-t border-gray-100">
-            <p className="text-sm font-medium text-gray-700 mb-3">활동 분야</p>
+            <p className="text-[15px] font-medium text-gray-700 mb-3">활동 분야</p>
             {isEditing ? (
               <div className="grid grid-cols-2 @[480px]:grid-cols-3 @[640px]:grid-cols-4 gap-2.5">
                 {ACTIVITY_FIELDS.map(field => (
@@ -419,7 +419,7 @@ export default function Profile() {
             ) : (
               <div className="flex flex-wrap gap-2">
                 {selectedFields.size === 0 ? (
-                  <p className="text-sm text-gray-400">미설정</p>
+                  <p className="text-[15px] text-gray-400">미설정</p>
                 ) : (
                   [...selectedFields].map(f => (
                     <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">
@@ -437,8 +437,8 @@ export default function Profile() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p id="profile-marketing-label" className="text-sm font-medium text-gray-900">마케팅 수신 동의</p>
-              <p className="text-sm text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
+              <p id="profile-marketing-label" className="text-[15px] font-medium text-gray-900">마케팅 수신 동의</p>
+              <p className="text-[15px] text-gray-500 mt-0.5 break-keep">캠페인 알림, 신규 혜택 등을 받아볼 수 있어요</p>
             </div>
             <Toggle checked={marketing} onChange={() => setMarketing(!marketing)} ariaLabelledBy="profile-marketing-label" />
           </div>
@@ -451,7 +451,7 @@ export default function Profile() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm font-medium text-gray-900">인스타그램 프로페셔널 계정</p>
+                <p className="text-[15px] font-medium text-gray-900">인스타그램 프로페셔널 계정</p>
                 {ig.professional && (
                   <span className="flex items-center gap-0.5 text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-full whitespace-nowrap">
                     <BadgeCheck size={11} aria-hidden="true" />연동됨
@@ -510,7 +510,7 @@ export default function Profile() {
           <div className="flex gap-3 pb-2">
             <button
               onClick={handleCancel}
-              className="flex-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 py-3 rounded-xl text-[15px] font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
@@ -519,7 +519,7 @@ export default function Profile() {
               disabled={isSaving || !hasProfileChanges}
               aria-disabled={isSaving || !hasProfileChanges}
               aria-busy={isSaving}
-              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {isSaving ? '저장 중...' : '저장하기'}
             </button>
@@ -531,7 +531,7 @@ export default function Profile() {
           <div className="flex flex-col items-center gap-3 pt-1 pb-4">
             <button
               onClick={() => setLogoutConfirm(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-[15px] font-medium text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <LogOut size={14} />로그아웃
             </button>
@@ -549,10 +549,10 @@ export default function Profile() {
       <ResponsiveSheet open={pwModalOpen} onClose={closePwModal} title="비밀번호 변경" size="sm">
         {pwStep === 1 ? (
           <>
-            <p className="text-sm text-gray-500 mb-4">본인 확인을 위해 전화번호 인증이 필요해요</p>
+            <p className="text-[15px] text-gray-500 mb-4">본인 확인을 위해 전화번호 인증이 필요해요</p>
             <div className="space-y-3">
               <div>
-                <label htmlFor="pw-phone" className="text-sm text-gray-500 block mb-1.5">전화번호</label>
+                <label htmlFor="pw-phone" className="text-[15px] text-gray-500 block mb-1.5">전화번호</label>
                 <div className="flex gap-2">
                   <input
                     id="pw-phone"
@@ -564,14 +564,14 @@ export default function Profile() {
                   />
                   <button
                     onClick={handlePwSendCode}
-                    className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text bg-brand-green-bg hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    className="shrink-0 px-3 py-2.5 rounded-xl border text-[15px] font-medium border-brand-green text-brand-green-text bg-brand-green-bg hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >
                     {pwCodeSent ? '재발송' : '인증요청'}
                   </button>
                 </div>
               </div>
               <div>
-                <label htmlFor="pw-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
+                <label htmlFor="pw-code" className="text-[15px] text-gray-500 block mb-1.5">인증번호</label>
                 <input
                   id="pw-code"
                   type="text" value={pwCode}
@@ -588,13 +588,13 @@ export default function Profile() {
               </div>
             </div>
             <div className="flex gap-3 mt-5">
-              <button onClick={closePwModal} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={handlePwVerify} disabled={!pwCodeSent || pwCode.length !== 6} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">인증 완료</button>
+              <button onClick={closePwModal} className="flex-1 py-3 rounded-xl text-[15px] border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={handlePwVerify} disabled={!pwCodeSent || pwCode.length !== 6} className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">인증 완료</button>
             </div>
           </>
         ) : (
           <>
-            <p className="text-sm text-gray-500 mb-4">새로 사용할 비밀번호를 입력해 주세요</p>
+            <p className="text-[15px] text-gray-500 mb-4">새로 사용할 비밀번호를 입력해 주세요</p>
             <div className="space-y-3">
               <div className="relative">
                 <input type={showNewPw ? 'text' : 'password'} placeholder="새 비밀번호 (8자 이상)" value={newPw}
@@ -622,8 +622,8 @@ export default function Profile() {
               </div>
             </div>
             <div className="flex gap-3 mt-5">
-              <button onClick={closePwModal} disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-              <button onClick={handlePwChange} disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
+              <button onClick={closePwModal} disabled={isPwSubmitting} className="flex-1 py-3 rounded-xl text-[15px] border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button onClick={handlePwChange} disabled={isPwSubmitting} aria-busy={isPwSubmitting} className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPwSubmitting ? '변경 중...' : '변경하기'}</button>
             </div>
           </>
         )}
@@ -633,7 +633,7 @@ export default function Profile() {
       <ResponsiveSheet open={phoneModalOpen} onClose={() => { setPhoneModalOpen(false); setNewPhone(''); setPhoneCode(''); setPhoneCodeSent(false) }} title="전화번호 변경" size="sm">
         <div className="space-y-3">
           <div>
-            <label htmlFor="profile-new-phone" className="text-sm text-gray-500 block mb-1.5">새 전화번호</label>
+            <label htmlFor="profile-new-phone" className="text-[15px] text-gray-500 block mb-1.5">새 전화번호</label>
             <div className="flex flex-col @[400px]:flex-row gap-2">
               <input
                 id="profile-new-phone"
@@ -647,14 +647,14 @@ export default function Profile() {
               />
               <button
                 onClick={handlePhoneSendCode}
-                className="shrink-0 px-3 py-2.5 rounded-xl border text-sm font-medium border-brand-green text-brand-green-text hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="shrink-0 px-3 py-2.5 rounded-xl border text-[15px] font-medium border-brand-green text-brand-green-text hover:bg-brand-green/5 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 {phoneCodeSent ? '재발송' : '인증번호 받기'}
               </button>
             </div>
           </div>
           <div>
-            <label htmlFor="profile-phone-code" className="text-sm text-gray-500 block mb-1.5">인증번호</label>
+            <label htmlFor="profile-phone-code" className="text-[15px] text-gray-500 block mb-1.5">인증번호</label>
             <input
               id="profile-phone-code"
               type="text" value={phoneCode}
@@ -666,13 +666,13 @@ export default function Profile() {
               maxLength={6}
             />
             {phoneCodeSent && (
-              <p className="text-sm text-gray-500 mt-1.5">인증번호를 발송했어요. 3분 내에 입력해 주세요.</p>
+              <p className="text-[15px] text-gray-500 mt-1.5">인증번호를 발송했어요. 3분 내에 입력해 주세요.</p>
             )}
           </div>
         </div>
         <div className="flex gap-3 mt-5">
-          <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-          <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
+          <button onClick={() => setPhoneModalOpen(false)} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-[15px] border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+          <button onClick={handlePhoneVerify} disabled={isPhoneSubmitting} aria-disabled={isPhoneSubmitting} aria-busy={isPhoneSubmitting} className="flex-1 py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:bg-brand-green-hover transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isPhoneSubmitting ? '확인 중...' : '인증 완료'}</button>
         </div>
       </ResponsiveSheet>
 
@@ -695,7 +695,7 @@ export default function Profile() {
           <>
             <button type="button"
               onClick={() => { setWithdrawModal(false); setWithdrawConfirmText('') }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               취소
             </button>
@@ -707,7 +707,7 @@ export default function Profile() {
                 showToast('탈퇴 신청이 완료됐어요.', 'info')
                 setTimeout(() => { auth.clear(); navigate('/login') }, TIMER_MS.NAV_DELAY)
               }}
-              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
+              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-[15px] font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
             >
               탈퇴하기
             </button>
@@ -716,7 +716,7 @@ export default function Profile() {
       >
         <div className="space-y-4">
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
+            <p className="text-[15px] font-semibold text-red-700 mb-1">탈퇴 전 꼭 확인해주세요</p>
             <ul className="text-xs text-red-600 space-y-1 mt-2">
               {['참여 중인 캠페인 이력과 정산 정보가 삭제돼요.', '연결된 인스타그램 계정 정보도 함께 삭제돼요.', '삭제된 데이터는 복구할 수 없어요.'].map(text => (
                 <li key={text} className="flex items-start gap-1.5">
@@ -727,7 +727,7 @@ export default function Profile() {
             </ul>
           </div>
           <div>
-            <label className="text-sm text-gray-500 mb-1.5 block">
+            <label className="text-[15px] text-gray-500 mb-1.5 block">
               아래 입력란에 <span className="font-semibold text-red-600">탈퇴</span>를 입력하면 버튼이 활성화돼요.
             </label>
             <input
@@ -735,7 +735,7 @@ export default function Profile() {
               value={withdrawConfirmText}
               onChange={e => setWithdrawConfirmText(e.target.value)}
               placeholder="'탈퇴'를 입력해 주세요"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 transition-colors"
             />
           </div>
         </div>

@@ -116,8 +116,8 @@ export default function PaymentMethod() {
         <div className="bg-red-100 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
           <AlertCircle size={16} className="text-red-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
-            <p className="text-base font-semibold text-red-700">최근 결제가 실패했습니다</p>
-            <p className="text-sm text-red-600 mt-0.5">카드 한도·유효기간을 확인하시거나 새 결제 수단을 추가해 주세요.</p>
+            <p className="text-[15px] font-semibold text-red-700">최근 결제가 실패했습니다</p>
+            <p className="text-[15px] text-red-600 mt-0.5">카드 한도·유효기간을 확인하시거나 새 결제 수단을 추가해 주세요.</p>
           </div>
         </div>
       )}
@@ -126,18 +126,18 @@ export default function PaymentMethod() {
       {defaultMethod && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold text-gray-900">기본 결제 수단</h2>
-            <span className="text-sm bg-brand-green-bg text-brand-green-text font-semibold px-2.5 py-1 rounded-full">
+            <h2 className="text-[15px] font-semibold text-gray-900">기본 결제 수단</h2>
+            <span className="text-[15px] bg-brand-green-bg text-brand-green-text font-semibold px-2.5 py-1 rounded-full">
               매월 자동 결제
             </span>
           </div>
           <div className="bg-gradient-to-br from-gray-900 to-gray-700 text-white rounded-xl p-5">
             <div className="flex items-center justify-between mb-6">
               <CreditCard size={22} aria-hidden="true" />
-              <span className="text-sm font-medium opacity-80">{defaultMethod.brand}</span>
+              <span className="text-[15px] font-medium opacity-80">{defaultMethod.brand}</span>
             </div>
             <p className="text-xl font-mono tracking-widest mb-4">**** **** **** {defaultMethod.last4}</p>
-            <div className="flex items-center justify-between text-sm opacity-80">
+            <div className="flex items-center justify-between text-[15px] opacity-80">
               <span>유효기간 {defaultMethod.expiresAt}</span>
               <span>등록일 {fmtDate(defaultMethod.registeredAt)}</span>
             </div>
@@ -148,10 +148,10 @@ export default function PaymentMethod() {
       {/* 등록된 결제 수단 목록 */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-          <h2 className="text-base font-semibold text-gray-900">등록된 결제 수단 <span className="text-gray-500 font-normal">{methods.length}개</span></h2>
+          <h2 className="text-[15px] font-semibold text-gray-900">등록된 결제 수단 <span className="text-gray-500 font-normal">{methods.length}개</span></h2>
           <button type="button"
             onClick={() => setAddModal(true)}
-            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+            className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2.5 rounded-lg text-[15px] font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
           >
             <Plus size={14} aria-hidden="true" />
             결제 수단 추가
@@ -160,8 +160,8 @@ export default function PaymentMethod() {
         {methods.length === 0 ? (
           <div className="px-5 py-12 text-center">
             <CreditCard size={32} className="text-gray-300 mx-auto mb-3" aria-hidden="true" />
-            <p className="text-base text-gray-500 mb-1">등록된 결제 수단이 없습니다.</p>
-            <p className="text-sm text-gray-500">결제 수단을 추가하면 자동 결제가 활성화됩니다.</p>
+            <p className="text-[15px] text-gray-500 mb-1">등록된 결제 수단이 없습니다.</p>
+            <p className="text-[15px] text-gray-500">결제 수단을 추가하면 자동 결제가 활성화됩니다.</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-50">
@@ -172,19 +172,19 @@ export default function PaymentMethod() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-base font-semibold text-gray-900 whitespace-nowrap">{m.brand}</span>
-                    <span className="text-sm text-gray-500 font-mono whitespace-nowrap">**** {m.last4}</span>
+                    <span className="text-[15px] font-semibold text-gray-900 whitespace-nowrap">{m.brand}</span>
+                    <span className="text-[15px] text-gray-500 font-mono whitespace-nowrap">**** {m.last4}</span>
                     {m.isDefault && (
-                      <span className="text-sm bg-brand-green-bg text-brand-green-text font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">기본</span>
+                      <span className="text-[15px] bg-brand-green-bg text-brand-green-text font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">기본</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5">유효기간 {m.expiresAt} · 등록일 {fmtDate(m.registeredAt)}</p>
+                  <p className="text-[15px] text-gray-500 mt-0.5">유효기간 {m.expiresAt} · 등록일 {fmtDate(m.registeredAt)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {!m.isDefault && (
                     <button type="button"
                       onClick={() => handleSetDefault(m.id)}
-                      className="text-sm text-gray-700 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
+                      className="text-[15px] text-gray-700 border border-gray-200 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 whitespace-nowrap"
                     >
                       기본으로 설정
                     </button>
@@ -206,7 +206,7 @@ export default function PaymentMethod() {
       {/* 보안 안내 */}
       <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 flex items-start gap-2">
         <ShieldCheck size={14} className="text-gray-500 mt-0.5 shrink-0" aria-hidden="true" />
-        <p className="text-sm text-gray-600 leading-relaxed">
+        <p className="text-[15px] text-gray-600 leading-relaxed">
           결제 정보는 토스페이먼츠를 통해 안전하게 암호화되어 저장됩니다.
           웰링크는 카드 정보를 직접 보관하지 않습니다.
         </p>
@@ -222,14 +222,14 @@ export default function PaymentMethod() {
             <button type="button"
               disabled={registering}
               onClick={() => { setAddModal(false); resetAddForm() }}
-              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               취소
             </button>
             <button type="button"
               disabled={registering}
               onClick={handleRegister}
-              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {registering ? '등록 중…' : '등록'}
             </button>
@@ -238,7 +238,7 @@ export default function PaymentMethod() {
       >
         <div className="space-y-3">
           <div>
-            <label htmlFor="card-number" className="text-sm text-gray-500 mb-1.5 block">카드 번호</label>
+            <label htmlFor="card-number" className="text-[15px] text-gray-500 mb-1.5 block">카드 번호</label>
             <input
               id="card-number"
               type="text"
@@ -247,12 +247,12 @@ export default function PaymentMethod() {
               onChange={e => setCardNumber(formatCardNumber(e.target.value))}
               placeholder="0000 0000 0000 0000"
               maxLength={19}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="card-expiry" className="text-sm text-gray-500 mb-1.5 block">유효기간</label>
+              <label htmlFor="card-expiry" className="text-[15px] text-gray-500 mb-1.5 block">유효기간</label>
               <input
                 id="card-expiry"
                 type="text"
@@ -261,11 +261,11 @@ export default function PaymentMethod() {
                 onChange={e => setExpiry(formatExpiry(e.target.value))}
                 placeholder="MM/YY"
                 maxLength={5}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
             </div>
             <div>
-              <label htmlFor="card-cvc" className="text-sm text-gray-500 mb-1.5 block">CVC</label>
+              <label htmlFor="card-cvc" className="text-[15px] text-gray-500 mb-1.5 block">CVC</label>
               <input
                 id="card-cvc"
                 type="text"
@@ -274,31 +274,31 @@ export default function PaymentMethod() {
                 onChange={e => setCvc(e.target.value.replace(/\D/g, '').slice(0, 3))}
                 placeholder="000"
                 maxLength={3}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] font-mono outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               />
             </div>
           </div>
           <div>
-            <label htmlFor="card-holder" className="text-sm text-gray-500 mb-1.5 block">카드 소유자 이름</label>
+            <label htmlFor="card-holder" className="text-[15px] text-gray-500 mb-1.5 block">카드 소유자 이름</label>
             <input
               id="card-holder"
               type="text"
               value={holder}
               onChange={e => setHolder(e.target.value)}
               placeholder="HONG GILDONG"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             />
           </div>
           <CustomCheckbox
             checked={setAsDefault}
             onChange={() => setSetAsDefault(prev => !prev)}
             label="기본 결제 수단으로 설정"
-            labelClassName="text-sm text-gray-600"
+            labelClassName="text-[15px] text-gray-600"
             className="mt-2"
           />
           <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 flex items-start gap-2 mt-2">
             <CheckCircle2 size={14} className="text-gray-500 mt-0.5 shrink-0" aria-hidden="true" />
-            <p className="text-sm text-gray-600">테스트 환경에서는 실제 결제가 발생하지 않습니다.</p>
+            <p className="text-[15px] text-gray-600">테스트 환경에서는 실제 결제가 발생하지 않습니다.</p>
           </div>
         </div>
       </Modal>

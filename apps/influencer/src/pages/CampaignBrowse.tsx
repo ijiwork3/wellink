@@ -104,7 +104,7 @@ export default function CampaignBrowse() {
       {/* 헤더 */}
       <div className="mb-5">
         <h1 className="text-xl font-bold text-gray-900">진행 중인 캠페인</h1>
-        <p className="text-sm text-gray-500 mt-0.5">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
+        <p className="text-[15px] text-gray-500 mt-0.5">당신의 채널과 잘 어울리는 브랜드를 찾아보세요</p>
       </div>
 
       <div className="pb-12">
@@ -118,7 +118,7 @@ export default function CampaignBrowse() {
             autoComplete="off"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-base shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
+            className="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-gray-200 bg-white text-[15px] shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label="검색어 지우기" className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
@@ -141,7 +141,7 @@ export default function CampaignBrowse() {
 
         {/* 결과 수 */}
         {!loading && (
-          <p className="text-sm text-gray-500 mb-4 mt-1">
+          <p className="text-[15px] text-gray-500 mb-4 mt-1">
             총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
           </p>
         )}
@@ -187,7 +187,7 @@ export default function CampaignBrowse() {
             action={
               <button
                 onClick={() => { setSearch(''); setSelectedCategory('전체') }}
-                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="px-5 py-2.5 rounded-xl text-[15px] font-medium text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 전체 캠페인 보기
               </button>
@@ -207,11 +207,11 @@ export default function CampaignBrowse() {
           >
             {c && (
               <div className="pb-4">
-                <p className="text-sm text-gray-500 mb-1">{c.brand}</p>
-                <h3 className="text-base font-bold text-gray-900 mb-3">{c.name}</h3>
+                <p className="text-[15px] text-gray-500 mb-1">{c.brand}</p>
+                <h3 className="text-[15px] font-bold text-gray-900 mb-3">{c.name}</h3>
                 {c.reward && (
                   <div className="flex items-start gap-2 mb-3 p-3 rounded-xl bg-brand-green-bg border border-brand-green-border">
-                    <span className="text-sm font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
+                    <span className="text-[15px] font-medium text-gray-700 break-keep"><span aria-hidden="true">🎁</span> {c.reward}</span>
                   </div>
                 )}
                 <div className="flex gap-2 flex-wrap mb-4">
@@ -221,7 +221,7 @@ export default function CampaignBrowse() {
                 </div>
                 <button
                   onClick={() => { setQuickViewId(null); navigate(`/campaigns/${c.id}`) }}
-                  className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  className="w-full py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   상세보기 · 신청하기
                 </button>

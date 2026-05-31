@@ -79,7 +79,7 @@ export default function Notifications() {
         value: v,
         label: FILTER_LABELS[v],
         trailing: count > 0 ? (
-          <span className="ml-1 text-sm text-gray-500 font-normal whitespace-nowrap">{count}</span>
+          <span className="ml-1 text-[15px] text-gray-500 font-normal whitespace-nowrap">{count}</span>
         ) : undefined,
       }
     })
@@ -142,7 +142,7 @@ export default function Notifications() {
           title="알림"
           meta={unreadCount > 0 ? (
             <span
-              className="bg-brand-green text-white text-sm font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+              className="bg-brand-green text-white text-[15px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
               aria-label={`미읽음 ${unreadCount}건`}
             >
               {unreadCount}
@@ -152,7 +152,7 @@ export default function Notifications() {
             <button
               type="button"
               onClick={handleMarkAllRead}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
+              className="text-[15px] text-gray-500 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded whitespace-nowrap"
             >
               전체 읽음
             </button>
@@ -173,7 +173,7 @@ export default function Notifications() {
                 ariaLabel="알림 카테고리 필터"
               />
             </div>
-            <label className="flex items-center gap-2 shrink-0 cursor-pointer text-sm">
+            <label className="flex items-center gap-2 shrink-0 cursor-pointer text-[15px]">
               <span className="text-gray-700 whitespace-nowrap">읽지 않음만</span>
               <Toggle
                 checked={unreadOnly}
@@ -226,7 +226,7 @@ export default function Notifications() {
                         {avatar.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={`text-sm mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                        <h3 className={`text-[15px] mb-0.5 ${unread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                           {item.title}
                           {unread && (
                             <span
@@ -236,7 +236,7 @@ export default function Notifications() {
                           )}
                           <span className="ml-2 text-xs font-normal text-gray-500 whitespace-nowrap">· {item.time}</span>
                         </h3>
-                        <p className="text-sm text-gray-500 line-clamp-2">{item.desc}</p>
+                        <p className="text-[15px] text-gray-500 line-clamp-2">{item.desc}</p>
                       </div>
                       {item.link && (
                         <div className="text-gray-400 shrink-0 self-center mr-1" aria-hidden="true">

@@ -47,7 +47,7 @@ export function FooterCTA({ contactUrl, termsUrl, privacyUrl, inquiryUrl }: Foot
         <div className="mt-24 border-t border-slate-100 pt-12">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="text-2xl font-black tracking-tighter text-[var(--color-landing-dark)]">WELLINK</div>
-            <div className="flex gap-8 text-base font-medium text-slate-400">
+            <div className="flex gap-8 text-[15px] font-medium text-slate-400">
               <a href={termsUrl} target="_blank" rel="noopener noreferrer">
                 이용약관
               </a>
@@ -58,7 +58,7 @@ export function FooterCTA({ contactUrl, termsUrl, privacyUrl, inquiryUrl }: Foot
                 문의하기
               </a>
             </div>
-            <div className="text-base text-slate-400">© 2026 Wellink. All rights reserved.</div>
+            <div className="text-[15px] text-slate-400">© 2026 Wellink. All rights reserved.</div>
           </div>
         </div>
       </div>

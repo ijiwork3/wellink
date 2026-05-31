@@ -89,7 +89,7 @@ function ToastBubble({ toast, onRemove }: { toast: ToastItem; onRemove: (id: num
       style={{ animation: 'slideInRight 0.2s ease-out' }}
     >
       {icons[toast.type]}
-      <span className="flex-1 text-sm text-gray-800 break-keep min-w-0">{toast.message}</span>
+      <span className="flex-1 text-[15px] text-gray-800 break-keep min-w-0">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
         aria-label="알림 닫기"

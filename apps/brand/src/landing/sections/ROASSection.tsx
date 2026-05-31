@@ -23,7 +23,7 @@ export function ROASSection({ data }: ROASSectionProps) {
           <div className="rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-slate-200/50 md:p-12">
             <div className="mb-8">
               <h3 className="text-2xl font-black text-slate-900">ROAS Performance</h3>
-              <p className="text-sm font-bold uppercase tracking-widest text-slate-400">
+              <p className="text-[15px] font-bold uppercase tracking-widest text-slate-400">
                 Efficiency Benchmark 2024
               </p>
             </div>
@@ -32,7 +32,7 @@ export function ROASSection({ data }: ROASSectionProps) {
               {isNearViewport ? (
                 <React.Suspense
                   fallback={
-                    <div className="flex h-full items-center justify-center rounded-xl bg-slate-50 text-base font-medium text-slate-500">
+                    <div className="flex h-full items-center justify-center rounded-xl bg-slate-50 text-[15px] font-medium text-slate-500">
                       차트 로딩 중…
                     </div>
                   }
@@ -46,7 +46,7 @@ export function ROASSection({ data }: ROASSectionProps) {
 
             <div className="mt-8 flex justify-end">
               <div className="text-right">
-                <div className="text-sm font-bold uppercase tracking-widest text-slate-400">
+                <div className="text-[15px] font-bold uppercase tracking-widest text-slate-400">
                   Avg Conversion
                 </div>
                 <div className="text-4xl font-black text-[var(--color-landing-dark)]">+42%</div>
@@ -55,7 +55,7 @@ export function ROASSection({ data }: ROASSectionProps) {
           </div>
 
           <div>
-            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+            <span className="mb-4 block text-[15px] font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               03. Data Driven ROAS
             </span>
             <h2 className="mb-6 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
@@ -75,11 +75,11 @@ export function ROASSection({ data }: ROASSectionProps) {
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-2xl bg-slate-50 p-6">
                 <div className="text-4xl font-black text-[var(--color-landing-dark)]">92%</div>
-                <div className="text-base font-bold text-slate-500">진성 유저 매칭률</div>
+                <div className="text-[15px] font-bold text-slate-500">진성 유저 매칭률</div>
               </div>
               <div className="rounded-2xl bg-slate-50 p-6">
                 <div className="text-4xl font-black text-[var(--color-landing-dark)]">0%</div>
-                <div className="text-base font-bold text-slate-500">허수 계정 차단</div>
+                <div className="text-[15px] font-bold text-slate-500">허수 계정 차단</div>
               </div>
             </div>
           </div>

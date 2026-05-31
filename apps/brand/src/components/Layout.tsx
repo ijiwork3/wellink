@@ -25,7 +25,7 @@ export default function Layout() {
     <div className="relative flex h-full bg-gray-50 overflow-hidden">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-base focus:font-medium"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-brand-green focus:text-white focus:rounded-xl focus:shadow-lg focus:text-[15px] focus:font-medium"
       >
         메인 콘텐츠로 이동
       </a>
@@ -55,10 +55,10 @@ export default function Layout() {
               <button
                 type="button"
                 onClick={() => { navigate('/dashboard'); setMobileNav(false) }}
-                className="text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="text-[15px] font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
                 aria-label="홈으로 이동"
               >
-                WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-sm font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
+                WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-[15px] font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
               </button>
               <button type="button" onClick={() => setMobileNav(false)} aria-label="메뉴 닫기" className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                 <X size={18} className="text-gray-500" aria-hidden="true" />
@@ -86,23 +86,23 @@ export default function Layout() {
             <button
               type="button"
               onClick={() => navigate('/dashboard')}
-              className="ml-2 text-base font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+              className="ml-2 text-[15px] font-bold text-gray-900 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               aria-label="홈으로 이동"
             >
-              WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-sm font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
+              WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span> <span style={{ background: 'var(--gradient-brand)' }} className="text-[15px] font-medium text-white px-2 py-1 rounded-full ml-1">광고주</span>
             </button>
           </div>
         )}
         <InstagramGlobalBanner />
         {/* 구독 상태 배너 — 채도 v2: bg-amber-50 → bg-amber-100, bg-blue-50 → bg-blue-100 */}
         {isGated && (
-          <div className="bg-amber-100 border-b border-amber-200 px-4 py-2 text-sm text-amber-800 flex items-center justify-between">
+          <div className="bg-amber-100 border-b border-amber-200 px-4 py-2 text-[15px] text-amber-800 flex items-center justify-between">
             <span>구독이 만료되었습니다. 서비스 이용을 위해 플랜을 갱신해 주세요.</span>
             <Link to="/subscription" className="font-medium underline shrink-0 ml-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">구독 관리 →</Link>
           </div>
         )}
         {!hasActivePlan && !isGated && (
-          <div className="bg-blue-100 border-b border-blue-200 px-4 py-2 text-sm text-blue-800 flex items-center justify-between">
+          <div className="bg-blue-100 border-b border-blue-200 px-4 py-2 text-[15px] text-blue-800 flex items-center justify-between">
             <span>웰링크 플랜을 시작하면 모든 기능을 이용할 수 있습니다.</span>
             <Link to="/subscription" className="font-medium underline shrink-0 ml-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">플랜 보기 →</Link>
           </div>

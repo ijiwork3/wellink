@@ -8,19 +8,19 @@ function ToastTrigger() {
     <div className="flex flex-wrap gap-3">
       <button
         onClick={() => showToast('저장되었습니다.', 'success')}
-        className="px-4 py-2 bg-emerald-500 text-white text-sm rounded-lg hover:bg-emerald-600"
+        className="px-4 py-2 bg-emerald-500 text-white text-[15px] rounded-lg hover:bg-emerald-600"
       >
         Success
       </button>
       <button
         onClick={() => showToast('오류가 발생했습니다.', 'error')}
-        className="px-4 py-2 bg-rose-500 text-white text-sm rounded-lg hover:bg-rose-600"
+        className="px-4 py-2 bg-rose-500 text-white text-[15px] rounded-lg hover:bg-rose-600"
       >
         Error
       </button>
       <button
         onClick={() => showToast('캠페인이 검토 중입니다.', 'info')}
-        className="px-4 py-2 bg-sky-500 text-white text-sm rounded-lg hover:bg-sky-600"
+        className="px-4 py-2 bg-sky-500 text-white text-[15px] rounded-lg hover:bg-sky-600"
       >
         Info
       </button>
@@ -47,7 +47,7 @@ export default function ToastStory() {
       </StoryBlock>
 
       <div className="mt-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Setup — App.tsx</h3>
+        <h3 className="text-[15px] font-semibold text-gray-700 mb-3">Setup — App.tsx</h3>
         <CodeBlock code={`import { ToastProvider } from '@wellink/ui'
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
       </div>
 
       <div className="mt-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Usage — 컴포넌트 내부</h3>
+        <h3 className="text-[15px] font-semibold text-gray-700 mb-3">Usage — 컴포넌트 내부</h3>
         <CodeBlock code={`import { useToast } from '@wellink/ui'
 
 function MyComponent() {

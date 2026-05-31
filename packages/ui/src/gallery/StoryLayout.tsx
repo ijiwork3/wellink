@@ -17,7 +17,7 @@ export function StoryBlock({ title, description, children, bg = 'white' }: Story
   return (
     <div className="mb-8">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+        <h3 className="text-[15px] font-semibold text-gray-900">{title}</h3>
         {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
       </div>
       <div className={`rounded-xl border border-gray-200 ${bgClass} p-6 flex flex-wrap items-start gap-3`}>
@@ -41,7 +41,7 @@ export function PageHeader({ name, description, importPath, props }: PageHeaderP
         <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
         <span className="text-xs font-medium bg-brand-green/10 text-brand-green-text px-2.5 py-1 rounded-full">Component</span>
       </div>
-      <p className="text-sm text-gray-600 mb-4">{description}</p>
+      <p className="text-[15px] text-gray-600 mb-4">{description}</p>
       <div className="inline-flex items-center gap-2 bg-gray-900 text-gray-300 text-xs px-4 py-2 rounded-lg font-mono">
         <span className="text-gray-500">import</span>
         <span className="text-blue-400">{`{ ${name} }`}</span>
@@ -51,7 +51,7 @@ export function PageHeader({ name, description, importPath, props }: PageHeaderP
 
       {props && props.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">Props</h2>
+          <h2 className="text-[15px] font-semibold text-gray-700 mb-3">Props</h2>
           <div className="rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200">

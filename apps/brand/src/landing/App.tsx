@@ -85,7 +85,7 @@ export default function App() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-base font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+                className="text-[15px] font-medium text-slate-600 transition-colors hover:text-[var(--color-landing-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
               >
                 {item.label}
               </a>
@@ -95,7 +95,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_desktop"
               ctaId="header_desktop_consult"
-              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-base font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-[15px] font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
             >
               상담 신청
             </CtaLink>
@@ -219,7 +219,7 @@ export default function App() {
               </div>
 
               <div>
-                <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+                <span className="mb-4 block text-[15px] font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
                   01. Various Categories
                 </span>
                 <h2 className="mb-6 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
@@ -237,7 +237,7 @@ export default function App() {
                   {['#헬스', '#크로스핏', '#요가', '#필라테스', '#바레', '#러닝'].map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-slate-100 px-4 py-2 text-base font-medium text-slate-600 whitespace-nowrap"
+                      className="rounded-full bg-slate-100 px-4 py-2 text-[15px] font-medium text-slate-600 whitespace-nowrap"
                     >
                       {tag}
                     </span>
@@ -256,7 +256,7 @@ export default function App() {
 
         <section className="py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
+            <span className="mb-4 block text-[15px] font-bold tracking-wider text-[var(--color-landing-dark)] uppercase">
               05. Multi-Layer Pool
             </span>
             <h2 className="mb-16 text-4xl font-black leading-tight text-slate-900 md:text-6xl">
@@ -300,11 +300,11 @@ export default function App() {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-landing-dark)]">
                     <item.icon size={28} />
                   </div>
-                  <div className="mb-2 text-sm font-bold uppercase tracking-widest text-slate-400">
+                  <div className="mb-2 text-[15px] font-bold uppercase tracking-widest text-slate-400">
                     {item.label}
                   </div>
                   <h3 className="mb-4 text-2xl font-black text-slate-900">{item.title}</h3>
-                  <p className="text-base leading-relaxed text-slate-500">{item.desc}</p>
+                  <p className="text-[15px] leading-relaxed text-slate-500">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -320,7 +320,7 @@ export default function App() {
           />
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-            <span className="mb-4 block text-base font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
+            <span className="mb-4 block text-[15px] font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
               Standard Operating Procedure
             </span>
             <h2 className="mb-16 text-4xl font-black leading-tight md:text-6xl">
@@ -347,7 +347,7 @@ export default function App() {
                     </div>
                   </div>
                   <h3 className="mb-4 text-3xl font-black">{item.title}</h3>
-                  <p className="text-base leading-relaxed text-white/50">{item.desc}</p>
+                  <p className="text-[15px] leading-relaxed text-white/50">{item.desc}</p>
                   {i < 3 && <div className="absolute right-0 top-12 hidden h-px w-1/2 bg-white/10 lg:block" />}
                 </div>
               ))}

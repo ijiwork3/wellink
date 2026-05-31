@@ -258,12 +258,12 @@ export default function Subscription() {
         description="가장 합리적인 가격으로 캠페인 기능을 이용하세요"
         meta={
           displayPlan ? (
-            <span className="shrink-0 text-sm font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
+            <span className="shrink-0 text-[15px] font-semibold bg-brand-green-bg text-brand-green-text px-3 py-1.5 rounded-full border border-brand-green-border">
               현재: {plans.find(p => p.id === displayPlan)?.name ?? displayPlan} 플랜
               {(showExpired || showPaymentFailed) && ' (만료)'}
             </span>
           ) : (
-            <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300">
+            <span className="shrink-0 inline-flex items-center gap-1.5 text-[15px] font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300">
               <AlertTriangle size={12} aria-hidden="true" />
               미구독 · 무료 플랜
             </span>
@@ -276,8 +276,8 @@ export default function Subscription() {
         <div className="flex items-start gap-3 bg-red-100 border border-red-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="text-base font-semibold text-red-700">구독이 만료되었습니다</p>
-            <p className="text-sm text-red-500 mt-0.5">지금 플랜을 선택하고 서비스를 계속 이용하세요.</p>
+            <p className="text-[15px] font-semibold text-red-700">구독이 만료되었습니다</p>
+            <p className="text-[15px] text-red-500 mt-0.5">지금 플랜을 선택하고 서비스를 계속 이용하세요.</p>
           </div>
         </div>
       )}
@@ -287,12 +287,12 @@ export default function Subscription() {
         <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="text-base font-semibold text-amber-800">결제에 실패했습니다</p>
-            <p className="text-sm text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
+            <p className="text-[15px] font-semibold text-amber-800">결제에 실패했습니다</p>
+            <p className="text-[15px] text-amber-700 mt-0.5">결제 수단을 확인하고 다시 시도해 주세요.</p>
           </div>
           <button type="button"
             onClick={() => navigate('/payment/method')}
-            className="ml-auto text-sm border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="ml-auto text-[15px] border border-amber-300 text-amber-800 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             결제 수단 수정
           </button>
@@ -304,16 +304,16 @@ export default function Subscription() {
         <div className="bg-brand-green-bg border border-brand-green-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <p className="text-base font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
-              <span className="text-sm font-bold text-red-600 bg-red-100 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
+              <p className="text-[15px] font-semibold text-brand-green-text">현재 Scale 플랜 7일 무료 체험 중입니다.</p>
+              <span className="text-[15px] font-bold text-red-600 bg-red-100 border border-red-200 px-2.5 py-1 rounded-full animate-pulse">D-3</span>
             </div>
-            <span className="text-sm font-medium text-brand-green-text bg-brand-green-border px-2.5 py-1 rounded-full">
+            <span className="text-[15px] font-medium text-brand-green-text bg-brand-green-border px-2.5 py-1 rounded-full">
               체험 중
             </span>
           </div>
           {/* 체험 진행 바 */}
           <div>
-            <div className="flex justify-between text-sm text-brand-green-text mb-1.5">
+            <div className="flex justify-between text-[15px] text-brand-green-text mb-1.5">
               <span>시작일</span>
               <span>D-3 / 7일</span>
             </div>
@@ -329,8 +329,8 @@ export default function Subscription() {
         <div className="flex items-start gap-3 bg-amber-100 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={18} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
-            <p className="text-base font-bold text-amber-800">현재 무료 플랜을 이용 중입니다</p>
-            <p className="text-sm text-amber-800 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
+            <p className="text-[15px] font-bold text-amber-800">현재 무료 플랜을 이용 중입니다</p>
+            <p className="text-[15px] text-amber-800 mt-0.5">유료 플랜 구독 시 인플루언서 매칭, AI 분석 등 모든 기능을 사용할 수 있어요.</p>
           </div>
         </div>
       )}
@@ -347,11 +347,11 @@ export default function Subscription() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-green-bg text-brand-green-text px-2.5 py-1 text-sm font-bold">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-green-bg text-brand-green-text px-2.5 py-1 text-[15px] font-bold">
                     <Check size={12} aria-hidden="true" /> 현재 이용중
                   </span>
                   {cancelStatus === 'cancel_scheduled' && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-1 text-sm font-bold">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-1 text-[15px] font-bold">
                       해지 예정
                     </span>
                   )}
@@ -359,14 +359,14 @@ export default function Subscription() {
                 <h2 className="text-xl @md:text-2xl font-bold text-gray-900">{cur?.name} 플랜</h2>
                 <div className="flex items-baseline gap-1 mt-1">
                   <span className="text-lg @md:text-xl font-bold text-gray-900">{cur?.price}</span>
-                  <span className="text-sm text-gray-500">{cur?.unit}</span>
+                  <span className="text-[15px] text-gray-500">{cur?.unit}</span>
                 </div>
                 {cancelStatus === 'active' ? (
-                  <p className="text-sm text-gray-500 mt-1.5">
+                  <p className="text-[15px] text-gray-500 mt-1.5">
                     다음 결제일은 <span className="font-medium text-gray-900">{fmtDate(nextBillingDate)}</span> 입니다.
                   </p>
                 ) : (
-                  <p className="text-sm text-amber-800 mt-1.5">
+                  <p className="text-[15px] text-amber-800 mt-1.5">
                     해지 예정일 <span className="font-bold">{fmtDate(nextBillingDate)}</span> 까지 이용 가능합니다.
                   </p>
                 )}
@@ -375,17 +375,17 @@ export default function Subscription() {
                 {cancelStatus === 'cancel_scheduled' ? (
                   <button type="button"
                     onClick={() => { setCancelStatus('active'); showToast('해지 예약이 취소되었습니다.', 'success') }}
-                    className="text-sm font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                    className="text-[15px] font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >해지 예약 취소</button>
                 ) : (
                   <>
                     <button type="button"
                       onClick={() => setCancelModal(true)}
-                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      className="text-[15px] font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >해지</button>
                     <button type="button"
                       onClick={() => setRefundModal(true)}
-                      className="text-sm font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                      className="text-[15px] font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >환불 요청</button>
                   </>
                 )}
@@ -404,7 +404,7 @@ export default function Subscription() {
               key={b}
               type="button"
               onClick={() => setBilling(b)}
-              className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              className={`relative rounded-full px-5 py-2 text-[15px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 billing === b
                   ? 'bg-brand-green text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
@@ -438,17 +438,17 @@ export default function Subscription() {
           >
             {currentPlan === plan.id && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-gray-900 text-white text-sm px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                <span className="bg-gray-900 text-white text-[15px] px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                   현재 플랜
                 </span>
               </div>
             )}
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
+              <p className="text-[15px] text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900 tabular-nums">{displayPrice}</span>
-                <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
+                <span className="text-[15px] text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -459,7 +459,7 @@ export default function Subscription() {
               {billing === 'annual' && (
                 <div className="mt-1.5 space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
+                    <span className="text-[15px] text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
                     <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-md whitespace-nowrap">20% 절약</span>
                   </div>
                   <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
@@ -469,14 +469,14 @@ export default function Subscription() {
             <div className="mb-5 grid grid-cols-3 rounded-xl border border-gray-100 bg-gray-50">
               {plan.quota.map(q => (
                 <div key={q.label} className="flex flex-col items-center py-2.5 px-1 gap-0.5">
-                  <span className="text-sm font-bold text-gray-900 tabular-nums whitespace-nowrap">{q.value}</span>
+                  <span className="text-[15px] font-bold text-gray-900 tabular-nums whitespace-nowrap">{q.value}</span>
                   <span className="text-[10px] text-gray-400 whitespace-nowrap">{q.label}</span>
                 </div>
               ))}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
+                <li key={f} className="flex items-start gap-2.5 text-[15px] text-gray-600">
                   <Check size={16} className="shrink-0 mt-0.5 text-gray-900" aria-hidden="true" />
                   {f}
                 </li>
@@ -485,7 +485,7 @@ export default function Subscription() {
             <button type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              className={`w-full py-3 rounded-xl text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 plan.id === currentPlan
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -511,16 +511,16 @@ export default function Subscription() {
             }`}
           >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-brand-green text-white text-sm px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+              <span className="bg-brand-green text-white text-[15px] px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                 {currentPlan === plan.id ? '현재 플랜' : plan.tag}
               </span>
             </div>
             <div className="mb-5">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
+              <p className="text-[15px] text-gray-500 mt-1">{plan.desc}</p>
               <div className="mt-4 flex items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-gray-900 tabular-nums">{displayPrice}</span>
-                <span className="text-base text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
+                <span className="text-[15px] text-gray-500 whitespace-nowrap">{billing === 'annual' ? '원/월' : '원'}</span>
               </div>
               {billing === 'monthly' && (
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -531,7 +531,7 @@ export default function Subscription() {
               {billing === 'annual' && (
                 <div className="mt-1.5 space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
+                    <span className="text-[15px] text-gray-400 line-through tabular-nums whitespace-nowrap">{plan.price}원/월</span>
                     <span className="text-xs font-semibold text-brand-green-text bg-brand-green-bg px-1.5 py-0.5 rounded-md whitespace-nowrap">20% 절약</span>
                   </div>
                   <p className="text-xs text-gray-500">연 {Math.round(monthlyKRW * 0.8 * 12).toLocaleString('ko-KR')}원 청구</p>
@@ -541,14 +541,14 @@ export default function Subscription() {
             <div className="mb-5 grid grid-cols-3 rounded-xl border border-brand-green-border bg-brand-green-bg">
               {plan.quota.map(q => (
                 <div key={q.label} className="flex flex-col items-center py-2.5 px-1 gap-0.5">
-                  <span className="text-sm font-bold text-gray-900 tabular-nums whitespace-nowrap">{q.value}</span>
+                  <span className="text-[15px] font-bold text-gray-900 tabular-nums whitespace-nowrap">{q.value}</span>
                   <span className="text-[10px] text-brand-green-text whitespace-nowrap">{q.label}</span>
                 </div>
               ))}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-base text-gray-600">
+                <li key={f} className="flex items-start gap-2.5 text-[15px] text-gray-600">
                   <Check size={16} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
@@ -557,7 +557,7 @@ export default function Subscription() {
             <button type="button"
               onClick={() => plan.id !== currentPlan && setConfirmModal(plan.id)}
               disabled={plan.id === currentPlan}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+              className={`w-full py-3 rounded-xl text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                 plan.id === currentPlan
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-brand-green text-white hover:bg-brand-green-hover'
@@ -579,14 +579,14 @@ export default function Subscription() {
           >
             {currentPlan === plan.id && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-gray-600 text-white text-sm px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
+                <span className="bg-gray-600 text-white text-[15px] px-4 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">
                   현재 플랜
                 </span>
               </div>
             )}
             <div className="mb-5">
               <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-              <p className="text-sm text-gray-300 mt-1">{plan.desc}</p>
+              <p className="text-[15px] text-gray-300 mt-1">{plan.desc}</p>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-1">
                 <span className="text-4xl font-extrabold text-white">{plan.price}</span>
               </div>
@@ -594,14 +594,14 @@ export default function Subscription() {
             <div className="mb-5 grid grid-cols-3 rounded-xl border border-gray-700 bg-gray-800">
               {plan.quota.map(q => (
                 <div key={q.label} className="flex flex-col items-center py-2.5 px-1 gap-0.5">
-                  <span className="text-sm font-bold text-white tabular-nums whitespace-nowrap">{q.value}</span>
+                  <span className="text-[15px] font-bold text-white tabular-nums whitespace-nowrap">{q.value}</span>
                   <span className="text-[10px] text-gray-400 whitespace-nowrap">{q.label}</span>
                 </div>
               ))}
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-start gap-2.5 text-base text-gray-300">
+                <li key={f} className="flex items-start gap-2.5 text-[15px] text-gray-300">
                   <Check size={16} className="shrink-0 mt-0.5 text-brand-green" aria-hidden="true" />
                   {f}
                 </li>
@@ -613,7 +613,7 @@ export default function Subscription() {
                   setEnterpriseModal(true)
                 }
               }}
-              className={`w-full py-3 rounded-xl text-base font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
+              className={`w-full py-3 rounded-xl text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
                 currentPlan === plan.id
                   ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   : 'border-2 border-white text-white hover:bg-white/10'
@@ -655,7 +655,7 @@ export default function Subscription() {
           )
           if (v === false) return <span className="text-gray-200 font-medium">—</span>
           return (
-            <span className={`text-sm font-semibold whitespace-nowrap tabular-nums ${isScale ? 'text-brand-green-text' : isInfinite ? 'text-gray-700' : 'text-gray-500'}`}>
+            <span className={`text-[15px] font-semibold whitespace-nowrap tabular-nums ${isScale ? 'text-brand-green-text' : isInfinite ? 'text-gray-700' : 'text-gray-500'}`}>
               {v}
             </span>
           )
@@ -666,8 +666,8 @@ export default function Subscription() {
 
             {/* 타이틀 */}
             <div className="px-6 py-5 border-b border-gray-100">
-              <p className="text-base font-bold text-gray-900">플랜별 기능 비교</p>
-              <p className="text-sm text-gray-400 mt-0.5">월간 결제 기준</p>
+              <p className="text-[15px] font-bold text-gray-900">플랜별 기능 비교</p>
+              <p className="text-[15px] text-gray-400 mt-0.5">월간 결제 기준</p>
             </div>
 
             {/* 컬럼 헤더 */}
@@ -683,7 +683,7 @@ export default function Subscription() {
                   className={`relative border-l border-b border-gray-100 px-4 py-5 text-center ${col.accent ? 'bg-brand-green-bg' : col.dark ? 'bg-gray-900' : 'bg-white'}`}
                 >
                   <div className="flex items-center justify-center gap-1.5">
-                    <p className={`text-sm font-bold ${col.accent ? 'text-brand-green-text' : col.dark ? 'text-white' : 'text-gray-900'}`}>
+                    <p className={`text-[15px] font-bold ${col.accent ? 'text-brand-green-text' : col.dark ? 'text-white' : 'text-gray-900'}`}>
                       {col.label}
                     </p>
                     {col.accent && (
@@ -709,7 +709,7 @@ export default function Subscription() {
                 )}
                 <div className="grid grid-cols-4 border-t border-gray-50 group hover:bg-gray-50/60 transition-colors duration-100">
                   <div className="px-6 py-4 flex items-center">
-                    <span className="text-sm text-gray-600 break-keep leading-snug">{row.name}</span>
+                    <span className="text-[15px] text-gray-600 break-keep leading-snug">{row.name}</span>
                   </div>
                   {(['focus', 'scale', 'infinite'] as const).map((key) => (
                     <div
@@ -728,20 +728,20 @@ export default function Subscription() {
       })()}
 
       {/* 7일 무료 체험 안내 */}
-      <p className="text-center text-sm text-gray-500">
+      <p className="text-center text-[15px] text-gray-500">
         7일 무료 체험 후 자동 결제됩니다. 체험 기간 중 언제든 취소 가능합니다.
       </p>
 
       {/* 결제 수단 */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+          <h3 className="text-[15px] font-semibold text-gray-900 flex items-center gap-2">
             <CreditCard size={16} className="text-gray-500" aria-hidden="true" />
             결제 수단
           </h3>
           <button type="button"
             onClick={() => navigate('/payment/method')}
-            className="text-sm text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="text-[15px] text-gray-500 border border-gray-200 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             변경
           </button>
@@ -754,11 +754,11 @@ export default function Subscription() {
               <div className="w-10 h-7 bg-gray-100 rounded-md flex items-center justify-center shrink-0">
                 <CreditCard size={14} className="text-gray-400" aria-hidden="true" />
               </div>
-              <p className="text-base text-gray-500">등록된 결제 수단이 없습니다</p>
+              <p className="text-[15px] text-gray-500">등록된 결제 수단이 없습니다</p>
             </div>
             <button type="button"
               onClick={() => navigate('/payment/method')}
-              className="text-sm bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="text-[15px] bg-brand-green text-white px-3 py-1.5 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               등록하기
             </button>
@@ -766,11 +766,11 @@ export default function Subscription() {
         ) : (
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
             <div className="w-10 h-7 bg-gray-800 rounded-md flex items-center justify-center shrink-0">
-              <span className="text-white text-sm font-bold">VISA</span>
+              <span className="text-white text-[15px] font-bold">VISA</span>
             </div>
             <div>
-              <p className="text-base font-medium text-gray-900">****-****-****-1234</p>
-              <p className="text-sm text-gray-500">유효기한: 01/28</p>
+              <p className="text-[15px] font-medium text-gray-900">****-****-****-1234</p>
+              <p className="text-[15px] text-gray-500">유효기한: 01/28</p>
             </div>
           </div>
         )}
@@ -783,7 +783,7 @@ export default function Subscription() {
         return (
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-50">
-              <h3 className="text-base font-semibold text-gray-900">최근 결제 내역</h3>
+              <h3 className="text-[15px] font-semibold text-gray-900">최근 결제 내역</h3>
             </div>
 
             {/* 모바일 (< @md) — 카드 리스트 */}
@@ -793,18 +793,18 @@ export default function Subscription() {
                 return (
                   <li key={p.id} className="px-5 py-4">
                     <div className="flex items-start justify-between gap-3 mb-1.5">
-                      <p className="text-base font-medium text-gray-900 break-keep min-w-0">{p.desc}</p>
-                      <span className={`text-sm px-2.5 py-1 rounded-full font-medium whitespace-nowrap shrink-0 ${
+                      <p className="text-[15px] font-medium text-gray-900 break-keep min-w-0">{p.desc}</p>
+                      <span className={`text-[15px] px-2.5 py-1 rounded-full font-medium whitespace-nowrap shrink-0 ${
                         isRefunded ? 'bg-amber-100 text-amber-700' : 'bg-brand-green-bg text-brand-green-text'
                       }`}>{isRefunded ? '부분 환불 처리됨' : p.status}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-500">
-                      <span className="text-base font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
+                    <div className="flex items-center gap-3 text-[15px] text-gray-500">
+                      <span className="text-[15px] font-semibold text-gray-900 tabular-nums whitespace-nowrap">{p.amount}</span>
                       <span className="text-gray-400" aria-hidden="true">·</span>
                       <span className="whitespace-nowrap">{fmtDate(p.date)}</span>
                     </div>
                     {isRefunded && refundInfo && (
-                      <p className="text-sm text-amber-700 mt-1.5 whitespace-nowrap">
+                      <p className="text-[15px] text-amber-700 mt-1.5 whitespace-nowrap">
                         결제일 {fmtDate(p.date)} · 환불 요청일 {fmtDate(refundInfo.refundedAt)}
                       </p>
                     )}
@@ -825,7 +825,7 @@ export default function Subscription() {
                     <thead>
                       <tr className="bg-gray-50/50 border-b border-gray-100">
                         {['내용', '금액', '날짜', '상태'].map(h => (
-                          <th key={h} scope="col" className="text-left text-sm font-medium text-gray-500 py-2.5 px-5 whitespace-nowrap">{h}</th>
+                          <th key={h} scope="col" className="text-left text-[15px] font-medium text-gray-500 py-2.5 px-5 whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -834,16 +834,16 @@ export default function Subscription() {
                         const isRefunded = !!(refundInfo && p.id === refundInfo.lastPaymentId)
                         return (
                           <tr key={p.id} className="hover:bg-gray-50 transition-colors duration-150">
-                            <td className="py-3 px-5 text-base font-medium text-gray-900 whitespace-nowrap">{p.desc}</td>
-                            <td className="py-3 px-5 text-base text-gray-900 whitespace-nowrap">{p.amount}</td>
+                            <td className="py-3 px-5 text-[15px] font-medium text-gray-900 whitespace-nowrap">{p.desc}</td>
+                            <td className="py-3 px-5 text-[15px] text-gray-900 whitespace-nowrap">{p.amount}</td>
                             <td className="py-3 px-5 whitespace-nowrap">
-                              <div className="text-base text-gray-600">{fmtDate(p.date)}</div>
+                              <div className="text-[15px] text-gray-600">{fmtDate(p.date)}</div>
                               {isRefunded && refundInfo && (
-                                <div className="text-sm text-amber-700 mt-0.5">환불 요청일 {fmtDate(refundInfo.refundedAt)}</div>
+                                <div className="text-[15px] text-amber-700 mt-0.5">환불 요청일 {fmtDate(refundInfo.refundedAt)}</div>
                               )}
                             </td>
                             <td className="py-3 px-5 whitespace-nowrap">
-                              <span className={`text-sm px-2.5 py-1 rounded-full font-medium ${
+                              <span className={`text-[15px] px-2.5 py-1 rounded-full font-medium ${
                                 isRefunded ? 'bg-amber-100 text-amber-700' : 'bg-brand-green-bg text-brand-green-text'
                               }`}>{isRefunded ? '부분 환불 처리됨' : p.status}</span>
                             </td>
@@ -881,10 +881,10 @@ export default function Subscription() {
         onConfirm={() => setEnterpriseModal(false)}
         showCancel={false}
       >
-        <p className="text-base text-gray-600">웰링크 엔터프라이즈팀에 문의해 주세요.</p>
+        <p className="text-[15px] text-gray-600">웰링크 엔터프라이즈팀에 문의해 주세요.</p>
         <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3 mt-2">
-          <span className="text-base text-gray-500">이메일</span>
-          <span className="text-base font-semibold text-gray-900">{ENTERPRISE_EMAIL}</span>
+          <span className="text-[15px] text-gray-500">이메일</span>
+          <span className="text-[15px] font-semibold text-gray-900">{ENTERPRISE_EMAIL}</span>
         </div>
       </AlertModal>
 
@@ -896,8 +896,8 @@ export default function Subscription() {
         size="sm"
         footer={!confirmed ? (
           <>
-            <button type="button" onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-base hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button type="button" onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-base hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">확인</button>
+            <button type="button" onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+            <button type="button" onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-[15px] hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">확인</button>
           </>
         ) : undefined}
       >
@@ -906,7 +906,7 @@ export default function Subscription() {
             <div className="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center mx-auto mb-3">
               <Check size={20} className="text-white" aria-hidden="true" />
             </div>
-            <p className="text-base font-semibold text-gray-900">
+            <p className="text-[15px] font-semibold text-gray-900">
               {!currentPlan || currentPlan === 'free' ? '구독이 시작되었습니다!' : '플랜이 변경되었습니다!'}
             </p>
           </div>
@@ -915,26 +915,26 @@ export default function Subscription() {
           const isDowngrade = currentPlan === 'scale' && confirmModal === 'focus'
           return (
             <div className="space-y-3">
-              <p className="text-base text-gray-600">
+              <p className="text-[15px] text-gray-600">
                 <strong>{selectedPlan?.name}</strong> 플랜으로 {isNewSubscribe ? '구독을 시작' : '변경'}하시겠습니까?
               </p>
               <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-[15px]">
                   <span className="text-gray-600">{isNewSubscribe ? '구독 플랜' : '변경 플랜'}</span>
                   <span className="font-semibold">{selectedPlan?.name}</span>
                 </div>
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-[15px]">
                   <span className="text-gray-600">금액</span>
                   <span className="font-semibold">
                     {selectedPlan?.price === '커스텀' ? '커스텀' : `₩${selectedPlan?.price}${selectedPlan?.unit?.replace('원', '')}`}
                   </span>
                 </div>
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-[15px]">
                   <span className="text-gray-600">적용일</span>
                   <span className="text-gray-500">{isNewSubscribe ? '즉시 결제 후 적용' : '다음 결제일부터 적용'}</span>
                 </div>
                 {currentPlan && currentPlan !== 'free' && (
-                  <div className="flex justify-between text-base">
+                  <div className="flex justify-between text-[15px]">
                     <span className="text-gray-600">현재 플랜</span>
                     <span className="text-gray-500">{plans.find(p => p.id === currentPlan)?.name ?? '없음'}</span>
                   </div>
@@ -944,7 +944,7 @@ export default function Subscription() {
               {/* 결제 수단 안내 — 미구독→유료 시 즉시 결제, 변경 시 등록 카드로 결제 */}
               <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl">
                 <CreditCard size={14} className="text-blue-700 shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="text-sm text-blue-800 flex-1">
+                <div className="text-[15px] text-blue-800 flex-1">
                   {isNewSubscribe
                     ? '등록된 결제 수단으로 즉시 결제됩니다. 결제 수단을 확인하거나 변경하시려면 아래 링크를 이용해 주세요.'
                     : '다음 결제일에 등록된 결제 수단으로 자동 결제됩니다.'}
@@ -961,7 +961,7 @@ export default function Subscription() {
               {isDowngrade && (
                 <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
                   <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
-                  <p className="text-sm text-amber-800">다운그레이드 시 AI 분석, 우선 지원 등 Scale 전용 기능이 비활성화됩니다.</p>
+                  <p className="text-[15px] text-amber-800">다운그레이드 시 AI 분석, 우선 지원 등 Scale 전용 기능이 비활성화됩니다.</p>
                 </div>
               )}
             </div>
@@ -979,7 +979,7 @@ export default function Subscription() {
           <div className="flex flex-col gap-2 w-full">
             <button type="button"
               onClick={() => setCancelModal(false)}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >구독 유지하기</button>
             <button type="button"
               onClick={() => {
@@ -987,7 +987,7 @@ export default function Subscription() {
                 setCancelModal(false)
                 showToast('해지가 예약되었습니다. 다음 결제일까지 이용 가능합니다.', 'info')
               }}
-              className="text-sm text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+              className="text-[15px] text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
             >해지 예약하기</button>
           </div>
         }
@@ -998,7 +998,7 @@ export default function Subscription() {
             <AlertTriangle size={28} className="text-amber-500" aria-hidden="true" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">정기 결제 해지</h2>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-[15px] text-gray-600 leading-relaxed">
             해지하셔도 <strong className="text-gray-900 font-semibold">{fmtDate(nextPaymentDate)}</strong>까지는<br />
             혜택을 계속 이용하실 수 있습니다.
           </p>
@@ -1008,16 +1008,16 @@ export default function Subscription() {
         <div className="bg-gray-50 rounded-xl p-4 flex items-start gap-2.5 mb-6">
           <CheckCircle2 size={18} className="text-gray-500 shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="text-sm font-medium text-gray-900">다음 결제일부터 요금이 청구되지 않습니다.</p>
-            <p className="text-sm text-gray-500 mt-1">현재 이용 중인 혜택은 만료일까지 유지됩니다.</p>
+            <p className="text-[15px] font-medium text-gray-900">다음 결제일부터 요금이 청구되지 않습니다.</p>
+            <p className="text-[15px] text-gray-500 mt-1">현재 이용 중인 혜택은 만료일까지 유지됩니다.</p>
           </div>
         </div>
 
         {/* 잃게 되는 혜택 — 체크 아이콘 + 회색 텍스트 */}
-        <p className="text-sm font-bold text-gray-900 mb-3">해지 후 잃게 되는 혜택:</p>
+        <p className="text-[15px] font-bold text-gray-900 mb-3">해지 후 잃게 되는 혜택:</p>
         <ul className="space-y-2.5">
           {PLAN_BENEFITS.map((b) => (
-            <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+            <li key={b} className="flex items-start gap-2 text-[15px] text-gray-700">
               <CheckCircle2 size={16} className="text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
               <span>{b}</span>
             </li>
@@ -1035,7 +1035,7 @@ export default function Subscription() {
           <div className="flex flex-col gap-2 w-full">
             <button type="button"
               onClick={() => { setRefundModal(false); setRefundReason('') }}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-lg text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >구독 유지하기</button>
             <button type="button"
               onClick={() => {
@@ -1060,7 +1060,7 @@ export default function Subscription() {
                 showToast('환불 요청이 접수되었습니다. 검토 후 영업일 기준 3~5일 내 처리됩니다.', 'info')
               }}
               disabled={!refundReason.trim()}
-              className="text-sm text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded disabled:text-gray-300 disabled:cursor-not-allowed"
+              className="text-[15px] text-gray-500 hover:text-gray-700 py-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded disabled:text-gray-300 disabled:cursor-not-allowed"
             >환불 및 해지하기</button>
           </div>
         }
@@ -1071,7 +1071,7 @@ export default function Subscription() {
             <AlertTriangle size={20} className="text-amber-500" aria-hidden="true" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 mb-1">환불 및 구독 취소</h2>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-[15px] text-gray-600 leading-relaxed">
             지금 취소하시면 남은 기간에 대한 금액이 환불되며,<br />
             <strong className="text-gray-900 font-semibold">{plans.find(p => p.id === currentPlan)?.name ?? '현재 플랜'}</strong>의 혜택이 즉시 중단됩니다.
           </p>
@@ -1079,37 +1079,37 @@ export default function Subscription() {
 
         {/* 예상 환불 금액 박스 */}
         <div className="bg-gray-50 rounded-lg p-3 mb-3">
-          <p className="text-sm font-medium text-gray-900 flex items-center gap-1.5 mb-2">
+          <p className="text-[15px] font-medium text-gray-900 flex items-center gap-1.5 mb-2">
             <Receipt size={14} aria-hidden="true" />
             예상 환불 금액
           </p>
           <div className="space-y-1">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-[15px]">
               <span className="text-gray-600">다음 결제일</span>
               <span className="text-gray-900 font-medium tabular-nums">{fmtDate(nextPaymentDate)}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-[15px]">
               <span className="text-gray-600">남은 이용 기간</span>
               <span className="text-gray-900 font-medium tabular-nums">{remainingDays}일</span>
             </div>
           </div>
           {/* 구분선 + 환불 예정 금액 */}
           <div className="border-t border-gray-200 pt-2 mt-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-900">
-              환불 예정 금액 <span className="text-sm font-normal text-gray-500">(vat 미포함)</span>
+            <span className="text-[15px] font-medium text-gray-900">
+              환불 예정 금액 <span className="text-[15px] font-normal text-gray-500">(vat 미포함)</span>
             </span>
-            <span className="text-base font-bold text-brand-green-text tabular-nums">{fmtPrice(refundEstimate)}</span>
+            <span className="text-[15px] font-bold text-brand-green-text tabular-nums">{fmtPrice(refundEstimate)}</span>
           </div>
-          <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
+          <p className="text-[15px] text-gray-500 mt-1.5 leading-relaxed">
             * 실제 환불 금액은 결제 수단 및 카드사 정책에 따라 차이가 있을 수 있습니다.
           </p>
         </div>
 
         {/* 잃게 되는 혜택 */}
-        <p className="text-sm font-bold text-gray-900 mb-1.5">취소 시 잃게 되는 혜택:</p>
+        <p className="text-[15px] font-bold text-gray-900 mb-1.5">취소 시 잃게 되는 혜택:</p>
         <ul className="space-y-1 mb-3">
           {PLAN_BENEFITS.map((b) => (
-            <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+            <li key={b} className="flex items-start gap-2 text-[15px] text-gray-700">
               <CheckCircle2 size={14} className="text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
               <span>{b}</span>
             </li>
@@ -1118,7 +1118,7 @@ export default function Subscription() {
 
         {/* 환불 사유 — 필수 */}
         <div>
-          <label htmlFor="refund-reason" className="text-sm font-medium text-gray-900 block mb-1.5">
+          <label htmlFor="refund-reason" className="text-[15px] font-medium text-gray-900 block mb-1.5">
             환불 사유를 알려주세요 <span className="text-rose-500" aria-label="필수">*</span>
           </label>
           <textarea
@@ -1127,7 +1127,7 @@ export default function Subscription() {
             onChange={(e) => setRefundReason(e.target.value)}
             placeholder="서비스 이용에 불편하셨던 점이나 환불 사유를 자세히 적어주시면 서비스 개선에 큰 도움이 됩니다."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none placeholder:text-gray-400 focus-visible:outline-none focus-visible:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/20 transition-colors"
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-[15px] resize-none placeholder:text-gray-400 focus-visible:outline-none focus-visible:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/20 transition-colors"
           />
         </div>
       </Modal>

@@ -149,7 +149,7 @@ export default function Modal({ open, onClose, title, label, children, footer, s
            * px-6은 모바일에서 좌우 24px 침범 → px-4 @sm:px-6 으로 단계화. */
           <div className={`flex items-center justify-between gap-3 px-4 @sm:px-6 py-4 shrink-0 ${noDividers ? '' : 'border-b border-gray-100'}`}>
             {title
-              ? <h3 id={titleId} className="text-base font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
+              ? <h3 id={titleId} className="text-[15px] font-semibold text-gray-900 min-w-0 truncate">{title}</h3>
               : <span />
             }
             {showClose && (

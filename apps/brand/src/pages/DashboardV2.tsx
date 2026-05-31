@@ -337,7 +337,7 @@ export default function DashboardV2() {
       <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-sm text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+          <p className="text-[15px] text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState
@@ -350,7 +350,7 @@ export default function DashboardV2() {
             action={
               <button
                 onClick={() => navigate('/campaigns/new')}
-                className="mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="mt-2 px-5 py-2.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 만들기
               </button>
@@ -366,7 +366,7 @@ export default function DashboardV2() {
       <div className="space-y-4 @sm:space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-sm text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
+          <p className="text-[15px] text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState
@@ -376,7 +376,7 @@ export default function DashboardV2() {
             action={
               <button
                 onClick={() => navigate('/subscription')}
-                className="mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="mt-2 px-5 py-2.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 플랜 업그레이드
               </button>
@@ -411,7 +411,7 @@ export default function DashboardV2() {
             ) : undefined
           }
         />
-        <p className="text-sm text-gray-500 mt-1.5 flex items-center gap-2 flex-wrap">
+        <p className="text-[15px] text-gray-500 mt-1.5 flex items-center gap-2 flex-wrap">
           <RefreshCw size={13} aria-hidden="true" />
           <span>마지막 업데이트 {lastSyncStr}</span>
           <span className="text-gray-300">·</span>
@@ -480,7 +480,7 @@ export default function DashboardV2() {
         {/* 노출 & 도달 추이 — 프로필인사이트 ImpressReachChart 재사용 */}
         <div className="border-t border-gray-100 pt-4 mt-4">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <h3 className="text-sm font-medium text-gray-600">노출 & 도달 추이</h3>
+            <h3 className="text-[15px] font-medium text-gray-600">노출 & 도달 추이</h3>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-indigo-400 inline-block" />노출</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-0.5 bg-brand-green inline-block" />도달</span>
@@ -594,7 +594,7 @@ export default function DashboardV2() {
         <div className="grid grid-cols-1 @[500px]:grid-cols-[240px_1fr] gap-4 @[500px]:gap-6 mb-5">
           {/* 멘션 구성 도넛 */}
           <div className="rounded-xl bg-gray-50 p-4 flex flex-col items-center">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 self-start">멘션 구성</h3>
+            <h3 className="text-[15px] font-bold text-gray-700 uppercase tracking-wide mb-3 self-start">멘션 구성</h3>
             <div className="relative w-32 h-32 mb-3" role="img" aria-label={`총 멘션 ${DASHBOARD_VIRAL_MIX.total}건, 릴스 ${DASHBOARD_VIRAL_MIX.reels.percent}%, 피드 ${DASHBOARD_VIRAL_MIX.feed.percent}%`}>
               <svg viewBox="0 0 90 90" className="w-full h-full -rotate-90" aria-hidden="true">
                 <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" />
@@ -612,10 +612,10 @@ export default function DashboardV2() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-2xl font-bold text-gray-900 tabular-nums">{DASHBOARD_VIRAL_MIX.total}</span>
-                <span className="text-sm text-gray-500 mt-0.5">총 멘션</span>
+                <span className="text-[15px] text-gray-500 mt-0.5">총 멘션</span>
               </div>
             </div>
-            <dl className="w-full space-y-1.5 text-sm">
+            <dl className="w-full space-y-1.5 text-[15px]">
               <div className="flex items-center justify-between">
                 <dt className="flex items-center gap-1.5 text-gray-700">
                   <span className="w-2 h-2 rounded-full bg-brand-green inline-block" aria-hidden="true" />
@@ -641,7 +641,7 @@ export default function DashboardV2() {
           <div className="rounded-xl bg-gray-50 p-4 flex flex-col">
             <div className="flex items-center gap-1.5 mb-3">
               <Hash size={12} className="text-gray-400" aria-hidden="true" />
-              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">캡션 워드클라우드</h3>
+              <h3 className="text-[15px] font-bold text-gray-700 uppercase tracking-wide">캡션 워드클라우드</h3>
             </div>
             <div className="flex-1 flex items-center min-h-[140px]">
               <WordCloud
@@ -652,13 +652,13 @@ export default function DashboardV2() {
                 className="w-full py-2"
               />
             </div>
-            <p className="text-sm text-gray-500 mt-3">단어 클릭 시 해당 키워드로 필터된 바이럴 페이지로 이동합니다.</p>
+            <p className="text-[15px] text-gray-500 mt-3">단어 클릭 시 해당 키워드로 필터된 바이럴 페이지로 이동합니다.</p>
           </div>
         </div>
 
         {/* 멘션 콘텐츠 캐로셀 — 가로 스크롤 + 쉐브론 + fade */}
         <div>
-          <h3 className="text-sm font-medium text-gray-600 mb-3">최근 멘션 콘텐츠</h3>
+          <h3 className="text-[15px] font-medium text-gray-600 mb-3">최근 멘션 콘텐츠</h3>
           {DASHBOARD_VIRAL_CONTENTS.length === 0 ? (
             <EmptyState
               variant="default"
@@ -730,17 +730,17 @@ export default function DashboardV2() {
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <LayoutGrid size={16} className="text-gray-500" aria-hidden="true" />
-            <h2 className="text-base font-semibold text-gray-900">캠페인</h2>
+            <h2 className="text-[15px] font-semibold text-gray-900">캠페인</h2>
           </div>
           <button
             type="button"
             onClick={() => navigate('/campaigns')}
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+            className="text-[15px] text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
           >
             캠페인 목록 <ArrowRight size={12} aria-hidden="true" />
           </button>
         </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-[15px] text-gray-500 mb-4">
           <span className="text-brand-green-text font-medium tabular-nums">진행중 {DASHBOARD_CAMPAIGN_COUNTS.active}</span>
           <span className="mx-1.5 text-gray-300">·</span>
           <span className="tabular-nums">검토 대기 {DASHBOARD_CAMPAIGN_COUNTS.review}</span>
@@ -758,7 +758,7 @@ export default function DashboardV2() {
               <button
                 type="button"
                 onClick={() => navigate('/campaigns/new')}
-                className="bg-brand-green hover:bg-brand-green-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="bg-brand-green hover:bg-brand-green-hover text-white px-4 py-2 rounded-lg text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 만들기
               </button>
@@ -801,13 +801,13 @@ function SectionHeader({
     <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-gray-500 shrink-0">{icon}</span>
-        <h2 className="text-base font-semibold text-gray-900">{title}</h2>
-        {meta && <span className="text-sm text-gray-500 whitespace-nowrap">{meta}</span>}
+        <h2 className="text-[15px] font-semibold text-gray-900">{title}</h2>
+        {meta && <span className="text-[15px] text-gray-500 whitespace-nowrap">{meta}</span>}
       </div>
       <button
         type="button"
         onClick={onAction}
-        className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded shrink-0"
+        className="text-[15px] text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded shrink-0"
       >
         {actionLabel} <ArrowRight size={12} aria-hidden="true" />
       </button>

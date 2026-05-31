@@ -201,7 +201,7 @@ const fmtBudget = (n: number) => n === 0 ? '-' : `₩${(n / 10000).toFixed(0)}�
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-sm text-gray-700 whitespace-nowrap">
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-[15px] text-gray-700 whitespace-nowrap">
       {label}
       <button type="button"
         onClick={onRemove}
@@ -396,7 +396,7 @@ export default function Campaigns() {
               onClick={() => !isGated && navigate('/campaigns/new')}
               disabled={isGated}
               aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
-              className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-base font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Plus size={14} aria-hidden="true" />
               새 캠페인 등록
@@ -422,7 +422,7 @@ export default function Campaigns() {
               <button type="button"
                 key={tab}
                 onClick={() => handleTabClick(tab)}
-                className={`px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
+                className={`px-3 py-3 text-[15px] whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab
                     ? 'border-gray-900 font-semibold text-gray-900'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -453,7 +453,7 @@ export default function Campaigns() {
               onChange={e => setInputValue(e.target.value)}
               placeholder="캠페인명 검색"
               aria-label="캠페인명 검색"
-              className="w-full pl-8 pr-8 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
+              className="w-full pl-8 pr-8 py-2 text-[15px] bg-gray-50 border border-gray-100 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:bg-white placeholder:text-gray-400"
             />
             {inputValue && (
               <button type="button"
@@ -492,7 +492,7 @@ export default function Campaigns() {
         {/* 활성 필터 칩 */}
         {hasActiveFilters && (
           <div className="px-3 @sm:px-5 py-2 border-b border-gray-100 flex items-center gap-1.5 flex-wrap">
-            <span className="text-sm text-gray-500 shrink-0">적용된 필터:</span>
+            <span className="text-[15px] text-gray-500 shrink-0">적용된 필터:</span>
             {!isAllTabActive && (
               <FilterChip
                 label={`상태: ${activeTab}`}
@@ -510,7 +510,7 @@ export default function Campaigns() {
             )}
             <button type="button"
               onClick={resetAllFilters}
-              className="ml-auto inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="ml-auto inline-flex items-center gap-1 text-[15px] text-gray-500 hover:text-gray-900 px-2 py-1 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <RotateCcw size={12} aria-hidden="true" />
               초기화
@@ -531,7 +531,7 @@ export default function Campaigns() {
             action={!qaEmpty && hasActiveFilters ? (
               <button type="button"
                 onClick={resetAllFilters}
-                className="inline-flex items-center gap-1 text-sm text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                className="inline-flex items-center gap-1 text-[15px] text-brand-green-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 필터 초기화
@@ -539,7 +539,7 @@ export default function Campaigns() {
             ) : qaEmpty ? (
               <button type="button"
                 onClick={() => navigate('/campaigns/new')}
-                className="text-sm bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="text-[15px] bg-brand-green text-white px-4 py-2 rounded-xl hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 새 캠페인 등록
               </button>
@@ -593,8 +593,8 @@ export default function Campaigns() {
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-brand-fuchsia-bg text-brand-fuchsia-text border border-brand-fuchsia-border">활동비</span>
                       )}
                     </div>
-                    <p className="text-base @sm:text-base font-semibold text-gray-900 break-keep mb-1">{c.name}</p>
-                    <div className="flex items-center gap-x-2 @sm:gap-x-3 gap-y-0.5 text-sm flex-wrap">
+                    <p className="text-[15px] @sm:text-[15px] font-semibold text-gray-900 break-keep mb-1">{c.name}</p>
+                    <div className="flex items-center gap-x-2 @sm:gap-x-3 gap-y-0.5 text-[15px] flex-wrap">
                       {/* 마감일(to) 강조 — 단계별 라벨 (정책서 § 7-1) */}
                       {(() => {
                         const meta = getCampaignDeadlineMeta(c)
@@ -617,7 +617,7 @@ export default function Campaigns() {
                     {(() => {
                       const meta = getCampaignDeadlineMeta(c)
                       return meta.graceText ? (
-                        <p className="text-sm text-gray-500 mt-0.5">{meta.graceText}</p>
+                        <p className="text-[15px] text-gray-500 mt-0.5">{meta.graceText}</p>
                       ) : null
                     })()}
                     <div className="mt-2 flex items-center gap-2">
@@ -635,7 +635,7 @@ export default function Campaigns() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-700 font-medium tabular-nums shrink-0">{pct}%</span>
+                      <span className="text-[15px] text-gray-700 font-medium tabular-nums shrink-0">{pct}%</span>
                     </div>
                   </div>
                 </div>

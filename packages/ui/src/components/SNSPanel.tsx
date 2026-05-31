@@ -40,7 +40,7 @@ export default function SNSPanel({
     <div className="border border-gray-100 rounded-2xl p-4 bg-white shadow-sm">
       <div className="flex items-center gap-2 mb-3">
         <Link2 size={15} className="text-brand-green" aria-hidden="true" />
-        <span className="text-sm font-semibold text-gray-900">연결된 SNS</span>
+        <span className="text-[15px] font-semibold text-gray-900">연결된 SNS</span>
       </div>
       <div>
         {resolvedPlatforms.map(p => (
@@ -53,21 +53,21 @@ export default function SNSPanel({
                 {p.icon}
               </div>
               <div>
-                <span className="text-sm text-gray-700 font-medium">{p.name}</span>
+                <span className="text-[15px] text-gray-700 font-medium">{p.name}</span>
                 {p.connected && p.handle && (
-                  <p className="text-sm text-gray-400">@{p.handle}</p>
+                  <p className="text-[15px] text-gray-400">@{p.handle}</p>
                 )}
               </div>
             </div>
             {p.connected ? (
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-green inline-block" />
-                <span className="text-sm text-brand-green-text font-medium">연결됨</span>
+                <span className="text-[15px] text-brand-green-text font-medium">연결됨</span>
               </div>
             ) : (
               <button
                 type="button"
-                className="text-sm text-brand-green-text flex items-center gap-0.5 hover:text-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
+                className="text-[15px] text-brand-green-text flex items-center gap-0.5 hover:text-brand-green-hover transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded px-1 py-0.5"
                 onClick={() => onConnectClick?.(p.id)}
                 aria-label={`${p.name} 연결하기`}
               >

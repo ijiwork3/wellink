@@ -72,7 +72,7 @@ export default function Tooltip({ content, children, side = 'top', multiline = f
       {open && (
         <span
           role="tooltip"
-          className={`absolute ${positionCls} px-2.5 py-1.5 bg-gray-800 text-white text-sm rounded-lg z-20 shadow-lg ${
+          className={`absolute ${positionCls} px-2.5 py-1.5 bg-gray-800 text-white text-[15px] rounded-lg z-20 shadow-lg ${
             multiline
               // w-max: content 기준 width (inline-flex 부모 영향 제거)
               // max-w-[min(80vw,360px)]: viewport 기준 한도, 길면 자연스럽게 줄바꿈

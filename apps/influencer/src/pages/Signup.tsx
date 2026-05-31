@@ -111,7 +111,7 @@ export default function Signup() {
       <div className="fixed top-4 right-4 z-10">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          className="inline-block px-4 py-2 rounded-xl text-sm font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          className="inline-block px-4 py-2 rounded-xl text-[15px] font-medium bg-white shadow-sm hover:shadow-md transition-all duration-150 text-brand-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           도입문의
         </a>
@@ -121,13 +121,13 @@ export default function Signup() {
         {/* 로고 */}
         <div className="text-center mb-7">
           <h1 className="text-2xl font-black text-gray-900">WELLINK<span className="text-brand-green">.AI</span></h1>
-          <p className="text-sm text-gray-500 mt-1">인플루언서 포털 회원가입</p>
+          <p className="text-[15px] text-gray-500 mt-1">인플루언서 포털 회원가입</p>
         </div>
 
         <div className="space-y-3.5">
           {/* 이름 */}
           <div>
-            <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1.5">이름 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-name" className="block text-[15px] font-medium text-gray-700 mb-1.5">이름 <span className="text-red-400">*</span></label>
             <input
               id="signup-name"
               type="text"
@@ -146,7 +146,7 @@ export default function Signup() {
 
           {/* 이메일 */}
           <div>
-            <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1.5">이메일 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-email" className="block text-[15px] font-medium text-gray-700 mb-1.5">이메일 <span className="text-red-400">*</span></label>
             <input
               id="signup-email"
               type="email"
@@ -169,7 +169,7 @@ export default function Signup() {
 
           {/* 비밀번호 */}
           <div>
-            <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-password" className="block text-[15px] font-medium text-gray-700 mb-1.5">비밀번호 <span className="text-red-400">*</span></label>
             <input
               id="signup-password"
               type="password"
@@ -188,7 +188,7 @@ export default function Signup() {
 
           {/* 비밀번호 확인 */}
           <div>
-            <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-gray-700 mb-1.5">비밀번호 확인 <span className="text-red-400">*</span></label>
+            <label htmlFor="signup-password-confirm" className="block text-[15px] font-medium text-gray-700 mb-1.5">비밀번호 확인 <span className="text-red-400">*</span></label>
             <input
               id="signup-password-confirm"
               type="password"
@@ -207,7 +207,7 @@ export default function Signup() {
 
           {/* 전화번호 — 인증하기 인라인 (좁은 모바일에서 줄바꿈) */}
           <div>
-            <label htmlFor="signup-phone" className="block text-sm font-medium text-gray-700 mb-1.5">전화번호</label>
+            <label htmlFor="signup-phone" className="block text-[15px] font-medium text-gray-700 mb-1.5">전화번호</label>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 id="signup-phone"
@@ -225,7 +225,7 @@ export default function Signup() {
                   setPhoneVerified(true)
                   showToast('인증번호가 발송됐어요', 'success')
                 }}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                className={`px-4 py-2.5 rounded-xl text-[15px] font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   phoneVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
@@ -237,7 +237,7 @@ export default function Signup() {
 
           {/* 인스타그램 — 인증하기 인라인 */}
           <div>
-            <label htmlFor="signup-instagram" className="block text-sm font-medium text-gray-700 mb-1.5">인스타그램 아이디</label>
+            <label htmlFor="signup-instagram" className="block text-[15px] font-medium text-gray-700 mb-1.5">인스타그램 아이디</label>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 id="signup-instagram"
@@ -258,7 +258,7 @@ export default function Signup() {
                   setInstaVerified(true)
                   showToast('인스타그램 연동이 완료됐어요', 'success')
                 }}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+                className={`px-4 py-2.5 rounded-xl text-[15px] font-medium transition-all duration-150 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
                   instaVerified ? 'bg-brand-green-bg text-brand-green-text' : 'bg-brand-green text-white hover:opacity-90'
                 }`}
               >
@@ -270,7 +270,7 @@ export default function Signup() {
 
           {/* 활동 분야 — CustomCheckbox */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2.5">활동 분야</label>
+            <label className="block text-[15px] font-medium text-gray-700 mb-2.5">활동 분야</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {activityFields.map((field) => (
                 <CustomCheckbox
@@ -289,13 +289,13 @@ export default function Signup() {
             disabled={isSubmitting}
             aria-disabled={isSubmitting}
             aria-busy={isSubmitting}
-            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-3 rounded-xl text-[15px] font-semibold text-white transition-all duration-150 hover:opacity-90 mt-1 disabled:opacity-60 disabled:cursor-not-allowed bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             {isSubmitting ? '처리 중...' : '회원 인증 후 가입하기'}
           </button>
 
           {/* 로그인 링크 */}
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-[15px] text-gray-500">
             이미 계정이 있으신가요?{' '}
             <button
               onClick={() => navigate('/login')}

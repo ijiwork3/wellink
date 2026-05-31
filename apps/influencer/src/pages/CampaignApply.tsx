@@ -204,26 +204,26 @@ export default function CampaignApply() {
           </div>
           <div className="text-center">
             <p className="text-lg font-bold text-gray-900">{isEditMode ? '수정 완료!' : '신청 완료!'}</p>
-            <p className="text-sm text-gray-500 mt-1">{isEditMode ? '변경 사항을 반영했어요' : '브랜드 검토 후 결과를 알려드릴게요'}</p>
+            <p className="text-[15px] text-gray-500 mt-1">{isEditMode ? '변경 사항을 반영했어요' : '브랜드 검토 후 결과를 알려드릴게요'}</p>
           </div>
           {isEditMode ? (
             <button
               onClick={() => navigate(`/campaigns/${id}/apply?mode=view`)}
-              className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full max-w-sm py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               신청 정보 보기
             </button>
           ) : (
             <button
               onClick={() => navigate('/campaigns/my')}
-              className="w-full max-w-sm py-3 rounded-xl text-sm font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full max-w-sm py-3 rounded-xl text-[15px] font-semibold text-white bg-brand-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               내 캠페인 확인
             </button>
           )}
           <button
             onClick={() => navigate('/campaigns/browse')}
-            className="w-full max-w-sm py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full max-w-sm py-3 rounded-xl text-[15px] font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             계속 둘러보기
           </button>
@@ -245,7 +245,7 @@ export default function CampaignApply() {
           {isViewMode ? (
             <button
               onClick={() => navigate('/campaigns/my')}
-              className="w-full py-3.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full py-3.5 rounded-xl text-[15px] font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               돌아가기
             </button>
@@ -257,7 +257,7 @@ export default function CampaignApply() {
               <button
                 type="button"
                 onClick={() => navigate('/media')}
-                className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
+                className="w-full py-3.5 rounded-xl text-[15px] font-semibold text-white bg-amber-500 hover:bg-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
               >
                 인스타 관리에서 계정 연동하기
               </button>
@@ -268,7 +268,7 @@ export default function CampaignApply() {
               disabled={isSubmitting || !agreed1 || !agreed2}
               aria-disabled={isSubmitting || !agreed1 || !agreed2}
               aria-busy={isSubmitting}
-              className="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              className="w-full py-3.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               {isSubmitting ? '제출 중...' : isEditMode ? '수정 완료' : '신청하기'}
             </button>
@@ -284,18 +284,18 @@ export default function CampaignApply() {
             <div className="flex items-center justify-between gap-2 p-3.5 rounded-xl bg-brand-green-bg border border-brand-green-border">
               <div className="flex items-center gap-2 min-w-0">
                 <CheckCircle2 size={16} className="text-brand-green flex-shrink-0" aria-hidden="true" />
-                <span className="text-sm font-medium text-brand-green-text truncate">신청 완료된 정보예요</span>
+                <span className="text-[15px] font-medium text-brand-green-text truncate">신청 완료된 정보예요</span>
               </div>
               <button
                 onClick={() => navigate(`/campaigns/${id}/apply?mode=edit`)}
-                className="shrink-0 flex items-center gap-1 text-sm text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="shrink-0 flex items-center gap-1 text-[15px] text-brand-green-text font-medium border border-brand-green-border rounded-lg px-2.5 py-1 hover:bg-brand-green-bg transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 <Pencil size={14} aria-hidden="true" />수정하기
               </button>
             </div>
             {appliedData?.selectionStatus && (
               <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-100">
-                <span className="text-sm text-gray-500">선정 상태</span>
+                <span className="text-[15px] text-gray-500">선정 상태</span>
                 <span className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${
                   appliedData.selectionStatus === 'selected'
                     ? 'bg-brand-green-bg text-brand-green-text'
@@ -311,12 +311,12 @@ export default function CampaignApply() {
         {/* 바로가기 링크 — 원본 CampaignApplyForm.tsx L417-437: campaign.link 존재 시 노출 */}
         {campaign.link && (
           <div className="rounded-2xl border border-gray-100 p-4">
-            <p className="text-sm font-semibold text-gray-500 mb-2">바로가기 링크</p>
+            <p className="text-[15px] font-semibold text-gray-500 mb-2">바로가기 링크</p>
             <a
               href={campaign.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-brand-green-text hover:underline flex items-center gap-1 break-all"
+              className="text-[15px] text-brand-green-text hover:underline flex items-center gap-1 break-all"
             >
               {campaign.link}
               <ExternalLink size={13} className="shrink-0" aria-hidden="true" />
@@ -338,8 +338,8 @@ export default function CampaignApply() {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-gray-500 truncate">{campaign.brand}</p>
-              <p className="text-sm font-semibold text-gray-900 line-clamp-2 break-keep">{campaign.name}</p>
+              <p className="text-[15px] text-gray-500 truncate">{campaign.brand}</p>
+              <p className="text-[15px] font-semibold text-gray-900 line-clamp-2 break-keep">{campaign.name}</p>
               <div className="flex items-center gap-x-2 gap-y-0.5 mt-1 flex-wrap">
                 {isDelivery
                   ? <span className="flex items-center gap-1 text-xs text-brand-green-text whitespace-nowrap"><Package size={12} />배송형</span>
@@ -356,7 +356,7 @@ export default function CampaignApply() {
               <p className="text-xs font-semibold text-gray-500 flex items-center gap-1 mb-1.5">
                 <Gift size={11} className="text-brand-green" aria-hidden="true" />제공 내역
               </p>
-              <p className="text-sm text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.productDetail}</p>
+              <p className="text-[15px] text-gray-700 whitespace-pre-line break-keep leading-relaxed">{campaign.productDetail}</p>
             </div>
           )}
 
@@ -366,7 +366,7 @@ export default function CampaignApply() {
               <p className="text-xs font-semibold text-gray-500 flex items-center gap-1 mb-1.5">
                 <BookOpen size={11} className="text-brand-green" aria-hidden="true" />필수 가이드
               </p>
-              <div className="text-sm text-gray-700 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
+              <div className="text-[15px] text-gray-700 break-keep leading-relaxed prose prose-sm max-w-none prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
                 <Markdown>{campaign.detailMissionDescription}</Markdown>
               </div>
             </div>
@@ -376,24 +376,24 @@ export default function CampaignApply() {
 
         {/* 신청자 정보 + 연락처 통합 카드 — 원본 CampaignApplyForm.tsx L463-518 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-          <p className="text-sm font-semibold text-gray-900 mb-3">신청자 정보</p>
+          <p className="text-[15px] font-semibold text-gray-900 mb-3">신청자 정보</p>
           <div className="space-y-2.5">
             <div className="flex items-center gap-4">
               <span className="text-xs text-gray-400 w-20 shrink-0">이름</span>
-              <span className="text-sm text-gray-900">{mockProfile.name}</span>
+              <span className="text-[15px] text-gray-900">{mockProfile.name}</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-xs text-gray-400 w-20 shrink-0">연락처</span>
               {phone
-                ? <span className="text-sm text-gray-700 tabular-nums">{phone}</span>
-                : <button onClick={() => navigate('/profile')} className="text-sm text-brand-green-text font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">마이페이지에서 등록하기 →</button>
+                ? <span className="text-[15px] text-gray-700 tabular-nums">{phone}</span>
+                : <button onClick={() => navigate('/profile')} className="text-[15px] text-brand-green-text font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">마이페이지에서 등록하기 →</button>
               }
             </div>
             {mockProfile.instagramConnected && (
               <div className="flex items-start gap-4">
                 <span className="text-xs text-gray-400 w-20 shrink-0 pt-0.5">인스타그램</span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-gray-900 truncate">@{mockProfile.instagram}</span>
+                  <span className="text-[15px] text-gray-900 truncate">@{mockProfile.instagram}</span>
                   {!isViewMode && (
                     <p className="text-xs text-gray-400 mt-0.5 break-keep">선정 후에는 연결된 계정을 변경할 수 없습니다.</p>
                   )}
@@ -408,7 +408,7 @@ export default function CampaignApply() {
           <Section title="배송 정보" required={!isViewMode} icon={<MapPin size={14} className="text-brand-green" />}>
             <div className="space-y-3">
               <div>
-                <label className="text-sm text-gray-500 mb-1 block">수령인 이름{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-[15px] text-gray-500 mb-1 block">수령인 이름{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={deliveryName} />
                 ) : (
@@ -429,7 +429,7 @@ export default function CampaignApply() {
                 )}
               </div>
               <div>
-                <label className="text-sm text-gray-500 mb-1 block">연락처{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-[15px] text-gray-500 mb-1 block">연락처{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={deliveryPhone} />
                 ) : (
@@ -451,7 +451,7 @@ export default function CampaignApply() {
                 )}
               </div>
               <div>
-                <label className="text-sm text-gray-500 mb-1 block">주소{!isViewMode && <span className="text-red-500"> *</span>}</label>
+                <label className="text-[15px] text-gray-500 mb-1 block">주소{!isViewMode && <span className="text-red-500"> *</span>}</label>
                 {isViewMode ? (
                   <ViewField value={`(${deliveryZip}) ${deliveryAddr}${deliveryAddrDetail ? ' ' + deliveryAddrDetail : ''}`} />
                 ) : (
@@ -469,7 +469,7 @@ export default function CampaignApply() {
                       />
                       <button
                         onClick={() => { setAddrQuery(''); setAddrSearchOpen(true) }}
-                        className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                        className="shrink-0 px-3 py-2.5 rounded-xl border border-gray-200 text-[15px] text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                       >
                         주소 검색
                       </button>
@@ -509,7 +509,7 @@ export default function CampaignApply() {
             <div className="space-y-4">
               {campaign.questions!.map(q => (
                 <div key={q.id}>
-                  <label className="text-sm font-medium text-gray-900 block mb-1">
+                  <label className="text-[15px] font-medium text-gray-900 block mb-1">
                     {q.question}
                     {q.required && !isViewMode && <span className="text-red-500 ml-0.5">*</span>}
                   </label>
@@ -531,7 +531,7 @@ export default function CampaignApply() {
                             onChange={() => { setAnswers(prev => ({ ...prev, [q.id]: opt })); clearError(`q_${q.id}`) }}
                             className="accent-brand-green mt-0.5 flex-shrink-0"
                           />
-                          <span className="text-sm text-gray-700 break-keep min-w-0 flex-1">{opt}</span>
+                          <span className="text-[15px] text-gray-700 break-keep min-w-0 flex-1">{opt}</span>
                         </label>
                       ))}
                     </div>
@@ -551,7 +551,7 @@ export default function CampaignApply() {
                           aria-invalid={!!errors[`q_${q.id}`]}
                           aria-describedby={errors[`q_${q.id}`] ? `apply-error-q-${q.id}` : undefined}
                         />
-                        <p className={`text-sm mt-1 text-right tabular-nums ${counterCls}`}>{len}/500</p>
+                        <p className={`text-[15px] mt-1 text-right tabular-nums ${counterCls}`}>{len}/500</p>
                       </>
                     )
                   })()}
@@ -582,7 +582,7 @@ export default function CampaignApply() {
               />
               {/* 공통 안내사항 — 원본 CampaignApplyForm.tsx L859-872 */}
               <div className="pt-4 mt-2">
-                <p className="text-sm font-semibold text-gray-900 mb-4">공통 안내사항</p>
+                <p className="text-[15px] font-semibold text-gray-900 mb-4">공통 안내사항</p>
                 <div className="space-y-5 text-xs leading-relaxed">
                   {[
                     { num: '①', title: '광고 표시 의무', desc: '게시물에 [광고] 또는 [협찬] 문구를 눈에 띄는 위치에 한국어로 표시해야 합니다. 미표시 시 향후 캠페인 참여가 제한될 수 있습니다.' },
@@ -616,7 +616,7 @@ export default function CampaignApply() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100">
-              <p className="text-base font-bold text-gray-900">주소 검색</p>
+              <p className="text-[15px] font-bold text-gray-900">주소 검색</p>
               <button
                 onClick={() => setAddrSearchOpen(false)}
                 className="text-gray-400 hover:text-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg p-1"
@@ -630,7 +630,7 @@ export default function CampaignApply() {
                 onChange={e => setAddrQuery(e.target.value)}
                 placeholder="도로명, 건물명, 지번 검색"
                 autoFocus
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
               />
             </div>
             <div className="overflow-y-auto max-h-64 px-2 pb-3">
@@ -653,7 +653,7 @@ export default function CampaignApply() {
                     }}
                     className="w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                   >
-                    <p className="text-sm font-medium text-gray-900">{a.addr}</p>
+                    <p className="text-[15px] font-medium text-gray-900">{a.addr}</p>
                     <p className="text-xs text-gray-400 tabular-nums mt-0.5">({a.zip})</p>
                   </button>
                 ))}
@@ -668,7 +668,7 @@ export default function CampaignApply() {
 
 function ViewField({ value }: { value: string }) {
   return (
-    <div className="w-full px-3.5 py-2.5 rounded-xl border border-gray-100 bg-gray-50 text-sm text-gray-700">
+    <div className="w-full px-3.5 py-2.5 rounded-xl border border-gray-100 bg-gray-50 text-[15px] text-gray-700">
       {value}
     </div>
   )
@@ -684,8 +684,8 @@ function Section({ title, required, icon, children }: {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 @[640px]:p-5">
       <div className="flex items-center gap-1.5 mb-3">
         {icon}
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-        {required && <span className="text-red-500 text-sm" aria-label="필수">*</span>}
+        <h3 className="text-[15px] font-semibold text-gray-900">{title}</h3>
+        {required && <span className="text-red-500 text-[15px]" aria-label="필수">*</span>}
       </div>
       {children}
     </div>
@@ -710,7 +710,7 @@ function AgreementRow({ checked, onChange, error, title, description }: {
         className="mt-0.5 accent-brand-green shrink-0"
       />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-800 leading-snug break-keep">{title} <span className="text-red-500">*</span></p>
+        <p className="text-[15px] font-medium text-gray-800 leading-snug break-keep">{title} <span className="text-red-500">*</span></p>
         {description && <p className="text-xs text-gray-400 mt-0.5 break-keep leading-relaxed">{description}</p>}
       </div>
     </label>
@@ -718,8 +718,8 @@ function AgreementRow({ checked, onChange, error, title, description }: {
 }
 
 function fieldCls(error?: boolean) {
-  // 글자 크기 16px(text-base) 강제 — iOS Safari 인풋 focus 시 auto-zoom 방지
-  return `w-full px-3.5 py-2.5 rounded-xl border text-base transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
+  // 글자 크기 16px(text-[15px]) 강제 — iOS Safari 인풋 focus 시 auto-zoom 방지
+  return `w-full px-3.5 py-2.5 rounded-xl border text-[15px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 ${
     error
       ? 'border-red-300 bg-red-50 focus-visible:ring-red-300/50'
       : 'border-gray-200 bg-white focus-visible:border-brand-green'

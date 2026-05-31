@@ -65,10 +65,10 @@ export default function Login() {
     <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-brand-green-bg to-white p-4">
       {/* 로고 */}
       <div className="fixed top-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-10">
-        <span className="text-base font-bold tracking-tight text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
+        <span className="text-[15px] font-bold tracking-tight text-gray-900">WELLINK<span className="text-brand-green">.AI</span></span>
         <button
           onClick={() => navigate('/signup')}
-          className="text-sm px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+          className="text-[15px] px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
         >
           회원가입
         </button>
@@ -77,7 +77,7 @@ export default function Login() {
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-gray-900">로그인</h1>
-          <p className="text-sm text-gray-500 mt-1">인플루언서 포털에 오신 걸 환영해요</p>
+          <p className="text-[15px] text-gray-500 mt-1">인플루언서 포털에 오신 걸 환영해요</p>
         </div>
 
         <div className="space-y-4">
@@ -96,7 +96,7 @@ export default function Login() {
               value={id}
               onChange={e => setId(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
             />
           </div>
 
@@ -111,7 +111,7 @@ export default function Login() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all"
             />
             <button
               onClick={() => setShowPassword(v => !v)}
@@ -129,13 +129,13 @@ export default function Login() {
             disabled={!id.trim() || !password.trim() || loading}
             aria-disabled={!id.trim() || !password.trim() || loading}
             aria-busy={loading}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-green transition-all duration-150 disabled:opacity-40 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+            className="w-full py-2.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green transition-all duration-150 disabled:opacity-40 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-[15px] text-gray-500 mt-4">
           계정이 없으신가요?{' '}
           <button onClick={() => navigate('/signup')} className="text-brand-green-text rounded-md transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">회원가입</button>
         </p>

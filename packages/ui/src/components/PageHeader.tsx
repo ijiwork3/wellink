@@ -3,7 +3,7 @@
  *
  * 정책 (CLAUDE.md > "공통 페이지 헤더 정책"):
  * - 타이틀: text-2xl @md:text-3xl font-bold tracking-tight (모바일 H2 / PC H1)
- * - 설명: text-sm text-gray-500 (선택)
+ * - 설명: text-[15px] text-gray-500 (선택)
  * - actions: 우측 (DateRangePicker, 새 X 등록 버튼 등)
  * - 모바일에서는 actions가 다음 줄로 wrap (flex-col → flex-row at @sm)
  * - sticky 적용 시 상위에서 직접 sticky top-N + bg-white 처리
@@ -40,7 +40,7 @@ const PageHeader = memo(function PageHeader({
           {meta}
         </div>
         {description && (
-          <p className="text-sm text-gray-500 mt-1 break-keep">{description}</p>
+          <p className="text-[15px] text-gray-500 mt-1 break-keep">{description}</p>
         )}
       </div>
       {actions && (

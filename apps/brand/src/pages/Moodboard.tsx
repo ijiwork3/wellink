@@ -134,7 +134,7 @@ type G = typeof GRAY[0]
 // ─── 배지 공통 ────────────────────────────────────────────────────
 function Badge({ bg, text, children }: { bg: string; text: string; children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full"
+    <span className="inline-flex items-center gap-1 text-[15px] font-medium px-2.5 py-1 rounded-full"
       style={{ backgroundColor: bg, color: text }}>
       {children}
     </span>
@@ -156,7 +156,7 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
     <div className="w-[220px] shrink-0 flex flex-col h-full border-r" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
       <div className="px-5 pt-5 pb-4 flex items-center gap-1.5">
         <span className="text-lg font-bold tracking-tight text-gray-900">WELLINK</span>
-        <span className="text-sm font-medium px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>광고주</span>
+        <span className="text-[15px] font-medium px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>광고주</span>
       </div>
       <nav className="flex-1 px-3 overflow-y-auto">
         {navItems.map(item => {
@@ -166,9 +166,9 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
           return (
             <div key={item.key}>
               {showSection && (
-                <div className="text-sm font-semibold uppercase tracking-widest px-3 mt-4 mb-1" style={{ color: g.subtle }}>{item.section}</div>
+                <div className="text-[15px] font-semibold uppercase tracking-widest px-3 mt-4 mb-1" style={{ color: g.subtle }}>{item.section}</div>
               )}
-              <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base mb-0.5 cursor-pointer"
+              <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] mb-0.5 cursor-pointer"
                 style={isActive
                   ? { backgroundColor: g.navActive, color: SEMANTIC_COLORS.textPrimary, fontWeight: 500 }
                   : { color: g.muted }}>
@@ -181,10 +181,10 @@ function Sidebar({ p, d: _d, g, active }: { p: P; d: D; g: G; active: string }) 
       </nav>
       <div className="px-3 pb-5 pt-3 border-t" style={{ borderColor: g.border }}>
         <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style={{ backgroundColor: g.pillBg, color: g.muted }}>W</div>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[15px] font-bold shrink-0" style={{ backgroundColor: g.pillBg, color: g.muted }}>W</div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 break-words">웰링크 브랜드</p>
-            <p className="text-sm break-words" style={{ color: g.subtle }}>brand@wellink.ai</p>
+            <p className="text-[15px] font-medium text-gray-900 break-words">웰링크 브랜드</p>
+            <p className="text-[15px] break-words" style={{ color: g.subtle }}>brand@wellink.ai</p>
           </div>
         </div>
       </div>
@@ -212,9 +212,9 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
         <div className="px-6 py-4 flex items-center justify-between border-b" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">안녕하세요, 웰링크 브랜드님</h1>
-            <p className="text-base mt-0.5" style={{ color: g.muted }}>2026년 4월 25일 금요일</p>
+            <p className="text-[15px] mt-0.5" style={{ color: g.muted }}>2026년 4월 25일 금요일</p>
           </div>
-          <button type="button" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>
+          <button type="button" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[15px] font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>
             <Megaphone size={14} aria-hidden="true" /> 새 캠페인
           </button>
         </div>
@@ -224,11 +224,11 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             {kpis.map((k, i) => (
               <div key={i} className="border shadow-sm rounded-xl p-5 flex flex-col gap-3" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium" style={{ color: g.muted }}>{k.label}</span>
+                  <span className="text-[15px] font-medium" style={{ color: g.muted }}>{k.label}</span>
                   <span style={{ color: g.subtle }}>{k.icon}</span>
                 </div>
                 <div className="text-[28px] font-bold text-gray-900 leading-tight">{k.value}</div>
-                <div className="flex items-center gap-1 text-sm font-medium" style={{ color: k.up ? d.color : a.trendDown }}>
+                <div className="flex items-center gap-1 text-[15px] font-medium" style={{ color: k.up ? d.color : a.trendDown }}>
                   {k.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
                   {k.trend} <span className="font-normal" style={{ color: g.subtle }}>전월</span>
                 </div>
@@ -240,14 +240,14 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
           <div className="grid grid-cols-1 @lg:grid-cols-3 gap-4">
             <div className="@lg:col-span-2 border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: g.border }}>
-                <h2 className="text-base font-semibold text-gray-900">활성 캠페인 현황</h2>
-                <button type="button" className="text-sm flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>전체보기 <ArrowRight size={12} aria-hidden="true" /></button>
+                <h2 className="text-[15px] font-semibold text-gray-900">활성 캠페인 현황</h2>
+                <button type="button" className="text-[15px] flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>전체보기 <ArrowRight size={12} aria-hidden="true" /></button>
               </div>
-              <table className="w-full text-base">
+              <table className="w-full text-[15px]">
                 <thead>
                   <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                     {['캠페인명','상태','진행률','마감일',''].map(h => (
-                      <th key={h} className="text-left text-sm font-medium py-2.5 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
+                      <th key={h} className="text-left text-[15px] font-medium py-2.5 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -257,7 +257,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     { name: '비건 신제품 론칭', status: '대기중', pct: 0,  dday: 'D-17', active: false },
                   ].map((c, i) => (
                     <tr key={i} className="border-b last:border-0" style={{ borderColor: g.border }}>
-                      <td className="py-3.5 px-4 text-base font-medium text-gray-900">{c.name}</td>
+                      <td className="py-3.5 px-4 text-[15px] font-medium text-gray-900">{c.name}</td>
                       <td className="py-3.5 px-4">
                         <Badge bg={c.active ? a.badgeActiveBg : a.badgePendingBg} text={c.active ? a.badgeActiveText : a.badgePendingText}>{c.status}</Badge>
                       </td>
@@ -266,12 +266,12 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                           <div className="w-20 h-1.5 rounded-full" style={{ backgroundColor: g.pillBg }}>
                             <div className="h-full rounded-full" style={{ width: `${c.pct}%`, backgroundColor: p.green }} />
                           </div>
-                          <span className="text-sm" style={{ color: g.muted }}>{c.pct}%</span>
+                          <span className="text-[15px]" style={{ color: g.muted }}>{c.pct}%</span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-sm" style={{ color: g.muted }}>{c.dday}</td>
+                      <td className="py-3.5 px-4 text-[15px]" style={{ color: g.muted }}>{c.dday}</td>
                       <td className="py-3.5 px-4">
-                        <button type="button" className="text-sm flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>상세 <ArrowRight size={12} aria-hidden="true" /></button>
+                        <button type="button" className="text-[15px] flex items-center gap-1 px-2 py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ color: d.color }}>상세 <ArrowRight size={12} aria-hidden="true" /></button>
                       </td>
                     </tr>
                   ))}
@@ -282,16 +282,16 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             <div className="border shadow-sm rounded-xl overflow-hidden flex flex-col" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: g.border }}>
                 <Bell size={14} style={{ color: g.muted }}/>
-                <h2 className="text-base font-semibold text-gray-900">최근 알림</h2>
-                <span className="text-sm font-bold px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
+                <h2 className="text-[15px] font-semibold text-gray-900">최근 알림</h2>
+                <span className="text-[15px] font-bold px-2 py-1 rounded-full leading-none text-white" style={{ backgroundColor: p.green }}>3</span>
               </div>
               {notifications.map((n, i) => (
                 <div key={i} className="px-5 py-3 border-b last:border-0" style={{ borderColor: g.border }}>
                   <div className="flex gap-2.5 items-start">
                     <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: n.dot }}/>
                     <div>
-                      <p className="text-sm leading-relaxed" style={{ color: n.unread ? SEMANTIC_COLORS.textPrimary : g.muted, fontWeight: n.unread ? 500 : 400 }}>{n.text}</p>
-                      <p className="text-sm mt-0.5" style={{ color: g.subtle }}>{n.time}</p>
+                      <p className="text-[15px] leading-relaxed" style={{ color: n.unread ? SEMANTIC_COLORS.textPrimary : g.muted, fontWeight: n.unread ? 500 : 400 }}>{n.text}</p>
+                      <p className="text-[15px] mt-0.5" style={{ color: g.subtle }}>{n.time}</p>
                     </div>
                   </div>
                 </div>
@@ -301,7 +301,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
 
           {/* 빠른 실행 */}
           <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">빠른 실행</h2>
+            <h2 className="text-[15px] font-semibold text-gray-900 mb-3">빠른 실행</h2>
             <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
               {[
                 { icon: <Megaphone size={18}/>, label: '새 캠페인',     sub: '캠페인 만들기',   primary: true },
@@ -314,8 +314,8 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     style={{ backgroundColor: item.primary ? p.greenLight : g.pillBg }}>
                     <span style={{ color: item.primary ? d.color : g.muted }}>{item.icon}</span>
                   </div>
-                  <p className="text-base font-semibold text-gray-900">{item.label}</p>
-                  <p className="text-sm mt-0.5" style={{ color: g.subtle }}>{item.sub}</p>
+                  <p className="text-[15px] font-semibold text-gray-900">{item.label}</p>
+                  <p className="text-[15px] mt-0.5" style={{ color: g.subtle }}>{item.sub}</p>
                 </div>
               ))}
             </div>
@@ -348,37 +348,37 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
         <div className="px-6 py-4 flex items-center justify-between border-b" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">인플루언서 리스트</h1>
-            <p className="text-base mt-0.5" style={{ color: g.muted }}>브랜드에 적합한 인플루언서를 탐색하세요.</p>
+            <p className="text-[15px] mt-0.5" style={{ color: g.muted }}>브랜드에 적합한 인플루언서를 탐색하세요.</p>
           </div>
-          <button type="button" className="px-4 py-2.5 rounded-xl text-base font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
+          <button type="button" className="px-4 py-2.5 rounded-xl text-[15px] font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>+ 캠페인 제안</button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3">
             {summary.map((stat, i) => (
               <div key={i} className="border shadow-sm rounded-xl px-4 py-3" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
-                <p className="text-sm" style={{ color: g.subtle }}>{stat.label}</p>
+                <p className="text-[15px]" style={{ color: g.subtle }}>{stat.label}</p>
                 <p className="text-xl font-bold text-gray-900 mt-0.5">{stat.value}</p>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-xl text-base border shadow-sm" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
+            <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-xl text-[15px] border shadow-sm" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
               <Search size={14} style={{ color: g.subtle }} className="shrink-0"/>
-              <span className="text-sm" style={{ color: g.subtle }}>이름으로 검색...</span>
+              <span className="text-[15px]" style={{ color: g.subtle }}>이름으로 검색...</span>
             </div>
             {['카테고리','핏 스코어','참여율','팔로워급'].map(f => (
-              <div key={f} className="px-3 py-2 rounded-xl text-sm font-medium cursor-pointer border shrink-0"
+              <div key={f} className="px-3 py-2 rounded-xl text-[15px] font-medium cursor-pointer border shrink-0"
                 style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
                 {f} ▾
               </div>
             ))}
           </div>
           <div className="border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
-            <table className="w-full text-base">
+            <table className="w-full text-[15px]">
               <thead>
                 <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                   {['인플루언서','카테고리','팔로워','참여율','Fit Score','진성비율','최근 콘텐츠',''].map(h => (
-                    <th key={h} className="text-left text-sm font-medium py-3 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
+                    <th key={h} className="text-left text-[15px] font-medium py-3 px-4 whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -387,10 +387,10 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                   <tr key={i} className="border-b last:border-0" style={{ borderColor: g.border }}>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-base shrink-0" style={{ backgroundColor: r.avColor }}>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-[15px] shrink-0" style={{ backgroundColor: r.avColor }}>
                           {r.name[0]}
                         </div>
-                        <span className="text-base font-medium text-gray-900">{r.name}</span>
+                        <span className="text-[15px] font-medium text-gray-900">{r.name}</span>
                         <Heart size={14}
                           style={{ color: r.bookmarked ? a.av4 : g.subtle }}
                           fill={r.bookmarked ? a.av4 : 'none'}
@@ -400,23 +400,23 @@ function InfluencerScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     <td className="py-3 px-4">
                       <div className="flex gap-1 flex-wrap">
                         {r.cats.map(c => (
-                          <span key={c} className="text-sm px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>{c}</span>
+                          <span key={c} className="text-[15px] px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>{c}</span>
                         ))}
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-base" style={{ color: g.muted }}>{r.followers}</td>
-                    <td className="py-3 px-4 text-base font-semibold" style={{ color: r.engHigh ? d.color : g.muted }}>{r.eng}</td>
+                    <td className="py-3 px-4 text-[15px]" style={{ color: g.muted }}>{r.followers}</td>
+                    <td className="py-3 px-4 text-[15px] font-semibold" style={{ color: r.engHigh ? d.color : g.muted }}>{r.eng}</td>
                     <td className="py-3 px-4">
                       <Badge bg={r.fitHigh ? a.badgeActiveBg : a.badgePendingBg} text={r.fitHigh ? a.badgeActiveText : a.badgePendingText}>{r.fit}</Badge>
                     </td>
-                    <td className="py-3 px-4 text-base font-medium" style={{ color: d.color }}>{r.authentic}</td>
+                    <td className="py-3 px-4 text-[15px] font-medium" style={{ color: d.color }}>{r.authentic}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1">
                         {[0,1,2].map(j => <div key={j} className="w-8 h-8 rounded-md" style={{ backgroundColor: g.pillBg }} />)}
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <button type="button" className="text-sm px-3 py-2.5 rounded-lg font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>제안</button>
+                      <button type="button" className="text-[15px] px-3 py-2.5 rounded-lg font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: p.green }}>제안</button>
                     </td>
                   </tr>
                 ))}
@@ -454,19 +454,19 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <div className="px-6 py-4 flex items-center justify-between border-b" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
           <div>
-            <p className="text-sm" style={{ color: g.subtle }}>리포트</p>
+            <p className="text-[15px]" style={{ color: g.subtle }}>리포트</p>
             <h1 className="text-2xl font-bold text-gray-900">성과 분석</h1>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: g.pillBg }}>
               {['최근 7일','최근 30일','이번 달'].map((label, i) => (
-                <span key={label} className="text-sm px-3 py-1.5 rounded-lg cursor-pointer font-medium"
+                <span key={label} className="text-[15px] px-3 py-1.5 rounded-lg cursor-pointer font-medium"
                   style={i === 1 ? { backgroundColor: g.cardBg, color: SEMANTIC_COLORS.textPrimary, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' } : { color: g.subtle }}>
                   {label}
                 </span>
               ))}
             </div>
-            <button type="button" className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-base font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
+            <button type="button" className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[15px] font-medium border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>
               <Download size={14} aria-hidden="true" />내보내기
             </button>
           </div>
@@ -476,11 +476,11 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
             {metrics.map((m, i) => (
               <div key={i} className="border shadow-sm rounded-xl p-5" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium" style={{ color: g.muted }}>{m.label}</span>
+                  <span className="text-[15px] font-medium" style={{ color: g.muted }}>{m.label}</span>
                   <span style={{ color: g.subtle }}>{m.icon}</span>
                 </div>
                 <p className="text-3xl font-bold text-gray-900 mb-2">{m.value}</p>
-                <span className="text-sm font-medium inline-flex items-center gap-1" style={{ color: m.up ? d.color : a.trendDown }}>
+                <span className="text-[15px] font-medium inline-flex items-center gap-1" style={{ color: m.up ? d.color : a.trendDown }}>
                   {m.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}{m.change}
                 </span>
               </div>
@@ -489,8 +489,8 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
 
           <div className="border shadow-sm rounded-xl p-6" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-base font-semibold text-gray-900">주간 도달 & 참여 추이</h2>
-              <div className="flex items-center gap-5 text-sm" style={{ color: g.subtle }}>
+              <h2 className="text-[15px] font-semibold text-gray-900">주간 도달 & 참여 추이</h2>
+              <div className="flex items-center gap-5 text-[15px]" style={{ color: g.subtle }}>
                 <span className="flex items-center gap-1.5">
                   <span className="w-3 h-2 rounded inline-block" style={{ backgroundColor: p.green }}/>도달
                 </span>
@@ -506,7 +506,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     <div className="flex-1 rounded-t-sm" style={{ height: `${d2.a}%`, backgroundColor: p.green, opacity: 0.85 }}/>
                     <div className="flex-1 rounded-t-sm" style={{ height: `${d2.b}%`, backgroundColor: a.barB, opacity: 0.65 }}/>
                   </div>
-                  <span className="text-sm whitespace-nowrap" style={{ color: g.subtle }}>{d2.label}</span>
+                  <span className="text-[15px] whitespace-nowrap" style={{ color: g.subtle }}>{d2.label}</span>
                 </div>
               ))}
             </div>
@@ -514,14 +514,14 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
 
           <div className="border shadow-sm rounded-xl overflow-hidden" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>
             <div className="px-5 py-4 flex items-center justify-between border-b" style={{ borderColor: g.border }}>
-              <h2 className="text-base font-semibold text-gray-900">캠페인별 성과 비교</h2>
-              <button type="button" className="text-sm px-3 py-2.5 rounded-lg border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
+              <h2 className="text-[15px] font-semibold text-gray-900">캠페인별 성과 비교</h2>
+              <button type="button" className="text-[15px] px-3 py-2.5 rounded-lg border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50" style={{ backgroundColor: g.cardBg, borderColor: g.border, color: g.muted }}>전체 보기</button>
             </div>
-            <table className="w-full text-base">
+            <table className="w-full text-[15px]">
               <thead>
                 <tr className="border-b" style={{ backgroundColor: g.pillBg, borderColor: g.border }}>
                   {['캠페인','총 도달','평균 참여율','콘텐츠 수','ROAS','상태'].map(h => (
-                    <th key={h} className="px-5 py-3 text-left text-sm font-medium whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
+                    <th key={h} className="px-5 py-3 text-left text-[15px] font-medium whitespace-nowrap" style={{ color: g.muted }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -535,7 +535,7 @@ function AnalyticsScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
                     <td className="px-5 py-4 font-semibold" style={{ color: g.muted }}>{c.roas}</td>
                     <td className="px-5 py-4">
                       {c.active === null
-                        ? <span className="inline-flex items-center text-sm font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>완료</span>
+                        ? <span className="inline-flex items-center text-[15px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: g.pillBg, color: g.muted }}>완료</span>
                         : <Badge bg={c.active ? a.badgeActiveBg : a.badgePendingBg} text={c.active ? a.badgeActiveText : a.badgePendingText}>
                             {c.active ? '진행중' : '대기중'}
                           </Badge>
@@ -573,25 +573,25 @@ export default function Moodboard() {
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-8 py-3 flex items-center gap-5">
         {/* 프라이머리 */}
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-700 shrink-0">프라이머리</span>
+          <span className="text-[15px] font-semibold text-gray-700 shrink-0">프라이머리</span>
           <input type="range" min={0} max={9} value={pi} onChange={e => setPi(Number(e.target.value))} className="w-24 cursor-pointer" style={{ accentColor: p.green }}/>
-          <span className="text-sm font-bold text-gray-900 w-4 shrink-0">{pi + 1}</span>
+          <span className="text-[15px] font-bold text-gray-900 w-4 shrink-0">{pi + 1}</span>
           <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: p.green }}/>
         </div>
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
         {/* 딥 */}
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-700 shrink-0">프라이머리 딥</span>
+          <span className="text-[15px] font-semibold text-gray-700 shrink-0">프라이머리 딥</span>
           <input type="range" min={0} max={9} value={di} onChange={e => setDi(Number(e.target.value))} className="w-24 cursor-pointer" style={{ accentColor: p.green }}/>
-          <span className="text-sm font-bold text-gray-900 w-4 shrink-0">{di + 1}</span>
+          <span className="text-[15px] font-bold text-gray-900 w-4 shrink-0">{di + 1}</span>
           <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: d.color }}/>
         </div>
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
         {/* 나머지 */}
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-700 shrink-0">나머지</span>
+          <span className="text-[15px] font-semibold text-gray-700 shrink-0">나머지</span>
           <input type="range" min={0} max={9} value={ai} onChange={e => setAi(Number(e.target.value))} className="w-24 cursor-pointer" style={{ accentColor: p.green }}/>
-          <span className="text-sm font-bold text-gray-900 w-4 shrink-0">{ai + 1}</span>
+          <span className="text-[15px] font-bold text-gray-900 w-4 shrink-0">{ai + 1}</span>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgeActiveBg }}/>
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: a.badgePendingBg }}/>
@@ -601,9 +601,9 @@ export default function Moodboard() {
         <div className="w-px h-5 bg-gray-200 shrink-0"/>
         {/* 그레이톤 */}
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-700 shrink-0">그레이톤</span>
+          <span className="text-[15px] font-semibold text-gray-700 shrink-0">그레이톤</span>
           <input type="range" min={0} max={9} value={gi} onChange={e => setGi(Number(e.target.value))} className="w-24 cursor-pointer" style={{ accentColor: p.green }}/>
-          <span className="text-sm font-bold text-gray-900 w-4 shrink-0">{gi + 1}</span>
+          <span className="text-[15px] font-bold text-gray-900 w-4 shrink-0">{gi + 1}</span>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: g.pageBg }}/>
             <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: g.border }}/>

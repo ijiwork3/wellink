@@ -109,7 +109,7 @@ export default function CustomSelect<T extends string | string[] = string>({
         onKeyDown={handleKeyDown}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`w-full flex items-center justify-between gap-2 border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150 cursor-pointer
+        className={`w-full flex items-center justify-between gap-2 border rounded-lg px-3 py-2 text-[15px] bg-white transition-all duration-150 cursor-pointer
           ${open ? 'border-brand-green ring-2 ring-brand-green/50' : 'border-gray-200 hover:border-gray-300'}
           focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:border-brand-green focus-visible:outline-none`}
       >
@@ -178,7 +178,7 @@ function OptionRow({
       role="option"
       aria-selected={selected}
       onClick={onSelect}
-      className={`flex items-center justify-between gap-3 ${padding} text-sm cursor-pointer transition-colors duration-100 rounded-lg whitespace-nowrap
+      className={`flex items-center justify-between gap-3 ${padding} text-[15px] cursor-pointer transition-colors duration-100 rounded-lg whitespace-nowrap
         ${selected
           ? 'text-gray-900 font-medium hover:bg-gray-50'
           : active

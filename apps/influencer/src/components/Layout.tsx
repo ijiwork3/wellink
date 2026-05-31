@@ -33,7 +33,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
     <div className="@container flex flex-col w-full h-full">
       <a
         href="#main-content"
-        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[9999] focus-visible:px-4 focus-visible:py-2 focus-visible:bg-brand-green focus-visible:text-white focus-visible:rounded-xl focus-visible:shadow-lg focus-visible:text-sm focus-visible:font-medium"
+        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[9999] focus-visible:px-4 focus-visible:py-2 focus-visible:bg-brand-green focus-visible:text-white focus-visible:rounded-xl focus-visible:shadow-lg focus-visible:text-[15px] focus-visible:font-medium"
       >
         메인 콘텐츠로 이동
       </a>
@@ -50,7 +50,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
               className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <ArrowLeft size={20} />
-              <span className="text-sm font-medium truncate max-w-[200px]">{pageTitle}</span>
+              <span className="text-[15px] font-medium truncate max-w-[200px]">{pageTitle}</span>
             </button>
             <div className="w-8" />
           </div>
@@ -73,7 +73,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
                 type="button"
                 onClick={() => navigate('/campaigns/browse')}
                 aria-label="WELLINK AI 홈으로"
-                className="text-base font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="text-[15px] font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span>
               </button>
@@ -108,7 +108,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
               <button
                 type="button"
                 onClick={confirmLogout}
-                className="hidden @[640px]:block text-sm px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="hidden @[640px]:block text-[15px] px-3 @[640px]:px-3.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
               </button>
@@ -158,7 +158,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
           >
             <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-bold text-gray-900">WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span></span>
+                <span className="text-[15px] font-bold text-gray-900">WELLINK<span style={{ background: 'var(--gradient-brand)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>.AI</span></span>
                 <button
                   type="button"
                   onClick={() => { setDrawerOpen(false); document.dispatchEvent(new Event('qa-toggle')) }}
@@ -178,7 +178,7 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
             <div className="border-t border-gray-100 p-4">
               <button
                 onClick={confirmLogout}
-                className="w-full text-sm py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                className="w-full text-[15px] py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 로그아웃
               </button>
