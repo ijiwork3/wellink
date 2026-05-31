@@ -37,7 +37,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
       ? 'bg-red-100 text-red-600 border border-red-200'                    // D-3 이하 — 빨강
       : dday.color === 'text-orange-400'
         ? 'bg-amber-100 text-amber-600 border border-amber-200'            // D-4~7 — 노랑
-        : 'bg-green-100 text-green-700 border border-green-200'            // D-8+ — 초록
+        : 'bg-gray-100 text-gray-500 border border-gray-200'              // D-8+ — 여유(회색)
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -110,7 +110,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
             {ddayText}
           </span>
           {campaign.type === 'delivery'
-            ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 whitespace-nowrap">배송형</span>
+            ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100 whitespace-nowrap">배송형</span>
             : campaign.type
               ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600 border border-indigo-200 whitespace-nowrap">방문형</span>
               : null
