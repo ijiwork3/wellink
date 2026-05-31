@@ -850,3 +850,12 @@
   --gradient-login-bg: linear-gradient(135deg, var(--color-gradient-login-stop-1) 0%, var(--color-gradient-login-stop-2) 30%, var(--color-gradient-login-stop-3) 60%, var(--color-gradient-login-stop-4) 100%);
   --gradient-instagram: linear-gradient(45deg, var(--color-gradient-instagram-purple), var(--color-gradient-instagram-red), var(--color-gradient-instagram-orange));
 }
+
+/* ─── 내부 스크롤바 숨김 — 전체 페이지(html/body) 제외 ─── */
+*:not(html):not(body) {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE / Edge */
+}
+*:not(html):not(body)::-webkit-scrollbar {
+  display: none;               /* Chrome / Safari */
+}
