@@ -708,29 +708,32 @@ function MentionMixDonut() {
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-36 h-36 mb-4" role="img" aria-label={`총 멘션 ${mix.total}건, 릴스 ${mix.reels.percent}%, 피드 ${mix.feed.percent}%`}>
-        <svg viewBox="-5 -5 100 100" className="w-full h-full -rotate-90" overflow="visible">
-          <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" aria-hidden="true" />
-          <circle
-            cx="45" cy="45" r="36" fill="none"
-            stroke="var(--color-brand-green)" strokeWidth="14"
-            strokeDasharray={`${reelsDash} ${C - reelsDash}`}
-            className="transition-opacity cursor-pointer"
-            style={{ opacity: hover && hover !== 'reels' ? 0.35 : 1 }}
-            onMouseEnter={() => setHover('reels')}
-            onMouseLeave={() => setHover(null)}
-            aria-label="릴스 segment"
-          />
-          <circle
-            cx="45" cy="45" r="36" fill="none"
-            stroke="var(--color-brand-fuchsia)" strokeWidth="14"
-            strokeDasharray={`${feedDash} ${C - feedDash}`}
-            strokeDashoffset={-reelsDash}
-            className="transition-opacity cursor-pointer"
-            style={{ opacity: hover && hover !== 'feed' ? 0.35 : 1 }}
-            onMouseEnter={() => setHover('feed')}
-            onMouseLeave={() => setHover(null)}
-            aria-label="피드 segment"
-          />
+        {/* CSS transform 대신 SVG 내부 rotate — CSS overflow 간섭 없음 */}
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <g transform="rotate(-90 50 50)">
+            <circle cx="50" cy="50" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" aria-hidden="true" />
+            <circle
+              cx="50" cy="50" r="36" fill="none"
+              stroke="var(--color-brand-green)" strokeWidth="14"
+              strokeDasharray={`${reelsDash} ${C - reelsDash}`}
+              className="transition-opacity cursor-pointer"
+              style={{ opacity: hover && hover !== 'reels' ? 0.35 : 1 }}
+              onMouseEnter={() => setHover('reels')}
+              onMouseLeave={() => setHover(null)}
+              aria-label="릴스 segment"
+            />
+            <circle
+              cx="50" cy="50" r="36" fill="none"
+              stroke="var(--color-brand-fuchsia)" strokeWidth="14"
+              strokeDasharray={`${feedDash} ${C - feedDash}`}
+              strokeDashoffset={-reelsDash}
+              className="transition-opacity cursor-pointer"
+              style={{ opacity: hover && hover !== 'feed' ? 0.35 : 1 }}
+              onMouseEnter={() => setHover('feed')}
+              onMouseLeave={() => setHover(null)}
+              aria-label="피드 segment"
+            />
+          </g>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className={`text-2xl font-bold tabular-nums transition-colors ${
