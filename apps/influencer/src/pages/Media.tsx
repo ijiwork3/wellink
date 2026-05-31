@@ -23,10 +23,6 @@ interface Platform {
   placeholder: string
 }
 
-const PLATFORM_META: Omit<Platform, 'connected' | 'url' | 'followers' | 'engagementRate'>[] = [
-  { id: 'instagram', name: '인스타그램', iconBg: PLATFORM_COLOR.instagram, icon: '📷', description: '아이디를 연결하면 팔로워 수가 자동으로 확인돼요', placeholder: '@인스타그램 아이디' },
-]
-
 const CONTENT_PAGE_SIZE = 20
 const MOCK_CONTENT = Array.from({ length: 100 }, (_, i) => ({
   id: String(i + 1),
