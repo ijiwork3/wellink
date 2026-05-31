@@ -708,7 +708,7 @@ function MentionMixDonut() {
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-36 h-36 mb-4" role="img" aria-label={`총 멘션 ${mix.total}건, 릴스 ${mix.reels.percent}%, 피드 ${mix.feed.percent}%`}>
-        <svg viewBox="0 0 90 90" className="w-full h-full -rotate-90">
+        <svg viewBox="-5 -5 100 100" className="w-full h-full -rotate-90" overflow="visible">
           <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" aria-hidden="true" />
           <circle
             cx="45" cy="45" r="36" fill="none"
