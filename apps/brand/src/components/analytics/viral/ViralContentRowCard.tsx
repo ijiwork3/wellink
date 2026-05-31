@@ -251,7 +251,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onCampaignClick?.(e) }}
-              className="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800 transition-colors hover:bg-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+              className="inline-flex items-center rounded-full bg-brand-green-bg px-2.5 py-1 text-xs font-semibold text-brand-green-text transition-colors hover:bg-brand-green-border/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/30"
               aria-label={`매칭 캠페인: ${campaignName}`}
             >
               {campaignName}

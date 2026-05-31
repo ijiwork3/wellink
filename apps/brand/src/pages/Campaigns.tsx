@@ -16,12 +16,12 @@ import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '@wellink/ui'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
-  '맛집/푸드':     { Icon: Utensils, bg: 'bg-orange-50',   fg: 'text-orange-500' },
-  '뷰티/패션':     { Icon: Sparkles, bg: 'bg-pink-50',     fg: 'text-pink-500' },
-  '피트니스':      { Icon: Dumbbell, bg: 'bg-emerald-50',  fg: 'text-emerald-600' },
-  '여행':          { Icon: Plane,    bg: 'bg-sky-50',      fg: 'text-sky-500' },
-  '라이프스타일':  { Icon: Home,     bg: 'bg-violet-50',   fg: 'text-violet-500' },
-  '육아':          { Icon: Baby,     bg: 'bg-amber-50',    fg: 'text-amber-500' },
+  '맛집/푸드':     { Icon: Utensils, bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '뷰티/패션':     { Icon: Sparkles, bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '피트니스':      { Icon: Dumbbell, bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '여행':          { Icon: Plane,    bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '라이프스타일':  { Icon: Home,     bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '육아':          { Icon: Baby,     bg: 'bg-gray-100', fg: 'text-gray-500' },
 }
 
 type Campaign = {
@@ -587,10 +587,10 @@ export default function Campaigns() {
                         <span className={getDDayBadgeStyle(dday.color, dday.pulse)}>{dday.label}</span>
                       )}
                       {(c.productPrice ?? 0) > 0 && (
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-teal-50 text-teal-600 border border-teal-100">제품 협찬</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-brand-green-bg text-brand-green-text border border-brand-green-border">제품 협찬</span>
                       )}
                       {(c.rewardPoint ?? 0) > 0 && (
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-violet-50 text-violet-600 border border-violet-100">활동비</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap bg-brand-fuchsia-bg text-brand-fuchsia-text border border-brand-fuchsia-border">활동비</span>
                       )}
                     </div>
                     <p className="text-base @sm:text-base font-semibold text-gray-900 break-keep mb-1">{c.name}</p>

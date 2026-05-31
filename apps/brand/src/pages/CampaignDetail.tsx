@@ -120,7 +120,7 @@ const APPLICANT_NAME_POOL = [
   '강민재', '윤채영', '조성훈', '송예린', '백지호', '권나연', '문태진', '서다인',
   '홍은수', '배유나', '노건우', '안소현',
 ]
-const AVATAR_POOL = ['bg-rose-200', 'bg-sky-200', 'bg-amber-200', 'bg-emerald-200', 'bg-violet-200', 'bg-pink-200', 'bg-cyan-200', 'bg-orange-200', 'bg-teal-200', 'bg-indigo-200']
+const AVATAR_POOL = ['bg-gray-100', 'bg-brand-green-bg', 'bg-brand-fuchsia-bg']
 // 활동분야 풀 — 원본 ApplicantList의 activityFieldList 대응
 const ACTIVITY_FIELD_POOL = [
   ['뷰티', '뷰티/코스메틱'],
@@ -1077,10 +1077,10 @@ export default function CampaignDetail() {
                 <span className="text-base font-medium rounded-full px-3 py-1 bg-gray-100 text-gray-600">{meta.campaignType}</span>
                 <span className="text-base font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text">{campaign.category}</span>
                 {meta.productPrice > 0 && (
-                  <span className="text-base font-medium rounded-full px-3 py-1 bg-teal-100 text-teal-600 border border-teal-200 whitespace-nowrap">제품 협찬</span>
+                  <span className="text-base font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">제품 협찬</span>
                 )}
                 {meta.rewardPoint > 0 && (
-                  <span className="text-base font-medium rounded-full px-3 py-1 bg-violet-100 text-violet-600 border border-violet-200 whitespace-nowrap">활동비</span>
+                  <span className="text-base font-medium rounded-full px-3 py-1 bg-brand-fuchsia-bg text-brand-fuchsia-text border border-brand-fuchsia-border whitespace-nowrap">활동비</span>
                 )}
               </div>
               <h1 className="text-xl @md:text-2xl font-bold text-gray-900 line-clamp-2">[{meta.location}] {campaign.name}</h1>

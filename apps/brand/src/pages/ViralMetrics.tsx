@@ -262,7 +262,7 @@ export default function ViralMetrics() {
 
       {/* 전날 대비 비교 배너 — 원본 ViralMetricsSection L1649-1651 보강 */}
       {!isZero && (
-        <div className="rounded-xl border border-sky-100 bg-sky-50/60 px-4 py-3 text-sm text-gray-600 flex items-center gap-2 flex-wrap">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 flex items-center gap-2 flex-wrap">
           <span className="font-medium text-gray-900">전날 대비</span>
           <span>총 참여 {growth.engagement > 0 ? '+' : ''}{growth.engagement.toFixed(1)}%</span>
           <span className="text-gray-300">·</span>
@@ -490,10 +490,10 @@ export default function ViralMetrics() {
 
         </div>
         {/* 글로벌 안내 — 피드 조회수 표시 정책 (영상 매칭) */}
-        <div className="px-5 py-2.5 border-b border-gray-50 bg-amber-50/40">
-          <p className="text-sm text-amber-800 flex items-center gap-1.5">
-            <Info size={13} className="text-amber-600 shrink-0" aria-hidden="true" />
-            피드 조회수는 확인할 수 없어 <strong className="font-semibold">'알 수 없음'</strong>으로 표시됩니다.
+        <div className="px-5 py-2.5 border-b border-gray-100 bg-gray-50/60">
+          <p className="text-sm text-gray-500 flex items-center gap-1.5">
+            <Info size={13} className="text-gray-400 shrink-0" aria-hidden="true" />
+            피드 조회수는 확인할 수 없어 <strong className="font-semibold text-gray-600">'알 수 없음'</strong>으로 표시됩니다.
           </p>
         </div>
 

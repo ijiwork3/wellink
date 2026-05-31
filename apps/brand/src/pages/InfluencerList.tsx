@@ -991,7 +991,7 @@ export default function InfluencerList() {
                       { word: '#like4like', weight: 1 },
                     ]
                     const sizes = ['text-2xl font-black', 'text-xl font-bold', 'text-lg font-bold', 'text-base font-semibold', 'text-base font-medium']
-                    const colors = ['text-gray-900', 'text-blue-700', 'text-teal-600', 'text-gray-600', 'text-gray-400']
+                    const colors = ['text-gray-900', 'text-brand-green-text', 'text-brand-fuchsia-text', 'text-gray-600', 'text-gray-400']
                     return (
                       <div className="border border-gray-100 rounded-xl p-4">
                         <div className="flex items-center justify-between mb-1">

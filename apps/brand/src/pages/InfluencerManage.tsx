@@ -597,7 +597,7 @@ export default function InfluencerManage() {
                     className={`mb-3 aspect-[3/1] rounded-lg flex flex-col items-center justify-center gap-1.5 border ${
                       inf.isPrivate
                         ? 'bg-gray-50 border-gray-200'
-                        : 'bg-amber-50/60 border-dashed border-amber-200'
+                        : 'bg-gray-50 border-dashed border-gray-200'
                     }`}
                     role="status"
                   >
@@ -608,8 +608,8 @@ export default function InfluencerManage() {
                       </>
                     ) : (
                       <>
-                        <Image size={18} className="text-amber-400" aria-hidden="true" />
-                        <span className="text-sm font-medium text-amber-700">최근 콘텐츠 없음</span>
+                        <Image size={18} className="text-gray-400" aria-hidden="true" />
+                        <span className="text-sm font-medium text-gray-500">최근 콘텐츠 없음</span>
                       </>
                     )}
                   </div>
@@ -944,7 +944,7 @@ export default function InfluencerManage() {
                     { word: '#like4like', weight: 1 },
                   ]
                   const sizes = ['text-2xl font-black', 'text-xl font-bold', 'text-lg font-bold', 'text-base font-semibold', 'text-sm font-medium']
-                  const colors = ['text-gray-900', 'text-blue-700', 'text-teal-600', 'text-gray-600', 'text-gray-400']
+                  const colors = ['text-gray-900', 'text-brand-green-text', 'text-brand-fuchsia-text', 'text-gray-600', 'text-gray-400']
                   return (
                     <div className="border border-gray-100 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-1">
