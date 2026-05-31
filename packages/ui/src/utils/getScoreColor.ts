@@ -15,21 +15,21 @@ import {
 
 /** 참여율 색상: 4%+ 초록, 2~4% 앰버, 2% 미만 빨강 */
 export function getEngagementColor(rate: number): string {
-  if (rate >= ENGAGEMENT_THRESHOLD.high) return 'text-green-600'
+  if (rate >= ENGAGEMENT_THRESHOLD.high) return 'text-brand-green-text'
   if (rate >= ENGAGEMENT_THRESHOLD.low) return 'text-amber-600'
   return 'text-red-500'
 }
 
 /** FitScore 색상: 85+ 초록, 70~84 주황, 70 미만 회색 */
 export function getFitScoreColor(score: number): string {
-  if (score >= FITSCORE_THRESHOLD.excellent) return 'text-green-600'
+  if (score >= FITSCORE_THRESHOLD.excellent) return 'text-brand-green-text'
   if (score >= FITSCORE_THRESHOLD.average) return 'text-orange-500'
   return 'text-gray-400'
 }
 
 /** ROAS 색상: 3.0+ 초록, 1.5~3.0 주황, 1.5 미만 빨강 */
 export function getRoasColor(roas: number): string {
-  if (roas >= ROAS_THRESHOLD.good) return 'text-green-600'
+  if (roas >= ROAS_THRESHOLD.good) return 'text-brand-green-text'
   if (roas >= ROAS_THRESHOLD.average) return 'text-orange-500'
   return 'text-red-500'
 }
@@ -37,7 +37,7 @@ export function getRoasColor(roas: number): string {
 /** 모집 진행률 색상: 80%+ 빨강(마감 임박), 80% 미만 초록 */
 export function getRecruitmentColor(pct: number): string {
   if (pct >= RECRUITMENT_THRESHOLD.closing) return 'text-red-500'
-  return 'text-green-600'
+  return 'text-brand-green-text'
 }
 
 /** D-day 색상: 3일 이하 빨강, 7일 이하 주황, 그 외 회색 */
@@ -49,7 +49,7 @@ export function getDDayColor(dday: number): string {
 
 /** 진성 비율 색상: 80%+ 브랜드그린, 60~79% 앰버, 60% 미만 빨강 */
 export function getAuthenticColor(rate: number): string {
-  if (rate >= AUTHENTIC_THRESHOLD.high) return 'text-green-600'
+  if (rate >= AUTHENTIC_THRESHOLD.high) return 'text-brand-green-text'
   if (rate >= AUTHENTIC_THRESHOLD.average) return 'text-amber-600'
   return 'text-red-500'
 }
@@ -77,7 +77,7 @@ export function getRecommendedCampaignType(fitScore: number): string {
 
 /** CTR 색상: 3%+ 초록, 1.5~3% 주황, 1.5% 미만 빨강 */
 export function getCtrColor(rate: number): string {
-  if (rate >= CTR_THRESHOLD.good) return 'text-green-600'
+  if (rate >= CTR_THRESHOLD.good) return 'text-brand-green-text'
   if (rate >= CTR_THRESHOLD.average) return 'text-orange-500'
   return 'text-red-500'
 }
