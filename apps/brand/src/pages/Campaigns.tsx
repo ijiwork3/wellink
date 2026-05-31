@@ -41,6 +41,15 @@ const SEED_CAMPAIGNS: Campaign[] = [
   { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05', rewardPoint: 300000 },
   { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25', productPrice: 35000, rewardPoint: 100000 },
   { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12', productPrice: 250000 },
+  // ── 모집중 탭 (deadline D-4 이상 미래) ──────────────────────────────────
+  { id: 101, name: '여름 러닝화 인스타 리뷰', status: '모집중', total: 20, current: 7, selectedCount: 4, deadline: '2026-06-20', budget: 2500000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-101/160/160', createdAt: '2026-05-20', productPrice: 130000 },
+  { id: 102, name: '식물성 단백질 바 체험단', status: '모집중', total: 15, current: 5, selectedCount: 2, deadline: '2026-06-15', budget: 1200000, category: '맛집/푸드', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-102/160/160', createdAt: '2026-05-18', rewardPoint: 50000 },
+  { id: 103, name: '요가 매트 신제품 론칭', status: '모집중', total: 10, current: 3, selectedCount: 1, deadline: '2026-07-01', budget: 900000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-103/160/160', createdAt: '2026-05-25', productPrice: 68000 },
+  { id: 104, name: '스킨케어 루틴 브이로그', status: '모집중', total: 8, current: 2, selectedCount: 0, deadline: '2026-06-25', budget: 1600000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-104/160/160', createdAt: '2026-05-22' },
+  // ── 마감임박 탭 (status 모집중 + deadline D-3 이하) ──────────────────────
+  { id: 111, name: '크로스핏 보충제 긴급 모집', status: '모집중', total: 10, current: 8, selectedCount: 5, deadline: '2026-06-01', budget: 800000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-111/160/160', createdAt: '2026-05-10', productPrice: 45000, rewardPoint: 100000 },
+  { id: 112, name: '필라테스 스튜디오 체험', status: '모집중', total: 6, current: 5, selectedCount: 3, deadline: '2026-06-02', budget: 600000, category: '피트니스', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-112/160/160', createdAt: '2026-05-12' },
+  { id: 113, name: '홈카페 디저트 리뷰어', status: '모집중', total: 12, current: 11, selectedCount: 7, deadline: '2026-06-03', budget: 1100000, category: '맛집/푸드', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-113/160/160', createdAt: '2026-05-08', rewardPoint: 80000 },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
