@@ -75,7 +75,7 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
   const hasStructured = (analysis && analysis.length > 0) || (guides && guides.length > 0)
 
   return (
-    <div className="bg-gradient-to-br from-brand-fuchsia-bg to-brand-green-bg border border-brand-fuchsia-border rounded-2xl p-5">
+    <div className="border border-brand-fuchsia-border rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 12%, white), color-mix(in srgb, var(--color-brand-fuchsia) 12%, white))' }}>
       {/* 헤더 */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">

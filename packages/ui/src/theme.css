@@ -571,11 +571,11 @@
   --color-brand-green-hover:  #00B5A0;
   --color-brand-green-bg:     #F0FDFB;
   --color-brand-green-border: #76E4DC;
-  --color-brand-fuchsia:        #6D28D9;
-  --color-brand-fuchsia-text:   #4C1D95;
+  --color-brand-fuchsia:        #8B5CF6;
+  --color-brand-fuchsia-text:   #6D28D9;
   --color-brand-fuchsia-bg:     #F5F3FF;
   --color-brand-fuchsia-border: #DDD6FE;
-  --gradient-brand: linear-gradient(135deg, #00C9B5, 70%, #6D28D9);
+  --gradient-brand: linear-gradient(135deg, #00C9B5, 70%, #8B5CF6);
   --color-gradient-login-stop-1: #CCFBF7;
   --color-gradient-login-stop-2: #76E4DC;
   --color-gradient-login-stop-3: #EDE9FE;
