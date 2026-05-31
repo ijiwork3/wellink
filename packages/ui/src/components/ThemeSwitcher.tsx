@@ -134,7 +134,7 @@ export default function ThemeSwitcher({ bottomOffset = '3.75rem' }: Props) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<ThemeId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
-    return (saved && saved in CLASS_MAP ? saved : 'blue') as ThemeId
+    return (saved && saved in CLASS_MAP ? saved : 'violet') as ThemeId
   })
 
   // 마운트 시 저장된 테마 적용
