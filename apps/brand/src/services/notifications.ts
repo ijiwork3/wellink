@@ -24,7 +24,7 @@ const TIME_POOL = ['방금 전', '5분 전', '30분 전', '1시간 전', '2시�
 const CAMPAIGN_TITLES = [
   '캠페인이 삭제됐습니다',
   '캠페인 모집이 마감됐습니다',
-  '인플루언서 선정 마감 3일 전입니다',
+  '인플루언서 선정 마감이 3일 남았습니다',
   '콘텐츠가 제출됐습니다',
 ]
 const CAMPAIGN_DESCS = [
@@ -35,7 +35,7 @@ const CAMPAIGN_DESCS = [
 ]
 const PAYMENT_TITLES = [
   '결제가 완료됐습니다',
-  '결제 예정 3일 전',
+  '결제 예정일이 3일 남았습니다',
   '결제에 실패했습니다',
 ]
 const PAYMENT_DESCS = [
@@ -47,12 +47,12 @@ const SYSTEM_TITLES = [
   '서비스 공지',
   '정기 점검 안내',
   '약관 변경 안내',
-  '서비스 이용 관련 안내',
+  '서비스 이용 안내',
 ]
 const SYSTEM_DESCS = [
   '웰링크 AI 매칭 기능이 업데이트됐습니다. 더욱 정교한 인플루언서 추천 결과를 경험해 보세요.',
-  '정기 점검이 새벽 2시부터 4시까지 진행될 예정입니다.',
-  '서비스 이용 약관이 2026년 7월 1일부로 변경됩니다. 변경 내용을 확인해 주세요.',
+  '2026년 7월 1일 새벽 2시~4시 정기 점검이 예정됩니다. 해당 시간대 서비스 이용이 제한됩니다.',
+  '광고주 서비스 이용 약관이 2026년 7월 1일부로 변경됩니다. 변경 내용을 확인해 주세요.',
   '웰링크 서비스 이용 정책이 업데이트됐습니다. 확인해 주세요.',
 ]
 const MESSAGE_TITLES = [
@@ -80,8 +80,8 @@ export const ALL_NOTIFICATIONS: NotificationItem[] = Array.from({ length: 100 },
   // 타이틀별 딥링크 라우팅 (스펙: 캠페인→캠페인 상세, 메시지→캠페인 상세, 결제→결제/구독, 시스템→null)
   const link =
     title === '결제에 실패했습니다' ? '/payment/method'
-    : title === '결제가 완료됐습니다' || title === '결제 예정 3일 전' ? '/subscription'
-    : title === '인플루언서 선정 마감 3일 전입니다' ? '/campaigns/1?qa=tab-applicants'
+    : title === '결제가 완료됐습니다' || title === '결제 예정일이 3일 남았습니다' ? '/subscription'
+    : title === '인플루언서 선정 마감이 3일 남았습니다' ? '/campaigns/1?qa=tab-applicants'
     : title === '콘텐츠가 제출됐습니다' ? '/campaigns/1?qa=tab-applicants'
     : type === 'campaign' ? '/campaigns/1'
     : type === 'message'  ? '/campaigns/1?qa=tab-applicants'
