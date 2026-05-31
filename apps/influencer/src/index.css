@@ -2,14 +2,16 @@
 @import "@wellink/ui/theme.css";
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
 
+/* 스크롤바 — 평소엔 거의 안 보이고 hover 시 살짝 드러남 */
 * {
   box-sizing: border-box;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.10) transparent;
 }
-
-*::-webkit-scrollbar {
-  display: none;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
 
 html {
   scroll-behavior: smooth;

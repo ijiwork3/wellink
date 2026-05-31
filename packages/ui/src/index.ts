@@ -65,6 +65,9 @@ export { ToastProvider, useToast }   from './components/Toast'
 export { default as ErrorState }     from './components/ErrorState'
 export { ErrorBoundary } from './components/ErrorBoundary'
 
+// 데모 도구
+export { default as ThemeSwitcher } from './components/ThemeSwitcher'
+
 // 인증
 export { ProtectedRoute } from './components/ProtectedRoute'
 export { auth } from './utils/auth'

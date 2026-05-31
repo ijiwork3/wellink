@@ -16,32 +16,33 @@
   --color-landing-bg-dark:   #111827;  /* 랜딩 다크 배경 (= gray-900) */
 
   /* ─────────────────────────────────────────────────────────────
-   * 브랜드 컬러 (primary — 바이올렛 × 퓨시아)
-   * 컬러 정책 v5.0 (2026-05-31) — 전기 바이올렛 S=100% L=65%, 퓨시아 S=100% L=50%
+   * 브랜드 컬러 (primary — 코발트 블루 × 에메랄드)
+   * 컬러 정책 v6.0 (2026-05-31) — 코발트 블루 #2563EB + 에메랄드 #10B981
+   * 신뢰·전문성(블루) × 건강·활력(에메랄드). 텍스트 대비 AA 이상
    * 변경 시 packages/ui/src/constants/colors.ts > BRAND 동기화 필수
    * ─────────────────────────────────────────────────────────────*/
-  --color-brand-green:        #A44FFF;  /* HSL(270,100%,65%) — 아이콘·border·bg·포커스링 */
-  --color-brand-green-text:   #6B10CC;  /* HSL(270,87%,42%) — 흰 배경 강조 텍스트 (AA 8.1:1) */
-  --color-brand-green-hover:  #8C3AED;  /* HSL(270,82%,57%) — hover */
-  --color-brand-green-bg:     #F5EEFF;  /* HSL(270,100%,96%) — 옅은 배경 */
-  --color-brand-green-border: #CFA0FF;  /* HSL(270,100%,82%) — 보더 */
+  --color-brand-green:        #2563EB;  /* 코발트 블루 (blue-600) — 아이콘·border·bg·포커스링 */
+  --color-brand-green-text:   #1E40AF;  /* blue-800 — 흰 배경 강조 텍스트 (AA 8.9:1) */
+  --color-brand-green-hover:  #1D4ED8;  /* blue-700 — hover */
+  --color-brand-green-bg:     #EFF6FF;  /* blue-50 — 옅은 배경 */
+  --color-brand-green-border: #BFDBFE;  /* blue-200 — 보더 */
 
   /* 시맨틱 성공·긍정 지표 (브랜드 컬러와 분리) — KPI 상승·성장·good severity 전용
-   * 컬러 정책 v5.0 (2026-05-31): 블루그린 HSL(158,100%,39%) — 바이올렛 브랜드와 보색 트라이어드
+   * 컬러 정책 v6.0 (2026-05-31): 블루그린 HSL(158,100%,39%) — 코발트 블루와 분리
    * 옐로우그린 계열(HSL<145) 금지. 텍스트 대비 7.1:1 (AA) */
   --color-success-green:        #00C896;  /* HSL(158,100%,39%) — 차트 상승 스트로크·스파크라인 */
   --color-success-green-text:   #006B4A;  /* HSL(158,100%,21%) — 흰 배경 텍스트 (AA 7.1:1) */
   --color-success-green-bg:     #E5FFF9;  /* HSL(158,100%,95%) — 옅은 배경 */
   --color-success-green-border: #7AE8C8;  /* HSL(158,70%,69%) — 보더 */
 
-  /* 퓨시아 보조 토큰 — 그라디언트·액센트 전용 */
-  --color-brand-fuchsia:        #F00B7A;  /* HSL(330,100%,50%) — 그라디언트 끝점·포인트 */
-  --color-brand-fuchsia-text:   #A8005A;  /* HSL(330,100%,33%) — 흰 배경 텍스트 (AA 7.2:1) */
-  --color-brand-fuchsia-bg:     #FFF0F7;  /* HSL(330,100%,97%) — 옅은 배경 */
-  --color-brand-fuchsia-border: #FFB0D8;  /* HSL(330,100%,84%) — 보더 */
+  /* 에메랄드 보조 토큰 — 그라디언트·액센트·건강 전용 */
+  --color-brand-fuchsia:        #10B981;  /* 에메랄드 (emerald-500) — 그라디언트 끝점·포인트 */
+  --color-brand-fuchsia-text:   #065F46;  /* emerald-800 — 흰 배경 텍스트 (AA 7.5:1) */
+  --color-brand-fuchsia-bg:     #ECFDF5;  /* emerald-50 — 옅은 배경 */
+  --color-brand-fuchsia-border: #A7F3D0;  /* emerald-200 — 보더 */
 
   /* 브랜드 그라디언트 */
-  --gradient-brand: linear-gradient(135deg, #A44FFF 0%, #F00B7A 100%);
+  --gradient-brand: linear-gradient(135deg, #2563EB 0%, #10B981 100%);
 
   /* ─────────────────────────────────────────────────────────────
    * 뉴트럴 — gray  (메인 앱 전반 중립 팔레트)
@@ -522,13 +523,270 @@
   --color-mb-accent-10-av5:                #f97316;
 }
 
+/* ══════════════════════════════════════════════════════════════
+ * 런타임 테마 오버라이드 (ThemeSwitcher — html 클래스로 전환)
+ * 기본값(코발트 블루 × 에메랄드)은 @theme 블록에서 정의됨
+ * ══════════════════════════════════════════════════════════════*/
+
+/* ── 테마: 바이올렛 × 퓨시아 (v5) ── */
+:root.theme-violet {
+  --color-brand-green:        #A44FFF;
+  --color-brand-green-text:   #6B10CC;
+  --color-brand-green-hover:  #8C3AED;
+  --color-brand-green-bg:     #F5EEFF;
+  --color-brand-green-border: #CFA0FF;
+  --color-brand-fuchsia:        #F00B7A;
+  --color-brand-fuchsia-text:   #A8005A;
+  --color-brand-fuchsia-bg:     #FFF0F7;
+  --color-brand-fuchsia-border: #FFB0D8;
+  --gradient-brand: linear-gradient(135deg, #A44FFF 0%, #F00B7A 100%);
+  --color-gradient-login-stop-1: #F0E8FF;
+  --color-gradient-login-stop-2: #E0C8FF;
+  --color-gradient-login-stop-3: #FFD8EF;
+  --color-gradient-login-stop-4: #F590BB;
+}
+
+/* ── 테마: 라임그린 × 스카이 (원본 웰링크) ── */
+:root.theme-green {
+  --color-brand-green:        #65A30D;
+  --color-brand-green-text:   #3F6212;
+  --color-brand-green-hover:  #4D7C0F;
+  --color-brand-green-bg:     #F7FEE7;
+  --color-brand-green-border: #D9F99D;
+  --color-brand-fuchsia:        #0EA5E9;
+  --color-brand-fuchsia-text:   #075985;
+  --color-brand-fuchsia-bg:     #F0F9FF;
+  --color-brand-fuchsia-border: #BAE6FD;
+  --gradient-brand: linear-gradient(135deg, #65A30D 0%, #0EA5E9 100%);
+  --color-gradient-login-stop-1: #ECFCCB;
+  --color-gradient-login-stop-2: #D9F99D;
+  --color-gradient-login-stop-3: #E0F2FE;
+  --color-gradient-login-stop-4: #7DD3FC;
+}
+
+/* ── 테마: 틸 × 네이비 ── */
+:root.theme-teal-navy {
+  --color-brand-green:        #00C9B5;
+  --color-brand-green-text:   #0A7A6E;
+  --color-brand-green-hover:  #00B5A0;
+  --color-brand-green-bg:     #F0FDFB;
+  --color-brand-green-border: #76E4DC;
+  --color-brand-fuchsia:        #1845C0;
+  --color-brand-fuchsia-text:   #0E2A7A;
+  --color-brand-fuchsia-bg:     #EEF2FF;
+  --color-brand-fuchsia-border: #A5B4FC;
+  --gradient-brand: linear-gradient(135deg, #00C9B5 0%, #1845C0 100%);
+  --color-gradient-login-stop-1: #CCFBF7;
+  --color-gradient-login-stop-2: #76E4DC;
+  --color-gradient-login-stop-3: #E0E7FF;
+  --color-gradient-login-stop-4: #818CF8;
+}
+
+/* ── 테마: 인디고 × 블루 ── */
+:root.theme-indigo {
+  --color-brand-green:        #4F46E5;
+  --color-brand-green-text:   #3730A3;
+  --color-brand-green-hover:  #4338CA;
+  --color-brand-green-bg:     #EEF2FF;
+  --color-brand-green-border: #C7D2FE;
+  --color-brand-fuchsia:        #0EA5E9;
+  --color-brand-fuchsia-text:   #075985;
+  --color-brand-fuchsia-bg:     #F0F9FF;
+  --color-brand-fuchsia-border: #BAE6FD;
+  --gradient-brand: linear-gradient(135deg, #4F46E5 0%, #0EA5E9 100%);
+  --color-gradient-login-stop-1: #E0E7FF;
+  --color-gradient-login-stop-2: #C7D2FE;
+  --color-gradient-login-stop-3: #E0F2FE;
+  --color-gradient-login-stop-4: #7DD3FC;
+}
+
+/* ── 테마: 사이언 × 딥네이비 ── */
+:root.theme-cyan-navy {
+  --color-brand-green:        #06B6D4;
+  --color-brand-green-text:   #155E75;
+  --color-brand-green-hover:  #0891B2;
+  --color-brand-green-bg:     #ECFEFF;
+  --color-brand-green-border: #A5F3FC;
+  --color-brand-fuchsia:        #0F172A;
+  --color-brand-fuchsia-text:   #0F172A;
+  --color-brand-fuchsia-bg:     #F8FAFC;
+  --color-brand-fuchsia-border: #CBD5E1;
+  --gradient-brand: linear-gradient(135deg, #06B6D4 0%, #0F172A 100%);
+  --color-gradient-login-stop-1: #CFFAFE;
+  --color-gradient-login-stop-2: #A5F3FC;
+  --color-gradient-login-stop-3: #E2E8F0;
+  --color-gradient-login-stop-4: #94A3B8;
+}
+
+/* ── 테마: 스카이 × 인디고 ── */
+:root.theme-sky-indigo {
+  --color-brand-green:        #0EA5E9;
+  --color-brand-green-text:   #0C4A6E;
+  --color-brand-green-hover:  #0284C7;
+  --color-brand-green-bg:     #F0F9FF;
+  --color-brand-green-border: #BAE6FD;
+  --color-brand-fuchsia:        #4338CA;
+  --color-brand-fuchsia-text:   #312E81;
+  --color-brand-fuchsia-bg:     #EEF2FF;
+  --color-brand-fuchsia-border: #C7D2FE;
+  --gradient-brand: linear-gradient(135deg, #0EA5E9 0%, #4338CA 100%);
+  --color-gradient-login-stop-1: #E0F2FE;
+  --color-gradient-login-stop-2: #BAE6FD;
+  --color-gradient-login-stop-3: #E0E7FF;
+  --color-gradient-login-stop-4: #A5B4FC;
+}
+
+/* ── 테마: 딥블루 × 퍼플 ── */
+:root.theme-deep-purple {
+  --color-brand-green:        #1D4ED8;
+  --color-brand-green-text:   #1E3A8A;
+  --color-brand-green-hover:  #1E40AF;
+  --color-brand-green-bg:     #EFF6FF;
+  --color-brand-green-border: #BFDBFE;
+  --color-brand-fuchsia:        #7C3AED;
+  --color-brand-fuchsia-text:   #4C1D95;
+  --color-brand-fuchsia-bg:     #F5F3FF;
+  --color-brand-fuchsia-border: #DDD6FE;
+  --gradient-brand: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+  --color-gradient-login-stop-1: #DBEAFE;
+  --color-gradient-login-stop-2: #BFDBFE;
+  --color-gradient-login-stop-3: #EDE9FE;
+  --color-gradient-login-stop-4: #C4B5FD;
+}
+
+/* ── 테마: 틸 × 딥블루 ── */
+:root.theme-teal-blue {
+  --color-brand-green:        #0D9488;
+  --color-brand-green-text:   #0F766E;
+  --color-brand-green-hover:  #0B7A6D;
+  --color-brand-green-bg:     #F0FDFA;
+  --color-brand-green-border: #99F6E4;
+  --color-brand-fuchsia:        #1D4ED8;
+  --color-brand-fuchsia-text:   #1E3A8A;
+  --color-brand-fuchsia-bg:     #EFF6FF;
+  --color-brand-fuchsia-border: #BFDBFE;
+  --gradient-brand: linear-gradient(135deg, #0D9488 0%, #1D4ED8 100%);
+  --color-gradient-login-stop-1: #CCFBF1;
+  --color-gradient-login-stop-2: #99F6E4;
+  --color-gradient-login-stop-3: #DBEAFE;
+  --color-gradient-login-stop-4: #93C5FD;
+}
+
+/* ── 테마: 틸 × 퓨시아 ── */
+:root.theme-teal {
+  --color-brand-green:        #0D9488;
+  --color-brand-green-text:   #0F766E;
+  --color-brand-green-hover:  #0B7A6D;
+  --color-brand-green-bg:     #F0FDFA;
+  --color-brand-green-border: #99F6E4;
+  --color-brand-fuchsia:        #D946EF;
+  --color-brand-fuchsia-text:   #A21CAF;
+  --color-brand-fuchsia-bg:     #FDF4FF;
+  --color-brand-fuchsia-border: #F0ABFC;
+  --gradient-brand: linear-gradient(135deg, #0D9488 0%, #D946EF 100%);
+  --color-gradient-login-stop-1: #CCFBF1;
+  --color-gradient-login-stop-2: #99F6E4;
+  --color-gradient-login-stop-3: #FAE8FF;
+  --color-gradient-login-stop-4: #E879F9;
+}
+
+/* ── 테마: 오렌지 플레임 × 딥블루 ── */
+:root.theme-orange {
+  --color-brand-green:        #EA580C;
+  --color-brand-green-text:   #9A3412;
+  --color-brand-green-hover:  #C2410C;
+  --color-brand-green-bg:     #FFF7ED;
+  --color-brand-green-border: #FED7AA;
+  --color-brand-fuchsia:        #1D4ED8;
+  --color-brand-fuchsia-text:   #1E3A8A;
+  --color-brand-fuchsia-bg:     #EFF6FF;
+  --color-brand-fuchsia-border: #BFDBFE;
+  --gradient-brand: linear-gradient(135deg, #EA580C 0%, #1D4ED8 100%);
+  --color-gradient-login-stop-1: #FED7AA;
+  --color-gradient-login-stop-2: #FB923C;
+  --color-gradient-login-stop-3: #DBEAFE;
+  --color-gradient-login-stop-4: #93C5FD;
+}
+
+/* ── 테마: 비비드 레드 × 일렉트릭 블루 ── */
+:root.theme-red {
+  --color-brand-green:        #E11D48;
+  --color-brand-green-text:   #9F1239;
+  --color-brand-green-hover:  #BE123C;
+  --color-brand-green-bg:     #FFF1F2;
+  --color-brand-green-border: #FECDD3;
+  --color-brand-fuchsia:        #2563EB;
+  --color-brand-fuchsia-text:   #1E40AF;
+  --color-brand-fuchsia-bg:     #EFF6FF;
+  --color-brand-fuchsia-border: #BFDBFE;
+  --gradient-brand: linear-gradient(135deg, #E11D48 0%, #2563EB 100%);
+  --color-gradient-login-stop-1: #FFE4E6;
+  --color-gradient-login-stop-2: #FDA4AF;
+  --color-gradient-login-stop-3: #DBEAFE;
+  --color-gradient-login-stop-4: #93C5FD;
+}
+
+/* ── 테마: 핫 코랄 × 인디고 ── */
+:root.theme-coral {
+  --color-brand-green:        #F43F5E;
+  --color-brand-green-text:   #9F1239;
+  --color-brand-green-hover:  #E11D48;
+  --color-brand-green-bg:     #FFF1F2;
+  --color-brand-green-border: #FECDD3;
+  --color-brand-fuchsia:        #4338CA;
+  --color-brand-fuchsia-text:   #312E81;
+  --color-brand-fuchsia-bg:     #EEF2FF;
+  --color-brand-fuchsia-border: #C7D2FE;
+  --gradient-brand: linear-gradient(135deg, #F43F5E 0%, #4338CA 100%);
+  --color-gradient-login-stop-1: #FFE4E6;
+  --color-gradient-login-stop-2: #FDA4AF;
+  --color-gradient-login-stop-3: #E0E7FF;
+  --color-gradient-login-stop-4: #A5B4FC;
+}
+
+/* ── 테마: 선셋 오렌지 × 바이올렛 ── */
+:root.theme-sunset {
+  --color-brand-green:        #F97316;
+  --color-brand-green-text:   #9A3412;
+  --color-brand-green-hover:  #EA580C;
+  --color-brand-green-bg:     #FFF7ED;
+  --color-brand-green-border: #FED7AA;
+  --color-brand-fuchsia:        #7C3AED;
+  --color-brand-fuchsia-text:   #4C1D95;
+  --color-brand-fuchsia-bg:     #F5F3FF;
+  --color-brand-fuchsia-border: #DDD6FE;
+  --gradient-brand: linear-gradient(135deg, #F97316 0%, #7C3AED 100%);
+  --color-gradient-login-stop-1: #FED7AA;
+  --color-gradient-login-stop-2: #FDBA74;
+  --color-gradient-login-stop-3: #EDE9FE;
+  --color-gradient-login-stop-4: #C4B5FD;
+}
+
+/* ── 테마: 크림슨 × 틸 ── */
+:root.theme-crimson {
+  --color-brand-green:        #DC2626;
+  --color-brand-green-text:   #991B1B;
+  --color-brand-green-hover:  #B91C1C;
+  --color-brand-green-bg:     #FEF2F2;
+  --color-brand-green-border: #FECACA;
+  --color-brand-fuchsia:        #0D9488;
+  --color-brand-fuchsia-text:   #0F766E;
+  --color-brand-fuchsia-bg:     #F0FDFA;
+  --color-brand-fuchsia-border: #99F6E4;
+  --gradient-brand: linear-gradient(135deg, #DC2626 0%, #0D9488 100%);
+  --color-gradient-login-stop-1: #FEE2E2;
+  --color-gradient-login-stop-2: #FCA5A5;
+  --color-gradient-login-stop-3: #CCFBF1;
+  --color-gradient-login-stop-4: #5EEAD4;
+}
+
 :root {
   /* 그라디언트 내부 색상 토큰 */
   --color-gradient-auth-stop:        #ffffff;   /* = --color-white */
-  --color-gradient-login-stop-1:     #F0E8FF;   /* 바이올렛 그라디언트 1 */
-  --color-gradient-login-stop-2:     #E0C8FF;   /* 바이올렛 그라디언트 2 */
-  --color-gradient-login-stop-3:     #FFD8EF;   /* 퓨시아 그라디언트 3 */
-  --color-gradient-login-stop-4:     #F590BB;   /* 퓨시아 그라디언트 4 */
+  --color-gradient-login-stop-1:     #DBEAFE;   /* 블루 그라디언트 1 (blue-100) */
+  --color-gradient-login-stop-2:     #BFDBFE;   /* 블루 그라디언트 2 (blue-200) */
+  --color-gradient-login-stop-3:     #D1FAE5;   /* 에메랄드 그라디언트 3 (emerald-100) */
+  --color-gradient-login-stop-4:     #6EE7B7;   /* 에메랄드 그라디언트 4 (emerald-300) */
   --color-gradient-instagram-purple: #833ab4;   /* 인스타그램 그라디언트 보라 */
   --color-gradient-instagram-red:    #fd1d1d;   /* 인스타그램 그라디언트 빨강 */
   --color-gradient-instagram-orange: #fcb045;   /* 인스타그램 그라디언트 오렌지 */

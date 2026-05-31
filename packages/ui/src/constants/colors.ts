@@ -89,12 +89,12 @@ export const SEMANTIC_COLORS = {
 /** 바이럴 콘텐츠 등급 도넛 전용 색상
  *  GradeDonut 등 SVG prop에서 BRAND·CHART_COLORS 대신 이 상수 사용 */
 export const GRADE_COLORS = {
-  A:          '#A44FFF',  // BRAND.green (violet)
+  A:          '#2563EB',  // BRAND.green (cobalt blue)
   B:          '#F9A006',  // CHART_COLORS.warn (amber S+3%)
   C:          '#9CA3AF',  // gray-400
   D:          '#D1D5DB',  // gray-300
   E:          '#E5E7EB',  // gray-200
-  processing: '#CFA0FF',  // BRAND.greenBorder (light violet)
+  processing: '#BFDBFE',  // BRAND.greenBorder (light blue)
 } as const
 
 /** 시맨틱 성공·긍정 지표 — 브랜드 컬러(바이올렛)와 분리. KPI 상승·차트 good severity 전용
@@ -126,28 +126,28 @@ export const THUMBNAIL_PALETTES: { from: string; to: string }[] = [
   { from: '#f1f8e9', to: '#9ccc65' },  // 라임
 ]
 
-/** 컬러 정책 v5.0 (2026-05-31) — 바이올렛 × 퓨시아. S=100% 고채도.
- *  brand-green-text 대비 8.1:1 (AAA).
+/** 컬러 정책 v6.0 (2026-05-31) — 코발트 블루 × 에메랄드.
+ *  brand-green-text(blue-800) 대비 8.9:1 (AAA).
  *  packages/ui/src/theme.css 의 --color-brand-* 와 1:1 동기화
  */
 export const BRAND = {
-  /** 메인 바이올렛 — HSL(270,100%,65%) */
-  green:      '#A44FFF',
-  /** 텍스트 바이올렛 — HSL(270,87%,42%), 대비 8.1:1 */
-  greenText:  '#6B10CC',
-  /** hover 바이올렛 — HSL(270,82%,57%) */
-  greenHover: '#8C3AED',
-  /** 연한 바이올렛 배경 — HSL(270,100%,96%) */
-  greenBg:    '#F5EEFF',
-  /** 연한 바이올렛 보더 — HSL(270,100%,82%) */
-  greenBorder:'#CFA0FF',
-  /** 퓨시아 — HSL(330,100%,50%) — 그라디언트·액센트 전용 */
-  fuchsia:      '#F00B7A',
-  /** 퓨시아 텍스트 — HSL(330,100%,33%), 대비 7.2:1 */
-  fuchsiaText:  '#A8005A',
-  /** 연한 퓨시아 배경 */
-  fuchsiaBg:    '#FFF0F7',
-  /** 연한 퓨시아 보더 */
-  fuchsiaBorder:'#FFB0D8',
+  /** 메인 코발트 블루 — blue-600 (#2563EB) */
+  green:      '#2563EB',
+  /** 텍스트 블루 — blue-800, 대비 8.9:1 */
+  greenText:  '#1E40AF',
+  /** hover 블루 — blue-700 */
+  greenHover: '#1D4ED8',
+  /** 연한 블루 배경 — blue-50 */
+  greenBg:    '#EFF6FF',
+  /** 연한 블루 보더 — blue-200 */
+  greenBorder:'#BFDBFE',
+  /** 에메랄드 — emerald-500 — 그라디언트·액센트 전용 */
+  fuchsia:      '#10B981',
+  /** 에메랄드 텍스트 — emerald-800, 대비 7.5:1 */
+  fuchsiaText:  '#065F46',
+  /** 연한 에메랄드 배경 — emerald-50 */
+  fuchsiaBg:    '#ECFDF5',
+  /** 연한 에메랄드 보더 — emerald-200 */
+  fuchsiaBorder:'#A7F3D0',
 } as const
 

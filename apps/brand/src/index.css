@@ -49,11 +49,9 @@ body {
   }
 }
 
-/* 스크롤바 숨기기 */
-* {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-*::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
+/* 스크롤바 — 평소엔 거의 안 보이고 hover 시 살짝 드러남 */
+* { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.10) transparent; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
