@@ -88,7 +88,7 @@ function Dot({ theme, active, onSelect }: {
       className="relative group w-[18px] h-[18px] rounded-full transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 flex-shrink-0"
       style={{
         background: theme.midpoint
-          ? `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primary} ${theme.midpoint}, ${theme.secondary} 100%)`
+          ? `linear-gradient(135deg, ${theme.primary}, ${theme.midpoint}, ${theme.secondary})`
           : `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
         transform: active ? 'scale(1.25)' : 'scale(1)',
         opacity: active ? 1 : 0.55,
