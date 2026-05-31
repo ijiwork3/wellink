@@ -297,8 +297,8 @@ export default function AdPerformance() {
             <Tooltip content={AD_SECTION_HINTS_KO.dailyPerformance} multiline><Info size={12} className="text-gray-400" aria-hidden="true" /></Tooltip>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm inline-block" style={{ backgroundColor: '#3983F9' }} />지출</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-500 inline-block" />클릭</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm inline-block bg-brand-green" />지출</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-brand-fuchsia inline-block" />클릭</span>
           </div>
         </div>
         <ChartScrollContainer
@@ -317,7 +317,7 @@ export default function AdPerformance() {
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">지출 {fmtPrice(d.spend)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-3 h-0.5 shrink-0 bg-orange-500" />
+                  <span className="w-3 h-0.5 shrink-0 bg-brand-fuchsia" />
                   <span className="text-xs text-gray-700 whitespace-nowrap font-medium">클릭 {fmtNumber(d.clicks)}</span>
                 </div>
                 <p className="text-xs text-gray-500 whitespace-nowrap mt-0.5">CTR {d.ctr.toFixed(2)}%</p>
@@ -397,7 +397,7 @@ export default function AdPerformance() {
           >
             <SimpleBarChart
               data={chartData.map(d => ({ label: d.date, value: d.clicks }))}
-              stroke={CHART_COLORS.reach}
+              stroke="var(--color-brand-green)"
               ariaLabel="기간별 클릭 수 차트"
               yLabelFormatter={(n) => fmtNumber(Math.round(n))}
               activeIndex={clicksChartIdx}
@@ -418,8 +418,8 @@ export default function AdPerformance() {
           <DonutChartSimple
             ariaLabel="광고 도달과 유기적 도달 비율 도넛 차트"
             data={[
-              { label: '광고 도달', value: kpi.reach, color: CHART_COLORS.feed },
-              { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: CHART_COLORS.saves },
+              { label: '광고 도달', value: kpi.reach, color: 'var(--color-brand-green)' },
+              { label: '유기적 도달', value: Math.floor(kpi.reach * 0.6), color: 'var(--color-brand-fuchsia)' },
             ]}
           />
         </div>
@@ -431,8 +431,8 @@ export default function AdPerformance() {
           <DonutChartSimple
             ariaLabel="광고 참여와 유기적 참여 비율 도넛 차트"
             data={[
-              { label: '광고 참여', value: kpi.clicks, color: CHART_COLORS.feed },
-              { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: CHART_COLORS.saves },
+              { label: '광고 참여', value: kpi.clicks, color: 'var(--color-brand-green)' },
+              { label: '유기적 참여', value: Math.floor(kpi.clicks * 0.45), color: 'var(--color-brand-fuchsia)' },
             ]}
           />
         </div>
@@ -622,10 +622,10 @@ function CampaignList({
                               onClick={() => setExpandedAdSet(isSetOpen ? null : set.id)}
                               aria-expanded={isSetOpen}
                               aria-controls={`adset-detail-${set.id}`}
-                              className="w-full flex items-center justify-between p-3 text-left hover:bg-teal-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
+                              className="w-full flex items-center justify-between p-3 text-left hover:bg-brand-green-bg/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 focus-visible:ring-inset"
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-100 text-teal-600 shrink-0">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-green-bg text-brand-green-text shrink-0">
                                   <Layers size={12} aria-hidden="true" />
                                 </div>
                                 <div className="min-w-0">
@@ -636,7 +636,7 @@ function CampaignList({
                               {isSetOpen ? <ChevronUp size={14} className="text-gray-400 shrink-0" aria-hidden="true" /> : <ChevronDown size={14} className="text-gray-400 shrink-0" aria-hidden="true" />}
                             </button>
                             {isSetOpen && (
-                              <div className="border-t border-gray-100 p-3 bg-teal-50/20" id={`adset-detail-${set.id}`}>
+                              <div className="border-t border-gray-100 p-3 bg-brand-green-bg/20" id={`adset-detail-${set.id}`}>
                                 {/* 광고세트 KPI */}
                                 <div className="grid grid-cols-1 @sm:grid-cols-2 gap-x-3 gap-y-2 mb-3">
                                   {([
@@ -656,7 +656,7 @@ function CampaignList({
                                   ))}
                                 </div>
                                 {/* 소재 리스트 — 계층 표시는 텍스트 라벨 + 들여쓰기만 (트리 라인·좌측 보더 제거) */}
-                                <div className="mt-1 mb-1.5 text-sm font-semibold text-teal-700 uppercase tracking-wide">
+                                <div className="mt-1 mb-1.5 text-sm font-semibold text-brand-green-text uppercase tracking-wide">
                                   소재 ({set.ads.length})
                                 </div>
                                 <div className="space-y-2">

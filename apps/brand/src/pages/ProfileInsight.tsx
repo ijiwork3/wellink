@@ -357,8 +357,8 @@ export default function ProfileInsight() {
               </p>
             </div>
             <div className="flex gap-3 text-sm text-gray-500">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-violet-500 inline-block rounded" />노출</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-sky-500 inline-block rounded" />도달</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-green inline-block rounded" />노출</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-fuchsia inline-block rounded" />도달</span>
             </div>
           </div>
           <ChartScrollContainer
@@ -374,11 +374,11 @@ export default function ProfileInsight() {
                 <>
                   <p className="text-xs text-gray-500 mb-1.5 whitespace-nowrap">{d.label}</p>
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="w-2 h-2 rounded-full shrink-0 bg-violet-500" />
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-brand-green" />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">노출: {fmtV(d.impressions)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full shrink-0 bg-emerald-500" />
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-brand-fuchsia" />
                     <span className="text-xs text-gray-700 whitespace-nowrap font-medium">도달: {fmtV(d.reach)}</span>
                   </div>
                 </>
@@ -571,7 +571,7 @@ export default function ProfileInsight() {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-700 font-medium">남성</span>
-                      <span className="text-sky-700 font-bold">{malePct}%</span>
+                      <span className="text-brand-green-text font-bold">{malePct}%</span>
                     </div>
                     <div
                       className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -582,13 +582,13 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`${malePct}%`}
                     >
-                      <div className={`h-full rounded-full ${maleIsMax ? 'bg-sky-500' : 'bg-sky-200'}`} style={{ width: `${malePct}%` }} />
+                      <div className={`h-full rounded-full ${maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${malePct}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-700 font-medium">여성</span>
-                      <span className="text-sky-700 font-bold">{femalePct}%</span>
+                      <span className="text-brand-green-text font-bold">{femalePct}%</span>
                     </div>
                     <div
                       className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -599,7 +599,7 @@ export default function ProfileInsight() {
                       aria-valuemax={100}
                       aria-valuetext={`${femalePct}%`}
                     >
-                      <div className={`h-full rounded-full ${!maleIsMax ? 'bg-sky-500' : 'bg-sky-200'}`} style={{ width: `${femalePct}%` }} />
+                      <div className={`h-full rounded-full ${!maleIsMax ? 'bg-brand-green' : 'bg-brand-green-border'}`} style={{ width: `${femalePct}%` }} />
                     </div>
                   </div>
                 </div>
@@ -612,7 +612,7 @@ export default function ProfileInsight() {
                     <div key={a.range}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-700 font-medium">{a.range}세</span>
-                        <span className="text-sky-700 font-bold">{a.percent}%</span>
+                        <span className="text-brand-green-text font-bold">{a.percent}%</span>
                       </div>
                       <div
                         className="h-2 bg-gray-100 rounded-full overflow-hidden"
@@ -624,7 +624,7 @@ export default function ProfileInsight() {
                         aria-valuetext={`${a.percent}%`}
                       >
                         <div
-                          className={`h-full rounded-full ${i === ageMaxIdx ? 'bg-sky-500' : 'bg-sky-200'}`}
+                          className={`h-full rounded-full ${i === ageMaxIdx ? 'bg-brand-green' : 'bg-brand-green-border'}`}
                           style={{ width: `${a.percent}%` }}
                         />
                       </div>
