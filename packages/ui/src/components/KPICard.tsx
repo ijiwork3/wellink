@@ -19,7 +19,7 @@ import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react'
 import Tooltip from './Tooltip'
 import Sparkline from './Sparkline'
 import { useIsTouchDevice } from '../utils/useIsTouchDevice'
-import { BRAND, CHART_COLORS, SUCCESS } from '../constants/colors'
+import { CHART_COLORS } from '../constants/colors'
 
 interface KPICardProps {
   title: string
