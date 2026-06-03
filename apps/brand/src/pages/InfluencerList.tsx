@@ -549,10 +549,11 @@ export default function InfluencerList() {
           <>
             <div className="grid grid-cols-1 @md:grid-cols-2 gap-3">
               {paginated.map(inf => (
-                <button type="button"
+                <div role="button" tabIndex={0}
                   key={inf.id}
                   onClick={() => { setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) }}
-                  className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-left hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null); setContentModalPage(1) } }}
+                  className="cursor-pointer bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-left hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`w-10 h-10 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-bold text-lg shrink-0`}>
@@ -603,7 +604,7 @@ export default function InfluencerList() {
                       >제안하기</button>
                     )}
                   </div>
-                </button>
+                </div>
               ))}
             </div>
             <Pagination total={sorted.length} page={safePage} pageSize={perPage} onChange={setPage} />

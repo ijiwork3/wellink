@@ -930,10 +930,11 @@ export default function Library() {
                   </button>
 
                   <div className="p-3">
-                    <button type="button"
+                    <div role="button" tabIndex={0}
                       aria-label={`${c.creator} 콘텐츠 상세 보기`}
                       onClick={() => setPreviewItem(c)}
-                      className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPreviewItem(c) } }}
+                      className="w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded-lg"
                     >
                       <div className="flex items-start justify-between gap-3 mb-1">
                         <div className="min-w-0">
@@ -957,7 +958,7 @@ export default function Library() {
                           <MessageCircle size={12} aria-hidden="true" /> {c.reach === 0 ? '—' : c.comments}
                         </span>
                       </div>
-                    </button>
+                    </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[15px] text-gray-500">{fmtDate(c.date)}</span>
                       <button type="button"

@@ -116,7 +116,9 @@
   --color-green-500: #10b981;
   --color-green-600: #059669;
   --color-green-700: #047857;
+  --color-green-800: #065f46;
   --color-green-900: #064e3b;
+  --color-green-950: #022c22;
 
   /* ─────────────────────────────────────────────────────────────
    * 정보 / 데이터  (blue)
@@ -238,8 +240,10 @@
   --color-lime-200: #a7f3d0;
   --color-lime-300: #6ee7b7;
   --color-lime-400: #34d399;
+  --color-lime-600: #059669;
   --color-lime-700: #047857;
-  --color-lime-800: #3f6212;
+  --color-lime-800: #065f46;
+  --color-lime-900: #064e3b;
 
   --color-sky-50:  #f0f9ff;
   --color-sky-100: #e0f2fe;

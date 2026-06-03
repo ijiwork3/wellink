@@ -116,14 +116,14 @@ export const QA_ACCENT_COLOR = '#8736E3' as const
 
 /** 썸네일 placeholder SVG 그라디언트 팔레트 — thumbnailPlaceholder.ts 전용 */
 export const THUMBNAIL_PALETTES: { from: string; to: string }[] = [
-  { from: '#e8f5e9', to: '#66bb6a' },  // 그린
+  { from: '#d1fae5', to: '#34d399' },  // 에메랄드
   { from: '#e3f2fd', to: '#42a5f5' },  // 블루
   { from: '#f3e5f5', to: '#ab47bc' },  // 퍼플
   { from: '#fff3e0', to: '#ffa726' },  // 오렌지
   { from: '#fce4ec', to: '#ec407a' },  // 핑크
   { from: '#e8eaf6', to: '#5c6bc0' },  // 인디고
   { from: '#e0f7fa', to: '#26c6da' },  // 시안
-  { from: '#f1f8e9', to: '#9ccc65' },  // 라임
+  { from: '#ccfbf1', to: '#2dd4bf' },  // 틸
 ]
 
 /** 컬러 정책 v6.0 (2026-05-31) — 코발트 블루 × 에메랄드.
