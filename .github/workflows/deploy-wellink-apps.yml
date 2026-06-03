@@ -1,0 +1,47 @@
+name: Deploy Wellink Apps (Vercel)
+
+# main 푸시 시 광고주(brand)·인플루언서(influencer) 앱을 Vercel 프로덕션으로 자동 배포.
+# 사전 준비: 이 레포 Settings → Secrets and variables → Actions 에 VERCEL_TOKEN 추가.
+#   (토큰 발급: https://vercel.com/account/tokens — 팀 ijiwork3s-projects 스코프)
+# org/project ID는 비밀이 아니라 아래에 직접 명시. 빌드는 vercel.json 의 vercel-build.sh 가
+# VERCEL_PROJECT_ID 로 brand/influencer 를 분기.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: wellink-apps
+  cancel-in-progress: true
+
+jobs:
+  brand:
+    name: Deploy 광고주(brand)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_RkdY0BThumm3AauxObrmlAq5
+      VERCEL_PROJECT_ID: prj_UWq8DmnhKfvqreiHNrxBMZpHSL2f
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g vercel@latest
+      - run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"
+
+  influencer:
+    name: Deploy 인플루언서(influencer)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_RkdY0BThumm3AauxObrmlAq5
+      VERCEL_PROJECT_ID: prj_cnRjL0MR84wriww1Hxi8kISZbCsw
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g vercel@latest
+      - run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"
