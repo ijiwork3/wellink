@@ -67,7 +67,7 @@ const campaignMeta: Record<string, {
   rewardPoint: number
   /** 콘텐츠 다운로드 단가 — 광고주가 인플루언서 콘텐츠를 2차 활용 시 건당 지급 금액. 0이면 다운로드 버튼 비활성. */
   downloadPrice: number
-  campaignType: '방문형' | '택배형'
+  campaignType: '방문형' | '배송형'
   postType: string
   priorityType: string   // 우대사항 — 광고주가 선정 시 선호하는 인플루언서 조건
   requiredKeywords: string[]
@@ -105,7 +105,7 @@ const campaignMeta: Record<string, {
     productPrice: 89000,
     rewardPoint: 30000,
     downloadPrice: 3000,
-    campaignType: '택배형',
+    campaignType: '배송형',
     postType: '피드, 릴스',
     priorityType: '실사용 1주일 후 후기 필수',
     requiredKeywords: ['#비건뷰티', '#클린뷰티'],

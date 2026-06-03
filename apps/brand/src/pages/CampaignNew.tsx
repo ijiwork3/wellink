@@ -32,10 +32,10 @@ const SECONDARY_USE_CHANNELS = ['인스타그램 광고', '유튜브 광고', '�
 const SECONDARY_USE_DURATIONS = ['3개월', '6개월', '12개월', '24개월'] as const
 
 const FILLED = {
-  type: '방문형' as '방문형' | '택배형',
+  type: '방문형' as '방문형' | '배송형',
   location: '강남/서초',
   storeName: '봄 요가 스튜디오',
-  // 택배형 전용 — 원본 mentionName(브랜드명) + product(상품이름) 분리 보강
+  // 배송형 전용 — 원본 mentionName(브랜드명) + product(상품이름) 분리 보강
   brandName: '웰링크 웰니스',
   shippedProductName: '요가매트 세트',
   platform: '인스타그램' as Platform,
@@ -89,9 +89,9 @@ export default function CampaignNew() {
   const isEdit = !!editId
   const isFilled = isEdit || qa === 'filled' || qa === 'modal-complete'
   const init = isFilled ? FILLED : {
-    type: '방문형' as '방문형' | '택배형',
+    type: '방문형' as '방문형' | '배송형',
     location: '', storeName: '',
-    brandName: '', shippedProductName: '',  // 택배형 전용 — 원본 보강
+    brandName: '', shippedProductName: '',  // 배송형 전용 — 원본 보강
     platform: '인스타그램' as Platform, category: '맛집/푸드',
     description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '', downloadPrice: '',
     secondaryUseEnabled: false,
@@ -120,7 +120,7 @@ export default function CampaignNew() {
     setForm(prev => ({ ...prev, platform, postType: types[0] ?? '' }))
   }
 
-  // 자동 캠페인 제목 — 방문형: [지역] 가게이름 / 택배형: 브랜드명 — 상품이름
+  // 자동 캠페인 제목 — 방문형: [지역] 가게이름 / 배송형: 브랜드명 — 상품이름
   const autoTitle = form.type === '방문형'
     ? (form.location && form.storeName ? `[${form.location}] ${form.storeName}` : '')
     : (form.brandName && form.shippedProductName ? `${form.brandName} — ${form.shippedProductName}` : '')
@@ -183,7 +183,7 @@ export default function CampaignNew() {
       showToast(editStatusInfo.reason, 'error')
       return
     }
-    // 방문형: 지역+가게이름 / 택배형: 브랜드명+상품이름 (원본 분기)
+    // 방문형: 지역+가게이름 / 배송형: 브랜드명+상품이름 (원본 분기)
     if (form.type === '방문형') {
       if (!form.location || !form.storeName) { showToast('지역과 가게 이름을 입력해주세요', 'error'); return }
     } else {
@@ -260,7 +260,7 @@ export default function CampaignNew() {
         {/* 캠페인 유형 토글 */}
         <Field label="캠페인 유형">
           <div className="grid grid-cols-2 gap-2">
-            {(['방문형', '택배형'] as const).map(t => (
+            {(['방문형', '배송형'] as const).map(t => (
               <button type="button"
                 key={t}
                 onClick={() => set('type', t)}
@@ -277,7 +277,7 @@ export default function CampaignNew() {
           </div>
         </Field>
 
-        {/* 방문형: 지역+가게이름 / 택배형: 브랜드명+상품이름 (원본 정책 보강) */}
+        {/* 방문형: 지역+가게이름 / 배송형: 브랜드명+상품이름 (원본 정책 보강) */}
         {form.type === '방문형' ? (
           <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
             <Field label="지역">
@@ -399,9 +399,9 @@ export default function CampaignNew() {
           </Field>
         </div>
 
-        {form.type === '택배형' && (
+        {form.type === '배송형' && (
           <div className="bg-blue-100 border border-blue-200 rounded-xl px-3 py-2.5 text-[15px] text-blue-800">
-            <p className="font-semibold mb-0.5">택배형 캠페인 안내</p>
+            <p className="font-semibold mb-0.5">배송형 캠페인 안내</p>
             <p className="text-blue-700">상품 배송이 필요한 경우, 신청한 인플루언서의 배송지 정보를 엑셀로 다운로드할 수 있습니다.</p>
           </div>
         )}

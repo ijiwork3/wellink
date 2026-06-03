@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, User, Building2, Phone, Hash, LogOut, Save, Link, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react'
+import { Mail, User, Building2, Phone, Hash, LogOut, Save, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react'
 
 function InstagramIcon({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
@@ -63,7 +63,6 @@ export default function MyPage() {
   // SNS 연동
   const [snsConnected, setSnsConnected] = useState(true)
   const [snsModal, setSnsModal] = useState(false)
-  const [snsHandle, setSnsHandle] = useState('wellink_brand')
   // C-4: Meta OAuth 로딩 시뮬레이션
   // 실제 구현: startCompanyMetaConnect(me?.id) → Meta 앱 ID + OAuth redirect URI 필요
   const [isConnecting, setIsConnecting] = useState(false)
@@ -588,27 +587,27 @@ export default function MyPage() {
         </div>
       )}
 
-      {/* SNS 연결 모달 */}
+      {/* SNS 연결 모달 — Meta OAuth 방식 (원본 startCompanyMetaConnect 대응) */}
       <Modal
         open={snsModal}
-        onClose={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
+        onClose={() => setSnsModal(false)}
         title="Instagram 연결"
         footer={
           <>
             <button type="button"
-              onClick={() => { setSnsModal(false); setSnsHandle('wellink_brand') }}
+              onClick={() => setSnsModal(false)}
               className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button type="button"
               onClick={handleSnsConnect}
-              disabled={snsHandle.trim() === '' || isConnecting}
+              disabled={isConnecting}
               className="flex-1 flex items-center justify-center gap-1.5 bg-brand-green text-white py-2.5 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isConnecting
                 ? <><Loader2 size={14} className="animate-spin" aria-hidden="true" />연결 중...</>
-                : '연결'
+                : 'Meta로 계속하기'
               }
             </button>
           </>
@@ -616,25 +615,17 @@ export default function MyPage() {
       >
         <div className="space-y-4">
           <div className="flex justify-center">
-            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
-              <Link size={24} className="text-gray-400" aria-hidden="true" />
+            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #FCAF45 100%)' }}>
+              <InstagramIcon size={26} className="text-white" aria-hidden="true" />
             </div>
           </div>
-          <div>
-            <label htmlFor="sns-handle" className="text-[15px] text-gray-500 mb-1.5 block">Instagram 비즈니스 계정</label>
-            <input
-              id="sns-handle"
-              type="text"
-              value={snsHandle}
-              onChange={e => setSnsHandle(e.target.value)}
-              aria-label="Instagram 비즈니스 계정"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[15px] outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-colors"
-              placeholder="Instagram 아이디를 입력하세요"
-            />
-            {snsHandle.trim() === '' && (
-              <p className="text-[15px] text-red-500 mt-1">아이디를 입력해야 연결할 수 있습니다.</p>
-            )}
-          </div>
+          <p className="text-[15px] text-gray-600 text-center">Instagram 비즈니스 계정을 연결하면 팔로워·게시물·광고 데이터를 실시간으로 확인할 수 있어요.</p>
+          <ul className="text-[15px] text-gray-500 space-y-1.5 bg-gray-50 rounded-xl p-4">
+            <li>· 팔로워 분석 및 인구통계</li>
+            <li>· 게시물·릴스 성과 지표</li>
+            <li>· 광고 캠페인 연계 데이터</li>
+          </ul>
+          <p className="text-[13px] text-gray-400 text-center">연결 시 Instagram 로그인 페이지로 이동합니다. 읽기 전용 권한만 요청됩니다.</p>
         </div>
       </Modal>
 

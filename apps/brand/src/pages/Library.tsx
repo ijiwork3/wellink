@@ -457,9 +457,10 @@ export default function Library() {
   }, [])
 
   const handleRejectConfirm = useCallback(() => {
+    if (!rejectReason.trim()) { showToast('반려 사유를 입력해주세요.', 'error'); return }
     rejectConfirm.onConfirm()
     closeRejectConfirm()
-  }, [rejectConfirm, closeRejectConfirm])
+  }, [rejectReason, rejectConfirm, closeRejectConfirm, showToast])
 
   const closePreview = useCallback(() => setPreviewItem(null), [])
 
@@ -1387,15 +1388,15 @@ export default function Library() {
             <p className="text-[15px] text-gray-500 mt-1">{rejectConfirm.description}</p>
           </div>
           <textarea
-            aria-label="반려 사유 (선택)"
+            aria-label="반려 사유 (필수)"
             value={rejectReason}
             onChange={e => setRejectReason(e.target.value)}
-            placeholder="인플루언서에게 전달할 반려 사유를 입력해 주세요 (선택)"
-            maxLength={300}
+            placeholder="인플루언서에게 전달할 반려 사유를 입력해 주세요 (필수)"
+            maxLength={500}
             rows={4}
             className="w-full text-[15px] border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 transition-all placeholder:text-gray-400"
           />
-          <div className="text-right text-[15px] text-gray-500">{rejectReason.length}/300</div>
+          <div className="text-right text-[15px] text-gray-500">{rejectReason.length}/500</div>
         </div>
       </Modal>
 
