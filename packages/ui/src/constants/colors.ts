@@ -46,10 +46,10 @@ export const CHART_COLORS = {
   badStroke: '#f43f5e',
   /** KPI bad 지표 뮤트 배경 — rose-300 */
   badMuted: '#fda4af',
-  /** 콘텐츠 상세 — 조회수 메인 (green-600) */
-  contentViews: '#16a34a',
-  /** 콘텐츠 상세 — 조회수 평균 dashed (green-400) */
-  contentViewsAvg: '#4ade80',
+  /** 콘텐츠 상세 — 조회수 메인 (emerald-600 · 틸 조화) */
+  contentViews: '#059669',
+  /** 콘텐츠 상세 — 조회수 평균 dashed (emerald-400 · 틸 조화) */
+  contentViewsAvg: '#34d399',
   /** 콘텐츠 상세 — 증가 조회수 메인 (orange-500) */
   contentViewsInc: '#f97316',
   /** 콘텐츠 상세 — 증가 조회수 평균 dashed (amber-400) */
@@ -76,8 +76,8 @@ export const SEMANTIC_COLORS = {
   heartInactive: '#9CA3AF',
   /** 에러 아이콘 (SVG stroke) */
   error: '#F04242',
-  /** 성공/완료 아이콘 (SVG stroke) */
-  success: '#22c55e',
+  /** 성공/완료 아이콘 (SVG stroke) — emerald-500(틸 조화) */
+  success: '#10b981',
   /** 인라인 style prop 전용 — primary 텍스트 (gray-900) */
   textPrimary: '#111827',
   /** 인라인 style prop 전용 — secondary 텍스트 (gray-700) */
