@@ -19,7 +19,7 @@ const plans = [
     desc: '소규모 브랜드와 초기 스타트업을 위한 시작 플랜',
     quota: [
       { value: '5,000명', label: '인플루언서 DB' },
-      { value: '월 3건', label: '캠페인' },
+      { value: '월 5건', label: '캠페인' },
       { value: '1명', label: '팀 멤버' },
     ],
     features: [
@@ -117,6 +117,8 @@ export default function Subscription() {
   const [confirmModal, setConfirmModal] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(false)
   const [enterpriseModal, setEnterpriseModal] = useState(false)
+  // 다운그레이드 예약 — 즉시 적용하지 않고 다음 결제일부터 적용 (원본 UpgradeModal 정책)
+  const [scheduledDowngrade, setScheduledDowngrade] = useState<string | null>(null)
   const { showToast } = useToast()
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // confirmTimer cleanup — 언마운트 시 타이머 누수 방지
@@ -183,10 +185,30 @@ export default function Subscription() {
   const displayPlan = (showExpired || showPaymentFailed) && !currentPlan ? 'scale' : currentPlan
 
   const selectedPlan = plans.find(p => p.id === confirmModal)
+  const currentPlanObj = plans.find(p => p.id === currentPlan)
+  // 플랜 가격 숫자 변환 ('99,000' → 99000, '커스텀'·미구독 → 0)
+  const priceNum = (p?: { price: string }) => (p && /^\d/.test(p.price) ? parseInt(p.price.replace(/,/g, ''), 10) : 0)
+  // 플랜 등급 — plans 배열 순서(Focus < Scale < Infinite). '커스텀' 가격에도 안전
+  const planRank = (id?: string | null) => plans.findIndex(p => p.id === id)
+  const isNewSubscribe = !currentPlan || currentPlan === 'free'
+  const isDowngrade = !isNewSubscribe && planRank(confirmModal) >= 0 && planRank(currentPlan) >= 0 && planRank(confirmModal) < planRank(currentPlan)
+  const isUpgrade = !isNewSubscribe && planRank(confirmModal) > planRank(currentPlan)
+  // 업그레이드 차액 (선택 플랜가 − 현재 플랜가) — 원본 UpgradeModal 정책: 차액만 즉시 결제
+  const upgradeDiff = Math.max(0, priceNum(selectedPlan) - priceNum(currentPlanObj))
 
   const handleConfirm = () => {
     if (!selectedPlan) return
 
+    // 다운그레이드: 즉시 적용하지 않고 "변경 예약" — 다음 결제일부터 적용 (현재 주기 동안 기존 플랜 유지)
+    if (isDowngrade) {
+      setScheduledDowngrade(confirmModal)
+      setConfirmModal(null)
+      setConfirmed(false)
+      showToast(`다음 결제일부터 ${selectedPlan.name} 플랜으로 변경됩니다.`, 'success')
+      return
+    }
+
+    // 신규 구독·업그레이드: 즉시 결제 후 적용 (업그레이드는 차액만 결제)
     // TODO: 토스페이먼츠 API 키 확정 후 아래 주석 해제
     // const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY
     // const toss = await loadTossPayments(TOSS_CLIENT_KEY)
@@ -201,13 +223,14 @@ export default function Subscription() {
       if (confirmModal) {
         setCurrentPlan(confirmModal)
         setQAState({ plan: confirmModal as QAPlan })
-        // 재구독 시 이전 환불 정보 초기화 (부분 환불 배지 자동 해제)
+        // 재구독·업그레이드 시 이전 환불·다운그레이드 예약 초기화
         setRefundedFromPlan(null)
         setRefundInfo(null)
+        setScheduledDowngrade(null)
       }
       setConfirmModal(null)
       setConfirmed(false)
-      showToast(`${selectedPlan.name} 플랜으로 변경되었습니다.`, 'success')
+      showToast(isNewSubscribe ? `${selectedPlan.name} 플랜 구독이 시작되었습니다.` : `${selectedPlan.name} 플랜으로 변경되었습니다.`, 'success')
       confirmTimerRef.current = null
     }, TIMER_MS.MOCK_PLAN_CHANGE)
   }
@@ -355,6 +378,11 @@ export default function Subscription() {
                       해지 예정
                     </span>
                   )}
+                  {scheduledDowngrade && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-1 text-[15px] font-bold">
+                      {plans.find(p => p.id === scheduledDowngrade)?.name} 변경 예정
+                    </span>
+                  )}
                 </div>
                 <h2 className="text-xl @md:text-2xl font-bold text-gray-900">{cur?.name} 플랜</h2>
                 <div className="flex items-baseline gap-1 mt-1">
@@ -388,6 +416,12 @@ export default function Subscription() {
                       className="text-[15px] font-medium px-3 py-1.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
                     >환불 요청</button>
                   </>
+                )}
+                {scheduledDowngrade && (
+                  <button type="button"
+                    onClick={() => { setScheduledDowngrade(null); showToast('플랜 변경 예약이 취소되었습니다.', 'success') }}
+                    className="text-[15px] font-medium px-3 py-1.5 rounded-xl border border-brand-green-border text-brand-green-text hover:bg-brand-green-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+                  >변경 예약 취소</button>
                 )}
               </div>
             </div>
@@ -634,7 +668,7 @@ export default function Subscription() {
           { name: '성과 대시보드',          focus: '기본',     scale: '고급',        infinite: '커스텀' },
           { name: 'Fit-Score 상세 리포트',  focus: false,      scale: true,          infinite: true },
           { name: '콘텐츠 다운로드',        focus: true,       scale: true,          infinite: true },
-          { name: '캠페인 수',              focus: '월 3건',   scale: '월 20건',     infinite: '무제한',      section: '운영 한도' },
+          { name: '캠페인 수',              focus: '월 5건',   scale: '월 20건',     infinite: '무제한',      section: '운영 한도' },
           { name: '팀 멤버',                focus: '1명',      scale: '5명',         infinite: '무제한' },
           { name: '동시 활성 캠페인',       focus: '1건',      scale: '5건',         infinite: '무제한' },
           { name: 'API 접근',               focus: false,      scale: false,         infinite: true,         section: '기술·통합' },
@@ -896,10 +930,17 @@ export default function Subscription() {
         title="플랜 변경"
         size="sm"
         footer={!confirmed ? (
-          <>
-            <button type="button" onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
-            <button type="button" onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-[15px] hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">확인</button>
-          </>
+          isDowngrade ? (
+            <>
+              <button type="button" onClick={handleCloseConfirmModal} className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-[15px] font-semibold hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">현재 플랜 유지하기</button>
+              <button type="button" onClick={handleConfirm} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">변경 예약하기</button>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={handleCloseConfirmModal} className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-[15px] hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">취소</button>
+              <button type="button" onClick={handleConfirm} disabled={confirmed} className="flex-1 bg-brand-green text-white py-2.5 rounded-xl text-[15px] hover:bg-brand-green-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">{isUpgrade ? `${upgradeDiff.toLocaleString('ko-KR')}원 결제하기` : '확인'}</button>
+            </>
+          )
         ) : undefined}
       >
         {confirmed ? (
@@ -908,66 +949,90 @@ export default function Subscription() {
               <Check size={20} className="text-white" aria-hidden="true" />
             </div>
             <p className="text-[15px] font-semibold text-gray-900">
-              {!currentPlan || currentPlan === 'free' ? '구독이 시작되었습니다!' : '플랜이 변경되었습니다!'}
+              {isNewSubscribe ? '구독이 시작되었습니다!' : '플랜이 변경되었습니다!'}
             </p>
           </div>
-        ) : (() => {
-          const isNewSubscribe = !currentPlan || currentPlan === 'free'
-          const isDowngrade = currentPlan === 'scale' && confirmModal === 'focus'
-          return (
-            <div className="space-y-3">
-              <p className="text-[15px] text-gray-600">
-                <strong>{selectedPlan?.name}</strong> 플랜으로 {isNewSubscribe ? '구독을 시작' : '변경'}하시겠습니까?
-              </p>
-              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-[15px]">
-                  <span className="text-gray-600">{isNewSubscribe ? '구독 플랜' : '변경 플랜'}</span>
-                  <span className="font-semibold">{selectedPlan?.name}</span>
-                </div>
-                <div className="flex justify-between text-[15px]">
-                  <span className="text-gray-600">금액</span>
-                  <span className="font-semibold">
-                    {selectedPlan?.price === '커스텀' ? '커스텀' : `₩${selectedPlan?.price}${selectedPlan?.unit?.replace('원', '')}`}
-                  </span>
-                </div>
-                <div className="flex justify-between text-[15px]">
-                  <span className="text-gray-600">적용일</span>
-                  <span className="text-gray-500">{isNewSubscribe ? '즉시 결제 후 적용' : '다음 결제일부터 적용'}</span>
-                </div>
-                {currentPlan && currentPlan !== 'free' && (
-                  <div className="flex justify-between text-[15px]">
-                    <span className="text-gray-600">현재 플랜</span>
-                    <span className="text-gray-500">{plans.find(p => p.id === currentPlan)?.name ?? '없음'}</span>
-                  </div>
-                )}
+        ) : isDowngrade ? (
+          <div className="space-y-3">
+            <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
+              <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="text-[15px] text-amber-800">
+                <p className="font-semibold">플랜 변경 안내</p>
+                <p className="mt-0.5">{currentPlanObj?.name}에서 {selectedPlan?.name}으로 변경 시 다음 혜택들이 축소되거나 제한될 수 있습니다.</p>
               </div>
-
-              {/* 결제 수단 안내 — 미구독→유료 시 즉시 결제, 변경 시 등록 카드로 결제 */}
-              <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl">
-                <CreditCard size={14} className="text-blue-700 shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="text-[15px] text-blue-800 flex-1">
-                  {isNewSubscribe
-                    ? '등록된 결제 수단으로 즉시 결제됩니다. 결제 수단을 확인하거나 변경하시려면 아래 링크를 이용해 주세요.'
-                    : '다음 결제일에 등록된 결제 수단으로 자동 결제됩니다.'}
-                  <button type="button"
-                    // eslint-disable-next-line react-hooks/refs -- onClick은 이벤트 시점 호출이라 안전 (룰 false positive)
-                    onClick={() => { handleCloseConfirmModal(); navigate('/payment/method') }}
-                    className="block mt-1 font-semibold underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-                  >
-                    결제 수단 관리 →
-                  </button>
-                </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-[15px] font-semibold text-gray-900 mb-2">현재 누리고 있는 혜택</p>
+              <ul className="space-y-1.5">
+                {currentPlanObj?.features?.map(f => (
+                  <li key={f} className="flex items-start gap-2 text-[15px] text-gray-400">
+                    <Check size={14} className="mt-0.5 shrink-0 text-gray-300" aria-hidden="true" />
+                    <span className="line-through">{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-3 bg-blue-50 rounded-xl text-[15px] text-blue-800">
+              변경된 플랜은 다음 결제일부터 적용됩니다.
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-[15px] text-gray-600">
+              <strong>{selectedPlan?.name}</strong> 플랜으로 {isNewSubscribe ? '구독을 시작' : '업그레이드'}하시겠습니까?
+            </p>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+              <div className="flex justify-between text-[15px]">
+                <span className="text-gray-600">{isNewSubscribe ? '구독 플랜' : '변경 플랜'}</span>
+                <span className="font-semibold">{selectedPlan?.name}</span>
               </div>
-
-              {isDowngrade && (
-                <div className="flex items-start gap-2 p-3 bg-amber-100 rounded-xl">
-                  <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
-                  <p className="text-[15px] text-amber-800">다운그레이드 시 AI 분석, 우선 지원 등 Scale 전용 기능이 비활성화됩니다.</p>
+              <div className="flex justify-between text-[15px]">
+                <span className="text-gray-600">{isUpgrade ? '즉시 결제 금액 (차액)' : '금액'}</span>
+                <span className="font-semibold">
+                  {isUpgrade ? `₩${upgradeDiff.toLocaleString('ko-KR')}` : `₩${selectedPlan?.price}${selectedPlan?.unit?.replace('원', '')}`}
+                </span>
+              </div>
+              <div className="flex justify-between text-[15px]">
+                <span className="text-gray-600">적용일</span>
+                <span className="text-gray-500">{isNewSubscribe ? '즉시 결제 후 적용' : '결제 즉시 적용'}</span>
+              </div>
+              {!isNewSubscribe && (
+                <div className="flex justify-between text-[15px]">
+                  <span className="text-gray-600">현재 플랜</span>
+                  <span className="text-gray-500">{currentPlanObj?.name ?? '없음'}</span>
                 </div>
               )}
             </div>
-          )
-        })()}
+
+            {isUpgrade && (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-[15px] text-amber-800 space-y-1">
+                <p className="font-semibold">결제 전 확인해주세요</p>
+                <ul className="list-disc pl-4 space-y-0.5 opacity-90">
+                  <li>기존 플랜({currentPlanObj?.name})에 대한 차액만 결제됩니다.</li>
+                  <li>결제 즉시 새로운 플랜의 혜택이 적용됩니다.</li>
+                  <li>다음 결제일부터는 새로운 플랜의 정가가 결제됩니다.</li>
+                </ul>
+              </div>
+            )}
+
+            {/* 결제 수단 안내 — 신규는 정가 즉시 결제, 업그레이드는 차액 즉시 결제 */}
+            <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl">
+              <CreditCard size={14} className="text-blue-700 shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="text-[15px] text-blue-800 flex-1">
+                {isNewSubscribe
+                  ? '등록된 결제 수단으로 즉시 결제됩니다. 결제 수단을 확인하거나 변경하시려면 아래 링크를 이용해 주세요.'
+                  : '등록된 결제 수단으로 차액이 즉시 결제됩니다.'}
+                <button type="button"
+                  // eslint-disable-next-line react-hooks/refs -- onClick은 이벤트 시점 호출이라 안전 (룰 false positive)
+                  onClick={() => { handleCloseConfirmModal(); navigate('/payment/method') }}
+                  className="block mt-1 font-semibold underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
+                >
+                  결제 수단 관리 →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* ── 해지 예약 모달 — 정기 결제만 해지, 만료일까지 혜택 유지 (이미지 매칭) ── */}
