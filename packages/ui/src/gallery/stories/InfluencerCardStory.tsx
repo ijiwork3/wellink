@@ -47,7 +47,7 @@ export default function InfluencerCardStory() {
       <StoryBlock title="Multiple Platforms" bg="gray">
         <div className="w-72">
           <InfluencerCard influencer={{
-            id: 3, name: '박지민', platform: '인스타그램/유튜브/틱톡',
+            id: 3, name: '박지민', platform: '인스타그램/유튜브',
             followers: 120000, engagement: 5.1, authentic: 87,
             category: ['스포츠', '건강', '뷰티'],
           }} />

@@ -16,7 +16,7 @@ import { memo } from 'react'
 import type { CampaignStatus, ParticipationStatus } from '../constants/status'
 
 /** 플랫폼 문자열 리터럴 타입 */
-type PlatformStatus = '인스타그램' | '유튜브' | '틱톡' | '게재중' | '일시중지'
+type PlatformStatus = '인스타그램' | '유튜브' | '게재중' | '일시중지'
 
 /** StatusBadge가 수용하는 알려진 상태값 유니온 */
 export type KnownStatus = CampaignStatus | ParticipationStatus | PlatformStatus
@@ -68,7 +68,6 @@ const statusConfig: Record<string, Cfg> = {
   // 플랫폼
   '인스타그램':   { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
   '유튜브':       { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
-  '틱톡':         { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
   '네이버 블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
   // 정산 (인플 — SettlementStatus)
   '적립':       { bg: 'bg-teal-100', text: 'text-teal-700', dot: 'bg-teal-400' },

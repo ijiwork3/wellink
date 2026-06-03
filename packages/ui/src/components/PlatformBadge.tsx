@@ -1,6 +1,6 @@
 /**
  * PlatformBadge — SNS 플랫폼 배지
- * 정책 §8.3: 인스타그램 / 유튜브 / 네이버 블로그 / 틱톡 (한글 통일)
+ * 정책 §8.3: 인스타그램 / 유튜브 / 네이버 블로그 (한글 통일)
  *
  * variant:
  *  - 'soft' (기본): 흰 배경 위 사용. 연한 톤 + 진한 텍스트
@@ -10,7 +10,7 @@
 import { memo } from 'react'
 import type React from 'react'
 
-type PlatformType = 'instagram' | 'youtube' | 'blog' | 'tiktok' | string
+type PlatformType = 'instagram' | 'youtube' | 'blog' | string
 type Variant = 'soft' | 'solid'
 
 interface PlatformBadgeProps {
@@ -29,7 +29,6 @@ const STYLES: Record<string, { soft: string; solid: string; softStyle?: React.CS
   },
   '유튜브':        { soft: 'bg-red-100 text-red-700',      solid: 'bg-red-500/90 text-white',     label: '유튜브' },
   '네이버 블로그': { soft: 'bg-green-100 text-green-700',  solid: 'bg-green-600/90 text-white',   label: '네이버 블로그' },
-  '틱톡':          { soft: 'bg-slate-100 text-slate-700',  solid: 'bg-black/80 text-white',       label: '틱톡' },
 }
 
 const ALIAS: Record<string, string> = {
@@ -37,7 +36,6 @@ const ALIAS: Record<string, string> = {
   'youtube': '유튜브',
   'blog': '네이버 블로그',
   '블로그': '네이버 블로그',
-  'tiktok': '틱톡',
 }
 
 const PlatformBadge = memo(function PlatformBadge({ platform, variant = 'soft', className = '' }: PlatformBadgeProps) {
