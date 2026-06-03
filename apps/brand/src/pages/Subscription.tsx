@@ -77,7 +77,7 @@ const PLAN_BENEFITS = [
   'IG 브랜드 계정 분석 및 AI 가이드',
   '메타 광고 데이터 분석 및 AI 가이드',
   '웰니스·피트니스 인플루언서 Pool',
-  '무가/유가 시딩 캠페인 운영',
+  '제품 협찬/활동비 캠페인 운영',
   'SNS 바이럴 지표 제공 및 분석',
 ] as const
 
@@ -633,6 +633,7 @@ export default function Subscription() {
           { name: 'Fit-Score 인플루언서 추천',     focus: true,       scale: true,          infinite: true },
           { name: '성과 대시보드',          focus: '기본',     scale: '고급',        infinite: '커스텀' },
           { name: 'Fit-Score 상세 리포트',  focus: false,      scale: true,          infinite: true },
+          { name: '콘텐츠 다운로드',        focus: true,       scale: true,          infinite: true },
           { name: '캠페인 수',              focus: '월 3건',   scale: '월 20건',     infinite: '무제한',      section: '운영 한도' },
           { name: '팀 멤버',                focus: '1명',      scale: '5명',         infinite: '무제한' },
           { name: '동시 활성 캠페인',       focus: '1건',      scale: '5건',         infinite: '무제한' },

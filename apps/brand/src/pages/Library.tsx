@@ -54,6 +54,8 @@ interface Content {
   /** 누락 케이스 식별 — onError fallback 시 무한 루프 방지용 */
   thumbnailMissing: boolean
   postUrl?: string
+  /** 콘텐츠가 속한 캠페인의 다운로드 단가 — 광고주가 캠페인 등록 시 설정. 0이면 다운로드 비활성. */
+  downloadPrice: number
 }
 
 // 100개 더미 + 엣지케이스 (썸네일 누락, 0값 등) — 원본 ContentList rawFileUrl=#일 때 ImageIcon fallback 보강
@@ -79,7 +81,14 @@ const CREATOR_POOL: Array<{ name: string; username: string }> = [
   { name: '홍은수', username: 'eunsoo_healthy' },
   { name: '배유나', username: 'yuna_active' },
 ]
-const CAMPAIGN_POOL = ['봄 요가 프로모션', '비건 신제품 론칭', '여름 캠페인', '주방 가전 런칭', '겨울 운동 챌린지']
+/** 캠페인별 다운로드 단가 — CampaignNew.tsx에서 광고주가 설정하는 값과 동일 구조 */
+const CAMPAIGN_POOL: Array<{ name: string; downloadPrice: number }> = [
+  { name: '봄 요가 프로모션',   downloadPrice: 5000 },  // CampaignDetail mock id:1 과 일치
+  { name: '비건 신제품 론칭',   downloadPrice: 3000 },  // CampaignDetail mock id:2 과 일치
+  { name: '여름 캠페인',       downloadPrice: 4000 },
+  { name: '주방 가전 런칭',    downloadPrice: 0 },      // 0 = 다운로드 비활성
+  { name: '겨울 운동 챌린지',   downloadPrice: 5000 },
+]
 type LibPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
 type LibSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
 const LIB_PS: Array<{ p: LibPlatform; t: LibSubType | undefined }> = [
@@ -105,7 +114,8 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
   const creatorEntry = CREATOR_POOL[i % CREATOR_POOL.length]
   const creator = creatorEntry.name
   const creatorUsername = creatorEntry.username
-  const campaign = CAMPAIGN_POOL[i % CAMPAIGN_POOL.length]
+  const campaignEntry = CAMPAIGN_POOL[i % CAMPAIGN_POOL.length]
+  const campaign = campaignEntry.name
   const ps = LIB_PS[i % LIB_PS.length]
   // i % 23 == 0 zero-reach 엣지 케이스
   const isZero = i % 23 === 0
@@ -134,6 +144,7 @@ const contents: Content[] = Array.from({ length: 100 }, (_, i) => {
     thumbnailMissing: false,
     thumbnailUrl: getThumbnailFromPool(contentId),
     postUrl: (i % 5 !== 0 && i % 7 !== 3) ? `https://www.instagram.com/p/mock_${contentId}/` : undefined,
+    downloadPrice: campaignEntry.downloadPrice,
   }
 })
 
@@ -1113,6 +1124,15 @@ export default function Library() {
                           >
                             <Download size={14} aria-hidden="true" />
                           </button>
+                        ) : c.downloadPrice === 0 ? (
+                          <Tooltip content="캠페인 등록 시 다운로드 단가를 설정해야 활성화됩니다">
+                            <button type="button" disabled
+                              aria-label={`${c.creator} 다운로드 비활성 (단가 0원)`}
+                              className="p-1.5 rounded-lg text-gray-300 cursor-not-allowed"
+                            >
+                              <Download size={14} aria-hidden="true" />
+                            </button>
+                          </Tooltip>
                         ) : (
                           <button type="button"
                             onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: c.id })}
@@ -1159,6 +1179,14 @@ export default function Library() {
               >
                 <Download size={14} aria-hidden="true" /> 다시 다운로드
               </button>
+            ) : previewItem.downloadPrice === 0 ? (
+              <Tooltip content="캠페인 등록 시 다운로드 단가를 설정해야 활성화됩니다">
+                <button type="button" disabled
+                  className="w-full flex items-center justify-center gap-1.5 border border-gray-200 text-gray-300 py-2.5 rounded-xl text-[15px] font-medium cursor-not-allowed"
+                >
+                  <Download size={14} aria-hidden="true" /> 다운로드 비활성
+                </button>
+              </Tooltip>
             ) : (
               <button type="button"
                 onClick={() => setDownloadModal({ open: true, scope: 'single', singleId: previewItem.id })}
@@ -1372,11 +1400,15 @@ export default function Library() {
 
       {/* 콘텐츠 다운로드 모달 — 건당 결제 */}
       {(() => {
-        const count = downloadModal.scope === 'all' ? filtered.length : downloadModal.scope === 'single' ? 1 : selectedIds.size
-        // TODO: 다운로드 단가 미확정 — 현재 임의값(3,000원), 클라이언트 확정 후 반영 필요
-        // CampaignDetail.tsx와 동일 단가 유지 (정합성)
-        const PRICE_PER_DOWNLOAD = 3000 // 단가 임시값 (정책 확정 후 교체)
-        const totalAmount = PRICE_PER_DOWNLOAD * count
+        // 대상 콘텐츠 목록 — 캠페인별 다운로드 단가 합산
+        const targetContents = downloadModal.scope === 'all'
+          ? filtered
+          : downloadModal.scope === 'single' && downloadModal.singleId != null
+            ? filtered.filter(c => c.id === downloadModal.singleId)
+            : filtered.filter(c => selectedIds.has(c.id))
+        const count = targetContents.length
+        const totalAmount = targetContents.reduce((sum, c) => sum + c.downloadPrice, 0)
+        const hasZeroPriceContent = targetContents.some(c => c.downloadPrice === 0)
         const closeDownloadModal = () => {
           if (isPaying) return
           setDownloadModal({ open: false, scope: 'selected' })
@@ -1415,8 +1447,13 @@ export default function Library() {
           >
             <div className="space-y-3">
               <p className="text-[15px] text-gray-600">
-                다운로드 1건당 <strong className="text-gray-900">₩{PRICE_PER_DOWNLOAD.toLocaleString()}</strong>이 부과됩니다.
+                콘텐츠 다운로드 단가는 캠페인 등록 시 광고주가 설정한 금액입니다.
               </p>
+              {hasZeroPriceContent && (
+                <p className="text-[15px] text-amber-600">
+                  ⚠ 다운로드 단가 0원인 콘텐츠가 포함되어 있습니다. 해당 캠페인은 다운로드가 비활성화되어 제외됩니다.
+                </p>
+              )}
               <div className="space-y-2 text-[15px] bg-gray-50 rounded-xl p-4">
                 <div className="flex justify-between"><span className="text-gray-500">다운로드 대상</span><span className="font-medium">{downloadModal.scope === 'all' ? '전체 콘텐츠' : downloadModal.scope === 'single' ? '단건 콘텐츠' : '선택한 콘텐츠'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">건수</span><span className="font-medium">{count}건</span></div>

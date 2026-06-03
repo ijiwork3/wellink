@@ -20,7 +20,7 @@ export default function CampaignApply() {
   const applications = useApplications()
   const ig = useInstagramState()
   const campaign = mockCampaigns.find(c => c.id === Number(id))
-  // 유가시딩(activityFee > 0) + 일반 계정 → 신청 불가
+  // 활동비(activityFee > 0) + 일반 계정 → 신청 불가
   const needsProfessional = (campaign?.activityFee ?? 0) > 0 && !ig.professional
   const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => {

@@ -566,16 +566,16 @@
 
 /* ── 테마: 틸 × 퍼플네이비 ── */
 :root.theme-teal-navy {
-  --color-brand-green:        #00C9B5;
+  --color-brand-green:        #00A896;  /* CTA·fill용 살짝 어두운 틸 (네온감↓, brand-green-text와 응집) */
   --color-brand-green-text:   #0A7A6E;
-  --color-brand-green-hover:  #00B5A0;
+  --color-brand-green-hover:  #009082;
   --color-brand-green-bg:     #F0FDFB;
   --color-brand-green-border: #76E4DC;
   --color-brand-fuchsia:        #8B5CF6;
   --color-brand-fuchsia-text:   #6D28D9;
   --color-brand-fuchsia-bg:     #F5F3FF;
   --color-brand-fuchsia-border: #DDD6FE;
-  --gradient-brand: linear-gradient(135deg, #00C9B5, 70%, #8B5CF6);
+  --gradient-brand: linear-gradient(135deg, #00A896, 70%, #8B5CF6);
   --color-gradient-login-stop-1: #CCFBF7;
   --color-gradient-login-stop-2: #76E4DC;
   --color-gradient-login-stop-3: #EDE9FE;

@@ -4,7 +4,12 @@ import { useEscToClose } from '../utils/useEscToClose'
 import ProfileHeader from './ProfileHeader'
 import SideNav from './SideNav'
 import BottomTabBar from './BottomTabBar'
-import { auth, AlertModal } from '@wellink/ui'
+import { AlertModal, useToast } from '@wellink/ui'
+
+/* 데모: 실제 로그아웃 없이 토스트 후 랜딩(마케팅)으로 이동. 배포 시 도메인만 교체. */
+const MARKETING_URL = /^(localhost|127\.0\.0\.1)/.test(typeof window !== 'undefined' ? window.location.hostname : '')
+  ? 'http://localhost:5199/'
+  : 'https://wellink.ai/'
 import { ArrowLeft, Menu, X, Bell } from 'lucide-react'
 import { useUnreadCount } from '../services/notifications'
 
@@ -23,11 +28,17 @@ export default function Layout({ children, showSidebar = true, showBottomTab, pa
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const unreadCount = useUnreadCount()
   useEscToClose(drawerOpen, () => setDrawerOpen(false))
 
   const confirmLogout = () => setLogoutConfirm(true)
-  const doLogout = () => { auth.clear(); navigate('/login') }
+  // 데모: 실제 로그아웃은 하지 않고, 토스트 노출 후 랜딩으로 이동
+  const doLogout = () => {
+    setLogoutConfirm(false)
+    showToast('로그아웃되었습니다. 메인으로 이동할게요.', 'info')
+    setTimeout(() => { window.location.href = MARKETING_URL }, 700)
+  }
 
   return (
     <div className="@container flex flex-col w-full h-full">

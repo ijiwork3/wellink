@@ -28,7 +28,7 @@ const campaignsData: Record<string, {
     status: '모집중',
     category: '피트니스',
     budget: '2,000,000원',
-    period: '2026-03-25 ~ 2026-04-28',
+    period: '2026-04-25 ~ 2026-05-25',
     headcount: 15,
     description: '## 캠페인 소개\n\n봄 시즌을 맞아 요가·필라테스 인플루언서와 함께하는 브랜드 캠페인입니다. 제품 체험 후 솔직한 후기 콘텐츠를 제작합니다.\n\n## 타겟\n\n- 요가·필라테스·홈트레이닝 관련 콘텐츠를 꾸준히 업로드하는 인플루언서\n- 20~40대 여성 팔로워 비중이 높은 계정 우대\n- 강남·서초 지역 방문 가능자\n\n## 제공 혜택\n\n프리미엄 요가매트 세트 + 매장 1회 무료 강습권 제공',
     influencers: [
@@ -41,10 +41,11 @@ const campaignsData: Record<string, {
   '2': {
     name: '비건 신제품 론칭',
     status: '대기중',
-    category: '뷰티/웰니스',
+    category: '뷰티/패션',
     budget: '1,500,000원',
     period: '2026-04-10 ~ 2026-05-10',
     headcount: 10,
+    /* campaignMeta와 동기화 — productPrice: 89000, postType: '피드, 릴스' (인스타그램) */
     description: '## 캠페인 소개\n\n비건 스킨케어 신제품 론칭을 알리는 캠페인입니다. 뷰티·웰니스 카테고리 인플루언서 대상으로 1주일 사용 후 솔직 리뷰를 제작합니다.\n\n## 타겟\n\n- 뷰티·클린뷰티·비건 라이프 콘텐츠 채널\n- 평소 성분·제형 분석 콘텐츠를 제작하는 인플루언서 우대\n\n## 제공 혜택\n\n제품 3종 세트 + 30,000P 추가 리워드 적립',
     influencers: [
       { id: 5, name: '장영훈', status: '대기중', content: '미정', deadline: '2026-04-18', avatar: 'bg-green-200', dday: 14 },

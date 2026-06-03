@@ -61,7 +61,7 @@ const FILLED = {
   announceDate: '2026-05-30',
   uploadStart: '2026-04-25',
   uploadEnd: '2026-05-25',
-  headcount: '20',
+  headcount: '15',
 }
 
 type Question = {

@@ -682,7 +682,7 @@ export default function Profile() {
         title="로그아웃"
         description="로그아웃 하시겠어요?"
         confirmLabel="로그아웃"
-        onConfirm={() => { auth.clear(); navigate('/login') }}
+        onConfirm={() => { setLogoutConfirm(false); showToast('로그아웃되었습니다. 메인으로 이동할게요.', 'info'); setTimeout(() => { window.location.href = /^(localhost|127\.0\.0\.1)/.test(window.location.hostname) ? 'http://localhost:5199/' : 'https://wellink.ai/' }, TIMER_MS.LOGOUT_REDIRECT) }}
         variant="default"
       />
 
@@ -705,7 +705,7 @@ export default function Profile() {
                 setWithdrawModal(false)
                 setWithdrawConfirmText('')
                 showToast('탈퇴 신청이 완료됐어요.', 'info')
-                setTimeout(() => { auth.clear(); navigate('/login') }, TIMER_MS.NAV_DELAY)
+                setTimeout(() => { auth.clear(); window.location.href = /^(localhost|127\.0\.0\.1)/.test(window.location.hostname) ? 'http://localhost:5199/' : 'https://wellink.ai/' }, TIMER_MS.NAV_DELAY)
               }}
               className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-[15px] font-medium hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
             >

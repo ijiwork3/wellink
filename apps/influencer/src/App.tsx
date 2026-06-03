@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
-import Login from './pages/Login'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
 import CampaignDetail from './pages/CampaignDetail'
@@ -8,7 +7,6 @@ import CampaignApply from './pages/CampaignApply'
 import Profile from './pages/Profile'
 import Media from './pages/Media'
 import Settlement from './pages/Settlement'
-import Signup from './pages/Signup'
 import Favorites from './pages/Favorites'
 import Notifications from './pages/Notifications'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
@@ -287,8 +285,9 @@ function AppRoutes() {
     <>
       <Routes>
         <Route path="/" element={<Navigate to="/campaigns/browse" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* 데모: 앱에는 로그인/회원가입 없음 — 진입 시 메인으로 (로그인은 랜딩에서만) */}
+        <Route path="/login" element={<Navigate to="/campaigns/browse" replace />} />
+        <Route path="/signup" element={<Navigate to="/campaigns/browse" replace />} />
         <Route path="/campaigns/browse" element={<ProtectedRoute><CampaignBrowse /></ProtectedRoute>} />
         <Route path="/campaigns/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         <Route path="/campaigns/my" element={<ProtectedRoute><MyCampaign /></ProtectedRoute>} />

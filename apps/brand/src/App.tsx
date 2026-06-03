@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Settings, X } from 'lucide-react'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
 import Layout from './components/Layout'
 import Dashboard from './pages/DashboardV2'
 import ProfileInsight from './pages/ProfileInsight'
@@ -284,8 +282,9 @@ function AppRoutes() {
     <>
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* 데모: 앱에는 로그인/회원가입 없음 — 진입 시 메인으로 (로그인은 랜딩에서만) */}
+        <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/fail" element={<PaymentFail />} />
         <Route path="/moodboard" element={<Moodboard />} />

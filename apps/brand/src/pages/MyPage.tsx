@@ -189,7 +189,7 @@ export default function MyPage() {
         description="계정 설정 및 구독 정보를 한눈에 확인하세요."
         actions={
           <button type="button"
-            onClick={() => { showToast('로그아웃되었습니다.', 'info'); setTimeout(() => navigate('/login'), TIMER_MS.LOGOUT_REDIRECT) }}
+            onClick={() => { showToast('로그아웃되었습니다. 메인으로 이동할게요.', 'info'); setTimeout(() => { window.location.href = /^(localhost|127\.0\.0\.1)/.test(window.location.hostname) ? 'http://localhost:5199/' : 'https://wellink.ai/' }, TIMER_MS.LOGOUT_REDIRECT) }}
             className="shrink-0 flex items-center gap-1.5 text-[15px] text-gray-500 hover:text-gray-700 transition-colors"
           >
             <LogOut size={16} aria-hidden="true" />

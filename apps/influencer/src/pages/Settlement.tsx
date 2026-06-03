@@ -72,16 +72,17 @@ interface DownloadRevenueItem {
 }
 
 /** 광고주 콘텐츠 다운로드로 발생한 수익 내역 (mock) */
+/** 다운로드 수익 단가는 광고주가 캠페인 등록 시 설정 (CampaignNew.tsx downloadPrice). 캠페인마다 다름. */
 const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
   { id: 'dr-1', campaign: '헬스 보충제 캠페인', contentType: '피드', brand: 'SMILEATO', downloadedAt: '2026-05-20', amount: 3000, status: '미인출' },
-  { id: 'dr-2', campaign: '아웃도어 장비 리뷰', contentType: '블로그', brand: '아웃도어킹', downloadedAt: '2026-05-18', amount: 3000, status: '미인출' },
-  { id: 'dr-3', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
-  { id: 'dr-4', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 3000, status: '지급완료', paidAt: '2026-04-25' },
+  { id: 'dr-2', campaign: '아웃도어 장비 리뷰', contentType: '블로그', brand: '아웃도어킹', downloadedAt: '2026-05-18', amount: 4000, status: '미인출' },
+  { id: 'dr-3', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 5000, status: '지급완료', paidAt: '2026-04-25' },
+  { id: 'dr-4', campaign: '봄 요가 프로모션', contentType: '릴스', brand: '요가랩', downloadedAt: '2026-04-22', amount: 5000, status: '지급완료', paidAt: '2026-04-25' },
   { id: 'dr-5', campaign: '비건 신제품 론칭', contentType: '피드', brand: '그린푸드', downloadedAt: '2026-04-12', amount: 3000, status: '지급완료', paidAt: '2026-04-15' },
-  { id: 'dr-6', campaign: '홈트레이닝 챌린지', contentType: '릴스', brand: '아이언짐', downloadedAt: '2026-03-30', amount: 3000, status: '지급완료', paidAt: '2026-04-02' },
-  { id: 'dr-7', campaign: '스킨케어 브랜드 홍보', contentType: '피드', brand: '글로우랩', downloadedAt: '2026-03-15', amount: 3000, status: '지급완료', paidAt: '2026-03-18' },
+  { id: 'dr-6', campaign: '홈트레이닝 챌린지', contentType: '릴스', brand: '아이언짐', downloadedAt: '2026-03-30', amount: 5000, status: '지급완료', paidAt: '2026-04-02' },
+  { id: 'dr-7', campaign: '스킨케어 브랜드 홍보', contentType: '피드', brand: '글로우랩', downloadedAt: '2026-03-15', amount: 4000, status: '지급완료', paidAt: '2026-03-18' },
   { id: 'dr-8', campaign: '프리미엄 커피 체험', contentType: '스토리', brand: '카페모어', downloadedAt: '2026-03-05', amount: 3000, status: '지급완료', paidAt: '2026-03-08' },
-  { id: 'dr-9', campaign: '운동복 신제품 리뷰', contentType: '릴스', brand: '스포럭스', downloadedAt: '2026-02-20', amount: 3000, status: '지급완료', paidAt: '2026-02-22' },
+  { id: 'dr-9', campaign: '운동복 신제품 리뷰', contentType: '릴스', brand: '스포럭스', downloadedAt: '2026-02-20', amount: 5000, status: '지급완료', paidAt: '2026-02-22' },
 ]
 
 function buildSettlementItems(): SettlementItem[] {
