@@ -18,7 +18,7 @@ export const kpiByMode: Record<DatePeriod, { reach: number; shares: number; save
 // ── 콘텐츠 타입 정의 (정책 § 2-3, 2-4) ──────────────────────────────────────
 export type ViralContentType = '릴스' | '피드'
 export type ContentGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'processing'
-export type ViralPlatform = 'instagram' | 'youtube' | 'tiktok'
+export type ViralPlatform = 'instagram' | 'youtube'
 export type ViralContent = {
   id: string
   title: string

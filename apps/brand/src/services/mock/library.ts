@@ -1,6 +1,6 @@
 // Mock data — replace with API calls when backend is ready
 
-export type LibraryPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+export type LibraryPlatform = '인스타그램' | '유튜브' | '네이버 블로그'
 export type LibraryPostType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
 
 export interface LibraryContent {
@@ -45,7 +45,6 @@ export const PLATFORM_ICONS: Record<LibraryPlatform, string> = {
   '인스타그램': '📷',
   '유튜브': '▶',
   '네이버 블로그': '📝',
-  '틱톡': '🎵',
 }
 
 export const LIBRARY_CAMPAIGN_OPTIONS = [

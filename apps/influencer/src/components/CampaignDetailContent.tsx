@@ -558,7 +558,7 @@ export default function CampaignDetailContent({
                               : formatDateShort(campaign.applyEnd)}
                           </span>
                           {dDay > 0 && (
-                            <span className="shrink-0 text-[10px] font-bold text-red-500 bg-red-100 px-1.5 py-0.5 rounded whitespace-nowrap">
+                            <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${dDay <= 3 ? 'text-red-500 bg-red-100' : dDay <= 7 ? 'text-orange-500 bg-orange-100' : 'text-gray-500 bg-gray-100'}`}>
                               {dDay === 1 ? '당일 마감' : `D-${dDay}`}
                             </span>
                           )}

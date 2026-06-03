@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import {
   KPICard, PageHeader, DateRangePicker, WordCloud, EmptyState,
-  ChartScrollContainer, useIsTouchDevice, fmtNumber, BRAND, CHART_COLORS,
+  ChartScrollContainer, useIsTouchDevice, fmtNumber, CHART_COLORS,
   ErrorState, SkeletonCard, Skeleton,
   type ChartScrollContainerHandle, type DatePeriod, type WordCloudEntry,
 } from '@wellink/ui'
@@ -600,12 +600,12 @@ export default function DashboardV2() {
                 <circle cx="45" cy="45" r="36" fill="none" stroke={CHART_COLORS.grid} strokeWidth="14" />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke={BRAND.green} strokeWidth="14"
+                  stroke="var(--color-brand-green)" strokeWidth="14"
                   strokeDasharray={`${reelsDash} ${donutCircumference - reelsDash}`}
                 />
                 <circle
                   cx="45" cy="45" r="36" fill="none"
-                  stroke={BRAND.greenText} strokeWidth="14"
+                  stroke="var(--color-brand-fuchsia)" strokeWidth="14"
                   strokeDasharray={`${feedDash} ${donutCircumference - feedDash}`}
                   strokeDashoffset={-reelsDash}
                 />
@@ -627,7 +627,7 @@ export default function DashboardV2() {
               </div>
               <div className="flex items-center justify-between">
                 <dt className="flex items-center gap-1.5 text-gray-700">
-                  <span className="w-2 h-2 rounded-full bg-brand-green-text inline-block" aria-hidden="true" />
+                  <span className="w-2 h-2 rounded-full bg-brand-fuchsia inline-block" aria-hidden="true" />
                   피드
                 </dt>
                 <dd className="font-semibold text-gray-900 tabular-nums">

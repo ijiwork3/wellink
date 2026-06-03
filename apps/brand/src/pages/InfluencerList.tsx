@@ -57,11 +57,11 @@ const INF_BIOS = [
 ]
 const INF_TYPES: InfluencerType[] = ['개인 인플루언서', '개인 인플루언서', '개인 인플루언서', '크루/그룹', '센터', '행사']
 // 채널 = 플랫폼 + 콘텐츠 유형 (8개 유효 조합)
-type InfluencerChannel = '인스타그램_피드' | '인스타그램_릴스' | '인스타그램_스토리' | '유튜브_영상' | '유튜브_쇼츠' | '네이버블로그' | '틱톡'
-const CHANNEL_POOL: InfluencerChannel[] = ['인스타그램_피드', '인스타그램_릴스', '인스타그램_스토리', '유튜브_영상', '유튜브_쇼츠', '인스타그램_피드', '틱톡', '네이버블로그', '인스타그램_릴스', '유튜브_영상']
+type InfluencerChannel = '인스타그램_피드' | '인스타그램_릴스' | '인스타그램_스토리' | '유튜브_영상' | '유튜브_쇼츠' | '네이버블로그'
+const CHANNEL_POOL: InfluencerChannel[] = ['인스타그램_피드', '인스타그램_릴스', '인스타그램_스토리', '유튜브_영상', '유튜브_쇼츠', '인스타그램_피드', '네이버블로그', '인스타그램_릴스', '유튜브_영상']
 const CHANNEL_TO_PLATFORM: Record<InfluencerChannel, string> = {
   '인스타그램_피드': '인스타그램', '인스타그램_릴스': '인스타그램', '인스타그램_스토리': '인스타그램',
-  '유튜브_영상': '유튜브', '유튜브_쇼츠': '유튜브', '네이버블로그': '네이버 블로그', '틱톡': '틱톡',
+  '유튜브_영상': '유튜브', '유튜브_쇼츠': '유튜브', '네이버블로그': '네이버 블로그',
 }
 const LAST_ACTIVE_POOL = ['오늘', '1일 전', '2일 전', '3일 전', '5일 전', '1주 전', '2주 전', '3주 전']
 const influencers = Array.from({ length: 100 }, (_, i) => {
@@ -180,7 +180,6 @@ const channelOptions = [
   { label: '유튜브 · 영상', value: '유튜브_영상' },
   { label: '유튜브 · 쇼츠', value: '유튜브_쇼츠' },
   { label: '네이버 블로그', value: '네이버블로그' },
-  { label: '틱톡', value: '틱톡' },
 ]
 
 /* THUMB_GRADIENTS — Unsplash 사진 매핑(getThumbnailFromPool)으로 대체됨 */

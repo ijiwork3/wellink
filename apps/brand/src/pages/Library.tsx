@@ -39,7 +39,7 @@ interface Content {
   creatorUsername: string
   campaign: string
   type?: '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
-  platform: '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+  platform: '인스타그램' | '유튜브' | '네이버 블로그'
   date: string
   reach: number
   likes: number
@@ -89,13 +89,12 @@ const CAMPAIGN_POOL: Array<{ name: string; downloadPrice: number }> = [
   { name: '주방 가전 런칭',    downloadPrice: 0 },      // 0 = 다운로드 비활성
   { name: '겨울 운동 챌린지',   downloadPrice: 5000 },
 ]
-type LibPlatform = '인스타그램' | '유튜브' | '네이버 블로그' | '틱톡'
+type LibPlatform = '인스타그램' | '유튜브' | '네이버 블로그'
 type LibSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
 const LIB_PS: Array<{ p: LibPlatform; t: LibSubType | undefined }> = [
   { p: '인스타그램', t: '피드' }, { p: '인스타그램', t: '릴스' }, { p: '인스타그램', t: '스토리' },
   { p: '유튜브', t: '영상' }, { p: '유튜브', t: '쇼츠' },
   { p: '네이버 블로그', t: undefined },
-  { p: '틱톡', t: undefined },
 ]
 // 플랫폼+유형 통합 필터 옵션 — 유효한 조합만 노출
 const PLATFORM_TYPE_OPTIONS: Array<{ label: string; value: string; platform: LibPlatform | null; type: LibSubType | null }> = [
@@ -106,7 +105,6 @@ const PLATFORM_TYPE_OPTIONS: Array<{ label: string; value: string; platform: Lib
   { label: '유튜브 · 영상', value: '유튜브_영상', platform: '유튜브', type: '영상' },
   { label: '유튜브 · 쇼츠', value: '유튜브_쇼츠', platform: '유튜브', type: '쇼츠' },
   { label: '네이버 블로그', value: '네이버 블로그', platform: '네이버 블로그', type: null },
-  { label: '틱톡', value: '틱톡', platform: '틱톡', type: null },
 ]
 const THUMB_POOL = ['from-pink-100 to-pink-200', 'from-blue-100 to-blue-200', 'from-violet-100 to-violet-200', 'from-red-100 to-red-200', 'from-yellow-100 to-yellow-200', 'from-emerald-100 to-emerald-200', 'from-orange-100 to-orange-200', 'from-indigo-100 to-indigo-200', 'from-rose-100 to-rose-200', 'from-green-100 to-green-200', 'from-cyan-100 to-cyan-200', 'from-lime-100 to-lime-200', 'from-amber-100 to-amber-200', 'from-fuchsia-100 to-fuchsia-200', 'from-teal-100 to-teal-200']
 const STATUS_CYCLE: Content['status'][] = ['승인', '승인', '승인', '승인', '승인', '승인', '검수중', '검수중', '반려']
@@ -157,7 +155,6 @@ const PLATFORM_BADGE_STYLE: Record<string, string> = {
   '인스타그램':    'bg-pink-500/90 text-white',
   '유튜브':        'bg-red-500/90 text-white',
   '네이버 블로그': 'bg-green-600/90 text-white',
-  '틱톡':          'bg-black/80 text-white',
 }
 
 /* ───── Campaign list ───── */

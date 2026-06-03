@@ -386,7 +386,7 @@ export default function CampaignApply() {
               <span className="text-xs text-gray-400 w-20 shrink-0">연락처</span>
               {phone
                 ? <span className="text-[15px] text-gray-700 tabular-nums">{phone}</span>
-                : <button onClick={() => navigate('/profile')} className="text-[15px] text-brand-green-text font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">마이페이지에서 등록하기 →</button>
+                : <button onClick={() => navigate('/profile')} className="text-[15px] text-brand-green-text font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded">내 정보에서 등록하기 →</button>
               }
             </div>
             {mockProfile.instagramConnected && (
