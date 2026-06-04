@@ -30,7 +30,7 @@ function ContentThumb({ seed, className, alt }: { seed: string; className?: stri
 
 // 인플루언서 더미 데이터 100개 — 다양한 카테고리·팔로워 규모·엣지케이스 (avgLikes·avgComments 추가)
 type InfluencerCat = '피트니스' | '요가' | '웰니스' | '필라테스' | '운동' | '크로스핏'
-type InfluencerType = '개인 인플루언서' | '크루/그룹' | '센터' | '행사'
+type InfluencerType = '개인 인플루언서' | '스포츠크루·커뮤니티' | '웰니스·피트니스 센터' | '대회·이벤트'
 const INF_CAT_POOL: InfluencerCat[][] = [
   ['피트니스', '크로스핏'], ['운동'], ['필라테스'], ['요가'], ['웰니스'],
   ['피트니스'], ['요가', '웰니스'], ['크로스핏', '운동'], ['필라테스', '요가'], ['운동', '웰니스'],
@@ -55,7 +55,7 @@ const INF_BIOS = [
   '운동과 식단으로 변화한 내 이야기 | 일상 공유',
   '요가 지도자 | 내면의 평화를 찾는 여정',
 ]
-const INF_TYPES: InfluencerType[] = ['개인 인플루언서', '개인 인플루언서', '개인 인플루언서', '크루/그룹', '센터', '행사']
+const INF_TYPES: InfluencerType[] = ['개인 인플루언서', '개인 인플루언서', '개인 인플루언서', '스포츠크루·커뮤니티', '웰니스·피트니스 센터', '대회·이벤트']
 // 채널 = 플랫폼 + 콘텐츠 유형 (8개 유효 조합)
 type InfluencerChannel = '인스타그램_피드' | '인스타그램_릴스' | '인스타그램_스토리' | '유튜브_영상' | '유튜브_쇼츠' | '네이버블로그'
 const CHANNEL_POOL: InfluencerChannel[] = ['인스타그램_피드', '인스타그램_릴스', '인스타그램_스토리', '유튜브_영상', '유튜브_쇼츠', '인스타그램_피드', '네이버블로그', '인스타그램_릴스', '유튜브_영상']
@@ -166,9 +166,9 @@ const followerTierOptions = [
 const joinTypeOptions = [
   { label: '가입 타입', value: '' },
   { label: '개인 인플루언서', value: '개인 인플루언서' },
-  { label: '크루/그룹', value: '크루/그룹' },
-  { label: '센터', value: '센터' },
-  { label: '행사', value: '행사' },
+  { label: '스포츠크루·커뮤니티', value: '스포츠크루·커뮤니티' },
+  { label: '웰니스·피트니스 센터', value: '웰니스·피트니스 센터' },
+  { label: '대회·이벤트', value: '대회·이벤트' },
 ]
 
 // 채널 — 플랫폼 + 콘텐츠 유형 통합 (8개 유효 조합)

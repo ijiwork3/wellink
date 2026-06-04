@@ -40,7 +40,7 @@ interface Influencer {
   id: number
   name: string
   instagramId: string
-  type: '개인 인플루언서' | '크루/그룹' | '센터' | '행사'
+  type: '개인 인플루언서' | '스포츠크루·커뮤니티' | '웰니스·피트니스 센터' | '대회·이벤트'
   bio: string
   category: string[]
   followers: number
