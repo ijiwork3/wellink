@@ -857,7 +857,7 @@ export default function InfluencerList() {
                       {inf.scrapingStatus === 'in_progress' && (
                         <span className="text-[15px] bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">데이터 수집 중</span>
                       )}
-                      <span className="text-[15px] bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full">{inf.type}</span>
+                      <span className="text-[15px] bg-brand-green-bg text-brand-green-text px-2.5 py-1 rounded-full whitespace-nowrap">{inf.type}</span>
                       <button type="button" onClick={closeDetail} aria-label="닫기" className="ml-auto w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors duration-150 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50">
                         <X size={16} aria-hidden="true" />
                       </button>
