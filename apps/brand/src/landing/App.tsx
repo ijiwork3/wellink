@@ -288,7 +288,7 @@ export default function App() {
                 {
                   icon: Trophy,
                   label: 'Mass Exposure',
-                  title: '행사/이벤트',
+                  title: '행사·이벤트',
                   desc: '대회, 세미나 등 대형 오프라인 이벤트 스폰서십 연결.',
                 },
               ].map((item) => (

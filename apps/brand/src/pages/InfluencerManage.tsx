@@ -108,7 +108,7 @@ const DAY_MS = 86_400_000
 const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   const base = [
     { id: 1, name: '이창민', instagramId: 'changmin_fit', type: '개인 인플루언서' as const, bio: '꾸준한 활동과 높은 진성 팔로워로 신뢰도 높은 인플루언서', category: ['피트니스', '크로스핏'], followers: 8700, engagement: 4.1, posts: 234, authentic: 92.3, lastActive: '2일 전', fitScore: 92, groups: ['우수 인플루언서'] },
-    { id: 4, name: '김가애', instagramId: 'gae.yoga', type: '개인 인플루언서' as const, bio: '매일 아침 요가로 하루를 시작합니다 🧘‍♀️ 몸과 마음의 균형을 찾아드려요', category: ['요가'], followers: 18900, engagement: 4.2, posts: 567, authentic: 88.7, lastActive: '오늘', fitScore: 88, groups: ['우수 인플루언서', '요가/필라테스'] },
+    { id: 4, name: '김가애', instagramId: 'gae.yoga', type: '개인 인플루언서' as const, bio: '매일 아침 요가로 하루를 시작합니다 🧘‍♀️ 몸과 마음의 균형을 찾아드려요', category: ['요가'], followers: 18900, engagement: 4.2, posts: 567, authentic: 88.7, lastActive: '오늘', fitScore: 88, groups: ['우수 인플루언서', '요가·필라테스'] },
     { id: 5, name: '박리나', instagramId: 'lina_wellness', type: '개인 인플루언서' as const, bio: '웰니스 라이프스타일 | 비건 푸드 | 마인드풀니스', category: ['웰니스'], followers: 7120, engagement: 2.2, posts: 178, authentic: 85.2, lastActive: '3일 전', fitScore: 71, groups: [] },
     { id: 6, name: '최수진나이스바디핏니스트레이너', instagramId: 'nicebody_trainer', type: '개인 인플루언서' as const, bio: '기록보다 이야기로 달립니다 🏃 · 러닝 코치 · 마라톤 서브4', category: ['러닝', '마라톤', '트레일'], followers: 12400, engagement: 3.8, posts: 302, authentic: 79.4, lastActive: '1일 전', fitScore: 85, groups: [] },
     { id: 7, name: '정민준헬스앤라이프스타일코치', instagramId: 'minjun_health', type: '개인 인플루언서' as const, bio: '헬스 코치 10년 | 바른 식단과 운동으로 지속 가능한 몸만들기', category: ['헬스', 'PT', '다이어트'], followers: 5300, engagement: 5.1, posts: 145, authentic: 91.0, lastActive: '4일 전', fitScore: 79, groups: [] },
@@ -138,7 +138,7 @@ const ALL_INFLUENCERS: Influencer[] = Array.from({ length: 200 }, (_, i) => {
   }
 }).sort((a, b) => b.addedAt - a.addedAt)
 
-const initialGroups = ['우수 인플루언서', '요가/필라테스']
+const initialGroups = ['우수 인플루언서', '요가·필라테스']
 const defaultConfirm: ConfirmState = { open: false, title: '', description: '', onConfirm: () => {} }
 
 

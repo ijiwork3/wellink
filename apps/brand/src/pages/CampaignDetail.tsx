@@ -75,7 +75,7 @@ const campaignMeta: Record<string, {
   heroImage: string
 }> = {
   '1': {
-    location: '강남/서초',
+    location: '강남·서초',
     storeName: '봄 요가 스튜디오',
     recruitPeriod: '2026-04-25 ~ 2026-05-25',
     announcedAt: '2026-05-26',
@@ -124,7 +124,7 @@ const APPLICANT_NAME_POOL = [
 const AVATAR_POOL = ['bg-gray-100', 'bg-brand-green-bg', 'bg-brand-fuchsia-bg']
 // 활동분야 풀 — 원본 ApplicantList의 activityFieldList 대응
 const ACTIVITY_FIELD_POOL = [
-  ['뷰티', '뷰티/코스메틱'],
+  ['뷰티', '뷰티·코스메틱'],
   ['피트니스', '운동'],
   ['푸드', '맛집'],
   ['패션', '데일리룩'],
@@ -132,7 +132,7 @@ const ACTIVITY_FIELD_POOL = [
   ['육아', '가족'],
   ['라이프스타일'],
   ['홈인테리어'],
-  ['헬스/웰니스'],
+  ['헬스·웰니스'],
   ['반려동물'],
 ]
 // 신청 답변 풀 — 원본 questionVo + answers 대응 (객관식 + 단답)

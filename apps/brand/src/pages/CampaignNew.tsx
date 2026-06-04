@@ -33,7 +33,7 @@ const SECONDARY_USE_DURATIONS = ['3개월', '6개월', '12개월', '24개월'] a
 
 const FILLED = {
   type: '방문형' as '방문형' | '배송형',
-  location: '강남/서초',
+  location: '강남·서초',
   storeName: '봄 요가 스튜디오',
   // 배송형 전용 — 원본 mentionName(브랜드명) + product(상품이름) 분리 보강
   brandName: '웰링크 웰니스',
@@ -281,7 +281,7 @@ export default function CampaignNew() {
         {form.type === '방문형' ? (
           <div className="grid grid-cols-1 @sm:grid-cols-2 gap-3">
             <Field label="지역">
-              <Input value={form.location} onChange={v => set('location', v)} placeholder="예) 강남/서초" />
+              <Input value={form.location} onChange={v => set('location', v)} placeholder="예) 강남·서초" />
             </Field>
             <Field label="가게 이름">
               <Input value={form.storeName} onChange={v => set('storeName', v)} placeholder="예) 킹콩정육점" />

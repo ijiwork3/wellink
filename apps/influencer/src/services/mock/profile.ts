@@ -2,7 +2,7 @@
 import { mockMyCampaigns } from './campaigns'
 
 export const ACTIVITY_FIELDS = [
-  '헬스/웨이트', '러닝', '요가', '필라테스', '바레', '크로스핏', '하이록스(하이브리드 트레이닝)', 'F45', '파워리프팅', '기타',
+  '헬스·웨이트', '러닝', '요가', '필라테스', '바레', '크로스핏', '하이록스(하이브리드 트레이닝)', 'F45', '파워리프팅', '기타',
 ]
 
 export const INFLUENCER_TYPES = [
@@ -49,7 +49,7 @@ export const mockProfile: InfluencerProfile = {
   instagramProfessional: false,   // 데모 기본값: 일반 계정 → 활동비 캠페인 전환 안내 흐름 시연
   bio: '헬스·필라테스 전문 인플루언서 | 건강한 라이프스타일을 공유합니다',
   marketing: true,
-  selectedFields: ['헬스/웨이트', '필라테스'],
+  selectedFields: ['헬스·웨이트', '필라테스'],
   influencerType: 'individual',
   phone: '010-1234-5678',
   hasBusinessReg: true,
