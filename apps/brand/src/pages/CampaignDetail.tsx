@@ -1075,7 +1075,7 @@ export default function CampaignDetail() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                 <span className={`text-[15px] font-medium rounded-full px-3 py-1 ${campaignStatus.cls}`}>{campaignStatus.label}</span>
-                <span className="text-[15px] font-medium rounded-full px-3 py-1 bg-gray-100 text-gray-600">{meta.campaignType}</span>
+                <span className={`text-[15px] font-medium rounded-full px-3 py-1 whitespace-nowrap border ${meta.campaignType === '배송형' ? 'bg-sky-50 text-sky-700 border-sky-100' : 'bg-indigo-100 text-indigo-600 border-indigo-200'}`}>{meta.campaignType}</span>
                 <span className="text-[15px] font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text">{campaign.category}</span>
                 {meta.productPrice > 0 && (
                   <span className="text-[15px] font-medium rounded-full px-3 py-1 bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">제품 협찬</span>
