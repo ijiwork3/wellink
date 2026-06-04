@@ -306,7 +306,7 @@ function DashboardScreen({ p, d, a, g }: { p: P; d: D; a: A; g: G }) {
               {[
                 { icon: <Megaphone size={18}/>, label: '새 캠페인',     sub: '캠페인 만들기',   primary: true },
                 { icon: <Users size={18}/>,    label: '인플루언서 탐색', sub: '전체 리스트 보기', primary: false },
-                { icon: <Search size={18}/>,   label: '인플루언서 관리', sub: '그룹·북마크 관리', primary: false },
+                { icon: <Search size={18}/>,   label: '인플루언서 관리', sub: '그룹·찜 관리', primary: false },
                 { icon: <Activity size={18}/>, label: '콘텐츠 검수',    sub: '대기 중 2건',    primary: false },
               ].map((item, i) => (
                 <div key={i} className="border shadow-sm rounded-xl p-4 cursor-pointer" style={{ backgroundColor: g.cardBg, borderColor: g.border }}>

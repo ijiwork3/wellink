@@ -88,7 +88,7 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
             className="absolute top-2.5 right-2.5 z-10 w-7 h-7 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             onClick={handleLike}
             aria-pressed={liked}
-            aria-label={liked ? '북마크 해제' : '북마크'}
+            aria-label={liked ? '찜 해제' : '찜'}
           >
             <Heart
               size={22}

@@ -93,7 +93,7 @@ export default function Favorites() {
             <EmptyState
               icon={<Heart size={32} className="text-red-300" aria-hidden="true" />}
               title="저장한 캠페인이 없어요"
-              description="마음에 드는 캠페인에 북마크를 눌러보세요"
+              description="마음에 드는 캠페인을 찜해보세요"
               action={
                 <button
                   onClick={() => navigate('/campaigns/browse')}

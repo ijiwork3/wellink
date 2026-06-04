@@ -33,9 +33,9 @@ const STATUS_ITEMS: StatusItem[] = [
   {
     label: '관심 캠페인',
     children: [
-      { label: '기본 (북마크 있음)', path: '/campaigns/favorites' },
+      { label: '기본 (찜 있음)', path: '/campaigns/favorites' },
       { label: '로딩 스켈레톤', path: '/campaigns/favorites?qa=loading' },
-      { label: '빈 상태 — 북마크 없음', path: '/campaigns/favorites?qa=empty' },
+      { label: '빈 상태 — 찜 없음', path: '/campaigns/favorites?qa=empty' },
       { label: '에러', path: '/campaigns/favorites?qa=error' },
     ],
   },
