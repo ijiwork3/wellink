@@ -110,7 +110,7 @@ export default function Notifications() {
   if (qa === 'error') {
     return (
       <Layout>
-        <ErrorState message="알림을 불러올 수 없습니다" onRetry={() => window.location.reload()} />
+        <ErrorState message="알림을 불러올 수 없어요" onRetry={() => window.location.reload()} />
       </Layout>
     )
   }
