@@ -286,10 +286,10 @@ export default function CampaignDetailContent({
                   </h1>
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {(campaign.rewardAmount ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-100 text-teal-600 border border-teal-200 whitespace-nowrap">제품 협찬</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">제품 협찬</span>
                     )}
                     {(campaign.activityFee ?? 0) > 0 && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-100 text-violet-600 border border-violet-200 whitespace-nowrap">활동비</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-fuchsia-bg text-brand-fuchsia-text border border-brand-fuchsia-border whitespace-nowrap">활동비</span>
                     )}
                     {(campaign.downloadPrice ?? 0) > 0 && (
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-100 text-sky-600 border border-sky-200 whitespace-nowrap">콘텐츠 수익</span>

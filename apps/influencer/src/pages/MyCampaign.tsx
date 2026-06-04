@@ -358,10 +358,10 @@ const handleContentSubmit = () => {
                         {((c.rewardAmount > 0) || (c.activityFee ?? 0) > 0) && (
                           <div className="flex flex-wrap gap-1 mt-1.5">
                             {c.rewardAmount > 0 && (
-                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-teal-100 text-teal-600 border border-teal-200">제품 협찬</span>
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-brand-green-bg text-brand-green-text border border-brand-green-border">제품 협찬</span>
                             )}
                             {(c.activityFee ?? 0) > 0 && (
-                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-violet-100 text-violet-600 border border-violet-200">활동비</span>
+                              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap bg-brand-fuchsia-bg text-brand-fuchsia-text border border-brand-fuchsia-border">활동비</span>
                             )}
                           </div>
                         )}
