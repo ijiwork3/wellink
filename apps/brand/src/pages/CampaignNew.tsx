@@ -21,7 +21,7 @@ const POST_TYPE_MAP: Record<Platform, string[]> = {
   '블로그':     [],
 }
 
-const CATEGORIES = ['뷰티/패션', '맛집/푸드', '생활/리빙', '디지털/가전', '여행/숙박', '기타']
+const CATEGORIES = ['뷰티·패션', '맛집·푸드', '생활·리빙', '디지털·가전', '여행·숙박', '기타']
 const PRECAUTIONS = ['릴스 제작 우대', '체험 후기 필수', '없음']
 const PHOTO_COUNTS = ['3장 이상', '5장 이상', '7장 이상', '10장 이상']
 const VIDEO_COUNTS = ['1개 이상 (15초+)', '1개 이상 (30초+)', '2개 이상', '없음']
@@ -39,7 +39,7 @@ const FILLED = {
   brandName: '웰링크 웰니스',
   shippedProductName: '요가매트 세트',
   platform: '인스타그램' as Platform,
-  category: '생활/리빙',
+  category: '생활·리빙',
   description: '브랜드 소개와 캠페인 핵심 메시지를 담아주세요.',
   productName: '요가매트 세트 (프리미엄 6mm + 스트랩)',
   productDetail: '요가매트 6mm + 논슬립 스트랩 2개 + 세척 스프레이',
@@ -92,7 +92,7 @@ export default function CampaignNew() {
     type: '방문형' as '방문형' | '배송형',
     location: '', storeName: '',
     brandName: '', shippedProductName: '',  // 배송형 전용 — 원본 보강
-    platform: '인스타그램' as Platform, category: '맛집/푸드',
+    platform: '인스타그램' as Platform, category: '맛집·푸드',
     description: '', productName: '', productDetail: '', productPrice: '', rewardPoint: '', downloadPrice: '',
     secondaryUseEnabled: false,
     secondaryUseChannels: [] as string[],

@@ -20,9 +20,9 @@ export interface Campaign {
 
 export const mockCampaigns: Campaign[] = [
   { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-04-28', budget: '2,000,000원', category: '기타', platform: 'Instagram', reach: 48200, engRate: 4.2, thumbnail: null },
-  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: '1,500,000원', category: '뷰티/패션', platform: 'Instagram', reach: 0, engRate: 0, thumbnail: null },
+  { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-05', budget: '1,500,000원', category: '뷰티·패션', platform: 'Instagram', reach: 0, engRate: 0, thumbnail: null },
   { id: 3, name: '여름 홈트 챌린지', status: '종료', total: 20, current: 20, deadline: '2026-04-01', budget: '3,200,000원', category: '기타', platform: 'Instagram + YouTube', reach: 128000, engRate: 5.8, thumbnail: null },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: '800,000원', category: '맛집/푸드', platform: 'Instagram', reach: 62400, engRate: 3.9, thumbnail: null },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: '800,000원', category: '맛집·푸드', platform: 'Instagram', reach: 62400, engRate: 3.9, thumbnail: null },
 ]
 
 export interface CampaignInfluencer {
@@ -65,7 +65,7 @@ export const mockCampaignDetail: Record<string, CampaignDetail> = {
   '2': {
     name: '비건 신제품 론칭',
     status: '대기중',
-    category: '뷰티/패션',
+    category: '뷰티·패션',
     budget: '1,500,000원',
     period: '2026-04-10 ~ 2026-05-10',
     headcount: 10,

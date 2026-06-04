@@ -41,7 +41,7 @@ const campaignsData: Record<string, {
   '2': {
     name: '비건 신제품 론칭',
     status: '대기중',
-    category: '뷰티/패션',
+    category: '뷰티·패션',
     budget: '1,500,000원',
     period: '2026-04-10 ~ 2026-05-10',
     headcount: 10,
