@@ -663,7 +663,7 @@ export default function Subscription() {
       {(() => {
         type FeatureVal = string | boolean
         const comparison: { name: string; focus: FeatureVal; scale: FeatureVal; infinite: FeatureVal; section?: string }[] = [
-          { name: '인플루언서 DB',         focus: '5,000명',  scale: '50,000명+',  infinite: '무제한',      section: '핵심 기능' },
+          { name: '인플루언서 DB',         focus: '5,000명',  scale: '5만 명+',  infinite: '무제한',      section: '핵심 기능' },
           { name: 'Fit-Score 인플루언서 추천',     focus: true,       scale: true,          infinite: true },
           { name: '성과 대시보드',          focus: '기본',     scale: '고급',        infinite: '커스텀' },
           { name: 'Fit-Score 상세 리포트',  focus: false,      scale: true,          infinite: true },
