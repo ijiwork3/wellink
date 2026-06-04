@@ -1,6 +1,6 @@
 /**
  * SNSPanel — SNS 연결 상태 패널
- * 네이버 블로그 / 인스타그램 / 유튜브
+ * 블로그 / 인스타그램 / 유튜브
  * connected: true 시 연결됨 표시, false 시 연결하기 버튼
  */
 
@@ -25,7 +25,7 @@ const DEFAULT_PLATFORMS: PlatformConfig[] = [
 ]
 
 const PLATFORM_META: Record<PlatformConfig['id'], { name: string; icon: string; iconBg: string }> = {
-  naver:     { name: '네이버 블로그', icon: 'N',  iconBg: PLATFORM_COLORS.naver },
+  naver:     { name: '블로그', icon: 'N',  iconBg: PLATFORM_COLORS.naver },
   instagram: { name: '인스타그램',   icon: '📷', iconBg: PLATFORM_COLORS.instagram },
   youtube:   { name: '유튜브',       icon: '▶',  iconBg: PLATFORM_COLORS.youtube },
 }

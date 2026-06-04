@@ -61,7 +61,7 @@ type InfluencerChannel = '인스타그램_피드' | '인스타그램_릴스' | '
 const CHANNEL_POOL: InfluencerChannel[] = ['인스타그램_피드', '인스타그램_릴스', '인스타그램_스토리', '유튜브_영상', '유튜브_쇼츠', '인스타그램_피드', '네이버블로그', '인스타그램_릴스', '유튜브_영상']
 const CHANNEL_TO_PLATFORM: Record<InfluencerChannel, string> = {
   '인스타그램_피드': '인스타그램', '인스타그램_릴스': '인스타그램', '인스타그램_스토리': '인스타그램',
-  '유튜브_영상': '유튜브', '유튜브_쇼츠': '유튜브', '네이버블로그': '네이버 블로그',
+  '유튜브_영상': '유튜브', '유튜브_쇼츠': '유튜브', '네이버블로그': '블로그',
 }
 const LAST_ACTIVE_POOL = ['오늘', '1일 전', '2일 전', '3일 전', '5일 전', '1주 전', '2주 전', '3주 전']
 const influencers = Array.from({ length: 100 }, (_, i) => {
@@ -179,7 +179,7 @@ const channelOptions = [
   { label: '인스타그램 · 스토리', value: '인스타그램_스토리' },
   { label: '유튜브 · 영상', value: '유튜브_영상' },
   { label: '유튜브 · 쇼츠', value: '유튜브_쇼츠' },
-  { label: '네이버 블로그', value: '네이버블로그' },
+  { label: '블로그', value: '네이버블로그' },
 ]
 
 /* THUMB_GRADIENTS — Unsplash 사진 매핑(getThumbnailFromPool)으로 대체됨 */

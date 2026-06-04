@@ -82,7 +82,7 @@ export const AD_CAMPAIGN_STATUS = {
 export type AdCampaignStatus = (typeof AD_CAMPAIGN_STATUS)[keyof typeof AD_CAMPAIGN_STATUS]
 
 // 정책 §8.3 — 플랫폼별 게시 유형
-// 인스타그램: 피드/릴스/스토리, 유튜브: 영상/쇼츠, 네이버 블로그: 서브타입 없음
+// 인스타그램: 피드/릴스/스토리, 유튜브: 영상/쇼츠, 블로그: 서브타입 없음
 export type ContentType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
 
 export const CONTENT_TYPE_STYLE: Record<ContentType, string> = {

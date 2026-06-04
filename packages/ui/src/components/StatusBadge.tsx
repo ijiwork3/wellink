@@ -68,7 +68,7 @@ const statusConfig: Record<string, Cfg> = {
   // 플랫폼
   '인스타그램':   { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
   '유튜브':       { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
-  '네이버 블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
+  '블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
   // 정산 (인플 — SettlementStatus)
   '적립':       { bg: 'bg-teal-100', text: 'text-teal-700', dot: 'bg-teal-400' },
   '지급완료':   done,

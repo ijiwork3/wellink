@@ -1,6 +1,6 @@
 /**
  * PlatformBadge — SNS 플랫폼 배지
- * 정책 §8.3: 인스타그램 / 유튜브 / 네이버 블로그 (한글 통일)
+ * 정책 §8.3: 인스타그램 / 유튜브 / 블로그 (한글 통일)
  *
  * variant:
  *  - 'soft' (기본): 흰 배경 위 사용. 연한 톤 + 진한 텍스트
@@ -28,14 +28,14 @@ const STYLES: Record<string, { soft: string; solid: string; softStyle?: React.CS
     label: '인스타그램',
   },
   '유튜브':        { soft: 'bg-red-100 text-red-700',      solid: 'bg-red-500/90 text-white',     label: '유튜브' },
-  '네이버 블로그': { soft: 'bg-green-100 text-green-700',  solid: 'bg-green-600/90 text-white',   label: '네이버 블로그' },
+  '블로그': { soft: 'bg-green-100 text-green-700',  solid: 'bg-green-600/90 text-white',   label: '블로그' },
 }
 
 const ALIAS: Record<string, string> = {
   'instagram': '인스타그램',
   'youtube': '유튜브',
-  'blog': '네이버 블로그',
-  '블로그': '네이버 블로그',
+  'blog': '블로그',
+  '블로그': '블로그',
 }
 
 const PlatformBadge = memo(function PlatformBadge({ platform, variant = 'soft', className = '' }: PlatformBadgeProps) {
