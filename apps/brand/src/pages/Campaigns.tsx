@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Plus, Megaphone, ChevronLeft, ChevronRight, Calendar, Users, Wallet, Search, X, RotateCcw,
   Share2,
-  Utensils, Sparkles, Dumbbell, Plane, Home, Baby,
+  Utensils, Sparkles, Plane, Home,
 } from 'lucide-react'
 import {
   ErrorState, EmptyState, StatusBadge, PlatformBadge, CustomSelect, AlertModal, Pagination,
@@ -16,12 +16,10 @@ import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '@wellink/ui'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
-  '맛집/푸드':     { Icon: Utensils, bg: 'bg-gray-100', fg: 'text-gray-500' },
   '뷰티/패션':     { Icon: Sparkles, bg: 'bg-gray-100', fg: 'text-gray-500' },
-  '피트니스':      { Icon: Dumbbell, bg: 'bg-gray-100', fg: 'text-gray-500' },
-  '여행':          { Icon: Plane,    bg: 'bg-gray-100', fg: 'text-gray-500' },
-  '라이프스타일':  { Icon: Home,     bg: 'bg-gray-100', fg: 'text-gray-500' },
-  '육아':          { Icon: Baby,     bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '맛집/푸드':     { Icon: Utensils, bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '생활/리빙':     { Icon: Home,     bg: 'bg-gray-100', fg: 'text-gray-500' },
+  '여행/숙박':     { Icon: Plane,    bg: 'bg-gray-100', fg: 'text-gray-500' },
 }
 
 type Campaign = {
@@ -36,29 +34,29 @@ type Campaign = {
 }
 
 const SEED_CAMPAIGNS: Campaign[] = [
-  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-05-25', budget: 2000000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
+  { id: 1, name: '봄 요가 프로모션', status: '모집중', total: 15, current: 8, deadline: '2026-05-25', budget: 2000000, category: '기타', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-1/160/160', createdAt: '2026-04-10' },
   { id: 2, name: '비건 신제품 론칭', status: '대기중', total: 10, current: 0, deadline: '2026-05-10', budget: 1500000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-2/160/160', createdAt: '2026-04-18', productPrice: 89000, rewardPoint: 30000 },
-  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05', rewardPoint: 300000 },
-  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '피트니스', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25', productPrice: 35000, rewardPoint: 100000 },
+  { id: 3, name: '여름 홈트 챌린지', status: '완료', total: 20, current: 20, deadline: '2026-04-01', budget: 3200000, category: '기타', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-3/160/160', createdAt: '2026-03-05', rewardPoint: 300000 },
+  { id: 4, name: '프로틴 파우더 리뷰', status: '종료', total: 8, current: 8, deadline: '2026-03-20', budget: 800000, category: '기타', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-4/160/160', createdAt: '2026-02-25', productPrice: 35000, rewardPoint: 100000 },
   { id: 5, name: '뷰티 디바이스 체험단', status: '진행중', total: 12, current: 12, deadline: '2026-05-10', budget: 1800000, category: '뷰티/패션', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-5/160/160', createdAt: '2026-04-12', productPrice: 250000 },
   // ── 모집중 탭 (deadline D-4 이상 미래) ──────────────────────────────────
-  { id: 101, name: '여름 러닝화 인스타 리뷰', status: '모집중', total: 20, current: 7, selectedCount: 4, deadline: '2026-06-20', budget: 2500000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-101/160/160', createdAt: '2026-05-20', productPrice: 130000 },
+  { id: 101, name: '여름 러닝화 인스타 리뷰', status: '모집중', total: 20, current: 7, selectedCount: 4, deadline: '2026-06-20', budget: 2500000, category: '기타', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-101/160/160', createdAt: '2026-05-20', productPrice: 130000 },
   { id: 102, name: '식물성 단백질 바 체험단', status: '모집중', total: 15, current: 5, selectedCount: 2, deadline: '2026-06-15', budget: 1200000, category: '맛집/푸드', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-102/160/160', createdAt: '2026-05-18', rewardPoint: 50000 },
-  { id: 103, name: '요가 매트 신제품 론칭', status: '모집중', total: 10, current: 3, selectedCount: 1, deadline: '2026-07-01', budget: 900000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-103/160/160', createdAt: '2026-05-25', productPrice: 68000 },
+  { id: 103, name: '요가 매트 신제품 론칭', status: '모집중', total: 10, current: 3, selectedCount: 1, deadline: '2026-07-01', budget: 900000, category: '기타', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-103/160/160', createdAt: '2026-05-25', productPrice: 68000 },
   { id: 104, name: '스킨케어 루틴 브이로그', status: '모집중', total: 8, current: 2, selectedCount: 0, deadline: '2026-06-25', budget: 1600000, category: '뷰티/패션', platform: '유튜브', imageUrl: 'https://picsum.photos/seed/wellink-104/160/160', createdAt: '2026-05-22' },
   // ── 마감임박 탭 (status 모집중 + deadline D-3 이하) ──────────────────────
-  { id: 111, name: '크로스핏 보충제 긴급 모집', status: '모집중', total: 10, current: 8, selectedCount: 5, deadline: '2026-06-01', budget: 800000, category: '피트니스', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-111/160/160', createdAt: '2026-05-10', productPrice: 45000, rewardPoint: 100000 },
-  { id: 112, name: '필라테스 스튜디오 체험', status: '모집중', total: 6, current: 5, selectedCount: 3, deadline: '2026-06-02', budget: 600000, category: '피트니스', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-112/160/160', createdAt: '2026-05-12' },
+  { id: 111, name: '크로스핏 보충제 긴급 모집', status: '모집중', total: 10, current: 8, selectedCount: 5, deadline: '2026-06-01', budget: 800000, category: '기타', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-111/160/160', createdAt: '2026-05-10', productPrice: 45000, rewardPoint: 100000 },
+  { id: 112, name: '필라테스 스튜디오 체험', status: '모집중', total: 6, current: 5, selectedCount: 3, deadline: '2026-06-02', budget: 600000, category: '기타', platform: '블로그', imageUrl: 'https://picsum.photos/seed/wellink-112/160/160', createdAt: '2026-05-12' },
   { id: 113, name: '홈카페 디저트 리뷰어', status: '모집중', total: 12, current: 11, selectedCount: 7, deadline: '2026-06-03', budget: 1100000, category: '맛집/푸드', platform: '인스타그램', imageUrl: 'https://picsum.photos/seed/wellink-113/160/160', createdAt: '2026-05-08', rewardPoint: 80000 },
 ]
 
 const NAME_TEMPLATES: Record<string, string[]> = {
-  '맛집/푸드': ['신메뉴 시식 리뷰', '비건 디저트 체험', '수제 베이커리 캠페인', '프리미엄 한식 디너'],
   '뷰티/패션': ['앰플 신제품 체험', '봄 신상 메이크업', 'SS 컬렉션 룩북', '향수 시그니처 라인'],
-  '피트니스': ['홈트 루틴 챌린지', '단백질 보충제 리뷰', '필라테스 클래스 체험', '러닝화 신제품'],
-  '여행': ['제주 호캉스 패키지', '동남아 휴양지 후기', '강원도 워케이션', '유럽 자유여행 가이드'],
-  '라이프스타일': ['미니멀 인테리어', '홈카페 굿즈 리뷰', '반려동물 용품', '독서 챌린지'],
-  '육아': ['신생아 용품 체험', '유아식 레시피', '교육 완구 리뷰', '주말 가족 나들이'],
+  '맛집/푸드': ['신메뉴 시식 리뷰', '비건 디저트 체험', '수제 베이커리 캠페인', '프리미엄 한식 디너'],
+  '생활/리빙': ['미니멀 인테리어 소품', '홈카페 굿즈 리뷰', '리빙 데코 체험', '주방용품 신제품'],
+  '디지털/가전': ['무선 이어폰 리뷰', '스마트홈 기기 체험', '주방 가전 신제품', '웨어러블 디바이스'],
+  '여행/숙박': ['제주 호캉스 패키지', '동남아 휴양지 후기', '강원도 워케이션', '도심 호텔 스테이'],
+  '기타': ['반려동물 용품 체험', '취미 클래스 체험', '독서 챌린지', '신규 서비스 체험'],
 }
 const PLATFORM_LIST = ['인스타그램', '유튜브', '블로그']
 const CATEGORY_LIST = Object.keys(NAME_TEMPLATES)
@@ -186,7 +184,7 @@ function deriveDisplayStatus(c: Campaign): CampaignStatus {
  */
 
 const PLATFORMS = ['전체', '인스타그램', '유튜브', '블로그'] as const
-const CATEGORIES = ['전체', '맛집/푸드', '뷰티/패션', '피트니스', '여행', '라이프스타일', '육아'] as const
+const CATEGORIES = ['전체', '뷰티/패션', '맛집/푸드', '생활/리빙', '디지털/가전', '여행/숙박', '기타'] as const
 const SORTS = [
   { value: 'deadline', label: '마감 임박순' },
   { value: 'recent', label: '최근 등록순' },

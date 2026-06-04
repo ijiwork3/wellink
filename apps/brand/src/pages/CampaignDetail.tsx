@@ -26,7 +26,7 @@ const campaignsData: Record<string, {
   '1': {
     name: '봄 요가 프로모션',
     status: '모집중',
-    category: '피트니스',
+    category: '기타',
     budget: '2,000,000원',
     period: '2026-04-25 ~ 2026-05-25',
     headcount: 15,
