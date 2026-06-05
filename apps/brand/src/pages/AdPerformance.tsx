@@ -214,7 +214,7 @@ export default function AdPerformance() {
           trendLabel="전기간 대비"
           icon={<ShoppingBag size={16} aria-hidden="true" />}
           /* valueColor 제거 — trend 색상과 시각 모순 방지 (ROAS·CTR 모두 검정 통일) */
-          tooltip="광고 지출 1원당 발생한 매출 (≥4.0x 우수)"
+          tooltip="광고 지출 1원당 발생한 매출 (≥3.0x 우수)"
         />
         <KPICard
           title="결과"
@@ -534,8 +534,8 @@ function CampaignList({
           <p className="text-[15px] text-gray-500 mt-0.5">Meta 광고 관리자 기준 — 캠페인 → 광고세트 → 소재 3단계</p>
         </div>
         <div className="flex items-center gap-3 text-[15px] text-gray-400">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥4.0x 우수</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}2.0x 주의</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-green inline-block" />≥3.0x 우수</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />{'<'}1.5x 주의</span>
         </div>
       </div>
       {/* 상태 탭 — 게재중 / 일시정지 */}
