@@ -52,8 +52,10 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
     else navigate(`/campaigns/${campaign.id}`)
   }
 
+  // 제품 협찬 = 제품(텍스트)이 있으면 (제품가 미상이어도). 활동비 N만원 부분은 제외.
+  const hasProduct = !!campaign.reward && campaign.reward.split('활동비')[0].replace(/[+·,()\s]/g, '').length > 0
   const benefitTags = [
-    (campaign.rewardAmount ?? 0) > 0 ? '제품 협찬' : null,
+    hasProduct ? '제품 협찬' : null,
     (campaign.activityFee ?? 0) > 0 ? '활동비' : null,
     (campaign.downloadPrice ?? 0) > 0 ? '콘텐츠 수익' : null,
   ].filter(Boolean)

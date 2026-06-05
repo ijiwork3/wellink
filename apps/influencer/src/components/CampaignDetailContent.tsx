@@ -285,7 +285,7 @@ export default function CampaignDetailContent({
                     {campaign.name}
                   </h1>
                   <div className="flex flex-wrap gap-1.5 mb-3">
-                    {(campaign.rewardAmount ?? 0) > 0 && (
+                    {!!campaign.reward && campaign.reward.split('활동비')[0].replace(/[+·,()\s]/g, '').length > 0 && (
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-green-bg text-brand-green-text border border-brand-green-border whitespace-nowrap">제품 협찬</span>
                     )}
                     {(campaign.activityFee ?? 0) > 0 && (
