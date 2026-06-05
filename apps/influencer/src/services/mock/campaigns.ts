@@ -69,6 +69,27 @@ export interface Campaign {
   }
 }
 
+/**
+ * 데모 날짜 정규화 — mock 일정이 특정월 고정이라 현재 시점 기준으로 재계산한다.
+ * 상태에 맞춰 신청 마감(applyEnd)을 now 오프셋하고, 나머지 일정을 논리적 순서
+ * (모집시작 → 마감 → 발표 → 등록시작 → 등록마감)로 파생 → 항상 정합·현실적.
+ */
+function normalizeCampaignDates(c: Campaign): Campaign {
+  const DAY = 86400000
+  const base = new Date(); base.setHours(0, 0, 0, 0)
+  const s = c.id
+  const endOff = c.status === '종료'     ? -(2 + (s % 8))   // 마감 지남
+               : c.status === '마감임박' ?  1 + (s % 3)     // D-1~3 (긴박)
+               :                            7 + (s % 28)     // 모집중 D-7~34 (다양)
+  const applyEnd     = new Date(base.getTime() + endOff * DAY)
+  const applyStart   = new Date(applyEnd.getTime()     - (7 + (s % 7)) * DAY)
+  const announceDate = new Date(applyEnd.getTime()     + (2 + (s % 3)) * DAY)
+  const postStart    = new Date(announceDate.getTime() + (1 + (s % 3)) * DAY)
+  const postEnd      = new Date(postStart.getTime()    + (25 + (s % 20)) * DAY)
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return { ...c, applyStart: fmt(applyStart), applyEnd: fmt(applyEnd), announceDate: fmt(announceDate), postStart: fmt(postStart), postEnd: fmt(postEnd) }
+}
+
 export const mockCampaigns: Campaign[] = [
   {
     id: 1,
@@ -442,7 +463,7 @@ export const mockCampaigns: Campaign[] = [
   { id: 98, brand: '터치미', name: '아이 천연 버블바스 체험단', channel: '인스타그램', category: '기타', status: '모집중', applyStart: '2026-07-28', applyEnd: '2026-08-07', announceDate: '2026-08-11', postStart: '2026-08-14', postEnd: '2026-09-04', image: '🫧', description: '터치미 천연 아이 버블바스 제품으로 목욕 시간을 즐겁게 만들고 아이 반응 콘텐츠를 올려주세요', reward: '버블바스 세트 (6만원 상당)', rewardAmount: 60000, headcount: 15, applied: 5, type: 'delivery' },
   { id: 99, brand: '짱구이유식', name: '짱구 이유식 월령별 체험', channel: '인스타그램', category: '기타', status: '모집중', applyStart: '2026-07-29', applyEnd: '2026-08-08', announceDate: '2026-08-12', postStart: '2026-08-15', postEnd: '2026-09-15', image: '🥣', description: '짱구이유식 월령별 맞춤 이유식을 체험하고 아이 영양 성장 콘텐츠를 인스타그램에 공유해 주세요', reward: '이유식 1개월 구독 (10만원 상당)', rewardAmount: 100000, headcount: 20, applied: 9, type: 'delivery' },
   { id: 100, brand: '펫팸', name: '강아지 유모차 라이프 체험', channel: '유튜브', category: '기타', status: '모집중', applyStart: '2026-07-30', applyEnd: '2026-08-09', announceDate: '2026-08-13', postStart: '2026-08-16', postEnd: '2026-09-16', image: '🛺', description: '펫팸 강아지 유모차로 반려견과 산책하는 라이프스타일 브이로그를 유튜브에 제작해 주세요', reward: '유모차 1개월 체험 (대여, 30만원 상당)', rewardAmount: 300000, headcount: 3, applied: 1, type: 'delivery', conditions: ['소형견 1마리 이상 보유', '유튜브 구독자 1,000명 이상'] },
-]
+].map(normalizeCampaignDates)
 
 // ────────────────────────────────────────────────────────────────────────────
 // MyCampaign — 인플루언서가 신청·진행 중인 캠페인 (별도 세션 컨텍스트 데이터)
