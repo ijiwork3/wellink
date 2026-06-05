@@ -52,7 +52,7 @@ interface SettlementItem {
  * 과거에 인출된 캠페인 기록 (mockMyCampaigns에 없는 이력 데이터)
  */
 const HISTORIC_PAYMENTS: SettlementItem[] = [
-  { id: 'h-1', campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '지급완료', completedAt: '2026-04-18', paidAt: '2026-04-20' },
+  { id: 'h-1', campaign: '봄 요가 프로모션', type: '릴스', amount: 150000, status: '미인출', completedAt: '2026-06-02' },
   { id: 'h-2', campaign: '비건 신제품 론칭', type: '피드', amount: 120000, status: '지급완료', completedAt: '2026-04-10', paidAt: '2026-04-12' },
   { id: 'h-3', campaign: '홈트레이닝 챌린지', type: '릴스', amount: 200000, status: '지급완료', completedAt: '2026-03-25', paidAt: '2026-03-27' },
   { id: 'h-4', campaign: '스킨케어 브랜드 홍보', type: '피드', amount: 90000, status: '지급완료', completedAt: '2026-03-12', paidAt: '2026-03-14' },
@@ -86,14 +86,14 @@ const MOCK_DOWNLOAD_REVENUE: DownloadRevenueItem[] = [
 ]
 
 function buildSettlementItems(): SettlementItem[] {
-  // 완료된 캠페인만 → 즉시 미인출 상태로 누적 (검수중 제외)
+  // 활동비(현금)가 있는 완료 캠페인만 정산 — 제품 협찬은 현물이라 현금 인출 대상이 아님
   const fromMyCampaigns: SettlementItem[] = mockMyCampaigns
-    .filter(c => c.status === '완료')
+    .filter(c => c.status === '완료' && (c.activityFee ?? 0) > 0)
     .map(c => ({
       id: `sl-${c.id}`,
       campaign: c.name,
       type: c.channel,
-      amount: c.rewardAmount,
+      amount: c.activityFee ?? 0,
       status: '미인출' as const,
       completedAt: c.deadline,
     }))
