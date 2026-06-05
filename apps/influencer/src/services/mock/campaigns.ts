@@ -107,7 +107,7 @@ function normalizeReward(c: Campaign): Campaign {
   return { ...c, rewardAmount, activityFee }
 }
 
-export const mockCampaigns: Campaign[] = [
+export const mockCampaigns: Campaign[] = ([
   {
     id: 1,
     brand: '사계단백연구소',
@@ -480,7 +480,7 @@ export const mockCampaigns: Campaign[] = [
   { id: 98, brand: '터치미', name: '아이 천연 버블바스 체험단', channel: '인스타그램', category: '기타', status: '모집중', applyStart: '2026-07-28', applyEnd: '2026-08-07', announceDate: '2026-08-11', postStart: '2026-08-14', postEnd: '2026-09-04', image: '🫧', description: '터치미 천연 아이 버블바스 제품으로 목욕 시간을 즐겁게 만들고 아이 반응 콘텐츠를 올려주세요', reward: '버블바스 세트 (6만원 상당)', rewardAmount: 60000, headcount: 15, applied: 5, type: 'delivery' },
   { id: 99, brand: '짱구이유식', name: '짱구 이유식 월령별 체험', channel: '인스타그램', category: '기타', status: '모집중', applyStart: '2026-07-29', applyEnd: '2026-08-08', announceDate: '2026-08-12', postStart: '2026-08-15', postEnd: '2026-09-15', image: '🥣', description: '짱구이유식 월령별 맞춤 이유식을 체험하고 아이 영양 성장 콘텐츠를 인스타그램에 공유해 주세요', reward: '이유식 1개월 구독 (10만원 상당)', rewardAmount: 100000, headcount: 20, applied: 9, type: 'delivery' },
   { id: 100, brand: '펫팸', name: '강아지 유모차 라이프 체험', channel: '유튜브', category: '기타', status: '모집중', applyStart: '2026-07-30', applyEnd: '2026-08-09', announceDate: '2026-08-13', postStart: '2026-08-16', postEnd: '2026-09-16', image: '🛺', description: '펫팸 강아지 유모차로 반려견과 산책하는 라이프스타일 브이로그를 유튜브에 제작해 주세요', reward: '유모차 1개월 체험 (대여, 30만원 상당)', rewardAmount: 300000, headcount: 3, applied: 1, type: 'delivery', conditions: ['소형견 1마리 이상 보유', '유튜브 구독자 1,000명 이상'] },
-].map(normalizeCampaignDates).map(normalizeReward)
+] satisfies Campaign[]).map(normalizeCampaignDates).map(normalizeReward)
 
 // ────────────────────────────────────────────────────────────────────────────
 // MyCampaign — 인플루언서가 신청·진행 중인 캠페인 (별도 세션 컨텍스트 데이터)
@@ -540,7 +540,7 @@ function normalizeMyCampaignDates(c: MyCampaign, i: number): MyCampaign {
   return { ...c, appliedAt: fmt(appliedAt), applyEnd: fmt(applyEnd), contentDeadline: fmt(contentDeadline), deadline: fmt(contentDeadline) }
 }
 
-export const mockMyCampaigns: MyCampaign[] = [
+export const mockMyCampaigns: MyCampaign[] = ([
   {
     id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
     appliedAt: '2026-04-28', deadline: '2026-07-28', applyEnd: '2026-07-08',
@@ -601,7 +601,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     campaignRef: 4,
     requiredKeywords: ['아이언핏', '크로스핏장비', 'crossfit', '홈트'],
   },
-].map(normalizeMyCampaignDates)
+] satisfies MyCampaign[]).map(normalizeMyCampaignDates)
 
 // ────────────────────────────────────────────────────────────────────────────
 // Home / Favorites — 찜(관심)은 더 이상 별도 mock 객체로 두지 않는다.
