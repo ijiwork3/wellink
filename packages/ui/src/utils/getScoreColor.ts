@@ -13,28 +13,28 @@ import {
   CTR_THRESHOLD,
 } from '../constants/thresholds'
 
-/** 참여율 색상: 4%+ 초록, 2~4% 앰버, 2% 미만 빨강 */
+/** 참여율 색상: 4%+ 브랜드 블루, 2~4% 앰버, 2% 미만 빨강 */
 export function getEngagementColor(rate: number): string {
   if (rate >= ENGAGEMENT_THRESHOLD.high) return 'text-brand-green-text'
   if (rate >= ENGAGEMENT_THRESHOLD.low) return 'text-amber-600'
   return 'text-red-500'
 }
 
-/** FitScore 색상: 85+ 초록, 70~84 주황, 70 미만 회색 */
+/** FitScore 색상: 85+ 브랜드 블루, 70~84 주황, 70 미만 회색 */
 export function getFitScoreColor(score: number): string {
   if (score >= FITSCORE_THRESHOLD.excellent) return 'text-brand-green-text'
   if (score >= FITSCORE_THRESHOLD.average) return 'text-orange-500'
   return 'text-gray-400'
 }
 
-/** ROAS 색상: 3.0+ 초록, 1.5~3.0 주황, 1.5 미만 빨강 */
+/** ROAS 색상: 3.0+ 브랜드 블루, 1.5~3.0 주황, 1.5 미만 빨강 */
 export function getRoasColor(roas: number): string {
   if (roas >= ROAS_THRESHOLD.good) return 'text-brand-green-text'
   if (roas >= ROAS_THRESHOLD.average) return 'text-orange-500'
   return 'text-red-500'
 }
 
-/** 모집 진행률 색상: 80%+ 빨강(마감 임박), 80% 미만 초록 */
+/** 모집 진행률 색상: 80%+ 빨강(마감 임박), 80% 미만 브랜드 블루 */
 export function getRecruitmentColor(pct: number): string {
   if (pct >= RECRUITMENT_THRESHOLD.closing) return 'text-red-500'
   return 'text-brand-green-text'
@@ -54,7 +54,7 @@ export function getAuthenticColor(rate: number): string {
   return 'text-red-500'
 }
 
-/** FitScore 뱃지 클래스: 85+ 초록, 70~84 앰버, 70 미만 회색 */
+/** FitScore 뱃지 클래스: 85+ 브랜드 블루, 70~84 앰버, 70 미만 회색 */
 export function getFitScoreBadge(score: number): string {
   if (score >= FITSCORE_THRESHOLD.excellent) return 'bg-brand-green/10 text-brand-green-text'
   if (score >= FITSCORE_THRESHOLD.average) return 'bg-amber-50 text-amber-700'
@@ -75,7 +75,7 @@ export function getRecommendedCampaignType(fitScore: number): string {
   return '스토리 언급형'
 }
 
-/** CTR 색상: 3%+ 초록, 1.5~3% 주황, 1.5% 미만 빨강 */
+/** CTR 색상: 3%+ 브랜드 블루, 1.5~3% 주황, 1.5% 미만 빨강 */
 export function getCtrColor(rate: number): string {
   if (rate >= CTR_THRESHOLD.good) return 'text-brand-green-text'
   if (rate >= CTR_THRESHOLD.average) return 'text-orange-500'

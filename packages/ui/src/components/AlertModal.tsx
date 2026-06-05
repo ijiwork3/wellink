@@ -5,7 +5,7 @@
  * variant:
  *   'default'  — 기본 (파란 계열 확인 버튼)
  *   'danger'   — 삭제/취소 등 위험 액션 (빨간 확인 버튼)
- *   'confirm'  — 긍정적 확인 (초록 확인 버튼)
+ *   'confirm'  — 긍정적 확인 (브랜드 블루 확인 버튼)
  */
 
 import { AlertTriangle, CheckCircle } from 'lucide-react'

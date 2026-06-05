@@ -76,7 +76,7 @@ const SEVERITY_STROKE: Record<Severity, string> = {
   bad:     CHART_COLORS.badStroke,     // rose-500 (vivid red)
 }
 
-// bar variant 비활성 막대 색 — bad는 회색 (초록 bar가 빨간 카드 안에 있으면 어색)
+// bar variant 비활성 막대 색 — bad는 회색 (브랜드 블루 bar가 빨간 카드 안에 있으면 어색)
 const SEVERITY_MUTED: Record<Severity, string> = {
   good:    'var(--color-brand-green-border)', // 브랜드 그린 보더 — 테마 반응
   neutral: CHART_COLORS.inactive,             // gray-300

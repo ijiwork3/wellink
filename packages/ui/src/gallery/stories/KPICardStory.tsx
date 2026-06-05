@@ -14,7 +14,7 @@ export default function KPICardStory() {
           { name: 'title', type: 'string', description: '지표 제목' },
           { name: 'value', type: 'string | number', description: '주요 수치' },
           { name: 'sub', type: 'string', description: '보조 텍스트 (값 아래)' },
-          { name: 'trend', type: 'number', description: '전주 대비 증감률. 양수=초록, 음수=빨강' },
+          { name: 'trend', type: 'number', description: '전주 대비 증감률. 양수=브랜드 블루, 음수=빨강' },
           { name: 'trendLabel', type: 'string', description: 'trend 옆 보조 라벨 (예: "전주 대비")' },
           { name: 'icon', type: 'ReactNode', description: '우측 상단 아이콘' },
           { name: 'valueColor', type: 'string', description: "값 색상 커스텀 (예: 'text-blue-600')" },
