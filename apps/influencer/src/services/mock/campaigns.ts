@@ -547,8 +547,8 @@ export const mockMyCampaigns: MyCampaign[] = [
 ]
 
 // ────────────────────────────────────────────────────────────────────────────
-// Home / Favorites — 북마크는 더 이상 별도 mock 객체로 두지 않는다.
-// 사용자별 북마크 ID Set은 `services/userState.ts`의 useBookmarks()가 관리하고,
+// Home / Favorites — 찜(관심)은 더 이상 별도 mock 객체로 두지 않는다.
+// 사용자별 찜(관심) ID Set은 `services/userState.ts`의 useBookmarks()가 관리하고,
 // 표시할 캠페인 정보는 mockCampaigns에서 join 한다 (단일 마스터, A2 해결).
 // ────────────────────────────────────────────────────────────────────────────
 

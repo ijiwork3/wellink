@@ -3,7 +3,7 @@
  *
  * 캠페인 id를 master(mockCampaigns)에서만 관리하고, 사용자별 상호작용 상태는
  * 여기서 관리한다. cold-review A2/A3 해결:
- *  - 북마크: campaignId Set (페이지 간 동기화)
+ *  - 찜(관심): campaignId Set (페이지 간 동기화)
  *  - 신청 완료: campaignId Set (CampaignDetail "신청완료" 배지 + Browse forceApplied)
  *  - 인스타그램 연결 상태: connected + professional (Media↔Profile↔CampaignApply 동기화)
  *
@@ -91,7 +91,7 @@ function useSyncedSet(key: string, fallback: number[]) {
   return { ids: set, has, toggle, add, remove, size: set.size }
 }
 
-/** 북마크(관심 캠페인) — campaignId Set 관리 */
+/** 찜(관심 캠페인) — campaignId Set 관리 */
 export function useBookmarks() {
   return useSyncedSet(BOOKMARKS_KEY, DEFAULT_BOOKMARKS)
 }

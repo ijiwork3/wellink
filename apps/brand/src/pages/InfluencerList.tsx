@@ -670,7 +670,7 @@ export default function InfluencerList() {
                 aria-label={`${inf.name} 상세 보기`}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInfluencer(inf); setContentSubTab('feed'); setContentSort('latest'); setContentDetail(null) } }}
               >
-                {/* 인플루언서 (이름 + 북마크) */}
+                {/* 인플루언서 (이름 + 찜) */}
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[inf.id % AVATAR_COLORS.length]} flex items-center justify-center text-gray-700 font-semibold text-[15px] shrink-0`}>

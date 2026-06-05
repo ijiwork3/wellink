@@ -34,9 +34,9 @@ export function getRoasColor(roas: number): string {
   return 'text-red-500'
 }
 
-/** 모집 진행률 색상: 80%+ 빨강(마감 임박), 80% 미만 브랜드 블루 */
+/** 모집 진행률 색상: 80%+ 주황(마감 임박), 80% 미만 브랜드 블루 — 라이브 모집 바(orange-400)와 일치 */
 export function getRecruitmentColor(pct: number): string {
-  if (pct >= RECRUITMENT_THRESHOLD.closing) return 'text-red-500'
+  if (pct >= RECRUITMENT_THRESHOLD.closing) return 'text-orange-500'
   return 'text-brand-green-text'
 }
 
