@@ -969,9 +969,9 @@ export default function InfluencerList() {
                           <text x="32" y="36" textAnchor="middle" className="text-[15px] font-bold fill-gray-700" fontSize="12" fontWeight="bold">{totalContent}</text>
                         </svg>
                         <div className="space-y-1.5 text-[15px]">
-                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-400 shrink-0" />피드 {feedCount}개 ({Math.round(feedCount/totalContent*100)}%)</div>
-                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />릴스 {reelsCount}개 ({Math.round(reelsCount/totalContent*100)}%)</div>
-                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />이미지 {imgCount}개 ({Math.round(imgCount/totalContent*100)}%)</div>
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full shrink-0" style={{ background: CHART_COLORS.feed }} />피드 {feedCount}개 ({Math.round(feedCount/totalContent*100)}%)</div>
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full shrink-0" style={{ background: CHART_COLORS.saves }} />릴스 {reelsCount}개 ({Math.round(reelsCount/totalContent*100)}%)</div>
+                          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full shrink-0" style={{ background: SEMANTIC_COLORS.success }} />이미지 {imgCount}개 ({Math.round(imgCount/totalContent*100)}%)</div>
                         </div>
                       </div>
                     </div>
