@@ -531,7 +531,7 @@ export default function Subscription() {
           )
         })}
 
-        {/* Scale — 흰 배경 + 그린 테두리 (border opacity 60% 의도된 alpha — 비활성 시 약화 표시) */}
+        {/* Scale — 흰 배경 + 블루 테두리 (border opacity 60% 의도된 alpha — 비활성 시 약화 표시) */}
         {plans.filter(p => p.style === 'green').map(plan => {
           const monthlyKRW = parseInt(plan.price.replace(/,/g, ''), 10)
           const displayPrice = billing === 'annual' ? Math.round(monthlyKRW * 0.8).toLocaleString('ko-KR') : plan.price

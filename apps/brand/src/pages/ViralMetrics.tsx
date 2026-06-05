@@ -186,6 +186,13 @@ export default function ViralMetrics() {
     return today.toISOString().split('T')[0]
   }, [dateOffset])
 
+  // 비교 기준일 — 전날 스냅샷 (원본 comparisonSnapshotLabel: "{날짜} 기준 데이터와 비교합니다.")
+  const comparisonDate = useMemo(() => {
+    const [y, m, dd] = referenceDate.split('-').map(Number)
+    const d = new Date(y, m - 1, dd - 1)
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+  }, [referenceDate])
+
   // 페이지네이션 적용
   const totalPages = Math.max(1, Math.ceil(sortedContent.length / VC_PAGE_SIZE))
   const safePage = Math.min(contentPage, totalPages)
@@ -260,15 +267,11 @@ export default function ViralMetrics() {
         </div>
       )}
 
-      {/* 전날 대비 비교 배너 — 원본 ViralMetricsSection L1649-1651 보강 */}
+      {/* 전날 대비 비교 기준 안내 — 원본 ViralMetricsSection L1649-1651 동일 */}
       {!isZero && (
         <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-600 flex items-center gap-2 flex-wrap">
           <span className="font-medium text-gray-900">전날 대비</span>
-          <span>총 참여 {growth.engagement > 0 ? '+' : ''}{growth.engagement.toFixed(1)}%</span>
-          <span className="text-gray-300">·</span>
-          <span>조회수 {growth.views > 0 ? '+' : ''}{growth.views.toFixed(1)}%</span>
-          <span className="text-gray-300">·</span>
-          <span>좋아요 {growth.likes > 0 ? '+' : ''}{growth.likes.toFixed(1)}%</span>
+          <span>{comparisonDate} 기준 데이터와 비교합니다.</span>
         </div>
       )}
 

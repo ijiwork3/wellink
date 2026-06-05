@@ -7,7 +7,7 @@
  *   line + area fill 이 추세와 누적 성장을 함께 보여주는 정석.
  *
  * 디자인:
- *   - line: brand-green (#A44FFF) 2px
+ *   - line: brand-green (#2563EB) 2px
  *   - area: brand-green gradient (위 35% → 아래 0)
  *   - Y축: minVal·midVal·maxVal 3구간 라벨 (0에서 시작 X — base 24000에서 변동 100 단위 가시화)
  *   - X축: showLabel 정책 (>14 데이터 시 sparse)

@@ -56,7 +56,7 @@ function getRecruitChip(applyEnd?: string): { label: string; className: string }
   const end = new Date(applyEnd)
   if (isNaN(end.getTime())) return null
   end.setHours(23, 59, 59, 999)
-  if (end >= new Date()) return { label: '모집중', className: 'bg-lime-100 text-lime-700' }
+  if (end >= new Date()) return { label: '모집중', className: 'bg-emerald-100 text-emerald-700' }
   return { label: '종료됨', className: 'bg-gray-100 text-gray-500' }
 }
 

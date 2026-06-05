@@ -15,7 +15,7 @@ import { CHART_COLORS, SEMANTIC_COLORS } from '../constants/colors'
 interface SparklineProps {
   /** 데이터 포인트 배열 — 길이 < 2면 렌더 안 함 */
   data: number[]
-  /** 라인/막대 색상 — 기본 brand-green-text (#527E18) */
+  /** 라인/막대 색상 — 기본 brand-green-text (#1E40AF) */
   stroke?: string
   /** 옅은 톤 색 — bar variant 비활성 막대 (기본 brand-green-border) */
   mutedStroke?: string

@@ -35,7 +35,6 @@ import CampaignPreviewRow from '../components/dashboard/CampaignPreviewRow'
 import useHeaderStuck from '../hooks/useHeaderStuck'
 import { useDeviceMode } from '../qa-mockup-kit'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 import {
   DASHBOARD_VIRAL_KEYWORDS,
   DASHBOARD_VIRAL_MIX,
@@ -59,7 +58,6 @@ const TREND_LABEL: Record<DatePeriod, string> = {
 export default function DashboardV2() {
   const navigate = useNavigate()
   const qa = useQAMode()
-  const { isGated, planLabel } = usePlanAccess()
   const [period, setPeriod] = useState<DatePeriod>('일간')
   const [dateOffset, setDateOffset] = useState<number>(0)
   const trendLabel = TREND_LABEL[period]
@@ -353,32 +351,6 @@ export default function DashboardV2() {
                 className="mt-2 px-5 py-2.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
               >
                 캠페인 만들기
-              </button>
-            }
-          />
-        </div>
-      </div>
-    )
-  }
-
-  if (qa === 'plan-locked' || isGated) {
-    return (
-      <div className="space-y-4 @sm:space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
-          <p className="text-[15px] text-gray-500 mt-0.5">캠페인 성과를 한눈에 확인하세요.</p>
-        </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <EmptyState
-            size="lg"
-            title={`${planLabel} 플랜에서는 이용할 수 없습니다`}
-            description="더 높은 플랜으로 업그레이드하면 대시보드 전체 기능을 이용할 수 있습니다."
-            action={
-              <button
-                onClick={() => navigate('/subscription')}
-                className="mt-2 px-5 py-2.5 rounded-xl text-[15px] font-semibold text-white bg-brand-green hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-              >
-                플랜 업그레이드
               </button>
             }
           />

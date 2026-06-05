@@ -215,7 +215,7 @@ export default function Media() {
                 올바르지 않은 사용자 이름이에요. 다시 확인해보세요.
               </div>
             ) : isUpdating ? (
-              <div className="mx-4 mb-3 flex items-center gap-2 rounded-xl border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800">
+              <div className="mx-4 mb-3 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
                 <Loader2 size={13} className="animate-spin shrink-0" aria-hidden="true" />
                 <span>데이터를 수집 중이에요. 잠시만 기다려주세요.</span>
               </div>

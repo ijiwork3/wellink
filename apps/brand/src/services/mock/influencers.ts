@@ -70,7 +70,7 @@ export const CATEGORY_OPTIONS = [
   { label: '크로스핏', value: '크로스핏' },
 ]
 
-// 핏스코어 구간: 85+ 우수(green) / 70~84 보통(amber) / 70미만 개선필요(gray)
+// 핏스코어 구간: 85+ 우수(블루) / 70~84 보통(amber) / 70미만 개선필요(gray)
 export const FIT_SCORE_OPTIONS = [
   { label: '핏 스코어', value: '' },
   { label: '85점 이상 (우수)', value: '85+' },

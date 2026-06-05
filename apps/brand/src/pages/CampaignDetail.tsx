@@ -163,12 +163,12 @@ const FEED_GRADIENTS = [
   'from-green-200 to-emerald-300',
   'from-amber-200 to-orange-300',
   'from-violet-200 to-purple-300',
-  'from-emerald-200 to-teal-300',
+  'from-sky-200 to-sky-300',
 ]
 const REELS_GRADIENTS = [
   'from-rose-200 to-pink-300',
   'from-sky-200 to-blue-300',
-  'from-lime-200 to-green-300',
+  'from-emerald-200 to-emerald-300',
   'from-orange-200 to-amber-300',
   'from-fuchsia-200 to-violet-300',
 ]
@@ -295,9 +295,9 @@ const INFLUENCER_POOL = [
   { name: '서유진', id: 'yujin_s',      thumb: 'bg-gradient-to-br from-green-200 to-green-300' },
   { name: '한지수', id: 'jisu_han',     thumb: 'bg-gradient-to-br from-rose-200 to-rose-300' },
   { name: '최민호', id: 'minho_choi',   thumb: 'bg-gradient-to-br from-indigo-200 to-indigo-300' },
-  { name: '윤아름', id: 'areum_y',      thumb: 'bg-gradient-to-br from-teal-200 to-teal-300' },
+  { name: '윤아름', id: 'areum_y',      thumb: 'bg-gradient-to-br from-sky-200 to-sky-300' },
   { name: '강태현', id: 'taehyun_k',    thumb: 'bg-gradient-to-br from-orange-200 to-orange-300' },
-  { name: '임소희', id: 'sohee_lim',    thumb: 'bg-gradient-to-br from-cyan-200 to-cyan-300' },
+  { name: '임소희', id: 'sohee_lim',    thumb: 'bg-gradient-to-br from-sky-200 to-sky-300' },
 ]
 type ContentPlatform = '인스타그램' | '유튜브' | '블로그'
 type ContentSubType = '피드' | '릴스' | '스토리' | '영상' | '쇼츠'
@@ -548,7 +548,7 @@ export default function CampaignDetail() {
   }
 
   // 콘텐츠 다운로드 (플랜 권한 기반)
-  const { planLabel, canDownloadContent, isGated } = usePlanAccess()
+  const { planLabel, canDownloadContent } = usePlanAccess()
   const [downloadModal, setDownloadModal] = useState(false)
   const [selectedContents, setSelectedContents] = useState<Set<number>>(new Set())
   const [isPaying, setIsPaying] = useState(false)
@@ -1156,8 +1156,7 @@ export default function CampaignDetail() {
         )}
         <div ref={tabScrollRef} className="flex-1 flex items-center overflow-x-auto scrollbar-hide">
         {tabs.map(tab => {
-          const isTabGated = isGated && (tab === '등록 콘텐츠' || tab === '성과 리포트')
-          const isDisabled = (isClosed && tab === '지원자 관리') || isTabGated
+          const isDisabled = isClosed && tab === '지원자 관리'
           const isActive = activeTab === tab
           return (
             <button type="button"
@@ -1180,7 +1179,6 @@ export default function CampaignDetail() {
                 }
               }}
               disabled={isDisabled}
-              aria-label={isTabGated ? `${tab} (구독 만료)` : undefined}
               className={`relative whitespace-nowrap shrink-0 px-2.5 @sm:px-4 py-2.5 ${isPhone ? 'text-[15px]' : 'text-[15px]'} border-b-2 transition-all duration-150 ${
                 isDisabled
                   ? 'border-transparent text-gray-300 cursor-not-allowed'
@@ -1190,9 +1188,6 @@ export default function CampaignDetail() {
               }`}
             >
               {tab}
-              {isTabGated && (
-                <span className="absolute inset-0 rounded backdrop-blur-[1px] bg-white/40" aria-hidden="true" />
-              )}
             </button>
           )
         })}
@@ -1865,7 +1860,7 @@ export default function CampaignDetail() {
       )}
 
       {/* ─── D) 등록 콘텐츠 탭 ─── */}
-      {activeTab === '등록 콘텐츠' && !isGated && qa === 'tab-content-empty' && (
+      {activeTab === '등록 콘텐츠' && qa === 'tab-content-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <EmptyState
             size="lg"
@@ -1875,7 +1870,7 @@ export default function CampaignDetail() {
           />
         </div>
       )}
-      {activeTab === '등록 콘텐츠' && !isGated && qa !== 'tab-content-empty' && (() => {
+      {activeTab === '등록 콘텐츠' && qa !== 'tab-content-empty' && (() => {
         const filtered = registeredContents
           .filter(c =>
             (contentFilter === '전체' || contentStatuses[c.id] === contentFilter) &&
@@ -2191,7 +2186,7 @@ export default function CampaignDetail() {
       })()}
 
       {/* ─── E) 성과 리포트 탭 — 빈 상태 ─── */}
-      {activeTab === '성과 리포트' && !isGated && qa === 'tab-report-empty' && (
+      {activeTab === '성과 리포트' && qa === 'tab-report-empty' && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <EmptyState
             size="lg"
@@ -2203,7 +2198,7 @@ export default function CampaignDetail() {
       )}
 
       {/* ─── E) 성과 리포트 탭 ─── */}
-      {activeTab === '성과 리포트' && !isGated && qa !== 'tab-report-empty' && (
+      {activeTab === '성과 리포트' && qa !== 'tab-report-empty' && (
         <div className="space-y-4">
           {/* 리포트 헤더 — 제목 + PDF 저장 버튼 (원본 ReportView 보강). PDF 저장은 mock — 실연동 시 jsPDF + html2canvas */}
           <div className="flex items-center justify-between flex-wrap gap-2">

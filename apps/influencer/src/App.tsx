@@ -10,7 +10,7 @@ import Settlement from './pages/Settlement'
 import Favorites from './pages/Favorites'
 import Notifications from './pages/Notifications'
 import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider, ProtectedRoute, ErrorBoundary, ThemeSwitcher } from '@wellink/ui'
+import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 import PhoneVerificationGate from './components/PhoneVerificationGate'
 
 const STATUS_ITEMS: StatusItem[] = [
@@ -300,7 +300,6 @@ function AppRoutes() {
         <Route path="*" element={<Navigate to="/campaigns/browse" replace />} />
       </Routes>
 
-      <ThemeSwitcher bottomOffset="1rem" />
       {qaOpen && (
         <GlobalQAHeader
           title="웰링크 인플루언서 POC"

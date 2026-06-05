@@ -18,9 +18,8 @@ import PaymentFail from './pages/PaymentFail'
 import PaymentMethod from './pages/PaymentMethod'
 import MyPage from './pages/MyPage'
 import Notifications from './pages/Notifications'
-import Moodboard from './pages/Moodboard'
 import { GlobalQAHeader, GLOBAL_QA_HEADER_HEIGHT, type StatusItem } from './qa-mockup-kit'
-import { ToastProvider, ProtectedRoute, ErrorBoundary, ThemeSwitcher } from '@wellink/ui'
+import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 
 const BRAND_TAB_MAP: Record<string, string> = {
   login: '/login',
@@ -59,7 +58,6 @@ const STATUS_ITEMS: StatusItem[] = [
       { label: '로딩 스켈레톤', path: '/dashboard?qa=loading' },
       { label: '빈 상태 — 캠페인 없음', path: '/dashboard?qa=empty' },
       { label: '신규 회원 온보딩', path: '/dashboard?qa=new-user' },
-      { label: 'Focus 플랜 — 기능 잠금', path: '/dashboard?qa=plan-locked' },
       { label: '에러', path: '/dashboard?qa=error' },
     ],
   },
@@ -287,7 +285,6 @@ function AppRoutes() {
         <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/fail" element={<PaymentFail />} />
-        <Route path="/moodboard" element={<Moodboard />} />
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analytics/profile" element={<ProfileInsight />} />
@@ -309,7 +306,6 @@ function AppRoutes() {
 
       {location.pathname !== '/moodboard' && (
         <>
-          <ThemeSwitcher bottomOffset="3.75rem" />
           <button
             onClick={() => setQaOpen(o => !o)}
             aria-label="QA 패널 열기"

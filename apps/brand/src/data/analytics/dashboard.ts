@@ -440,7 +440,7 @@ export const DASHBOARD_KPI_VALUES_BY_PERIOD: Record<DatePeriod, {
     },
     ad: {
       spend: '138,000원', roas: '3.2x', results: '24', costPerResult: '5,750원',
-      // ROAS 음수 (bad=amber), 결과당 비용 음수 (positive=false → good=초록)
+      // ROAS 음수 (bad=amber), 결과당 비용 음수 (positive=false → good=블루)
       trends: { spend: 5.3, roas: -0.4, results: 9.1, costPerResult: -2.4 },
     },
     viral: {

@@ -29,8 +29,9 @@ export function usePlanAccess() {
   const { plan: qaPlan } = useQAState()
   const plan: PlanId = effectivePlan(qaPlan)
 
-  // expired/payment-failed만 잠금 — free 포함 나머지 전체 오픈
-  const isGated = qaPlan === 'expired' || qaPlan === 'payment-failed'
+  // 접근 게이팅 제거 — 원본·필요업무에 구독상태 기반 잠금이 없음(전 화면 항상 접근 가능).
+  // 구독 만료/결제 실패는 구독 관리 화면에서만 상태로 표시(isExpired/isPaymentFailed).
+  const isGated = false
 
   // 플랜별 티어 (Focus < Scale < Infinite)
   const planTier = plan === 'infinite' ? 3 : plan === 'scale' ? 2 : plan === 'focus' ? 1 : 0

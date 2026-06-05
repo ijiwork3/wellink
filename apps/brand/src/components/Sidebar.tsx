@@ -3,9 +3,8 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, BarChart2, TrendingUp, Users, UserCheck,
   Megaphone, BookOpen, CreditCard,
-  BookMarked, Lightbulb, User, Share2, ExternalLink, Search, Bell, Lock,
+  BookMarked, Lightbulb, User, Share2, ExternalLink, Search, Bell,
 } from 'lucide-react'
-import { Modal } from '@wellink/ui'
 import { usePlanAccess } from '../hooks/usePlanAccess'
 import { useUnreadCount } from '../services/notifications'
 
@@ -41,17 +40,14 @@ const sections = [
   },
 ]
 
-// isGated 상태에서도 항상 접근 가능한 경로
-const ALWAYS_ACCESSIBLE = new Set(['/campaigns', '/subscription'])
 
 export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = false }: { onNavigate?: () => void; hideLogo?: boolean; fullWidth?: boolean } = {}) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isGated, planLabel, isSubscribed } = usePlanAccess()
+  const { isSubscribed } = usePlanAccess()
   const unreadNotifs = useUnreadCount(isSubscribed)
   const isMyPageActive = location.pathname === '/mypage'
   const [menuSearch, setMenuSearch] = useState('')
-  const [gatedModalOpen, setGatedModalOpen] = useState(false)
   const q = menuSearch.trim().toLowerCase()
   // 클라 #5: 사이드바 *홈* 탭 삭제. 좌상단 WELLINK 로고 클릭으로 대시보드 이동
   const showDashboard = !q || '대시보드'.includes(q)
@@ -63,7 +59,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
     [q]
   )
 
-  const openGatedModal = () => setGatedModalOpen(true)
 
   return (
     <aside className={`${fullWidth ? 'w-full h-full' : 'w-[220px] shrink-0 sticky top-0'} bg-white border-r border-gray-100 flex flex-col min-h-0`}>
@@ -80,20 +75,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
             <span style={{ background: 'var(--gradient-brand)' }} className="text-[15px] font-medium text-white px-2 py-1 rounded-full leading-none">광고주</span>
           </div>
         </button>
-      )}
-
-      {/* 구독 만료 배너 */}
-      {isGated && (
-        <div className="mx-3 mb-2 px-3 py-2 bg-amber-100 border border-amber-200 rounded-lg">
-          <p className="text-[15px] text-amber-800 font-medium leading-snug">{planLabel}</p>
-          <button
-            type="button"
-            onClick={() => navigate('/subscription')}
-            className="text-[15px] text-amber-700 hover:text-amber-900 underline mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50 rounded"
-          >
-            구독 갱신하기 →
-          </button>
-        </div>
       )}
 
       {/* 메뉴 검색 */}
@@ -113,33 +94,21 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
       {/* 내비게이션 — 클라 #5: 홈 탭 제거 (WELLINK 로고로 대체) */}
       <nav className="flex-1 overflow-y-auto px-3 pb-2">
         {showDashboard && (
-          isGated ? (
-            <button
-              type="button"
-              onClick={openGatedModal}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
-            >
-              <LayoutDashboard size={15} />
-              <span className="flex-1 text-left">대시보드</span>
-              <Lock size={11} className="shrink-0 opacity-50" aria-hidden="true" />
-            </button>
-          ) : (
-            <NavLink
-              to="/dashboard"
-              end
-              onClick={() => onNavigate?.()}
-              className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] transition-all duration-150 mb-0.5 ${
-                  isActive
-                    ? 'bg-gray-100 text-gray-900 font-medium'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }`
-              }
-            >
-              <LayoutDashboard size={15} />
-              대시보드
-            </NavLink>
-          )
+          <NavLink
+            to="/dashboard"
+            end
+            onClick={() => onNavigate?.()}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] transition-all duration-150 mb-0.5 ${
+                isActive
+                  ? 'bg-gray-100 text-gray-900 font-medium'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`
+            }
+          >
+            <LayoutDashboard size={15} />
+            대시보드
+          </NavLink>
         )}
         {filteredSections.map(section => (
           <div key={section.label} className="mb-4">
@@ -147,20 +116,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
               {section.label}
             </div>
             {section.items.map(item => {
-              const itemGated = isGated && !ALWAYS_ACCESSIBLE.has(item.to)
-              if (itemGated) {
-                return (
-                  <button
-                    key={item.to}
-                    onClick={openGatedModal}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] text-gray-300 w-full transition-all duration-150 mb-0.5 cursor-not-allowed"
-                  >
-                    {item.icon}
-                    <span className="flex-1 text-left">{item.label}</span>
-                    <Lock size={11} className="shrink-0 opacity-50" aria-hidden="true" />
-                  </button>
-                )
-              }
               const showNotifDot = item.to === '/notifications' && unreadNotifs > 0
               return (
                 <NavLink
@@ -232,36 +187,6 @@ export default function Sidebar({ onNavigate, hideLogo = false, fullWidth = fals
         </div>
       </div>
 
-      {/* 구독 만료 게이팅 모달 */}
-      <Modal
-        open={gatedModalOpen}
-        onClose={() => setGatedModalOpen(false)}
-        title="구독 갱신이 필요합니다"
-        size="sm"
-        footer={
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setGatedModalOpen(false)}
-              className="flex-1 py-2.5 rounded-xl border border-gray-200 text-[15px] text-gray-600 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              취소
-            </button>
-            <button
-              type="button"
-              onClick={() => { setGatedModalOpen(false); navigate('/subscription') }}
-              className="flex-1 py-2.5 rounded-xl bg-brand-green text-white text-[15px] font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
-            >
-              구독 관리로 이동
-            </button>
-          </div>
-        }
-      >
-        <p className="text-[15px] text-gray-600 leading-relaxed">
-          현재 구독이 만료되어 이 기능을 사용할 수 없습니다.<br />
-          구독을 갱신하면 모든 기능을 다시 이용할 수 있습니다.
-        </p>
-      </Modal>
     </aside>
   )
 }

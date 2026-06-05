@@ -192,7 +192,7 @@ const ViralContentRowCard = memo(function ViralContentRowCard({
         </span>
         {/* New 배지 — 우상단. 마지막 동기화 이후 새로 수집된 콘텐츠 (원본 ViralMetricsSection L2005-2011) */}
         {isNew && (
-          <span className="absolute top-2 right-2 inline-flex items-center rounded-full bg-lime-100 px-2.5 py-1 text-[11px] font-semibold text-lime-700 shadow-sm">
+          <span className="absolute top-2 right-2 inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow-sm">
             New
           </span>
         )}

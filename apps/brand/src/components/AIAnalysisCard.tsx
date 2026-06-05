@@ -50,15 +50,15 @@ interface NumberedSectionProps {
 
 function NumberedSection({ icon, title, items }: NumberedSectionProps) {
   return (
-    <div className="bg-white rounded-xl p-4 border border-brand-fuchsia-border/60">
-      <div className="flex items-center gap-1.5 mb-3 text-[15px] font-semibold text-brand-fuchsia-text">
+    <div className="bg-white rounded-xl p-4 border border-brand-green-border/60">
+      <div className="flex items-center gap-1.5 mb-3 text-[15px] font-semibold text-brand-green-text">
         {icon}
         {title}
       </div>
       <ol className="space-y-2.5">
         {items.map((item, i) => (
           <li key={i} className="flex items-start gap-2.5 text-[15px] text-gray-700">
-            <span className="shrink-0 w-5 h-5 rounded-full bg-brand-fuchsia-bg text-brand-fuchsia-text text-xs font-semibold flex items-center justify-center mt-0.5" aria-hidden="true">
+            <span className="shrink-0 w-5 h-5 rounded-full bg-brand-green-bg text-brand-green-text text-xs font-semibold flex items-center justify-center mt-0.5" aria-hidden="true">
               {i + 1}
             </span>
             <span className="leading-relaxed flex-1 min-w-0">{item}</span>
@@ -75,17 +75,17 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
   const hasStructured = (analysis && analysis.length > 0) || (guides && guides.length > 0)
 
   return (
-    <div className="border border-brand-fuchsia-border rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 12%, white), color-mix(in srgb, var(--color-brand-fuchsia) 12%, white))' }}>
+    <div className="border border-brand-green-border rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand-green) 12%, white), color-mix(in srgb, var(--color-brand-green) 12%, white))' }}>
       {/* 헤더 */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-brand-fuchsia-text" aria-hidden="true" />
+          <Sparkles size={16} className="text-brand-green-text" aria-hidden="true" />
           <h2 className="text-[15px] font-bold text-gray-900">{title}</h2>
         </div>
         <button type="button"
           onClick={onRefresh}
           disabled={refreshing}
-          className="inline-flex items-center gap-1.5 text-[15px] px-3 py-1.5 rounded-lg border border-brand-fuchsia-border bg-white hover:bg-brand-fuchsia-bg text-brand-fuchsia-text disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fuchsia/30 whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 text-[15px] px-3 py-1.5 rounded-lg border border-brand-green-border bg-white hover:bg-brand-green-bg text-brand-green-text disabled:opacity-60 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/30 whitespace-nowrap"
         >
           {refreshing ? (
             <>
@@ -103,10 +103,10 @@ const AIAnalysisCard = memo(function AIAnalysisCard({
 
       {refreshing ? (
         <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="AI 분석 진행 중">
-          <div className="h-3 w-3/4 bg-brand-fuchsia-border/50 rounded-xl" />
-          <div className="h-3 w-full bg-brand-fuchsia-border/50 rounded-xl" />
-          <div className="h-3 w-5/6 bg-brand-fuchsia-border/50 rounded-xl" />
-          <div className="h-3 w-2/3 bg-brand-fuchsia-border/50 rounded-xl" />
+          <div className="h-3 w-3/4 bg-brand-green-border/50 rounded-xl" />
+          <div className="h-3 w-full bg-brand-green-border/50 rounded-xl" />
+          <div className="h-3 w-5/6 bg-brand-green-border/50 rounded-xl" />
+          <div className="h-3 w-2/3 bg-brand-green-border/50 rounded-xl" />
         </div>
       ) : !hasStructured ? (
         // 단일 summary fallback (바이럴 호환)

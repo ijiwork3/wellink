@@ -46,9 +46,9 @@ export const CHART_COLORS = {
   badStroke: '#f43f5e',
   /** KPI bad 지표 뮤트 배경 — rose-300 */
   badMuted: '#fda4af',
-  /** 콘텐츠 상세 — 조회수 메인 (emerald-600 · 틸 조화) */
+  /** 콘텐츠 상세 — 조회수 메인 (emerald-600) */
   contentViews: '#059669',
-  /** 콘텐츠 상세 — 조회수 평균 dashed (emerald-400 · 틸 조화) */
+  /** 콘텐츠 상세 — 조회수 평균 dashed (emerald-400) */
   contentViewsAvg: '#34d399',
   /** 콘텐츠 상세 — 증가 조회수 메인 (orange-500) */
   contentViewsInc: '#f97316',
@@ -62,10 +62,10 @@ export const CHART_COLORS = {
   contentComments: '#7c3aed',
   /** 콘텐츠 상세 — 댓글 평균 dashed (violet-400) */
   contentCommentsAvg: '#a78bfa',
-  /** 콘텐츠 상세 — 참여율 메인 (cyan-700) */
-  contentEngage: '#0891b2',
-  /** 콘텐츠 상세 — 참여율 평균 dashed (cyan-300) */
-  contentEngageAvg: '#67e8f9',
+  /** 콘텐츠 상세 — 참여율 메인 (blue-600 브랜드) */
+  contentEngage: '#2563EB',
+  /** 콘텐츠 상세 — 참여율 평균 dashed (blue-300) */
+  contentEngageAvg: '#93c5fd',
 } as const
 
 /** SVG stroke/fill prop에서 Tailwind 클래스 불가한 경우에만 사용 */
@@ -76,7 +76,7 @@ export const SEMANTIC_COLORS = {
   heartInactive: '#9CA3AF',
   /** 에러 아이콘 (SVG stroke) */
   error: '#F04242',
-  /** 성공/완료 아이콘 (SVG stroke) — emerald-500(틸 조화) */
+  /** 성공/완료 아이콘 (SVG stroke) — emerald-500(emerald 계열) */
   success: '#10b981',
   /** 인라인 style prop 전용 — primary 텍스트 (gray-900) */
   textPrimary: '#111827',
@@ -123,7 +123,7 @@ export const THUMBNAIL_PALETTES: { from: string; to: string }[] = [
   { from: '#fce4ec', to: '#ec407a' },  // 핑크
   { from: '#e8eaf6', to: '#5c6bc0' },  // 인디고
   { from: '#e0f7fa', to: '#26c6da' },  // 시안
-  { from: '#ccfbf1', to: '#2dd4bf' },  // 틸
+  { from: '#e0f2fe', to: '#38bdf8' },  // 스카이
 ]
 
 /** 컬러 정책 v6.0 (2026-05-31) — 코발트 블루 × 에메랄드.

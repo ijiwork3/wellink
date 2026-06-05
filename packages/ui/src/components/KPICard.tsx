@@ -3,7 +3,7 @@
  *
  * 디자인 원칙 (KPI dashboard best practice 2026):
  *  - 40-30-20-10 공간 룰: 값 40% / 라벨·trend 30% / 시각(sparkline) 30%
- *  - Semantic 3단계 색상: Green (good ≥+5%) / Amber (neutral) / Rose (bad ≤-3%)
+ *  - Semantic 3단계 색상: Blue (good ≥+5%) / Gray (neutral) / Rose (bad ≤-3%)
  *  - 가로 분할: 데스크탑 sm+ = 좌 텍스트 + 우 큰 sparkline / 모바일 = 세로 풀폭
  *  - prefers-reduced-motion 가드는 Sparkline 내부 처리
  *
@@ -44,9 +44,9 @@ type Severity = 'good' | 'neutral' | 'bad'
  * trend → 의미 단계 변환
  *
  * 규칙 (단순 명료):
- *  - trend > 0 & positive=true(기본)  → good (오른 게 좋음 → 초록)
+ *  - trend > 0 & positive=true(기본)  → good (오른 게 좋음 → 블루)
  *  - trend < 0 & positive=true        → bad  (내린 게 나쁨 → 빨강)
- *  - trend < 0 & positive=false       → good (내린 게 좋음 → 초록, 비용성 지표)
+ *  - trend < 0 & positive=false       → good (내린 게 좋음 → 블루, 비용성 지표)
  *  - trend > 0 & positive=false       → bad  (오른 게 나쁨 → 빨강, 비용 증가)
  *  - trend = 0 또는 undefined         → neutral (회색)
  *

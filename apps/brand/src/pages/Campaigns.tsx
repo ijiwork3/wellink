@@ -12,7 +12,6 @@ import {
 } from '@wellink/ui'
 import type { CampaignStatus } from '@wellink/ui'
 import { useQAModeBrand as useQAMode } from '../utils/useQAModeBrand'
-import { usePlanAccess } from '../hooks/usePlanAccess'
 import { fmtDate } from '@wellink/ui'
 
 const CATEGORY_ICON: Record<string, { Icon: typeof Megaphone; bg: string; fg: string }> = {
@@ -215,7 +214,6 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
 export default function Campaigns() {
   const navigate = useNavigate()
   const qa = useQAMode()
-  const { isGated } = usePlanAccess()
   const [searchParams, setSearchParams] = useSearchParams()
 
   // URL ←→ state 초기값 동기화 (한 번만)
@@ -391,10 +389,8 @@ export default function Campaigns() {
         actions={
           <>
             <button type="button"
-              onClick={() => !isGated && navigate('/campaigns/new')}
-              disabled={isGated}
-              aria-label={isGated ? '새 캠페인 등록 (구독 만료)' : '새 캠페인 등록'}
-              className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
+              onClick={() => navigate('/campaigns/new')}
+              className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-2 @sm:px-4 @sm:py-2.5 rounded-xl text-[15px] font-medium hover:bg-brand-green-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/50"
             >
               <Plus size={14} aria-hidden="true" />
               새 캠페인 등록
