@@ -521,6 +521,25 @@ export interface MyCampaign {
   activityFee?: number
 }
 
+/**
+ * 내 캠페인 날짜 정규화 — 지원일(과거)·모집 마감(과거)·콘텐츠 제출 마감(상태별)을 now 기준
+ * 재계산. mock 고정 날짜가 현재 시점엔 '미래 지원일' 등 모순이라 교정한다.
+ */
+function normalizeMyCampaignDates(c: MyCampaign, i: number): MyCampaign {
+  const DAY = 86400000
+  const base = new Date(); base.setHours(0, 0, 0, 0)
+  const appliedAt = new Date(base.getTime() - (16 + i * 4) * DAY)
+  const applyEnd = new Date(appliedAt.getTime() + (4 + (i % 4)) * DAY)
+  const cdOff = c.status === '콘텐츠대기' ? 2 + (i % 6)
+              : c.status === '검수중'     ? 1 + (i % 4)
+              : (c.status === '완료' || c.status === '승인')   ? -(3 + (i % 5))
+              : (c.status === '미선정' || c.status === '반려') ? -(2 + (i % 4))
+              :                              7 + (i % 8)
+  const contentDeadline = new Date(base.getTime() + cdOff * DAY)
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return { ...c, appliedAt: fmt(appliedAt), applyEnd: fmt(applyEnd), contentDeadline: fmt(contentDeadline), deadline: fmt(contentDeadline) }
+}
+
 export const mockMyCampaigns: MyCampaign[] = [
   {
     id: 'mc-1', name: '프로틴 파워 챌린지', brand: '뉴트리션랩', channel: '인스타그램',
@@ -582,7 +601,7 @@ export const mockMyCampaigns: MyCampaign[] = [
     campaignRef: 4,
     requiredKeywords: ['아이언핏', '크로스핏장비', 'crossfit', '홈트'],
   },
-]
+].map(normalizeMyCampaignDates)
 
 // ────────────────────────────────────────────────────────────────────────────
 // Home / Favorites — 찜(관심)은 더 이상 별도 mock 객체로 두지 않는다.
