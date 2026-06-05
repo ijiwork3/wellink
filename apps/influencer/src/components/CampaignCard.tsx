@@ -35,8 +35,8 @@ const CampaignCard = memo(function CampaignCard({ campaign, liked = false, appli
     ? 'bg-gray-100 text-gray-400'                                          // 종료 — 회색
     : dday.color === 'text-red-500'
       ? 'bg-red-100 text-red-600 border border-red-200'                    // D-3 이하 — 빨강
-      : dday.color === 'text-orange-400'
-        ? 'bg-amber-100 text-amber-600 border border-amber-200'            // D-4~7 — 노랑
+      : dday.color === 'text-orange-500'
+        ? 'bg-orange-100 text-orange-600 border border-orange-200'         // D-4~7 — 주의(주황)
         : 'bg-gray-100 text-gray-500 border border-gray-200'              // D-8+ — 여유(회색)
 
   const handleLike = (e: React.MouseEvent) => {
