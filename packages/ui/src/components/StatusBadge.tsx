@@ -1,28 +1,18 @@
 /**
  * StatusBadge — 전사 공통 상태 배지
  *
- * 전사 상태 컬러 정책 — 5그룹
- * ─────────────────────────────────────────────────────
- * active  (진행 중)   emerald  모집중·진행중
- * pending (대기·예정) amber    대기중·신청완료·콘텐츠대기
- * review  (검토 필요) sky      검수중
- * done    (종료·완료) slate    완료·종료·마감·게시완료·포인트지급
- * alert   (반려·긴급) rose     반려·마감임박
- * ─────────────────────────────────────────────────────
- * 원색 사용 금지 — bg-*-100 / text-*-600~700 톤 유지
+ * 색상은 CAMPAIGN_STATUS_STYLE · PARTICIPATION_STATUS_STYLE 과 1:1 동기화.
+ * status.ts 상수가 정답 — 여기서 색을 바꾸지 말 것.
  */
 
 import { memo } from 'react'
 import type { CampaignStatus, ParticipationStatus } from '../constants/status'
 
-/** 플랫폼 문자열 리터럴 타입 */
 type PlatformStatus = '인스타그램' | '유튜브' | '게재중' | '일시중지'
 
-/** StatusBadge가 수용하는 알려진 상태값 유니온 */
 export type KnownStatus = CampaignStatus | ParticipationStatus | PlatformStatus
 
 interface StatusBadgeProps {
-  /** 알려진 상태값 우선 사용. 미등록 문자열도 허용 (fallback: slate) */
   status: KnownStatus | (string & {})
   size?: 'sm' | 'md'
   dot?: boolean
@@ -31,47 +21,44 @@ interface StatusBadgeProps {
 
 type Cfg = { bg: string; text: string; dot: string }
 
-const active:  Cfg = { bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-400' }
-const pending: Cfg = { bg: 'bg-amber-100',   text: 'text-amber-700',   dot: 'bg-amber-400'   }
-const review:  Cfg = { bg: 'bg-sky-100',     text: 'text-sky-700',     dot: 'bg-sky-400'     }
-const done:    Cfg = { bg: 'bg-slate-100',   text: 'text-slate-500',   dot: 'bg-slate-400'   }
-const alert:   Cfg = { bg: 'bg-rose-100',    text: 'text-rose-600',    dot: 'bg-rose-400'    }
+function fromStyle(cls: string, dotColor: string): Cfg {
+  const bg = cls.match(/bg-[\w-]+/)?.[0] ?? 'bg-slate-100'
+  const text = cls.match(/text-[\w-]+/)?.[0] ?? 'text-slate-500'
+  return { bg, text, dot: dotColor }
+}
 
 const statusConfig: Record<string, Cfg> = {
-  // active
-  '모집중':         active,
-  '진행중':         active,
-  '콘텐츠 등록 중': active, // 친절화 라벨 (정책서 § 4-0)
-  // pending
-  '대기중':       pending,
-  '지원자 대기':  pending, // 친절화 라벨 (정책서 § 4-0)
-  '신청완료':     pending,
-  '지원완료':     pending, // 인플 — 신청 직후 (MyCampaignStatus)
-  '콘텐츠대기':   pending,
-  // review
-  '검수중':     review,
-  '검토중':     review, // 인플 — 브랜드 검토 단계 (MyCampaignStatus)
-  // done
-  '완료':       done,
-  '종료':       done,
-  '마감':       done,
-  '게시완료':   done,
-  '포인트지급': done,
-  '미선정':     alert, // 인플 — PARTICIPATION_STATUS_STYLE 정책에 따라 rose/red 톤
-  // alert
-  '반려':       alert,
-  '마감임박':   alert,
-  '선정 필요': alert, // 광고주 액션 필요 — 정책서 § 4-0
-  // 광고 게재 상태
-  '게재중':     active,
-  '일시중지':   pending,
-  // 플랫폼
-  '인스타그램':   { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
-  '유튜브':       { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
-  '블로그': { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' }, // 네이버 브랜드 그린 톤
-  // 정산 (인플 — SettlementStatus)
-  '적립':       { bg: 'bg-sky-100', text: 'text-sky-700', dot: 'bg-sky-400' },
-  '지급완료':   done,
+  // ── 캠페인 상태 (CAMPAIGN_STATUS_STYLE 동기화) ──
+  '대기중':         fromStyle('bg-amber-100 text-amber-800', 'bg-amber-400'),
+  '지원자 대기':    fromStyle('bg-amber-100 text-amber-800', 'bg-amber-400'),
+  '모집중':         fromStyle('bg-brand-green-bg text-brand-green-text', 'bg-brand-green'),
+  '진행중':         fromStyle('bg-emerald-100 text-emerald-700', 'bg-emerald-400'),
+  '콘텐츠 등록 중': fromStyle('bg-emerald-100 text-emerald-700', 'bg-emerald-400'),
+  '완료':           fromStyle('bg-brand-green-bg text-brand-green-text', 'bg-brand-green'),
+  '종료':           fromStyle('bg-gray-100 text-gray-500', 'bg-gray-400'),
+  '마감임박':       fromStyle('bg-orange-100 text-orange-700', 'bg-orange-400'),
+  '선정 필요':      fromStyle('bg-rose-100 text-rose-700', 'bg-rose-400'),
+  '취소':           fromStyle('bg-red-100 text-red-500', 'bg-red-400'),
+  // ── 참여 상태 (PARTICIPATION_STATUS_STYLE 동기화) ──
+  '신청완료':       fromStyle('bg-gray-100 text-gray-600', 'bg-gray-400'),
+  '지원완료':       fromStyle('bg-gray-100 text-gray-600', 'bg-gray-400'),
+  '검토중':         fromStyle('bg-amber-100 text-amber-800', 'bg-amber-400'),
+  '선정':           fromStyle('bg-brand-green-bg text-brand-green-text', 'bg-brand-green'),
+  '미선정':         fromStyle('bg-red-100 text-red-700', 'bg-red-400'),
+  '콘텐츠대기':     fromStyle('bg-gray-100 text-gray-600', 'bg-gray-400'),
+  '검수중':         fromStyle('bg-sky-100 text-sky-700', 'bg-sky-400'),
+  '반려':           fromStyle('bg-red-100 text-red-700', 'bg-red-400'),
+  // ── 기타 ──
+  '마감':           fromStyle('bg-gray-100 text-gray-500', 'bg-gray-400'),
+  '게시완료':       fromStyle('bg-gray-100 text-gray-500', 'bg-gray-400'),
+  '포인트지급':     fromStyle('bg-gray-100 text-gray-500', 'bg-gray-400'),
+  '게재중':         fromStyle('bg-emerald-100 text-emerald-700', 'bg-emerald-400'),
+  '일시중지':       fromStyle('bg-amber-100 text-amber-800', 'bg-amber-400'),
+  '인스타그램':     { bg: 'bg-pink-100',  text: 'text-pink-600',  dot: 'bg-pink-400'  },
+  '유튜브':         { bg: 'bg-red-100',   text: 'text-red-600',   dot: 'bg-red-400'   },
+  '블로그':         { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-400' },
+  '적립':           fromStyle('bg-sky-100 text-sky-700', 'bg-sky-400'),
+  '지급완료':       fromStyle('bg-gray-100 text-gray-500', 'bg-gray-400'),
 }
 
 const StatusBadge = memo(function StatusBadge({ status, size = 'sm', dot = true, className = '' }: StatusBadgeProps) {
