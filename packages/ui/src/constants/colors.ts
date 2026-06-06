@@ -28,6 +28,8 @@ export const CHART_COLORS = {
   tooltipBg: '#111827',
   /** 다크 툴팁 위 텍스트 — gray-200 */
   tooltipText: '#e5e7eb',
+  /** 노출(impressions) 라인 — indigo-400 */
+  impressions: '#818CF8',
   /** 피드 콘텐츠 지표 라인/범례 — orange-500 */
   feed: '#f97316',
   /** 도달(reach) 라인 — 파랑 S+3% */
@@ -97,9 +99,8 @@ export const GRADE_COLORS = {
   processing: '#BFDBFE',  // BRAND.greenBorder (light blue)
 } as const
 
-/** 시맨틱 성공·긍정 지표 — 브랜드 컬러(바이올렛)와 분리. KPI 상승·차트 good severity 전용
- *  컬러 정책 v5.0 (2026-05-31): 블루그린 HSL(158,100%,39%) — 바이올렛과 트라이어드 배색
- *  옐로우그린(HSL<145) 계열 금지. 텍스트 대비 7.1:1 */
+/** 시맨틱 성공·긍정 지표 — 브랜드 블루와 분리. KPI 상승·차트 good severity 전용
+ *  컬러 정책 v6.0: 블루그린 HSL(158,100%,39%). 텍스트 대비 7.1:1 */
 export const SUCCESS = {
   /** 블루그린 — HSL(158,100%,39%) — 차트 스트로크·스파크라인 상승 */
   green:       '#00C896',

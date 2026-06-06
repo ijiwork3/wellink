@@ -40,7 +40,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4" style={{ background: 'var(--gradient-login-bg)' }}>
+    <div className="@container min-h-screen flex items-center justify-center relative overflow-hidden p-4" style={{ background: 'var(--gradient-login-bg)' }}>
       {/* 배경 데코 */}
       <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-20" aria-hidden="true" style={{ background: 'radial-gradient(circle, var(--color-brand-green), transparent)' }} />
       <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-15" aria-hidden="true" style={{ background: 'radial-gradient(circle, var(--color-brand-green), transparent)' }} />

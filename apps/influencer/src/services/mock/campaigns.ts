@@ -29,7 +29,7 @@ export interface Campaign {
   description?: string
   reward?: string
   rewardAmount?: number
-  /** 활동비(원고료) — 0 또는 미입력이면 제품 협찬만, 양수면 활동비 배지 노출 */
+  /** 활동비 — 0 또는 미입력이면 제품 협찬만, 양수면 활동비 배지 노출 */
   activityFee?: number
   headcount: number
   applied: number
@@ -517,7 +517,7 @@ export interface MyCampaign {
   campaignRef?: number
   /** 반려 사유 — 광고주가 콘텐츠를 반려할 때 입력한 피드백 */
   rejectReason?: string
-  /** 활동비(원고료·포인트) — 0 초과 시 활동비 배지 */
+  /** 활동비 — 0 초과 시 활동비 배지 */
   activityFee?: number
 }
 

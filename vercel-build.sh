@@ -6,12 +6,28 @@ pnpm install --frozen-lockfile=false
 
 pnpm --filter @wellink/ui build
 
-# prj_cnRjL0MR84wriww1Hxi8kISZbCsw = wellink-influencer
-if [ "$VERCEL_PROJECT_ID" = "prj_cnRjL0MR84wriww1Hxi8kISZbCsw" ]; then
+# ── 프로젝트 ID 분기 ──
+# prj_4kk6T48GXRkyCWMK7w2dGYrPiqlG = wellink-influencer
+# prj_wFikuhetaZ15z0pt8dAOzPknzgOb = wellink-landing
+# 그 외 (prj_C463kzYEChTKORBFxvLdAIeuNHnn) = wellink-brand
+
+if [ "$VERCEL_PROJECT_ID" = "prj_4kk6T48GXRkyCWMK7w2dGYrPiqlG" ]; then
   echo "=== Building influencer app ==="
   pnpm --filter wellink-influencer build
   mkdir -p dist
   cp -r apps/influencer/dist/. dist/
+
+elif [ "$VERCEL_PROJECT_ID" = "prj_wFikuhetaZ15z0pt8dAOzPknzgOb" ]; then
+  echo "=== Building landing page ==="
+  cd apps/brand
+  cp index.html index.html.bak
+  cp landing.html index.html
+  cd ../..
+  pnpm --filter wellink-brand build
+  mkdir -p dist
+  cp -r apps/brand/dist/. dist/
+  mv apps/brand/index.html.bak apps/brand/index.html
+
 else
   echo "=== Building brand app ==="
   pnpm --filter wellink-brand build

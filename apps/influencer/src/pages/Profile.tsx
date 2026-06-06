@@ -461,7 +461,7 @@ export default function Profile() {
               <p className="text-xs text-gray-500 break-keep leading-relaxed">
                 {ig.professional
                   ? '비즈니스·크리에이터 계정이 연동되었습니다. 활동비 지급 캠페인에 지원할 수 있어요.'
-                  : '비즈니스·크리에이터 계정을 연동하면 활동비(원고료) 지급 캠페인에 지원할 수 있어요.'}
+                  : '비즈니스·크리에이터 계정을 연동하면 활동비 지급 캠페인에 지원할 수 있어요.'}
               </p>
               {!ig.professional && (
                 <a

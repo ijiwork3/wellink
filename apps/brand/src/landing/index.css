@@ -1,5 +1,13 @@
 @import "tailwindcss";
+@import "@wellink/ui/theme.css";
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
 
 html {
   scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+  color: var(--color-gray-900);
 }

@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react'
-import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS, SEMANTIC_COLORS } from '@wellink/ui'
+import { useChartScrollContext, niceCeil, shouldShowLabel, CHART_COLORS, SEMANTIC_COLORS, BRAND } from '@wellink/ui'
 import type { ImpressReachItem } from '../../../data/analytics/profile'
 
 interface Props {
@@ -110,10 +110,10 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       {impressSegs.map((seg, si) => (
         <g key={`i-${si}`}>
           <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
-            fill="none" stroke="var(--color-brand-green)" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+            fill="none" stroke={CHART_COLORS.impressions} strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
           {seg.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="var(--color-brand-green)" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={CHART_COLORS.impressions} />
               <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill={SEMANTIC_COLORS.white} />
             </g>
           ))}
@@ -122,10 +122,10 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
       {reachSegs.map((seg, si) => (
         <g key={`r-${si}`}>
           <path d={seg.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')}
-            fill="none" stroke="var(--color-brand-fuchsia)" strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
+            fill="none" stroke={BRAND.green} strokeWidth={isDense ? 1.5 : 2} strokeLinecap="round" strokeLinejoin="round" />
           {seg.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill="var(--color-brand-fuchsia)" />
+              <circle cx={p.x} cy={p.y} r={isDense ? 2 : 3} fill={BRAND.green} />
               <circle cx={p.x} cy={p.y} r={isDense ? 0.8 : 1.2} fill={SEMANTIC_COLORS.white} />
             </g>
           ))}
@@ -151,8 +151,8 @@ const ImpressReachChart = memo(function ImpressReachChart({ data, activeIndex, o
         return (
           <g key="active">
             <line x1={x} y1={padT} x2={x} y2={padT + plotH} stroke={CHART_COLORS.axisLabel} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill="var(--color-brand-green)" stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
-            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill="var(--color-brand-fuchsia)" stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
+            {impY !== null && <circle cx={x} cy={impY} r={3.5} fill={CHART_COLORS.impressions} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
+            {reachY !== null && <circle cx={x} cy={reachY} r={3.5} fill={BRAND.green} stroke={SEMANTIC_COLORS.white} strokeWidth={1.5} />}
           </g>
         )
       })()}
