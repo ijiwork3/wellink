@@ -36,7 +36,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? undefined : { duration: 0.6 }}
         >
-          <span className="mb-6 inline-block rounded-full border border-emerald-300/30 bg-white/10 px-4 py-1 text-[15px] font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
+          <span className="mb-6 inline-block rounded-full border border-lime-300/30 bg-white/10 px-4 py-1 text-[15px] font-bold tracking-widest text-[var(--color-landing-lime)] uppercase">
             Fitness & Wellness Specialized
           </span>
           <h1 className="mb-8 text-5xl font-black leading-tight text-white md:text-7xl">
@@ -56,7 +56,7 @@ export function HeroSection({ shouldReduceMotion, contactUrl }: HeroSectionProps
               ctaLabel="캠페인 상담 받기"
               ctaLocation="hero_primary"
               ctaId="hero_primary_consult"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-lime)] px-8 py-4 text-xl font-bold text-white transition-all hover:scale-105 active:scale-95 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-landing-lime)] px-8 py-4 text-xl font-bold text-[var(--color-landing-dark)] transition-all hover:scale-105 active:scale-95 sm:w-auto"
             >
               캠페인 상담 받기
             </CtaLink>

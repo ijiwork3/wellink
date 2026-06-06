@@ -1,0 +1,314 @@
+@import "tailwindcss";
+
+/* ── Theme D: 코발트 블루 × 에메랄드 (신뢰·건강 웰니스 — v6.0 기본) ──
+   컬러 정책 v6.0 (2026-05-31) — 코발트 블루 #2563EB + 에메랄드 #10B981
+   신뢰·전문성(블루) × 건강·활력(에메랄드). 텍스트 대비 AA 이상 */
+:root {
+  --cp: #2563EB;
+  --cs: #10B981;
+  --cm: #1D4ED8;
+  --cd: #1E3A5F;
+  --cd-deep: #0F1E2E;
+  --cl: #BFDBFE;
+  --cp-rgb: 37,99,235;
+  --cs-rgb: 16,185,129;
+  --cl-rgb: 191,219,254;
+  --cd-rgb: 30,58,95;
+  --cbg1: #EFF6FF;
+  --cbg2: #ECFDF5;
+  --cbg3: #EFF6FF;
+  --cbg4: #ECFDF5;
+  --ctag: #1E3A5F;
+  --btn-gradient: linear-gradient(135deg, #2563EB, 70%, #10B981);
+}
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --border: rgba(0, 0, 0, 0.1);
+  --radius: 0.625rem;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* IE/Edge */
+  }
+
+  *::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari/WebKit */
+  }
+
+  html {
+    font-size: var(--font-size);
+    zoom: 1.25;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Inter", "Noto Sans KR", system-ui, sans-serif;
+  }
+
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 64px;
+  }
+
+
+  p, li, h1, h2, h3, h4, button {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  footer {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+@keyframes gradientLoop {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text-loop {
+  background: linear-gradient(135deg, #111827, var(--cp), var(--cs), var(--cp), #111827);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientLoop 4s ease infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageEnter 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+@media (hover: hover) {
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes reelSlideRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes reelSlideLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.reel-slide-right { animation: reelSlideRight 300ms cubic-bezier(0.22,1,0.36,1) both; }
+.reel-slide-left  { animation: reelSlideLeft  300ms cubic-bezier(0.22,1,0.36,1) both; }
+
+
+/* ── Card Interaction Combos (dev preview) ── */
+
+/* 1번: Lift + 내부 마우스 glow + 상단 바 bloom */
+.card-interact-1 {
+  transition: transform 280ms cubic-bezier(0.22,1,0.36,1), box-shadow 280ms;
+}
+.card-interact-1 .card-inner-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(200px circle at var(--cx, 50%) var(--cy, 50%), rgba(var(--cp-rgb), 0.11), transparent 70%);
+  transition: opacity 300ms;
+}
+.card-interact-1 .card-top-bar {
+  transition: box-shadow 300ms, filter 300ms;
+}
+@media (hover: hover) {
+  .card-interact-1:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 48px -12px rgba(var(--cp-rgb), 0.26) !important;
+  }
+  .card-interact-1:hover .card-inner-glow {
+    opacity: 1;
+  }
+  .card-interact-1:hover .card-top-bar {
+    box-shadow: 0 2px 12px 3px rgba(var(--cp-rgb), 0.55);
+    filter: brightness(1.15);
+  }
+}
+
+/* Shine (1번 버튼) */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 600ms ease-out;
+}
+@media (hover: hover) {
+  .btn-shine:hover::after {
+    transform: translateX(160%);
+  }
+}
+
+/* 2번: Tilt (JS 처리) */
+.card-interact-2 {
+  transition: transform 500ms cubic-bezier(0.22,1,0.36,1);
+}
+
+/* 3번: card lift */
+.card-interact-3 {
+  transition: transform 280ms cubic-bezier(0.22,1,0.36,1);
+}
+@media (hover: hover) {
+  .card-interact-3:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* 3번 광고주 버튼: SVG 화살표 슬라이드 */
+.btn-arrow {
+  position: relative;
+  overflow: hidden;
+}
+.btn-arrow .btn-arrow-text {
+  display: inline-block;
+  transition: transform 300ms cubic-bezier(0.22,1,0.36,1), opacity 300ms;
+}
+.btn-arrow .btn-arrow-icon {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  transform: translate(22px, -50%);
+  opacity: 0;
+  transition: transform 360ms cubic-bezier(0.34,1.56,0.64,1), opacity 220ms;
+}
+@media (hover: hover) {
+  .btn-arrow:hover .btn-arrow-text {
+    transform: translateX(-14px);
+    opacity: 0.82;
+  }
+  .btn-arrow:hover .btn-arrow-icon {
+    transform: translate(0, -50%);
+    opacity: 1;
+  }
+}
+
+/* 3번 인플루언서 버튼: fill 애니메이션 */
+.btn-fill {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 320ms;
+}
+.btn-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--cp), var(--cs));
+  border-radius: 9999px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 360ms cubic-bezier(0.22,1,0.36,1);
+}
+.btn-fill-inverse::before {
+  background: white;
+}
+.btn-fill .btn-fill-text {
+  position: relative;
+  z-index: 1;
+  transition: color 180ms 80ms;
+}
+@media (hover: hover) {
+  .btn-fill:hover::before { transform: scaleX(1); }
+  .btn-fill:hover { border-color: transparent !important; }
+  .btn-fill-inverse:hover { outline: 2px solid rgba(var(--cp-rgb), 0.5); outline-offset: -2px; border-color: transparent !important; }
+  .btn-fill-inverse:hover .btn-fill-text { color: var(--cp) !important; }
+  .btn-fill:hover .btn-fill-text { color: var(--cd) !important; }
+}
+
+/* Hero: 1920×1080 FHD (wide + short) 에서만 콘텐츠 축소 */
+@media (min-width: 1600px) and (max-height: 1100px) {
+  .hero-content-wrap {
+    zoom: 0.82;
+  }
+}
+
+@keyframes marqueeY {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+.marquee-y-track {
+  animation: marqueeY 36s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  .page-transition {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ─── 내부 스크롤바 숨김 — 전체 페이지(html/body) 제외 ─── */
+*:not(html):not(body) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*:not(html):not(body)::-webkit-scrollbar {
+  display: none;
+}

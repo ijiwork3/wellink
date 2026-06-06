@@ -18,15 +18,13 @@ if [ "$VERCEL_PROJECT_ID" = "prj_cnRjL0MR84wriww1Hxi8kISZbCsw" ]; then
   cp -r apps/influencer/dist/. dist/
 
 elif [ "$VERCEL_PROJECT_ID" = "prj_wFikuhetaZ15z0pt8dAOzPknzgOb" ]; then
-  echo "=== Building landing page ==="
-  cd apps/brand
-  cp index.html index.html.bak
-  cp landing.html index.html
+  echo "=== Building landing page (v5 export) ==="
+  cd apps/landing
+  npm install
+  npm run build
   cd ../..
-  pnpm --filter wellink-brand build
   mkdir -p dist
-  cp -r apps/brand/dist/. dist/
-  mv apps/brand/index.html.bak apps/brand/index.html
+  cp -r apps/landing/dist/. dist/
 
 else
   echo "=== Building brand app ==="
