@@ -42,7 +42,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
                     />
                   </div>
                 ))}
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-lime-200 text-[15px] font-bold text-[var(--color-landing-dark)]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-emerald-200 text-[15px] font-bold text-[var(--color-landing-dark)]">
                   +50k
                 </div>
               </div>
@@ -119,7 +119,7 @@ export function ExpertPoolSection({ shouldReduceMotion }: ExpertPoolSectionProps
               className="absolute top-20 -right-2 sm:-right-10 rounded-xl bg-white p-4 shadow-xl z-10"
             >
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-lime-400" />
+                <div className="h-2 w-2 rounded-full bg-emerald-400" />
                 <div className="text-[15px] font-bold uppercase text-slate-400">Current Streak</div>
               </div>
               <div className="text-[15px] font-black text-slate-900">오운완 1,249일차</div>

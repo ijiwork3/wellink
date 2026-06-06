@@ -66,7 +66,7 @@ export default function App() {
   }, [isMenuOpen]);
 
   return (
-    <div id="top" className="min-h-screen bg-white font-sans text-slate-900 selection:bg-lime-200">
+    <div id="top" className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-200">
       <a
         href="#main-content"
         className="sr-only z-[60] rounded-md bg-white px-3 py-2 font-semibold text-[var(--color-landing-dark)] focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
@@ -95,7 +95,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_desktop"
               ctaId="header_desktop_consult"
-              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-[15px] font-bold text-[var(--color-landing-dark)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+              className="rounded-full bg-[var(--color-landing-lime)] px-6 py-2 text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
             >
               상담 신청
             </CtaLink>
@@ -143,7 +143,7 @@ export default function App() {
               ctaLabel="상담 신청"
               ctaLocation="header_mobile"
               ctaId="header_mobile_consult"
-              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-[var(--color-landing-dark)] hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
+              className="w-full rounded-full bg-[var(--color-landing-lime)] py-4 text-center text-xl font-bold text-white hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-landing-dark)]"
               onClick={() => setIsMenuOpen(false)}
             >
               상담 신청
@@ -342,7 +342,7 @@ export default function App() {
               ].map((item, i) => (
                 <div key={item.step} className="group relative">
                   <div className="mb-8 flex justify-center">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-4xl font-black text-[var(--color-landing-dark)] transition-transform group-hover:scale-110">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-4xl font-black text-white transition-transform group-hover:scale-110">
                       {item.step}
                     </div>
                   </div>

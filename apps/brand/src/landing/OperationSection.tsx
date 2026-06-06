@@ -16,7 +16,7 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div>
-            <span className="mb-4 inline-block rounded-full bg-lime-400/10 px-3 py-1 text-[15px] font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
+            <span className="mb-4 inline-block rounded-full bg-emerald-400/10 px-3 py-1 text-[15px] font-bold tracking-wider text-[var(--color-landing-lime)] uppercase">
               04. Operation Automation
             </span>
             <h2 className="mb-6 text-4xl font-black leading-tight md:text-6xl">
@@ -38,7 +38,7 @@ export function OperationSection({ shouldReduceMotion }: OperationSectionProps) 
                 '자동 성과 대시보드 생성',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 font-bold">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-[var(--color-landing-dark)]">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-landing-lime)] text-white">
                     <CheckCircle2 size={16} />
                   </div>
                   {item}
