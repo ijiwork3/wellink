@@ -5,7 +5,7 @@ import Layout from '../components/Layout'
 import CampaignCard from '../components/CampaignCard'
 import { mockCampaigns, BROWSE_CATEGORIES } from '../services/mock/campaigns'
 import type { Campaign } from '../services/mock/campaigns'
-import { useQAMode, Tabs, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination } from '@wellink/ui'
+import { useQAMode, Tabs, useToast, ErrorState, EmptyState, Skeleton, BottomSheet, Pagination, CustomSelect } from '@wellink/ui'
 import { useBookmarks, useApplications } from '../services/userState'
 
 function CampaignSkeletonCard() {
@@ -36,6 +36,7 @@ export default function CampaignBrowse() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const bookmarks = useBookmarks()
   const applications = useApplications()
+  const [sortKey, setSortKey] = useState<'deadline' | 'latest' | 'popular'>('deadline')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 30
   // 인공 지연 제거 — 데이터는 정적 import이므로 즉시 표시. QA `?qa=loading`만 스켈레톤 노출.
@@ -73,10 +74,16 @@ export default function CampaignBrowse() {
         || (c.tags ?? []).some(t => t.toLowerCase().includes(q))
       return matchCat && matchSearch
     })
-    return [...filtered].sort((a, b) =>
-      new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime()
-    )
-  }, [selectedCategory, search])
+    const sorted = [...filtered]
+    if (sortKey === 'deadline') {
+      sorted.sort((a, b) => new Date(a.applyEnd).getTime() - new Date(b.applyEnd).getTime())
+    } else if (sortKey === 'latest') {
+      sorted.sort((a, b) => new Date(b.applyEnd).getTime() - new Date(a.applyEnd).getTime())
+    } else {
+      sorted.sort((a, b) => b.applied - a.applied)
+    }
+    return sorted
+  }, [selectedCategory, search, sortKey])
 
   const filtered = qa === 'empty' ? []
     : qa === 'status-모집중'   ? baseFiltered.filter(c => c.status === '모집중')
@@ -84,7 +91,7 @@ export default function CampaignBrowse() {
     : baseFiltered
 
   // 필터·검색 변경 시 첫 페이지로 리셋
-  useEffect(() => { setPage(1) }, [selectedCategory, search])
+  useEffect(() => { setPage(1) }, [selectedCategory, search, sortKey])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -139,11 +146,22 @@ export default function CampaignBrowse() {
           />
         </div>
 
-        {/* 결과 수 */}
+        {/* 결과 수 + 정렬 */}
         {!loading && (
-          <p className="text-[15px] text-gray-500 mb-4 mt-1">
-            총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
-          </p>
+          <div className="flex items-center justify-between mb-4 mt-1">
+            <p className="text-[15px] text-gray-500">
+              총 <strong className="text-gray-900">{filtered.length}</strong>개의 캠페인
+            </p>
+            <CustomSelect
+              value={sortKey}
+              onChange={v => setSortKey(v as typeof sortKey)}
+              options={[
+                { value: 'deadline', label: '마감임박순' },
+                { value: 'latest', label: '최신등록순' },
+                { value: 'popular', label: '인기순' },
+              ]}
+            />
+          </div>
         )}
 
         {/* 카드 그리드 */}

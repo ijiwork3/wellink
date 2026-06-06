@@ -20,7 +20,7 @@ function InfluencerThumb({ src, seed, index }: { src: string; seed: string; inde
 import { useNavigate, Link } from 'react-router-dom'
 import {
   Modal, AlertModal, BottomSheet, CustomSelect, Pagination, Tooltip,
-  ErrorState, EmptyState, SkeletonCard,
+  ErrorState, EmptyState, SkeletonCard, PageHeader,
   useToast, fmtFollowers as formatFollowers, TIMER_MS, AVATAR_COLORS,
   CHART_COLORS, SEMANTIC_COLORS,
 } from '@wellink/ui'
@@ -349,10 +349,7 @@ export default function InfluencerManage() {
   if (qa === 'loading') {
     return (
       <div className="space-y-5">
-        <div>
-          <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
-          <p className={`${isMobile ? 'text-[15px]' : 'text-[15px]'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
-        </div>
+        <PageHeader title="인플루언서 관리" description="관심 인플루언서를 그룹별로 관리하세요." />
         <div className="flex gap-2 flex-wrap">
           {[60, 52, 80, 72].map((w, i) => (
             <div key={i} className="h-9 rounded-full bg-gray-100 animate-pulse" style={{ width: w + 'px' }} />
@@ -401,10 +398,7 @@ export default function InfluencerManage() {
     <div className="space-y-5">
       {/* 상단 헤더 + 탭 (sticky) */}
       <div className={`sticky ${device === 'desktop' ? 'top-0' : 'top-12'} z-40 -mx-4 @md:-mx-6 @lg:-mx-8 px-4 @md:px-6 @lg:px-8 pt-4 pb-3 bg-gray-50/95 backdrop-blur-sm space-y-4`}>
-        <div>
-          <h1 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>인플루언서 관리</h1>
-          <p className={`${isMobile ? 'text-[15px]' : 'text-[15px]'} text-gray-500 mt-0.5`}>관심 인플루언서를 그룹별로 관리하세요.</p>
-        </div>
+        <PageHeader title="인플루언서 관리" description="관심 인플루언서를 그룹별로 관리하세요." />
 
       {/* 그룹 필터 + 공통 정렬 — role=group (tablist는 단일 패널 토글에만 사용. 여기는 X 삭제 액션 동반된 필터) */}
       <div className="flex items-center justify-between gap-2 flex-wrap">

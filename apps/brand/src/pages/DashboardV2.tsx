@@ -270,7 +270,7 @@ export default function DashboardV2() {
     return DASHBOARD_CAMPAIGN_PREVIEWS
       .slice()
       .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
-      .slice(0, 3)
+      .slice(0, 5)
       .map(c => {
         const dday = c.status === 'active' ? Math.ceil((new Date(c.endDate).getTime() - mountedAt) / 86400000) : 99
         return { ...c, isClosing: c.status === 'active' && dday >= 0 && dday <= 7 }

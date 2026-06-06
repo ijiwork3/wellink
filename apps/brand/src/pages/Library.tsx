@@ -23,7 +23,7 @@ import {
   Send,
 } from 'lucide-react'
 import {
-  Modal, StatusBadge, useToast, ErrorState, EmptyState,
+  Modal, StatusBadge, useToast, ErrorState, EmptyState, PageHeader,
   fmtNumber, ENGAGEMENT_THRESHOLD, CONTENT_TYPE_STYLE,
   CustomSelect, Pagination, Tooltip, FloatingScrollChevrons,
 } from '@wellink/ui'
@@ -562,10 +562,7 @@ export default function Library() {
   if (qa === 'empty') {
     return (
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
-          <p className="text-[15px] text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
-        </div>
+        <PageHeader title="콘텐츠 라이브러리" description="인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다." />
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState
             size="lg"
@@ -587,10 +584,7 @@ export default function Library() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">콘텐츠 라이브러리</h1>
-        <p className="text-[15px] text-gray-500 mt-0.5">인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다.</p>
-      </div>
+      <PageHeader title="콘텐츠 라이브러리" description="인플루언서가 제작한 콘텐츠를 한 곳에서 관리합니다." />
 
       {/* Summary Stats — 캠페인 탭 연동 */}
       <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
