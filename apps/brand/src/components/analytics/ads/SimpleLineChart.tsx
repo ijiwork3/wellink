@@ -20,6 +20,7 @@ interface Props {
 }
 
 const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel, yLabelFormatter, activeIndex, onActiveIndex, isTouch }: Props) {
+  const gradId = `grad-${stroke.replace(/[^a-zA-Z0-9_-]/g, '_')}`
   const ctx = useChartScrollContext()
   const W = ctx?.measuredW ?? 400
   const H = 200, padL = 56, padR = 16, padT = 18, padB = 32
@@ -60,7 +61,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
       onTouchMove={isTouch && onActiveIndex ? (e) => { e.preventDefault(); onActiveIndex(idxAt(e.touches[0].clientX, e.currentTarget.getBoundingClientRect())) } : undefined}
     >
       <defs>
-        <linearGradient id={`grad-${stroke.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={stroke} stopOpacity="0.25" />
           <stop offset="100%" stopColor={stroke} stopOpacity="0" />
         </linearGradient>
@@ -79,7 +80,7 @@ const SimpleLineChart = memo(function SimpleLineChart({ data, stroke, ariaLabel,
           </text>
         )
       })}
-      <path d={fillPath} fill={`url(#grad-${stroke.replace('#', '')})`} />
+      <path d={fillPath} fill={`url(#${gradId})`} />
       <path d={path} fill="none" stroke={stroke} strokeWidth={2} />
       {points.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r={2} fill={stroke} />
