@@ -11,7 +11,6 @@
     "lint": "turbo lint"
   },
   "devDependencies": {
-    "lightningcss-darwin-arm64": "1.32.0",
     "turbo": "^2.5.4"
   },
   "packageManager": "pnpm@9.15.0"
