@@ -224,6 +224,97 @@ export function ScreenBadge({ label }: { label: string }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// 전역 QA 상태 타입
+// ─────────────────────────────────────────────────────────────
+
+/** 전역 상태 그룹 하나의 선택지 */
+export interface GlobalStateOption {
+  label: string;
+  value: string;
+  onSelect: () => void;
+}
+
+/**
+ * 전역 QA 상태 그룹 — GlobalQAHeader의 globalStateGroups prop으로 전달.
+ * App.tsx에서 useInstagramState 등 hook을 사용해 activeValue를 계산한 뒤 넘겨준다.
+ */
+export interface GlobalStateGroup {
+  /** 그룹 레이블 (예: "인스타그램") */
+  label: string;
+  /** 현재 선택된 값 — UI에서 하이라이트에 사용 */
+  activeValue: string;
+  /** 선택지 목록 */
+  options: GlobalStateOption[];
+}
+
+// ─────────────────────────────────────────────────────────────
+// GlobalStateDropdown — 전역 QA 상태 드롭다운 (PC 전용, 상단 고정 바)
+// ─────────────────────────────────────────────────────────────
+
+function GlobalStateDropdown({
+  groups,
+  accentColor,
+}: {
+  groups: GlobalStateGroup[];
+  accentColor: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 transition-colors"
+        aria-label="전역 QA 상태 설정"
+      >
+        <span>전역</span>
+        <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-[1100] py-2 overflow-hidden">
+          {groups.map((group, gi) => (
+            <div key={gi} className={gi > 0 ? 'border-t border-slate-700 mt-1 pt-1' : ''}>
+              <div className="px-3 pt-1 pb-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                {group.label}
+              </div>
+              <div className="px-2 pb-1 flex flex-wrap gap-1">
+                {group.options.map((opt, oi) => {
+                  const active = opt.value === group.activeValue;
+                  return (
+                    <button
+                      key={oi}
+                      onClick={() => { opt.onSelect(); setOpen(false); }}
+                      className={`text-[11px] px-2 py-1 rounded-md transition-colors whitespace-nowrap ${
+                        active
+                          ? 'font-semibold text-white'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                      style={active ? { background: accentColor } : undefined}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // StateDropdown — 앱 상태 선택 (우상단 좌)
 // ─────────────────────────────────────────────────────────────
 
@@ -703,6 +794,7 @@ export function GlobalQAHeader<S extends string, T extends string>({
   title = '웰링크 인플루언서 POC',
   pathItems,
   quickItems = [],
+  globalStateGroups = [],
   onNavigate,
   accentColor = QA_ACCENT_COLOR,
 }: {
@@ -710,6 +802,8 @@ export function GlobalQAHeader<S extends string, T extends string>({
   pathItems: StatusItem[];
   /** 현재 페이지 전용 빠른 이동 버튼 (경로 드롭다운 좌측에 칩으로 표시) */
   quickItems?: StatusItem[];
+  /** 전역 QA 상태 그룹 — 인스타그램·전화인증·알림뱃지·정산계좌 등 앱 전역에 영향을 미치는 상태 */
+  globalStateGroups?: GlobalStateGroup[];
   onNavigate: (result: { state?: S; tab?: T; path?: string; modal?: string }) => void;
   accentColor?: string;
 }) {
@@ -760,8 +854,8 @@ export function GlobalQAHeader<S extends string, T extends string>({
             <span>메뉴</span>
           </button>
         ) : (
-          /* 데스크탑: 기존 칩 + 드롭다운 */
-          <div className="flex items-center gap-1.5 flex-wrap">
+          /* 데스크탑: 현재 페이지 칩 + 전역 드롭다운 + 경로 드롭다운 */
+          <div className="flex items-center gap-1.5">
             {quickItems.map((item, i) => (
               <button
                 key={i}
@@ -772,6 +866,10 @@ export function GlobalQAHeader<S extends string, T extends string>({
               </button>
             ))}
             {quickItems.length > 0 && <div className="w-px h-4 bg-slate-600" />}
+            {globalStateGroups.length > 0 && (
+              <GlobalStateDropdown groups={globalStateGroups} accentColor={accentColor} />
+            )}
+            {globalStateGroups.length > 0 && <div className="w-px h-4 bg-slate-600" />}
             <GlobalPathDropdown items={pathItems} onNavigate={onNavigate} accentColor={accentColor} />
           </div>
         )}
@@ -804,6 +902,39 @@ export function GlobalQAHeader<S extends string, T extends string>({
 
             {/* 스크롤 영역 */}
             <div className="flex-1 overflow-y-auto">
+              {/* 전역 상태 — 인스타그램·전화인증·알림뱃지·정산계좌 */}
+              {globalStateGroups.length > 0 && (
+                <div className="p-4 border-b border-slate-800">
+                  <p className="text-[11px] font-semibold text-slate-400 mb-3 uppercase tracking-wider">전역 상태</p>
+                  <div className="space-y-3">
+                    {globalStateGroups.map((group, gi) => (
+                      <div key={gi}>
+                        <p className="text-[11px] text-slate-500 mb-1.5">{group.label}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {group.options.map((opt, oi) => {
+                            const active = opt.value === group.activeValue;
+                            return (
+                              <button
+                                key={oi}
+                                onClick={() => { opt.onSelect(); setMenuOpen(false); }}
+                                className={`text-[13px] font-medium px-3 py-2 rounded-xl border transition-colors whitespace-nowrap ${
+                                  active
+                                    ? 'text-white border-transparent'
+                                    : 'text-slate-300 bg-slate-800 border-slate-700 hover:bg-slate-700'
+                                }`}
+                                style={active ? { background: accentColor, borderColor: accentColor } : undefined}
+                              >
+                                {opt.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 현재 페이지 빠른 이동 */}
               {quickItems.length > 0 && (
                 <div className="p-4 border-b border-slate-800">

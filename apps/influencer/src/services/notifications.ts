@@ -99,6 +99,15 @@ export function deleteNotification(_id: number) {
   // mock: no-op (실서비스에서 API 연동)
 }
 
+/** 읽음 상태 초기화 — 전역 QA에서 "뱃지 있음" 복원 시 사용 */
+export function clearAllRead() {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+    window.dispatchEvent(new Event(CHANGE_EVENT))
+  } catch { /* ignore */ }
+}
+
 // ── React hooks ─────────────────────────────────────────────────
 function subscribe(callback: () => void) {
   if (typeof window === 'undefined') return () => {}

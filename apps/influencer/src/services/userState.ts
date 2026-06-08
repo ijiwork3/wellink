@@ -190,3 +190,41 @@ export function useInstagramState() {
 
   return { ...state, connect, disconnect, upgradeToProfessional, downgradeToPersonal }
 }
+
+// ─────────────────────────────────────────────────────────────
+// 정산 계좌 등록 상태 — Settlement 화면 동기화 (QA 전역 제어)
+// ─────────────────────────────────────────────────────────────
+
+export const BANK_ACCOUNT_KEY        = 'wl_inf_bank_account_v1'
+export const BANK_ACCOUNT_SYNC_EVENT = 'wl_inf_bank_account_change'
+
+export function readHasBankAccount(): boolean {
+  if (typeof window === 'undefined') return false
+  const raw = localStorage.getItem(BANK_ACCOUNT_KEY)
+  return raw === '1' || raw === '0' ? raw === '1' : false
+}
+
+export function writeHasBankAccount(has: boolean) {
+  try {
+    localStorage.setItem(BANK_ACCOUNT_KEY, has ? '1' : '0')
+    window.dispatchEvent(new CustomEvent(BANK_ACCOUNT_SYNC_EVENT))
+  } catch { /* ignore */ }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 전화번호 인증 상태 — PhoneVerificationGate 동기화 (QA 전역 제어)
+// ─────────────────────────────────────────────────────────────
+
+export const PHONE_VERIFIED_KEY = 'wl_inf_phone_verified_v1'
+
+export function readPhoneVerified(): boolean {
+  if (typeof window === 'undefined') return true
+  return localStorage.getItem(PHONE_VERIFIED_KEY) === '1'
+}
+
+export function writePhoneVerified(verified: boolean) {
+  try {
+    if (verified) localStorage.setItem(PHONE_VERIFIED_KEY, '1')
+    else localStorage.removeItem(PHONE_VERIFIED_KEY)
+  } catch { /* ignore */ }
+}

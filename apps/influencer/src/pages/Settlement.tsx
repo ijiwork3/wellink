@@ -4,6 +4,7 @@ import Layout from '../components/Layout'
 import { ResponsiveSheet, CustomSelect, INPUT_BASE, useToast, useQAMode, ErrorState, EmptyState, fmtDate, Skeleton, Tabs, Pagination, CustomCheckbox } from '@wellink/ui'
 import { mockProfile } from '../services/mock/profile'
 import { mockMyCampaigns } from '../services/mock/campaigns'
+import { readHasBankAccount, BANK_ACCOUNT_SYNC_EVENT } from '../services/userState'
 
 type PayerType = '개인' | '개인사업자'
 
@@ -114,13 +115,33 @@ export default function Settlement() {
   const [activeTab, setActiveTab] = useState<SettlementTab>('전체')
   const [page, setPage] = useState(1)
 
-  // 계좌 정보
+  // 계좌 정보 — QA URL param | 전역 QA localStorage | mockProfile 순으로 초기화
+  const MOCK_BANK_ACCOUNT: BankAccount = { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name, payerType: '개인', name: mockProfile.name, phone: '010-1234-5678' }
   const [bankAccount, setBankAccount] = useState<BankAccount | null>(() => {
     if (qa === 'no-account') return null
-    if (qa === 'has-account' || mockProfile.hasBankAccount) return { bank: 'KB국민은행', accountNumber: '123-456-789012', holder: mockProfile.name, payerType: '개인', name: mockProfile.name, phone: '010-1234-5678' }
+    if (qa === 'has-account' || mockProfile.hasBankAccount || readHasBankAccount()) return MOCK_BANK_ACCOUNT
     return null
   })
   const hasBankAccount = bankAccount !== null
+
+  // 전역 QA 상태 변경 시 실시간 반영 (localStorage 이벤트)
+  useEffect(() => {
+    const sync = () => {
+      const hasLS = readHasBankAccount()
+      setBankAccount(prev => {
+        if (hasLS && !prev) return MOCK_BANK_ACCOUNT
+        if (!hasLS && prev && !mockProfile.hasBankAccount && qa !== 'has-account') return null
+        return prev
+      })
+    }
+    window.addEventListener(BANK_ACCOUNT_SYNC_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(BANK_ACCOUNT_SYNC_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qa])
   const [bankModalOpen, setBankModalOpen] = useState(false)
 
   // 폼 draft — 개인 / 개인사업자 공통

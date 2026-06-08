@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import CampaignBrowse from './pages/CampaignBrowse'
 import MyCampaign from './pages/MyCampaign'
@@ -9,9 +9,11 @@ import Media from './pages/Media'
 import Settlement from './pages/Settlement'
 import Favorites from './pages/Favorites'
 import Notifications from './pages/Notifications'
-import { GlobalQAHeader, type StatusItem } from './qa-mockup-kit'
+import { GlobalQAHeader, type StatusItem, type GlobalStateGroup } from './qa-mockup-kit'
 import { ToastProvider, ProtectedRoute, ErrorBoundary } from '@wellink/ui'
 import PhoneVerificationGate from './components/PhoneVerificationGate'
+import { useInstagramState, readPhoneVerified, writePhoneVerified, writeHasBankAccount, readHasBankAccount } from './services/userState'
+import { useUnreadCount, markAllAsRead, clearAllRead } from './services/notifications'
 
 const STATUS_ITEMS: StatusItem[] = [
   /* ────────────────── 온보딩 ────────────────── */
@@ -248,6 +250,58 @@ function AppRoutes() {
   const location = useLocation()
   const [qaOpen, setQaOpen] = useState(false)
 
+  // ── 전역 QA 상태 hooks ──────────────────────────────────────
+  const ig = useInstagramState()
+  const unreadCount = useUnreadCount()
+  // bankAccount: localStorage에서 읽어 sync (Settlement와 동일 키)
+  const [hasBankAccountLS, setHasBankAccountLS] = useState(() => readHasBankAccount())
+  useEffect(() => {
+    const sync = () => setHasBankAccountLS(readHasBankAccount())
+    window.addEventListener('wl_inf_bank_account_change', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('wl_inf_bank_account_change', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  const globalStateGroups = useMemo<GlobalStateGroup[]>(() => [
+    {
+      label: '인스타그램',
+      activeValue: !ig.connected ? '연동안함' : ig.professional ? '프로페셔널' : '일반',
+      options: [
+        { label: '연동 안함', value: '연동안함', onSelect: () => ig.disconnect() },
+        { label: '일반 계정', value: '일반',     onSelect: () => ig.connect(false) },
+        { label: '프로페셔널', value: '프로페셔널', onSelect: () => ig.connect(true) },
+      ],
+    },
+    {
+      label: '전화번호 인증',
+      activeValue: readPhoneVerified() ? '인증완료' : '미인증',
+      options: [
+        { label: '인증 완료', value: '인증완료', onSelect: () => { writePhoneVerified(true);  window.location.reload() } },
+        { label: '미인증 (게이트)', value: '미인증', onSelect: () => { writePhoneVerified(false); window.location.reload() } },
+      ],
+    },
+    {
+      label: '알림 뱃지',
+      activeValue: unreadCount > 0 ? '있음' : '없음',
+      options: [
+        { label: `뱃지 있음 (6)`, value: '있음', onSelect: () => clearAllRead() },
+        { label: '뱃지 없음',     value: '없음', onSelect: () => markAllAsRead() },
+      ],
+    },
+    {
+      label: '정산 계좌',
+      activeValue: hasBankAccountLS ? '등록됨' : '미등록',
+      options: [
+        { label: '계좌 등록됨', value: '등록됨', onSelect: () => { writeHasBankAccount(true);  setHasBankAccountLS(true) } },
+        { label: '미등록',      value: '미등록', onSelect: () => { writeHasBankAccount(false); setHasBankAccountLS(false) } },
+      ],
+    },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [ig.connected, ig.professional, unreadCount, hasBankAccountLS])
+
   const handleNavigate = ({ path }: { path?: string }) => {
     if (path) { navigate(path); setQaOpen(false) }
   }
@@ -305,6 +359,7 @@ function AppRoutes() {
           title="웰링크 인플루언서 POC"
           pathItems={STATUS_ITEMS}
           quickItems={getQuickItems(location.pathname)}
+          globalStateGroups={globalStateGroups}
           onNavigate={handleNavigate}
           accentColor="var(--color-brand-green)"
         />
